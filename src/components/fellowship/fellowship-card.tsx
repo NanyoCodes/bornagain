@@ -19,7 +19,7 @@ import { format, parseISO } from 'date-fns';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CommentSection } from '@/components/testimonies/comment-section';
@@ -56,16 +56,20 @@ function FullDevotionalDialog({
     const { user } = useUser();
     const isMobile = useIsMobile();
     const [isOpen, setIsOpen] = useState(false);
-    const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const commentsRef = useRef<HTMLDivElement>(null);
     useEffect(() => setMounted(true), []);
 
     const hasAmened = user ? supporters.includes(user.uid) : false;
     const hasInspired = user ? inspiredBy.includes(user.uid) : false;
     const hasCelebrated = user ? connectedBy.includes(user.uid) : false;
 
-    const totalReactions = (supporters?.length || 0) + (inspiredBy?.length || 0) + (connectedBy?.length || 0);
     const commentPath = `fellowships/${fellowshipId}/devotionals/${devotional.scheduledDate}/comments`;
+
+    const scrollToComments = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        commentsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
     if (!mounted) return <>{children}</>;
 
@@ -131,32 +135,26 @@ function FullDevotionalDialog({
                         </Button>
                     </div>
 
-                    <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <SheetTrigger asChild>
-                            <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="h-9 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest bg-muted/20 border-primary/20 hover:bg-muted/30 transition-all active:scale-95 px-6 shadow-sm"
-                            >
-                                <MessageSquare className="h-4 w-4 text-primary" />
-                                <span>{commentCount} Response{commentCount !== 1 ? 's' : ''}</span>
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] border-t-4 border-t-primary/20">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <SheetHeader className="text-left flex-shrink-0">
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight flex items-center gap-3">
-                                        <MessageSquare className="h-6 w-6 text-primary" />
-                                        Gathered Responses
-                                    </SheetTitle>
-                                </SheetHeader>
-                            </div>
-                            <div className="flex-grow min-h-0">
-                                <CommentSection path={commentPath} />
-                            </div>
-                        </SheetContent>
-                    </Sheet>
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-9 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest bg-muted/20 border-primary/20 hover:bg-muted/30 transition-all active:scale-95 px-6 shadow-sm"
+                        onClick={scrollToComments}
+                    >
+                        <MessageSquare className="h-4 w-4 text-primary" />
+                        <span>{commentCount} Response{commentCount !== 1 ? 's' : ''}</span>
+                    </Button>
                 </div>
+            </div>
+
+            <div ref={commentsRef} className="border-t border-dashed pt-8">
+                <div className="flex items-center gap-3 mb-6 px-1">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <MessageSquare className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">GATHERED RESPONSES</span>
+                </div>
+                <CommentSection path={commentPath} inline />
             </div>
         </div>
     );

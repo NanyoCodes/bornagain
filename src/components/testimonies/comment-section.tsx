@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -246,7 +245,7 @@ function CommentItem({
     );
 }
 
-export function CommentSection({ testimonyId, path }: { testimonyId?: string; path?: string }) {
+export function CommentSection({ testimonyId, path, inline = false }: { testimonyId?: string; path?: string; inline?: boolean }) {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -327,9 +326,9 @@ export function CommentSection({ testimonyId, path }: { testimonyId?: string; pa
     };
 
     return (
-        <div className="flex flex-col h-full min-h-0 overflow-hidden bg-background">
-            <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
-                <div className="space-y-6 p-4 sm:p-6 pb-24">
+        <div className={cn("flex flex-col min-h-0 overflow-hidden", !inline ? "h-full bg-background" : "h-auto")}>
+            <div className={cn(!inline ? "flex-1 min-h-0 overflow-y-auto scrollbar-hide" : "h-auto")}>
+                <div className={cn("space-y-6", !inline ? "p-4 sm:p-6 pb-24" : "p-0 pb-6")}>
                     {(loading || userLoading || (profileLoading && !profile)) ? (
                         <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
                     ) : topLevelComments.length > 0 ? (
@@ -344,7 +343,10 @@ export function CommentSection({ testimonyId, path }: { testimonyId?: string; pa
             </div>
 
             {user && (
-                <div className="shrink-0 p-3 sm:p-4 border-t bg-background/80 backdrop-blur-md shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.1)]">
+                <div className={cn(
+                    "p-3 sm:p-4 border-t bg-background/80 backdrop-blur-md", 
+                    !inline ? "shrink-0 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.1)] sticky bottom-0 z-30" : "sticky bottom-0 z-30 rounded-2xl border shadow-lg mt-4"
+                )}>
                     {replyingTo && (
                         <div className="flex items-center justify-between bg-primary/5 px-4 py-2 rounded-t-2xl text-[11px] text-muted-foreground border-x border-t mb-0 border-primary/20">
                             <p className="truncate">Replying to <span className="font-bold text-primary">{replyingTo.authorFirstName}</span></p>

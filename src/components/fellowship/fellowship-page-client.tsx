@@ -79,16 +79,20 @@ function FullDevotionalDialog({
     const { user } = useUser();
     const isMobile = useIsMobile();
     const [isOpen, setIsOpen] = useState(false);
-    const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const commentsRef = useRef<HTMLDivElement>(null);
     useEffect(() => setMounted(true), []);
 
     const hasAmened = user ? supporters.includes(user.uid) : false;
     const hasInspired = user ? inspiredBy.includes(user.uid) : false;
     const hasCelebrated = user ? connectedBy.includes(user.uid) : false;
 
-    const totalReactions = (supporters?.length || 0) + (inspiredBy?.length || 0) + (connectedBy?.length || 0);
     const commentPath = `fellowships/${fellowshipId}/devotionals/${devotional.scheduledDate}/comments`;
+
+    const scrollToComments = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        commentsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
     if (!mounted) return <>{children}</>;
 
@@ -154,32 +158,26 @@ function FullDevotionalDialog({
                         </Button>
                     </div>
 
-                    <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <SheetTrigger asChild>
-                            <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="h-9 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest bg-muted/20 border-primary/20 hover:bg-muted/30 transition-all active:scale-95 px-6 shadow-sm"
-                            >
-                                <MessageSquare className="h-4 w-4 text-primary" />
-                                <span>{commentCount} Response{commentCount !== 1 ? 's' : ''}</span>
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] border-t-4 border-t-primary/20">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <SheetHeader className="text-left flex-shrink-0">
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight flex items-center gap-3">
-                                        <MessageSquare className="h-6 w-6 text-primary" />
-                                        Gathered Responses
-                                    </SheetTitle>
-                                </SheetHeader>
-                            </div>
-                            <div className="flex-grow min-h-0">
-                                <CommentSection path={commentPath} />
-                            </div>
-                        </SheetContent>
-                    </Sheet>
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-9 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest bg-muted/20 border-primary/20 hover:bg-muted/30 transition-all active:scale-95 px-6 shadow-sm"
+                        onClick={scrollToComments}
+                    >
+                        <MessageSquare className="h-4 w-4 text-primary" />
+                        <span>{commentCount} Response{commentCount !== 1 ? 's' : ''}</span>
+                    </Button>
                 </div>
+            </div>
+
+            <div ref={commentsRef} className="border-t border-dashed pt-8">
+                <div className="flex items-center gap-3 mb-6 px-1">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <MessageSquare className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">GATHERED RESPONSES</span>
+                </div>
+                <CommentSection path={commentPath} inline />
             </div>
         </div>
     );
@@ -256,7 +254,6 @@ export default function FellowshipPageClient() {
     const [isLogFollowUpOpen, setIsLogFollowUpOpen] = useState(false);
     const [isChatLoading, setIsChatLoading] = useState(false);
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
-    const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     
     const [viewDate, setViewDate] = useState(new Date());
     const [isDevotionalDialogOpen, setIsDevotionalDialogOpen] = useState(false);
@@ -270,6 +267,7 @@ export default function FellowshipPageClient() {
 
     const devotionalTextRef = useRef<HTMLParagraphElement>(null);
     const [isDevotionalTruncated, setIsDevotionalTruncated] = useState(false);
+    const commentsAreaRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => { setMounted(true); }, []);
 
@@ -575,6 +573,10 @@ export default function FellowshipPageClient() {
         setViewDate(prev => direction === 'prev' ? subDays(prev, 1) : addDays(prev, 1));
     };
 
+    const scrollToComments = () => {
+        commentsAreaRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
     const loading = fellowshipLoading || profileLoading || loadingMembers || soulsLoading || devoLoading;
 
     if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
@@ -831,8 +833,8 @@ export default function FellowshipPageClient() {
                                             <Button 
                                                 variant="ghost" 
                                                 size="sm" 
-                                                className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", isCommentsOpen && "bg-white/20 border-white/30")}
-                                                onClick={() => setIsCommentsOpen(true)}
+                                                className="h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all"
+                                                onClick={scrollToComments}
                                             >
                                                 <MessageSquare className="h-3.5 w-3.5" />
                                                 <span>{commentCount} Response{commentCount !== 1 && 's'}</span>
@@ -1010,6 +1012,18 @@ export default function FellowshipPageClient() {
                            )}
                         </CardContent>
                     </Card>
+                    
+                    <div ref={commentsAreaRef} className="pt-8">
+                        <div className="flex items-center gap-3 mb-6 px-1">
+                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
+                                <MessageSquare className="h-5 w-5 text-primary" />
+                            </div>
+                            <h3 className="text-xl font-black font-headline uppercase tracking-tight">Gathered Responses</h3>
+                        </div>
+                        <Card className="rounded-none sm:rounded-[2rem] border-none shadow-sm overflow-hidden bg-background">
+                            <CommentSection path={commentPath} inline />
+                        </Card>
+                    </div>
                 </div>
 
                 <div className="space-y-8 flex flex-col px-4 sm:px-0 pb-32">
@@ -1143,21 +1157,6 @@ export default function FellowshipPageClient() {
                         </ScrollArea>
                     </SheetContent>
                 </Sheet>
-                <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                    <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] border-t-4 border-t-primary/20">
-                        <div className="p-8 border-b shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left flex-shrink-0">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight flex items-center gap-3">
-                                    <MessageSquare className="h-6 w-6 text-primary shrink-0" />
-                                    Gathered Responses
-                                </SheetTitle>
-                            </SheetHeader>
-                        </div>
-                        <div className="flex-grow min-h-0">
-                            <CommentSection path={commentPath} />
-                        </div>
-                    </SheetContent>
-                </Sheet>
                 </>
             ) : (
                 <>
@@ -1231,21 +1230,6 @@ export default function FellowshipPageClient() {
                         <ScrollArea className="max-h-[60vh] p-6">
                             {ScheduleList}
                         </ScrollArea>
-                    </DialogContent>
-                </Dialog>
-                <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                    <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl border-t-4 border-t-primary/20">
-                        <div className="p-8 border-b shrink-0 bg-muted/10">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
-                                    <MessageSquare className="h-6 w-6 text-primary shrink-0" />
-                                    Gathered Responses
-                                </DialogTitle>
-                            </DialogHeader>
-                        </div>
-                        <div className="flex-1 min-h-0">
-                            <CommentSection path={commentPath} />
-                        </div>
                     </DialogContent>
                 </Dialog>
                 </>

@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Responsive reaction layout and expanded interaction - 2025-07-21T10:00:00Z
+    // Deployment trigger: Devotional response sheets & interactive directories - 2025-08-01T12:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
