@@ -127,9 +127,9 @@ function FullDevotionalDialog({
                             <Button 
                                 variant="outline" 
                                 size="sm" 
-                                className="h-9 rounded-full gap-2 font-bold uppercase text-[10px] tracking-widest bg-muted/40 border-muted-foreground/10 hover:bg-muted/60 transition-all active:scale-95"
+                                className="h-10 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest bg-muted/20 border-primary/20 hover:bg-muted/30 transition-all active:scale-95 px-6 shadow-sm"
                             >
-                                <MessageSquare className="h-3.5 w-3.5" />
+                                <MessageSquare className="h-4 w-4 text-primary" />
                                 <span>{commentCount} Response{commentCount !== 1 ? 's' : ''}</span>
                             </Button>
                         </SheetTrigger>
@@ -926,7 +926,7 @@ export default function FellowshipPageClient() {
                                         <div className="flex items-center justify-between mb-6 px-1">
                                             <div className="flex items-center gap-2">
                                                 <Heart className="h-4 w-4 text-primary" />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Assigned Converts</span>
+                                                <span className="text-[10px] font-black uppercase tracking-0.2em text-muted-foreground">Assigned Converts</span>
                                             </div>
                                             <Button onClick={() => setIsLogSoulOpen(true)} size="sm" className="h-8 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-md transition-transform active:scale-95">
                                                 <UserPlus className="mr-1.5 h-3.5 w-3.5" />
@@ -1034,6 +1034,7 @@ export default function FellowshipPageClient() {
             </div>
 
             {mounted && isMobile ? (
+                <>
                 <Sheet open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
@@ -1091,7 +1092,41 @@ export default function FellowshipPageClient() {
                         </ScrollArea>
                     </SheetContent>
                 </Sheet>
+                <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}>
+                    <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left flex-shrink-0">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <CalendarClock className="h-4 w-4 text-primary" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span>
+                                </div>
+                                <SheetTitle className="text-2xl font-black font-headline">Planned Word</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1">Browse scheduled meditations for this group.</SheetDescription>
+                            </SheetHeader>
+                        </div>
+                        <ScrollArea className="flex-grow px-8 pt-6">
+                            {ScheduleList}
+                        </ScrollArea>
+                    </SheetContent>
+                </Sheet>
+                <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
+                    <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] border-t-4 border-t-primary/20">
+                        <div className="p-8 border-b shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left flex-shrink-0">
+                                <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight flex items-center gap-3">
+                                    <MessageSquare className="h-6 w-6 text-primary shrink-0" />
+                                    Gathered Responses
+                                </SheetTitle>
+                            </SheetHeader>
+                        </div>
+                        <div className="flex-grow min-h-0">
+                            <CommentSection path={commentPath} />
+                        </div>
+                    </SheetContent>
+                </Sheet>
+                </>
             ) : (
+                <>
                 <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
                     <DialogContent className="sm:max-w-2xl p-0 overflow-hidden rounded-[2rem] shadow-2xl border-none">
                         <div className="p-8 border-b bg-muted/10">
@@ -1151,45 +1186,6 @@ export default function FellowshipPageClient() {
                         </ScrollArea>
                     </DialogContent>
                 </Dialog>
-            )}
-
-            {mounted && isMobile ? (
-                <>
-                <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}>
-                    <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left flex-shrink-0">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <CalendarClock className="h-4 w-4 text-primary" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span>
-                                </div>
-                                <SheetTitle className="text-2xl font-black font-headline">Planned Word</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Browse scheduled meditations for this group.</SheetDescription>
-                            </SheetHeader>
-                        </div>
-                        <ScrollArea className="flex-grow px-8 pt-6">
-                            {ScheduleList}
-                        </ScrollArea>
-                    </SheetContent>
-                </Sheet>
-                <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                    <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] border-t-4 border-t-primary/20">
-                        <div className="p-8 border-b shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left flex-shrink-0">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight flex items-center gap-3">
-                                    <MessageSquare className="h-6 w-6 text-primary shrink-0" />
-                                    Gathered Responses
-                                </SheetTitle>
-                            </SheetHeader>
-                        </div>
-                        <div className="flex-grow min-h-0">
-                            <CommentSection path={commentPath} />
-                        </div>
-                    </SheetContent>
-                </Sheet>
-                </>
-            ) : (
-                <>
                 <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                         <div className="p-8 border-b bg-muted/10">

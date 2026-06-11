@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refine devotional permissions and authorship controls - 2025-07-15T10:00:00Z
+    // Deployment trigger: Devotional responses and engagement metrics - 2025-07-20T12:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
