@@ -22,6 +22,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { CommentSection } from '@/components/testimonies/comment-section';
 
 type FellowshipCardProps = {
   fellowship: Fellowship;
@@ -34,6 +35,7 @@ type FellowshipCardProps = {
 function FullDevotionalDialog({ 
     devotional, 
     children,
+    fellowshipId,
     commentCount = 0,
     supporters = [],
     inspiredBy = [],
@@ -41,6 +43,7 @@ function FullDevotionalDialog({
 }: { 
     devotional: DailyDevotional, 
     children: React.ReactNode,
+    fellowshipId: string,
     commentCount?: number,
     supporters?: string[],
     inspiredBy?: string[],
@@ -48,10 +51,12 @@ function FullDevotionalDialog({
 }) {
     const isMobile = useIsMobile();
     const [isOpen, setIsOpen] = useState(false);
+    const [isCommentsOpen, setIsCommentsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
 
     const totalReactions = (supporters?.length || 0) + (inspiredBy?.length || 0) + (connectedBy?.length || 0);
+    const commentPath = `fellowships/${fellowshipId}/devotionals/${devotional.scheduledDate}/comments`;
 
     if (!mounted) return <>{children}</>;
 
@@ -83,26 +88,45 @@ function FullDevotionalDialog({
                     <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
                 </div>
 
-                {(totalReactions > 0 || commentCount > 0) && (
-                    <div className="flex items-center gap-6">
-                        {totalReactions > 0 && (
-                            <div className="flex items-center gap-2 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10">
-                                <div className="flex items-center -space-x-1.5">
-                                    {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background shadow-sm"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
-                                    {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background shadow-sm"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
-                                    {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
-                                </div>
-                                <span className="text-[10px] font-black text-primary">{totalReactions} Reactions</span>
+                <div className="flex items-center gap-4 flex-wrap justify-center">
+                    {totalReactions > 0 && (
+                        <div className="flex items-center gap-2 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10">
+                            <div className="flex items-center -space-x-1.5">
+                                {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background shadow-sm"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
+                                {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background shadow-sm"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
+                                {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
                             </div>
-                        )}
-                        {commentCount > 0 && (
-                            <div className="flex items-center gap-2 text-muted-foreground bg-muted/40 px-3 py-1.5 rounded-full border">
+                            <span className="text-[10px] font-black text-primary">{totalReactions} Reactions</span>
+                        </div>
+                    )}
+                    
+                    <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
+                        <SheetTrigger asChild>
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="h-9 rounded-full gap-2 font-bold uppercase text-[10px] tracking-widest bg-muted/40 border-muted-foreground/10 hover:bg-muted/60 transition-all active:scale-95"
+                            >
                                 <MessageSquare className="h-3.5 w-3.5" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">{commentCount} Response{commentCount !== 1 ? 's' : ''}</span>
+                                <span>{commentCount} Response{commentCount !== 1 ? 's' : ''}</span>
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] border-t-4 border-t-primary/20">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                                <SheetHeader className="text-left flex-shrink-0">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight flex items-center gap-3">
+                                        <MessageSquare className="h-6 w-6 text-primary" />
+                                        Gathered Responses
+                                    </SheetTitle>
+                                    <SheetDescription className="text-xs font-bold uppercase tracking-widest">PRAYERS & AGREEMENT ON THIS WORD</SheetDescription>
+                                </SheetHeader>
                             </div>
-                        )}
-                    </div>
-                )}
+                            <div className="flex-grow min-h-0">
+                                <CommentSection path={commentPath} />
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                </div>
             </div>
         </div>
     );
@@ -480,6 +504,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                 {isDevotionalTruncated && (
                                     <FullDevotionalDialog 
                                         devotional={todayDevotional}
+                                        fellowshipId={fellowship.id}
                                         commentCount={commentCount}
                                         supporters={supporters}
                                         inspiredBy={inspiredBy}

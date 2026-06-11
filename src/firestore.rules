@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Devotional engagement icon visibility sync - 2025-06-30T10:00:00Z
+    // Deployment trigger: Devotional response navigation & interactive feedback - 2025-07-05T14:30:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -160,6 +160,7 @@ service cloud.firestore {
       match /devotionals/{date} {
         allow read: if true;
         allow create, update, delete: if request.auth != null;
+        allow update: if request.auth != null && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']);
         
         match /comments/{commentId} {
             allow get, list: if true;
