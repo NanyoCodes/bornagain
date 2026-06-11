@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -99,7 +98,10 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere]">{devotional.title}</SheetTitle>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3">
+                                <MessageSquare className="h-6 w-6 text-primary shrink-0" />
+                                {devotional.title}
+                            </SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
                         </SheetHeader>
                     </div>
@@ -115,11 +117,20 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</DialogTrigger>
+            <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
+                {children}
+            </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                 <div className="p-8 border-b bg-muted/10">
+                    <div className="flex items-center gap-3 mb-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
+                    </div>
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere]">{devotional.title}</DialogTitle>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3">
+                            <MessageSquare className="h-6 w-6 text-primary shrink-0" />
+                            {devotional.title}
+                        </DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
@@ -1079,7 +1090,7 @@ export default function FellowshipPageClient() {
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span>
                                 </div>
                                 <SheetTitle className="text-2xl font-black font-headline">Planned Word</SheetTitle>
-                                <SheetDescription className="text-sm font-medium">Browse scheduled meditations for this group.</SheetDescription>
+                                <SheetDescription className="text-sm font-medium mt-1">Browse scheduled meditations for this group.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow px-8 pt-6">
