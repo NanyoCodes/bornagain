@@ -50,7 +50,7 @@ function FullDevotionalDialog({
     supporters?: string[],
     inspiredBy?: string[],
     connectedBy?: string[],
-    onReaction: (type: 'amen' | 'inspired' | 'celebrate') => void,
+    onReaction: (type: 'amen' | 'inspired' | 'celebrate', e: React.MouseEvent) => void,
     isProcessingReaction: string | null
 }) {
     const { user } = useUser();
@@ -71,10 +71,14 @@ function FullDevotionalDialog({
         commentsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
+    const stopPropagation = (e: React.MouseEvent) => {
+        e.stopPropagation();
+    };
+
     if (!mounted) return <>{children}</>;
 
     const content = (
-        <div className="space-y-8">
+        <div className="space-y-8" onClick={stopPropagation}>
             <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
                 <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
                 <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words [overflow-wrap:anywhere]">{devotional.text}</p>
@@ -104,7 +108,7 @@ function FullDevotionalDialog({
                 <div className="flex items-center gap-2 flex-wrap justify-center w-full sm:w-auto">
                     <div className="flex items-center gap-1.5 flex-wrap justify-center">
                         <Button 
-                            onClick={(e) => { e.stopPropagation(); onReaction('amen'); }} 
+                            onClick={(e) => onReaction('amen', e)} 
                             disabled={isProcessingReaction !== null || !user} 
                             variant="outline" 
                             size="sm" 
@@ -114,7 +118,7 @@ function FullDevotionalDialog({
                             <span>Amen</span>
                         </Button>
                         <Button 
-                            onClick={(e) => { e.stopPropagation(); onReaction('inspired'); }} 
+                            onClick={(e) => onReaction('inspired', e)} 
                             disabled={isProcessingReaction !== null || !user} 
                             variant="outline" 
                             size="sm" 
@@ -124,7 +128,7 @@ function FullDevotionalDialog({
                             <span>Hallelujah</span>
                         </Button>
                         <Button 
-                            onClick={(e) => { e.stopPropagation(); onReaction('celebrate'); }} 
+                            onClick={(e) => onReaction('celebrate', e)} 
                             disabled={isProcessingReaction !== null || !user} 
                             variant="outline" 
                             size="sm" 
@@ -162,7 +166,7 @@ function FullDevotionalDialog({
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
+                <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0">
@@ -185,7 +189,7 @@ function FullDevotionalDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <DialogTrigger asChild onClick={stopPropagation}>
                 {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
@@ -208,7 +212,7 @@ function FullDevotionalDialog({
                     </div>
                 </ScrollArea>
                 <div className="p-6 border-t bg-muted/5 flex justify-end gap-3">
-                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold">Close Word</Button>
+                    <Button variant="outline" onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="rounded-full px-8 font-bold">Close Word</Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -271,7 +275,8 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
         }
     }, [todayDevotional]);
 
-    const handleReaction = (type: 'amen' | 'inspired' | 'celebrate') => {
+    const handleReaction = (type: 'amen' | 'inspired' | 'celebrate', e: React.MouseEvent) => {
+        e.stopPropagation();
         if (!user || !firestore || !todayDevotional) return;
         
         const hasAmened = supporters.includes(user.uid);

@@ -62,7 +62,8 @@ function CommentItem({
     const hasInspired = user ? inspiredBy.includes(user.uid) : false;
     const hasCelebrated = user ? connectedBy.includes(user.uid) : false;
 
-    const handleReaction = async (type: 'amen' | 'inspired' | 'celebrate') => {
+    const handleReaction = async (type: 'amen' | 'inspired' | 'celebrate', e: React.MouseEvent) => {
+        e.stopPropagation();
         if (!user || !firestore) return;
         setIsReacting(type);
 
@@ -83,7 +84,8 @@ function CommentItem({
         }
     };
 
-    const handleDelete = async () => {
+    const handleDelete = async (e: React.MouseEvent) => {
+        e.stopPropagation();
         if (!user || !firestore) return;
         try {
             await deleteDoc(doc(firestore, basePath, comment.id));
@@ -93,7 +95,8 @@ function CommentItem({
         }
     };
 
-    const handleUpdate = () => {
+    const handleUpdate = (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
         if (!editedText.trim()) return;
         if (editedText.trim() === comment.text) {
             setIsEditing(false);
@@ -115,9 +118,9 @@ function CommentItem({
     const initials = comment.authorFirstName?.charAt(0) || 'U';
 
     return (
-        <div className={cn("space-y-4", level > 0 && (isMobile ? "ml-4" : "ml-10"))}>
+        <div className={cn("space-y-4", level > 0 && (isMobile ? "ml-4" : "ml-10"))} onClick={(e) => e.stopPropagation()}>
             <div className="flex gap-2 sm:gap-4 items-start group relative">
-                <Link href={profileLink} className="shrink-0">
+                <Link href={profileLink} className="shrink-0" onClick={(e) => e.stopPropagation()}>
                     <CommentAuthorAvatar 
                         userId={comment.authorId} 
                         fallbackInitials={initials}
@@ -131,7 +134,7 @@ function CommentItem({
                     <div className="bg-muted/30 rounded-2xl p-3 sm:p-4 relative border">
                         <div className="flex justify-between items-start mb-1 gap-2">
                             <div className="min-w-0 flex-1">
-                                <Link href={profileLink} className="hover:underline decoration-primary/30 underline-offset-2">
+                                <Link href={profileLink} className="hover:underline decoration-primary/30 underline-offset-2" onClick={(e) => e.stopPropagation()}>
                                     <p className="text-sm font-bold truncate leading-tight">
                                         {authorName}
                                     </p>
@@ -148,7 +151,7 @@ function CommentItem({
                                 )}>
                                     <button
                                         className="h-6 w-6 text-muted-foreground hover:text-primary transition-all rounded-full hover:bg-primary/10 flex items-center justify-center"
-                                        onClick={() => setIsEditing(true)}
+                                        onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
                                     >
                                         <Edit className="h-3.5 w-3.5" />
                                     </button>
@@ -169,7 +172,9 @@ function CommentItem({
                                     onChange={(e) => setEditedText(e.target.value)}
                                     className="h-9 text-sm bg-background"
                                     autoFocus
+                                    onClick={(e) => e.stopPropagation()}
                                     onKeyDown={(e) => {
+                                        e.stopPropagation();
                                         if (e.key === 'Enter') handleUpdate();
                                         if (e.key === 'Escape') {
                                             setIsEditing(false);
@@ -178,7 +183,8 @@ function CommentItem({
                                     }}
                                 />
                                 <div className="flex justify-end gap-2">
-                                    <Button size="sm" variant="ghost" className="h-7 text-[10px] font-bold uppercase tracking-widest" onClick={() => {
+                                    <Button size="sm" variant="ghost" className="h-7 text-[10px] font-bold uppercase tracking-widest" onClick={(e) => {
+                                        e.stopPropagation();
                                         setIsEditing(false);
                                         setEditedText(comment.text);
                                     }}>Cancel</Button>
@@ -208,21 +214,21 @@ function CommentItem({
                     <div className="flex items-center gap-4 mt-1.5 px-1">
                         <div className="flex items-center gap-x-4 gap-y-1 flex-wrap">
                             <button 
-                                onClick={() => handleReaction('amen')}
+                                onClick={(e) => handleReaction('amen', e)}
                                 disabled={isReacting !== null}
                                 className={cn("text-xs font-bold transition-colors hover:text-primary py-1", hasAmened ? "text-primary" : "text-muted-foreground")}
                             >
                                 Amen
                             </button>
                             <button 
-                                onClick={() => handleReaction('inspired')}
+                                onClick={(e) => handleReaction('inspired', e)}
                                 disabled={isReacting !== null}
                                 className={cn("text-xs font-bold transition-colors hover:text-chart-3 py-1", hasInspired ? "text-chart-3" : "text-muted-foreground")}
                             >
                                 Hallelujah
                             </button>
                             <button 
-                                onClick={() => handleReaction('celebrate')}
+                                onClick={(e) => handleReaction('celebrate', e)}
                                 disabled={isReacting !== null}
                                 className={cn("text-xs font-bold transition-colors hover:text-blue-500 py-1", hasCelebrated ? "text-blue-500" : "text-muted-foreground")}
                             >
@@ -230,7 +236,7 @@ function CommentItem({
                             </button>
                             {!isEditing && (
                                 <button 
-                                    onClick={() => onReply(comment)}
+                                    onClick={(e) => { e.stopPropagation(); onReply(comment); }}
                                     className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors py-1"
                                 >
                                     Reply
@@ -281,6 +287,7 @@ export function CommentSection({ testimonyId, path, inline = false }: { testimon
 
     const handleSendComment = async (e: React.FormEvent) => {
         e.preventDefault();
+        e.stopPropagation();
         if (!newComment.trim() || !user || !profile || isSending) return;
 
         setIsSending(true);
@@ -346,24 +353,26 @@ export function CommentSection({ testimonyId, path, inline = false }: { testimon
                 <div className={cn(
                     "p-3 sm:p-4 border-t bg-background/80 backdrop-blur-md", 
                     !inline ? "shrink-0 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.1)] sticky bottom-0 z-30" : "sticky bottom-0 z-30 rounded-2xl border shadow-lg mt-4"
-                )}>
+                )} onClick={(e) => e.stopPropagation()}>
                     {replyingTo && (
                         <div className="flex items-center justify-between bg-primary/5 px-4 py-2 rounded-t-2xl text-[11px] text-muted-foreground border-x border-t mb-0 border-primary/20">
                             <p className="truncate">Replying to <span className="font-bold text-primary">{replyingTo.authorFirstName}</span></p>
-                            <button onClick={() => setReplyingTo(null)} className="hover:text-foreground transition-colors p-1 rounded-full hover:bg-muted">
+                            <button onClick={(e) => { e.stopPropagation(); setReplyingTo(null); }} className="hover:text-foreground transition-colors p-1 rounded-full hover:bg-muted">
                                 <X className="h-3 w-3" />
                             </button>
                         </div>
                     )}
-                    <form onSubmit={handleSendComment} className={cn("flex gap-2 items-center", replyingTo && "border-x border-b p-1.5 rounded-b-2xl bg-muted/5 border-primary/20")}>
+                    <form onSubmit={handleSendComment} className={cn("flex gap-2 items-center", replyingTo && "border-x border-b p-1.5 rounded-b-2xl bg-muted/5 border-primary/20")} onClick={(e) => e.stopPropagation()}>
                         <Input
                             placeholder={replyingTo ? "Write your reply..." : "Write a prayer or encouragement..."}
                             value={newComment}
                             onChange={(e) => setNewMessage(e.target.value)}
                             className="text-sm sm:text-base h-11 sm:h-12 shadow-inner rounded-2xl focus-visible:ring-primary/20 border-muted-foreground/20"
                             disabled={isSending || profileLoading}
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
                         />
-                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl shadow-lg transition-transform active:scale-90" disabled={!newComment.trim() || isSending || profileLoading}>
+                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl shadow-lg transition-transform active:scale-90" disabled={!newComment.trim() || isSending || profileLoading} onClick={(e) => e.stopPropagation()}>
                             {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                         </Button>
                     </form>

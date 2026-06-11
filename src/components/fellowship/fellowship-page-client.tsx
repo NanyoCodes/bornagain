@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, Campaign, TestimonyComment } from '@/lib/types';
+import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, Campaign, TestimonyComment, SoulRelationship } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion } from 'firebase/firestore';
 import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, HandHeart, ChevronDown, Share2, UserPlus, PartyPopper, MessageSquare, Target, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -73,7 +73,7 @@ function FullDevotionalDialog({
     supporters?: string[],
     inspiredBy?: string[],
     connectedBy?: string[],
-    onReaction: (type: 'amen' | 'inspired' | 'celebrate') => void,
+    onReaction: (type: 'amen' | 'inspired' | 'celebrate', e: React.MouseEvent) => void,
     isProcessingReaction: string | null
 }) {
     const { user } = useUser();
@@ -94,10 +94,14 @@ function FullDevotionalDialog({
         commentsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
+    const stopPropagation = (e: React.MouseEvent) => {
+        e.stopPropagation();
+    };
+
     if (!mounted) return <>{children}</>;
 
     const content = (
-        <div className="space-y-8">
+        <div className="space-y-8" onClick={stopPropagation}>
             <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
                 <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
                 <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words [overflow-wrap:anywhere]">{devotional.text}</p>
@@ -127,7 +131,7 @@ function FullDevotionalDialog({
                 <div className="flex items-center gap-2 flex-wrap justify-center w-full sm:w-auto">
                     <div className="flex items-center gap-1.5 flex-wrap justify-center">
                         <Button 
-                            onClick={(e) => { e.stopPropagation(); onReaction('amen'); }} 
+                            onClick={(e) => onReaction('amen', e)} 
                             disabled={isProcessingReaction !== null || !user} 
                             variant="outline" 
                             size="sm" 
@@ -137,7 +141,7 @@ function FullDevotionalDialog({
                             <span>Amen</span>
                         </Button>
                         <Button 
-                            onClick={(e) => { e.stopPropagation(); onReaction('inspired'); }} 
+                            onClick={(e) => onReaction('inspired', e)} 
                             disabled={isProcessingReaction !== null || !user} 
                             variant="outline" 
                             size="sm" 
@@ -147,7 +151,7 @@ function FullDevotionalDialog({
                             <span>Hallelujah</span>
                         </Button>
                         <Button 
-                            onClick={(e) => { e.stopPropagation(); onReaction('celebrate'); }} 
+                            onClick={(e) => onReaction('celebrate', e)} 
                             disabled={isProcessingReaction !== null || !user} 
                             variant="outline" 
                             size="sm" 
@@ -185,7 +189,7 @@ function FullDevotionalDialog({
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
+                <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0">
@@ -208,7 +212,7 @@ function FullDevotionalDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <DialogTrigger asChild onClick={stopPropagation}>
                 {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
@@ -231,7 +235,7 @@ function FullDevotionalDialog({
                     </div>
                 </ScrollArea>
                 <div className="p-6 border-t bg-muted/5 flex justify-end gap-3">
-                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold">Close Word</Button>
+                    <Button variant="outline" onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="rounded-full px-8 font-bold">Close Word</Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -458,7 +462,8 @@ export default function FellowshipPageClient() {
             });
     };
 
-    const handleReaction = (type: 'amen' | 'inspired' | 'celebrate') => {
+    const handleReaction = (type: 'amen' | 'inspired' | 'celebrate', e: React.MouseEvent) => {
+        e.stopPropagation();
         if (!user || !firestore || !activeDevotional) return;
         const hasReacted = (type === 'amen' && hasAmened) || (type === 'inspired' && hasInspired) || (type === 'celebrate' && hasCelebrated);
         setIsProcessingReaction(type);
@@ -573,7 +578,8 @@ export default function FellowshipPageClient() {
         setViewDate(prev => direction === 'prev' ? subDays(prev, 1) : addDays(prev, 1));
     };
 
-    const scrollToComments = () => {
+    const scrollToComments = (e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
         commentsAreaRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
@@ -671,7 +677,7 @@ export default function FellowshipPageClient() {
 
     return (
         <div className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 px-4 sm:px-0">
+            <div className="flex items-center gap-4 px-4 sm:px-0">
                 <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-12 sm:w-12 rounded-full border bg-background shadow-sm hover:bg-muted/50">
                         <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6"/>
@@ -817,15 +823,15 @@ export default function FellowshipPageClient() {
                                     <div className="flex flex-col gap-4">
                                         <div className="flex items-center justify-between flex-wrap gap-4 px-1">
                                             <div className="flex items-center flex-wrap gap-2 sm:gap-3">
-                                                <Button onClick={() => handleReaction('amen')} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasAmened && "bg-white/20 border-white/30")}>
+                                                <Button onClick={(e) => handleReaction('amen', e)} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasAmened && "bg-white/20 border-white/30")}>
                                                     {isProcessingReaction === 'amen' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HandHeart className={cn("h-3.5 w-3.5", hasAmened && "fill-current")} />}
                                                     <span>Amen</span>
                                                 </Button>
-                                                <Button onClick={() => handleReaction('inspired')} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasInspired && "bg-white/20 border-white/30")}>
+                                                <Button onClick={(e) => handleReaction('inspired', e)} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasInspired && "bg-white/20 border-white/30")}>
                                                     {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className={cn("h-3.5 w-3.5", hasInspired && "fill-current")} />}
                                                     <span>Hallelujah</span>
                                                 </Button>
-                                                <Button onClick={() => handleReaction('celebrate')} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasCelebrated && "bg-white/20 border-white/30")}>
+                                                <Button onClick={(e) => handleReaction('celebrate', e)} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("h-9 rounded-xl gap-2 font-bold uppercase text-[10px] tracking-widest border border-white/10 bg-white/5 hover:bg-white/10 text-white transition-all", hasCelebrated && "bg-white/20 border-white/30")}>
                                                     {isProcessingReaction === 'celebrate' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PartyPopper className={cn("h-3.5 w-3.5", hasCelebrated && "fill-current")} />}
                                                     <span>Celebrate</span>
                                                 </Button>
