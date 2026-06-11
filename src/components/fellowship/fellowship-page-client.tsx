@@ -30,6 +30,9 @@ import { useToast } from '@/hooks/use-toast';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
 import { CommentSection } from '../testimonies/comment-section';
 import NextLink from 'next/link';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const devotionalSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters.").max(100),
