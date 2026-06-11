@@ -246,7 +246,7 @@ export default function FellowshipPageClient() {
           if (navigator && navigator.share) {
             await navigator.share(shareData);
           } else {
-            throw new Error('Share API not supported');
+            throw new Error('Native share not supported');
           }
         } catch (err: any) {
             if (err.name === 'AbortError') return;
@@ -748,13 +748,19 @@ export default function FellowshipPageClient() {
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             {members?.map(member => (
                                                 <div key={member.id} className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/5 transition-all hover:bg-muted/10 group min-w-0">
-                                                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0">
-                                                        <AvatarFallback className="text-xs sm:text-sm font-black bg-primary/10 text-primary">{member.firstName?.charAt(0)}</AvatarFallback>
-                                                    </Avatar>
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="font-black truncate text-sm sm:text-base leading-tight break-words [overflow-wrap:anywhere] uppercase tracking-tight">{member.firstName} {member.lastName}</p>
-                                                        {member.userId === fellowship.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-[0.15em] block mt-1">Organizer</span>}
-                                                    </div>
+                                                    <Link 
+                                                        href={member.userId === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${member.userId}`} 
+                                                        className="flex items-center gap-4 flex-1 min-w-0 group/member"
+                                                    >
+                                                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0 transition-transform group-hover/member:scale-105">
+                                                            <AvatarImage src={member.photoURL} className="object-cover" />
+                                                            <AvatarFallback className="text-xs sm:text-sm font-black bg-primary/10 text-primary">{member.firstName?.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-black truncate text-sm sm:text-base leading-tight break-words [overflow-wrap:anywhere] uppercase tracking-tight group-hover/member:text-primary transition-colors">{member.firstName} {member.lastName}</p>
+                                                            {member.userId === fellowship.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-[0.15em] block mt-1">Organizer</span>}
+                                                        </div>
+                                                    </Link>
                                                     {isOrganizer && member.userId !== user?.uid && (
                                                         <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive opacity-40 hover:opacity-100 hover:bg-destructive/10 rounded-full" onClick={() => setMemberToRemove(member)}><UserMinus className="h-4 w-4" /></Button>
                                                     )}
@@ -825,7 +831,7 @@ export default function FellowshipPageClient() {
                         <CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4">
                             <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Organizer</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-6 sm:px-8 pb-8 sm:pb-10 pt-2">
+                        <CardContent className="px-6 sm:px-8 pb-8 sm:pb-24 pt-2">
                             <Link href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-4 group bg-muted/20 p-4 sm:p-5 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0 shadow-inner">
                                 <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-sm shrink-0">
                                     <AvatarFallback className="font-black text-sm sm:text-base bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
