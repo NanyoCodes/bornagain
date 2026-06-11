@@ -6,13 +6,13 @@ import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, DailyDevotional, TestimonyComment } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { doc, runTransaction, arrayUnion, arrayRemove, increment, serverTimestamp, collection, query } from 'firebase/firestore';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, MapPin, BarChart3, BookOpen, LogOut, Quote, Sparkles, HandHeart, Share2, MessageSquare, Target, PartyPopper } from 'lucide-react';
+import { Loader2, Users, MoreVertical, PlayCircle, Edit, Trash2, MapPin, BarChart3, BookOpen, LogOut, Quote, Sparkles, HandHeart, Share2, MessageSquare, Target, PartyPopper, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { format, parseISO } from 'date-fns';
@@ -31,11 +31,27 @@ type FellowshipCardProps = {
   onClick?: () => void;
 };
 
-function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevotional, children: React.ReactNode }) {
+function FullDevotionalDialog({ 
+    devotional, 
+    children,
+    commentCount = 0,
+    supporters = [],
+    inspiredBy = [],
+    connectedBy = []
+}: { 
+    devotional: DailyDevotional, 
+    children: React.ReactNode,
+    commentCount?: number,
+    supporters?: string[],
+    inspiredBy?: string[],
+    connectedBy?: string[]
+}) {
     const isMobile = useIsMobile();
     const [isOpen, setIsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
+
+    const totalReactions = (supporters?.length || 0) + (inspiredBy?.length || 0) + (connectedBy?.length || 0);
 
     if (!mounted) return <>{children}</>;
 
@@ -61,9 +77,32 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
                 </div>
             )}
 
-            <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit mx-auto">
-                <Sparkles className="h-4 w-4 text-primary fill-current" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-dashed pt-8">
+                <div className="flex items-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit">
+                    <Sparkles className="h-4 w-4 text-primary fill-current" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
+                </div>
+
+                {(totalReactions > 0 || commentCount > 0) && (
+                    <div className="flex items-center gap-6">
+                        {totalReactions > 0 && (
+                            <div className="flex items-center gap-2 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10">
+                                <div className="flex items-center -space-x-1.5">
+                                    {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background shadow-sm"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current" /></div>}
+                                    {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background shadow-sm"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
+                                    {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
+                                </div>
+                                <span className="text-[10px] font-black text-primary">{totalReactions} Reactions</span>
+                            </div>
+                        )}
+                        {commentCount > 0 && (
+                            <div className="flex items-center gap-2 text-muted-foreground bg-muted/40 px-3 py-1.5 rounded-full border">
+                                <MessageSquare className="h-3.5 w-3.5" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">{commentCount} Response{commentCount !== 1 ? 's' : ''}</span>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -75,7 +114,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3 text-balance">
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                 {devotional.title}
                             </SheetTitle>
@@ -104,7 +143,7 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3 text-balance">
                             <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                             {devotional.title}
                         </DialogTitle>
@@ -116,6 +155,9 @@ function FullDevotionalDialog({ devotional, children }: { devotional: DailyDevot
                         {content}
                     </div>
                 </ScrollArea>
+                <div className="p-6 border-t bg-muted/5 flex justify-end gap-3">
+                    <Button variant="outline" onClick={() => setIsOpen(false)} className="rounded-full px-8 font-bold">Close Word</Button>
+                </div>
             </DialogContent>
         </Dialog>
     );
@@ -436,7 +478,13 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                 ) : <div />}
                                 
                                 {isDevotionalTruncated && (
-                                    <FullDevotionalDialog devotional={todayDevotional}>
+                                    <FullDevotionalDialog 
+                                        devotional={todayDevotional}
+                                        commentCount={commentCount}
+                                        supporters={supporters}
+                                        inspiredBy={inspiredBy}
+                                        connectedBy={connectedBy}
+                                    >
                                         <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline h-auto p-0">
                                             Read More
                                         </button>
