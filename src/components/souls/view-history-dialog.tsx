@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -7,17 +6,31 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { type Soul } from "@/lib/types";
+import { type Soul, type FollowUpStatus } from "@/lib/types";
 import { format } from "date-fns";
 import { actionItems } from "@/lib/follow-up-data";
 import { cn, safeToDate } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { History, Sparkles } from "lucide-react";
+import { History, Sparkles, MapPin, Church, Phone, Mail, User } from "lucide-react";
 
 interface ViewHistoryDialogProps {
   soul: Soul | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+const getStatusClasses = (status: FollowUpStatus | undefined): string => {
+    if (!status) return 'bg-secondary text-secondary-foreground border-border';
+    switch (status) {
+        case 'New':
+            return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-500';
+        case 'Contacted':
+            return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-500';
+        case 'Established':
+            return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-500';
+        default:
+            return 'bg-secondary text-secondary-foreground border-border';
+    }
 }
 
 export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDialogProps) {
@@ -37,54 +50,105 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
     });
   }, [soul, isOpen]);
 
+  const wonAtDate = React.useMemo(() => soul ? safeToDate(soul.wonAt) : null, [soul]);
+  const locationString = React.useMemo(() => {
+    if (!soul?.locationWon) return null;
+    return [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ');
+  }, [soul?.locationWon]);
+
   const historyContent = (
-    <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
+    <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[70vh]")}>
         <div className="space-y-8 pb-12">
-            {sortedHistory.length > 0 ? sortedHistory.map((log, index) => {
-                const logDate = safeToDate(log.date);
-                return (
-                <div key={index} className="relative">
-                    <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
-                        <p className="font-black text-[10px] uppercase tracking-[0.2em] text-primary">
-                           {logDate ? format(logDate, "PPP 'at' p") : 'Date not available'}
-                        </p>
-                        {log.memberName && (
-                            <span className="text-[9px] font-bold text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-full border uppercase tracking-tighter truncate max-w-[120px]">
-                                By {log.memberName}
-                            </span>
-                        )}
-                    </div>
-                    <div className="pl-6 border-l-4 border-primary/20 space-y-4">
-                       {log.actions && log.actions.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                                {log.actions.map(actionId => {
-                                    const action = actionItems.find(a => a.id === actionId);
-                                    return action ? (
-                                        <Badge key={actionId} variant="secondary" className="font-bold text-[9px] px-2 h-4 uppercase tracking-tight bg-background border">{action.label}</Badge>
-                                    ) : null;
-                                })}
+            {soul && (
+                <div className="space-y-6">
+                    <div className="flex flex-col gap-4 p-5 rounded-[2rem] bg-muted/20 border border-dashed shadow-inner">
+                        <div className="flex items-center justify-between gap-3">
+                            <Badge className={cn("h-6 px-3 uppercase font-black tracking-widest text-[10px]", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                            {wonAtDate && <span className="text-[10px] font-bold text-muted-foreground uppercase">Won {format(wonAtDate, 'PPP')}</span>}
+                        </div>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-xs text-muted-foreground font-medium">
+                            <div className="flex items-center gap-2.5">
+                                <User className="h-3.5 w-3.5 text-primary" />
+                                <span className="truncate">{soul.gender || 'Gender Unset'} • {soul.relationship || 'Outreach'}</span>
                             </div>
-                        )}
-                       {log.note ? (
-                            <div className="bg-muted/10 rounded-2xl p-4 border border-dashed relative">
-                                <span className="absolute -top-3 left-4 bg-background px-2 text-[10px] font-black text-muted-foreground uppercase tracking-widest">Note</span>
-                                <p className="text-sm sm:text-base text-muted-foreground italic leading-relaxed">
-                                    &ldquo;{log.note}&rdquo;
-                                </p>
-                            </div>
-                        ) : (
-                             <p className="text-sm text-muted-foreground italic pl-1 opacity-60">No additional details recorded for this entry.</p>
-                         )}
+                            {locationString && (
+                                <div className="flex items-start gap-2.5">
+                                    <MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                                    <span className="line-clamp-2">{locationString}</span>
+                                </div>
+                            )}
+                            {soul.phone && (
+                                <div className="flex items-center gap-2.5">
+                                    <Phone className="h-3.5 w-3.5 text-primary" />
+                                    <span className="truncate">{soul.phone}</span>
+                                </div>
+                            )}
+                            {soul.church && (
+                                <div className="flex items-start gap-2.5">
+                                    <Church className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                                    <span className="line-clamp-2">{soul.church}</span>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                     {index < sortedHistory.length - 1 && <Separator className="mt-8 opacity-50" />}
-                </div>
-            )}) : (
-                <div className="text-center py-24 flex flex-col items-center">
-                    <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
-                        <History className="h-10 w-10 text-muted-foreground opacity-10" />
+                    
+                    <div className="space-y-4 pt-2">
+                        <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-primary flex items-center gap-2 px-1">
+                            <History className="h-3.5 w-3.5" /> Interaction History
+                        </h4>
+                        <div className="space-y-8 pl-1">
+                            {sortedHistory.length > 0 ? sortedHistory.map((log, index) => {
+                                const logDate = safeToDate(log.date);
+                                return (
+                                <div key={index} className="relative">
+                                    <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
+                                        <p className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">
+                                        {logDate ? format(logDate, "PPP 'at' p") : 'Date not available'}
+                                        </p>
+                                        {log.memberName && (
+                                            <span className="text-[9px] font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20 uppercase tracking-tighter truncate max-w-[140px]">
+                                                By {log.memberName}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="pl-6 border-l-4 border-primary/20 space-y-4">
+                                    {log.actions && log.actions.length > 0 && (
+                                            <div className="flex flex-wrap gap-2">
+                                                {log.actions.map(actionId => {
+                                                    const action = actionItems.find(a => a.id === actionId);
+                                                    return action ? (
+                                                        <Badge key={actionId} variant="secondary" className="font-bold text-[9px] px-2 h-4 uppercase tracking-tight bg-background border">{action.label}</Badge>
+                                                    ) : null;
+                                                })}
+                                            </div>
+                                        )}
+                                    {log.note ? (
+                                            <div className="bg-background rounded-2xl p-4 border shadow-sm relative overflow-hidden group">
+                                                <div className="absolute top-0 right-0 p-3 opacity-[0.02] pointer-events-none group-hover:opacity-[0.05] transition-opacity">
+                                                    <Sparkles className="h-8 w-8 text-primary rotate-12" />
+                                                </div>
+                                                <p className="text-sm sm:text-base text-muted-foreground italic leading-relaxed break-words [overflow-wrap:anywhere]">
+                                                    &ldquo;{log.note}&rdquo;
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <p className="text-sm text-muted-foreground italic pl-1 opacity-60">No additional details recorded for this entry.</p>
+                                        )}
+                                    </div>
+                                    {index < sortedHistory.length - 1 && <Separator className="mt-8 opacity-30" />}
+                                </div>
+                            )}) : (
+                                <div className="text-center py-20 flex flex-col items-center border-2 border-dashed rounded-3xl bg-muted/5">
+                                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+                                        <History className="h-10 w-10 text-muted-foreground opacity-10" />
+                                    </div>
+                                    <p className="text-base font-bold uppercase tracking-tight text-muted-foreground/60">No interactions recorded</p>
+                                    <p className="text-xs mt-2 italic px-12 text-muted-foreground/50 text-balance leading-relaxed">Start logging follow-up interactions to build a spiritual journey map for this believer.</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    <p className="text-base font-bold uppercase tracking-tight text-muted-foreground/60">No history found</p>
-                    <p className="text-xs mt-2 italic px-12 text-muted-foreground/50">Start logging follow-up interactions to build a spiritual journey map.</p>
                 </div>
             )}
         </div>
@@ -103,10 +167,10 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
                 <SheetHeader className="text-left">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="h-4 w-4 text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Journey</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Journey</span>
                   </div>
-                  <SheetTitle className="text-2xl font-black font-headline leading-tight">History: {soul.firstName}</SheetTitle>
-                  <SheetDescription className="text-sm font-medium">Chronological log of all Kingdom interactions.</SheetDescription>
+                  <SheetTitle className="text-2xl font-black font-headline leading-tight uppercase break-words [overflow-wrap:anywhere]">{soul.firstName} {soul.lastName}</SheetTitle>
+                  <SheetDescription className="text-sm font-medium mt-1">Status and spiritual development history.</SheetDescription>
                 </SheetHeader>
               </div>
               <div className="flex-grow min-h-0 pt-8 px-8">
@@ -121,16 +185,16 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl flex flex-col max-h-[90vh] p-0 rounded-3xl overflow-hidden">
+      <DialogContent className="sm:max-w-2xl flex flex-col max-h-[90vh] p-0 rounded-[2.5rem] overflow-hidden border-none shadow-2xl">
         {soul && (
           <>
-            <div className="p-6 border-b shrink-0 bg-muted/10">
+            <div className="p-8 border-b shrink-0 bg-muted/10">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold font-headline">Follow-up History</DialogTitle>
-                    <DialogDescription className="text-sm font-medium">A complete record for {soul.firstName} {soul.lastName}.</DialogDescription>
+                    <DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere]">{soul.firstName} {soul.lastName}</DialogTitle>
+                    <DialogDescription className="text-base font-medium">Harvest Record & Spiritual Progress</DialogDescription>
                 </DialogHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6">
+            <div className="flex-grow overflow-hidden p-8">
                 {historyContent}
             </div>
           </>

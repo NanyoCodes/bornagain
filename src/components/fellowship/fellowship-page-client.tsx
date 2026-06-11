@@ -29,6 +29,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { format, addDays, isSameDay, subDays, parseISO } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
+import { ViewHistoryDialog } from '@/components/souls/view-history-dialog';
 import { actionItems } from '@/lib/follow-up-data';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Skeleton } from '../ui/skeleton';
@@ -527,7 +528,7 @@ export default function FellowshipPageClient() {
                         <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline tracking-tight truncate leading-tight uppercase text-balance break-words [overflow-wrap:anywhere]">{fellowship.name}</h1>
                         <div className="flex items-center gap-2 mt-0.5">
                             <Badge variant="secondary" className="uppercase font-bold tracking-[0.2em] text-[8px] sm:text-[10px] px-2 h-5 shrink-0">{fellowship.groupType || 'Fellowship'}</Badge>
-                            <span className="text-[9px] sm:text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 truncate">Global Community</span>
+                            <span className="text-[9px] sm:xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 truncate">Global Community</span>
                         </div>
                     </div>
                 </div>
@@ -715,7 +716,7 @@ export default function FellowshipPageClient() {
                         <CardHeader className="p-6 sm:p-10">
                             <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">About this Group</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-6 sm:px-10 pb-8 sm:pb-12">
+                        <CardContent className="px-6 sm:p-10 pb-8 sm:pb-12">
                             <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words [overflow-wrap:anywhere]">
                                 {fellowship.description}
                             </p>
@@ -769,7 +770,12 @@ export default function FellowshipPageClient() {
                                                 <div key={soul.id} className="flex items-center gap-4 p-4 rounded-2xl border bg-primary/5 transition-all hover:bg-muted/10 group min-w-0">
                                                     <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20"><Heart className="h-5 w-5 text-primary fill-current" /></div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="font-black truncate text-sm sm:text-base leading-tight break-words [overflow-wrap:anywhere] uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                                                        <button 
+                                                            onClick={() => { setSelectedSoulId(soul.id); setIsSoulDetailsOpen(true); }}
+                                                            className="font-black truncate text-sm sm:text-base leading-tight break-words [overflow-wrap:anywhere] uppercase tracking-tight hover:text-primary transition-colors text-left w-full"
+                                                        >
+                                                            {soul.firstName} {soul.lastName}
+                                                        </button>
                                                         <Badge className="mt-1 h-4 text-[8px] sm:text-[9px] font-black uppercase tracking-widest" variant="secondary">{soul.status}</Badge>
                                                     </div>
                                                     <Button variant="outline" size="sm" className="h-8 sm:h-9 text-[10px] sm:text-[11px] font-black uppercase tracking-widest px-4 rounded-xl shadow-sm" onClick={() => { setSelectedSoulId(soul.id); setIsSoulDetailsOpen(true); }}>Details</Button>
@@ -998,6 +1004,12 @@ export default function FellowshipPageClient() {
                     </DialogContent>
                 </Dialog>
             )}
+
+            <ViewHistoryDialog 
+                soul={activeSoul}
+                isOpen={isSoulDetailsOpen}
+                onOpenChange={setIsSoulDetailsOpen}
+            />
 
             <LogFollowUpDialog 
                 soul={activeSoul}
