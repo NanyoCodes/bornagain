@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Define commentPath and sync devotional response logic - 2025-07-05T15:00:00Z
+    // Deployment trigger: Devotional Response UI refinement & Header streamlining - 2025-07-06T09:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -167,7 +167,7 @@ service cloud.firestore {
             allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
             allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
             allow update: if request.auth != null && (
-              (resource.data.authorId == request.auth.uid) ||
+              (resource.data.authorId == request.authorId) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }

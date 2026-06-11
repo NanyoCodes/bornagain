@@ -10,27 +10,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
-} from "@/components/ui/alert-dialog";
-import { useIsMobile } from '@/hooks/use-mobile';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format, addDays, isSameDay, subDays, parseISO } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
 import { ViewHistoryDialog } from '@/components/souls/view-history-dialog';
 import { actionItems } from '@/lib/follow-up-data';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
@@ -139,7 +125,6 @@ function FullDevotionalDialog({
                                         <MessageSquare className="h-6 w-6 text-primary" />
                                         Gathered Responses
                                     </SheetTitle>
-                                    <SheetDescription className="text-xs font-bold uppercase tracking-widest">PRAYERS & AGREEMENT ON THIS WORD</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <div className="flex-grow min-h-0">
@@ -1180,7 +1165,6 @@ export default function FellowshipPageClient() {
                                     <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                     Gathered Responses
                                 </SheetTitle>
-                                <SheetDescription className="text-xs font-bold uppercase tracking-widest">PRAYERS & AGREEMENT FOR {viewDateStr}</SheetDescription>
                             </SheetHeader>
                         </div>
                         <div className="flex-grow min-h-0">
@@ -1212,7 +1196,6 @@ export default function FellowshipPageClient() {
                                     <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                     Gathered Responses
                                 </DialogTitle>
-                                <SheetDescription className="text-xs font-bold uppercase tracking-widest">COMMUNITY RESPONSES TO THIS WORD</SheetDescription>
                             </DialogHeader>
                         </div>
                         <div className="flex-1 min-h-0">

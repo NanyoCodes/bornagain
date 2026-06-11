@@ -83,7 +83,7 @@ function FullDevotionalDialog({
             )}
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-t border-dashed pt-8">
-                <div className="flex items-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit">
+                <div className="flex items-center justify-center gap-3 bg-muted/30 px-4 py-2 rounded-full border border-dashed w-fit">
                     <Sparkles className="h-4 w-4 text-primary fill-current" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Messenger: {devotional.authorName}</span>
                 </div>
@@ -118,7 +118,6 @@ function FullDevotionalDialog({
                                         <MessageSquare className="h-6 w-6 text-primary" />
                                         Gathered Responses
                                     </SheetTitle>
-                                    <SheetDescription className="text-xs font-bold uppercase tracking-widest">PRAYERS & AGREEMENT ON THIS WORD</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <div className="flex-grow min-h-0">
