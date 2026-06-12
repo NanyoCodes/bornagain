@@ -134,7 +134,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   return (
     <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
       <div className="flex items-center shrink-0">
-        <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 text-lg font-semibold shrink-0">
+        <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
             <Avatar className="h-10 w-10 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
@@ -291,7 +291,7 @@ function BottomNavBar() {
     const pathname = usePathname();
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[3.5rem] h-auto items-stretch justify-around px-1 py-1">
+        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
