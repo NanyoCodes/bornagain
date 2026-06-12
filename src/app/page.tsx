@@ -130,6 +130,7 @@ export default function LandingPage() {
                   GLORIFYING GOD
                 </Badge>
                 <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
+                  Testify Global.<br className="hidden sm:block" />
                   Share Your Story.<br className="hidden sm:block" />
                   <span className="text-primary">Join the Harvest.</span>
                 </h1>
