@@ -98,38 +98,38 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
   };
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
+    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg font-bold"><Church className="h-5 w-5 text-primary" /> My Home Church</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight"><Church className="h-5 w-5 text-primary" /> My Home Church</CardTitle>
         <CardDescription>
           Set your primary place of worship and regular schedule.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSaveChanges)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(handleSaveChanges)} className="space-y-8">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Church Name</FormLabel>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Church Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., New Life Church" {...field} value={field.value ?? ''} className="text-base h-11" />
+                    <Input placeholder="e.g., New Life Church" {...field} value={field.value ?? ''} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-base font-bold" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <FormField
                 control={form.control}
                 name="branch"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Branch (Optional)</FormLabel>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Branch (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Downtown Campus" {...field} value={field.value ?? ''} className="text-base h-11" />
+                      <Input placeholder="e.g., Downtown Campus" {...field} value={field.value ?? ''} className="h-11 rounded-2xl bg-muted/20 border-none shadow-inner" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -140,9 +140,9 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Area / City (Optional)</FormLabel>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Area / City (Optional)</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Nairobi, Kenya" {...field} value={field.value ?? ''} className="text-base h-11" />
+                      <Input placeholder="e.g., Nairobi, Kenya" {...field} value={field.value ?? ''} className="h-11 rounded-2xl bg-muted/20 border-none shadow-inner" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -150,42 +150,42 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
               />
             </div>
             
-            <div className="space-y-4">
-                <div className="flex items-center gap-2">
+            <div className="space-y-5">
+                <div className="flex items-center gap-2.5 px-1">
                     <CalendarClock className="h-5 w-5 text-primary" />
-                    <h3 className="text-sm font-bold uppercase tracking-widest">Worship Schedule</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em]">Worship Schedule</h3>
                 </div>
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 gap-3">
                     {daysOfWeek.map((day) => {
                         const daySchedules = scheduleByDay[day] || [];
                         const hasEntries = daySchedules.length > 0;
                         return(
-                        <div key={day} className={cn("rounded-xl border transition-colors", hasEntries ? "bg-muted/10 border-primary/20" : "bg-muted/5")}>
-                            <div className="flex items-center justify-between p-3 sm:p-4">
-                                <Label className={cn("font-bold text-sm sm:text-base", hasEntries ? "text-primary" : "text-muted-foreground")}>{day}</Label>
+                        <div key={day} className={cn("rounded-[1.5rem] border-2 transition-all duration-300", hasEntries ? "bg-primary/[0.03] border-primary/20 shadow-inner" : "bg-muted/10 border-transparent")}>
+                            <div className="flex items-center justify-between p-4">
+                                <Label className={cn("font-black text-xs sm:text-sm uppercase tracking-widest", hasEntries ? "text-primary" : "text-muted-foreground/60")}>{day}</Label>
                                 <Button
                                     type="button"
                                     variant="secondary"
                                     size="sm"
-                                    className="h-8 text-xs font-bold uppercase tracking-tighter px-3"
+                                    className="h-8 rounded-xl text-[10px] font-black uppercase tracking-widest px-3 shadow-md"
                                     onClick={() => {
                                         const currentSchedule = form.getValues('schedule') || [];
                                         form.setValue('schedule', [...currentSchedule, { day, time: '10:00', url: '' }], { shouldDirty: true });
                                     }}
                                 >
-                                    <Plus className="mr-1.5 h-3.5 w-3.5" />
+                                    <Plus className="mr-1.5 h-3 w-3" />
                                     Add Time
                                 </Button>
                             </div>
                             {hasEntries && (
-                                <div className="px-3 pb-3 sm:px-4 sm:pb-4 space-y-3">
+                                <div className="px-4 pb-4 space-y-4">
                                     {daySchedules.map(item => (
-                                            <div key={item.originalIndex} className="space-y-4 rounded-xl border bg-background p-3 sm:p-4 shadow-sm relative">
+                                            <div key={item.originalIndex} className="space-y-5 rounded-2xl border bg-background p-4 sm:p-5 shadow-sm relative group/item">
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="absolute top-2 right-2 h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                                    className="absolute top-2 right-2 h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-colors"
                                                     onClick={() => {
                                                         const updatedSchedule = (form.getValues('schedule') || []).filter((_, i) => i !== item.originalIndex);
                                                         form.setValue('schedule', updatedSchedule, { shouldDirty: true });
@@ -195,11 +195,11 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
                                                 </Button>
 
                                                 <div className="space-y-2">
-                                                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Service Time</Label>
+                                                    <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Service Time</Label>
                                                     <Input
                                                         type="time"
                                                         value={item.time}
-                                                        className="h-10 text-base font-medium"
+                                                        className="h-10 text-base font-black rounded-xl bg-muted/30 border-none"
                                                         onChange={(e) => {
                                                             const updatedSchedule = [...(form.getValues('schedule') || [])];
                                                             updatedSchedule[item.originalIndex].time = e.target.value;
@@ -209,13 +209,13 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
                                                 </div>
 
                                                 <div className="space-y-2">
-                                                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Stream Link <span className="opacity-50">(Optional)</span></Label>
+                                                    <Label className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Stream Link <span className="opacity-40 italic">(Optional)</span></Label>
                                                     <div className="flex gap-2">
                                                         <Input
                                                             type="url"
                                                             placeholder="YouTube or FB Live URL"
                                                             value={item.url || ''}
-                                                            className="h-10 text-xs sm:text-sm flex-1"
+                                                            className="h-10 text-xs font-bold flex-1 rounded-xl bg-muted/30 border-none"
                                                             onChange={(e) => {
                                                                 const updatedSchedule = [...(form.getValues('schedule') || [])];
                                                                 if (!updatedSchedule[item.originalIndex]) return;
@@ -227,7 +227,7 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
                                                             type="button" 
                                                             variant="outline" 
                                                             size="icon" 
-                                                            className="h-10 w-10 shrink-0" 
+                                                            className="h-10 w-10 shrink-0 rounded-xl bg-background border-dashed" 
                                                             title="Generate Google Meet"
                                                             onClick={handleCreateMeet}
                                                         >
@@ -245,7 +245,7 @@ export function ChurchSettingsCard({ userProfile, userId }: { userProfile: UserP
                 </div>
             </div>
             
-            <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting || !form.formState.isDirty}>
+            <Button type="submit" className="w-full h-14 rounded-2xl text-lg font-black uppercase tracking-widest shadow-xl shadow-primary/20" disabled={isSubmitting || !form.formState.isDirty}>
               {isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
               Save Church Details
             </Button>

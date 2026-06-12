@@ -88,24 +88,24 @@ export function PasswordSettingsCard() {
   }
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
+    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg"><Lock className="h-5 w-5 text-primary" /> Security</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight"><Lock className="h-5 w-5 text-primary" /> Security</CardTitle>
         <CardDescription>
           Update your account password.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Current Password</FormLabel>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Current Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} className="h-11 text-base" />
+                    <Input type="password" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -116,9 +116,9 @@ export function PasswordSettingsCard() {
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">New Password</FormLabel>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">New Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} className="h-11 text-base" />
+                    <Input type="password" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -129,15 +129,15 @@ export function PasswordSettingsCard() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Confirm New Password</FormLabel>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Confirm New Password</FormLabel>
                   <FormControl>
-                    <Input type="password" {...field} className="h-11 text-base" />
+                    <Input type="password" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting || !form.formState.isDirty}>
+            <Button type="submit" className="w-full sm:w-auto h-12 px-10 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-primary/10" disabled={isSubmitting || !form.formState.isDirty}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Update Password
             </Button>

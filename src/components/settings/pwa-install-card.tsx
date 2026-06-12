@@ -92,8 +92,8 @@ export function PwaInstallCard() {
   if (!mounted) return null;
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden">
-      <CardHeader className="p-6">
+    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden bg-card/50 backdrop-blur-sm">
+      <CardHeader className="p-6 sm:p-8">
         <CardTitle className="flex items-center gap-2 text-lg font-black font-headline uppercase tracking-tight">
           <Smartphone className="h-5 w-5 text-primary" /> 
           App Installation
@@ -102,48 +102,48 @@ export function PwaInstallCard() {
           Install Testify on your phone for the best Kingdom experience.
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-6 pt-0 space-y-6">
+      <CardContent className="p-6 sm:p-8 pt-0 space-y-8">
         {isInstalled ? (
-          <div className="flex items-center gap-3 text-green-600 font-bold bg-green-50 dark:bg-green-950/30 p-5 rounded-2xl border-2 border-dashed border-green-200 dark:border-green-900 animate-in fade-in zoom-in duration-500">
-            <CheckCircle2 className="h-6 w-6 shrink-0" />
-            <div className="space-y-0.5">
-                <p className="text-sm">App Installed Successfully</p>
-                <p className="text-[10px] uppercase tracking-widest opacity-70">Kingdom Ready</p>
+          <div className="flex items-center gap-4 text-green-600 font-bold bg-green-50 dark:bg-green-950/20 p-6 rounded-[2rem] border-2 border-dashed border-green-200 dark:border-green-900 animate-in fade-in zoom-in duration-500 shadow-inner">
+            <CheckCircle2 className="h-8 w-8 shrink-0" />
+            <div className="space-y-1">
+                <p className="text-base font-black uppercase tracking-tight">Kingdom Ready</p>
+                <p className="text-[10px] uppercase tracking-widest opacity-70">App is successfully installed</p>
             </div>
           </div>
         ) : (
-          <div className="space-y-6">
-            <div className="bg-primary/5 rounded-2xl p-5 border-2 border-dashed border-primary/20 space-y-3">
-                <div className="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-[0.2em]">
-                    <Info className="h-3.5 w-3.5" />
+          <div className="space-y-8">
+            <div className="bg-primary/5 rounded-[2rem] p-6 border-2 border-dashed border-primary/10 space-y-4 shadow-inner">
+                <div className="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-[0.3em]">
+                    <Info className="h-4 w-4" />
                     Why Install?
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium">
+                <p className="text-sm text-muted-foreground leading-relaxed font-medium text-balance">
                     Get a dedicated home screen icon, immersive full-screen mode, and a faster connection to the global harvest network.
                 </p>
             </div>
 
             {isIos ? (
-                <div className="space-y-5 p-5 bg-muted/30 rounded-2xl border border-dashed animate-in slide-in-from-bottom-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                        <Smartphone className="h-3.5 w-3.5" /> 
-                        iPhone Instructions
+                <div className="space-y-6 p-6 sm:p-8 bg-muted/20 rounded-[2rem] border border-dashed animate-in slide-in-from-bottom-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
+                        <Smartphone className="h-4 w-4 text-primary" /> 
+                        iPhone Setup
                     </h4>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 rounded-full bg-background flex items-center justify-center border shadow-sm shrink-0">
-                                <Share className="h-5 w-5 text-primary" />
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-5">
+                            <div className="h-12 w-12 rounded-2xl bg-background flex items-center justify-center border shadow-xl shrink-0">
+                                <Share className="h-6 w-6 text-primary" />
                             </div>
-                            <p className="text-xs font-medium text-muted-foreground leading-snug">
-                                1. Tap the <span className="font-bold text-foreground">Share</span> button at the bottom of Safari.
+                            <p className="text-sm font-bold text-muted-foreground leading-snug">
+                                1. Tap the <span className="text-foreground font-black">Share</span> icon at the bottom of Safari.
                             </p>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 rounded-full bg-background flex items-center justify-center border shadow-sm shrink-0">
-                                <PlusSquare className="h-5 w-5 text-primary" />
+                        <div className="flex items-center gap-5">
+                            <div className="h-12 w-12 rounded-2xl bg-background flex items-center justify-center border shadow-xl shrink-0">
+                                <PlusSquare className="h-6 w-6 text-primary" />
                             </div>
-                            <p className="text-xs font-medium text-muted-foreground leading-snug">
-                                2. Scroll down and tap <span className="font-bold text-foreground">"Add to Home Screen"</span>.
+                            <p className="text-sm font-bold text-muted-foreground leading-snug">
+                                2. Scroll down and tap <span className="text-foreground font-black">"Add to Home Screen"</span>.
                             </p>
                         </div>
                     </div>
@@ -152,25 +152,25 @@ export function PwaInstallCard() {
                 <div className="space-y-4">
                     <Button 
                         onClick={handleInstallClick} 
-                        className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase py-3"
+                        className="w-full font-black h-14 rounded-2xl shadow-xl shadow-primary/20 tracking-[0.2em] uppercase py-4"
                         variant="default"
                     >
                         <Download className="mr-2 h-5 w-5" />
-                        INSTALL ON HOME SCREEN
+                        INSTALL APP
                     </Button>
                     
                     {!deferredPrompt && (
-                        <div className="p-4 bg-muted/20 rounded-xl border text-center">
-                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter leading-relaxed">
-                                Use <span className="font-black text-foreground">Google Chrome</span> on Android to enable one-tap installation.
+                        <div className="p-5 bg-muted/20 rounded-2xl border border-dashed text-center">
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest leading-relaxed text-balance">
+                                Use <span className="text-foreground">Google Chrome</span> on Android to enable one-tap installation.
                             </p>
                         </div>
                     )}
                 </div>
             )}
             
-            <p className="text-[9px] text-center text-muted-foreground font-bold uppercase tracking-widest opacity-50">
-                PWA Version 1.2.0 • Mobilizing the Body
+            <p className="text-[9px] text-center text-muted-foreground font-black uppercase tracking-[0.4em] opacity-30">
+                Testify PWA • Mobilizing the workforce
             </p>
           </div>
         )}
