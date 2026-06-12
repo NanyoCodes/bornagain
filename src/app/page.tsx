@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -130,8 +131,8 @@ export default function LandingPage() {
                   GLORIFYING GOD
                 </Badge>
                 <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
-                  Testify Global.<br className="hidden sm:block" />
-                  Share Your Story.<br className="hidden sm:block" />
+                  Testify the<br className="hidden sm:block" />
+                  Greatness of GOD.<br className="hidden sm:block" />
                   <span className="text-primary">Join the Harvest.</span>
                 </h1>
                 <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-white/80 font-medium max-w-xl leading-relaxed italic text-pretty">
@@ -236,7 +237,7 @@ export default function LandingPage() {
                       <CardContent className="p-5 sm:p-6 flex gap-4">
                         <Quote className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-20 shrink-0 mt-1" />
                         <div className="min-w-0">
-                          <p className="text-sm sm:text-base italic text-muted-foreground line-clamp-3 leading-relaxed mb-4">
+                          <p className="text-sm sm:text-base italic text-muted-foreground line-clamp-2 leading-relaxed mb-4">
                             "{t.content}"
                           </p>
                           <div className="flex items-center gap-3">
