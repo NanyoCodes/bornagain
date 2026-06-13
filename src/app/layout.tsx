@@ -8,8 +8,7 @@ import { CookieConsentBanner } from '@/components/cookie-consent-banner';
 import { FontSizeProvider } from '@/components/font-size-provider';
 import Script from 'next/script';
 
-const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-const testifyLogoUrl = logo?.imageUrl || 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png';
+const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=2';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://testifyglobal.com'),

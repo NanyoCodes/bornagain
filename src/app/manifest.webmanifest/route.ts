@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 /**
  * @fileOverview Dynamically generates the Web App Manifest.
@@ -7,10 +6,9 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
  * Implements maskable icon support for high-fidelity OS integration.
  */
 
-const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-const testifyLogoUrl = logo?.imageUrl || 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png';
-
 export async function GET() {
+  const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=2';
+
   const manifest = {
     name: 'Testify Global',
     short_name: 'Testify',
@@ -24,25 +22,13 @@ export async function GET() {
         src: testifyLogoUrl,
         sizes: '192x192',
         type: 'image/png',
-        purpose: 'any'
-      },
-      {
-        src: testifyLogoUrl,
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'maskable'
+        purpose: 'any maskable'
       },
       {
         src: testifyLogoUrl,
         sizes: '512x512',
         type: 'image/png',
-        purpose: 'any'
-      },
-      {
-        src: testifyLogoUrl,
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable'
+        purpose: 'any maskable'
       },
     ],
   };
