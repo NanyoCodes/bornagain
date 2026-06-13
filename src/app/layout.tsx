@@ -8,7 +8,7 @@ import { CookieConsentBanner } from '@/components/cookie-consent-banner';
 import { FontSizeProvider } from '@/components/font-size-provider';
 import Script from 'next/script';
 
-const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=2';
+const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://testifyglobal.com'),

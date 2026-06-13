@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server';
  */
 
 export async function GET() {
-  const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=2';
+  const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
 
   const manifest = {
     name: 'Testify Global',
