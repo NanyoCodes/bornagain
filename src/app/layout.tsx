@@ -9,7 +9,7 @@ import { FontSizeProvider } from '@/components/font-size-provider';
 import Script from 'next/script';
 
 const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-const testifyLogoUrl = logo?.imageUrl || '';
+const testifyLogoUrl = logo?.imageUrl || 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://testifyglobal.com'),
@@ -79,7 +79,10 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.webmanifest',
   icons: {
-    icon: [{ url: testifyLogoUrl, type: 'image/png' }],
+    icon: [
+      { url: testifyLogoUrl, type: 'image/png', sizes: '192x192' },
+      { url: testifyLogoUrl, type: 'image/png', sizes: '512x512' }
+    ],
     shortcut: testifyLogoUrl,
     apple: [{ url: testifyLogoUrl, sizes: '180x180', type: 'image/png' }],
   },
@@ -124,7 +127,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://maps.googleapis.com" />
         
-        {/* Favicon / Touch Icon Fallbacks */}
+        {/* Favicon / Touch Icon Fallbacks - Force absolute logo URL to override local caches */}
         <link rel="icon" href={testifyLogoUrl} />
         <link rel="apple-touch-icon" href={testifyLogoUrl} />
 

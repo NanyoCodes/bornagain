@@ -8,7 +8,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
  */
 
 const logo = PlaceHolderImages.find((img) => img.id === 'logo');
-const testifyLogoUrl = logo?.imageUrl || '';
+const testifyLogoUrl = logo?.imageUrl || 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png';
 
 export async function GET() {
   const manifest = {
