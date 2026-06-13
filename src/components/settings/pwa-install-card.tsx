@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Download, Smartphone, CheckCircle2, Info, Share, PlusSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 export function PwaInstallCard() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -13,6 +15,7 @@ export function PwaInstallCard() {
   const [isIos, setIsIos] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
+  const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 
   useEffect(() => {
     setMounted(true);
@@ -113,18 +116,29 @@ export function PwaInstallCard() {
           </div>
         ) : (
           <div className="space-y-8">
-            <div className="bg-primary/5 rounded-[2rem] p-6 border-2 border-dashed border-primary/10 space-y-4 shadow-inner">
-                <div className="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-[0.3em]">
-                    <Info className="h-4 w-4" />
-                    Why Install?
+            <div className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted-foreground/10">
+                <div className="relative shrink-0">
+                    <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-2 border-background shadow-xl">
+                        <AvatarImage src={logo?.imageUrl} alt="Testify Logo" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary">T</AvatarFallback>
+                    </Avatar>
+                    <div className="absolute -top-1 -right-1 h-5 w-5 bg-primary rounded-full flex items-center justify-center border-2 border-background shadow-lg">
+                        <Download className="h-2.5 w-2.5 text-primary-foreground" />
+                    </div>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed font-medium text-balance">
-                    Get a dedicated home screen icon, immersive full-screen mode, and a faster connection to the global harvest network.
-                </p>
+                <div className="space-y-2 text-center sm:text-left">
+                    <div className="flex items-center justify-center sm:justify-start gap-2 text-primary font-black text-[10px] uppercase tracking-[0.3em]">
+                        <Info className="h-4 w-4" />
+                        Kingdom Identity
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed font-medium text-balance">
+                        Add Testify to your home screen to access the harvest field instantly with your unique spiritual identity.
+                    </p>
+                </div>
             </div>
 
             {isIos ? (
-                <div className="space-y-6 p-6 sm:p-8 bg-muted/20 rounded-[2rem] border border-dashed animate-in slide-in-from-bottom-4">
+                <div className="space-y-6 p-6 sm:p-8 bg-muted/30 rounded-[2rem] border-2 border-dashed border-primary/10 animate-in slide-in-from-bottom-4">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
                         <Smartphone className="h-4 w-4 text-primary" /> 
                         iPhone Setup
@@ -170,7 +184,7 @@ export function PwaInstallCard() {
             )}
             
             <p className="text-[9px] text-center text-muted-foreground font-black uppercase tracking-[0.4em] opacity-30">
-                Testify PWA • Mobilizing the workforce
+                PWA Version 1.2.0 • Mobilizing the Body
             </p>
           </div>
         )}
