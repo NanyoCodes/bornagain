@@ -5,7 +5,41 @@ import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, Campaign, TestimonyComment, SoulRelationship } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion } from 'firebase/firestore';
-import { Loader2, ArrowLeft, Users, Calendar, PlayCircle, MapPin, Heart, Phone, Mail, Church, History, PlusCircle, Award, MessagesSquare, User, Info, Sparkles, UserMinus, Trash2, BookOpen, Quote, Edit, CalendarClock, ChevronLeft, ChevronRight, CalendarDays, HandHeart, ChevronDown, Share2, UserPlus, PartyPopper, MessageSquare, X } from 'lucide-react';
+import { 
+    Loader2, 
+    ArrowLeft, 
+    Users, 
+    Calendar, 
+    PlayCircle, 
+    MapPin, 
+    Heart, 
+    Phone, 
+    Mail, 
+    Church, 
+    History, 
+    PlusCircle, 
+    Award, 
+    MessagesSquare, 
+    User, 
+    Info, 
+    Sparkles, 
+    UserMinus, 
+    Trash2, 
+    BookOpen, 
+    Quote, 
+    Edit, 
+    CalendarClock, 
+    ChevronLeft, 
+    ChevronRight, 
+    CalendarDays, 
+    HandHeart, 
+    ChevronDown, 
+    Share2, 
+    UserPlus, 
+    PartyPopper, 
+    MessageSquare, 
+    X 
+} from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -41,6 +75,8 @@ import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { cn, safeToDate } from '@/lib/utils';
+import dynamic from 'next/dynamic';
 
 const devotionalSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters.").max(100),
@@ -240,8 +276,6 @@ function FullDevotionalDialog({
 const ViewHistoryDialog = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
 const LogFollowUpDialog = dynamic(() => import('@/components/souls/log-follow-up-dialog').then(m => m.LogFollowUpDialog), { ssr: false });
 
-import dynamic from 'next/dynamic';
-
 export default function FellowshipPageClient() {
     const router = useRouter();
     const params = useParams();
@@ -338,17 +372,6 @@ export default function FellowshipPageClient() {
     }, [firestore, fellowshipId]);
     const { data: scheduledDevotionals, loading: loadingSchedule } = useCollection<DailyDevotional>(scheduledDevotionalsQuery);
 
-    const form = useForm<z.infer<typeof devotionalSchema>>({
-        resolver: zodResolver(devotionalSchema),
-        defaultValues: {
-            title: '',
-            scripture: '',
-            text: '',
-            prayer: '',
-            scheduledDate: viewDateStr,
-        },
-    });
-
     const handleEditDevotional = (devo: DailyDevotional) => {
         form.reset({
             title: devo.title,
@@ -361,7 +384,7 @@ export default function FellowshipPageClient() {
 
     const handleShare = async () => {
         if (!fellowship) return;
-        const shareUrl = window.location.href;
+        const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
         let shareText = `Join the '${fellowship.name}' fellowship on Testify!`;
         
         if (activeDevotional) {
@@ -582,11 +605,6 @@ export default function FellowshipPageClient() {
         if (e) e.stopPropagation();
         commentsAreaRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
-
-    const loading = fellowshipLoading || profileLoading || loadingMembers || soulsLoading || devoLoading;
-
-    if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
-    if (fellowshipError || !fellowship || fellowship.status === 'deleted') return <div className="text-center p-12"><Loader2 className="mx-auto h-12 w-12 opacity-20" /><h2 className="mt-4 text-xl font-bold">Group Not Found</h2><Button asChild variant="outline" className="mt-4"><NextLink href="/dashboard/fellowship">Return to Directory</NextLink></Button></div>;
 
     const ScheduleList = (
         <div className="space-y-4">
