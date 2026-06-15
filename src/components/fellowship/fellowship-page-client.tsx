@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment, SoulRelationship, Campaign } from '@/lib/types';
+import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion } from 'firebase/firestore';
 import { 
     Loader2, 
@@ -35,7 +35,8 @@ import {
     UserPlus, 
     PartyPopper, 
     MessageSquare, 
-    X 
+    X,
+    Target
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -67,7 +68,7 @@ import {
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { z } from 'genkit';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -336,8 +337,7 @@ export default function FellowshipPageClient() {
     const supporters = useMemo(() => activeDevotional?.supporters || [], [activeDevotional]);
     const inspiredBy = useMemo(() => activeDevotional?.inspiredBy || [], [activeDevotional]);
     const connectedBy = useMemo(() => activeDevotional?.connectedBy || [], [activeDevotional]);
-    const totalReactions = useMemo(() => supporters.length + inspiredBy.length + connectedBy.length, [supporters, inspiredBy, connectedBy]);
-
+    
     const hasAmened = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
     const hasInspired = useMemo(() => user ? inspiredBy.includes(user.uid) : false, [user, inspiredBy]);
     const hasCelebrated = useMemo(() => user ? connectedBy.includes(user.uid) : false, [user, connectedBy]);
@@ -570,9 +570,41 @@ export default function FellowshipPageClient() {
         commentsAreaRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    const commentPath = `fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`;
+    const handleShare = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const shareUrl = `${window.location.origin}/dashboard/fellowship/${fellowship?.id}`;
+        let shareText = `Join the '${fellowship?.name}' fellowship on Testify!`;
+        
+        if (activeDevotional) {
+            shareText = `Read today's word: '${activeDevotional.title}' in the '${fellowship?.name}' fellowship on Testify!`;
+        }
 
-    if (fellowshipLoading || profileLoading || soulsLoading || loadingMembers || devoLoading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
+        const shareData = {
+          title: fellowship?.name || 'Fellowship',
+          text: shareText,
+          url: shareUrl,
+        };
+
+        try {
+          if (navigator && navigator.share) {
+            await navigator.share(shareData);
+          } else {
+            throw new Error('Native share not supported');
+          }
+        } catch (err: any) {
+            if (err.name === 'AbortError') return;
+            try {
+              await navigator.clipboard.writeText(`${shareData.text} ${shareUrl}`);
+              toast({ title: 'Link Copied!', description: 'Fellowship link has been copied to your clipboard.' });
+            } catch (clipErr) {
+              console.error("Clipboard fallback failed", clipErr);
+            }
+        }
+    };
+
+    const loading = fellowshipLoading || profileLoading || soulsLoading || loadingMembers || devoLoading;
+
+    if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
 
     if (fellowshipError || !fellowship || fellowship.status === 'deleted') {
         return (
@@ -583,7 +615,7 @@ export default function FellowshipPageClient() {
                 <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Fellowship Not Found</h2>
                 <p className="text-muted-foreground mt-2 max-w-xs mx-auto text-sm">This community may have moved or been disbanded by the organizer.</p>
                 <Button asChild variant="outline" className="mt-8 h-11 rounded-full font-bold px-8">
-                    <NextLink href="/dashboard/fellowships">Return to directory</NextLink>
+                    <NextLink href="/dashboard/fellowship">Return to directory</NextLink>
                 </Button>
             </div>
         );
@@ -625,6 +657,8 @@ export default function FellowshipPageClient() {
             )}
         </div>
     );
+
+    const commentPath = `fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`;
 
     return (
         <div className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4">
@@ -801,7 +835,19 @@ export default function FellowshipPageClient() {
             </AlertDialog>
 
             <AlertDialog open={!!soulToUnassign} onOpenChange={(open) => !open && setSoulToUnassign(null)}>
-                <AlertDialogContent className="rounded-3xl p-8"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black font-headline">Unassign Convert?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium">Remove {soulToUnassign?.firstName} from this shared list?</AlertDialogDescription></AccordionHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Unassign</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+                <AlertDialogContent className="rounded-3xl p-8">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-2xl font-black font-headline">Unassign Convert?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium">Remove {soulToUnassign?.firstName} from this shared list?</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter className="gap-3 mt-6">
+                    <AlertDialogCancel className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
+                      {isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Confirm Unassign
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
             </AlertDialog>
         </div>
     );
