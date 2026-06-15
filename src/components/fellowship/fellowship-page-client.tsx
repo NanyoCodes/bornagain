@@ -26,13 +26,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Separator } from '@/components/ui/separator';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { useToast } from '@/hooks/use-toast';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
 import { CommentSection } from '../testimonies/comment-section';
 import NextLink from 'next/link';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -535,7 +534,7 @@ export default function FellowshipPageClient() {
     };
 
     const handleStartGroupChat = async () => {
-        if (!user || !firestore || !fellowship || !members) return;
+        if (!user || !firestore || !fellowship || !members || !isOrganizer) return;
         setIsChatLoading(true);
         
         const participantIds = fellowship.memberIds;
@@ -651,7 +650,7 @@ export default function FellowshipPageClient() {
                                 variant={fellowship.hasGroupChat ? "default" : "outline"}
                                 size="icon" 
                                 onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
-                                disabled={isChatLoading || (!fellowship.hasGroupChat && isOrganizer && (!members || members.length < 2))}
+                                disabled={isChatLoading || (!fellowship.hasGroupChat && (!isOrganizer || !members || members.length < 2))}
                                 className={cn(
                                     "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg transition-all active:scale-90 relative shrink-0",
                                     fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
