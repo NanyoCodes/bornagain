@@ -1,4 +1,4 @@
-'use server';
+'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
@@ -14,17 +14,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { format, addDays, isSameDay, subDays, parseISO } from 'date-fns';
-import { safeToDate, cn } from '@/lib/utils';
-import { LogFollowUpDialog } from '@/components/souls/log-follow-up-dialog';
-import { ViewHistoryDialog } from '@/components/souls/view-history-dialog';
-import { actionItems } from '@/lib/follow-up-data';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Separator } from '@/components/ui/separator';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
