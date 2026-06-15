@@ -72,6 +72,7 @@ import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import { cn, safeToDate } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 
@@ -339,13 +340,6 @@ export default function FellowshipPageClient() {
     }, [firestore, fellowshipId, viewDateStr, activeDevotional]);
     const { data: comments } = useCollection<TestimonyComment>(commentsQuery);
     const commentCount = comments?.length || 0;
-
-    const supporters = activeDevotional?.supporters || [];
-    const inspiredBy = activeDevotional?.inspiredBy || [];
-    const connectedBy = activeDevotional?.connectedBy || [];
-    const hasAmened = user ? supporters.includes(user.uid) : false;
-    const hasInspired = user ? inspiredBy.includes(user.uid) : false;
-    const hasCelebrated = user ? connectedBy.includes(user.uid) : false;
 
     useEffect(() => {
         if (activeDevotional) {
@@ -958,7 +952,7 @@ export default function FellowshipPageClient() {
                         <CardHeader className="p-6 sm:p-10">
                             <CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">About this Group</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-6 sm:p-10 pb-8 sm:pb-12">
+                        <CardContent className="px-6 sm:px-10 pb-8 sm:pb-12">
                             <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words [overflow-wrap:anywhere]">
                                 {fellowship.description}
                             </p>
