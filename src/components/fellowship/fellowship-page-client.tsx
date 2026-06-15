@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, Campaign, TestimonyComment, SoulRelationship } from '@/lib/types';
+import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment, SoulRelationship, Campaign } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion } from 'firebase/firestore';
 import { 
     Loader2, 
@@ -14,14 +14,11 @@ import {
     MapPin, 
     Heart, 
     Phone, 
-    Mail, 
-    Church, 
     History, 
     PlusCircle, 
     Award, 
     MessagesSquare, 
     User, 
-    Info, 
     Sparkles, 
     UserMinus, 
     Trash2, 
@@ -329,8 +326,6 @@ export default function FellowshipPageClient() {
     const viewDateStr = format(viewDate, 'yyyy-MM-dd');
     const isViewingToday = isSameDay(viewDate, new Date());
     
-    const commentPath = useMemo(() => `fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`, [fellowshipId, viewDateStr]);
-    
     const activeDevotionalRef = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
         return doc(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr);
@@ -339,8 +334,9 @@ export default function FellowshipPageClient() {
 
     const commentsQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !activeDevotional) return null;
-        return query(collection(firestore, commentPath), orderBy('createdAt', 'asc'));
-    }, [firestore, fellowshipId, commentPath, activeDevotional]);
+        const path = `fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`;
+        return query(collection(firestore, path), orderBy('createdAt', 'asc'));
+    }, [firestore, fellowshipId, viewDateStr, activeDevotional]);
     const { data: comments } = useCollection<TestimonyComment>(commentsQuery);
     const commentCount = comments?.length || 0;
 
@@ -371,6 +367,17 @@ export default function FellowshipPageClient() {
         return query(collection(firestore, 'fellowships', fellowshipId, 'devotionals'), orderBy('scheduledDate', 'asc'), limit(60));
     }, [firestore, fellowshipId]);
     const { data: scheduledDevotionals, loading: loadingSchedule } = useCollection<DailyDevotional>(scheduledDevotionalsQuery);
+
+    const form = useForm<z.infer<typeof devotionalSchema>>({
+        resolver: zodResolver(devotionalSchema),
+        defaultValues: {
+            title: '',
+            scripture: '',
+            text: '',
+            prayer: '',
+            scheduledDate: viewDateStr,
+        },
+    });
 
     const handleEditDevotional = (devo: DailyDevotional) => {
         form.reset({
@@ -606,6 +613,25 @@ export default function FellowshipPageClient() {
         commentsAreaRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const loading = fellowshipLoading || profileLoading || soulsLoading || loadingMembers || devoLoading;
+
+    if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
+
+    if (fellowshipError || !fellowship || fellowship.status === 'deleted') {
+        return (
+            <div className="text-center p-12">
+                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Users className="h-10 w-10 text-muted-foreground/30" />
+                </div>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Fellowship Not Found</h2>
+                <p className="text-muted-foreground mt-2 max-w-xs mx-auto text-sm">This community may have moved or been disbanded by the organizer.</p>
+                <Button asChild variant="outline" className="mt-8 h-11 rounded-full font-bold px-8">
+                    <NextLink href="/dashboard/fellowships">Return to directory</NextLink>
+                </Button>
+            </div>
+        );
+    }
+
     const ScheduleList = (
         <div className="space-y-4">
             {loadingSchedule ? (
@@ -627,8 +653,8 @@ export default function FellowshipPageClient() {
                                     <span className="text-[10px] font-black uppercase tracking-widest text-primary/70">{format(parseISO(devo.scheduledDate), 'EEEE, MMM d')}</span>
                                     {isSameDay(parseISO(devo.scheduledDate), new Date()) && <Badge className="bg-white text-primary h-4 px-1.5 font-black uppercase text-[7px] tracking-widest animate-pulse border-none">Today</Badge>}
                                 </div>
-                                <p className="font-bold text-sm truncate pr-6 break-words [overflow-wrap:anywhere]">{devo.title}</p>
-                                <p className="text-[9px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter italic break-words [overflow-wrap:anywhere]">Ref: {devo.scripture}</p>
+                                <p className="font-bold text-sm truncate pr-6">{devo.title}</p>
+                                <p className="text-[9px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter italic">Ref: {devo.scripture}</p>
                                 <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                             </button>
                         );
