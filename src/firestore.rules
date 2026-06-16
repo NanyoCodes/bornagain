@@ -186,7 +186,7 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
-            allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+            allow delete: if request.auth != null && resource.authorId == request.auth.uid;
             allow update: if request.auth != null && (
               (resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))

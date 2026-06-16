@@ -32,6 +32,23 @@ type FellowshipCardProps = {
   onClick?: () => void;
 };
 
+/**
+ * Ensures the profile photo displayed in the directory is always the most recent version.
+ */
+function LiveAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const currentPhotoUrl = profile?.photoURL || fallbackUrl;
+    
+    return (
+        <Avatar className={className}>
+            <AvatarImage src={currentPhotoUrl} className="object-cover" />
+            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
+        </Avatar>
+    );
+}
+
 function FullDevotionalDialog({ 
     devotional, 
     children,
@@ -199,7 +216,7 @@ function FullDevotionalDialog({
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3 text-balance">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3 text-balance">
                             <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                             {devotional.title}
                         </DialogTitle>
@@ -415,10 +432,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                         </CardTitle>
                         <div className="space-y-2">
                           <CardDescription className="flex items-center gap-2 text-[11px] sm:text-xs font-medium">
-                              <Avatar className="h-5 w-5 border shadow-sm">
-                                  <AvatarImage src={fellowship.organizerPhotoURL} />
-                                  <AvatarFallback className="text-[8px] font-black bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback>
-                              </Avatar>
+                              <LiveAvatar userId={fellowship.organizerId} fallbackUrl={fellowship.organizerPhotoURL} fallbackInitials={fellowship.organizerName?.charAt(0)} className="h-5 w-5 border shadow-sm" />
                               <span className="leading-tight truncate">
                                 Organized by{" "}
                                 <Link 
@@ -541,9 +555,9 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                         {totalReactions > 0 && (
                                             <div className="flex items-center gap-1 bg-background/50 px-1.5 py-0.5 rounded-full border border-primary/10 shadow-sm">
                                                 <div className="flex items-center -space-x-1">
-                                                    {supporters.length > 0 && <HandHeart className="h-2.5 w-2.5 text-primary fill-current" />}
-                                                    {inspiredBy.length > 0 && <Sparkles className="h-2.5 w-2.5 text-chart-3 fill-current" />}
-                                                    {connectedBy.length > 0 && <PartyPopper className="h-2.5 w-2.5 text-blue-500" />}
+                                                    {supporters.length > 0 && <HandHeart className="h-3 w-3 text-primary fill-current" />}
+                                                    {inspiredBy.length > 0 && <Sparkles className="h-3 w-3 text-chart-3 fill-current" />}
+                                                    {connectedBy.length > 0 && <PartyPopper className="h-3 w-3 text-blue-500" />}
                                                 </div>
                                                 <span className="text-[8px] font-black text-muted-foreground">{totalReactions}</span>
                                             </div>
