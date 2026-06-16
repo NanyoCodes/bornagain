@@ -327,6 +327,7 @@ export default function FellowshipPageClient() {
     const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
     const viewDateStr = format(viewDate, 'yyyy-MM-dd');
     const isViewingToday = isSameDay(viewDate, new Date());
+    const commentPath = `fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`;
     
     const activeDevotionalRef = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
@@ -344,9 +345,8 @@ export default function FellowshipPageClient() {
 
     const commentsQuery = useMemo(() => {
         if (!firestore || !fellowshipId || !activeDevotional) return null;
-        const path = `fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`;
-        return query(collection(firestore, path), orderBy('createdAt', 'asc'));
-    }, [firestore, fellowshipId, viewDateStr, activeDevotional]);
+        return query(collection(firestore, commentPath), orderBy('createdAt', 'asc'));
+    }, [firestore, commentPath, activeDevotional]);
     const { data: comments } = useCollection<TestimonyComment>(commentsQuery);
     const commentCount = comments?.length || 0;
 
@@ -570,38 +570,6 @@ export default function FellowshipPageClient() {
         commentsAreaRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    const handleShare = async (e: React.MouseEvent) => {
-        e.stopPropagation();
-        const shareUrl = `${window.location.origin}/dashboard/fellowship/${fellowship?.id}`;
-        let shareText = `Join the '${fellowship?.name}' fellowship on Testify!`;
-        
-        if (activeDevotional) {
-            shareText = `Read today's word: '${activeDevotional.title}' in the '${fellowship?.name}' fellowship on Testify!`;
-        }
-
-        const shareData = {
-          title: fellowship?.name || 'Fellowship',
-          text: shareText,
-          url: shareUrl,
-        };
-
-        try {
-          if (navigator && navigator.share) {
-            await navigator.share(shareData);
-          } else {
-            throw new Error('Native share not supported');
-          }
-        } catch (err: any) {
-            if (err.name === 'AbortError') return;
-            try {
-              await navigator.clipboard.writeText(`${shareData.text} ${shareUrl}`);
-              toast({ title: 'Link Copied!', description: 'Fellowship link has been copied to your clipboard.' });
-            } catch (clipErr) {
-              console.error("Clipboard fallback failed", clipErr);
-            }
-        }
-    };
-
     const loading = fellowshipLoading || profileLoading || soulsLoading || loadingMembers || devoLoading;
 
     if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
@@ -679,7 +647,7 @@ export default function FellowshipPageClient() {
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button variant="outline" size="icon" onClick={handleShare} className="h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg bg-background border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/5">
+                                    <Button variant="outline" size="icon" className="h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg bg-background border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/5">
                                         <Share2 className="h-4 w-4 sm:h-5 w-5" />
                                     </Button>
                                 </TooltipTrigger>
