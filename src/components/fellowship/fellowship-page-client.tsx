@@ -321,7 +321,7 @@ export default function FellowshipPageClient() {
     const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
     const viewDateStr = format(viewDate, 'yyyy-MM-dd');
     const isViewingToday = isSameDay(viewDate, new Date());
-    const commentPath = `fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`;
+    const commentPath = useMemo(() => `fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`, [fellowshipId, viewDateStr]);
     
     const activeDevotionalRef = useMemo(() => {
         if (!firestore || !fellowshipId) return null;
@@ -687,12 +687,12 @@ export default function FellowshipPageClient() {
                                             className={cn(
                                                 "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg relative shrink-0 transition-all", 
                                                 fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90",
-                                                !fellowship.hasGroupChat && !isOrganizer && "opacity-60 cursor-not-allowed"
+                                                !fellowship.hasGroupChat && !isOrganizer && "opacity-60 cursor-not-allowed bg-muted border-muted-foreground/20"
                                             )}
                                         >
                                             {isChatLoading ? <Loader2 className="h-4 w-4 sm:h-5 w-5 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}
                                             {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && <span className="absolute -top-1 -right-1 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span></span>}
-                                            {!fellowship.hasGroupChat && !isOrganizer && <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-muted border-2 border-background flex items-center justify-center"><X className="h-2 w-2 text-muted-foreground" /></span>}
+                                            {!fellowship.hasGroupChat && !isOrganizer && <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-muted border-2 border-background flex items-center justify-center shadow-sm"><X className="h-2 w-2 text-muted-foreground" /></span>}
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
