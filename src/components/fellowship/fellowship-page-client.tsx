@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment } from '@/lib/types';
@@ -62,6 +61,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -811,6 +811,9 @@ export default function FellowshipPageClient() {
                 <div className="space-y-8 flex flex-col px-4 sm:px-0 pb-32">
                     <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden border-b-8 border-b-primary/10"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2.5"><Calendar className="h-4 w-4 text-primary"/> Gathering Details</CardTitle></CardHeader><CardContent className="px-6 sm:px-8 pb-8 sm:pb-10 space-y-5 sm:space-y-6 pt-2">{fellowship.schedule && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2">Schedule</p><p className="text-foreground font-black text-xs sm:text-base leading-tight text-balance break-words [overflow-wrap:anywhere]">{fellowship.schedule}</p></div>}{fellowship.location && <div className="p-4 sm:p-5 rounded-2xl bg-muted/30 border border-dashed"><p className="font-black text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted-foreground mb-2">Primary Location</p><p className="text-foreground font-black text-xs sm:text-base flex items-start gap-2 leading-tight break-words [overflow-wrap:anywhere] text-balance"><MapPin className="h-4 w-4 sm:h-5 w-5 text-primary shrink-0 mt-0.5" /> {fellowship.location}</p></div>}{(isMember || isOrganizer) && fellowship.streamUrl && <Button asChild className="w-full h-14 sm:h-16 font-black rounded-2xl shadow-xl transition-all active:scale-95 text-sm sm:text-base uppercase tracking-widest"><NextLink href={fellowship.streamUrl} target="_blank" rel="noopener noreferrer"><PlayCircle className="mr-3 h-5 sm:h-6 w-5 sm:w-6" />ENTER MEETING</NextLink></Button>}</CardContent></Card>
                     <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border-none bg-background border border-muted-foreground/10 border-b-8 border-b-primary/5"><CardHeader className="p-6 sm:p-8 pb-3 sm:pb-4"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Organizer</CardTitle></CardHeader><CardContent className="px-6 sm:px-8 pb-8 sm:pb-12 pt-2"><NextLink href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`} className="flex items-center gap-4 group bg-muted/20 p-4 sm:p-5 rounded-2xl border border-dashed transition-all hover:bg-muted/40 hover:border-primary/20 min-w-0 shadow-inner"><Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-sm shrink-0"><AvatarFallback className="font-black text-sm sm:text-base bg-primary/10 text-primary">{fellowship.organizerName?.charAt(0)}</AvatarFallback></Avatar><div className="min-w-0 flex-1"><span className="font-black text-xs sm:text-base group-hover:text-primary transition-colors truncate block leading-tight uppercase tracking-tight">{fellowship.organizerName}</span><div className="flex items-center gap-2 mt-1"><Badge className="h-4 sm:h-5 text-[7px] sm:text-[8px] uppercase font-black tracking-widest px-2" variant={isOrganizer ? "default" : "secondary"}>{isOrganizer ? "YOU" : "LEADER"}</Badge></div></div></NextLink></CardContent></Card>
+                    <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground font-black uppercase tracking-widest px-1">
+                        <Users className="mr-2 h-4 w-4 text-primary" /> {fellowship.memberCount} MEMBERS
+                    </div>
                 </div>
             </div>
 

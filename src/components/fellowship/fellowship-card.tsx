@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
+import { useUser, useAuth, useFirestore, useDoc, useCollection } from '@/firebase';
 import type { Fellowship, UserProfile, DailyDevotional, TestimonyComment } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { doc, runTransaction, arrayUnion, arrayRemove, increment, serverTimestamp, collection, query, updateDoc } from 'firebase/firestore';
@@ -595,7 +595,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             
             <CardFooter className="px-5 sm:px-6 py-4 flex justify-between items-center border-t bg-black/5">
                 <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground font-black uppercase tracking-widest">
-                    <Users className="mr-2 h-4 w-4 text-primary" /> {fellowship.memberCount} SOUL WINNERS
+                    <Users className="mr-2 h-4 w-4 text-primary" /> {fellowship.memberCount} MEMBERS
                 </div>
                 <div className="flex items-center gap-2" onClick={stopPropagation}>
                     {(isMember || isOrganizer) && fellowship.streamUrl && (
