@@ -461,6 +461,32 @@ export default function FellowshipPageClient() {
             .finally(() => setIsProcessingReaction(null));
     }
 
+    const handleShare = async () => {
+        if (!fellowship) return;
+        const shareUrl = `${window.location.origin}/dashboard/fellowship/${fellowship.id}`;
+        const shareData = {
+            title: fellowship.name,
+            text: `Join the '${fellowship.name}' fellowship on Testify!`,
+            url: shareUrl,
+        };
+
+        try {
+            if (navigator && navigator.share) {
+                await navigator.share(shareData);
+            } else {
+                throw new Error('Share API not supported');
+            }
+        } catch (err: any) {
+            if (err.name === 'AbortError') return;
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                toast({ title: 'Link Copied', description: 'Fellowship link copied to clipboard.' });
+            } catch (clipErr) {
+                console.error("Clipboard fallback failed", clipErr);
+            }
+        }
+    };
+
     const handleDeleteMember = async () => {
         if (!user || !firestore || !fellowship || !isOrganizer || !memberToRemove) return;
         setIsProcessingRemoval(true);
