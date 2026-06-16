@@ -603,23 +603,25 @@ export default function FellowshipPage() {
         
         const location = [values.city, values.state, values.country].filter(Boolean).join(', ');
         
+        const updateData: { [key: string]: any } = {
+            name: values.name,
+            description: values.description,
+            groupType: values.groupType,
+            schedule: values.schedule,
+            locationType: values.locationType,
+            city: values.city || null,
+            state: values.state || null,
+            country: values.country || null,
+            location: values.locationType === 'Virtual' ? 'Global' : location || null,
+            streamUrl: values.streamUrl || null,
+        };
+
         try {
-            await updateDoc(fellowshipRef, {
-                name: values.name,
-                description: values.description,
-                groupType: values.groupType,
-                schedule: values.schedule,
-                locationType: values.locationType,
-                city: values.city || null,
-                state: values.state || null,
-                country: values.country || null,
-                location: values.locationType === 'Virtual' ? 'Global' : location || null,
-                streamUrl: values.streamUrl || null,
-            });
+            await updateDoc(fellowshipRef, updateData);
             toast({ title: 'Group Updated' });
             closeAllDialogs();
         } catch (e) {
-            const permissionError = new FirestorePermissionError({ path: `fellowships/${fellowshipToManage.id}`, operation: 'update' }, user);
+            const permissionError = new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update', requestResourceData: updateData }, user);
             errorEmitter.emit('permission-error', permissionError);
         } finally {
             setIsSubmitting(false);
@@ -659,9 +661,13 @@ export default function FellowshipPage() {
 
             toast({ title: 'Group Deleted', description: 'Associated souls have been automatically unassigned.' });
             closeAllDialogs();
-        } catch (e) {
+        } catch (e: any) {
             console.error("Cleanup failed:", e);
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update' }, user));
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ 
+                path: fellowshipRef.path, 
+                operation: 'update',
+                requestResourceData: { status: 'deleted' }
+            }, user));
         } finally {
             setIsDeleting(false);
         }

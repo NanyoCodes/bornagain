@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment } from '@/lib/types';
@@ -535,8 +535,13 @@ export default function FellowshipPageClient() {
             await batch.commit();
             setSoulToUnassign(null);
             toast({ title: "Convert Unassigned" });
-        } catch (e) {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
+        } catch (e: any) {
+            const permissionError = new FirestorePermissionError({ 
+                path: `users/${soul.userId}/souls/${soul.id}`, 
+                operation: 'update',
+                requestResourceData: update
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
         } finally {
             setIsProcessingRemoval(false);
         }

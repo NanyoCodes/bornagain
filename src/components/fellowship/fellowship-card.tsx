@@ -328,10 +328,10 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
         } catch (err: any) {
             if (err.name === 'AbortError') return;
             try {
-              await navigator.clipboard.writeText(`${shareData.text} ${shareUrl}`);
-              toast({ title: 'Link Copied!', description: 'Fellowship link has been copied to your clipboard.' });
+                await navigator.clipboard.writeText(shareUrl);
+                toast({ title: 'Link Copied!', description: 'Fellowship link copied to clipboard.' });
             } catch (clipErr) {
-              console.error("Clipboard fallback failed", clipErr);
+                console.error("Clipboard fallback failed", clipErr);
             }
         }
     };

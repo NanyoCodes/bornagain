@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: PWA branding synchronization & chat initiation enforcement - 2025-08-08T15:00:00Z
+    // Deployment trigger: Soul cleanup permission & fellowship terminology update - 2025-08-09T14:30:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -34,6 +34,7 @@ service cloud.firestore {
       return request.auth != null && (
         request.auth.uid in chatData.get('participantIds', []) ||
         (chatData.get('fellowshipId', '') != '' && isFellowshipMember(chatData.fellowshipId)) ||
+        (chatData.get('associationId', '') != '' && isFellowshipMember(chatData.associationId)) ||
         (chatData.get('campaignId', '') != '' && exists(/databases/$(database)/documents/campaigns/$(chatData.campaignId)/participants/$(request.auth.uid)))
       );
     }
@@ -52,7 +53,12 @@ service cloud.firestore {
 
       match /souls/{soulId} {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
-        allow create, update, delete: if isOwner(userId);
+        allow create, delete: if isOwner(userId);
+        allow update: if request.auth != null && (
+          isOwner(userId) || 
+          isFellowshipMember(resource.data.get('fellowshipId', '')) || 
+          isFellowshipMember(resource.data.get('associationId', ''))
+        );
       }
       
       match /joinedCampaigns/{campaignId} {
@@ -139,6 +145,7 @@ service cloud.firestore {
       allow create: if request.auth != null && (
         (!request.resource.data.get('isGroupChat', false)) ||
         (request.resource.data.get('fellowshipId', '') != '' && isFellowshipOrganizer(request.resource.data.fellowshipId)) ||
+        (request.resource.data.get('associationId', '') != '' && isFellowshipOrganizer(request.resource.data.associationId)) ||
         (request.resource.data.get('campaignId', '') != '' && get(/databases/$(database)/documents/campaigns/$(request.resource.data.campaignId)).data.organizerId == request.auth.uid)
       );
       allow read, update: if canAccessChatDoc(resource.data);
@@ -160,8 +167,12 @@ service cloud.firestore {
     
     match /fellowships/{fellowshipId} {
       allow get, list: if true;
-      allow create, update: if request.auth != null;
-      allow delete: if request.auth != null && isFellowshipOrganizer(fellowshipId);
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (
+        (resource.data.organizerId == request.auth.uid) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount', 'hasGroupChat', 'status']))
+      );
+      allow delete: if request.auth != null && resource.data.organizerId == request.auth.uid;
 
       match /members/{memberId} {
         allow read, list: if request.auth != null;
@@ -170,14 +181,14 @@ service cloud.firestore {
 
       match /devotionals/{date} {
         allow read: if true;
-        allow create, update, delete: if request.auth != null;
+        allow create, update, delete: if request.auth != null && isFellowshipOrganizer(fellowshipId);
         
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
             allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
             allow update: if request.auth != null && (
-              (resource.data.authorId == request.authorId) ||
+              (resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }
