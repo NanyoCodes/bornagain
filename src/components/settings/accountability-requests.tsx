@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -15,6 +14,7 @@ import { format, isToday } from 'date-fns';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { safeToDate } from '@/lib/utils';
+import Link from 'next/link';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -217,19 +217,19 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                         const createdAt = safeToDate(req.createdAt);
                         return (
                         <div key={req.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
-                            <div className="flex items-center gap-3">
-                                <Avatar>
+                            <Link href={`/dashboard/profile/${req.fromUserId}`} className="flex items-center gap-3 group">
+                                <Avatar className="group-hover:opacity-80 transition-opacity shadow-sm">
                                     <AvatarImage src={req.fromUserPhotoURL ?? undefined} alt={`${req.fromUserFirstName} ${req.fromUserLastName}`} />
                                     <AvatarFallback>{req.fromUserFirstName?.charAt(0)}{req.fromUserLastName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <div>
-                                    <p className="font-semibold text-sm">{req.fromUserFirstName} {req.fromUserLastName}</p>
+                                <div className="min-w-0">
+                                    <p className="font-semibold text-sm group-hover:underline truncate">{req.fromUserFirstName} {req.fromUserLastName}</p>
                                     <p className="text-xs text-muted-foreground">
                                         Sent {createdAt ? (isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'PPP')) : 'just now'}
                                     </p>
                                 </div>
-                            </div>
-                            <div className="flex gap-2">
+                            </Link>
+                            <div className="flex gap-2 shrink-0">
                                 <Button
                                     size="icon"
                                     variant="outline"
@@ -280,24 +280,24 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                         const createdAt = safeToDate(req.createdAt);
                         return (
                          <div key={req.id} className="flex items-center justify-between p-3 rounded-lg border">
-                            <div className="flex items-center gap-3">
-                                <Avatar>
+                            <Link href={`/dashboard/profile/${req.toUserId}`} className="flex items-center gap-3 group">
+                                <Avatar className="group-hover:opacity-80 transition-opacity shadow-sm">
                                     <AvatarImage src={req.toUserPhotoURL ?? undefined} alt={`${req.toUserFirstName} ${req.toUserLastName}`} />
                                     <AvatarFallback>{req.toUserFirstName?.charAt(0)}{req.toUserLastName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <div>
-                                    <p className="font-semibold text-sm">{req.toUserFirstName} {req.toUserLastName}</p>
+                                <div className="min-w-0">
+                                    <p className="font-semibold text-sm group-hover:underline truncate">{req.toUserFirstName} {req.toUserLastName}</p>
                                     <p className="text-xs text-muted-foreground">
                                         Sent {createdAt ? (isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'PPP')) : 'just now'}
                                     </p>
                                 </div>
-                            </div>
+                            </Link>
                             <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => handleCancel(req)}
                                 disabled={isProcessing === req.id}
-                                className="text-destructive"
+                                className="text-destructive shrink-0"
                             >
                                 {isProcessing === req.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
                                 Cancel
@@ -311,7 +311,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                     <div className="flex items-start gap-3">
                         <XCircle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                         <div>
-                             <p className="text-sm text-muted-foreground">
+                             <p className="text-sm text-muted-foreground font-medium">
                                 {req.fromUserId === user?.uid 
                                     ? `Your request to ${req.toUserFirstName} ${req.toUserLastName} was declined.`
                                     : `You declined the request from ${req.fromUserFirstName} ${req.fromUserLastName}.`

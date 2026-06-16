@@ -29,7 +29,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useCollection, useFirestore, useUser } from "@/firebase";
+import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, serverTimestamp, query, where, getDocs, addDoc, doc, getDoc } from "firebase/firestore";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Badge } from "../ui/badge";
@@ -41,6 +41,23 @@ import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+/**
+ * Ensures the profile photo displayed in the directory is always the most recent version.
+ */
+function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const currentPhotoUrl = profile?.photoURL || fallbackUrl;
+    
+    return (
+        <Avatar className={className}>
+            <AvatarImage src={currentPhotoUrl} className="object-cover" />
+            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
+        </Avatar>
+    );
+}
 
 function ParticipantsDialog({ campaign, children }: { campaign: Campaign; children: React.ReactNode; }) {
   const firestore = useFirestore();
@@ -54,35 +71,42 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   }, []);
 
   const participantsQuery = useMemo(() => {
-    if (!isOpen || !firestore || !user || user.uid !== campaign.organizerId) return null;
+    if (!isOpen || !firestore || !user) return null;
+    // Allow viewing list if owner OR member
     return query(collection(firestore, 'campaigns', campaign.id, 'participants'));
-  }, [isOpen, firestore, campaign.id, user, campaign.organizerId]);
+  }, [isOpen, firestore, campaign.id, user]);
 
   const { data: participants, loading } = useCollection<CampaignParticipant>(participantsQuery);
   
-  const organizer = useMemo(() => participants?.find(p => p.id === campaign.organizerId), [participants, campaign.organizerId]);
-  const otherParticipants = useMemo(() => participants?.filter(p => p.id !== campaign.organizerId), [participants, campaign.organizerId]);
+  const organizer = useMemo(() => participants?.find(p => p.userId === campaign.organizerId), [participants, campaign.organizerId]);
+  const otherParticipants = useMemo(() => participants?.filter(p => p.userId !== campaign.organizerId), [participants, campaign.organizerId]);
+
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
 
   const content = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
       {loading ? (
         <div className="space-y-4">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full rounded-2xl" />
+          <Skeleton className="h-10 w-full rounded-2xl" />
+          <Skeleton className="h-10 w-full rounded-2xl" />
         </div>
       ) : participants ? (
          <div className="space-y-6 pb-6 px-1">
             {organizer && (
                 <div className="space-y-3">
                     <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Organizer</h3>
-                    <div className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed">
-                        <Avatar className="h-10 w-10 border shadow-sm">
-                            <AvatarImage src={organizer.photoURL} />
-                            <AvatarFallback className="bg-primary/10 text-primary font-bold">{organizer.firstName?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span className='font-bold text-sm sm:text-base'>{organizer.firstName} {organizer.lastName}</span>
-                    </div>
+                    <Link 
+                        href={organizer.userId === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${organizer.userId}`}
+                        className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed hover:bg-muted/40 transition-colors group"
+                        onClick={stopPropagation}
+                    >
+                        <LiveParticipantAvatar userId={organizer.userId} fallbackUrl={organizer.photoURL} fallbackInitials={organizer.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm group-hover:scale-105 transition-transform" />
+                        <span className='font-bold text-sm sm:text-base group-hover:underline'>{organizer.firstName} {organizer.lastName}</span>
+                        {organizer.userId === user?.uid && <span className="text-[10px] text-muted-foreground ml-auto opacity-60">You</span>}
+                    </Link>
                 </div>
             )}
             {otherParticipants && otherParticipants.length > 0 && (
@@ -91,13 +115,15 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                 <div className="space-y-3">
                   {otherParticipants.map(p => (
                     <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-9 w-9 text-xs border">
-                            <AvatarImage src={p.photoURL} />
-                            <AvatarFallback className="font-bold">{p.firstName?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span className='font-bold text-sm'>{p.firstName} {p.lastName}</span>
-                      </div>
+                      <Link 
+                        href={p.userId === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${p.userId}`}
+                        className="flex items-center gap-3 group"
+                        onClick={stopPropagation}
+                      >
+                        <LiveParticipantAvatar userId={p.userId} fallbackUrl={p.photoURL} fallbackInitials={p.firstName?.charAt(0)} className="h-9 w-9 text-xs border group-hover:scale-105 transition-transform" />
+                        <span className='font-bold text-sm group-hover:underline'>{p.firstName} {p.lastName}</span>
+                        {p.userId === user?.uid && <span className="text-[10px] text-muted-foreground ml-auto opacity-60">You</span>}
+                      </Link>
                       {p.joinReason && (
                         <blockquote className="border-l-4 border-primary/20 pl-4 text-xs italic text-muted-foreground bg-primary/[0.02] py-2 rounded-r-xl">
                             &ldquo;{p.joinReason}&rdquo;
@@ -108,15 +134,15 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                 </div>
               </div>
             )}
-            {otherParticipants?.length === 0 && user?.uid === campaign.organizerId && (
+            {otherParticipants?.length === 0 && participants?.length > 0 && (
                 <p className="text-center text-muted-foreground py-12 text-sm italic px-8">No other believers have joined this mission yet. Share the campaign to invite others!</p>
             )}
         </div>
-      ) : user?.uid !== campaign.organizerId ? (
+      ) : (
         <div className="text-center py-16 bg-muted/20 rounded-[2rem] border-2 border-dashed mx-1">
-            <p className="text-sm text-muted-foreground px-10 leading-relaxed font-medium">Only the campaign organizer can see the full participant directory.</p>
+            <p className="text-sm text-muted-foreground px-10 leading-relaxed font-medium">Join this campaign to connect with the full participant directory.</p>
         </div>
-      ) : null}
+      )}
     </ScrollArea>
   );
 
@@ -144,12 +170,12 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-3xl overflow-hidden p-0">
+      <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl">
         <div className="p-8 border-b bg-muted/10">
             <DialogHeader>
                 <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance">Participants for "{campaign.title}"</DialogTitle>
                 <DialogDescription className="text-sm font-medium">
-                    {campaign.participants || 0} people have joined this campaign.
+                    {campaign.participants || 0} people have joined this mission.
                 </DialogDescription>
             </DialogHeader>
         </div>
@@ -212,7 +238,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
             {campaign.scripture && (
                 <div className="p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative">
                     <span className="absolute -top-3 left-6 bg-background px-3 text-[10px] font-black text-primary uppercase tracking-[0.2em]">Inspirational Word</span>
-                    <p className="italic text-base text-primary font-serif leading-relaxed text-balance">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                    <p className="italic text-base text-primary font-serif leading-relaxed text-justify text-balance">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
                     <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest">— {campaign.scripture}</p>
                 </div>
             )}
@@ -248,7 +274,9 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild onClick={stopPropagation}>{children}</DialogTrigger>
+            <DialogTrigger asChild onClick={stopPropagation}>
+                {children}
+            </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                 <div className="p-8 border-b bg-muted/10">
                     <div className="flex items-center gap-3 mb-2">
@@ -628,8 +656,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                     <Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors" onClick={stopPropagation}>
                         <Users className="h-4 w-4" />
                         <span className="ml-1.5">
-                            {campaign.participants}
-                            {campaign.maxParticipants ? ` / ${campaign.maxParticipants}` : ''} SOUL WINNERS
+                            {campaign.participants} MEMBERS
                         </span>
                     </Button>
                 </ParticipantsDialog>
