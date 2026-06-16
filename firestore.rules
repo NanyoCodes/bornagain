@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Public devotional comments & community engagement - 2025-06-25T12:00:00Z
+    // Deployment trigger: Refined group chat access & fellowship member verification - 2025-08-09T10:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -29,6 +29,15 @@ service cloud.firestore {
              fId != "" &&
              exists(/databases/$(database)/documents/fellowships/$(fId)) &&
              get(/databases/$(database)/documents/fellowships/$(fId)).data.organizerId == request.auth.uid;
+    }
+
+    function canAccessChatDoc(chatData) {
+      return request.auth != null && (
+        request.auth.uid in chatData.get('participantIds', []) ||
+        (chatData.get('fellowshipId', '') != '' && isFellowshipMember(chatData.fellowshipId)) ||
+        (chatData.get('associationId', '') != '' && isFellowshipMember(chatData.associationId)) ||
+        (chatData.get('campaignId', '') != '' && exists(/databases/$(database)/documents/campaigns/$(chatData.campaignId)/participants/$(request.auth.uid)))
+      );
     }
 
     match /users/{userId} {
@@ -108,7 +117,7 @@ service cloud.firestore {
     
     match /prayerRequests/{requestId} {
       allow get, list: if true;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.authorId;
+      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
       allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
       allow update: if request.auth != null && ( 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
@@ -129,14 +138,18 @@ service cloud.firestore {
     }
     
     match /chats/{chatId} {
-      allow create: if request.auth != null;
-      allow read: if request.auth != null && request.auth.uid in resource.data.get('participantIds', []);
-      allow update: if request.auth != null && request.auth.uid in resource.data.get('participantIds', []);
+      allow create: if request.auth != null && (
+        (!request.resource.data.get('isGroupChat', false)) ||
+        (request.resource.data.get('fellowshipId', '') != '' && isFellowshipOrganizer(request.resource.data.fellowshipId)) ||
+        (request.resource.data.get('associationId', '') != '' && isFellowshipOrganizer(request.resource.data.associationId)) ||
+        (request.resource.data.get('campaignId', '') != '' && get(/databases/$(database)/documents/campaigns/$(request.resource.data.campaignId)).data.organizerId == request.auth.uid)
+      );
+      allow read, update: if canAccessChatDoc(resource.data);
       allow delete: if false;
 
       match /messages/{messageId} {
-        allow read: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
-        allow create: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds && request.resource.data.senderId == request.auth.uid;
+        allow read: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data);
+        allow create: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data) && request.resource.data.senderId == request.auth.uid;
         allow update, delete: if false; 
       }
     }
