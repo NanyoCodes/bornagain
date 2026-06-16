@@ -68,7 +68,7 @@ import {
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'genkit';
+import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -657,8 +657,6 @@ export default function FellowshipPageClient() {
             )}
         </div>
     );
-
-    const commentPath = `fellowships/${fellowshipId}/devotionals/${viewDateStr}/comments`;
 
     return (
         <div className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4">
