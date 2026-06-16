@@ -14,7 +14,7 @@ import {
   where,
   getDocs,
 } from 'firebase/firestore';
-import type { Chat, ChatMessage, Campaign, Fellowship } from '@/lib/types';
+import type { Chat, ChatMessage, Campaign, Fellowship, UserProfile } from '@/lib/types';
 import { Loader2, Send, ArrowLeft, Reply, X, ChevronDown, MessagesSquare } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn, safeToDate } from '@/lib/utils';
@@ -31,6 +31,23 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import Image from 'next/image';
+
+/**
+ * Ensures the profile photo displayed in the chat is always the most recent version.
+ */
+function LiveChatAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const currentPhotoUrl = profile?.photoURL || fallbackUrl;
+    
+    return (
+        <Avatar className={className}>
+            <AvatarImage src={currentPhotoUrl} className="object-cover" />
+            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
+        </Avatar>
+    );
+}
 
 export default function ChatPageClient({ chatId }: { chatId: string }) {
     const { user, loading: userLoading } = useUser();
@@ -368,17 +385,17 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     return (
         <div className="flex flex-col w-full h-full min-h-0 bg-background overflow-hidden relative">
             <div className="flex items-center gap-4 p-4 shrink-0 border-b bg-background/80 backdrop-blur-md z-20">
-                <Button variant="outline" size="icon" onClick={() => router.back()}>
+                <Button variant="outline" size="icon" onClick={() => router.back()} className="rounded-full">
                     <ArrowLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
                 </Button>
                 {chat.isGroupChat ? (
                     <div className="flex items-center gap-3">
-                        <Avatar>
-                            <AvatarFallback>{chat.participantIds.length}</AvatarFallback>
+                        <Avatar className="border-2 border-primary/20 shadow-sm">
+                            <AvatarFallback className="font-black bg-primary/10 text-primary">{chat.participantIds.length}</AvatarFallback>
                         </Avatar>
                         <div>
-                            <h2 className="font-semibold">
+                            <h2 className="font-black text-sm sm:text-base leading-tight uppercase tracking-tight truncate max-w-[180px] sm:max-w-xs">
                                 {chat.campaignId && campaign ? (
                                     <Link href={`/dashboard/campaigns/${chat.campaignId}`} className="hover:underline">
                                         {chat.campaignTitle}
@@ -390,10 +407,9 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                 ) : (
                                     <span>{chat.campaignTitle}</span>
                                 )}
-                                 (Group)
                             </h2>
                             <ChatParticipantsDialog chat={chat}>
-                                <p className="text-sm text-muted-foreground hover:underline cursor-pointer">{chat.participantIds.length} participants</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer">{chat.participantIds.length} members</p>
                             </ChatParticipantsDialog>
                         </div>
                     </div>
@@ -402,10 +418,12 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                         <Dialog>
                             <DialogTrigger asChild disabled={!otherParticipantInfo.photoURL}>
                                 <div className="relative">
-                                    <Avatar className={cn("h-12 w-12", otherParticipantInfo.photoURL && "cursor-pointer")}>
-                                        <AvatarImage src={otherParticipantInfo.photoURL} />
-                                        <AvatarFallback>{otherParticipantInfo.firstName?.charAt(0)}</AvatarFallback>
-                                    </Avatar>
+                                    <LiveChatAvatar 
+                                        userId={otherParticipantId} 
+                                        fallbackUrl={otherParticipantInfo.photoURL} 
+                                        fallbackInitials={otherParticipantInfo.firstName?.charAt(0) || 'U'}
+                                        className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-sm", otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105 active:scale-95 transition-transform")}
+                                    />
                                 </div>
                             </DialogTrigger>
                             {otherParticipantInfo.photoURL && (
@@ -428,20 +446,18 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                 </DialogContent>
                             )}
                         </Dialog>
-                        <div className="flex-grow">
-                            <h2 className="font-semibold">
-                                {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
+                        <div className="flex-grow min-w-0">
+                            <h2 className="font-black text-sm sm:text-base uppercase tracking-tight truncate leading-tight">
+                                <Link href={`/dashboard/profile/${otherParticipantId}`} className="hover:underline">
+                                    {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
+                                </Link>
                             </h2>
-                            {chat.campaignTitle && chat.campaignId ? (
-                                <p className="text-sm text-muted-foreground">
-                                    Regarding: <Link href={`/dashboard/campaigns/${chat.campaignId}`} className="hover:underline">{chat.campaignTitle}</Link>
-                                </p>
-                            ) : chat.campaignTitle && chat.fellowshipId ? (
-                                <p className="text-sm text-muted-foreground">
-                                    Regarding: <Link href={`/dashboard/fellowship/${chat.fellowshipId}`} className="hover:underline">{chat.campaignTitle}</Link>
+                            {chat.campaignTitle ? (
+                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest truncate max-w-[150px] sm:max-w-xs">
+                                    RE: <span className="italic">"{chat.campaignTitle}"</span>
                                 </p>
                             ) : (
-                                <p className="text-sm text-muted-foreground">Accountability Partner</p>
+                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Accountability Partner</p>
                             )}
                         </div>
                     </div>
@@ -478,14 +494,16 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <div className="shrink-0 mb-1">
-                                                                <Avatar className="h-7 w-7 border shadow-sm">
-                                                                    <AvatarImage src={senderInfo.photoURL} />
-                                                                    <AvatarFallback className="text-[10px]">{senderInfo.firstName?.charAt(0)}</AvatarFallback>
-                                                                </Avatar>
+                                                                <LiveChatAvatar 
+                                                                    userId={msg.senderId} 
+                                                                    fallbackUrl={senderInfo.photoURL} 
+                                                                    fallbackInitials={senderInfo.firstName?.charAt(0) || 'U'}
+                                                                    className="h-7 w-7 border shadow-sm"
+                                                                />
                                                             </div>
                                                         </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>{senderInfo.firstName} {senderInfo.lastName}</p>
+                                                        <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
+                                                            <p className="font-bold text-xs">{senderInfo.firstName} {senderInfo.lastName}</p>
                                                         </TooltipContent>
                                                     </Tooltip>
                                                 )}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useFirestore, useUser } from '@/firebase';
+import { useFirestore, useUser, useDoc } from '@/firebase';
 import { collection, query, where, doc, writeBatch, deleteDoc, serverTimestamp, arrayUnion } from 'firebase/firestore';
 import type { AccountabilityRequest, UserProfile } from '@/lib/types';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -27,13 +27,30 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+/**
+ * Ensures the profile photo displayed in the request is always the most recent version.
+ */
+function LiveRequestAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const currentPhotoUrl = profile?.photoURL || fallbackUrl;
+    
+    return (
+        <Avatar className={className}>
+            <AvatarImage src={currentPhotoUrl} className="object-cover" />
+            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
+        </Avatar>
+    );
+}
+
 export function AccountabilityRequests({ currentUserProfile }: { currentUserProfile: UserProfile }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
-    // Query for ALL requests involving the current user. This is more secure and efficient.
+    // Query for ALL requests involving the current user.
     const requestsQuery = useMemo(() => {
         if (!user) return null;
         return query(
@@ -43,7 +60,6 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
     }, [user, firestore]);
     const { data: allRequests, loading } = useCollection<AccountabilityRequest>(requestsQuery);
 
-    // Filter requests on the client-side from the single data source
     const incomingRequests = useMemo(() =>
         allRequests?.filter(r => r.status === 'pending' && r.toUserId === user?.uid)
     , [allRequests, user]);
@@ -71,7 +87,6 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
         setIsProcessing(request.id);
         const batch = writeBatch(firestore);
 
-        // Update my user doc (the acceptor)
         const myRef = doc(firestore, 'users', user.uid);
         batch.update(myRef, {
             accountabilityPartners: arrayUnion({
@@ -83,7 +98,6 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
             partnerIds: arrayUnion(request.fromUserId)
         });
 
-        // Update sender's user doc
         const senderRef = doc(firestore, 'users', request.fromUserId);
         batch.update(senderRef, {
              accountabilityPartners: arrayUnion({
@@ -95,14 +109,12 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
             partnerIds: arrayUnion(user.uid)
         });
 
-        // Update the request status
         const requestRef = doc(firestore, 'accountabilityRequests', request.id);
         batch.update(requestRef, {
             status: 'accepted',
             respondedAt: serverTimestamp(),
         });
         
-        // Add notification for the sender
         const notificationRef = doc(collection(firestore, 'users', request.fromUserId, 'notifications'));
         batch.set(notificationRef, {
                 userId: request.fromUserId,
@@ -205,7 +217,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
     }
 
     if (!allRequests || allRequests.length === 0) {
-        return null; // No requests, render nothing.
+        return null;
     }
     
     return (
@@ -218,12 +230,14 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                         return (
                         <div key={req.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
                             <Link href={`/dashboard/profile/${req.fromUserId}`} className="flex items-center gap-3 group">
-                                <Avatar className="group-hover:opacity-80 transition-opacity shadow-sm">
-                                    <AvatarImage src={req.fromUserPhotoURL ?? undefined} alt={`${req.fromUserFirstName} ${req.fromUserLastName}`} />
-                                    <AvatarFallback>{req.fromUserFirstName?.charAt(0)}{req.fromUserLastName?.charAt(0)}</AvatarFallback>
-                                </Avatar>
+                                <LiveRequestAvatar 
+                                    userId={req.fromUserId} 
+                                    fallbackUrl={req.fromUserPhotoURL} 
+                                    fallbackInitials={req.fromUserFirstName?.charAt(0) || 'U'}
+                                    className="group-hover:opacity-80 transition-opacity shadow-sm border"
+                                />
                                 <div className="min-w-0">
-                                    <p className="font-semibold text-sm group-hover:underline truncate">{req.fromUserFirstName} {req.fromUserLastName}</p>
+                                    <p className="font-semibold text-sm group-hover:underline truncate uppercase tracking-tight">{req.fromUserFirstName} {req.fromUserLastName}</p>
                                     <p className="text-xs text-muted-foreground">
                                         Sent {createdAt ? (isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'PPP')) : 'just now'}
                                     </p>
@@ -252,7 +266,7 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                                             <span className="sr-only">Accept</span>
                                         </Button>
                                     </AlertDialogTrigger>
-                                    <AlertDialogContent>
+                                    <AlertDialogContent className="rounded-3xl">
                                         <AlertDialogHeader>
                                             <AlertDialogTitle>Accept Request?</AlertDialogTitle>
                                             <AlertDialogDescription>
@@ -281,12 +295,14 @@ export function AccountabilityRequests({ currentUserProfile }: { currentUserProf
                         return (
                          <div key={req.id} className="flex items-center justify-between p-3 rounded-lg border">
                             <Link href={`/dashboard/profile/${req.toUserId}`} className="flex items-center gap-3 group">
-                                <Avatar className="group-hover:opacity-80 transition-opacity shadow-sm">
-                                    <AvatarImage src={req.toUserPhotoURL ?? undefined} alt={`${req.toUserFirstName} ${req.toUserLastName}`} />
-                                    <AvatarFallback>{req.toUserFirstName?.charAt(0)}{req.toUserLastName?.charAt(0)}</AvatarFallback>
-                                </Avatar>
+                                <LiveRequestAvatar 
+                                    userId={req.toUserId} 
+                                    fallbackUrl={req.toUserPhotoURL} 
+                                    fallbackInitials={req.toUserFirstName?.charAt(0) || 'U'}
+                                    className="group-hover:opacity-80 transition-opacity shadow-sm border"
+                                />
                                 <div className="min-w-0">
-                                    <p className="font-semibold text-sm group-hover:underline truncate">{req.toUserFirstName} {req.toUserLastName}</p>
+                                    <p className="font-semibold text-sm group-hover:underline truncate uppercase tracking-tight">{req.toUserFirstName} {req.toUserLastName}</p>
                                     <p className="text-xs text-muted-foreground">
                                         Sent {createdAt ? (isToday(createdAt) ? format(createdAt, 'p') : format(createdAt, 'PPP')) : 'just now'}
                                     </p>

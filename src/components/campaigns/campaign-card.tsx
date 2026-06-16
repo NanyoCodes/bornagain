@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreVertical, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreHorizontal, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -72,7 +72,6 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
 
   const participantsQuery = useMemo(() => {
     if (!isOpen || !firestore || !user) return null;
-    // Allow viewing list if owner OR member
     return query(collection(firestore, 'campaigns', campaign.id, 'participants'));
   }, [isOpen, firestore, campaign.id, user]);
 
@@ -104,7 +103,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                         onClick={stopPropagation}
                     >
                         <LiveParticipantAvatar userId={organizer.userId} fallbackUrl={organizer.photoURL} fallbackInitials={organizer.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm group-hover:scale-105 transition-transform" />
-                        <span className='font-bold text-sm sm:text-base group-hover:underline'>{organizer.firstName} {organizer.lastName}</span>
+                        <span className='font-bold text-sm sm:text-base group-hover:underline uppercase tracking-tight'>{organizer.firstName} {organizer.lastName}</span>
                         {organizer.userId === user?.uid && <span className="text-[10px] text-muted-foreground ml-auto opacity-60">You</span>}
                     </Link>
                 </div>
@@ -121,7 +120,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                         onClick={stopPropagation}
                       >
                         <LiveParticipantAvatar userId={p.userId} fallbackUrl={p.photoURL} fallbackInitials={p.firstName?.charAt(0)} className="h-9 w-9 text-xs border group-hover:scale-105 transition-transform" />
-                        <span className='font-bold text-sm group-hover:underline'>{p.firstName} {p.lastName}</span>
+                        <span className='font-bold text-sm group-hover:underline uppercase tracking-tight'>{p.firstName} {p.lastName}</span>
                         {p.userId === user?.uid && <span className="text-[10px] text-muted-foreground ml-auto opacity-60">You</span>}
                       </Link>
                       {p.joinReason && (
@@ -274,7 +273,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild onClick={stopPropagation}>
+            <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
@@ -656,7 +655,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                     <Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors" onClick={stopPropagation}>
                         <Users className="h-4 w-4" />
                         <span className="ml-1.5">
-                            {campaign.participants} MEMBERS
+                            {campaign.participants} {campaign.participants === 1 ? 'MEMBER' : 'MEMBERS'}
                         </span>
                     </Button>
                 </ParticipantsDialog>
