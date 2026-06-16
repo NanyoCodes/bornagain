@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment } from '@/lib/types';
@@ -13,12 +13,7 @@ import {
     PlayCircle, 
     MapPin, 
     Heart, 
-    Phone, 
-    History, 
-    PlusCircle, 
-    Award, 
     MessagesSquare, 
-    User, 
     Sparkles, 
     UserMinus, 
     Trash2, 
@@ -44,7 +39,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { format, addDays, isSameDay, subDays, parseISO } from 'date-fns';
+import { format, isSameDay, subDays, addDays, parseISO } from 'date-fns';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
@@ -55,6 +50,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -65,14 +61,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import dynamic from 'next/dynamic';
@@ -338,7 +332,7 @@ export default function FellowshipPageClient() {
     const supporters = useMemo(() => activeDevotional?.supporters || [], [activeDevotional]);
     const inspiredBy = useMemo(() => activeDevotional?.inspiredBy || [], [activeDevotional]);
     const connectedBy = useMemo(() => activeDevotional?.connectedBy || [], [activeDevotional]);
-    
+
     const hasAmened = useMemo(() => user ? supporters.includes(user.uid) : false, [user, supporters]);
     const hasInspired = useMemo(() => user ? inspiredBy.includes(user.uid) : false, [user, inspiredBy]);
     const hasCelebrated = useMemo(() => user ? connectedBy.includes(user.uid) : false, [user, connectedBy]);
@@ -663,14 +657,27 @@ export default function FellowshipPageClient() {
                                             variant={fellowship.hasGroupChat ? "default" : "outline"}
                                             size="icon" 
                                             onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
-                                            disabled={isChatLoading || (!fellowship.hasGroupChat && (!isOrganizer || !members || members.length < 2))}
-                                            className={cn("h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg relative shrink-0", fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90")}
+                                            disabled={isChatLoading || (!fellowship.hasGroupChat && !isOrganizer)}
+                                            className={cn(
+                                                "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg relative shrink-0 transition-all", 
+                                                fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90",
+                                                !fellowship.hasGroupChat && !isOrganizer && "opacity-60 cursor-not-allowed"
+                                            )}
                                         >
                                             {isChatLoading ? <Loader2 className="h-4 w-4 sm:h-5 w-5 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}
                                             {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && <span className="absolute -top-1 -right-1 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span></span>}
+                                            {!fellowship.hasGroupChat && !isOrganizer && <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-muted border-2 border-background flex items-center justify-center"><X className="h-2 w-2 text-muted-foreground" /></span>}
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent><p>{fellowship.hasGroupChat ? "Open Group Chat" : isOrganizer ? "Start Group Chat" : "Chat coming soon"}</p></TooltipContent>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
+                                        <p className="text-[10px] font-bold uppercase">
+                                            {fellowship.hasGroupChat 
+                                                ? "Open Group Chat" 
+                                                : isOrganizer 
+                                                    ? (members && members.length < 2 ? "Need members to start chat" : "Initialize Group Chat") 
+                                                    : "Chat pending organizer initiation"}
+                                        </p>
+                                    </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         )}
