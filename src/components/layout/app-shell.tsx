@@ -182,7 +182,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
         {isSearchVisible && (
           <Button variant="ghost" size="icon" className="h-9 w-9 md:h-10 md:w-10 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-4 w-4 md:h-5 md:w-5" />
+            <Search className="h-4 w-4 md:h-5 w-5" />
             <span className="sr-only">Search</span>
           </Button>
         )}
@@ -314,13 +314,6 @@ function BottomNavBar() {
                         item.color,
                         !isActive && "opacity-40 grayscale-[0.5]"
                     )} />
-                    {isActive && (
-                        <motion.div
-                            layoutId="bottom-nav-active-dot"
-                            className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(249,116,22,0.5)]"
-                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                        />
-                    )}
                   </div>
                   <span className={cn(
                     "text-[8px] font-black uppercase tracking-tighter transition-all duration-300 leading-none",

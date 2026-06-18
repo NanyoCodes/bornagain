@@ -46,10 +46,10 @@ import { CommentSection } from '../testimonies/comment-section';
 import NextLink from 'next/link';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '../ui/separator';
 import {
   AlertDialog,
   AlertDialogAction,
