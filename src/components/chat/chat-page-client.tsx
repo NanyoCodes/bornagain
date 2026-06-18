@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useDoc } from '@/firebase';
 import {
   collection,
   query,
@@ -362,18 +362,20 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             <div className="flex h-full w-full flex-col items-center justify-center bg-background">
                 <p className="text-muted-foreground">Chat not found.</p>
                  <Button variant="outline" asChild className="mt-4">
-                    <Link href="/dashboard/chats"><ArrowLeft className="mr-2 h-4 w-4" />Back to Chats</Link>
+                    <Link href="/dashboard/chats"><ArrowLeft className="mr-2 h-4 w-4" />Back to Conversations</Link>
                 </Button>
             </div>
         );
     }
     
     if (!user || !chat.participantIds.includes(user.uid)) {
+        const backUrl = chat.fellowshipId ? `/dashboard/fellowship/${chat.fellowshipId}` : chat.campaignId ? `/dashboard/campaigns/${chat.campaignId}` : "/dashboard/chats";
+        const backLabel = chat.fellowshipId || chat.campaignId ? "Return to Group" : "Back to Conversations";
         return (
             <div className="flex h-full w-full flex-col items-center justify-center bg-background">
                 <p className="text-muted-foreground">You do not have permission to view this chat.</p>
                 <Button variant="outline" asChild className="mt-4">
-                    <Link href="/dashboard/chats"><ArrowLeft className="mr-2 h-4 w-4" />Back to Chats</Link>
+                    <Link href={backUrl}><ArrowLeft className="mr-2 h-4 w-4" />{backLabel}</Link>
                 </Button>
             </div>
         );
