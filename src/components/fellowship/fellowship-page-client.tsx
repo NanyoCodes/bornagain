@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment } from '@/lib/types';
@@ -37,6 +37,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format, addDays, isSameDay, subDays, parseISO } from 'date-fns';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -46,7 +47,7 @@ import { CommentSection } from '../testimonies/comment-section';
 import NextLink from 'next/link';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '../ui/separator';
@@ -666,8 +667,8 @@ export default function FellowshipPageClient() {
 
     return (
         <div className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4">
-            <div className="flex items-center gap-4 px-4 sm:px-0">
-                <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+            <div className="flex flex-col gap-5 px-4 sm:px-0">
+                <div className="flex items-center gap-3 sm:gap-4 w-full">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-12 sm:w-12 rounded-full border bg-background shadow-sm hover:bg-muted/50">
                         <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6"/>
                         <span className="sr-only">Back</span>
@@ -680,52 +681,49 @@ export default function FellowshipPageClient() {
                         </div>
                     </div>
                 </div>
-                <div className="flex w-full sm:w-auto justify-end sm:ml-auto">
-                    <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 px-1">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="outline" size="icon" onClick={handleShare} className="h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg bg-background border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/5">
+                                    <Share2 className="h-4 w-4 sm:h-5 w-5" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Share Fellowship</p></TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    {(isMember || isOrganizer) && (
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button variant="outline" size="icon" onClick={handleShare} className="h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg bg-background border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/5">
-                                        <Share2 className="h-4 w-4 sm:h-5 w-5" />
+                                    <Button 
+                                        variant={fellowship.hasGroupChat ? "default" : "outline"}
+                                        size="icon" 
+                                        onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
+                                        disabled={isChatLoading || (!fellowship.hasGroupChat && !isOrganizer)}
+                                        className={cn(
+                                            "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg relative shrink-0 transition-all", 
+                                            fellowship.hasGroupChat ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90" : "opacity-60 cursor-not-allowed bg-muted border-muted-foreground/20"
+                                        )}
+                                    >
+                                        {isChatLoading ? <Loader2 className="h-4 w-4 sm:h-5 w-5 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}
+                                        {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && <span className="absolute -top-1 -right-1 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span></span>}
+                                        {!fellowship.hasGroupChat && !isOrganizer && <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-muted border-2 border-background flex items-center justify-center shadow-sm"><X className="h-2 w-2 text-muted-foreground" /></span>}
                                     </Button>
                                 </TooltipTrigger>
-                                <TooltipContent><p className="text-[10px] font-bold uppercase">Share Fellowship</p></TooltipContent>
+                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
+                                    <p className="text-[10px] font-bold uppercase">
+                                        {fellowship.hasGroupChat 
+                                            ? "Open Group Chat" 
+                                            : isOrganizer 
+                                                ? (members && members.length < 2 ? "Need members to start chat" : "Initialize Group Chat") 
+                                                : "Chat pending organizer initiation"}
+                                    </p>
+                                </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
-
-                        {(isMember || isOrganizer) && (
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button 
-                                            variant={fellowship.hasGroupChat ? "default" : "outline"}
-                                            size="icon" 
-                                            onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
-                                            disabled={isChatLoading || (!fellowship.hasGroupChat && !isOrganizer)}
-                                            className={cn(
-                                                "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg relative shrink-0 transition-all", 
-                                                fellowship.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90",
-                                                !fellowship.hasGroupChat && !isOrganizer && "opacity-60 cursor-not-allowed bg-muted border-muted-foreground/20"
-                                            )}
-                                        >
-                                            {isChatLoading ? <Loader2 className="h-4 w-4 sm:h-5 w-5 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}
-                                            {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && <span className="absolute -top-1 -right-1 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span></span>}
-                                            {!fellowship.hasGroupChat && !isOrganizer && <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-muted border-2 border-background flex items-center justify-center shadow-sm"><X className="h-2 w-2 text-muted-foreground" /></span>}
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
-                                        <p className="text-[10px] font-bold uppercase">
-                                            {fellowship.hasGroupChat 
-                                                ? "Open Group Chat" 
-                                                : isOrganizer 
-                                                    ? (members && members.length < 2 ? "Need members to start chat" : "Initialize Group Chat") 
-                                                    : "Chat pending organizer initiation"}
-                                        </p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        )}
-                    </div>
+                    )}
                 </div>
             </div>
 
