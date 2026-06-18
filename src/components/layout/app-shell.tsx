@@ -286,11 +286,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   );
 }
 
+/**
+ * Facebook-style persistent Bottom Navigation Bar.
+ * Stays active during page transitions with immediate active state highlighting.
+ */
 function BottomNavBar() {
     const pathname = usePathname();
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur-xl md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
+        <div className="flex h-16 items-stretch justify-around px-2">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -302,30 +306,39 @@ function BottomNavBar() {
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex items-center justify-center p-1.5 rounded-xl"
-                  whileTap={{ scale: 0.85 }}
+                  className="flex flex-col items-center gap-1"
+                  animate={{ 
+                    color: isActive ? "var(--primary)" : "var(--muted-foreground)"
+                  }}
+                  transition={{ duration: 0.2 }}
                 >
-                  {isActive && (
+                  <div className="relative">
+                    <item.icon className={cn(
+                        "h-6 w-6 transition-all duration-300", 
+                        isActive ? "scale-110" : "opacity-60"
+                    )} />
+                    {isActive && (
+                        <motion.div
+                            layoutId="bottom-nav-active-dot"
+                            className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(249,116,22,0.5)]"
+                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                    )}
+                  </div>
+                  <span className={cn(
+                    "text-[9px] font-black uppercase tracking-tighter transition-all duration-300 leading-none",
+                    isActive ? "opacity-100" : "opacity-40"
+                  )}>
+                    {item.label}
+                  </span>
+                </motion.div>
+                {isActive && (
                     <motion.div
-                      layoutId="nav-active-pill"
-                      className="absolute inset-0 bg-primary/10 rounded-xl"
+                      layoutId="bottom-nav-highlight-bar"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
-                  )}
-                  <motion.div
-                    animate={{ 
-                      scale: isActive ? 1.1 : 1,
-                      color: isActive ? "var(--primary)" : "var(--muted-foreground)"
-                    }}
-                    transition={{ duration: 0.2 }}
-                    className={cn(
-                      "relative z-10",
-                      isActive ? "text-primary" : "text-muted-foreground"
-                    )}
-                  >
-                    <item.icon className={cn("h-5.5 w-5.5", !isActive && item.color)} />
-                  </motion.div>
-                </motion.div>
+                )}
               </Link>
             )
           })}
