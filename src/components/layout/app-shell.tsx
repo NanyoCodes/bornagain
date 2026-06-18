@@ -160,7 +160,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
                   <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", isActive ? "scale-110" : item.color)} />
                   <span className={cn(
-                    "text-[9px] font-black uppercase tracking-tighter transition-all leading-none",
+                    "text-[8px] font-black uppercase tracking-tighter transition-all leading-none",
                     isActive ? "opacity-100" : "opacity-60 group-hover:opacity-100"
                   )}>
                     {item.label}
@@ -323,7 +323,7 @@ function BottomNavBar() {
                     )}
                   </div>
                   <span className={cn(
-                    "text-[9px] font-black uppercase tracking-tighter transition-all duration-300 leading-none",
+                    "text-[8px] font-black uppercase tracking-tighter transition-all duration-300 leading-none",
                     isActive ? "opacity-100" : "opacity-40"
                   )}>
                     {item.label}
