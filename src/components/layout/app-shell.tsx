@@ -158,7 +158,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   )}
               >
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
-                  <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
+                  <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", isActive ? "scale-110" : item.color)} />
                   <span className={cn(
                     "text-[9px] font-black uppercase tracking-tighter transition-all leading-none",
                     isActive ? "opacity-100" : "opacity-60 group-hover:opacity-100"
@@ -274,7 +274,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-9 px-4 rounded-full font-bold">
               <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-9 px-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20">
+            <Button asChild size="sm" className="h-9 px-5 rounded-full font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-lg shadow-primary/20">
               <Link href="/">Get Started</Link>
             </Button>
           </div>
@@ -286,10 +286,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   );
 }
 
-/**
- * Facebook-style persistent Bottom Navigation Bar.
- * Stays active during page transitions with immediate active state highlighting.
- */
 function BottomNavBar() {
     const pathname = usePathname();
     return (
@@ -308,14 +304,15 @@ function BottomNavBar() {
                 <motion.div
                   className="flex flex-col items-center gap-1"
                   animate={{ 
-                    color: isActive ? "var(--primary)" : "var(--muted-foreground)"
+                    color: isActive ? "inherit" : "var(--muted-foreground)"
                   }}
                   transition={{ duration: 0.2 }}
                 >
                   <div className="relative">
                     <item.icon className={cn(
                         "h-6 w-6 transition-all duration-300", 
-                        isActive ? "scale-110" : "opacity-60"
+                        item.color,
+                        !isActive && "opacity-40 grayscale-[0.5]"
                     )} />
                     {isActive && (
                         <motion.div
