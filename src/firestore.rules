@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refined group chat access & fellowship member verification - 2025-08-09T15:30:00Z
+    // Deployment trigger: Refined group chat access & fellowship member verification - 2025-08-09T18:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
