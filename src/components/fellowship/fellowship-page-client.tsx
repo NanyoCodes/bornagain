@@ -3,8 +3,8 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment } from '@/lib/types';
-import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion } from 'firebase/firestore';
+import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment, Chat } from '@/lib/types';
+import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion, getDoc } from 'firebase/firestore';
 import { 
     Loader2, 
     ArrowLeft, 
@@ -456,25 +456,6 @@ export default function FellowshipPageClient() {
             });
     };
 
-    const handleReaction = (type: 'amen' | 'inspired' | 'celebrate', e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (!user || !firestore || !activeDevotional) return;
-        
-        const hasReacted = (type === 'amen' && hasAmened) || (type === 'inspired' && hasInspired) || (type === 'celebrate' && hasCelebrated);
-        setIsProcessingReaction(type);
-        
-        const devoRef = doc(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr);
-        const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
-        const updatePayload = { [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) };
-        
-        updateDoc(devoRef, updatePayload)
-            .catch(() => {
-                const permissionError = new FirestorePermissionError({ path: devoRef.path, operation: 'update', requestResourceData: updatePayload }, user);
-                errorEmitter.emit('permission-error', permissionError);
-            })
-            .finally(() => setIsProcessingReaction(null));
-    }
-
     const handleShare = async () => {
         if (!fellowship) return;
         const shareUrl = `${window.location.origin}/dashboard/fellowship/${fellowship.id}`;
@@ -600,6 +581,40 @@ export default function FellowshipPageClient() {
         }
     };
 
+    const handleOpenGroupChat = async () => {
+        if (!user || !firestore || !fellowship) return;
+        
+        if (fellowship.hasGroupChat) {
+            setIsChatLoading(true);
+            const chatRef = doc(firestore, 'chats', fellowshipId);
+            try {
+                const chatDoc = await getDoc(chatRef);
+                if (chatDoc.exists()) {
+                    const chatData = chatDoc.data() as Chat;
+                    if (!chatData.participantIds.includes(user.uid)) {
+                        // User is a member of fellowship but not in the chat, add them
+                        await updateDoc(chatRef, {
+                            participantIds: arrayUnion(user.uid),
+                            [`participantInfo.${user.uid}`]: {
+                                firstName: userProfile?.firstName || '',
+                                lastName: userProfile?.lastName || '',
+                                photoURL: userProfile?.photoURL || '',
+                            }
+                        });
+                    }
+                }
+                router.push(`/dashboard/chats/${fellowshipId}`);
+            } catch (e) {
+                console.error("Failed to join/open group chat:", e);
+                errorEmitter.emit('permission-error', new FirestorePermissionError({ path: chatRef.path, operation: 'update' }, user));
+            } finally {
+                setIsChatLoading(false);
+            }
+        } else if (isOrganizer) {
+            handleStartGroupChat();
+        }
+    };
+
     const handleDateNav = (direction: 'prev' | 'next') => {
         setViewDate(prev => direction === 'prev' ? subDays(prev, 1) : addDays(prev, 1));
     };
@@ -700,7 +715,7 @@ export default function FellowshipPageClient() {
                                     <Button 
                                         variant={fellowship.hasGroupChat ? "default" : "outline"}
                                         size="icon" 
-                                        onClick={fellowship.hasGroupChat ? () => router.push(`/dashboard/chats/${fellowshipId}`) : handleStartGroupChat}
+                                        onClick={handleOpenGroupChat}
                                         disabled={isChatLoading || (!fellowship.hasGroupChat && !isOrganizer)}
                                         className={cn(
                                             "h-9 w-9 sm:h-12 sm:w-12 rounded-full shadow-lg relative shrink-0 transition-all", 
