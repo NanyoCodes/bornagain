@@ -433,7 +433,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight">Organized Campaigns ({processedCampaigns.length})</h3>
                 </div>
                 {processedCampaigns.length > 0 ? (
-                    <div className="grid gap-0 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
+                    <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto -mx-4 sm:mx-auto">
                         {processedCampaigns.map(campaign => (
                             <CampaignCard 
                                 key={campaign.id} 

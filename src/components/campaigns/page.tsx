@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
@@ -51,17 +52,19 @@ import { Card, CardContent } from "@/components/ui/card";
 
 function CampaignSkeletons() {
   return (
-    <>
+    <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto">
       {[...Array(3)].map((_, i) => (
-        <div key={i} className="flex flex-col space-y-3">
-          <Skeleton className="h-[250px] w-full rounded-xl" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-          </div>
-        </div>
+        <Card key={i} className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+          <CardContent className="p-6 space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+            <Skeleton className="h-32 w-full rounded-2xl" />
+          </CardContent>
+        </Card>
       ))}
-    </>
+    </div>
   )
 }
 
@@ -137,7 +140,6 @@ export default function CampaignsPage() {
   useEffect(() => {
     setMounted(true);
     setNow(new Date());
-    // Update the 'now' state every minute to re-evaluate campaign statuses
     const interval = setInterval(() => {
       setNow(new Date());
     }, 60000);
@@ -284,22 +286,19 @@ export default function CampaignsPage() {
         if (isAOwner && !isBOwner) return -1;
         if (!isAOwner && isBOwner) return 1;
 
-        // Status is primary sort key: Ongoing (1) < Upcoming (2) < Past (3)
         if (a._status !== b._status) {
             return a._status - b._status;
         }
         
-        // For Ongoing and Upcoming, sort by distance, then by start date
         if (a._status === 1 || a._status === 2) {
             if (a._distance != null && b._distance != null) {
                 if (a._distance !== b._distance) return a._distance - b._distance;
             } else if (a._distance != null) {
-                return -1; // a has distance, b doesn't
+                return -1;
             } else if (b._distance != null) {
-                return 1;  // b has distance, a doesn't
+                return 1;
             }
 
-            // Fallback for items with same or no distance: sort by start date
             const fullStartDateA = a._fullStartDate;
             const fullStartDateB = b._fullStartDate;
 
@@ -311,7 +310,6 @@ export default function CampaignsPage() {
             if (fullStartDateB) return 1;
         }
 
-        // For Past, sort by end date descending (most recently ended first)
         if (a._status === 3) {
             const fullEndDateA = a._fullEndDate;
             const fullEndDateB = b._fullEndDate;
@@ -324,20 +322,12 @@ export default function CampaignsPage() {
             if (fullEndDateB) return 1;
         }
 
-        // Fallback sort
         const createdAtA = safeToDate(a.createdAt)?.getTime() ?? 0;
         const createdAtB = safeToDate(b.createdAt)?.getTime() ?? 0;
         return createdAtB - createdAtA;
     });
 
   }, [processedCampaigns, searchTerm, mounted, filter, user?.uid, statusFilter, joinedCampaignIds]);
-
-  const triggerButton = (
-    <Button disabled={!user || profileLoading}>
-      {profileLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
-      <span className="hidden md:inline">Create Campaign</span>
-    </Button>
-  );
 
   const formContent = userProfile ? <CreateCampaignForm onCampaignCreated={handleCampaignCreated} userProfile={userProfile} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
@@ -349,7 +339,7 @@ export default function CampaignsPage() {
     }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 w-full max-w-2xl mx-auto">
       {/* Responsive Single-Row Interaction Box */}
       <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
         <CardContent className="p-3 sm:p-4">
@@ -384,20 +374,20 @@ export default function CampaignsPage() {
         </CardContent>
       </Card>
 
-      <div className="flex flex-wrap gap-4 items-center">
+      <div className="flex flex-wrap gap-4 items-center justify-between px-1">
         <Tabs value={filter} onValueChange={setFilter}>
             <TabsList>
-                <TabsTrigger value="all">All Campaigns</TabsTrigger>
-                <TabsTrigger value="created">My Campaigns</TabsTrigger>
+                <TabsTrigger value="all">All</TabsTrigger>
+                <TabsTrigger value="created">Mine</TabsTrigger>
                 <TabsTrigger value="joined">Joined</TabsTrigger>
             </TabsList>
         </Tabs>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Filter by status" />
+            <SelectTrigger className="w-full sm:w-[150px] h-11">
+                <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="all">All</SelectItem>
                 <SelectItem value="ongoing">Ongoing</SelectItem>
                 <SelectItem value="upcoming">Upcoming</SelectItem>
                 <SelectItem value="past">Past</SelectItem>
@@ -406,9 +396,9 @@ export default function CampaignsPage() {
       </div>
 
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
         {loading && <CampaignSkeletons />}
-        {sortedAndFilteredCampaigns?.map((campaign) => (
+        {!loading && sortedAndFilteredCampaigns?.map((campaign) => (
           <CampaignCard 
             key={campaign.id} 
             campaign={campaign} 
@@ -423,10 +413,10 @@ export default function CampaignsPage() {
           />
         ))}
          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
-          <div className="col-span-full text-center py-12 flex flex-col items-center">
-            <Target className="h-16 w-16 text-muted-foreground" />
-            <h3 className="mt-4 text-xl font-semibold">{noResultsMessage}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
+          <div className="col-span-full text-center py-24 px-8 flex flex-col items-center">
+            <Target className="h-16 w-16 text-muted-foreground opacity-10 mb-6" />
+            <h3 className="text-xl font-bold font-headline uppercase tracking-tight">{noResultsMessage}</h3>
+            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-pretty">
               {filter === 'created'
                 ? 'Why not start a new one to reach your community?'
                 : filter === 'joined' ? 'Explore all campaigns and join one!' : 'Try a different search term or create a new campaign.'}
@@ -438,9 +428,14 @@ export default function CampaignsPage() {
       {campaignToManage && (
         mounted && isMobile ? (
           <Sheet open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
-            <SheetContent side="bottom">
-              <SheetHeader><SheetTitle>Manage Campaign</SheetTitle><SheetDescription>Update the progress and details of your campaign.</SheetDescription></SheetHeader>
-              <div className="max-h-[80vh] overflow-y-auto p-1 mt-4">
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+              <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                <SheetHeader className="text-left">
+                    <SheetTitle className="text-2xl font-black font-headline">Manage Campaign</SheetTitle>
+                    <SheetDescription className="text-sm font-medium mt-1">Update mission progress and details.</SheetDescription>
+                </SheetHeader>
+              </div>
+              <div className="flex-grow overflow-y-auto p-8">
                 <ManageCampaignForm 
                   campaign={campaignToManage} 
                   onCampaignUpdated={() => { setCampaignToManage(null); }} 
@@ -454,18 +449,25 @@ export default function CampaignsPage() {
           </Sheet>
         ) : (
           <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
-            <DialogContent className="sm:max-w-2xl">
-              <DialogHeader><DialogTitle>Manage Campaign</DialogTitle><DialogDescription>Update the progress and details of your campaign.</DialogDescription></DialogHeader>
-              <div className="max-h-[70vh] overflow-y-auto pr-2">
-                <ManageCampaignForm 
-                  campaign={campaignToManage} 
-                  onCampaignUpdated={() => { setCampaignToManage(null); }}
-                  onDelete={() => {
-                    setCampaignToDelete(campaignToManage);
-                    setCampaignToManage(null);
-                  }}
-                />
-              </div>
+            <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden">
+               <div className="p-6 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold font-headline">Manage Campaign</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">Update mission progress and details.</DialogDescription>
+                    </DialogHeader>
+                </div>
+              <ScrollArea className="max-h-[70vh]">
+                <div className="p-6">
+                    <ManageCampaignForm 
+                    campaign={campaignToManage} 
+                    onCampaignUpdated={() => { setCampaignToManage(null); }}
+                    onDelete={() => {
+                        setCampaignToDelete(campaignToManage);
+                        setCampaignToManage(null);
+                    }}
+                    />
+                </div>
+              </ScrollArea>
             </DialogContent>
           </Dialog>
         )
@@ -473,16 +475,16 @@ export default function CampaignsPage() {
 
       {campaignToDelete && (
         <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
-          <AlertDialogContent>
+          <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8">
             <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                    This will mark the campaign as deleted and hide it from public view. This action cannot be undone.
+                <AlertDialogTitle className="text-2xl font-black font-headline">Delete Campaign?</AlertDialogTitle>
+                <AlertDialogDescription className="text-sm font-medium">
+                    This will permanently remove the mission from the global record. This action cannot be undone.
                 </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+            <AlertDialogFooter className="gap-3 mt-6">
+                <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12">Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
                     {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Confirm Deletion
                 </AlertDialogAction>
@@ -493,41 +495,49 @@ export default function CampaignsPage() {
 
       {campaignForSoul && (
         <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
-            <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                    <DialogTitle>Log a Soul Won in "{campaignForSoul.title}"</DialogTitle>
-                    <DialogDescription>
-                        Record the details of the person ministered to during this campaign.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                    <LogSoulForm
-                        onSoulLogged={handleSoulLogged}
-                        defaultCampaign={campaignForSoul}
-                        fellowships={[]}
-                        campaigns={[]}
-                    />
+            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden">
+                <div className="p-6 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold font-headline">Log Harvest</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">
+                            Record the details of the person won during this mission.
+                        </DialogDescription>
+                    </DialogHeader>
                 </div>
+                <ScrollArea className="max-h-[70vh]">
+                    <div className="p-6">
+                        <LogSoulForm
+                            onSoulLogged={handleSoulLogged}
+                            defaultCampaign={campaignForSoul}
+                            fellowships={[]}
+                            campaigns={[]}
+                        />
+                    </div>
+                </ScrollArea>
             </DialogContent>
         </Dialog>
       )}
       
       {campaignForTestimony && userProfile && (
         <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
-            <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                    <DialogTitle>Share Testimony for "{campaignForTestimony.title}"</DialogTitle>
-                    <DialogDescription>
-                        Encourage others by sharing what God has done during this campaign.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                   <CreateTestimonyForm
-                        userProfile={userProfile}
-                        onTestimonyCreated={handleTestimonyCreated}
-                        campaign={campaignForTestimony}
-                    />
+            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden">
+                <div className="p-6 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold font-headline">Share Victory</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">
+                            What has God done during "{campaignForTestimony.title}"?
+                        </DialogDescription>
+                    </DialogHeader>
                 </div>
+                <ScrollArea className="max-h-[70vh]">
+                    <div className="p-6">
+                    <CreateTestimonyForm
+                            userProfile={userProfile}
+                            onTestimonyCreated={handleTestimonyCreated}
+                            campaign={campaignForTestimony}
+                        />
+                    </div>
+                </ScrollArea>
             </DialogContent>
         </Dialog>
       )}

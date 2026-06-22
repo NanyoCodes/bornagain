@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -51,6 +52,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Country, State } from 'country-state-city';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -711,7 +713,7 @@ export default function FellowshipPage() {
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
     return (
-        <div className="space-y-8 pb-32">
+        <div className="space-y-8 pb-32 w-full max-w-2xl mx-auto">
             {/* Responsive Single-Row Interaction Box */}
             <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
                 <CardContent className="p-3 sm:p-4">
@@ -753,7 +755,7 @@ export default function FellowshipPage() {
             </Card>
 
             <div className="flex flex-col gap-6">
-                <div className="flex flex-wrap gap-4 items-center">
+                <div className="flex flex-wrap gap-4 items-center justify-between px-1">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
                         <TabsList className="grid w-full grid-cols-2 h-11 sm:h-12 p-1 bg-muted/40 rounded-xl">
                             <TabsTrigger value="Fellowship" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Fellowships</TabsTrigger>
@@ -762,21 +764,23 @@ export default function FellowshipPage() {
                     </Tabs>
                     <Tabs value={membershipFilter} onValueChange={setMembershipFilter} className="w-full sm:w-auto">
                         <TabsList className="grid w-full grid-cols-3 h-11 sm:h-12 p-1 bg-muted/40 rounded-xl">
-                            <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">All Groups</TabsTrigger>
-                            <TabsTrigger value="owned" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Created</TabsTrigger>
+                            <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">All</TabsTrigger>
+                            <TabsTrigger value="owned" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Mine</TabsTrigger>
                             <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Joined</TabsTrigger>
                         </TabsList>
                     </Tabs>
                 </div>
 
                 {loading ? (
-                    <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
+                    <div className="flex flex-col gap-6 w-full -mx-4 sm:mx-0">
                         {[...Array(3)].map((_, i) => (
-                            <Card key={i}><CardContent className="h-40 animate-pulse bg-muted rounded-lg" /></Card>
+                            <Card key={i} className="rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
+                                <CardContent className="h-40 animate-pulse bg-muted rounded-xl" />
+                            </Card>
                         ))}
                     </div>
                 ) : (
-                    <div className="grid gap-0 md:gap-6 md:grid-cols-2 lg:grid-cols-3 -mx-4 sm:mx-0">
+                    <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
                         {filteredFellowships.map((f) => (
                             <FellowshipCard 
                               key={f.id} 
@@ -788,10 +792,10 @@ export default function FellowshipPage() {
                             />
                         ))}
                         {filteredFellowships.length === 0 && (
-                            <div className="col-span-full text-center py-20 bg-muted/10 rounded-lg border-2 border-dashed">
-                                <Users className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-                                <p className="text-muted-foreground font-medium">No {activeTab.toLowerCase()}s found.</p>
-                                <p className="text-xs text-muted-foreground mt-1">Try a different filter or search.</p>
+                            <div className="col-span-full text-center py-24 px-8 flex flex-col items-center">
+                                <Users className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
+                                <h3 className="text-xl font-bold font-headline uppercase tracking-tight">No {activeTab.toLowerCase()}s Found</h3>
+                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">Try a different filter or start a new group in your area.</p>
                             </div>
                         )}
                     </div>
@@ -804,7 +808,7 @@ export default function FellowshipPage() {
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
                                 <SheetTitle className="text-2xl font-black font-headline">New Community Group</SheetTitle>
-                                <SheetDescription className="text-sm font-medium">Create a space for community and growth.</SheetDescription>
+                                <SheetDescription className="text-sm font-medium mt-1">Create a space for community and growth.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <div className="flex-grow overflow-y-auto p-8">
@@ -819,11 +823,11 @@ export default function FellowshipPage() {
                 </Sheet>
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0">
-                        <div className="p-6 border-b shrink-0">
+                    <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 rounded-3xl overflow-hidden">
+                        <div className="p-6 border-b shrink-0 bg-muted/10">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold">New Community Group</DialogTitle>
-                                <DialogDescription>Create a space for community and growth.</DialogDescription>
+                                <DialogTitle className="text-2xl font-bold font-headline">New Community Group</DialogTitle>
+                                <DialogDescription className="text-sm font-medium">Create a space for community and growth.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="flex-grow">
@@ -847,7 +851,7 @@ export default function FellowshipPage() {
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left">
                                     <SheetTitle className="text-2xl font-black font-headline">Manage Group</SheetTitle>
-                                    <SheetDescription className="text-sm">Update your group's details.</SheetDescription>
+                                    <SheetDescription className="text-sm font-medium mt-1">Update your group's details.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <div className="flex-grow overflow-y-auto p-8">
@@ -862,9 +866,9 @@ export default function FellowshipPage() {
                     </Sheet>
                 ) : (
                     <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
-                        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0">
-                            <div className="p-6 border-b shrink-0">
-                                <DialogHeader><DialogTitle className="text-2xl font-bold">Manage Group</DialogTitle></DialogHeader>
+                        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 rounded-3xl overflow-hidden">
+                            <div className="p-6 border-b shrink-0 bg-muted/10">
+                                <DialogHeader><DialogTitle className="text-2xl font-bold font-headline">Manage Group</DialogTitle></DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow">
                                 <div className="p-6">
@@ -883,13 +887,18 @@ export default function FellowshipPage() {
 
             {fellowshipToDelete && (
                 <AlertDialog open={!!fellowshipToDelete} onOpenChange={(open) => !open && closeAllDialogs()}>
-                    <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
-                        <AlertDialogHeader><AlertDialogTitle>Delete this group?</AlertDialogTitle></AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive">
+                    <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8">
+                        <AlertDialogHeader>
+                            <AlertDialogTitle className="text-2xl font-black font-headline">Delete Group?</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm font-medium">
+                                Are you sure you want to permanently remove this group? All assigned souls will be unassigned.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter className="gap-3 mt-6">
+                            <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12">Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
                                 {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Delete
+                                Confirm Delete
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
