@@ -35,7 +35,7 @@
     --status-new: 48 96% 51%;
     --status-contacted: 221 83% 53%;
     --status-established: 25 95% 53%;
-    --app-bg-image: url('https://images.unsplash.com/photo-1507692049790-de58290a4334?q=80&w=2070&auto=format&fit=crop');
+    --app-bg-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2070&auto=format&fit=crop');
     --app-bg-overlay: 0.7;
     --safe-area-inset-top: env(safe-area-inset-top);
     --safe-area-inset-bottom: env(safe-area-inset-bottom);

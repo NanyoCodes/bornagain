@@ -8,21 +8,21 @@
     },
     {
       "id": "auth-background",
-      "description": "A group of people in a community gathering",
-      "imageUrl": "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "community people"
+      "description": "Happy group of people in a community gathering",
+      "imageUrl": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "happy people"
     },
     {
       "id": "gospel-collage",
-      "description": "Powerful gospel imagery of Jesus",
-      "imageUrl": "https://images.unsplash.com/photo-1624884252467-9e57b4b0f751?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "JESUS"
+      "description": "Powerful imagery of a joyful diverse community",
+      "imageUrl": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "happy people"
     },
     {
       "id": "white-gospel",
-      "description": "Bright, white-toned gospel photography of a church interior",
+      "description": "Bright, white-toned photography of a community space",
       "imageUrl": "https://images.unsplash.com/photo-1510673398445-94f476ef2793?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "white church"
+      "imageHint": "white space"
     },
     {
       "id": "user-1",
