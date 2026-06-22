@@ -8,15 +8,15 @@
     },
     {
       "id": "auth-background",
-      "description": "Joyful smiling happy person outdoors",
-      "imageUrl": "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1974&auto=format&fit=crop",
-      "imageHint": "smiling person"
+      "description": "Person thanking God with raised hands",
+      "imageUrl": "https://images.unsplash.com/photo-1529070532972-08a4a98ae9af?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "thanking god"
     },
     {
       "id": "gospel-collage",
-      "description": "Smiling happy person representing community joy",
-      "imageUrl": "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1974&auto=format&fit=crop",
-      "imageHint": "smiling person"
+      "description": "Expression of spiritual gratitude and praise",
+      "imageUrl": "https://images.unsplash.com/photo-1529070532972-08a4a98ae9af?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "thanking god"
     },
     {
       "id": "white-gospel",
