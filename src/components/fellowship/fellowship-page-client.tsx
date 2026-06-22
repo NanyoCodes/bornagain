@@ -82,6 +82,9 @@ const devotionalSchema = z.object({
 const ViewHistoryDialog = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
 const LogFollowUpDialog = dynamic(() => import('@/components/souls/log-follow-up-dialog').then(m => m.LogFollowUpDialog), { ssr: false });
 
+/**
+ * Ensures the profile photo displayed in the directory is always the most recent version.
+ */
 function LiveMemberAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
     const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
@@ -912,3 +915,4 @@ export default function FellowshipPageClient() {
         </div>
     );
 }
+

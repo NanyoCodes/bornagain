@@ -33,7 +33,7 @@ type FellowshipCardProps = {
 };
 
 /**
- * Ensures the profile photo displayed in the directory is always the most recent version.
+ * Ensures the profile photo displayed in the card is always the most recent version.
  */
 function LiveAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
