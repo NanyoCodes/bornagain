@@ -1,4 +1,3 @@
-
 @import "react-image-crop/dist/ReactCrop.css";
 @tailwind base;
 @tailwind components;
@@ -36,7 +35,7 @@
     --status-new: 48 96% 51%;
     --status-contacted: 221 83% 53%;
     --status-established: 25 95% 53%;
-    --app-bg-image: url('https://images.unsplash.com/photo-1529070532972-08a4a98ae9af?q=80&w=2070&auto=format&fit=crop');
+    --app-bg-image: url('https://images.unsplash.com/photo-1656073629723-03fbcbc951ff?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRoYW5rJTIwR09EfGVufDB8fDB8fHww');
     --app-bg-overlay: 0.7;
     --safe-area-inset-top: env(safe-area-inset-top);
     --safe-area-inset-bottom: env(safe-area-inset-bottom);
