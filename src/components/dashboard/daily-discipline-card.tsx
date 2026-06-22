@@ -33,6 +33,11 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
     const firestore = useFirestore();
     const dateStr = useMemo(() => format(date, 'yyyy-MM-dd'), [date]);
     
+    // Live profile lookup for reactive photo updates
+    const partnerProfileRef = useMemo(() => partner.userId ? doc(firestore, 'users', partner.userId) : null, [firestore, partner.userId]);
+    const { data: partnerProfile } = useDoc<UserProfile>(partnerProfileRef);
+    const livePhotoURL = partnerProfile?.photoURL || partner.photoURL;
+
     const disciplineDocRef = useMemo(() => {
         if (!firestore || !partner.userId) return null;
         return doc(firestore, 'users', partner.userId, 'disciplineHistory', dateStr);
@@ -45,7 +50,7 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
         <div className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-transparent hover:border-primary/20 transition-all group">
             <Link href={`/dashboard/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity">
                 <Avatar className="h-8 w-8 border shadow-sm shrink-0">
-                    <AvatarImage src={partner.photoURL} />
+                    <AvatarImage src={livePhotoURL} className="object-cover" />
                     <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">{partner.firstName?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">

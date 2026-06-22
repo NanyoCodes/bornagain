@@ -117,7 +117,13 @@ function PartnerCard({
     onRemove: (p: any) => void 
 }) {
     const router = useRouter();
+    const firestore = useFirestore();
     const [dateStr, setDateStr] = useState(format(new Date(), 'yyyy-MM-dd'));
+    
+    // Live profile lookup to ensure photo is always current
+    const partnerDocRef = useMemo(() => partner.userId ? doc(firestore, 'users', partner.userId) : null, [firestore, partner.userId]);
+    const { data: partnerProfile } = useDoc<UserProfile>(partnerDocRef);
+    const livePhotoURL = partnerProfile?.photoURL || partner.photoURL;
     
     const selectedDate = useMemo(() => {
         const [year, month, day] = dateStr.split('-').map(Number);
@@ -129,13 +135,13 @@ function PartnerCard({
             <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6 gap-4">
                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     <Dialog>
-                      <DialogTrigger asChild disabled={!partner.photoURL}>
-                        <Avatar className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-sm shrink-0", partner.photoURL && "cursor-pointer active:scale-95 transition-transform")}>
-                            <AvatarImage src={partner.photoURL} />
+                      <DialogTrigger asChild disabled={!livePhotoURL}>
+                        <Avatar className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-sm shrink-0", livePhotoURL && "cursor-pointer active:scale-95 transition-transform")}>
+                            <AvatarImage src={livePhotoURL} className="object-cover" />
                             <AvatarFallback className="font-bold text-lg bg-primary/10 text-primary">{partner.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                       </DialogTrigger>
-                      {partner.photoURL && (
+                      {livePhotoURL && (
                           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
                               <DialogHeader className="sr-only">
                                   <DialogTitle>Profile photo of {partner.firstName} {partner.lastName}</DialogTitle>
@@ -144,7 +150,7 @@ function PartnerCard({
                               <div className="relative h-full w-full flex items-center justify-center p-4">
                                 <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                                     <Image 
-                                        src={partner.photoURL} 
+                                        src={livePhotoURL} 
                                         alt={`${partner.firstName} ${partner.lastName}`} 
                                         fill 
                                         className="object-contain shadow-2xl ring-4 ring-white/10" 
