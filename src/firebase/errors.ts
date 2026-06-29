@@ -16,7 +16,7 @@ export class FirestorePermissionError extends Error {
       token: user ? '(available)' : '(undetermined - check client state)',
     };
     
-    const message = `FirestoreError: Missing or insufficient permissions: The following request was denied by Firestore Security Rules:
+    const message = `System Error: Missing or insufficient permissions: The following request was denied by Security Rules:
 ${JSON.stringify(
   {
     context,

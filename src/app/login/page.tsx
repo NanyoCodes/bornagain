@@ -49,7 +49,7 @@ export default function LoginPage() {
     if (!auth || !firestore) {
       toast({
         variant: 'destructive',
-        title: 'Firebase not initialized',
+        title: 'System not ready',
         description: 'Please wait a moment and try again.',
       });
       setIsGoogleLoading(false);

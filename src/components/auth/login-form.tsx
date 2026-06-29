@@ -1,4 +1,3 @@
-
 "use client";
 
 /**
@@ -118,7 +117,7 @@ export function LoginForm() {
       toast({
         variant: "destructive",
         title: "Authentication Error",
-        description: "Firebase is not ready. Please try again.",
+        description: "The system is not ready. Please try again.",
       });
       setIsLoading(false);
       return;

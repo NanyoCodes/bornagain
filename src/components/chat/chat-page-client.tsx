@@ -524,15 +524,13 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                     </div>
 
                                                     {!isOwnMessage && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity order-last shrink-0"
+                                                        <button
+                                                            className="h-7 w-7 text-muted-foreground hover:text-primary transition-all rounded-full opacity-0 group-hover:opacity-100 order-last shrink-0"
                                                             onClick={() => setReplyingTo(msg)}
                                                             title="Reply"
                                                         >
                                                             <Reply className="h-3.5 w-3.5" />
-                                                        </Button>
+                                                        </button>
                                                     )}
 
                                                     <div
@@ -593,15 +591,13 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                     </div>
 
                                                     {isOwnMessage && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity order-first shrink-0"
+                                                        <button
+                                                            className="h-7 w-7 text-muted-foreground hover:text-primary transition-all rounded-full opacity-0 group-hover:opacity-100 order-first shrink-0"
                                                             onClick={() => setReplyingTo(msg)}
                                                             title="Reply"
                                                         >
                                                             <Reply className="h-3.5 w-3.5" />
-                                                        </Button>
+                                                        </button>
                                                     )}
                                                 </div>
                                             </div>

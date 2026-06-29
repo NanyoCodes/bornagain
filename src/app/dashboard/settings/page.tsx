@@ -383,7 +383,7 @@ export default function SettingsPage() {
     <div className="space-y-8 max-w-4xl mx-auto pb-32">
       <div className="px-4 sm:px-0 space-y-1">
         <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Settings</h1>
-        <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60">Identity & Kingdom Preferences</p>
+        <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60">Identity & Kingdom Preferences</p>
       </div>
       
        {loading || !userProfile || !user ? (
