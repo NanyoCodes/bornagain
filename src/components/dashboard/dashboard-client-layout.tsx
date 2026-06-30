@@ -30,6 +30,7 @@ import {
   Phone,
   Users,
   Store,
+  Gift,
 } from "lucide-react";
 
 import {
@@ -254,7 +255,13 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
             <DropdownMenuItem asChild>
               <Link href="/dashboard/marketplace">
                 <Store className="mr-2 h-4 w-4" />
-                <span>Marketplace</span>
+                <span>Meals Center</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/marketplace/gifts">
+                <Gift className="mr-2 h-4 w-4" />
+                <span>Kindness (Gifts)</span>
               </Link>
             </DropdownMenuItem>
             {userProfile?.isVendor && (

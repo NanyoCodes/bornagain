@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -186,7 +185,7 @@ export default function ProvisionMarketplacePage() {
                     <div className="space-y-1">
                         <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Provision Marketplace</h1>
                         <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
-                           <Utensils className="h-4 w-4 text-primary" /> Physical Nourishment (Meals)
+                           <Utensils className="h-4 w-4 text-primary" /> Meals Center
                         </p>
                     </div>
                     <div className="flex gap-2">

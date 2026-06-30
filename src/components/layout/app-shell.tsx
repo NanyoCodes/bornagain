@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -163,7 +162,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
                   <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", isActive ? "scale-110" : item.color)} />
                   <span className={cn(
-                    "text-[8px] font-black uppercase tracking-tighter transition-all leading-none",
+                    "text-[8px] font-black uppercase tracking-tighter transition-all duration-300 leading-none",
                     isActive ? "opacity-100" : "opacity-60 group-hover:opacity-100"
                   )}>
                     {item.label}
@@ -254,7 +253,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
                   <Link href="/dashboard/marketplace">
                     <Store className="mr-2 h-4 w-4" />
-                    <span>Provision (Meals)</span>
+                    <span>Meals Center</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
