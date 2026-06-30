@@ -20,20 +20,30 @@ export function initializeFirebase(): FirebaseServices {
     return firebaseServices;
   }
   
-  const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+  const existingApps = getApps();
+  const app = existingApps.length > 0 ? getApp() : initializeApp(firebaseConfig);
   
   let firestore: Firestore;
-  try {
-    // Attempt to initialize with long polling for proxy/station compatibility.
-    firestore = initializeFirestore(app, {
-      experimentalForceLongPolling: true,
-    });
-  } catch (e: any) {
-    // If Firestore is already initialized, get the existing instance.
+  // Firestore must be initialized before other services that might implicitly call getFirestore()
+  if (typeof window !== 'undefined') {
+    try {
+      // Force long polling for proxy/station compatibility.
+      // experimentalAutoDetectLongPolling: false ensures we don't try standard transport first.
+      firestore = initializeFirestore(app, {
+        experimentalForceLongPolling: true,
+        experimentalAutoDetectLongPolling: false,
+      });
+    } catch (e: any) {
+      // If Firestore is already initialized, initializeFirestore throws an error.
+      // We then get the existing instance.
+      firestore = getFirestore(app);
+    }
+  } else {
+    // On the server (SSR), use standard initialization.
     firestore = getFirestore(app);
   }
-  
+
+  const auth = getAuth(app);
   const storage = getStorage(app);
   
   const services = { app, auth, firestore, storage };
