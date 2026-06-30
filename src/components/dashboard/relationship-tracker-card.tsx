@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -35,6 +36,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { actionItems } from '@/lib/follow-up-data';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Dialog,
   DialogContent,
@@ -143,6 +145,7 @@ function SoulSelectionDialog({
 export function RelationshipTrackerCard() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
   const { toast } = useToast();
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -181,6 +184,13 @@ export function RelationshipTrackerCard() {
   const handleSoulSelected = async (soul: Soul) => {
     if (!user || !firestore || !selectedActionId) return;
     
+    // REDIRECT LOGIC FOR MEALS
+    if (selectedActionId === 'shared_meal') {
+        setIsSoulDialogOpen(false);
+        router.push(`/dashboard/marketplace?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}`);
+        return;
+    }
+
     setIsSoulDialogOpen(false);
     setTogglingId(selectedActionId);
 
@@ -292,20 +302,6 @@ export function RelationshipTrackerCard() {
                     {format(currentDate, 'PPPP')}
                   </div>
                 )}
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full opacity-40 hover:opacity-100">
-                                <Info className="h-4 w-4" />
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-[200px] rounded-xl p-3 border-primary/20 shadow-xl" side="bottom">
-                            <p className="text-[10px] font-bold uppercase leading-relaxed text-center">
-                                Select a convert to link these relational actions to their spiritual history.
-                            </p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
               </div>
           </div>
         </CardHeader>

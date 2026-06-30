@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refined group chat access & member assignment controls - 2025-08-09T20:00:00Z
+    // Deployment trigger: Marketplace integration & live avatar lookups - 2025-08-10T10:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -45,7 +46,7 @@ service cloud.firestore {
 
       allow update: if request.auth != null && (
         isOwner(userId) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal']) && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor']) && (
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
           (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
         ))
@@ -193,6 +194,22 @@ service cloud.firestore {
             );
         }
       }
+    }
+
+    match /vendors/{vendorId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == vendorId;
+
+      match /meals/{mealId} {
+        allow read: if true;
+        allow write: if request.auth != null && request.auth.uid == vendorId;
+      }
+    }
+
+    match /mealGifts/{giftId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && (request.auth.uid == resource.data.senderId || request.auth.uid == resource.data.vendorId);
+      allow update: if request.auth != null && (request.auth.uid == resource.data.vendorId || request.auth.uid == resource.data.senderId);
     }
 
     match /mail/{mailId} {

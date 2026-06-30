@@ -233,7 +233,8 @@
         "lastActive": {
           "type": "object",
           "description": "Timestamp of the user's last activity."
-        }
+        },
+        "isVendor": { "type": "boolean" }
       },
       "required": [
         "firstName",
@@ -241,78 +242,52 @@
         "email"
       ]
     },
-    "Soul": {
-      "title": "Soul",
-      "description": "Represents a person led to Christ, tracked by a user.",
+    "VendorProfile": {
+      "title": "Vendor Profile",
+      "description": "Represents a user who sells meals or services.",
       "type": "object",
       "properties": {
         "userId": { "type": "string" },
-        "firstName": { "type": "string" },
-        "lastName": { "type": "string" },
-        "gender": { "type": "string", "enum": ["Male", "Female"] },
-        "nationality": { "type": "string" },
-        "email": { "type": "string", "format": "email" },
+        "businessName": { "type": "string" },
+        "description": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "location": { "type": "string" },
         "phone": { "type": "string" },
-        "church": { "type": "string" },
-        "relationship": { "type": "string", "enum": ["Family", "Friend", "Colleague", "Neighbor", "Stranger", "Other"] },
-        "source": { "type": "string", "enum": ["Personal", "Campaign"] },
-        "sourceDetails": { "type": "string" },
-        "campaignId": { "type": "string" },
-        "wonAt": { "type": "object" },
-        "status": { "type": "string", "enum": ["New", "Contacted", "Established"] }
+        "status": { "type": "string", "enum": ["active", "inactive"] }
       },
-      "required": ["userId", "firstName", "lastName", "source", "wonAt", "status"]
+      "required": ["userId", "businessName"]
     },
-    "AccountabilityRequest": {
-      "title": "Accountability Request",
-      "description": "A request from one user to another to become accountability partners.",
+    "Meal": {
+      "title": "Meal",
+      "description": "A food item sold by a vendor.",
       "type": "object",
       "properties": {
-        "fromUserId": { "type": "string" },
-        "fromUserFirstName": { "type": "string" },
-        "fromUserLastName": { "type": "string" },
-        "fromUserPhotoURL": { "type": "string", "format": "uri" },
-        "toUserId": { "type": "string" },
-        "toUserFirstName": { "type": "string" },
-        "toUserLastName": { "type": "string" },
-        "toUserPhotoURL": { "type": "string", "format": "uri" },
-        "status": { "type": "string", "enum": ["pending", "accepted", "declined"] },
-        "createdAt": { "type": "object" },
-        "participantIds": { "type": "array", "items": { "type": "string" } }
-      },
-      "required": ["fromUserId", "toUserId", "status", "createdAt", "participantIds"]
-    },
-    "Fellowship": {
-      "title": "Fellowship",
-      "description": "A spiritual community group for discipleship and fellowship.",
-      "type": "object",
-      "properties": {
+        "vendorId": { "type": "string" },
         "name": { "type": "string" },
         "description": { "type": "string" },
-        "groupType": { "type": "string", "enum": ["Fellowship", "Association"] },
-        "organizerId": { "type": "string" },
-        "organizerName": { "type": "string" },
-        "memberCount": { "type": "number" },
-        "memberIds": { "type": "array", "items": { "type": "string" } }
-      }
+        "price": { "type": "number" },
+        "currency": { "type": "string", "default": "NGN" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "category": { "type": "string" }
+      },
+      "required": ["vendorId", "name", "price"]
     },
-    "DailyDevotional": {
-      "title": "Daily Devotional",
-      "description": "A daily word of encouragement for a group.",
+    "MealGift": {
+      "title": "Meal Gift",
+      "description": "A meal purchased by a user and sent to a soul.",
       "type": "object",
       "properties": {
-        "title": { "type": "string" },
-        "text": { "type": "string" },
-        "scripture": { "type": "string" },
-        "authorId": { "type": "string" },
-        "authorName": { "type": "string" },
-        "scheduledDate": { "type": "string", "description": "Date string in YYYY-MM-DD format." },
-        "createdAt": { "type": "object" },
-        "supporters": { "type": "array", "items": { "type": "string" }, "description": "List of UIDs who gave an 'Amen'." },
-        "inspiredBy": { "type": "array", "items": { "type": "string" }, "description": "List of UIDs who gave an 'Hallelujah'." },
-        "connectedBy": { "type": "array", "items": { "type": "string" }, "description": "List of UIDs who gave a 'Celebrate'." }
+        "senderId": { "type": "string" },
+        "recipientSoulId": { "type": "string" },
+        "recipientName": { "type": "string" },
+        "vendorId": { "type": "string" },
+        "mealId": { "type": "string" },
+        "mealName": { "type": "string" },
+        "price": { "type": "number" },
+        "status": { "type": "string", "enum": ["ordered", "preparing", "delivering", "delivered"] },
+        "createdAt": { "type": "object" }
       },
-      "required": ["title", "text", "scripture", "authorId", "scheduledDate"]
+      "required": ["senderId", "recipientSoulId", "vendorId", "mealId", "status"]
     }
   },
   "auth": {
@@ -329,29 +304,17 @@
       },
       "description": "Stores public user profile data, keyed by user ID."
     },
-    "/accountabilityRequests/{requestId}": {
-      "schema": {
-        "$ref": "#/entities/AccountabilityRequest"
-      },
-      "description": "Stores accountability partnership requests between users."
+    "/vendors/{vendorId}": {
+      "schema": { "$ref": "#/entities/VendorProfile" },
+      "description": "Collection of meal vendors."
     },
-    "/fellowships/{fellowshipId}": {
-      "schema": {
-          "$ref": "#/entities/Fellowship"
-      },
-      "description": "Stores fellowship group data."
+    "/vendors/{vendorId}/meals/{mealId}": {
+      "schema": { "$ref": "#/entities/Meal" },
+      "description": "Meals offered by a specific vendor."
     },
-    "/fellowships/{fellowshipId}/devotionals/{date}": {
-      "schema": {
-          "$ref": "#/entities/DailyDevotional"
-      },
-      "description": "Stores scheduled daily devotionals for the group, keyed by YYYY-MM-DD."
-    },
-    "/fellowships/{fellowshipId}/devotionals/{date}/comments/{commentId}": {
-      "schema": {
-          "$ref": "#/entities/TestimonyComment"
-      },
-      "description": "Stores community responses to devotionals."
+    "/mealGifts/{giftId}": {
+      "schema": { "$ref": "#/entities/MealGift" },
+      "description": "Orders for meals sent to converts."
     }
   }
 }
