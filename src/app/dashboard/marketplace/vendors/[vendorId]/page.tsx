@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -36,14 +35,16 @@ import {
     DialogHeader, 
     DialogTitle, 
     DialogDescription,
-    DialogFooter 
+    DialogFooter,
+    DialogTrigger
 } from '@/components/ui/dialog';
 import { 
     Sheet, 
     SheetContent, 
     SheetHeader, 
     SheetTitle, 
-    SheetDescription 
+    SheetDescription,
+    SheetTrigger
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
