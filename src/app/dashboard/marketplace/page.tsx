@@ -186,7 +186,7 @@ export default function ProvisionMarketplacePage() {
     return (
         <div 
             className="space-y-10 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen ? "" : undefined}
+            inert={isAnyModalOpen ? true : undefined}
         >
             <header className="px-4 sm:px-0 space-y-4 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">

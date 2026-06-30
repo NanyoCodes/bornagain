@@ -187,7 +187,7 @@ export default function GiftsMarketplacePage() {
     return (
         <div 
             className="space-y-10 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen ? "" : undefined}
+            inert={isAnyModalOpen ? true : undefined}
         >
             <header className="px-4 sm:px-0 space-y-4 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
@@ -198,8 +198,8 @@ export default function GiftsMarketplacePage() {
                         </p>
                     </div>
                     <div className="flex gap-2">
-                        {myVendorProfile ? (
-                            <Button onClick={() => router.push(`/dashboard/marketplace/vendors/${myVendorProfile.id}`)} variant="outline" className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-md">
+                        {myGiftVendors && myGiftVendors.length > 0 ? (
+                            <Button onClick={() => router.push(`/dashboard/marketplace/vendors/${myVendorProfile?.id}`)} variant="outline" className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-md">
                                 <Store className="mr-2 h-4 w-4" /> My Storefront
                             </Button>
                         ) : (

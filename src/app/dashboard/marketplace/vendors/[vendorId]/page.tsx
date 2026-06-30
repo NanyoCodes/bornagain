@@ -4,8 +4,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, getDoc, deleteDoc } from 'firebase/firestore';
-import type { VendorProfile, Meal, UserProfile, MealGift, Chat } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import type { VendorProfile, Meal, UserProfile, Chat } from '@/lib/types';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -14,12 +14,8 @@ import {
     Plus, 
     Loader2, 
     ShoppingBag, 
-    Sparkles, 
-    CheckCircle2, 
     MapPin, 
-    Phone, 
     Heart,
-    Store,
     CreditCard,
     Edit,
     Trash2,
@@ -27,10 +23,7 @@ import {
     Gift,
     Package,
     ChefHat,
-    ShoppingBasket,
-    X,
-    ChevronRight,
-    LayoutGrid
+    ChevronRight
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -132,7 +125,6 @@ export default function VendorPage() {
     const centerLabel = isGiftVendor ? 'Kindness Center' : 'Meals Center';
     const itemLabel = isGiftVendor ? 'Product' : 'Meal';
     const actionLabel = isGiftVendor ? 'Gifting' : 'Provisioning';
-    const manageLabel = isGiftVendor ? 'Manage Catalog' : 'Manage Menu';
     const addLabel = isGiftVendor ? 'Add New Product' : 'Add New Meal';
     const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
     const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
@@ -450,7 +442,7 @@ export default function VendorPage() {
     return (
         <div 
             className="space-y-8 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen ? "" : undefined}
+            inert={isAnyModalOpen ? true : undefined}
         >
             <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
