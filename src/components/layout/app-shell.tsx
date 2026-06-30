@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -52,7 +53,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 
 const navItems = [
-  { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
+  { href: "/progress", label: "FOLLOW-UP", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },

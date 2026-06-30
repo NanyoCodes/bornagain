@@ -1,3 +1,4 @@
+
 'use client';
 
 /**
@@ -59,7 +60,7 @@ import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
-  { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
+  { href: "/progress", label: "FOLLOW-UP", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
