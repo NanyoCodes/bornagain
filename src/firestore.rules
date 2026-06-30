@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Marketplace integration & live avatar lookups - 2025-08-10T10:00:00Z
+    // Deployment trigger: Refined Marketplace & Fellowship permissions - 2025-08-11T12:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -183,7 +183,7 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
-            allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+            allow delete: if request.auth != null && resource.data.authorId == request.authorId;
             allow update: if request.auth != null && (
               (resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
@@ -193,11 +193,11 @@ service cloud.firestore {
     }
 
     match /vendors/{vendorId} {
-      allow read: if true;
+      allow get, list: if true;
       allow write: if request.auth != null && request.auth.uid == vendorId;
 
       match /meals/{mealId} {
-        allow read: if true;
+        allow get, list: if true;
         allow write: if request.auth != null && request.auth.uid == vendorId;
       }
     }
