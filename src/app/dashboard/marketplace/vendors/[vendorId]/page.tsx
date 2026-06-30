@@ -95,6 +95,7 @@ export default function VendorPage() {
 
     const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || selectedMeal);
 
+    // Interactivity Safety Valve
     useEffect(() => {
         if (!isAnyModalOpen && typeof document !== 'undefined') {
             const timer = setTimeout(() => {
@@ -486,7 +487,7 @@ export default function VendorPage() {
     return (
         <div 
             className="space-y-8 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen}
+            inert={isAnyModalOpen ? true : undefined}
         >
             <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
@@ -499,7 +500,7 @@ export default function VendorPage() {
                                 <CenterIcon className="h-3 w-3 text-primary" />
                                 <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
-                            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
+                            <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
                             <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Kingdom Network'}</p>
                         </div>
                     </div>
@@ -636,7 +637,7 @@ export default function VendorPage() {
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     )}
-                                    <Badge className="bg-primary text-white font-black text-xs px-3 h-8 rounded-full shadow-lg border-none">
+                                    <Badge className="bg-primary text-white font-black text-[10px] sm:text-xs px-3 h-8 rounded-full shadow-lg border-none">
                                         ₦{meal.price.toLocaleString()}
                                     </Badge>
                                 </div>
