@@ -147,9 +147,9 @@ export default function ProvisionMarketplacePage() {
             })
             .catch(async (serverError) => {
                 const permissionError = new FirestorePermissionError({
-                    path: `BATCH_WRITE:REGISTER_VENDOR`,
-                    operation: 'write',
-                    requestResourceData: { vendorData, isVendorUpdate: true }
+                    path: `vendors/${newVendorRef.id}`,
+                    operation: 'create',
+                    requestResourceData: vendorData
                 }, user);
                 errorEmitter.emit('permission-error', permissionError);
             })
@@ -160,7 +160,7 @@ export default function ProvisionMarketplacePage() {
 
     const registrationForm = (
         <form onSubmit={handleRegisterVendor}>
-            <div className="p-8 space-y-6">
+            <div className="p-6 sm:p-8 space-y-6">
                 <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 flex items-center gap-3">
                     <Utensils className="h-5 w-5 text-primary" />
                     <p className="text-xs font-bold text-primary uppercase tracking-widest">Registering for Meals Center</p>
@@ -185,7 +185,7 @@ export default function ProvisionMarketplacePage() {
                     <p className="text-[9px] text-muted-foreground px-1 italic">Users will see this to pay you when gifting.</p>
                 </div>
             </div>
-            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
+            <div className="p-6 sm:p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
                 <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isSubmitting} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -198,7 +198,7 @@ export default function ProvisionMarketplacePage() {
     return (
         <div 
             className="space-y-10 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen ? true : undefined}
+            inert={isAnyModalOpen}
         >
             <header className="px-4 sm:px-0 space-y-4 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">

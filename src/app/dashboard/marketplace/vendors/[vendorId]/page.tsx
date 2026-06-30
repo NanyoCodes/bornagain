@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
-import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, getDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, getDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, Chat } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,8 @@ import {
     Gift,
     Package,
     ChefHat,
-    ChevronRight
+    ChevronRight,
+    X
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -92,7 +93,6 @@ export default function VendorPage() {
     const [isDeletingStore, setIsDeletingStore] = useState(false);
     const [isDeletingItem, setIsDeletingItem] = useState(false);
 
-    // Interactivity Safety Valve
     const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || selectedMeal);
 
     useEffect(() => {
@@ -121,7 +121,6 @@ export default function VendorPage() {
     const isOwner = user?.uid === vendor?.userId;
     const isGiftVendor = vendor?.vendorType === 'gift';
     
-    // UI Helpers based on vendor type
     const CenterIcon = isGiftVendor ? Gift : ChefHat;
     const ItemIcon = isGiftVendor ? Package : Utensils;
     const centerLabel = isGiftVendor ? 'Kindness Center' : 'Meals Center';
@@ -137,7 +136,8 @@ export default function VendorPage() {
         
         const formData = new FormData(e.currentTarget);
         const name = formData.get('name') as string;
-        const price = parseFloat(formData.get('price') as string);
+        const priceValue = formData.get('price') as string;
+        const price = parseFloat(priceValue);
         const description = formData.get('description') as string;
         const category = formData.get('category') as string;
 
@@ -157,7 +157,7 @@ export default function VendorPage() {
 
         addDoc(mealsRef, mealData)
             .then(() => {
-                toast({ title: 'Item Added', description: `"${name}" has been added to your ${isGiftVendor ? 'catalog' : 'menu'}.` });
+                toast({ title: 'Item Added', description: `"${name}" has been added to your catalog.` });
                 setIsAddMealOpen(false);
             })
             .catch(async (serverError) => {
@@ -338,7 +338,7 @@ export default function VendorPage() {
     const editProfileForm = (
         <form onSubmit={handleUpdateProfile} className="flex flex-col h-full">
             <ScrollArea className="flex-grow">
-                <div className="p-8 space-y-6">
+                <div className="p-6 sm:p-8 space-y-6">
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
                         <Input name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
@@ -382,7 +382,7 @@ export default function VendorPage() {
                     </div>
                 </div>
             </ScrollArea>
-            <div className="p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row mt-auto">
+            <div className="p-6 sm:p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row mt-auto">
                 <Button type="button" variant="outline" onClick={() => setIsEditProfileOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isUpdatingProfile} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isUpdatingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -394,7 +394,7 @@ export default function VendorPage() {
 
     const addMealForm = (
         <form onSubmit={handleAddMeal}>
-            <div className="p-8 space-y-6">
+            <div className="p-6 sm:p-8 space-y-6">
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Name</Label>
                     <Input name="name" placeholder={`e.g., ${isGiftVendor ? 'Study Bible' : 'Jollof Rice'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
@@ -412,7 +412,7 @@ export default function VendorPage() {
                     <Textarea name="description" placeholder={descriptionPlaceholder} className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner" />
                 </div>
             </div>
-            <div className="p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row">
+            <div className="p-6 sm:p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row">
                 <Button type="button" variant="outline" onClick={() => setIsAddMealOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isSubmittingMeal} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isSubmittingMeal && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -554,7 +554,7 @@ export default function VendorPage() {
                                 {actionLabel} for {soulName}
                             </p>
                             <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1 text-balance">
-                                Select an item from the {isGiftVendor ? 'catalog' : 'menu'} below to gift as an act of Kingdom love.
+                                Select an item from the catalog below to gift as an act of Kingdom love.
                             </p>
                         </div>
                     </div>
@@ -656,12 +656,11 @@ export default function VendorPage() {
                 {(!meals || meals.length === 0) && !isOwner && (
                     <div className="col-span-full py-32 text-center flex flex-col items-center">
                         <ItemIcon className="h-16 w-16 text-muted-foreground opacity-10 mb-4" />
-                        <p className="text-sm text-muted-foreground italic font-medium">This provider's {isGiftVendor ? 'catalog' : 'menu'} is coming soon.</p>
+                        <p className="text-sm text-muted-foreground italic font-medium">This provider's catalog is coming soon.</p>
                     </div>
                 )}
             </div>
 
-            {/* Gift/Order Confirmation Interaction */}
             {mounted && (isMobile ? (
                 <Sheet open={!!selectedMeal} onOpenChange={(open) => !open && setSelectedMeal(null)}>
                     <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
@@ -700,13 +699,12 @@ export default function VendorPage() {
                 </Dialog>
             ))}
 
-            {/* Storefront Deletion Dialog */}
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
                 <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Delete Storefront?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium leading-relaxed">
-                            This action is permanent and will remove "{vendor.businessName}" and its entire {isGiftVendor ? 'catalog' : 'menu'} from the Testify Network.
+                            This action is permanent and will remove "{vendor.businessName}" and its entire catalog from the Testify Network.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="mt-6 gap-3">
@@ -719,7 +717,6 @@ export default function VendorPage() {
                 </AlertDialogContent>
             </AlertDialog>
 
-            {/* Item Deletion Dialog */}
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
                 <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl">
                     <AlertDialogHeader>

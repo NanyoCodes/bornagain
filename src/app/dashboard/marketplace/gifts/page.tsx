@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -162,7 +161,7 @@ export default function GiftsMarketplacePage() {
 
     const registrationForm = (
         <form onSubmit={handleRegisterVendor}>
-            <div className="p-8 space-y-6">
+            <div className="p-6 sm:p-8 space-y-6">
                 <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 flex items-center gap-3">
                     <Gift className="h-5 w-5 text-primary" />
                     <p className="text-xs font-bold text-primary uppercase tracking-widest">Registering for Kindness Center</p>
@@ -187,7 +186,7 @@ export default function GiftsMarketplacePage() {
                     <p className="text-[9px] text-muted-foreground px-1 italic">Users will see this to pay you when gifting.</p>
                 </div>
             </div>
-            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
+            <div className="p-6 sm:p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
                 <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isSubmitting} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
