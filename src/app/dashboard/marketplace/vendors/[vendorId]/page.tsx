@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
-import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch } from 'firebase/firestore';
+import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, Chat } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -326,8 +326,13 @@ export default function VendorPage() {
     if (loadingVendor || loadingMeals) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center py-20">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <p className="mt-4 text-muted-foreground font-black uppercase tracking-widest text-[10px]">Establishing Storefront...</p>
+                <div className="relative mb-8">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                    </div>
+                </div>
+                <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-8">Establishing Storefront...</p>
             </div>
         );
     }
@@ -482,10 +487,20 @@ export default function VendorPage() {
         </div>
     );
 
+    const addProductCard = (
+        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-6 sm:p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[200px] sm:min-h-[280px] shadow-sm">
+            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                <Plus className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            </div>
+            <h3 className="font-black uppercase tracking-widest text-primary text-xs sm:text-sm">{addLabel}</h3>
+            <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront catalog</p>
+        </Card>
+    );
+
     return (
         <div 
             className="space-y-8 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen}
+            inert={isAnyModalOpen ? true : undefined}
         >
             <div className="px-4 sm:px-0 flex flex-col gap-4 sm:gap-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
@@ -571,13 +586,7 @@ export default function VendorPage() {
                     mounted && (isMobile ? (
                         <Sheet open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                             <SheetTrigger asChild>
-                                <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[240px] sm:min-h-[280px] shadow-sm">
-                                    <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                                        <Plus className="h-8 w-8 text-primary" />
-                                    </div>
-                                    <h3 className="font-black uppercase tracking-widest text-primary text-sm">{addLabel}</h3>
-                                    <p className="text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront catalog</p>
-                                </Card>
+                                {addProductCard}
                             </SheetTrigger>
                             <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                                 <div className="p-8 border-b flex-shrink-0 bg-muted/10">
@@ -594,13 +603,7 @@ export default function VendorPage() {
                     ) : (
                         <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                             <DialogTrigger asChild>
-                                <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm">
-                                    <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                                        <Plus className="h-8 w-8 text-primary" />
-                                    </div>
-                                    <h3 className="font-black uppercase tracking-widest text-primary text-sm">{addLabel}</h3>
-                                    <p className="text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront catalog</p>
-                                </Card>
+                                {addProductCard}
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                                 <DialogHeader className="p-8 border-b bg-muted/10">
