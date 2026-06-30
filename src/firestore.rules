@@ -62,10 +62,6 @@ service cloud.firestore {
         );
       }
       
-      match /joinedCampaigns/{campaignId} {
-        allow read, create, delete: if isOwner(userId);
-      }
-      
       match /disciplineHistory/{logId} {
         allow read: if request.auth != null;
         allow write: if isOwner(userId);

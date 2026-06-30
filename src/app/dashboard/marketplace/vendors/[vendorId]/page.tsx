@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
-import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, MealGift } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -333,8 +333,4 @@ export default function VendorPage() {
             </Dialog>
         </div>
     );
-}
-
-function updateDoc(soulRef: any, arg1: { followUpLog: any; lastUpdatedAt: any; }) {
-    throw new Error('Function not implemented.');
 }
