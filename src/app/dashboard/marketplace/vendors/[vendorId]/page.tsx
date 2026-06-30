@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -30,7 +29,8 @@ import {
     ChefHat,
     ShoppingBasket,
     X,
-    ChevronRight
+    ChevronRight,
+    LayoutGrid
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -96,6 +96,19 @@ export default function VendorPage() {
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
     const [isDeletingStore, setIsDeletingStore] = useState(false);
     const [isDeletingItem, setIsDeletingItem] = useState(false);
+
+    // Interactivity Safety Valve
+    const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || selectedMeal);
+
+    useEffect(() => {
+        if (!isAnyModalOpen && typeof document !== 'undefined') {
+            const timer = setTimeout(() => {
+                document.body.style.pointerEvents = 'auto';
+                document.body.removeAttribute('aria-hidden');
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [isAnyModalOpen]);
 
     useEffect(() => {
         setMounted(true);
@@ -323,7 +336,7 @@ export default function VendorPage() {
                             <CardContent className="p-4 flex items-center justify-between gap-4">
                                 <div className="space-y-1 min-w-0">
                                     <p className="text-xs font-bold text-destructive">Delete Storefront</p>
-                                    <p className="text-[10px] text-muted-foreground leading-tight truncate">Permanently remove your business.</p>
+                                    <p className="text-[10px] text-muted-foreground leading-tight truncate">Permanently remove your business from Testify.</p>
                                 </div>
                                 <Button type="button" variant="destructive" size="sm" onClick={() => setIsDeleteStoreOpen(true)} className="rounded-xl h-8 font-black uppercase tracking-widest text-[9px] shrink-0">
                                     Delete
@@ -334,7 +347,7 @@ export default function VendorPage() {
                 </div>
             </ScrollArea>
             <div className="p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row mt-auto">
-                <Button type="button" variant="outline" onClick={() => setIsEditProfileOpen(false)} className="rounded-xl h-12 flex-1">Cancel</Button>
+                <Button type="button" variant="outline" onClick={() => setIsEditProfileOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isUpdatingProfile} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isUpdatingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Update Profile
@@ -364,7 +377,7 @@ export default function VendorPage() {
                 </div>
             </div>
             <div className="p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row">
-                <Button type="button" variant="outline" onClick={() => setIsAddMealOpen(false)} className="rounded-xl h-12 flex-1">Cancel</Button>
+                <Button type="button" variant="outline" onClick={() => setIsAddMealOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isSubmittingMeal} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isSubmittingMeal && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Add Item
@@ -435,7 +448,10 @@ export default function VendorPage() {
     );
 
     return (
-        <div className="space-y-8 max-w-4xl mx-auto pb-32">
+        <div 
+            className="space-y-8 max-w-4xl mx-auto pb-32"
+            inert={isAnyModalOpen ? "" : undefined}
+        >
             <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="flex items-center gap-4 min-w-0">
@@ -671,7 +687,7 @@ export default function VendorPage() {
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
                 <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="text-xl font-black font-headline uppercase tracking-tight">Remove {itemLabel}?</AlertDialogTitle>
+                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight">Remove {itemLabel}?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium">
                             Are you sure you want to delete "{itemToDelete?.name}" from your storefront?
                         </AlertDialogDescription>

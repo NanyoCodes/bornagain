@@ -56,6 +56,19 @@ export default function ProvisionMarketplacePage() {
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Interactivity Safety Valve
+    const isAnyModalOpen = isRegisterOpen;
+
+    useEffect(() => {
+        if (!isAnyModalOpen && typeof document !== 'undefined') {
+            const timer = setTimeout(() => {
+                document.body.style.pointerEvents = 'auto';
+                document.body.removeAttribute('aria-hidden');
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [isAnyModalOpen]);
+
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -161,7 +174,7 @@ export default function ProvisionMarketplacePage() {
                 </div>
             </div>
             <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
-                <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="rounded-xl h-12 flex-1">Cancel</Button>
+                <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isSubmitting} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Launch Storefront
@@ -171,7 +184,10 @@ export default function ProvisionMarketplacePage() {
     );
 
     return (
-        <div className="space-y-10 max-w-4xl mx-auto pb-32">
+        <div 
+            className="space-y-10 max-w-4xl mx-auto pb-32"
+            inert={isAnyModalOpen ? "" : undefined}
+        >
             <header className="px-4 sm:px-0 space-y-4 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="space-y-1">
