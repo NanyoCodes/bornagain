@@ -2,9 +2,9 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
-import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import type { VendorProfile, Meal, UserProfile, MealGift } from '@/lib/types';
+import { useUser, useAuth, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
+import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, setDoc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
+import type { VendorProfile, Meal, UserProfile, MealGift, Chat } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -95,8 +95,8 @@ export default function VendorPage() {
     const isGiftVendor = vendor?.vendorType === 'gift';
     
     // UI Helpers based on vendor type
-    const centerIcon = isGiftVendor ? Gift : ChefHat;
-    const itemIcon = isGiftVendor ? Package : Utensils;
+    const CenterIcon = isGiftVendor ? Gift : ChefHat;
+    const ItemIcon = isGiftVendor ? Package : Utensils;
     const centerLabel = isGiftVendor ? 'Kindness Center' : 'Meals Center';
     const itemLabel = isGiftVendor ? 'Product' : 'Meal';
     const actionLabel = isGiftVendor ? 'Gifting' : 'Provisioning';
@@ -316,7 +316,7 @@ export default function VendorPage() {
                         </Button>
                         <div className="min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                                <centerIcon className="h-3 w-3 text-primary" />
+                                <CenterIcon className="h-3 w-3 text-primary" />
                                 <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
                             <h1 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight truncate">{vendor.businessName}</h1>
@@ -436,7 +436,7 @@ export default function VendorPage() {
                                     <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">
-                                        <itemIcon className="h-12 w-12 text-muted-foreground opacity-10" />
+                                        <ItemIcon className="h-12 w-12 text-muted-foreground opacity-10" />
                                     </div>
                                 )}
                                 <div className="absolute top-4 right-4">
@@ -465,7 +465,7 @@ export default function VendorPage() {
 
                 {(!meals || meals.length === 0) && !isOwner && (
                     <div className="col-span-full py-32 text-center flex flex-col items-center">
-                        <itemIcon className="h-16 w-16 text-muted-foreground opacity-10 mb-4" />
+                        <ItemIcon className="h-16 w-16 text-muted-foreground opacity-10 mb-4" />
                         <p className="text-sm text-muted-foreground italic font-medium">This provider's {isGiftVendor ? 'catalog' : 'menu'} is coming soon.</p>
                     </div>
                 )}
@@ -484,7 +484,7 @@ export default function VendorPage() {
                         <div className="p-8 space-y-6">
                             <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border shadow-inner">
                                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                                    <itemIcon className="h-6 w-6 text-primary" />
+                                    <ItemIcon className="h-6 w-6 text-primary" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-black text-sm uppercase tracking-tight truncate">{selectedMeal.name}</p>
