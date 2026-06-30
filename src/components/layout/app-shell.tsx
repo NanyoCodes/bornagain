@@ -255,6 +255,14 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                     <span>Marketplace</span>
                   </Link>
                 </DropdownMenuItem>
+                {userProfile?.isVendor && (
+                  <DropdownMenuItem asChild className="rounded-lg mx-1">
+                    <Link href={`/dashboard/marketplace/vendors/${user.uid}`}>
+                      <Store className="mr-2 h-4 w-4 text-primary" />
+                      <span>Vendor Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
                     <Link href="/guide" className="cursor-pointer">

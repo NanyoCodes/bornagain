@@ -257,6 +257,14 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                 <span>Marketplace</span>
               </Link>
             </DropdownMenuItem>
+            {userProfile?.isVendor && (
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/marketplace/vendors/${user.uid}`}>
+                  <Store className="mr-2 h-4 w-4 text-primary" />
+                  <span>Vendor Profile</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
                 <Link href="/guide" className="cursor-pointer">
