@@ -259,7 +259,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
                   <Link href="/dashboard/marketplace/gifts">
                     <Gift className="mr-2 h-4 w-4" />
-                    <span>Kindness (Gifts)</span>
+                    <span>Kindness Center</span>
                   </Link>
                 </DropdownMenuItem>
                 {userProfile?.isVendor && (
