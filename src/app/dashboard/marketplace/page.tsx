@@ -1,36 +1,29 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useUserProfile, useDoc } from '@/firebase';
-import { collection, query, where, orderBy, doc, updateDoc, serverTimestamp, addDoc, limit } from 'firebase/firestore';
-import type { VendorProfile, UserProfile } from '@/lib/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { collection, query, where, doc, updateDoc, serverTimestamp, addDoc, limit } from 'firebase/firestore';
+import type { VendorProfile } from '@/lib/types';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
     Search, 
     Store, 
     Utensils, 
     Loader2, 
     PlusCircle, 
-    ArrowRight, 
     MapPin, 
     ChevronRight,
-    Sparkles,
     ShoppingBag,
-    CreditCard,
-    Gift,
-    CheckCircle2
+    CreditCard
 } from 'lucide-react';
 import { 
     Dialog, 
     DialogContent, 
     DialogHeader, 
     DialogTitle, 
-    DialogDescription,
-    DialogFooter 
+    DialogDescription 
 } from '@/components/ui/dialog';
 import { 
     Sheet, 
@@ -44,13 +37,10 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 export default function ProvisionMarketplacePage() {
     const { user } = useUser();
-    const { userProfile } = useUserProfile();
     const firestore = useFirestore();
     const { toast } = useToast();
     const router = useRouter();
@@ -65,7 +55,6 @@ export default function ProvisionMarketplacePage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [regVendorType, setRegVendorType] = useState<'meal' | 'gift'>('meal');
 
     useEffect(() => {
         setMounted(true);
@@ -126,7 +115,7 @@ export default function ProvisionMarketplacePage() {
             location,
             paymentDetails: paymentDetails || '',
             status: 'active',
-            vendorType: regVendorType,
+            vendorType: 'meal', // Locked to meal for this hub
             photoURL: user.photoURL || '',
             createdAt: serverTimestamp(),
         };
@@ -134,11 +123,11 @@ export default function ProvisionMarketplacePage() {
         try {
             const newVendorDoc = await addDoc(vendorsRef, vendorData);
             await updateDoc(userRef, { isVendor: true });
-            toast({ title: 'Welcome, Partner!', description: 'Your vendor profile is now active.' });
+            toast({ title: 'Welcome, Provision Partner!', description: 'Your meal storefront is now active.' });
             setIsRegisterOpen(false);
             router.push(`/dashboard/marketplace/vendors/${newVendorDoc.id}`);
         } catch (err) {
-            toast({ variant: 'destructive', title: 'Registration Failed', description: 'Could not create vendor profile.' });
+            toast({ variant: 'destructive', title: 'Registration Failed', description: 'Could not create storefront profile.' });
         } finally {
             setIsSubmitting(false);
         }
@@ -147,18 +136,9 @@ export default function ProvisionMarketplacePage() {
     const registrationForm = (
         <form onSubmit={handleRegisterVendor}>
             <div className="p-8 space-y-6">
-                <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">What are you offering?</Label>
-                    <RadioGroup value={regVendorType} onValueChange={(val) => setRegVendorType(val as any)} className="flex gap-4">
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="meal" id="reg-meal" />
-                            <Label htmlFor="reg-meal" className="font-bold">Meal Service</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="gift" id="reg-gift" />
-                            <Label htmlFor="reg-gift" className="font-bold">Gift/Products</Label>
-                        </div>
-                    </RadioGroup>
+                <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 flex items-center gap-3">
+                    <Utensils className="h-5 w-5 text-primary" />
+                    <p className="text-xs font-bold text-primary uppercase tracking-widest">Registering for Meals Center</p>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
@@ -170,7 +150,7 @@ export default function ProvisionMarketplacePage() {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About Your Service</Label>
-                    <Textarea id="description" name="description" placeholder="Describe your service and mission..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />
+                    <Textarea id="description" name="description" placeholder="Describe your food service and mission..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
@@ -184,7 +164,7 @@ export default function ProvisionMarketplacePage() {
                 <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="rounded-xl h-12 flex-1">Cancel</Button>
                 <Button type="submit" disabled={isSubmitting} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Register Service
+                    Launch Storefront
                 </Button>
             </div>
         </form>
@@ -195,9 +175,9 @@ export default function ProvisionMarketplacePage() {
             <header className="px-4 sm:px-0 space-y-4 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="space-y-1">
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Provision Marketplace</h1>
+                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Meals Center</h1>
                         <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
-                           <Utensils className="h-4 w-4 text-primary" /> Meals Center
+                           <Utensils className="h-4 w-4 text-primary" /> Provision Hub
                         </p>
                     </div>
                     <div className="flex gap-2">
@@ -298,7 +278,7 @@ export default function ProvisionMarketplacePage() {
                             <SheetHeader className="text-left">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Become a Provider</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">
-                                    Establish your presence and start providing physical tokens of kindness.
+                                    Register your meal service and start providing physical provision.
                                 </SheetDescription>
                             </SheetHeader>
                         </div>
@@ -314,7 +294,7 @@ export default function ProvisionMarketplacePage() {
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Become a Provider</DialogTitle>
                                 <DialogDescription className="text-sm font-medium mt-1">
-                                    Establish your presence and start providing physical tokens of kindness.
+                                    Register your meal service and start providing physical provision.
                                 </DialogDescription>
                             </DialogHeader>
                         </div>
