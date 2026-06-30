@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
-import { collection, query, where, doc, updateDoc, serverTimestamp, addDoc, limit } from 'firebase/firestore';
+import { collection, query, where, doc, updateDoc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
 import type { VendorProfile } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function ProvisionMarketplacePage() {
     const { user } = useUser();
@@ -105,7 +107,7 @@ export default function ProvisionMarketplacePage() {
         );
     }, [vendors, searchTerm]);
 
-    const handleRegisterVendor = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleRegisterVendor = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!user || !firestore) return;
         
@@ -118,7 +120,9 @@ export default function ProvisionMarketplacePage() {
         if (!businessName) return;
 
         setIsSubmitting(true);
-        const vendorsRef = collection(firestore, 'vendors');
+        
+        const batch = writeBatch(firestore);
+        const newVendorRef = doc(collection(firestore, 'vendors'));
         const userRef = doc(firestore, 'users', user.uid);
 
         const vendorData = {
@@ -133,17 +137,26 @@ export default function ProvisionMarketplacePage() {
             createdAt: serverTimestamp(),
         };
 
-        try {
-            const newVendorDoc = await addDoc(vendorsRef, vendorData);
-            await updateDoc(userRef, { isVendor: true });
-            toast({ title: 'Welcome, Provision Partner!', description: 'Your meal storefront is now active.' });
-            setIsRegisterOpen(false);
-            router.push(`/dashboard/marketplace/vendors/${newVendorDoc.id}`);
-        } catch (err) {
-            toast({ variant: 'destructive', title: 'Registration Failed', description: 'Could not create storefront profile.' });
-        } finally {
-            setIsSubmitting(false);
-        }
+        batch.set(newVendorRef, vendorData);
+        batch.update(userRef, { isVendor: true });
+
+        batch.commit()
+            .then(() => {
+                toast({ title: 'Welcome, Provision Partner!', description: 'Your meal storefront is now active.' });
+                setIsRegisterOpen(false);
+                router.push(`/dashboard/marketplace/vendors/${newVendorRef.id}`);
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: `BATCH_WRITE:REGISTER_VENDOR`,
+                    operation: 'write',
+                    requestResourceData: { vendorData, isVendor: true }
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsSubmitting(false);
+            });
     };
 
     const registrationForm = (
@@ -186,7 +199,7 @@ export default function ProvisionMarketplacePage() {
     return (
         <div 
             className="space-y-10 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen ? true : undefined}
+            inert={isAnyModalOpen}
         >
             <header className="px-4 sm:px-0 space-y-4 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">

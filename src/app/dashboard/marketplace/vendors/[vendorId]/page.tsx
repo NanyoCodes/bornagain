@@ -61,6 +61,8 @@ import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Separator } from '@/components/ui/separator';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function VendorPage() {
     const params = useParams();
@@ -129,7 +131,7 @@ export default function VendorPage() {
     const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
     const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
 
-    const handleAddMeal = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleAddMeal = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!user || !firestore || !isOwner) return;
         
@@ -142,41 +144,58 @@ export default function VendorPage() {
         if (!name || isNaN(price)) return;
 
         setIsSubmittingMeal(true);
-        try {
-            const mealsRef = collection(firestore, 'vendors', vendorId, 'meals');
-            await addDoc(mealsRef, {
-                vendorId,
-                name,
-                price,
-                description,
-                category,
-                currency: 'NGN',
-                createdAt: serverTimestamp(),
+        const mealsRef = collection(firestore, 'vendors', vendorId, 'meals');
+        const mealData = {
+            vendorId,
+            name,
+            price,
+            description,
+            category,
+            currency: 'NGN',
+            createdAt: serverTimestamp(),
+        };
+
+        addDoc(mealsRef, mealData)
+            .then(() => {
+                toast({ title: 'Item Added', description: `"${name}" has been added to your ${isGiftVendor ? 'catalog' : 'menu'}.` });
+                setIsAddMealOpen(false);
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: `vendors/${vendorId}/meals`,
+                    operation: 'create',
+                    requestResourceData: mealData
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsSubmittingMeal(false);
             });
-            toast({ title: 'Item Added', description: `"${name}" has been added to your ${isGiftVendor ? 'catalog' : 'menu'}.` });
-            setIsAddMealOpen(false);
-        } catch (err) {
-            toast({ variant: 'destructive', title: 'Failed to add item' });
-        } finally {
-            setIsSubmittingMeal(false);
-        }
     };
 
-    const handleDeleteItem = async () => {
+    const handleDeleteItem = () => {
         if (!user || !firestore || !itemToDelete || !isOwner) return;
         setIsDeletingItem(true);
-        try {
-            await deleteDoc(doc(firestore, 'vendors', vendorId, 'meals', itemToDelete.id));
-            toast({ title: 'Item Removed', description: `"${itemToDelete.name}" has been deleted.` });
-            setItemToDelete(null);
-        } catch (err) {
-            toast({ variant: 'destructive', title: 'Deletion Failed' });
-        } finally {
-            setIsDeletingItem(false);
-        }
+        const mealRef = doc(firestore, 'vendors', vendorId, 'meals', itemToDelete.id);
+        
+        deleteDoc(mealRef)
+            .then(() => {
+                toast({ title: 'Item Removed', description: `"${itemToDelete.name}" has been deleted.` });
+                setItemToDelete(null);
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: mealRef.path,
+                    operation: 'delete'
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsDeletingItem(false);
+            });
     };
 
-    const handleUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleUpdateProfile = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!user || !firestore || !isOwner || !vendor) return;
 
@@ -187,91 +206,116 @@ export default function VendorPage() {
         const paymentDetails = formData.get('paymentDetails') as string;
 
         setIsUpdatingProfile(true);
-        try {
-            await updateDoc(doc(firestore, 'vendors', vendorId), {
-                businessName,
-                description,
-                location,
-                paymentDetails,
-                updatedAt: serverTimestamp(),
+        const vendorRef = doc(firestore, 'vendors', vendorId);
+        const updateData = {
+            businessName,
+            description,
+            location,
+            paymentDetails,
+            updatedAt: serverTimestamp(),
+        };
+
+        updateDoc(vendorRef, updateData)
+            .then(() => {
+                toast({ title: 'Profile Updated' });
+                setIsEditProfileOpen(false);
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: vendorRef.path,
+                    operation: 'update',
+                    requestResourceData: updateData
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsUpdatingProfile(false);
             });
-            toast({ title: 'Profile Updated' });
-            setIsEditProfileOpen(false);
-        } catch (err) {
-            toast({ variant: 'destructive', title: 'Update Failed' });
-        } finally {
-            setIsUpdatingProfile(false);
-        }
     };
 
-    const handleDeleteStore = async () => {
+    const handleDeleteStore = () => {
         if (!user || !firestore || !isOwner || !vendor) return;
         setIsDeletingStore(true);
-        try {
-            await deleteDoc(doc(firestore, 'vendors', vendorId));
-            toast({ title: 'Storefront Deleted', description: 'Your business profile has been removed.' });
-            setIsDeleteStoreOpen(false);
-            router.push(isGiftVendor ? '/dashboard/marketplace/gifts' : '/dashboard/marketplace');
-        } catch (err) {
-            toast({ variant: 'destructive', title: 'Deletion Failed' });
-        } finally {
-            setIsDeletingStore(false);
-        }
+        const vendorRef = doc(firestore, 'vendors', vendorId);
+
+        deleteDoc(vendorRef)
+            .then(() => {
+                toast({ title: 'Storefront Deleted', description: 'Your business profile has been removed.' });
+                setIsDeleteStoreOpen(false);
+                router.push(isGiftVendor ? '/dashboard/marketplace/gifts' : '/dashboard/marketplace');
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: vendorRef.path,
+                    operation: 'delete'
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsDeletingStore(false);
+            });
     };
 
-    const handleGiftMeal = async () => {
+    const handleGiftMeal = () => {
         if (!user || !firestore || !selectedMeal || !soulId || !soulName) return;
 
         setIsProcessingOrder(true);
-        try {
-            const giftsRef = collection(firestore, 'mealGifts');
-            const giftData: any = {
-                senderId: user.uid,
-                recipientSoulId: soulId,
-                recipientName: soulName,
-                vendorId: vendorId,
-                vendorName: vendor?.businessName || 'Unknown Vendor',
-                mealId: selectedMeal.id,
-                mealName: selectedMeal.name,
-                price: selectedMeal.price,
-                status: 'ordered',
-                createdAt: serverTimestamp(),
-            };
+        const giftsRef = collection(firestore, 'mealGifts');
+        const giftData: any = {
+            senderId: user.uid,
+            recipientSoulId: soulId,
+            recipientName: soulName,
+            vendorId: vendorId,
+            vendorName: vendor?.businessName || 'Unknown Vendor',
+            mealId: selectedMeal.id,
+            mealName: selectedMeal.name,
+            price: selectedMeal.price,
+            status: 'ordered',
+            createdAt: serverTimestamp(),
+        };
 
-            await addDoc(giftsRef, giftData);
+        const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
+        const globalSoulRef = doc(firestore, 'souls', soulId);
+        
+        const displayAction = isGiftVendor ? 'sent a gift' : 'shared a meal';
+        const logActionId = isGiftVendor ? 'gave_gift' : 'shared_meal';
+        
+        const logEntry = {
+            date: new Date(),
+            note: `Logged via ${centerLabel}: ${displayAction} (${selectedMeal.name}) via ${vendor?.businessName}. Payment initiated.`,
+            actions: [logActionId],
+            memberId: user.uid,
+            memberName: `${userProfile?.firstName} ${userProfile?.lastName}`,
+        };
 
-            const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
-            const globalSoulRef = doc(firestore, 'souls', soulId);
-            
-            const displayAction = isGiftVendor ? 'sent a gift' : 'shared a meal';
-            const logActionId = isGiftVendor ? 'gave_gift' : 'shared_meal';
-            
-            const logEntry = {
-                date: new Date(),
-                note: `Logged via ${centerLabel}: ${displayAction} (${selectedMeal.name}) via ${vendor?.businessName}. Payment initiated.`,
-                actions: [logActionId],
-                memberId: user.uid,
-                memberName: `${userProfile?.firstName} ${userProfile?.lastName}`,
-            };
+        const batch = writeBatch(firestore);
+        batch.set(doc(giftsRef), giftData);
+        batch.update(soulRef, {
+            followUpLog: arrayUnion(logEntry),
+            lastUpdatedAt: serverTimestamp(),
+        });
+        batch.update(globalSoulRef, {
+            followUpLog: arrayUnion(logEntry),
+            lastUpdatedAt: serverTimestamp(),
+        });
 
-            await updateDoc(soulRef, {
-                followUpLog: arrayUnion(logEntry),
-                lastUpdatedAt: serverTimestamp(),
+        batch.commit()
+            .then(() => {
+                toast({ title: 'Order Placed!', description: `The ${selectedMeal.name} for ${soulName} is now in progress.` });
+                setSelectedMeal(null);
+                router.push('/dashboard/souls-won');
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: `BATCH_WRITE:GIFT_ITEM`,
+                    operation: 'write',
+                    requestResourceData: { giftData, logEntry }
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsProcessingOrder(false);
             });
-            await updateDoc(globalSoulRef, {
-                followUpLog: arrayUnion(logEntry),
-                lastUpdatedAt: serverTimestamp(),
-            });
-
-            toast({ title: 'Order Placed!', description: `The ${selectedMeal.name} for ${soulName} is now in progress.` });
-            setSelectedMeal(null);
-            router.push('/dashboard/souls-won');
-        } catch (err) {
-            console.error(err);
-            toast({ variant: 'destructive', title: 'Gift Failed', description: 'Could not process the gift order.' });
-        } finally {
-            setIsProcessingOrder(false);
-        }
     };
 
     const copyPaymentToClipboard = () => {
@@ -442,7 +486,7 @@ export default function VendorPage() {
     return (
         <div 
             className="space-y-8 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen ? true : undefined}
+            inert={isAnyModalOpen}
         >
             <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
