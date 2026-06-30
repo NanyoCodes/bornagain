@@ -58,7 +58,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Separator } from '@/components/ui/separator';
@@ -499,7 +499,7 @@ export default function VendorPage() {
                                 <CenterIcon className="h-3 w-3 text-primary" />
                                 <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
-                            <h1 className="text-xl sm:text-3xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
+                            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
                             <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Kingdom Network'}</p>
                         </div>
                     </div>
@@ -558,6 +558,12 @@ export default function VendorPage() {
                             </p>
                         </div>
                     </div>
+                )}
+
+                {vendor.description && (
+                  <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0">
+                    &ldquo;{vendor.description}&rdquo;
+                  </p>
                 )}
             </div>
 
@@ -637,8 +643,8 @@ export default function VendorPage() {
                             </div>
                             <div className="p-6 space-y-4 flex-grow">
                                 <div className="min-w-0">
-                                    <h3 className="text-lg font-black uppercase tracking-tight truncate">{meal.name}</h3>
-                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic leading-relaxed break-words">{meal.description || `Verified ${centerLabel} item.`}</p>
+                                    <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate">{meal.name}</h3>
+                                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic leading-relaxed break-words">{meal.description || `Verified ${centerLabel} item.`}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -720,7 +726,7 @@ export default function VendorPage() {
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
                 <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight">Remove {itemLabel}?</AlertDialogTitle>
+                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl">Remove {itemLabel}?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium">
                             Are you sure you want to delete "{itemToDelete?.name}" from your storefront?
                         </AlertDialogDescription>
