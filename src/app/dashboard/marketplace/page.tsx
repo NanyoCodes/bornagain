@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useCollection, useUserProfile, useDoc } from '@/firebase';
-import { collection, query, where, orderBy, doc, updateDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, updateDoc, serverTimestamp, addDoc, limit } from 'firebase/firestore';
 import type { VendorProfile, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -81,11 +81,17 @@ export default function ProvisionMarketplacePage() {
     }, [firestore]);
     const { data: vendors, loading } = useCollection<VendorProfile>(vendorsQuery);
 
-    const myVendorRef = useMemo(() => {
+    const myMealVendorsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
-        return doc(firestore, 'vendors', user.uid);
+        return query(
+            collection(firestore, 'vendors'), 
+            where('userId', '==', user.uid), 
+            where('vendorType', '==', 'meal'),
+            limit(1)
+        );
     }, [user?.uid, firestore]);
-    const { data: myVendorProfile } = useDoc<VendorProfile>(myVendorRef);
+    const { data: myMealVendors } = useCollection<VendorProfile>(myMealVendorsQuery);
+    const myVendorProfile = myMealVendors?.[0];
 
     const filteredVendors = useMemo(() => {
         if (!vendors) return [];
@@ -110,7 +116,7 @@ export default function ProvisionMarketplacePage() {
         if (!businessName) return;
 
         setIsSubmitting(true);
-        const vendorRef = doc(firestore, 'vendors', user.uid);
+        const vendorsRef = collection(firestore, 'vendors');
         const userRef = doc(firestore, 'users', user.uid);
 
         const vendorData = {
@@ -126,11 +132,11 @@ export default function ProvisionMarketplacePage() {
         };
 
         try {
-            await setDoc(vendorRef, vendorData);
+            const newVendorDoc = await addDoc(vendorsRef, vendorData);
             await updateDoc(userRef, { isVendor: true });
             toast({ title: 'Welcome, Partner!', description: 'Your vendor profile is now active.' });
             setIsRegisterOpen(false);
-            router.push(`/dashboard/marketplace/vendors/${user.uid}`);
+            router.push(`/dashboard/marketplace/vendors/${newVendorDoc.id}`);
         } catch (err) {
             toast({ variant: 'destructive', title: 'Registration Failed', description: 'Could not create vendor profile.' });
         } finally {
@@ -195,8 +201,8 @@ export default function ProvisionMarketplacePage() {
                         </p>
                     </div>
                     <div className="flex gap-2">
-                        {userProfile?.isVendor && myVendorProfile?.vendorType === 'meal' ? (
-                            <Button onClick={() => router.push(`/dashboard/marketplace/vendors/${user?.uid}`)} variant="outline" className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-md">
+                        {myVendorProfile ? (
+                            <Button onClick={() => router.push(`/dashboard/marketplace/vendors/${myVendorProfile.id}`)} variant="outline" className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-md">
                                 <Store className="mr-2 h-4 w-4" /> My Storefront
                             </Button>
                         ) : (

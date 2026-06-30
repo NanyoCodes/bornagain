@@ -50,7 +50,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
-import type { Notification, UserProfile } from "@/lib/types";
+import type { Notification, UserProfile, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -103,6 +103,12 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
 
   const { data: unreadOtherNotifications } = useCollection<Notification>(otherNotificationsQuery);
   const unreadCount = unreadOtherNotifications?.length ?? 0;
+
+  const userVendorsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, 'vendors'), where('userId', '==', user.uid));
+  }, [user?.uid, firestore]);
+  const { data: userVendors } = useCollection<VendorProfile>(userVendorsQuery);
 
   const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
 
@@ -264,14 +270,14 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
                 <span>Kindness Center</span>
               </Link>
             </DropdownMenuItem>
-            {userProfile?.isVendor && (
-              <DropdownMenuItem asChild>
-                <Link href={`/dashboard/marketplace/vendors/${user.uid}`}>
+            {userVendors && userVendors.length > 0 && userVendors.map(v => (
+              <DropdownMenuItem key={v.id} asChild className="rounded-lg mx-1">
+                <Link href={`/dashboard/marketplace/vendors/${v.id}`}>
                   <Store className="mr-2 h-4 w-4 text-primary" />
-                  <span>Vendor Profile</span>
+                  <span>{v.vendorType === 'meal' ? 'Meals' : 'Kindness'} Storefront</span>
                 </Link>
               </DropdownMenuItem>
-            )}
+            ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
                 <Link href="/guide" className="cursor-pointer">
@@ -414,7 +420,7 @@ export default function DashboardClientLayout({ children }: { children: React.Re
 
   if (loading || (profileLoading && !userProfile) || !user?.uid) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
         <div className="relative mb-8">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
             <div className="absolute inset-0 flex items-center justify-center">

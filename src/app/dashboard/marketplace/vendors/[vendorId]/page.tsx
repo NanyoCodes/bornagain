@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, setDoc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, MealGift, Chat } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -91,7 +91,7 @@ export default function VendorPage() {
     }, [firestore, vendorId]);
     const { data: meals, loading: loadingMeals } = useCollection<Meal>(mealsQuery);
 
-    const isOwner = user?.uid === vendorId;
+    const isOwner = user?.uid === vendor?.userId;
     const isGiftVendor = vendor?.vendorType === 'gift';
     
     // UI Helpers based on vendor type
@@ -235,6 +235,8 @@ export default function VendorPage() {
             </div>
         );
     }
+
+    if (!vendor) return <div className="text-center py-20">Storefront not found.</div>;
 
     const editProfileForm = (
         <form onSubmit={handleUpdateProfile}>
