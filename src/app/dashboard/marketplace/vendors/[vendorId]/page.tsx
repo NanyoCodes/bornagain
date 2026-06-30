@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
-import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, getDoc, deleteDoc, writeBatch } from 'firebase/firestore';
+import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, Chat } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,6 @@ import {
     Loader2, 
     ShoppingBag, 
     MapPin, 
-    Heart,
     CreditCard,
     Edit,
     Trash2,
@@ -23,8 +22,7 @@ import {
     Gift,
     Package,
     ChefHat,
-    ChevronRight,
-    X
+    ChevronRight
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -487,20 +485,20 @@ export default function VendorPage() {
     return (
         <div 
             className="space-y-8 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen ? true : undefined}
+            inert={isAnyModalOpen}
         >
-            <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4">
+            <div className="px-4 sm:px-0 flex flex-col gap-4 sm:gap-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="flex items-center gap-4 min-w-0">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background">
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
                         <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 mb-1">
                                 <CenterIcon className="h-3 w-3 text-primary" />
-                                <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
+                                <span className="text-[8px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
-                            <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
+                            <h1 className="text-lg sm:text-2xl md:text-4xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
                             <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Kingdom Network'}</p>
                         </div>
                     </div>
@@ -554,7 +552,7 @@ export default function VendorPage() {
                             <p className="text-lg font-black uppercase tracking-tight leading-tight">
                                 {actionLabel} for {soulName}
                             </p>
-                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1 text-balance">
+                            <p className="text-[11px] sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1 text-balance">
                                 Select an item from the catalog below to gift as an act of Kingdom love.
                             </p>
                         </div>
@@ -562,7 +560,7 @@ export default function VendorPage() {
                 )}
 
                 {vendor.description && (
-                  <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0">
+                  <p className="text-[11px] sm:text-sm md:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance">
                     &ldquo;{vendor.description}&rdquo;
                   </p>
                 )}
@@ -645,7 +643,7 @@ export default function VendorPage() {
                             <div className="p-6 space-y-4 flex-grow">
                                 <div className="min-w-0">
                                     <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate">{meal.name}</h3>
-                                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic leading-relaxed break-words">{meal.description || `Verified ${centerLabel} item.`}</p>
+                                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-1.5 font-medium italic leading-relaxed break-words">{meal.description || `Verified ${centerLabel} item.`}</p>
                                 </div>
                             </div>
                         </CardContent>
