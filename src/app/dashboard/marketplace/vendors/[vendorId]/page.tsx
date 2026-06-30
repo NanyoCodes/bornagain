@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
-import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, setDoc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, setDoc, updateDoc, arrayUnion, getDoc, deleteDoc } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, MealGift, Chat } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -46,6 +47,16 @@ import {
     SheetDescription,
     SheetTrigger
 } from '@/components/ui/sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -73,10 +84,12 @@ export default function VendorPage() {
 
     const [isAddMealOpen, setIsAddMealOpen] = useState(false);
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+    const [isDeleteStoreOpen, setIsDeleteStoreOpen] = useState(false);
     const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
     const [isProcessingOrder, setIsProcessingOrder] = useState(false);
     const [isSubmittingMeal, setIsSubmittingMeal] = useState(false);
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+    const [isDeletingStore, setIsDeletingStore] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -163,6 +176,21 @@ export default function VendorPage() {
             toast({ variant: 'destructive', title: 'Update Failed' });
         } finally {
             setIsUpdatingProfile(false);
+        }
+    };
+
+    const handleDeleteStore = async () => {
+        if (!user || !firestore || !isOwner || !vendor) return;
+        setIsDeletingStore(true);
+        try {
+            await deleteDoc(doc(firestore, 'vendors', vendorId));
+            toast({ title: 'Storefront Deleted', description: 'Your business profile has been removed.' });
+            setIsDeleteStoreOpen(false);
+            router.push(isGiftVendor ? '/dashboard/marketplace/gifts' : '/dashboard/marketplace');
+        } catch (err) {
+            toast({ variant: 'destructive', title: 'Deletion Failed' });
+        } finally {
+            setIsDeletingStore(false);
         }
     };
 
@@ -265,6 +293,23 @@ export default function VendorPage() {
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payment Instructions</Label>
                         <Textarea name="paymentDetails" defaultValue={vendor.paymentDetails} placeholder="Bank details..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" required />
                         <p className="text-[9px] text-muted-foreground px-1 italic">Users see this to pay you for gifts.</p>
+                    </div>
+
+                    <Separator />
+
+                    <div className="pt-4">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-destructive ml-1">Danger Zone</Label>
+                        <Card className="border-destructive/20 bg-destructive/5 mt-2">
+                            <CardContent className="p-4 flex items-center justify-between gap-4">
+                                <div className="space-y-1">
+                                    <p className="text-xs font-bold text-destructive">Delete Storefront</p>
+                                    <p className="text-[10px] text-muted-foreground leading-tight">Permanently remove your business from Testify.</p>
+                                </div>
+                                <Button type="button" variant="destructive" size="sm" onClick={() => setIsDeleteStoreOpen(true)} className="rounded-xl h-8 font-black uppercase tracking-widest text-[9px]">
+                                    Delete
+                                </Button>
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
             </ScrollArea>
@@ -369,7 +414,7 @@ export default function VendorPage() {
                 {soulName && (
                     <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-center gap-5 shadow-inner animate-in fade-in slide-in-from-top-4">
                         <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shrink-0">
-                            {isGiftVendor ? <Gift className="h-6 w-6 text-white" /> : <ChefHat className="h-6 w-6 text-white" />}
+                            <CenterIcon className="h-6 w-6 text-white" />
                         </div>
                         <div className="min-w-0">
                             <p className="text-lg font-black uppercase tracking-tight leading-tight">
@@ -541,6 +586,24 @@ export default function VendorPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
+                <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Delete Storefront?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+                            This action is permanent and will remove "{vendor.businessName}" and its entire {isGiftVendor ? 'catalog' : 'menu'} from the Testify Network.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="mt-6 gap-3">
+                        <AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
+                            {isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                            Confirm Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
