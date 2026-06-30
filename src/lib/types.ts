@@ -108,6 +108,7 @@ export type UserProfile = {
   favoritePassages?: string[];
   monthlySoulsGoal?: number;
   lastActive?: Timestamp;
+  isVendor?: boolean;
 };
 
 export type Achievement = {
@@ -414,4 +415,41 @@ export type JoinedFellowship = {
     id: string;
     fellowshipId: string;
     joinedAt: Timestamp;
+};
+
+export type VendorProfile = {
+  id: string;
+  userId: string;
+  businessName: string;
+  description?: string;
+  photoURL?: string;
+  location?: string;
+  phone?: string;
+  status: 'active' | 'inactive';
+  paymentDetails?: string;
+};
+
+export type Meal = {
+  id: string;
+  vendorId: string;
+  name: string;
+  description?: string;
+  price: number;
+  currency: string;
+  photoURL?: string;
+  category?: string;
+};
+
+export type MealGift = {
+  id: string;
+  senderId: string;
+  recipientSoulId: string;
+  recipientName: string;
+  vendorId: string;
+  vendorName: string;
+  mealId: string;
+  mealName: string;
+  price: number;
+  status: 'ordered' | 'preparing' | 'delivering' | 'delivered';
+  createdAt: Timestamp;
 };

@@ -20,7 +20,8 @@ import {
     MapPin, 
     ChevronRight,
     Sparkles,
-    ShoppingBag
+    ShoppingBag,
+    CreditCard
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -76,6 +77,7 @@ export default function MarketplacePage() {
         const businessName = formData.get('businessName') as string;
         const description = formData.get('description') as string;
         const location = formData.get('location') as string;
+        const paymentDetails = formData.get('paymentDetails') as string;
 
         if (!businessName) return;
 
@@ -88,6 +90,7 @@ export default function MarketplacePage() {
             businessName,
             description,
             location,
+            paymentDetails: paymentDetails || '',
             status: 'active',
             photoURL: user.photoURL || '',
             createdAt: serverTimestamp(),
@@ -98,6 +101,7 @@ export default function MarketplacePage() {
             await updateDoc(userRef, { isVendor: true });
             toast({ title: 'Welcome, Partner!', description: 'Your vendor profile is now active.' });
             setIsRegisterOpen(false);
+            router.push(`/dashboard/marketplace/vendors/${user.uid}`);
         } catch (err) {
             toast({ variant: 'destructive', title: 'Registration Failed', description: 'Could not create vendor profile.' });
         } finally {
@@ -115,9 +119,13 @@ export default function MarketplacePage() {
                            <Utensils className="h-4 w-4 text-primary" /> Provision & Kindness
                         </p>
                     </div>
-                    {!userProfile?.isVendor && (
+                    {userProfile?.isVendor ? (
+                         <Button onClick={() => router.push(`/dashboard/marketplace/vendors/${user?.uid}`)} variant="outline" className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-md">
+                            <Store className="mr-2 h-4 w-4" /> Manage My Storefront
+                        </Button>
+                    ) : (
                         <Button onClick={() => setIsRegisterOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20">
-                            <Store className="mr-2 h-4 w-4" /> Start Selling Meals
+                            <Store className="mr-2 h-4 w-4" /> Become a Vendor
                         </Button>
                     )}
                 </div>
@@ -130,7 +138,7 @@ export default function MarketplacePage() {
                             </div>
                             <div>
                                 <p className="text-lg font-black uppercase tracking-tight leading-tight">Gift a Meal to {soulName}</p>
-                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-80">Choose a vendor below to see their menu</p>
+                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-80">Choose a vendor below to see their menu and gift a meal.</p>
                             </div>
                         </div>
                         <ShoppingBag className="h-8 w-8 text-primary opacity-20 rotate-12 group-hover:rotate-0 transition-transform" />
@@ -184,7 +192,7 @@ export default function MarketplacePage() {
                                         &ldquo;{vendor.description || 'Verified Kingdom meal partner dedicated to feeding the harvest.'}&rdquo;
                                     </p>
                                     <Button variant="ghost" className="w-full justify-between h-10 rounded-xl px-4 hover:bg-primary/5 hover:text-primary transition-all font-black text-xs uppercase tracking-widest">
-                                        View Menu
+                                        View Menu & Gifting Options
                                         <ChevronRight className="h-4 w-4" />
                                     </Button>
                                 </div>
@@ -204,7 +212,7 @@ export default function MarketplacePage() {
                 <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                     <DialogHeader className="p-8 border-b bg-muted/10">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Become a Provider</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">Join our network of believers providing physical nourishment.</DialogDescription>
+                        <DialogDescription className="text-sm font-medium">Join our network of believers providing physical nourishment and meal gifting.</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleRegisterVendor}>
                         <div className="p-8 space-y-6">
@@ -219,6 +227,13 @@ export default function MarketplacePage() {
                             <div className="space-y-2">
                                 <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About Your Service</Label>
                                 <Textarea id="description" name="description" placeholder="Describe your food and mission..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+                                    <CreditCard className="h-3 w-3" /> Payment Details
+                                </Label>
+                                <Textarea id="paymentDetails" name="paymentDetails" placeholder="Bank account number, bank name, or payment link..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none" required />
+                                <p className="text-[9px] text-muted-foreground px-1 italic">Users will see this to pay you when gifting meals.</p>
                             </div>
                         </div>
                         <DialogFooter className="p-8 bg-muted/5 border-t gap-3">

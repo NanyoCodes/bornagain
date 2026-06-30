@@ -253,7 +253,11 @@
         "photoURL": { "type": "string", "format": "uri" },
         "location": { "type": "string" },
         "phone": { "type": "string" },
-        "status": { "type": "string", "enum": ["active", "inactive"] }
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "paymentDetails": {
+          "type": "string",
+          "description": "Bank details or payment instructions for receiving funds."
+        }
       },
       "required": ["userId", "businessName"]
     },

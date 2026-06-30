@@ -20,7 +20,11 @@ import {
     MapPin, 
     Phone, 
     Heart,
-    Store
+    Store,
+    CreditCard,
+    Edit,
+    Trash2,
+    Clipboard
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -51,9 +55,11 @@ export default function VendorPage() {
     const { toast } = useToast();
 
     const [isAddMealOpen, setIsAddMealOpen] = useState(false);
+    const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
     const [isProcessingOrder, setIsProcessingOrder] = useState(false);
     const [isSubmittingMeal, setIsSubmittingMeal] = useState(false);
+    const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
     const vendorDocRef = useMemo(() => vendorId ? doc(firestore, 'vendors', vendorId) : null, [firestore, vendorId]);
     const { data: vendor, loading: loadingVendor } = useDoc<VendorProfile>(vendorDocRef);
@@ -99,6 +105,34 @@ export default function VendorPage() {
         }
     };
 
+    const handleUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!user || !firestore || !isOwner || !vendor) return;
+
+        const formData = new FormData(e.currentTarget);
+        const businessName = formData.get('businessName') as string;
+        const description = formData.get('description') as string;
+        const location = formData.get('location') as string;
+        const paymentDetails = formData.get('paymentDetails') as string;
+
+        setIsUpdatingProfile(true);
+        try {
+            await updateDoc(doc(firestore, 'vendors', vendorId), {
+                businessName,
+                description,
+                location,
+                paymentDetails,
+                updatedAt: serverTimestamp(),
+            });
+            toast({ title: 'Profile Updated' });
+            setIsEditProfileOpen(false);
+        } catch (err) {
+            toast({ variant: 'destructive', title: 'Update Failed' });
+        } finally {
+            setIsUpdatingProfile(false);
+        }
+    };
+
     const handleGiftMeal = async () => {
         if (!user || !firestore || !selectedMeal || !soulId || !soulName) return;
 
@@ -125,7 +159,7 @@ export default function VendorPage() {
             const globalSoulRef = doc(firestore, 'souls', soulId);
             const logEntry = {
                 date: new Date(),
-                note: `Sent a gifted meal (${selectedMeal.name}) via ${vendor?.businessName}.`,
+                note: `Sent a gifted meal (${selectedMeal.name}) via ${vendor?.businessName}. Payment sent as per instructions.`,
                 actions: ['shared_meal'],
                 memberId: user.uid,
                 memberName: `${userProfile?.firstName} ${userProfile?.lastName}`,
@@ -151,11 +185,17 @@ export default function VendorPage() {
         }
     };
 
+    const copyPaymentToClipboard = () => {
+        if (!vendor?.paymentDetails) return;
+        navigator.clipboard.writeText(vendor.paymentDetails);
+        toast({ title: 'Copied!', description: 'Payment details copied to clipboard.' });
+    };
+
     if (loadingVendor || loadingMeals) {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center py-20">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <p className="mt-4 text-muted-foreground font-black uppercase tracking-widest text-[10px]">Loading Menu...</p>
+                <p className="mt-4 text-muted-foreground font-black uppercase tracking-widest text-[10px]">Loading Storefront...</p>
             </div>
         );
     }
@@ -165,14 +205,21 @@ export default function VendorPage() {
     return (
         <div className="space-y-8 max-w-4xl mx-auto pb-32">
             <div className="px-4 sm:px-0 flex flex-col gap-6">
-                <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background">
-                        <ArrowLeft className="h-5 w-5" />
-                    </Button>
-                    <div className="min-w-0">
-                        <h1 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight truncate">{vendor.businessName}</h1>
-                        <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Global Delivery'}</p>
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 min-w-0">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background">
+                            <ArrowLeft className="h-5 w-5" />
+                        </Button>
+                        <div className="min-w-0">
+                            <h1 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight truncate">{vendor.businessName}</h1>
+                            <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Global Delivery'}</p>
+                        </div>
                     </div>
+                    {isOwner && (
+                        <Button variant="outline" size="sm" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-10 px-4 font-bold uppercase tracking-widest text-[10px]">
+                            <Edit className="mr-2 h-4 w-4" /> Manage Profile
+                        </Button>
+                    )}
                 </div>
 
                 {soulName && (
@@ -182,7 +229,7 @@ export default function VendorPage() {
                         </div>
                         <div>
                             <p className="text-lg font-black uppercase tracking-tight">Selecting for {soulName}</p>
-                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70">Pick a meal to send as an act of Kingdom love.</p>
+                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70">Pick a meal to send as an act of Kingdom love. Ensure you follow the vendor's payment instructions.</p>
                         </div>
                     </div>
                 )}
@@ -198,12 +245,12 @@ export default function VendorPage() {
                             <Plus className="h-8 w-8 text-primary" />
                         </div>
                         <h3 className="font-black uppercase tracking-widest text-primary text-sm">Add New Meal</h3>
-                        <p className="text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront</p>
+                        <p className="text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront menu</p>
                     </Card>
                 )}
 
                 {meals?.map(meal => (
-                    <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm">
+                    <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col">
                         <CardContent className="p-0">
                             <div className="aspect-square relative bg-muted">
                                 {meal.photoURL ? (
@@ -219,19 +266,21 @@ export default function VendorPage() {
                                     </Badge>
                                 </div>
                             </div>
-                            <div className="p-6 space-y-4">
+                            <div className="p-6 space-y-4 flex-grow">
                                 <div>
                                     <h3 className="text-lg font-black uppercase tracking-tight truncate">{meal.name}</h3>
                                     <p className="text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic">{meal.description}</p>
                                 </div>
-                                <Button 
-                                    onClick={() => setSelectedMeal(meal)}
-                                    className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/10"
-                                >
-                                    {soulName ? `Send to ${soulName}` : 'Order Meal'}
-                                </Button>
                             </div>
                         </CardContent>
+                        <CardFooter className="p-6 pt-0">
+                            <Button 
+                                onClick={() => setSelectedMeal(meal)}
+                                className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/10"
+                            >
+                                {soulName ? `Send to ${soulName}` : 'Order Meal'}
+                            </Button>
+                        </CardFooter>
                     </Card>
                 ))}
 
@@ -249,7 +298,7 @@ export default function VendorPage() {
                     <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Confirm Gift</DialogTitle>
-                            <DialogDescription className="text-sm font-medium">You are about to purchase this meal for {soulName}.</DialogDescription>
+                            <DialogDescription className="text-sm font-medium">Please send the funds directly to the vendor using the instructions below.</DialogDescription>
                         </DialogHeader>
                     </div>
                     {selectedMeal && (
@@ -264,7 +313,24 @@ export default function VendorPage() {
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-4 bg-primary/5 p-5 rounded-2xl border-2 border-dashed border-primary/20 relative group">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                                    <CreditCard className="h-3 w-3" /> Payment Instructions
+                                </Label>
+                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed">
+                                    {vendor.paymentDetails || 'Contact vendor for payment details.'}
+                                </p>
+                                <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    className="absolute top-4 right-4 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={copyPaymentToClipboard}
+                                >
+                                    <Clipboard className="h-4 w-4" />
+                                </Button>
+                            </div>
+
+                            <div className="space-y-3">
                                 <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-muted-foreground">
                                     <span>Recipient</span>
                                     <span className="text-foreground">{soulName}</span>
@@ -275,7 +341,7 @@ export default function VendorPage() {
                                 </div>
                                 <Separator />
                                 <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary">
-                                    <span>Total Payable</span>
+                                    <span>Amount to Transfer</span>
                                     <span>₦{selectedMeal.price.toLocaleString()}</span>
                                 </div>
                             </div>
@@ -289,9 +355,49 @@ export default function VendorPage() {
                             className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
                         >
                             {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Confirm & Pay
+                            I Have Sent Payment
                         </Button>
                     </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Edit Profile Dialog */}
+            <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                    <DialogHeader className="p-8 border-b bg-muted/10">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Storefront</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">Update your business info and payment details.</DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleUpdateProfile}>
+                        <ScrollArea className="max-h-[70vh]">
+                            <div className="p-8 space-y-6">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
+                                    <Input name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none" required />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Location / Area</Label>
+                                    <Input name="location" defaultValue={vendor.location} className="h-12 rounded-2xl bg-muted/20 border-none" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About Your Service</Label>
+                                    <Textarea name="description" defaultValue={vendor.description} className="min-h-[100px] rounded-2xl bg-muted/20 border-none" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payment Instructions</Label>
+                                    <Textarea name="paymentDetails" defaultValue={vendor.paymentDetails} placeholder="Bank details..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none" required />
+                                    <p className="text-[9px] text-muted-foreground px-1 italic">Users see this to pay you for meal gifts.</p>
+                                </div>
+                            </div>
+                        </ScrollArea>
+                        <DialogFooter className="p-8 bg-muted/5 border-t gap-3">
+                            <Button type="button" variant="outline" onClick={() => setIsEditProfileOpen(false)} className="rounded-xl h-12 flex-1">Cancel</Button>
+                            <Button type="submit" disabled={isUpdatingProfile} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
+                                {isUpdatingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Update Profile
+                            </Button>
+                        </DialogFooter>
+                    </form>
                 </DialogContent>
             </Dialog>
 
@@ -300,7 +406,7 @@ export default function VendorPage() {
                 <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                     <DialogHeader className="p-8 border-b bg-muted/10">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add to Menu</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">Post a new meal for believers to buy.</DialogDescription>
+                        <DialogDescription className="text-sm font-medium">Post a new meal for believers to gift.</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleAddMeal}>
                         <div className="p-8 space-y-6">
