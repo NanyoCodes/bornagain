@@ -26,7 +26,9 @@ import {
     Trash2,
     Clipboard,
     Gift,
-    Package
+    Package,
+    ChefHat,
+    ShoppingBasket
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -50,6 +52,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Separator } from '@/components/ui/separator';
 
 export default function VendorPage() {
     const params = useParams();
@@ -88,6 +91,18 @@ export default function VendorPage() {
     const { data: meals, loading: loadingMeals } = useCollection<Meal>(mealsQuery);
 
     const isOwner = user?.uid === vendorId;
+    const isGiftVendor = vendor?.vendorType === 'gift';
+    
+    // UI Helpers based on vendor type
+    const centerIcon = isGiftVendor ? Gift : ChefHat;
+    const itemIcon = isGiftVendor ? Package : Utensils;
+    const centerLabel = isGiftVendor ? 'Kindness Center' : 'Meals Center';
+    const itemLabel = isGiftVendor ? 'Product' : 'Meal';
+    const actionLabel = isGiftVendor ? 'Gifting' : 'Provisioning';
+    const manageLabel = isGiftVendor ? 'Manage Catalog' : 'Manage Menu';
+    const addLabel = isGiftVendor ? 'Add New Product' : 'Add New Meal';
+    const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
+    const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
 
     const handleAddMeal = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -113,7 +128,7 @@ export default function VendorPage() {
                 currency: 'NGN',
                 createdAt: serverTimestamp(),
             });
-            toast({ title: 'Item Added', description: `"${name}" is now on your catalog.` });
+            toast({ title: 'Item Added', description: `"${name}" has been added to your ${isGiftVendor ? 'catalog' : 'menu'}.` });
             setIsAddMealOpen(false);
         } catch (err) {
             toast({ variant: 'destructive', title: 'Failed to add item' });
@@ -171,16 +186,15 @@ export default function VendorPage() {
 
             await addDoc(giftsRef, giftData);
 
-            // Log follow-up for the soul automatically
             const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
             const globalSoulRef = doc(firestore, 'souls', soulId);
             
-            const displayAction = actionId === 'gave_gift' ? 'sent a gift' : 'shared a meal';
-            const logActionId = actionId === 'gave_gift' ? 'gave_gift' : 'shared_meal';
+            const displayAction = isGiftVendor ? 'sent a gift' : 'shared a meal';
+            const logActionId = isGiftVendor ? 'gave_gift' : 'shared_meal';
             
             const logEntry = {
                 date: new Date(),
-                note: `Logged via Kingdom Marketplace: ${displayAction} (${selectedMeal.name}) via ${vendor?.businessName}. Payment initiated.`,
+                note: `Logged via ${centerLabel}: ${displayAction} (${selectedMeal.name}) via ${vendor?.businessName}. Payment initiated.`,
                 actions: [logActionId],
                 memberId: user.uid,
                 memberName: `${userProfile?.firstName} ${userProfile?.lastName}`,
@@ -195,7 +209,7 @@ export default function VendorPage() {
                 lastUpdatedAt: serverTimestamp(),
             });
 
-            toast({ title: 'Order Placed!', description: `A ${selectedMeal.name} is being prepared for ${soulName}.` });
+            toast({ title: 'Order Placed!', description: `The ${selectedMeal.name} for ${soulName} is now in progress.` });
             setSelectedMeal(null);
             router.push('/dashboard/souls-won');
         } catch (err) {
@@ -216,16 +230,10 @@ export default function VendorPage() {
         return (
             <div className="flex h-full w-full flex-col items-center justify-center py-20">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <p className="mt-4 text-muted-foreground font-black uppercase tracking-widest text-[10px]">Loading Storefront...</p>
+                <p className="mt-4 text-muted-foreground font-black uppercase tracking-widest text-[10px]">Establishing Storefront...</p>
             </div>
         );
     }
-
-    if (!vendor) return <div className="text-center py-20">Vendor not found.</div>;
-
-    const isGiftVendor = vendor.vendorType === 'gift';
-    const Icon = isGiftVendor ? Package : Utensils;
-    const itemLabel = isGiftVendor ? 'Product' : 'Meal';
 
     const editProfileForm = (
         <form onSubmit={handleUpdateProfile}>
@@ -234,6 +242,13 @@ export default function VendorPage() {
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
                         <Input name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Service Hub</Label>
+                        <div className="flex items-center gap-2 p-3 bg-primary/5 rounded-xl border border-primary/20">
+                           {isGiftVendor ? <Gift className="h-4 w-4 text-primary" /> : <Utensils className="h-4 w-4 text-primary" />}
+                           <span className="text-xs font-bold text-primary uppercase tracking-widest">{centerLabel}</span>
+                        </div>
                     </div>
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Location / Area</Label>
@@ -273,11 +288,11 @@ export default function VendorPage() {
                 </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
-                    <Input name="category" placeholder={`e.g., ${isGiftVendor ? 'Books' : 'Main Dish'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+                    <Input name="category" placeholder={categoryPlaceholder} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
                 </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label>
-                    <Textarea name="description" placeholder="Provide more details about this item..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner" />
+                    <Textarea name="description" placeholder={descriptionPlaceholder} className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner" />
                 </div>
             </div>
             <div className="p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row">
@@ -295,35 +310,71 @@ export default function VendorPage() {
             <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4 min-w-0">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 border bg-background">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background">
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
                         <div className="min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                                <centerIcon className="h-3 w-3 text-primary" />
+                                <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
+                            </div>
                             <h1 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight truncate">{vendor.businessName}</h1>
-                            <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Local Delivery'}</p>
+                            <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Kingdom Network'}</p>
                         </div>
                     </div>
                     {isOwner && (
-                        <Button variant="outline" size="sm" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-10 px-4 font-bold uppercase tracking-widest text-[10px] w-full sm:w-auto shadow-sm">
-                            <Edit className="mr-2 h-4 w-4" /> Manage Profile
-                        </Button>
+                        <div className="flex gap-2 w-full sm:w-auto">
+                            {mounted && (isMobile ? (
+                                <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                                    <SheetTrigger asChild>
+                                        <Button variant="outline" size="sm" className="rounded-xl h-10 px-4 font-bold uppercase tracking-widest text-[10px] flex-1 shadow-sm">
+                                            <Edit className="mr-2 h-4 w-4" /> Profile
+                                        </Button>
+                                    </SheetTrigger>
+                                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                                            <SheetHeader className="text-left">
+                                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage {centerLabel}</SheetTitle>
+                                                <SheetDescription className="text-sm font-medium mt-1">Update your business details and payment instructions.</SheetDescription>
+                                            </SheetHeader>
+                                        </div>
+                                        <div className="flex-grow overflow-hidden relative">
+                                             {editProfileForm}
+                                        </div>
+                                    </SheetContent>
+                                </Sheet>
+                            ) : (
+                                <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline" size="sm" className="rounded-xl h-10 px-4 font-bold uppercase tracking-widest text-[10px] shadow-sm">
+                                            <Edit className="mr-2 h-4 w-4" /> Manage Profile
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                                        <DialogHeader className="p-8 border-b bg-muted/10">
+                                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage {centerLabel}</DialogTitle>
+                                            <DialogDescription className="text-sm font-medium mt-1">Update your business details and payment instructions.</DialogDescription>
+                                        </DialogHeader>
+                                        {editProfileForm}
+                                    </DialogContent>
+                                </Dialog>
+                            ))}
+                        </div>
                     )}
                 </div>
 
                 {soulName && (
-                    <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-center gap-5 shadow-inner">
+                    <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-center gap-5 shadow-inner animate-in fade-in slide-in-from-top-4">
                         <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shrink-0">
-                            {actionId === 'gave_gift' ? (
-                                <Gift className="h-6 w-6 text-white" />
-                            ) : (
-                                <Heart className="h-6 w-6 text-white fill-current" />
-                            )}
+                            {isGiftVendor ? <Gift className="h-6 w-6 text-white" /> : <ChefHat className="h-6 w-6 text-white" />}
                         </div>
                         <div className="min-w-0">
                             <p className="text-lg font-black uppercase tracking-tight leading-tight">
-                                {actionId === 'gave_gift' ? 'Selecting Gift' : 'Selecting Meal'} for {soulName}
+                                {actionLabel} for {soulName}
                             </p>
-                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1">Pick an item to send as an act of Kingdom love. Ensure you follow the payment instructions.</p>
+                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1 text-balance">
+                                Select an item from the {isGiftVendor ? 'catalog' : 'menu'} below to send as an act of Kingdom love.
+                            </p>
                         </div>
                     </div>
                 )}
@@ -331,27 +382,60 @@ export default function VendorPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-0">
                 {isOwner && (
-                    <Card 
-                        className="rounded-[2rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm"
-                        onClick={() => setIsAddMealOpen(true)}
-                    >
-                        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                            <Plus className="h-8 w-8 text-primary" />
-                        </div>
-                        <h3 className="font-black uppercase tracking-widest text-primary text-sm">Add New Item</h3>
-                        <p className="text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront catalog</p>
-                    </Card>
+                    mounted && (isMobile ? (
+                        <Sheet open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
+                            <SheetTrigger asChild>
+                                <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm">
+                                    <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                                        <Plus className="h-8 w-8 text-primary" />
+                                    </div>
+                                    <h3 className="font-black uppercase tracking-widest text-primary text-sm">{addLabel}</h3>
+                                    <p className="text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront catalog</p>
+                                </Card>
+                            </SheetTrigger>
+                            <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                                    <SheetHeader className="text-left">
+                                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</SheetTitle>
+                                        <SheetDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</SheetDescription>
+                                    </SheetHeader>
+                                </div>
+                                <ScrollArea className="flex-grow">
+                                    {addMealForm}
+                                </ScrollArea>
+                            </SheetContent>
+                        </Sheet>
+                    ) : (
+                        <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
+                            <DialogTrigger asChild>
+                                <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm">
+                                    <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                                        <Plus className="h-8 w-8 text-primary" />
+                                    </div>
+                                    <h3 className="font-black uppercase tracking-widest text-primary text-sm">{addLabel}</h3>
+                                    <p className="text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront catalog</p>
+                                </Card>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                                <DialogHeader className="p-8 border-b bg-muted/10">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</DialogDescription>
+                                </DialogHeader>
+                                {addMealForm}
+                            </DialogContent>
+                        </Dialog>
+                    ))
                 )}
 
                 {meals?.map(meal => (
-                    <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col">
+                    <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full">
                         <CardContent className="p-0">
-                            <div className="aspect-[4/3] sm:aspect-square relative bg-muted">
+                            <div className="aspect-[4/3] relative bg-muted">
                                 {meal.photoURL ? (
                                     <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">
-                                        <Icon className="h-12 w-12 text-muted-foreground opacity-10" />
+                                        <itemIcon className="h-12 w-12 text-muted-foreground opacity-10" />
                                     </div>
                                 )}
                                 <div className="absolute top-4 right-4">
@@ -363,7 +447,7 @@ export default function VendorPage() {
                             <div className="p-6 space-y-4 flex-grow">
                                 <div className="min-w-0">
                                     <h3 className="text-lg font-black uppercase tracking-tight truncate">{meal.name}</h3>
-                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic leading-relaxed">{meal.description || 'Kingdom product for the harvest.'}</p>
+                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic leading-relaxed">{meal.description || `Verified ${centerLabel} item.`}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -372,7 +456,7 @@ export default function VendorPage() {
                                 onClick={() => setSelectedMeal(meal)}
                                 className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/10"
                             >
-                                {soulName ? `Send to ${soulName}` : 'Order Item'}
+                                {soulName ? `Gift to ${soulName}` : 'Order Item'}
                             </Button>
                         </CardFooter>
                     </Card>
@@ -380,8 +464,8 @@ export default function VendorPage() {
 
                 {(!meals || meals.length === 0) && !isOwner && (
                     <div className="col-span-full py-32 text-center flex flex-col items-center">
-                        <Icon className="h-16 w-16 text-muted-foreground opacity-10 mb-4" />
-                        <p className="text-sm text-muted-foreground italic font-medium">This provider hasn't posted any items yet.</p>
+                        <itemIcon className="h-16 w-16 text-muted-foreground opacity-10 mb-4" />
+                        <p className="text-sm text-muted-foreground italic font-medium">This provider's {isGiftVendor ? 'catalog' : 'menu'} is coming soon.</p>
                     </div>
                 )}
             </div>
@@ -399,7 +483,7 @@ export default function VendorPage() {
                         <div className="p-8 space-y-6">
                             <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border shadow-inner">
                                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                                    <Icon className="h-6 w-6 text-primary" />
+                                    <itemIcon className="h-6 w-6 text-primary" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-black text-sm uppercase tracking-tight truncate">{selectedMeal.name}</p>
@@ -454,60 +538,6 @@ export default function VendorPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-
-            {/* Edit Profile Logic */}
-            {mounted && (isMobile ? (
-                <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Storefront</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Update your business info and payment details.</SheetDescription>
-                            </SheetHeader>
-                        </div>
-                        <div className="flex-grow overflow-hidden relative">
-                             {editProfileForm}
-                        </div>
-                    </SheetContent>
-                </Sheet>
-            ) : (
-                <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                        <DialogHeader className="p-8 border-b bg-muted/10">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Storefront</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">Update your business info and payment details.</DialogDescription>
-                        </DialogHeader>
-                        {editProfileForm}
-                    </DialogContent>
-                </Dialog>
-            ))}
-
-            {/* Add Meal Logic */}
-            {mounted && (isMobile ? (
-                <Sheet open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                    <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add to Catalog</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Post a new item for believers to gift.</SheetDescription>
-                            </SheetHeader>
-                        </div>
-                        <ScrollArea className="flex-grow">
-                            {addMealForm}
-                        </ScrollArea>
-                    </SheetContent>
-                </Sheet>
-            ) : (
-                <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                        <DialogHeader className="p-8 border-b bg-muted/10">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add to Catalog</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">Post a new item for believers to gift.</DialogDescription>
-                        </DialogHeader>
-                        {addMealForm}
-                    </DialogContent>
-                </Dialog>
-            ))}
         </div>
     );
 }
