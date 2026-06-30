@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -148,9 +149,9 @@ export default function GiftsMarketplacePage() {
             })
             .catch(async (serverError) => {
                 const permissionError = new FirestorePermissionError({
-                    path: `BATCH_WRITE:REGISTER_GIFT_VENDOR`,
-                    operation: 'write',
-                    requestResourceData: { vendorData, isVendorUpdate: true }
+                    path: `vendors/${newVendorRef.id}`,
+                    operation: 'create',
+                    requestResourceData: vendorData
                 }, user);
                 errorEmitter.emit('permission-error', permissionError);
             })
@@ -199,7 +200,7 @@ export default function GiftsMarketplacePage() {
     return (
         <div 
             className="space-y-10 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen ? true : undefined}
+            inert={isAnyModalOpen}
         >
             <header className="px-4 sm:px-0 space-y-4 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">

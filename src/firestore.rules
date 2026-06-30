@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Atomic Marketplace Registration Support - 2025-08-25T11:00:00Z
+    // Deployment trigger: Marketplace & Kingdom Connections Fix - 2025-08-26T10:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -142,7 +142,7 @@ service cloud.firestore {
       allow create: if request.auth != null && (
         (!request.resource.data.get('isGroupChat', false)) ||
         (request.resource.data.get('fellowshipId', '') != '' && isFellowshipOrganizer(request.resource.data.fellowshipId)) ||
-        (request.resource.data.get('associationId', '') != '' && isFellowshipMember(chatData.associationId)) ||
+        (request.resource.data.get('associationId', '') != '' && isFellowshipMember(request.resource.data.associationId)) ||
         (request.resource.data.get('campaignId', '') != '' && get(/databases/$(database)/documents/campaigns/$(request.resource.data.campaignId)).data.organizerId == request.auth.uid)
       );
       allow read, update: if canAccessChatDoc(resource.data);
