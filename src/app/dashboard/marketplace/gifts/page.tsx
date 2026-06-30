@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
-import { collection, query, where, doc, updateDoc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
+import { collection, query, where, doc, setDoc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
 import type { VendorProfile } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -59,7 +59,6 @@ export default function GiftsMarketplacePage() {
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Interactivity Safety Valve
     const isAnyModalOpen = isRegisterOpen;
 
     useEffect(() => {
@@ -139,7 +138,7 @@ export default function GiftsMarketplacePage() {
         };
 
         batch.set(newVendorRef, vendorData);
-        batch.update(userRef, { isVendor: true });
+        batch.set(userRef, { isVendor: true }, { merge: true });
 
         batch.commit()
             .then(() => {
@@ -151,7 +150,7 @@ export default function GiftsMarketplacePage() {
                 const permissionError = new FirestorePermissionError({
                     path: `BATCH_WRITE:REGISTER_GIFT_VENDOR`,
                     operation: 'write',
-                    requestResourceData: { vendorData, isVendor: true }
+                    requestResourceData: { vendorData, isVendorUpdate: true }
                 }, user);
                 errorEmitter.emit('permission-error', permissionError);
             })
@@ -200,7 +199,7 @@ export default function GiftsMarketplacePage() {
     return (
         <div 
             className="space-y-10 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen}
+            inert={isAnyModalOpen ? true : undefined}
         >
             <header className="px-4 sm:px-0 space-y-4 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
