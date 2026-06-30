@@ -28,7 +28,8 @@ import {
     Gift,
     Package,
     ChefHat,
-    ShoppingBasket
+    ShoppingBasket,
+    X
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -85,11 +86,14 @@ export default function VendorPage() {
     const [isAddMealOpen, setIsAddMealOpen] = useState(false);
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [isDeleteStoreOpen, setIsDeleteStoreOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<Meal | null>(null);
     const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
+    
     const [isProcessingOrder, setIsProcessingOrder] = useState(false);
     const [isSubmittingMeal, setIsSubmittingMeal] = useState(false);
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
     const [isDeletingStore, setIsDeletingStore] = useState(false);
+    const [isDeletingItem, setIsDeletingItem] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -100,7 +104,7 @@ export default function VendorPage() {
 
     const mealsQuery = useMemo(() => {
         if (!firestore || !vendorId) return null;
-        return query(collection(firestore, 'vendors', vendorId, 'meals'));
+        return query(collection(firestore, 'vendors', vendorId, 'meals'), orderBy('createdAt', 'desc'));
     }, [firestore, vendorId]);
     const { data: meals, loading: loadingMeals } = useCollection<Meal>(mealsQuery);
 
@@ -148,6 +152,20 @@ export default function VendorPage() {
             toast({ variant: 'destructive', title: 'Failed to add item' });
         } finally {
             setIsSubmittingMeal(false);
+        }
+    };
+
+    const handleDeleteItem = async () => {
+        if (!user || !firestore || !itemToDelete || !isOwner) return;
+        setIsDeletingItem(true);
+        try {
+            await deleteDoc(doc(firestore, 'vendors', vendorId, 'meals', itemToDelete.id));
+            toast({ title: 'Item Removed', description: `"${itemToDelete.name}" has been deleted.` });
+            setItemToDelete(null);
+        } catch (err) {
+            toast({ variant: 'destructive', title: 'Deletion Failed' });
+        } finally {
+            setIsDeletingItem(false);
         }
     };
 
@@ -486,7 +504,17 @@ export default function VendorPage() {
                                         <ItemIcon className="h-12 w-12 text-muted-foreground opacity-10" />
                                     </div>
                                 )}
-                                <div className="absolute top-4 right-4">
+                                <div className="absolute top-4 right-4 flex gap-2">
+                                    {isOwner && (
+                                        <Button 
+                                            variant="destructive" 
+                                            size="icon" 
+                                            className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                            onClick={(e) => { e.stopPropagation(); setItemToDelete(meal); }}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    )}
                                     <Badge className="bg-primary text-white font-black text-xs px-3 h-8 rounded-full shadow-lg border-none">
                                         ₦{meal.price.toLocaleString()}
                                     </Badge>
@@ -587,6 +615,7 @@ export default function VendorPage() {
                 </DialogContent>
             </Dialog>
 
+            {/* Storefront Deletion Dialog */}
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
                 <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
                     <AlertDialogHeader>
@@ -600,6 +629,25 @@ export default function VendorPage() {
                         <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
                             {isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
                             Confirm Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Item Deletion Dialog */}
+            <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
+                <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-xl font-black font-headline uppercase tracking-tight">Remove {itemLabel}?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium">
+                            Are you sure you want to delete "{itemToDelete?.name}" from your storefront?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="mt-6 gap-3">
+                        <AlertDialogCancel disabled={isDeletingItem} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
+                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                            Delete Item
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
