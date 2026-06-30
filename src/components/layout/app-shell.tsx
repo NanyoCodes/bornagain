@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -22,6 +23,7 @@ import {
   BookMarked,
   Users,
   Store,
+  Gift,
 } from "lucide-react";
 
 import {
@@ -252,7 +254,13 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
                   <Link href="/dashboard/marketplace">
                     <Store className="mr-2 h-4 w-4" />
-                    <span>Marketplace</span>
+                    <span>Provision (Meals)</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/dashboard/marketplace/gifts">
+                    <Gift className="mr-2 h-4 w-4" />
+                    <span>Kindness (Gifts)</span>
                   </Link>
                 </DropdownMenuItem>
                 {userProfile?.isVendor && (

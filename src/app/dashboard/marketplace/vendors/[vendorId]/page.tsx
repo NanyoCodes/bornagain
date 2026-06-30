@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -24,7 +25,8 @@ import {
     Edit,
     Trash2,
     Clipboard,
-    Gift
+    Gift,
+    Package
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -111,10 +113,10 @@ export default function VendorPage() {
                 currency: 'NGN',
                 createdAt: serverTimestamp(),
             });
-            toast({ title: 'Meal Added', description: `"${name}" is now on your menu.` });
+            toast({ title: 'Item Added', description: `"${name}" is now on your catalog.` });
             setIsAddMealOpen(false);
         } catch (err) {
-            toast({ variant: 'destructive', title: 'Failed to add meal' });
+            toast({ variant: 'destructive', title: 'Failed to add item' });
         } finally {
             setIsSubmittingMeal(false);
         }
@@ -221,6 +223,10 @@ export default function VendorPage() {
 
     if (!vendor) return <div className="text-center py-20">Vendor not found.</div>;
 
+    const isGiftVendor = vendor.vendorType === 'gift';
+    const Icon = isGiftVendor ? Package : Utensils;
+    const itemLabel = isGiftVendor ? 'Product' : 'Meal';
+
     const editProfileForm = (
         <form onSubmit={handleUpdateProfile}>
             <ScrollArea className="max-h-[70vh]">
@@ -240,7 +246,7 @@ export default function VendorPage() {
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payment Instructions</Label>
                         <Textarea name="paymentDetails" defaultValue={vendor.paymentDetails} placeholder="Bank details..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" required />
-                        <p className="text-[9px] text-muted-foreground px-1 italic">Users see this to pay you for meal gifts.</p>
+                        <p className="text-[9px] text-muted-foreground px-1 italic">Users see this to pay you for gifts.</p>
                     </div>
                 </div>
             </ScrollArea>
@@ -258,8 +264,8 @@ export default function VendorPage() {
         <form onSubmit={handleAddMeal}>
             <div className="p-8 space-y-6">
                 <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Meal Name</Label>
-                    <Input name="name" placeholder="e.g., Jollof Rice & Chicken" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Name</Label>
+                    <Input name="name" placeholder={`e.g., ${isGiftVendor ? 'Study Bible' : 'Jollof Rice'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                 </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price (₦)</Label>
@@ -267,18 +273,18 @@ export default function VendorPage() {
                 </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
-                    <Input name="category" placeholder="e.g., Main Dish" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+                    <Input name="category" placeholder={`e.g., ${isGiftVendor ? 'Books' : 'Main Dish'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
                 </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label>
-                    <Textarea name="description" placeholder="Describe the ingredients or serving..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner" />
+                    <Textarea name="description" placeholder="Provide more details about this item..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner" />
                 </div>
             </div>
             <div className="p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row">
                 <Button type="button" variant="outline" onClick={() => setIsAddMealOpen(false)} className="rounded-xl h-12 flex-1">Cancel</Button>
                 <Button type="submit" disabled={isSubmittingMeal} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isSubmittingMeal && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Add Meal
+                    Add Item
                 </Button>
             </div>
         </form>
@@ -294,7 +300,7 @@ export default function VendorPage() {
                         </Button>
                         <div className="min-w-0">
                             <h1 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight truncate">{vendor.businessName}</h1>
-                            <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Global Delivery'}</p>
+                            <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Local Delivery'}</p>
                         </div>
                     </div>
                     {isOwner && (
@@ -305,7 +311,7 @@ export default function VendorPage() {
                 </div>
 
                 {soulName && (
-                    <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex items-center gap-5 shadow-inner">
+                    <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-center gap-5 shadow-inner">
                         <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shrink-0">
                             {actionId === 'gave_gift' ? (
                                 <Gift className="h-6 w-6 text-white" />
@@ -333,7 +339,7 @@ export default function VendorPage() {
                             <Plus className="h-8 w-8 text-primary" />
                         </div>
                         <h3 className="font-black uppercase tracking-widest text-primary text-sm">Add New Item</h3>
-                        <p className="text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront menu</p>
+                        <p className="text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront catalog</p>
                     </Card>
                 )}
 
@@ -345,7 +351,7 @@ export default function VendorPage() {
                                     <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">
-                                        <Utensils className="h-12 w-12 text-muted-foreground opacity-10" />
+                                        <Icon className="h-12 w-12 text-muted-foreground opacity-10" />
                                     </div>
                                 )}
                                 <div className="absolute top-4 right-4">
@@ -357,7 +363,7 @@ export default function VendorPage() {
                             <div className="p-6 space-y-4 flex-grow">
                                 <div className="min-w-0">
                                     <h3 className="text-lg font-black uppercase tracking-tight truncate">{meal.name}</h3>
-                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic leading-relaxed">{meal.description || 'Dedicated Kingdom provision partner.'}</p>
+                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic leading-relaxed">{meal.description || 'Kingdom product for the harvest.'}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -374,7 +380,7 @@ export default function VendorPage() {
 
                 {(!meals || meals.length === 0) && !isOwner && (
                     <div className="col-span-full py-32 text-center flex flex-col items-center">
-                        <Utensils className="h-16 w-16 text-muted-foreground opacity-10 mb-4" />
+                        <Icon className="h-16 w-16 text-muted-foreground opacity-10 mb-4" />
                         <p className="text-sm text-muted-foreground italic font-medium">This provider hasn't posted any items yet.</p>
                     </div>
                 )}
@@ -393,7 +399,7 @@ export default function VendorPage() {
                         <div className="p-8 space-y-6">
                             <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border shadow-inner">
                                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                                    <Utensils className="h-6 w-6 text-primary" />
+                                    <Icon className="h-6 w-6 text-primary" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-black text-sm uppercase tracking-tight truncate">{selectedMeal.name}</p>
@@ -482,7 +488,7 @@ export default function VendorPage() {
                     <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add to Menu</SheetTitle>
+                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add to Catalog</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">Post a new item for believers to gift.</SheetDescription>
                             </SheetHeader>
                         </div>
@@ -495,7 +501,7 @@ export default function VendorPage() {
                 <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                         <DialogHeader className="p-8 border-b bg-muted/10">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add to Menu</DialogTitle>
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add to Catalog</DialogTitle>
                             <DialogDescription className="text-sm font-medium mt-1">Post a new item for believers to gift.</DialogDescription>
                         </DialogHeader>
                         {addMealForm}

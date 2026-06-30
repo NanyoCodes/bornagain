@@ -427,6 +427,7 @@ export type VendorProfile = {
   phone?: string;
   status: 'active' | 'inactive';
   paymentDetails?: string;
+  vendorType?: 'meal' | 'gift';
 };
 
 export type Meal = {
