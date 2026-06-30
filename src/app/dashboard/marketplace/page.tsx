@@ -31,12 +31,20 @@ import {
     DialogDescription,
     DialogFooter 
 } from '@/components/ui/dialog';
+import { 
+    Sheet, 
+    SheetContent, 
+    SheetHeader, 
+    SheetTitle, 
+    SheetDescription 
+} from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function MarketplacePage() {
     const { user } = useUser();
@@ -45,6 +53,8 @@ export default function MarketplacePage() {
     const { toast } = useToast();
     const router = useRouter();
     const searchParams = useSearchParams();
+    const isMobile = useIsMobile();
+    const [mounted, setMounted] = useState(false);
     
     const soulId = searchParams.get('soulId');
     const soulName = searchParams.get('soulName');
@@ -52,6 +62,10 @@ export default function MarketplacePage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const vendorsQuery = useMemo(() => {
         if (!firestore) return null;
@@ -109,10 +123,43 @@ export default function MarketplacePage() {
         }
     };
 
+    const registrationForm = (
+        <form onSubmit={handleRegisterVendor}>
+            <div className="p-8 space-y-6">
+                <div className="space-y-2">
+                    <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
+                    <Input id="businessName" name="businessName" placeholder="e.g., Kingdom Kitchen" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Location / Area</Label>
+                    <Input id="location" name="location" placeholder="City, State" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About Your Service</Label>
+                    <Textarea id="description" name="description" placeholder="Describe your food and mission..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+                        <CreditCard className="h-3 w-3" /> Payment Details
+                    </Label>
+                    <Textarea id="paymentDetails" name="paymentDetails" placeholder="Bank account number, bank name, or payment link..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                    <p className="text-[9px] text-muted-foreground px-1 italic">Users will see this to pay you when gifting meals.</p>
+                </div>
+            </div>
+            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
+                <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="rounded-xl h-12 flex-1">Cancel</Button>
+                <Button type="submit" disabled={isSubmitting} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Register Service
+                </Button>
+            </div>
+        </form>
+    );
+
     return (
         <div className="space-y-10 max-w-4xl mx-auto pb-32">
-            <header className="px-4 sm:px-0 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <header className="px-4 sm:px-0 space-y-4 pt-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="space-y-1">
                         <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Kingdom Marketplace</h1>
                         <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
@@ -125,7 +172,7 @@ export default function MarketplacePage() {
                         </Button>
                     ) : (
                         <Button onClick={() => setIsRegisterOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20">
-                            <Store className="mr-2 h-4 w-4" /> Become a Vendor
+                            <Store className="mr-2 h-4 w-4" /> Register Your Service
                         </Button>
                     )}
                 </div>
@@ -138,10 +185,10 @@ export default function MarketplacePage() {
                             </div>
                             <div>
                                 <p className="text-lg font-black uppercase tracking-tight leading-tight">Gift a Meal to {soulName}</p>
-                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-80">Choose a vendor below to see their menu and gift a meal.</p>
+                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-80 text-balance">Choose a vendor below to see their menu and gift a meal.</p>
                             </div>
                         </div>
-                        <ShoppingBag className="h-8 w-8 text-primary opacity-20 rotate-12 group-hover:rotate-0 transition-transform" />
+                        <ShoppingBag className="h-8 w-8 text-primary opacity-20 rotate-12 group-hover:rotate-0 transition-transform hidden sm:block" />
                     </div>
                 )}
 
@@ -156,7 +203,7 @@ export default function MarketplacePage() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 sm:px-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4 sm:px-0">
                 {loading ? (
                     [...Array(4)].map((_, i) => (
                         <Card key={i} className="rounded-[2rem] border-none shadow-sm animate-pulse">
@@ -208,44 +255,39 @@ export default function MarketplacePage() {
                 )}
             </div>
 
-            <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                    <DialogHeader className="p-8 border-b bg-muted/10">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Become a Provider</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">Join our network of believers providing physical nourishment and meal gifting.</DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleRegisterVendor}>
-                        <div className="p-8 space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
-                                <Input id="businessName" name="businessName" placeholder="e.g., Kingdom Kitchen" className="h-12 rounded-2xl bg-muted/20 border-none" required />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Location / Area</Label>
-                                <Input id="location" name="location" placeholder="City, State" className="h-12 rounded-2xl bg-muted/20 border-none" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About Your Service</Label>
-                                <Textarea id="description" name="description" placeholder="Describe your food and mission..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-                                    <CreditCard className="h-3 w-3" /> Payment Details
-                                </Label>
-                                <Textarea id="paymentDetails" name="paymentDetails" placeholder="Bank account number, bank name, or payment link..." className="min-h-[80px] rounded-2xl bg-muted/20 border-none" required />
-                                <p className="text-[9px] text-muted-foreground px-1 italic">Users will see this to pay you when gifting meals.</p>
-                            </div>
+            {mounted && isMobile ? (
+                <Sheet open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left">
+                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Establish Your Service</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1">
+                                    If you own a food outlet or catering service, join our network to provide physical nourishment to the Body.
+                                </SheetDescription>
+                            </SheetHeader>
                         </div>
-                        <DialogFooter className="p-8 bg-muted/5 border-t gap-3">
-                            <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)} className="rounded-xl h-12 flex-1">Cancel</Button>
-                            <Button type="submit" disabled={isSubmitting} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
-                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Start Selling
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
+                        <ScrollArea className="flex-grow">
+                            {registrationForm}
+                        </ScrollArea>
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
+                    <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Establish Your Service</DialogTitle>
+                                <DialogDescription className="text-sm font-medium mt-1">
+                                    If you own a food outlet or catering service, join our network to provide physical nourishment to the Body.
+                                </SheetDescription>
+                            </DialogHeader>
+                        </div>
+                        <ScrollArea className="flex-grow">
+                            {registrationForm}
+                        </ScrollArea>
+                    </DialogContent>
+                </Dialog>
+            )}
         </div>
     );
 }
