@@ -22,7 +22,7 @@ import {
     Gift,
     Package,
     ChefHat,
-    ChevronRight
+    ChevronDown
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -499,7 +499,7 @@ export default function VendorPage() {
                                 <span className="text-[8px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
                             <h1 className="text-lg sm:text-2xl md:text-4xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
-                            <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Kingdom Network'}</p>
+                            <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Kingdom Network'}</p>
                         </div>
                     </div>
                     {isOwner && (
@@ -561,7 +561,7 @@ export default function VendorPage() {
 
                 {vendor.description && (
                   <p className="text-[11px] sm:text-sm md:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance">
-                    &ldquo;{vendor.description}&rdquo;
+                    {vendor.description}
                   </p>
                 )}
             </div>
