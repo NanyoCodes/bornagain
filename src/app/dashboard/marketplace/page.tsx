@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useFirestore, useCollection } from '@/firebase';
 import { collection, query, where, doc, updateDoc, serverTimestamp, addDoc, limit } from 'firebase/firestore';
 import type { VendorProfile } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -115,7 +115,7 @@ export default function ProvisionMarketplacePage() {
             location,
             paymentDetails: paymentDetails || '',
             status: 'active',
-            vendorType: 'meal', // Locked to meal for this hub
+            vendorType: 'meal', 
             photoURL: user.photoURL || '',
             createdAt: serverTimestamp(),
         };

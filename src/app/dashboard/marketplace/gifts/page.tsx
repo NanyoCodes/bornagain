@@ -116,7 +116,7 @@ export default function GiftsMarketplacePage() {
             location,
             paymentDetails: paymentDetails || '',
             status: 'active',
-            vendorType: 'gift', // Locked to gift for this hub
+            vendorType: 'gift', 
             photoURL: user.photoURL || '',
             createdAt: serverTimestamp(),
         };
