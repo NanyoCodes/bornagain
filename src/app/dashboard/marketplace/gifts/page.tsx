@@ -1,8 +1,7 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useFirestore, useCollection, useUserProfile, useDoc } from '@/firebase';
 import { collection, query, where, orderBy, doc, updateDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import type { VendorProfile, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -78,6 +77,12 @@ export default function GiftsMarketplacePage() {
         );
     }, [firestore]);
     const { data: vendors, loading } = useCollection<VendorProfile>(vendorsQuery);
+
+    const myVendorRef = useMemo(() => {
+        if (!user?.uid || !firestore) return null;
+        return doc(firestore, 'vendors', user.uid);
+    }, [user?.uid, firestore]);
+    const { data: myVendorProfile } = useDoc<VendorProfile>(myVendorRef);
 
     const filteredVendors = useMemo(() => {
         if (!vendors) return [];
@@ -187,7 +192,7 @@ export default function GiftsMarketplacePage() {
                         </p>
                     </div>
                     <div className="flex gap-2">
-                        {userProfile?.isVendor ? (
+                        {userProfile?.isVendor && myVendorProfile?.vendorType === 'gift' ? (
                             <Button onClick={() => router.push(`/dashboard/marketplace/vendors/${user?.uid}`)} variant="outline" className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-md">
                                 <Store className="mr-2 h-4 w-4" /> My Storefront
                             </Button>
