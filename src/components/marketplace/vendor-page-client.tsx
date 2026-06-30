@@ -13,7 +13,6 @@ import {
     Utensils, 
     Plus, 
     Loader2, 
-    ShoppingBag, 
     MapPin, 
     CreditCard,
     Edit,
@@ -22,7 +21,9 @@ import {
     Gift,
     Package,
     ChefHat,
-    ChevronDown
+    ChevronDown,
+    ChevronRight,
+    ShoppingBag
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -498,7 +499,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     return (
         <div 
             className="space-y-8 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen}
+            inert={isAnyModalOpen ? true : undefined}
         >
             <div className="px-4 sm:px-0 flex flex-col gap-4 sm:gap-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
@@ -509,7 +510,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 mb-1">
                                 <CenterIcon className="h-3 w-3 text-primary" />
-                                <span className="text-[8px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
+                                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
                             <h1 className="text-lg sm:text-2xl md:text-4xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
                             <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Kingdom Network'}</p>
@@ -561,7 +562,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shrink-0">
                             <CenterIcon className="h-6 w-6 text-white" />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                             <p className="text-lg font-black uppercase tracking-tight leading-tight">
                                 {actionLabel} for {soulName}
                             </p>
