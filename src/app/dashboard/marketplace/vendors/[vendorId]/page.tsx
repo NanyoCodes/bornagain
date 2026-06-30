@@ -23,7 +23,8 @@ import {
     CreditCard,
     Edit,
     Trash2,
-    Clipboard
+    Clipboard,
+    Gift
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -54,6 +55,7 @@ export default function VendorPage() {
     const vendorId = params.vendorId as string;
     const soulId = searchParams.get('soulId');
     const soulName = searchParams.get('soulName');
+    const actionId = searchParams.get('actionId');
     
     const { user } = useUser();
     const { userProfile } = useUserProfile();
@@ -170,10 +172,14 @@ export default function VendorPage() {
             // Log follow-up for the soul automatically
             const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
             const globalSoulRef = doc(firestore, 'souls', soulId);
+            
+            const displayAction = actionId === 'gave_gift' ? 'sent a gift' : 'shared a meal';
+            const logActionId = actionId === 'gave_gift' ? 'gave_gift' : 'shared_meal';
+            
             const logEntry = {
                 date: new Date(),
-                note: `Sent a gifted meal (${selectedMeal.name}) via ${vendor?.businessName}. Payment sent as per instructions.`,
-                actions: ['shared_meal'],
+                note: `Logged via Kingdom Marketplace: ${displayAction} (${selectedMeal.name}) via ${vendor?.businessName}. Payment initiated.`,
+                actions: [logActionId],
                 memberId: user.uid,
                 memberName: `${userProfile?.firstName} ${userProfile?.lastName}`,
             };
@@ -301,11 +307,17 @@ export default function VendorPage() {
                 {soulName && (
                     <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex items-center gap-5 shadow-inner">
                         <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shrink-0">
-                            <Heart className="h-6 w-6 text-white fill-current" />
+                            {actionId === 'gave_gift' ? (
+                                <Gift className="h-6 w-6 text-white" />
+                            ) : (
+                                <Heart className="h-6 w-6 text-white fill-current" />
+                            )}
                         </div>
                         <div className="min-w-0">
-                            <p className="text-lg font-black uppercase tracking-tight leading-tight">Selecting for {soulName}</p>
-                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1">Pick a meal to send as an act of Kingdom love. Ensure you follow the payment instructions.</p>
+                            <p className="text-lg font-black uppercase tracking-tight leading-tight">
+                                {actionId === 'gave_gift' ? 'Selecting Gift' : 'Selecting Meal'} for {soulName}
+                            </p>
+                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1">Pick an item to send as an act of Kingdom love. Ensure you follow the payment instructions.</p>
                         </div>
                     </div>
                 )}
@@ -320,7 +332,7 @@ export default function VendorPage() {
                         <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                             <Plus className="h-8 w-8 text-primary" />
                         </div>
-                        <h3 className="font-black uppercase tracking-widest text-primary text-sm">Add New Meal</h3>
+                        <h3 className="font-black uppercase tracking-widest text-primary text-sm">Add New Item</h3>
                         <p className="text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront menu</p>
                     </Card>
                 )}
@@ -345,7 +357,7 @@ export default function VendorPage() {
                             <div className="p-6 space-y-4 flex-grow">
                                 <div className="min-w-0">
                                     <h3 className="text-lg font-black uppercase tracking-tight truncate">{meal.name}</h3>
-                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic leading-relaxed">{meal.description || 'Dedicated Kingdom meal partner.'}</p>
+                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic leading-relaxed">{meal.description || 'Dedicated Kingdom provision partner.'}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -354,7 +366,7 @@ export default function VendorPage() {
                                 onClick={() => setSelectedMeal(meal)}
                                 className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/10"
                             >
-                                {soulName ? `Send to ${soulName}` : 'Order Meal'}
+                                {soulName ? `Send to ${soulName}` : 'Order Item'}
                             </Button>
                         </CardFooter>
                     </Card>
@@ -363,7 +375,7 @@ export default function VendorPage() {
                 {(!meals || meals.length === 0) && !isOwner && (
                     <div className="col-span-full py-32 text-center flex flex-col items-center">
                         <Utensils className="h-16 w-16 text-muted-foreground opacity-10 mb-4" />
-                        <p className="text-sm text-muted-foreground italic font-medium">This vendor hasn't posted any meals yet.</p>
+                        <p className="text-sm text-muted-foreground italic font-medium">This provider hasn't posted any items yet.</p>
                     </div>
                 )}
             </div>
@@ -374,7 +386,7 @@ export default function VendorPage() {
                     <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Confirm Gift</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">Please send the funds directly to the vendor using the instructions below.</DialogDescription>
+                            <DialogDescription className="text-sm font-medium mt-1">Please send the funds directly to the provider using the instructions below.</DialogDescription>
                         </DialogHeader>
                     </div>
                     {selectedMeal && (
@@ -394,7 +406,7 @@ export default function VendorPage() {
                                     <CreditCard className="h-3 w-3" /> Payment Instructions
                                 </Label>
                                 <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed">
-                                    {vendor.paymentDetails || 'Contact vendor for payment details.'}
+                                    {vendor.paymentDetails || 'Contact provider for payment details.'}
                                 </p>
                                 <Button 
                                     size="icon" 
@@ -412,7 +424,7 @@ export default function VendorPage() {
                                     <span className="text-foreground">{soulName}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                                    <span>Vendor</span>
+                                    <span>Provider</span>
                                     <span className="text-foreground">{vendor.businessName}</span>
                                 </div>
                                 <Separator className="opacity-50" />
@@ -471,7 +483,7 @@ export default function VendorPage() {
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add to Menu</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Post a new meal for believers to gift.</SheetDescription>
+                                <SheetDescription className="text-sm font-medium mt-1">Post a new item for believers to gift.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow">
@@ -484,7 +496,7 @@ export default function VendorPage() {
                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                         <DialogHeader className="p-8 border-b bg-muted/10">
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add to Menu</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">Post a new meal for believers to gift.</DialogDescription>
+                            <DialogDescription className="text-sm font-medium mt-1">Post a new item for believers to gift.</DialogDescription>
                         </DialogHeader>
                         {addMealForm}
                     </DialogContent>

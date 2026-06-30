@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -184,10 +183,10 @@ export function RelationshipTrackerCard() {
   const handleSoulSelected = async (soul: Soul) => {
     if (!user || !firestore || !selectedActionId) return;
     
-    // REDIRECT LOGIC FOR MEALS
-    if (selectedActionId === 'shared_meal') {
+    // REDIRECT LOGIC FOR GIFTS & MEALS
+    if (selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift') {
         setIsSoulDialogOpen(false);
-        router.push(`/dashboard/marketplace?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}`);
+        router.push(`/dashboard/marketplace?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
         return;
     }
 

@@ -20,7 +20,8 @@ import {
     ChevronRight,
     Sparkles,
     ShoppingBag,
-    CreditCard
+    CreditCard,
+    Gift
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -57,6 +58,7 @@ export default function MarketplacePage() {
     
     const soulId = searchParams.get('soulId');
     const soulName = searchParams.get('soulName');
+    const actionId = searchParams.get('actionId');
 
     const [searchTerm, setSearchTerm] = useState('');
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
@@ -155,6 +157,8 @@ export default function MarketplacePage() {
         </form>
     );
 
+    const displayAction = actionId === 'gave_gift' ? 'Gift to' : 'Meal for';
+
     return (
         <div className="space-y-10 max-w-4xl mx-auto pb-32">
             <header className="px-4 sm:px-0 space-y-4 pt-4">
@@ -180,11 +184,15 @@ export default function MarketplacePage() {
                     <div className="bg-primary/10 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-center justify-between group shadow-inner">
                         <div className="flex items-center gap-4">
                             <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
-                                <Sparkles className="h-6 w-6 text-white animate-pulse" />
+                                {actionId === 'gave_gift' ? (
+                                    <Gift className="h-6 w-6 text-white animate-pulse" />
+                                ) : (
+                                    <Utensils className="h-6 w-6 text-white animate-pulse" />
+                                )}
                             </div>
                             <div>
-                                <p className="text-lg font-black uppercase tracking-tight leading-tight">Gift a Meal to {soulName}</p>
-                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-80 text-balance">Choose a vendor below to see their menu and gift a meal.</p>
+                                <p className="text-lg font-black uppercase tracking-tight leading-tight">{displayAction} {soulName}</p>
+                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-80 text-balance">Choose a provider below to gift physical nourishment or kindness.</p>
                             </div>
                         </div>
                         <ShoppingBag className="h-8 w-8 text-primary opacity-20 rotate-12 group-hover:rotate-0 transition-transform hidden sm:block" />
@@ -214,7 +222,7 @@ export default function MarketplacePage() {
                         <Card 
                             key={vendor.id} 
                             className="rounded-[2rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group cursor-pointer bg-card/50 backdrop-blur-sm"
-                            onClick={() => router.push(`/dashboard/marketplace/vendors/${vendor.id}${soulId ? `?soulId=${soulId}&soulName=${soulName}` : ''}`)}
+                            onClick={() => router.push(`/dashboard/marketplace/vendors/${vendor.id}${soulId ? `?soulId=${soulId}&soulName=${soulName}&actionId=${actionId}` : ''}`)}
                         >
                             <CardContent className="p-0">
                                 <div className="aspect-[2/1] relative bg-muted">
