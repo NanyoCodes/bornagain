@@ -29,6 +29,7 @@ import {
   Info,
   Phone,
   Users,
+  Store,
 } from "lucide-react";
 
 import {
@@ -248,6 +249,12 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
               <Link href="/dashboard/settings">
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/marketplace">
+                <Store className="mr-2 h-4 w-4" />
+                <span>Marketplace</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

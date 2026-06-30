@@ -21,6 +21,7 @@ import {
   TrendingUp,
   BookMarked,
   Users,
+  Store,
 } from "lucide-react";
 
 import {
@@ -52,7 +53,7 @@ import { SplashScreen } from "../common/splash-screen";
 const navItems = [
   { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
-  { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
+  { href: "/testimonies", label: "Feed", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
@@ -246,6 +247,12 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/dashboard/marketplace">
+                    <Store className="mr-2 h-4 w-4" />
+                    <span>Marketplace</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
