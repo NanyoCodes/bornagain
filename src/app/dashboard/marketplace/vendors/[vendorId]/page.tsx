@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
-import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, setDoc, updateDoc, arrayUnion, getDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, getDoc, deleteDoc } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, MealGift, Chat } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,8 @@ import {
     Package,
     ChefHat,
     ShoppingBasket,
-    X
+    X,
+    ChevronRight
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -46,7 +47,8 @@ import {
     SheetHeader, 
     SheetTitle, 
     SheetDescription,
-    SheetTrigger
+    SheetTrigger,
+    SheetFooter
 } from '@/components/ui/sheet';
 import {
   AlertDialog,
@@ -285,8 +287,8 @@ export default function VendorPage() {
     if (!vendor) return <div className="text-center py-20">Storefront not found.</div>;
 
     const editProfileForm = (
-        <form onSubmit={handleUpdateProfile}>
-            <ScrollArea className="max-h-[70vh]">
+        <form onSubmit={handleUpdateProfile} className="flex flex-col h-full">
+            <ScrollArea className="flex-grow">
                 <div className="p-8 space-y-6">
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
@@ -317,13 +319,13 @@ export default function VendorPage() {
 
                     <div className="pt-4">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-destructive ml-1">Danger Zone</Label>
-                        <Card className="border-destructive/20 bg-destructive/5 mt-2">
+                        <Card className="border-destructive/20 bg-destructive/5 mt-2 overflow-hidden">
                             <CardContent className="p-4 flex items-center justify-between gap-4">
-                                <div className="space-y-1">
+                                <div className="space-y-1 min-w-0">
                                     <p className="text-xs font-bold text-destructive">Delete Storefront</p>
-                                    <p className="text-[10px] text-muted-foreground leading-tight">Permanently remove your business from Testify.</p>
+                                    <p className="text-[10px] text-muted-foreground leading-tight truncate">Permanently remove your business.</p>
                                 </div>
-                                <Button type="button" variant="destructive" size="sm" onClick={() => setIsDeleteStoreOpen(true)} className="rounded-xl h-8 font-black uppercase tracking-widest text-[9px]">
+                                <Button type="button" variant="destructive" size="sm" onClick={() => setIsDeleteStoreOpen(true)} className="rounded-xl h-8 font-black uppercase tracking-widest text-[9px] shrink-0">
                                     Delete
                                 </Button>
                             </CardContent>
@@ -331,7 +333,7 @@ export default function VendorPage() {
                     </div>
                 </div>
             </ScrollArea>
-            <div className="p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row">
+            <div className="p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row mt-auto">
                 <Button type="button" variant="outline" onClick={() => setIsEditProfileOpen(false)} className="rounded-xl h-12 flex-1">Cancel</Button>
                 <Button type="submit" disabled={isUpdatingProfile} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isUpdatingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -371,29 +373,90 @@ export default function VendorPage() {
         </form>
     );
 
+    const orderConfirmationContent = selectedMeal && (
+        <div className="space-y-6">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border shadow-inner">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <ItemIcon className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                    <p className="font-black text-sm uppercase tracking-tight truncate">{selectedMeal.name}</p>
+                    <p className="text-[10px] font-bold text-primary uppercase">₦{selectedMeal.price.toLocaleString()}</p>
+                </div>
+            </div>
+
+            <div className="space-y-4 bg-primary/5 p-5 rounded-2xl border-2 border-dashed border-primary/20 relative group">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                    <CreditCard className="h-3 w-3" /> Payment Instructions
+                </Label>
+                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words [overflow-wrap:anywhere] text-balance">
+                    {vendor.paymentDetails || 'Contact provider for payment details.'}
+                </p>
+                <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className="absolute top-4 right-4 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={copyPaymentToClipboard}
+                >
+                    <Clipboard className="h-4 w-4" />
+                </Button>
+            </div>
+
+            <div className="space-y-3">
+                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
+                    <span className="shrink-0">Recipient</span>
+                    <span className="text-foreground truncate">{soulName}</span>
+                </div>
+                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
+                    <span className="shrink-0">Provider</span>
+                    <span className="text-foreground truncate">{vendor.businessName}</span>
+                </div>
+                <Separator className="opacity-50" />
+                <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4">
+                    <span className="shrink-0">Transfer Amount</span>
+                    <span className="shrink-0">₦{selectedMeal.price.toLocaleString()}</span>
+                </div>
+            </div>
+        </div>
+    );
+
+    const orderConfirmationFooter = (
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
+            <Button variant="outline" onClick={() => setSelectedMeal(null)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
+            <Button 
+                onClick={handleGiftMeal} 
+                disabled={isProcessingOrder} 
+                className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
+            >
+                {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                I HAVE PAID
+            </Button>
+        </div>
+    );
+
     return (
         <div className="space-y-8 max-w-4xl mx-auto pb-32">
             <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="flex items-center gap-4 min-w-0">
                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background">
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 mb-1">
                                 <CenterIcon className="h-3 w-3 text-primary" />
                                 <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
-                            <h1 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight truncate">{vendor.businessName}</h1>
+                            <h1 className="text-xl sm:text-3xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
                             <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Kingdom Network'}</p>
                         </div>
                     </div>
                     {isOwner && (
-                        <div className="flex gap-2 w-full sm:w-auto">
+                        <div className="flex gap-2 w-full sm:w-auto px-1 sm:px-0">
                             {mounted && (isMobile ? (
                                 <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
                                     <SheetTrigger asChild>
-                                        <Button variant="outline" size="sm" className="rounded-xl h-10 px-4 font-bold uppercase tracking-widest text-[10px] flex-1 shadow-sm">
+                                        <Button variant="outline" size="sm" className="rounded-xl h-11 sm:h-10 px-4 font-bold uppercase tracking-widest text-[10px] flex-1 shadow-sm">
                                             <Edit className="mr-2 h-4 w-4" /> Profile
                                         </Button>
                                     </SheetTrigger>
@@ -430,7 +493,7 @@ export default function VendorPage() {
                 </div>
 
                 {soulName && (
-                    <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-center gap-5 shadow-inner animate-in fade-in slide-in-from-top-4">
+                    <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-center gap-5 shadow-inner animate-in fade-in slide-in-from-top-4 mx-1 sm:mx-0">
                         <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shrink-0">
                             <CenterIcon className="h-6 w-6 text-white" />
                         </div>
@@ -439,7 +502,7 @@ export default function VendorPage() {
                                 {actionLabel} for {soulName}
                             </p>
                             <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1 text-balance">
-                                Select an item from the {isGiftVendor ? 'catalog' : 'menu'} below to send as an act of Kingdom love.
+                                Select an item from the {isGiftVendor ? 'catalog' : 'menu'} below to gift as an act of Kingdom love.
                             </p>
                         </div>
                     </div>
@@ -451,7 +514,7 @@ export default function VendorPage() {
                     mounted && (isMobile ? (
                         <Sheet open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                             <SheetTrigger asChild>
-                                <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm">
+                                <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[240px] sm:min-h-[280px] shadow-sm">
                                     <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                                         <Plus className="h-8 w-8 text-primary" />
                                     </div>
@@ -523,14 +586,14 @@ export default function VendorPage() {
                             <div className="p-6 space-y-4 flex-grow">
                                 <div className="min-w-0">
                                     <h3 className="text-lg font-black uppercase tracking-tight truncate">{meal.name}</h3>
-                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic leading-relaxed">{meal.description || `Verified ${centerLabel} item.`}</p>
+                                    <p className="text-xs text-muted-foreground line-clamp-2 mt-1 font-medium italic leading-relaxed break-words">{meal.description || `Verified ${centerLabel} item.`}</p>
                                 </div>
                             </div>
                         </CardContent>
                         <CardFooter className="p-6 pt-0">
                             <Button 
                                 onClick={() => setSelectedMeal(meal)}
-                                className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/10"
+                                className="w-full h-12 sm:h-11 rounded-xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/10"
                             >
                                 {soulName ? `Gift to ${soulName}` : 'Order Item'}
                             </Button>
@@ -546,74 +609,44 @@ export default function VendorPage() {
                 )}
             </div>
 
-            {/* Gift Confirmation Dialog */}
-            <Dialog open={!!selectedMeal} onOpenChange={(open) => !open && setSelectedMeal(null)}>
-                <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                    <div className="p-8 border-b bg-muted/10">
-                        <DialogHeader>
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Confirm Gift</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">Please send the funds directly to the provider using the instructions below.</DialogDescription>
-                        </DialogHeader>
-                    </div>
-                    {selectedMeal && (
-                        <div className="p-8 space-y-6">
-                            <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border shadow-inner">
-                                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                                    <ItemIcon className="h-6 w-6 text-primary" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="font-black text-sm uppercase tracking-tight truncate">{selectedMeal.name}</p>
-                                    <p className="text-[10px] font-bold text-primary uppercase">₦{selectedMeal.price.toLocaleString()}</p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4 bg-primary/5 p-5 rounded-2xl border-2 border-dashed border-primary/20 relative group">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                                    <CreditCard className="h-3 w-3" /> Payment Instructions
-                                </Label>
-                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed">
-                                    {vendor.paymentDetails || 'Contact provider for payment details.'}
-                                </p>
-                                <Button 
-                                    size="icon" 
-                                    variant="ghost" 
-                                    className="absolute top-4 right-4 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={copyPaymentToClipboard}
-                                >
-                                    <Clipboard className="h-4 w-4" />
-                                </Button>
-                            </div>
-
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                                    <span>Recipient</span>
-                                    <span className="text-foreground">{soulName}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                                    <span>Provider</span>
-                                    <span className="text-foreground">{vendor.businessName}</span>
-                                </div>
-                                <Separator className="opacity-50" />
-                                <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary">
-                                    <span>Transfer Amount</span>
-                                    <span>₦{selectedMeal.price.toLocaleString()}</span>
-                                </div>
-                            </div>
+            {/* Gift/Order Confirmation Interaction */}
+            {mounted && (isMobile ? (
+                <Sheet open={!!selectedMeal} onOpenChange={(open) => !open && setSelectedMeal(null)}>
+                    <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left">
+                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Confirm Gift</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1">Please send funds directly to the provider below.</SheetDescription>
+                            </SheetHeader>
                         </div>
-                    )}
-                    <DialogFooter className="p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row">
-                        <Button variant="outline" onClick={() => setSelectedMeal(null)} className="rounded-xl h-12 flex-1">Cancel</Button>
-                        <Button 
-                            onClick={handleGiftMeal} 
-                            disabled={isProcessingOrder} 
-                            className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
-                        >
-                            {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            I Have Paid
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                        <ScrollArea className="flex-grow">
+                            <div className="p-8">
+                                {orderConfirmationContent}
+                            </div>
+                        </ScrollArea>
+                        <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
+                            {orderConfirmationFooter}
+                        </SheetFooter>
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <Dialog open={!!selectedMeal} onOpenChange={(open) => !open && setSelectedMeal(null)}>
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                        <div className="p-8 border-b bg-muted/10">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Confirm Gift</DialogTitle>
+                                <DialogDescription className="text-sm font-medium mt-1">Please send the funds directly to the provider using the instructions below.</DialogDescription>
+                            </DialogHeader>
+                        </div>
+                        <div className="p-8">
+                            {orderConfirmationContent}
+                        </div>
+                        <DialogFooter className="p-8 bg-muted/5 border-t">
+                            {orderConfirmationFooter}
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            ))}
 
             {/* Storefront Deletion Dialog */}
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
