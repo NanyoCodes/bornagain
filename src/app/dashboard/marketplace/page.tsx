@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -279,7 +278,7 @@ export default function MarketplacePage() {
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Establish Your Service</DialogTitle>
                                 <DialogDescription className="text-sm font-medium mt-1">
                                     If you own a food outlet or catering service, join our network to provide physical nourishment to the Body.
-                                </SheetDescription>
+                                </DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="flex-grow">
