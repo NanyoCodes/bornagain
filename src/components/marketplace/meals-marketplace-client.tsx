@@ -32,6 +32,13 @@ import {
     SheetTitle, 
     SheetDescription 
 } from '@/components/ui/sheet';
+import { 
+    Select, 
+    SelectContent, 
+    SelectItem, 
+    SelectTrigger, 
+    SelectValue 
+} from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -40,6 +47,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Country, State } from 'country-state-city';
 
 export default function MealsMarketplaceClient() {
     const { user } = useUser();
@@ -57,6 +65,16 @@ export default function MealsMarketplaceClient() {
     const [searchTerm, setSearchTerm] = useState('');
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Location State
+    const [selectedCountry, setSelectedCountry] = useState('');
+    const [selectedState, setSelectedState] = useState('');
+
+    const countriesList = useMemo(() => Country.getAllCountries(), []);
+    const statesList = useMemo(() => {
+        const country = countriesList.find(c => c.name === selectedCountry);
+        return country ? State.getStatesOfCountry(country.isoCode) : [];
+    }, [selectedCountry, countriesList]);
 
     const isAnyModalOpen = isRegisterOpen;
 
@@ -113,10 +131,12 @@ export default function MealsMarketplaceClient() {
         const formData = new FormData(e.currentTarget);
         const businessName = formData.get('businessName') as string;
         const description = formData.get('description') as string;
-        const location = formData.get('location') as string;
+        const city = formData.get('city') as string;
         const paymentDetails = formData.get('paymentDetails') as string;
 
         if (!businessName) return;
+
+        const locationString = [city, selectedState, selectedCountry].filter(Boolean).join(', ');
 
         setIsSubmitting(true);
         
@@ -128,7 +148,7 @@ export default function MealsMarketplaceClient() {
             userId: user.uid,
             businessName,
             description,
-            location,
+            location: locationString,
             paymentDetails: paymentDetails || '',
             status: 'active',
             vendorType: 'meal', 
@@ -169,10 +189,43 @@ export default function MealsMarketplaceClient() {
                     <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
                     <Input id="businessName" name="businessName" placeholder="e.g., Kingdom Kitchen" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                 </div>
-                <div className="space-y-2">
-                    <Label htmlFor="location" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Location / Area</Label>
-                    <Input id="location" name="location" placeholder="City, State" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Country</Label>
+                        <Select onValueChange={(val) => { setSelectedCountry(val); setSelectedState(''); }} value={selectedCountry}>
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
+                                <SelectValue placeholder="Select Country" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-[300px]">
+                                {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">State</Label>
+                            <Select 
+                                onValueChange={setSelectedState} 
+                                value={selectedState}
+                                disabled={!selectedCountry || statesList.length === 0}
+                            >
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
+                                    <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[300px]">
+                                    {statesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="city" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">City</Label>
+                            <Input id="city" name="city" placeholder="Enter City" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+                        </div>
+                    </div>
                 </div>
+
                 <div className="space-y-2">
                     <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About Your Service</Label>
                     <Textarea id="description" name="description" placeholder="Describe your food service and mission..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />

@@ -55,6 +55,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { 
+    Select, 
+    SelectContent, 
+    SelectItem, 
+    SelectTrigger, 
+    SelectValue 
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -67,6 +74,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import Image from 'next/image';
 import { ImageUpload } from '@/components/common/image-upload';
+import { Country, State } from 'country-state-city';
 
 export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const searchParams = useSearchParams();
@@ -97,6 +105,17 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const [isDeletingItem, setIsDeletingItem] = useState(false);
     const [isUpdatingItem, setIsUpdatingItem] = useState(false);
 
+    // Location State for Edit Profile
+    const [editCountry, setEditCountry] = useState('');
+    const [editState, setEditState] = useState('');
+    const [editCity, setEditCity] = useState('');
+
+    const countriesList = useMemo(() => Country.getAllCountries(), []);
+    const statesList = useMemo(() => {
+        const country = countriesList.find(c => c.name === editCountry);
+        return country ? State.getStatesOfCountry(country.isoCode) : [];
+    }, [editCountry, countriesList]);
+
     const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || itemToEdit || selectedMeal);
 
     useEffect(() => {
@@ -113,6 +132,25 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         setMounted(true);
     }, []);
 
+    const vendorDocRef = useMemo(() => vendorId ? doc(firestore, 'vendors', vendorId) : null, [firestore, vendorId]);
+    const { data: vendor, loading: loadingVendor } = useDoc<VendorProfile>(vendorDocRef);
+
+    useEffect(() => {
+        if (vendor?.location) {
+            const parts = vendor.location.split(',').map(p => p.trim());
+            if (parts.length >= 3) {
+                setEditCity(parts[0]);
+                setEditState(parts[1]);
+                setEditCountry(parts[2]);
+            } else if (parts.length === 2) {
+                setEditState(parts[0]);
+                setEditCountry(parts[1]);
+            } else if (parts.length === 1) {
+                setEditCountry(parts[0]);
+            }
+        }
+    }, [vendor]);
+
     useEffect(() => {
         if (itemToEdit) {
             setItemPhotoURL(itemToEdit.photoURL || '');
@@ -120,9 +158,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             setItemPhotoURL('');
         }
     }, [itemToEdit, isAddMealOpen]);
-
-    const vendorDocRef = useMemo(() => vendorId ? doc(firestore, 'vendors', vendorId) : null, [firestore, vendorId]);
-    const { data: vendor, loading: loadingVendor } = useDoc<VendorProfile>(vendorDocRef);
 
     const mealsQuery = useMemo(() => {
         if (!firestore || !vendorId) return null;
@@ -257,15 +292,16 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const formData = new FormData(e.currentTarget);
         const businessName = formData.get('businessName') as string;
         const description = formData.get('description') as string;
-        const location = formData.get('location') as string;
         const paymentDetails = formData.get('paymentDetails') as string;
+
+        const locationString = [editCity, editState, editCountry].filter(Boolean).join(', ');
 
         setIsUpdatingProfile(true);
         const vendorRef = doc(firestore, 'vendors', vendorId);
         const updateData = {
             businessName,
             description,
-            location,
+            location: locationString,
             paymentDetails,
             updatedAt: serverTimestamp(),
         };
@@ -394,16 +430,55 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                            <span className="text-xs font-bold text-primary uppercase tracking-widest">{centerLabel}</span>
                         </div>
                     </div>
+
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Country</Label>
+                            <Select onValueChange={(val) => { setEditCountry(val); setEditState(''); }} value={editCountry}>
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
+                                    <SelectValue placeholder="Select Country" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[300px]">
+                                    {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">State</Label>
+                                <Select 
+                                    onValueChange={setEditState} 
+                                    value={editState}
+                                    disabled={!editCountry || statesList.length === 0}
+                                >
+                                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
+                                        <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-[300px]">
+                                        {statesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="editCity" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">City</Label>
+                                <Input 
+                                    id="editCity" 
+                                    value={editCity} 
+                                    onChange={e => setEditCity(e.target.value)} 
+                                    placeholder="Enter City" 
+                                    className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" 
+                                />
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Location / Area</Label>
-                        <Input name="location" defaultValue={vendor.location} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+                        <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About Your Service</Label>
+                        <Textarea id="description" name="description" defaultValue={vendor.description} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About Your Service</Label>
-                        <Textarea name="description" defaultValue={vendor.description} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payment Instructions</Label>
+                        <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payment Instructions</Label>
                         <Textarea name="paymentDetails" defaultValue={vendor.paymentDetails} placeholder="Bank details..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" required />
                         <p className="text-[9px] text-muted-foreground px-1 italic">Users see this to pay you for gifts.</p>
                     </div>
