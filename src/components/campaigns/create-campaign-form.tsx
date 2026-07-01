@@ -259,7 +259,15 @@ export function CreateCampaignForm({ onCampaignCreated, userProfile }: CreateCam
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="Evangelism">Evangelism</SelectItem>
+                      <SelectItem value="Street Evangelism">Street Evangelism</SelectItem>
+                      <SelectItem value="Hospital Visitation">Hospital Visitation</SelectItem>
+                      <SelectItem value="Prison Ministry">Prison Ministry</SelectItem>
+                      <SelectItem value="School Outreach">School/Campus Outreach</SelectItem>
                       <SelectItem value="Community Outreach">Community Outreach</SelectItem>
+                      <SelectItem value="Welfare Ministry">Welfare/Mercy Ministry</SelectItem>
+                      <SelectItem value="Medical Outreach">Medical Outreach</SelectItem>
+                      <SelectItem value="Mass Crusade">Mass Crusade</SelectItem>
+                      <SelectItem value="Literature Distribution">Book/Literature Distribution</SelectItem>
                       <SelectItem value="Discipleship">Discipleship</SelectItem>
                       <SelectItem value="Prayer Meeting">Prayer Meeting</SelectItem>
                       <SelectItem value="Youth Program">Youth Program</SelectItem>
