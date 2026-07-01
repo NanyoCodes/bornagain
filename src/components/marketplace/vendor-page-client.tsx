@@ -789,21 +789,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         );
     }
 
-    if (!vendor) {
-        return (
-            <div className="flex h-full w-full flex-col items-center justify-center py-20 text-center px-8">
-                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
-                    <Store className="h-10 w-10 text-muted-foreground opacity-20" />
-                </div>
-                <h3 className="text-xl font-bold font-headline uppercase tracking-tight">Storefront Not Found</h3>
-                <p className="mt-2 text-sm text-muted-foreground max-w-[280px] leading-relaxed italic">This service might have been removed or the link is incorrect.</p>
-                <Button variant="outline" asChild className="mt-8 rounded-xl h-11 px-8 font-bold">
-                    <Link href="/dashboard/marketplace">Return to Hub</Link>
-                </Button>
-            </div>
-        );
-    }
-
     return (
         <div 
             className="space-y-8 max-w-4xl mx-auto pb-32"
@@ -1009,7 +994,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <ShoppingCart className="h-5 w-5" />
                                 <span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center shadow-sm">{cartCount}</span>
                             </div>
-                            <span className="truncate text-[10px] sm:text-xs">REVIEW PACKAGE</span>
+                            <span className="truncate text-[10px] sm:text-xs">OPEN CART</span>
                         </div>
                         <span className="text-[11px] sm:text-sm whitespace-nowrap ml-2">₦{cartTotal.toLocaleString()}</span>
                     </Button>
