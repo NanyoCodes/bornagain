@@ -83,6 +83,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [isDeleteStoreOpen, setIsDeleteStoreOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Meal | null>(null);
+    const [itemToEdit, setItemToEdit] = useState<Meal | null>(null);
     const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
     
     const [isProcessingOrder, setIsProcessingOrder] = useState(false);
@@ -90,8 +91,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
     const [isDeletingStore, setIsDeletingStore] = useState(false);
     const [isDeletingItem, setIsDeletingItem] = useState(false);
+    const [isUpdatingItem, setIsUpdatingItem] = useState(false);
 
-    const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || selectedMeal);
+    const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || itemToEdit || selectedMeal);
 
     useEffect(() => {
         if (!isAnyModalOpen && typeof document !== 'undefined') {
@@ -171,6 +173,47 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             });
     };
 
+    const handleUpdateItem = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!user || !firestore || !isOwner || !itemToEdit) return;
+
+        const formData = new FormData(e.currentTarget);
+        const name = formData.get('name') as string;
+        const priceValue = formData.get('price') as string;
+        const price = parseFloat(priceValue);
+        const description = formData.get('description') as string;
+        const category = formData.get('category') as string;
+
+        if (!name || isNaN(price)) return;
+
+        setIsUpdatingItem(true);
+        const itemRef = doc(firestore, 'vendors', vendorId, 'meals', itemToEdit.id);
+        const updateData = {
+            name,
+            price,
+            description,
+            category,
+            updatedAt: serverTimestamp(),
+        };
+
+        updateDoc(itemRef, updateData)
+            .then(() => {
+                toast({ title: 'Item Updated', description: `"${name}" has been updated.` });
+                setItemToEdit(null);
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: itemRef.path,
+                    operation: 'update',
+                    requestResourceData: updateData
+                }, user);
+                errorEmitter.emit('permission-error', permissionError);
+            })
+            .finally(() => {
+                setIsUpdatingItem(false);
+            });
+    };
+
     const handleDeleteItem = () => {
         if (!user || !firestore || !itemToDelete || !isOwner) return;
         setIsDeletingItem(true);
@@ -245,7 +288,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             .catch(async (serverError) => {
                 const permissionError = new FirestorePermissionError({
                     path: vendorRef.path,
-                    operation: 'delete'
+                    operation: 'delete',
                 }, user);
                 errorEmitter.emit('permission-error', permissionError);
             })
@@ -395,31 +438,31 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </form>
     );
 
-    const addMealForm = (
-        <form onSubmit={handleAddMeal}>
+    const itemForm = (initialItem?: Meal | null, isEdit = false) => (
+        <form onSubmit={isEdit ? handleUpdateItem : handleAddMeal}>
             <div className="p-6 sm:p-8 space-y-6">
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Name</Label>
-                    <Input name="name" placeholder={`e.g., ${isGiftVendor ? 'Study Bible' : 'Jollof Rice'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                    <Input name="name" defaultValue={initialItem?.name} placeholder={`e.g., ${isGiftVendor ? 'Study Bible' : 'Jollof Rice'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                 </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price (₦)</Label>
-                    <Input name="price" type="number" placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                    <Input name="price" type="number" defaultValue={initialItem?.price} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                 </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
-                    <Input name="category" placeholder={categoryPlaceholder} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+                    <Input name="category" defaultValue={initialItem?.category} placeholder={categoryPlaceholder} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
                 </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label>
-                    <Textarea name="description" placeholder={descriptionPlaceholder} className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner" />
+                    <Textarea name="description" defaultValue={initialItem?.description} placeholder={descriptionPlaceholder} className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner" />
                 </div>
             </div>
             <div className="p-6 sm:p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row">
-                <Button type="button" variant="outline" onClick={() => setIsAddMealOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
-                <Button type="submit" disabled={isSubmittingMeal} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
-                    {isSubmittingMeal && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Add Item
+                <Button type="button" variant="outline" onClick={() => isEdit ? setItemToEdit(null) : setIsAddMealOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
+                <Button type="submit" disabled={isEdit ? isUpdatingItem : isSubmittingMeal} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
+                    {(isEdit ? isUpdatingItem : isSubmittingMeal) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {isEdit ? 'Save Changes' : 'Add Item'}
                 </Button>
             </div>
         </form>
@@ -499,7 +542,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     return (
         <div 
             className="space-y-8 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen}
+            inert={isAnyModalOpen ? true : undefined}
         >
             <div className="px-4 sm:px-0 flex flex-col gap-5 sm:gap-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
@@ -519,7 +562,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     {isOwner && (
                         <div className="flex gap-2 w-full sm:w-auto px-1 sm:px-0">
                             {mounted && (isMobile ? (
-                                <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                                <Sheet open={isEditProfileOpen} onOpenChange={isEditProfileOpen}>
                                     <SheetTrigger asChild>
                                         <Button variant="outline" size="sm" className="rounded-xl h-11 sm:h-10 px-4 font-bold uppercase tracking-widest text-[10px] flex-1 shadow-sm">
                                             <Edit className="mr-2 h-4 w-4" /> Profile
@@ -538,7 +581,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     </SheetContent>
                                 </Sheet>
                             ) : (
-                                <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                                <Dialog open={isEditProfileOpen} onOpenChange={isEditProfileOpen}>
                                     <DialogTrigger asChild>
                                         <Button variant="outline" size="sm" className="rounded-xl h-10 px-4 font-bold uppercase tracking-widest text-[10px] shadow-sm">
                                             <Edit className="mr-2 h-4 w-4" /> Manage Profile
@@ -595,7 +638,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     </SheetHeader>
                                 </div>
                                 <ScrollArea className="flex-grow">
-                                    {addMealForm}
+                                    {itemForm()}
                                 </ScrollArea>
                             </SheetContent>
                         </Sheet>
@@ -609,7 +652,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</DialogDescription>
                                 </DialogHeader>
-                                {addMealForm}
+                                {itemForm()}
                             </DialogContent>
                         </Dialog>
                     ))
@@ -628,14 +671,24 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 )}
                                 <div className="absolute top-4 right-4 flex gap-2">
                                     {isOwner && (
-                                        <Button 
-                                            variant="destructive" 
-                                            size="icon" 
-                                            className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                                            onClick={(e) => { e.stopPropagation(); setItemToDelete(meal); }}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
+                                        <div className="flex gap-2">
+                                            <Button 
+                                                variant="outline" 
+                                                size="icon" 
+                                                className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg bg-background"
+                                                onClick={(e) => { e.stopPropagation(); setItemToEdit(meal); }}
+                                            >
+                                                <Edit className="h-4 w-4 text-primary" />
+                                            </Button>
+                                            <Button 
+                                                variant="destructive" 
+                                                size="icon" 
+                                                className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                                onClick={(e) => { e.stopPropagation(); setItemToDelete(meal); }}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
                                     )}
                                     <Badge className="bg-primary text-white font-black text-[10px] sm:text-xs px-3 h-8 rounded-full shadow-lg border-none">
                                         ₦{meal.price.toLocaleString()}
@@ -668,6 +721,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 )}
             </div>
 
+            {/* Selected Meal / Gifting Flow */}
             {mounted && (isMobile ? (
                 <Sheet open={!!selectedMeal} onOpenChange={(open) => !open && setSelectedMeal(null)}>
                     <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
@@ -702,6 +756,35 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <DialogFooter className="p-8 bg-muted/5 border-t">
                             {orderConfirmationFooter}
                         </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            ))}
+
+            {/* Edit Item Flow */}
+            {mounted && (isMobile ? (
+                <Sheet open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
+                    <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left">
+                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit {itemLabel}</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1">Update item details in your catalog.</SheetDescription>
+                            </SheetHeader>
+                        </div>
+                        <ScrollArea className="flex-grow">
+                            {itemForm(itemToEdit, true)}
+                        </ScrollArea>
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                        <div className="p-8 border-b bg-muted/10">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit {itemLabel}</DialogTitle>
+                                <DialogDescription className="text-sm font-medium mt-1">Update item details in your catalog.</DialogDescription>
+                            </DialogHeader>
+                        </div>
+                        {itemForm(itemToEdit, true)}
                     </DialogContent>
                 </Dialog>
             ))}
