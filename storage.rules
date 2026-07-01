@@ -2,27 +2,46 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Emergency Fix for Access Denied - 2025-09-02T18:00:00Z
+    // Deployment trigger: Emergency Fix for Access Denied - 2025-09-02T20:00:00Z
     
-    // Allow public read access for all ministry assets, testimonies, and profile photos
+    // Global public read access for all ministry assets
     match /{allPaths=**} {
       allow read: if true;
     }
 
     /**
-     * Universal Authenticated Write Policy
-     * Grants users write access to their own UID-named folders across any top-level category.
-     * This covers /meals-center/, /kindness-center/, /profile-pictures/, etc.
+     * Explicit Folder Authorizations
+     * These rules definitively grant write access to authenticated users for their unique directories.
      */
-    match /{folder}/{userId}/{allPaths=**} {
-       allow write: if request.auth != null && request.auth.uid == userId;
+    
+    match /profile-pictures/{uid}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /meals-center/{uid}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /kindness-center/{uid}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /vendor-items/{uid}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /testimony-media/{uid}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Fallback for top-level UID directories
+    match /{uid}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == uid;
     }
     
-    /**
-     * Fallback Pattern for top-level UID folders: /userId/file.jpg
-     */
-    match /{userId}/{allPaths=**} {
-       allow write: if request.auth != null && request.auth.uid == userId;
+    // Generic catch-all for nested folders
+    match /{folder}/{uid}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == uid;
     }
   }
 }

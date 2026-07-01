@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical Access for Joined Campaigns - 2025-09-02T11:00:00Z
+    // Deployment trigger: Critical Access for Joined Campaigns & Storage Sync - 2025-09-02T20:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -85,7 +84,7 @@ service cloud.firestore {
       }
 
       match /joinedCampaigns/{campaignId} {
-        allow read, write: if isOwner(userId);
+        allow get, list, write: if isOwner(userId);
       }
     }
     
@@ -123,7 +122,7 @@ service cloud.firestore {
     match /prayerRequests/{requestId} {
       allow get, list: if true;
       allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
-      allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+      allow delete: if request.auth != null && request.resource.data.authorId == request.auth.uid;
       allow update: if request.auth != null && ( 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
         (resource.data.authorId == request.auth.uid && request.resource.data.status in ['pending', 'answered'])
@@ -199,7 +198,8 @@ service cloud.firestore {
     match /vendors/{vendorId} {
       allow get, list: if true;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow delete: if request.auth != null && request.resource.data.userId == request.auth.uid;
 
       match /meals/{mealId} {
         allow get, list: if true;
