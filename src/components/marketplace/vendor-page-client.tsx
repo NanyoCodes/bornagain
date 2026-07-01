@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -30,7 +29,8 @@ import {
     Camera,
     Store,
     MessagesSquare,
-    Info
+    Info,
+    X
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -244,6 +244,13 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 ...prev,
                 [itemId]: { ...existing, quantity: newQty }
             };
+        });
+    };
+
+    const removeFromCart = (itemId: string) => {
+        setCart(prev => {
+            const { [itemId]: _, ...rest } = prev;
+            return rest;
         });
     };
 
@@ -614,7 +621,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">State</Label>
                                 <Select 
                                     onValueChange={setEditState} 
-                                    value={editState}
+                                    value={selectedState}
                                     disabled={!editCountry || statesList.length === 0}
                                 >
                                     <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
@@ -732,10 +739,21 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <p className="text-[9px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()} x {c.quantity}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-1.5 shrink-0 bg-background rounded-full p-0.5 border">
-                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
-                                <span className="text-xs font-black min-w-[1.5rem] text-center">{c.quantity}</span>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <div className="flex items-center gap-1.5 bg-background rounded-full p-0.5 border">
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
+                                    <span className="text-xs font-black min-w-[1.5rem] text-center">{c.quantity}</span>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                                </div>
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10" 
+                                    onClick={() => removeFromCart(c.item.id)}
+                                    title="Remove item"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
                             </div>
                         </div>
                     ))}
