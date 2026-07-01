@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Camera, X, Loader2, Crop as CropIcon, Trash2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import Image from 'next/image';
 
 /**
@@ -278,7 +278,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           <DialogFooter className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3">
             <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12">Cancel</Button>
             <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12 rounded-xl uppercase tracking-widest">
-              {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <CropIcon className="mr-2 h-5 w-5" />}
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
               {isLoading ? 'OPTIMIZING...' : 'CONFIRM PHOTO'}
             </Button>
           </DialogFooter>
