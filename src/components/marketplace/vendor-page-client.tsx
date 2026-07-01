@@ -666,8 +666,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         >
             <div className="px-4 sm:px-0 flex flex-col gap-5 sm:gap-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background">
+                    <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background mt-1 sm:mt-0">
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
                         <div className="min-w-0 flex-1">
@@ -676,7 +676,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
                             <h1 className="text-lg sm:text-2xl md:text-4xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
-                            <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Kingdom Network'}</p>
+                            <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] leading-relaxed break-words [overflow-wrap:anywhere]">{vendor.location || 'Kingdom Network'}</p>
                         </div>
                     </div>
                     {isOwner && (
@@ -868,7 +868,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             ) : (
                 <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                        <div className="p-8 border-b bg-muted/10">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</DialogTitle>
                                 <DialogDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</DialogDescription>
