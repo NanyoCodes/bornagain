@@ -47,10 +47,11 @@ export function initializeFirebase(): FirebaseServices {
   const auth = getAuth(app);
   
   /**
-   * Initialize Storage. 
-   * Reverting to standard initialization to ensure it uses the bucket defined in config.
+   * Explicit Storage Initialization
+   * We pass the bucket name directly from config to ensure the service correctly 
+   * targets the 'studio-6220967431-56fe2.firebasestorage.app' hub.
    */
-  const storage = getStorage(app);
+  const storage = getStorage(app, firebaseConfig.storageBucket);
   
   const services = { app, auth, firestore, storage };
 

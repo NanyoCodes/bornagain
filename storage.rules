@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Emergency Access Grant - 2025-08-30T10:00:00Z
+    // Deployment trigger: Universal Path Sync - 2025-08-31T09:00:00Z
     
     // Allow public read access for all ministry assets, testimonies, and profile photos
     match /{allPaths=**} {
@@ -11,7 +11,7 @@ service firebase.storage {
 
     /**
      * Authenticated Write Policy
-     * Grants users write access to their own UID-named folders across all top-level categories.
+     * Explicitly grants users write access to their own UID-named folders.
      * folder: profile-pictures, vendor-items, testimony-media, etc.
      */
     match /{folder}/{userId}/{allPaths=**} {
