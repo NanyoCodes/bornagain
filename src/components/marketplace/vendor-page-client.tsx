@@ -378,7 +378,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         toast({ title: 'Copied!', description: 'Payment details copied to clipboard.' });
     };
 
-    const editProfileForm = (
+    const editProfileForm = vendor && (
         <form onSubmit={handleUpdateProfile} className="flex flex-col h-full">
             <ScrollArea className="flex-grow">
                 <div className="p-6 sm:p-8 space-y-6">
@@ -474,7 +474,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </form>
     );
 
-    const orderConfirmationContent = selectedMeal && (
+    const orderConfirmationContent = selectedMeal && vendor && (
         <div className="space-y-6">
             <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border shadow-inner">
                 <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -545,6 +545,25 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </Card>
     );
 
+    if (loadingVendor || !mounted) {
+        return (
+            <div className="flex h-full w-full flex-col items-center justify-center py-20">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <p className="mt-4 text-[10px] font-black uppercase tracking-widest animate-pulse">Syncing Inventory...</p>
+            </div>
+        );
+    }
+
+    if (!vendor) {
+        return (
+            <div className="text-center py-32 space-y-4">
+                <Store className="h-16 w-16 text-muted-foreground opacity-10 mx-auto" />
+                <h2 className="text-xl font-bold uppercase tracking-tight">Storefront Not Found</h2>
+                <Button variant="outline" onClick={() => router.push('/dashboard/marketplace')} className="rounded-xl">Return to Hub</Button>
+            </div>
+        );
+    }
+
     return (
         <div 
             className="space-y-8 max-w-4xl mx-auto pb-32"
@@ -567,8 +586,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     </div>
                     {isOwner && (
                         <div className="flex gap-2 w-full sm:w-auto px-1 sm:px-0">
-                            {mounted && (isMobile ? (
-                                <Sheet open={isEditProfileOpen} onOpenChange={isEditProfileOpen}>
+                            {isMobile ? (
+                                <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
                                     <SheetTrigger asChild>
                                         <Button variant="outline" size="sm" className="rounded-xl h-11 sm:h-10 px-4 font-bold uppercase tracking-widest text-[10px] flex-1 shadow-sm">
                                             <Edit className="mr-2 h-4 w-4" /> Profile
@@ -577,7 +596,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                             <SheetHeader className="text-left">
-                                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage {centerLabel}</SheetTitle>
+                                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Storefront</SheetTitle>
                                                 <SheetDescription className="text-sm font-medium mt-1">Update your business details and payment instructions.</SheetDescription>
                                             </SheetHeader>
                                         </div>
@@ -587,7 +606,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     </SheetContent>
                                 </Sheet>
                             ) : (
-                                <Dialog open={isEditProfileOpen} onOpenChange={isEditProfileOpen}>
+                                <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
                                     <DialogTrigger asChild>
                                         <Button variant="outline" size="sm" className="rounded-xl h-10 px-4 font-bold uppercase tracking-widest text-[10px] shadow-sm">
                                             <Edit className="mr-2 h-4 w-4" /> Manage Profile
@@ -595,13 +614,13 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     </DialogTrigger>
                                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                                         <DialogHeader className="p-8 border-b bg-muted/10">
-                                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage {centerLabel}</DialogTitle>
+                                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Storefront</DialogTitle>
                                             <DialogDescription className="text-sm font-medium mt-1">Update your business details and payment instructions.</DialogDescription>
                                         </DialogHeader>
                                         {editProfileForm}
                                     </DialogContent>
                                 </Dialog>
-                            ))}
+                            )}
                         </div>
                     )}
                 </div>
@@ -631,7 +650,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-0">
                 {isOwner && (
-                    mounted && (isMobile ? (
+                    isMobile ? (
                         <Sheet open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                             <SheetTrigger asChild>
                                 {addProductCard}
@@ -661,10 +680,16 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 {itemForm()}
                             </DialogContent>
                         </Dialog>
-                    ))
+                    )
                 )}
 
-                {meals?.map(meal => (
+                {loadingMeals ? (
+                     [...Array(3)].map((_, i) => (
+                        <Card key={i} className="rounded-[2.5rem] border-none shadow-sm animate-pulse h-[300px]">
+                            <CardContent className="h-full bg-muted/30 rounded-[2.5rem]" />
+                        </Card>
+                    ))
+                ) : meals?.map(meal => (
                     <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full">
                         <CardContent className="p-0">
                             <div className="aspect-[4/3] relative bg-muted">
@@ -700,7 +725,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <div className="p-6 space-y-4 flex-grow">
                                 <div className="min-w-0">
                                     <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate">{meal.name}</h3>
-                                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-1.5 font-medium italic leading-relaxed break-words">{meal.description || `Verified ${centerLabel} item.`}</p>
+                                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-1.5 font-medium italic leading-relaxed break-words">{meal.description || `Verified Kingdom service item.`}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -723,8 +748,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 )}
             </div>
 
-            {/* Selected Meal / Gifting Flow */}
-            {mounted && (isMobile ? (
+            {/* Order Flow */}
+            {isMobile ? (
                 <Sheet open={!!selectedMeal} onOpenChange={(open) => !open && setSelectedMeal(null)}>
                     <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
@@ -760,15 +785,15 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
-            ))}
+            )}
 
-            {/* Edit Item Flow */}
-            {mounted && (isMobile ? (
+            {/* Edit Flow */}
+            {isMobile ? (
                 <Sheet open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
                     <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit {itemLabel}</SheetTitle>
+                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Item</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">Update item details in your catalog.</SheetDescription>
                             </SheetHeader>
                         </div>
@@ -782,14 +807,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                         <div className="p-8 border-b bg-muted/10">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit {itemLabel}</DialogTitle>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Item</DialogTitle>
                                 <DialogDescription className="text-sm font-medium mt-1">Update item details in your catalog.</DialogDescription>
                             </DialogHeader>
                         </div>
                         {itemForm(itemToEdit, true)}
                     </DialogContent>
                 </Dialog>
-            ))}
+            )}
 
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
                 <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
@@ -812,7 +837,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
                 <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl">Remove {itemLabel}?</AlertDialogTitle>
+                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl">Remove Item?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium">
                             Are you sure you want to delete "{itemToDelete?.name}" from your storefront?
                         </AlertDialogDescription>

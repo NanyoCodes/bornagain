@@ -5,8 +5,7 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 /**
  * @fileOverview Server-side Page component for individual Vendor storefronts.
- * Following Next.js 15 best practices by unwrapping params asynchronously 
- * before passing them to the high-fidelity client component.
+ * Refactored for Next.js 15 to correctly handle dynamic route params as Promises.
  */
 export default async function VendorPage(props: { params: Params; searchParams: SearchParams }) {
     const params = await props.params;
