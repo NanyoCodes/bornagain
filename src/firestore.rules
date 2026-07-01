@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Consistent access for joinedCampaigns and harvest tracking - 2025-09-02T11:00:00Z
+    // Deployment trigger: Refined storage logic for Ministry Hubs - 2025-09-02T14:45:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

@@ -213,6 +213,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const addLabel = isGiftVendor ? 'Add New Product' : 'Add New Meal';
     const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
     const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
+    
+    // Dynamic storage path based on vendor type
+    const storagePath = isGiftVendor ? 'kindness-center' : 'meals-center';
 
     const cartItems = useMemo(() => Object.values(cart), [cart]);
     const cartTotal = useMemo(() => cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0), [cartItems]);
@@ -692,7 +695,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                   <ImageUpload 
                       initialImageUrl={itemPhotoURL} 
                       onUploadComplete={setItemPhotoURL} 
-                      storagePath="vendor-items" 
+                      storagePath={storagePath} 
                       cropAspect={4/3}
                   />
                 </div>
