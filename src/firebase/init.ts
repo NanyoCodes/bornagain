@@ -44,7 +44,9 @@ export function initializeFirebase(): FirebaseServices {
   }
 
   const auth = getAuth(app);
-  const storage = getStorage(app);
+  
+  // Explicitly passing the storage bucket URL to ensure it uses the correct Kingdom repository
+  const storage = getStorage(app, firebaseConfig.storageBucket);
   
   const services = { app, auth, firestore, storage };
 
