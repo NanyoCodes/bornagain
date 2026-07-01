@@ -21,6 +21,8 @@ import {
   TrendingUp,
   BookMarked,
   Users,
+  Store,
+  Gift,
 } from "lucide-react";
 
 import {
@@ -40,7 +42,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
-import type { Notification } from "@/lib/types";
+import type { Notification, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -94,6 +96,12 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 
   const { data: unreadOtherNotifications } = useCollection<Notification>(otherNotificationsQuery);
   const unreadCount = unreadOtherNotifications?.length ?? 0;
+
+  const userVendorsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, 'vendors'), where('userId', '==', user.uid));
+  }, [user?.uid, firestore]);
+  const { data: userVendors } = useCollection<VendorProfile>(userVendorsQuery);
 
   const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
 
@@ -228,7 +236,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 rounded-2xl shadow-xl" align="end">
+              <DropdownMenuContent className="w-64 rounded-2xl shadow-xl" align="end">
                 <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-bold leading-tight truncate">{user.displayName || 'User'}</p>
@@ -248,6 +256,37 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                     <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
+                
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Marketplace</DropdownMenuLabel>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/dashboard/marketplace">
+                    <Store className="mr-2 h-4 w-4" />
+                    <span>Meals Center</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/dashboard/marketplace/gifts">
+                    <Gift className="mr-2 h-4 w-4" />
+                    <span>Kindness Center</span>
+                  </Link>
+                </DropdownMenuItem>
+                
+                {userVendors && userVendors.length > 0 && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">My Business</DropdownMenuLabel>
+                    {userVendors.map(v => (
+                      <DropdownMenuItem key={v.id} asChild className="rounded-lg mx-1">
+                        <Link href={`/dashboard/marketplace/vendors/${v.id}`}>
+                          <Store className="mr-2 h-4 w-4 text-primary" />
+                          <span className="truncate">{v.vendorType === 'meal' ? 'Meals' : 'Kindness'} Storefront</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </>
+                )}
+
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
                     <Link href="/guide" className="cursor-pointer">
