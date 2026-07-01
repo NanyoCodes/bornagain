@@ -621,7 +621,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">State</Label>
                                 <Select 
                                     onValueChange={setEditState} 
-                                    value={selectedState}
+                                    value={editState}
                                     disabled={!editCountry || statesList.length === 0}
                                 >
                                     <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
