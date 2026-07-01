@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Explicit Ministry Hub Access (Meals & Kindness) - 2025-09-02T15:00:00Z
+    // Deployment trigger: Explicit Hub Access (Meals & Kindness) - 2025-09-02T16:00:00Z
     
     // Allow public read access for all ministry assets, testimonies, and profile photos
     match /{allPaths=**} {
@@ -10,33 +10,31 @@ service firebase.storage {
     }
 
     /**
-     * Authenticated Write Policy
-     * Grants users write access to their own UID-named folders across any top-level category.
-     * 
-     * Pattern: /folder/userId/file.jpg (e.g., /meals-center/UID/item.jpg, /profile-pictures/UID/photo.jpg)
-     */
-    match /{folder}/{userId}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    /**
-     * Explicit matches for high-priority hubs to ensure maximum reliability 
-     * across different workstation and workstation proxy environments.
+     * Explicit matches for ministry hubs to ensure maximum reliability 
+     * across all workstation and workstation proxy environments.
      */
     match /profile-pictures/{userId}/{allPaths=**} {
        allow write: if request.auth != null && request.auth.uid == userId;
     }
     
-    match /vendor-items/{userId}/{allPaths=**} {
-       allow write: if request.auth != null && request.auth.uid == userId;
-    }
-
     match /meals-center/{userId}/{allPaths=**} {
        allow write: if request.auth != null && request.auth.uid == userId;
     }
 
     match /kindness-center/{userId}/{allPaths=**} {
        allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /vendor-items/{userId}/{allPaths=**} {
+       allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    /**
+     * Authenticated Write Policy
+     * Grants users write access to their own UID-named folders across any top-level category.
+     */
+    match /{folder}/{userId}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
     
     /**

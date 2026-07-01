@@ -48,11 +48,10 @@ export function initializeFirebase(): FirebaseServices {
   
   /**
    * Explicit Storage Initialization
-   * In proxied environments like Firebase Studio, explicitly passing the bucket URL
-   * ensures the SDK doesn't default to an incorrect or empty bucket instance.
+   * Relying on getStorage(app) ensures the SDK uses the bucket defined in the main config.
+   * This resolves potential permission errors caused by bucket string mismatches.
    */
-  const storageBucketUrl = `gs://${firebaseConfig.storageBucket}`;
-  const storage = getStorage(app, storageBucketUrl);
+  const storage = getStorage(app);
   
   const services = { app, auth, firestore, storage };
 

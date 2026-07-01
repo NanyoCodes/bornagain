@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refined storage logic for Ministry Hubs - 2025-09-02T14:45:00Z
+    // Deployment trigger: Critical Access for Joined Campaigns & Storage Sync - 2025-09-02T16:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -211,7 +210,7 @@ service cloud.firestore {
     match /mealGifts/{giftId} {
       allow create: if request.auth != null;
       allow read: if request.auth != null && (request.auth.uid == resource.data.senderId || request.auth.uid == resource.data.vendorId);
-      allow update: if request.auth != null && (request.auth.uid == request.resource.data.vendorId || request.auth.uid == request.resource.data.senderId);
+      allow update: if request.auth != null && (request.auth.uid == resource.data.vendorId || request.auth.uid == request.resource.data.senderId);
     }
 
     match /mail/{mailId} {
