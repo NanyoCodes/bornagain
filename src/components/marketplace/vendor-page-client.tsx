@@ -109,6 +109,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const [editCountry, setEditCountry] = useState('');
     const [editState, setEditState] = useState('');
     const [editCity, setEditCity] = useState('');
+    const [editAddress, setEditAddress] = useState('');
 
     const countriesList = useMemo(() => Country.getAllCountries(), []);
     const statesList = useMemo(() => {
@@ -138,7 +139,12 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     useEffect(() => {
         if (vendor?.location) {
             const parts = vendor.location.split(',').map(p => p.trim());
-            if (parts.length >= 3) {
+            if (parts.length >= 4) {
+                setEditAddress(parts[0]);
+                setEditCity(parts[1]);
+                setEditState(parts[2]);
+                setEditCountry(parts[3]);
+            } else if (parts.length === 3) {
                 setEditCity(parts[0]);
                 setEditState(parts[1]);
                 setEditCountry(parts[2]);
@@ -294,7 +300,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const description = formData.get('description') as string;
         const paymentDetails = formData.get('paymentDetails') as string;
 
-        const locationString = [editCity, editState, editCountry].filter(Boolean).join(', ');
+        const locationString = [editAddress, editCity, editState, editCountry].filter(Boolean).join(', ');
 
         setIsUpdatingProfile(true);
         const vendorRef = doc(firestore, 'vendors', vendorId);
@@ -433,6 +439,18 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
                     <div className="space-y-4">
                         <div className="space-y-2">
+                            <Label htmlFor="editAddress" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Street Address</Label>
+                            <Input 
+                                id="editAddress" 
+                                value={editAddress} 
+                                onChange={e => setEditAddress(e.target.value)} 
+                                placeholder="e.g., 123 Kingdom Way" 
+                                className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" 
+                                required 
+                            />
+                        </div>
+
+                        <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Country</Label>
                             <Select onValueChange={(val) => { setEditCountry(val); setEditState(''); }} value={editCountry}>
                                 <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
@@ -468,6 +486,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     onChange={e => setEditCity(e.target.value)} 
                                     placeholder="Enter City" 
                                     className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" 
+                                    required
                                 />
                             </div>
                         </div>

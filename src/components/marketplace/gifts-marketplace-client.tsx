@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
 import { collection, query, where, doc, serverTimestamp, writeBatch, limit } from 'firebase/firestore';
 import type { VendorProfile } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -132,12 +132,13 @@ export default function GiftsMarketplaceClient() {
         const formData = new FormData(e.currentTarget);
         const businessName = formData.get('businessName') as string;
         const description = formData.get('description') as string;
+        const address = formData.get('address') as string;
         const city = formData.get('city') as string;
         const paymentDetails = formData.get('paymentDetails') as string;
 
         if (!businessName) return;
 
-        const locationString = [city, selectedState, selectedCountry].filter(Boolean).join(', ');
+        const locationString = [address, city, selectedState, selectedCountry].filter(Boolean).join(', ');
 
         setIsSubmitting(true);
         
@@ -193,6 +194,11 @@ export default function GiftsMarketplaceClient() {
 
                 <div className="space-y-4">
                     <div className="space-y-2">
+                        <Label htmlFor="address" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Street Address</Label>
+                        <Input id="address" name="address" placeholder="e.g., 123 Kingdom Way" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                    </div>
+
+                    <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Country</Label>
                         <Select onValueChange={(val) => { setSelectedCountry(val); setSelectedState(''); }} value={selectedCountry}>
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
@@ -222,7 +228,7 @@ export default function GiftsMarketplaceClient() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="city" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">City</Label>
-                            <Input id="city" name="city" placeholder="Enter City" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+                            <Input id="city" name="city" placeholder="Enter City" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                         </div>
                     </div>
                 </div>
