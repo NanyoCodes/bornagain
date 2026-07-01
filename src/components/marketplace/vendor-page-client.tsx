@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -81,6 +80,7 @@ import { ImageUpload } from '@/components/common/image-upload';
 import { Country, State } from 'country-state-city';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import Link from 'next/link';
 
 /**
  * Ensures the profile photo displayed in the storefront is always the most recent version.
@@ -726,7 +726,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <CreditCard className="h-3 w-3" /> Payment Instructions
                 </Label>
                 <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words [overflow-wrap:anywhere] text-balance">
-                    {vendor.paymentDetails || 'Contact provider for payment details.'}
+                    {vendor?.paymentDetails || 'Contact provider for payment details.'}
                 </p>
                 <Button 
                     size="icon" 
@@ -745,7 +745,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
                     <span className="shrink-0">Provider</span>
-                    <span className="text-foreground truncate font-black">{vendor.businessName}</span>
+                    <span className="text-foreground truncate font-black">{vendor?.businessName || 'Kingdom Store'}</span>
                 </div>
                 <Separator className="opacity-50" />
                 <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4">
@@ -785,6 +785,21 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="flex h-full w-full flex-col items-center justify-center py-20">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
                 <p className="mt-4 text-[10px] font-black uppercase tracking-widest animate-pulse">Syncing Inventory...</p>
+            </div>
+        );
+    }
+
+    if (!vendor) {
+        return (
+            <div className="flex h-full w-full flex-col items-center justify-center py-20 text-center px-8">
+                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+                    <Store className="h-10 w-10 text-muted-foreground opacity-20" />
+                </div>
+                <h3 className="text-xl font-bold font-headline uppercase tracking-tight">Storefront Not Found</h3>
+                <p className="mt-2 text-sm text-muted-foreground max-w-[280px] leading-relaxed italic">This service might have been removed or the link is incorrect.</p>
+                <Button variant="outline" asChild className="mt-8 rounded-xl h-11 px-8 font-bold">
+                    <Link href="/dashboard/marketplace">Return to Hub</Link>
+                </Button>
             </div>
         );
     }
@@ -1083,7 +1098,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Delete Storefront?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium leading-relaxed">
-                            This action is permanent and will remove "{vendor.businessName}" and its entire catalog from the Testify Network.
+                            This action is permanent and will remove "{vendor?.businessName}" and its entire catalog from the Testify Network.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="mt-6 gap-3">
