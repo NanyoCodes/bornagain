@@ -147,7 +147,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     } catch (err: any) {
         console.error("Firebase Storage Upload Error:", err);
         
-        // Detailed error mapping for common Storage failures in proxied/new environments
         if (err.code === 'storage/unauthorized') {
             throw new Error("Access Denied: Your Storage Security Rules do not allow this upload. Please check storage.rules.");
         }

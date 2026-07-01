@@ -2,23 +2,20 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Storage Access Refinement - 2025-08-28T14:00:00Z
+    // Deployment trigger: Universal Asset Access - 2025-08-28T15:00:00Z
     
-    // Allow public read access to all spiritual evidence and profile photos
+    // Allow public read access to all spiritual evidence, ministry assets, and profile photos
     match /{allPaths=**} {
       allow read: if true;
     }
 
-    // Explicitly grant write permissions to authenticated owners for their respective folders
-    match /profile-pictures/{userId}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    match /testimony-media/{userId}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    match /vendor-items/{userId}/{allPaths=**} {
+    /**
+     * Universal Write Policy for the Kingdom Workforce.
+     * Allows any authenticated user to manage their own assets in any top-level folder
+     * (e.g., /profile-pictures/{uid}/..., /vendor-items/{uid}/..., /testimony-media/{uid}/...)
+     * as long as the second path segment matches their unique Firebase UID.
+     */
+    match /{folder}/{userId}/{allPaths=**} {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
   }
