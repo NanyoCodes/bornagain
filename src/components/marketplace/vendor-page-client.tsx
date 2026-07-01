@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, Chat } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -23,7 +23,8 @@ import {
     ChefHat,
     ChevronDown,
     ChevronRight,
-    ShoppingBag
+    ShoppingBag,
+    Camera
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -64,6 +65,7 @@ import { Separator } from '@/components/ui/separator';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import Image from 'next/image';
+import { ImageUpload } from '@/components/common/image-upload';
 
 export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const searchParams = useSearchParams();
@@ -86,6 +88,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const [itemToEdit, setItemToEdit] = useState<Meal | null>(null);
     const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
     
+    const [itemPhotoURL, setItemPhotoURL] = useState('');
     const [isProcessingOrder, setIsProcessingOrder] = useState(false);
     const [isSubmittingMeal, setIsSubmittingMeal] = useState(false);
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
@@ -108,6 +111,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    useEffect(() => {
+        if (itemToEdit) {
+            setItemPhotoURL(itemToEdit.photoURL || '');
+        } else if (isAddMealOpen) {
+            setItemPhotoURL('');
+        }
+    }, [itemToEdit, isAddMealOpen]);
 
     const vendorDocRef = useMemo(() => vendorId ? doc(firestore, 'vendors', vendorId) : null, [firestore, vendorId]);
     const { data: vendor, loading: loadingVendor } = useDoc<VendorProfile>(vendorDocRef);
@@ -152,6 +163,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             description,
             category,
             currency: 'NGN',
+            photoURL: itemPhotoURL || null,
             createdAt: serverTimestamp(),
         };
 
@@ -193,6 +205,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             price,
             description,
             category,
+            photoURL: itemPhotoURL || null,
             updatedAt: serverTimestamp(),
         };
 
@@ -441,6 +454,15 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const itemForm = (initialItem?: Meal | null, isEdit = false) => (
         <form onSubmit={isEdit ? handleUpdateItem : handleAddMeal}>
             <div className="p-6 sm:p-8 space-y-6">
+                <div className="space-y-4">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Photo</Label>
+                  <ImageUpload 
+                      initialImageUrl={itemPhotoURL} 
+                      onUploadComplete={setItemPhotoURL} 
+                      storagePath="vendor-items" 
+                      cropAspect={4/3}
+                  />
+                </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Name</Label>
                     <Input name="name" defaultValue={initialItem?.name} placeholder={`e.g., ${isGiftVendor ? 'Study Bible' : 'Jollof Rice'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />

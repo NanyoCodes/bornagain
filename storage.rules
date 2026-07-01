@@ -16,5 +16,9 @@ service firebase.storage {
     match /testimony-media/{userId}/{allPaths=**} {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
+
+    match /vendor-items/{userId}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
   }
 }
