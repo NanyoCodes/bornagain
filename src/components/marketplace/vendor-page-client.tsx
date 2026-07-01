@@ -24,7 +24,8 @@ import {
     ChevronDown,
     ChevronRight,
     ShoppingBag,
-    Camera
+    Camera,
+    Store
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -536,7 +537,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     );
 
     const addProductCard = (
-        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-6 sm:p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[200px] sm:min-h-[280px] shadow-sm">
+        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-6 sm:p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[200px] sm:min-h-[280px] shadow-sm" onClick={() => setIsAddMealOpen(true)}>
             <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                 <Plus className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
             </div>
@@ -649,39 +650,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-0">
-                {isOwner && (
-                    isMobile ? (
-                        <Sheet open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                            <SheetTrigger asChild>
-                                {addProductCard}
-                            </SheetTrigger>
-                            <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                    <SheetHeader className="text-left">
-                                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</SheetTitle>
-                                        <SheetDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</SheetDescription>
-                                    </SheetHeader>
-                                </div>
-                                <ScrollArea className="flex-grow">
-                                    {itemForm()}
-                                </ScrollArea>
-                            </SheetContent>
-                        </Sheet>
-                    ) : (
-                        <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                            <DialogTrigger asChild>
-                                {addProductCard}
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                                <DialogHeader className="p-8 border-b bg-muted/10">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</DialogDescription>
-                                </DialogHeader>
-                                {itemForm()}
-                            </DialogContent>
-                        </Dialog>
-                    )
-                )}
+                {isOwner && addProductCard}
 
                 {loadingMeals ? (
                      [...Array(3)].map((_, i) => (
@@ -787,7 +756,35 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </Dialog>
             )}
 
-            {/* Edit Flow */}
+            {/* Add/Edit Item Flows */}
+            {isMobile ? (
+                <Sheet open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
+                    <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left">
+                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</SheetDescription>
+                            </SheetHeader>
+                        </div>
+                        <ScrollArea className="flex-grow">
+                            {itemForm()}
+                        </ScrollArea>
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                        <div className="p-8 border-b bg-muted/10">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</DialogTitle>
+                                <DialogDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</DialogDescription>
+                            </DialogHeader>
+                        </div>
+                        {itemForm()}
+                    </DialogContent>
+                </Dialog>
+            )}
+
             {isMobile ? (
                 <Sheet open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
                     <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
