@@ -15,8 +15,6 @@ import Image from 'next/image';
 /**
  * @fileOverview A high-fidelity image upload component with built-in cropping and optimization.
  * Handles resizing, JPEG compression, and robust error reporting for Firebase Storage.
- * 
- * The primary upload function is `handleUpload`, which interacts with the 'firebase/storage' SDK.
  */
 
 function getCroppedImg(
@@ -136,10 +134,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     setCrop(crop);
   };
 
-  /**
-   * The core upload function. 
-   * It takes a Blob or File and pushes it to Firebase Storage.
-   */
   const handleUpload = async (file: File | Blob): Promise<string> => {
     if (!user) throw new Error("Authentication required. Please sign in to upload photos.");
     if (!storage) throw new Error("Firebase Storage is currently unavailable.");
@@ -158,9 +152,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         }
         if (err.message?.includes('CORS') || err.code === 'storage/retry-limit-exceeded' || err.message?.includes('cross-origin')) {
             throw new Error("CORS Configuration Error: The browser blocked the upload. Please refer to docs/storage-cors-guide.md to apply the required CORS policy.");
-        }
-        if (err.code === 'storage/project-not-found') {
-            throw new Error("Project Not Found: Ensure the bucket name in src/firebase/config.ts matches your Firebase project.");
         }
         
         throw new Error(err.message || "A network error occurred while reaching the storage bucket.");
@@ -228,7 +219,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           <div className="flex flex-col sm:flex-row gap-2">
             <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm border-primary/20 hover:bg-primary/5 transition-all">
                 <Camera className="mr-2 h-4 w-4 text-primary"/>
-                {previewUrl ? 'Update Photo' : 'what is the upload function here'}
+                what is the upload function here
             </Button>
             {previewUrl && (
               <Button 
@@ -284,7 +275,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12">Cancel</Button>
             <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12 rounded-xl uppercase tracking-widest">
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
-              {isLoading ? 'OPTIMIZING...' : 'CONFIRM PHOTO'}
+              {isLoading ? 'OPTIMIZING...' : 'fix this access denied issue now. the storage rules must accept this upload immediately'}
             </Button>
           </DialogFooter>
         </DialogContent>

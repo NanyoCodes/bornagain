@@ -48,10 +48,11 @@ export function initializeFirebase(): FirebaseServices {
   
   /**
    * Explicit Storage Initialization
-   * Relying on getStorage(app) ensures the SDK uses the bucket defined in the main config.
-   * This resolves potential permission errors caused by bucket string mismatches.
+   * We use the gs:// protocol to explicitly target the Kingdom bucket.
+   * This ensures the SDK doesn't default to an empty or incorrect bucket in proxied environments.
    */
-  const storage = getStorage(app);
+  const bucketUrl = `gs://${firebaseConfig.storageBucket}`;
+  const storage = getStorage(app, bucketUrl);
   
   const services = { app, auth, firestore, storage };
 

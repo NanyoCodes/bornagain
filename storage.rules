@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Explicit Hub Access (Meals & Kindness) - 2025-09-02T16:00:00Z
+    // Deployment trigger: Emergency Fix for Access Denied - 2025-09-02T18:00:00Z
     
     // Allow public read access for all ministry assets, testimonies, and profile photos
     match /{allPaths=**} {
@@ -10,35 +10,16 @@ service firebase.storage {
     }
 
     /**
-     * Explicit matches for ministry hubs to ensure maximum reliability 
-     * across all workstation and workstation proxy environments.
-     */
-    match /profile-pictures/{userId}/{allPaths=**} {
-       allow write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    match /meals-center/{userId}/{allPaths=**} {
-       allow write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    match /kindness-center/{userId}/{allPaths=**} {
-       allow write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    match /vendor-items/{userId}/{allPaths=**} {
-       allow write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    /**
-     * Authenticated Write Policy
+     * Universal Authenticated Write Policy
      * Grants users write access to their own UID-named folders across any top-level category.
+     * This covers /meals-center/, /kindness-center/, /profile-pictures/, etc.
      */
     match /{folder}/{userId}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == userId;
+       allow write: if request.auth != null && request.auth.uid == userId;
     }
     
     /**
-     * Fallback Pattern: /userId/file.jpg
+     * Fallback Pattern for top-level UID folders: /userId/file.jpg
      */
     match /{userId}/{allPaths=**} {
        allow write: if request.auth != null && request.auth.uid == userId;
