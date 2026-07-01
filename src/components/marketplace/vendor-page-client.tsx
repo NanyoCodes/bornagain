@@ -61,7 +61,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn, safeToDate } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '../ui/separator';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import Image from 'next/image';
@@ -378,22 +378,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         toast({ title: 'Copied!', description: 'Payment details copied to clipboard.' });
     };
 
-    if (loadingVendor || loadingMeals) {
-        return (
-            <div className="flex h-full w-full flex-col items-center justify-center py-20">
-                <div className="relative mb-8">
-                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                    </div>
-                </div>
-                <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-8">Establishing Storefront...</p>
-            </div>
-        );
-    }
-
-    if (!vendor) return <div className="text-center py-20">Storefront not found.</div>;
-
     const editProfileForm = (
         <form onSubmit={handleUpdateProfile} className="flex flex-col h-full">
             <ScrollArea className="flex-grow">
@@ -578,7 +562,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
                             <h1 className="text-lg sm:text-2xl md:text-4xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
-                            <p className="text-[9px] sm:text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Kingdom Network'}</p>
+                            <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] truncate">{vendor.location || 'Kingdom Network'}</p>
                         </div>
                     </div>
                     {isOwner && (
@@ -694,22 +678,18 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <div className="absolute top-4 right-4 flex gap-2">
                                     {isOwner && (
                                         <div className="flex gap-2">
-                                            <Button 
-                                                variant="outline" 
-                                                size="icon" 
-                                                className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg bg-background"
+                                            <button 
+                                                className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg bg-background flex items-center justify-center border hover:bg-muted"
                                                 onClick={(e) => { e.stopPropagation(); setItemToEdit(meal); }}
                                             >
                                                 <Edit className="h-4 w-4 text-primary" />
-                                            </Button>
-                                            <Button 
-                                                variant="destructive" 
-                                                size="icon" 
-                                                className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                                            </button>
+                                            <button 
+                                                className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg bg-destructive flex items-center justify-center hover:bg-destructive/90"
                                                 onClick={(e) => { e.stopPropagation(); setItemToDelete(meal); }}
                                             >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
+                                                <Trash2 className="h-4 w-4 text-white" />
+                                            </button>
                                         </div>
                                     )}
                                     <Badge className="bg-primary text-white font-black text-[10px] sm:text-xs px-3 h-8 rounded-full shadow-lg border-none">
