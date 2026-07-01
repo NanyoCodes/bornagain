@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -28,7 +29,8 @@ import {
     Minus,
     Camera,
     Store,
-    MessagesSquare
+    MessagesSquare,
+    Info
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -116,6 +118,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     // Cart State
     const [cart, setCart] = useState<{ [mealId: string]: { item: Meal; quantity: number } }>({});
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [giftInstructions, setGiftInstructions] = useState('');
+    const [manualRecipientName, setManualRecipientName] = useState('');
 
     const [isAddMealOpen, setIsAddMealOpen] = useState(false);
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -475,7 +479,18 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     };
 
     const handleGiftItems = async () => {
-        if (!user || !firestore || cartItems.length === 0 || !soulId || !soulName) return;
+        if (!user || !firestore || cartItems.length === 0) return;
+
+        const finalRecipientName = soulName || manualRecipientName;
+        if (!finalRecipientName.trim()) {
+            toast({ variant: 'destructive', title: 'Recipient Required', description: 'Please specify who receives this gift.' });
+            return;
+        }
+
+        if (!giftInstructions.trim()) {
+            toast({ variant: 'destructive', title: 'Instructions Required', description: 'Please provide delivery or gifting instructions.' });
+            return;
+        }
 
         setIsProcessingOrder(true);
         const batch = writeBatch(firestore);
@@ -485,48 +500,54 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const displayAction = isGiftVendor ? 'sent gifts' : 'shared a meal package';
         const logActionId = isGiftVendor ? 'gave_gift' : 'shared_meal';
         
+        const logNote = `Logged via ${centerLabel}: ${displayAction} [${itemNames}] via ${vendor?.businessName}. Payment of ₦${cartTotal.toLocaleString()} initiated. Instructions: ${giftInstructions}`;
+        
         const logEntry = {
             date: new Date(),
-            note: `Logged via ${centerLabel}: ${displayAction} [${itemNames}] via ${vendor?.businessName}. Payment of ₦${cartTotal.toLocaleString()} initiated.`,
+            note: logNote,
             actions: [logActionId],
             memberId: user.uid,
             memberName: `${userProfile?.firstName} ${userProfile?.lastName}`,
         };
-
-        const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
-        const globalSoulRef = doc(firestore, 'souls', soulId);
 
         cartItems.forEach(cartItem => {
             for(let i = 0; i < cartItem.quantity; i++) {
                 const giftRef = doc(giftsRef);
                 batch.set(giftRef, {
                     senderId: user.uid,
-                    recipientSoulId: soulId,
-                    recipientName: soulName,
+                    recipientSoulId: soulId || null,
+                    recipientName: finalRecipientName,
                     vendorId: vendorId,
                     vendorName: vendor?.businessName || 'Unknown Vendor',
                     mealId: cartItem.item.id,
                     mealName: cartItem.item.name,
                     price: cartItem.item.price,
                     status: 'ordered',
+                    instructions: giftInstructions,
                     createdAt: serverTimestamp(),
                 });
             }
         });
 
-        batch.update(soulRef, {
-            followUpLog: arrayUnion(logEntry),
-            lastUpdatedAt: serverTimestamp(),
-        });
-        batch.update(globalSoulRef, {
-            followUpLog: arrayUnion(logEntry),
-            lastUpdatedAt: serverTimestamp(),
-        });
+        if (soulId) {
+            const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
+            const globalSoulRef = doc(firestore, 'souls', soulId);
+            batch.update(soulRef, {
+                followUpLog: arrayUnion(logEntry),
+                lastUpdatedAt: serverTimestamp(),
+            });
+            batch.update(globalSoulRef, {
+                followUpLog: arrayUnion(logEntry),
+                lastUpdatedAt: serverTimestamp(),
+            });
+        }
 
         try {
             await batch.commit();
-            toast({ title: 'Gifts Sent!', description: `Your package for ${soulName} has been ordered.` });
+            toast({ title: 'Package Ordered!', description: `Your order for ${finalRecipientName} has been submitted.` });
             setCart({});
+            setGiftInstructions('');
+            setManualRecipientName('');
             setIsCartOpen(false);
             router.push('/dashboard/souls-won');
         } catch (serverError: any) {
@@ -721,6 +742,32 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
             </div>
 
+            <div className="space-y-4">
+                {!soulName && (
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this gift?</Label>
+                        <Input 
+                            placeholder="Enter recipient name" 
+                            value={manualRecipientName}
+                            onChange={(e) => setManualRecipientName(e.target.value)}
+                            className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                        />
+                    </div>
+                )}
+                
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                        {soulId ? 'Special Instructions' : 'Delivery & Recipient Instructions'}
+                    </Label>
+                    <Textarea 
+                        placeholder={soulId ? "e.g., Deliver to their home with a message of hope..." : "Please specify who receives this and how to deliver..."}
+                        value={giftInstructions}
+                        onChange={(e) => setGiftInstructions(e.target.value)}
+                        className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner"
+                    />
+                </div>
+            </div>
+
             <div className="space-y-4 bg-primary/5 p-5 rounded-[2rem] border-2 border-dashed border-primary/20 relative group">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
                     <CreditCard className="h-3 w-3" /> Payment Instructions
@@ -741,7 +788,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="space-y-3">
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
                     <span className="shrink-0">Recipient</span>
-                    <span className="text-foreground truncate font-black">{soulName}</span>
+                    <span className="text-foreground truncate font-black">{soulName || manualRecipientName || 'Unspecified'}</span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
                     <span className="shrink-0">Provider</span>
@@ -758,10 +805,10 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     const cartFooter = (
         <div className="flex flex-col sm:flex-row gap-3 w-full">
-            <Button variant="outline" onClick={() => setIsCartOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Back to Menu</Button>
+            <Button variant="outline" onClick={() => setIsCartOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Back to Catalog</Button>
             <Button 
                 onClick={handleGiftItems} 
-                disabled={isProcessingOrder} 
+                disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} 
                 className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
             >
                 {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -785,6 +832,23 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="flex h-full w-full flex-col items-center justify-center py-20">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
                 <p className="mt-4 text-[10px] font-black uppercase tracking-widest animate-pulse">Syncing Inventory...</p>
+            </div>
+        );
+    }
+
+    if (!vendor || vendor.status === 'inactive') {
+        return (
+            <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center px-8">
+                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+                    <Store className="h-10 w-10 text-muted-foreground opacity-20" />
+                </div>
+                <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Not Found</h3>
+                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed">
+                    This business might have closed or moved. Return to the hub to find other Kingdom providers.
+                </p>
+                <Button variant="outline" asChild className="mt-8 h-12 px-8 rounded-2xl font-bold">
+                    <Link href={isGiftVendor ? '/dashboard/marketplace/gifts' : '/dashboard/marketplace'}>Return to Marketplace</Link>
+                </Button>
             </div>
         );
     }
@@ -1006,8 +1070,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Gift Package for {soulName || 'Convert'}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Review your selection and proceed to payment.</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Gift Package Hub</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Review selection and provide instructions for {soulName || 'the recipient'}.</SheetDescription>
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow">

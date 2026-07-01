@@ -445,7 +445,7 @@ export type Meal = {
 export type MealGift = {
   id: string;
   senderId: string;
-  recipientSoulId: string;
+  recipientSoulId?: string | null;
   recipientName: string;
   vendorId: string;
   vendorName: string;
@@ -453,5 +453,6 @@ export type MealGift = {
   mealName: string;
   price: number;
   status: 'ordered' | 'preparing' | 'delivering' | 'delivered';
+  instructions?: string;
   createdAt: Timestamp;
 };

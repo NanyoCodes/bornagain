@@ -289,9 +289,10 @@
         "mealName": { "type": "string" },
         "price": { "type": "number" },
         "status": { "type": "string", "enum": ["ordered", "preparing", "delivering", "delivered"] },
+        "instructions": { "type": "string", "description": "Delivery or recipient instructions." },
         "createdAt": { "type": "object" }
       },
-      "required": ["senderId", "recipientSoulId", "vendorId", "mealId", "status"]
+      "required": ["senderId", "recipientName", "vendorId", "mealId", "status"]
     }
   },
   "auth": {
