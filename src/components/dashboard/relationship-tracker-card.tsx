@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -228,7 +227,7 @@ export function RelationshipTrackerCard() {
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(), 
-        note: `Logged via Kingdom Connections: ${action.label}`,
+        note: `Logged via Kingdom Souls Follow-up: ${action.label}`,
         actions: [selectedActionId],
         memberId: user.uid,
         memberName: memberName,
@@ -298,7 +297,7 @@ export function RelationshipTrackerCard() {
               <div className="space-y-1">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-primary" />
-                      Kingdom Connections
+                      KINGDOM SOULS FOLLOW-UP
                   </CardTitle>
                   <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
               </div>
