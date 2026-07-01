@@ -219,7 +219,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           <div className="flex flex-col sm:flex-row gap-2">
             <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm border-primary/20 hover:bg-primary/5 transition-all">
                 <Camera className="mr-2 h-4 w-4 text-primary"/>
-                what is the upload function here
+                set profile photo
             </Button>
             {previewUrl && (
               <Button 

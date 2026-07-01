@@ -474,7 +474,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             .then(() => {
                 toast({ title: 'Storefront Deleted', description: 'Your business profile has been removed.' });
                 setIsDeleteStoreOpen(false);
-                router.push(isGiftVendor ? '/dashboard/marketplace/gifts' : '/dashboard/marketplace');
+                // Force a page refresh when returning to the marketplace to ensure real-time consistency
+                window.location.href = isGiftVendor ? '/dashboard/marketplace/gifts' : '/dashboard/marketplace';
             })
             .catch(async (serverError) => {
                 const permissionError = new FirestorePermissionError({
