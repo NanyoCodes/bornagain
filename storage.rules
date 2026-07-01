@@ -2,6 +2,8 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
+    // Deployment trigger: Immediate access for optimized photos - 2025-08-28T09:00:00Z
+    
     // Allow public read access to all miracle evidence and profile photos for the community feed
     match /{allPaths=**} {
       allow read: if true;

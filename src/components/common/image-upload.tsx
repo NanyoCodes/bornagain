@@ -12,7 +12,10 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import Image from 'next/image';
 
-// Function to generate a cropped image
+/**
+ * Generates a cropped and compressed image blob.
+ * Resizes the output to a max width of 1200px and uses 0.8 quality to target ~250kb.
+ */
 function getCroppedImg(
   image: HTMLImageElement,
   crop: PixelCrop,
@@ -21,8 +24,19 @@ function getCroppedImg(
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
   
-  canvas.width = crop.width * scaleX;
-  canvas.height = crop.height * scaleY;
+  // High-fidelity resizing logic
+  const MAX_WIDTH = 1200;
+  let targetWidth = crop.width * scaleX;
+  let targetHeight = crop.height * scaleY;
+
+  if (targetWidth > MAX_WIDTH) {
+    const scale = MAX_WIDTH / targetWidth;
+    targetWidth = MAX_WIDTH;
+    targetHeight = targetHeight * scale;
+  }
+
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
   
   const ctx = canvas.getContext('2d', { alpha: false });
 
@@ -42,18 +56,19 @@ function getCroppedImg(
     crop.height * scaleY,
     0,
     0,
-    canvas.width,
-    canvas.height
+    targetWidth,
+    targetHeight
   );
 
   return new Promise((resolve, reject) => {
+    // 0.8 quality provides excellent compression (targeting ~250kb) while maintaining sharp details
     canvas.toBlob((blob) => {
       if (!blob) {
         reject(new Error('Canvas is empty'));
         return;
       }
       resolve(blob);
-    }, 'image/jpeg', 1.0); // Maximum quality for JPEG
+    }, 'image/jpeg', 0.8);
   });
 }
 
@@ -98,7 +113,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please select an image file.' });
         return;
       }
-      if (file.size > 10 * 1024 * 1024) { // Increase size limit for source to 10MB
+      if (file.size > 10 * 1024 * 1024) { 
         toast({ variant: 'destructive', title: 'File Too Large', description: 'Please select an image smaller than 10MB.' });
         return;
       }
@@ -126,7 +141,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     if (!user) throw new Error("You must be logged in to upload images.");
     if (!storage) throw new Error("Firebase Storage is not available.");
 
-    const fileName = file instanceof File ? file.name : 'high-res-profile.jpg';
+    const fileName = file instanceof File ? file.name : 'optimized-identity.jpg';
     const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
     try {
         await uploadBytes(fileRef, file);
@@ -146,24 +161,18 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     try {
       const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
       
-      if (croppedImageBlob.size > 5 * 1024 * 1024) { // Allow up to 5MB for the high quality crop
-        throw new Error("The processed image is too large. Please select a smaller area or use a lower resolution source.");
-      }
-
       const downloadURL = await handleUpload(croppedImageBlob);
       
       onUploadComplete(downloadURL);
       setPreviewUrl(downloadURL);
-      toast({ title: 'Success', description: 'Photo uploaded in high quality.' });
+      toast({ title: 'Success', description: 'Identity optimized and saved.' });
       
       setIsCropModalOpen(false);
       setImgSrc('');
 
     } catch (error: any) {
       console.error("Storage upload error:", error);
-      const message = error.message === 'Failed to fetch' 
-        ? "Network error. Please check your storage CORS settings."
-        : (error.message || "An unknown error occurred during upload.");
+      const message = error.message || "An unknown error occurred during upload.";
         
       toast({ 
         variant: 'destructive', 
@@ -204,7 +213,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         {isLoading ? (
           <div className="flex items-center gap-3 bg-muted/50 px-4 py-2 rounded-full border">
             <Loader2 className="h-4 w-4 animate-spin text-primary" />
-            <span className="text-xs font-bold uppercase tracking-widest">Processing High Quality...</span>
+            <span className="text-xs font-bold uppercase tracking-widest">Optimizing...</span>
           </div>
         ) : (
           <div className="flex flex-col sm:flex-row gap-2">
@@ -239,7 +248,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           <div className="p-6 border-b bg-muted/10">
             <DialogHeader>
                 <DialogTitle className="text-xl font-black font-headline uppercase tracking-tight">Refine Your Identity</DialogTitle>
-                <p className="text-sm text-muted-foreground">Crop the image to set your profile appearance.</p>
+                <p className="text-sm text-muted-foreground">Crop the image to set your appearance.</p>
             </DialogHeader>
           </div>
           <div className="p-6 overflow-hidden flex justify-center bg-black/5 min-h-[300px]">
@@ -266,7 +275,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             <Button variant="ghost" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold">Cancel</Button>
             <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12">
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
-              {isLoading ? 'ENHANCING...' : 'CONFIRM APPEARANCE'}
+              {isLoading ? 'OPTIMIZING...' : 'CONFIRM APPEARANCE'}
             </Button>
           </DialogFooter>
         </DialogContent>
