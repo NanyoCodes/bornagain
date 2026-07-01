@@ -999,19 +999,19 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
             {/* Sticky Cart Button */}
             {cartCount > 0 && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-xs px-4 animate-in slide-in-from-bottom-10">
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10">
                     <Button 
                         onClick={() => setIsCartOpen(true)}
-                        className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8"
+                        className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-5 sm:px-8 overflow-hidden"
                     >
-                        <div className="flex items-center gap-3">
-                            <div className="relative">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                            <div className="relative shrink-0">
                                 <ShoppingCart className="h-5 w-5" />
                                 <span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center shadow-sm">{cartCount}</span>
                             </div>
-                            <span>REVIEW PACKAGE</span>
+                            <span className="truncate text-[10px] sm:text-xs">REVIEW PACKAGE</span>
                         </div>
-                        <span className="text-sm">₦{cartTotal.toLocaleString()}</span>
+                        <span className="text-[11px] sm:text-sm whitespace-nowrap ml-2">₦{cartTotal.toLocaleString()}</span>
                     </Button>
                 </div>
             )}
