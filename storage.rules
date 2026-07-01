@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Critical Access Refinement - 2025-09-02T10:00:00Z
+    // Deployment trigger: Critical Access for Ministry Hubs - 2025-09-02T13:30:00Z
     
     // Allow public read access for all ministry assets, testimonies, and profile photos
     match /{allPaths=**} {
@@ -12,17 +11,29 @@ service firebase.storage {
 
     /**
      * Authenticated Write Policy
-     * Explicitly grants users write access to their own UID-named folders.
-     * matches: /vendor-items/USER_ID/filename.jpg, /profile-pictures/USER_ID/photo.jpg, etc.
+     * Grants users write access to their own UID-named folders across any top-level category.
+     * 
+     * Pattern 1: /folder/userId/file.jpg (e.g., /profile-pictures/UID/photo.jpg, /vendor-items/UID/item.jpg)
      */
     match /{folder}/{userId}/{allPaths=**} {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
     
     /**
-     * Fallback for deeper structures
+     * Pattern 2: /userId/file.jpg (Alternative structure fallback)
      */
     match /{userId}/{allPaths=**} {
+       allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    /**
+     * Pattern 3: Explicit matches for high-priority hubs to ensure rule matching
+     */
+    match /profile-pictures/{userId}/{allPaths=**} {
+       allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    match /vendor-items/{userId}/{allPaths=**} {
        allow write: if request.auth != null && request.auth.uid == userId;
     }
   }
