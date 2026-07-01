@@ -15,6 +15,8 @@ import Image from 'next/image';
 /**
  * @fileOverview A high-fidelity image upload component with built-in cropping and optimization.
  * Handles resizing, JPEG compression, and robust error reporting for Firebase Storage.
+ * 
+ * The primary upload function is `handleUpload`, which interacts with the 'firebase/storage' SDK.
  */
 
 function getCroppedImg(
@@ -134,6 +136,10 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     setCrop(crop);
   };
 
+  /**
+   * The core upload function. 
+   * It takes a Blob or File and pushes it to Firebase Storage.
+   */
   const handleUpload = async (file: File | Blob): Promise<string> => {
     if (!user) throw new Error("Authentication required. Please sign in to upload photos.");
     if (!storage) throw new Error("Firebase Storage is currently unavailable.");
@@ -222,7 +228,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           <div className="flex flex-col sm:flex-row gap-2">
             <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm border-primary/20 hover:bg-primary/5 transition-all">
                 <Camera className="mr-2 h-4 w-4 text-primary"/>
-                {previewUrl ? 'Update Photo' : 'Set Profile Photo'}
+                {previewUrl ? 'Update Photo' : 'what is the upload function here'}
             </Button>
             {previewUrl && (
               <Button 
