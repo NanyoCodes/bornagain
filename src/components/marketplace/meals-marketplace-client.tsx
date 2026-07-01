@@ -16,7 +16,8 @@ import {
     MapPin, 
     ChevronRight,
     ShoppingBag,
-    CreditCard
+    CreditCard,
+    ArrowLeft
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -257,15 +258,21 @@ export default function MealsMarketplaceClient() {
     return (
         <div 
             className="space-y-10 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen}
+            inert={isAnyModalOpen ? true : undefined}
         >
-            <header className="px-4 sm:px-0 space-y-4 pt-4">
+            <header className="px-4 sm:px-0 space-y-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="space-y-1">
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Meals Center</h1>
-                        <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
-                           <Utensils className="h-4 w-4 text-primary" /> Provision Hub
-                        </p>
+                    <div className="flex items-center gap-4">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0">
+                            <ArrowLeft className="h-6 w-6" />
+                            <span className="sr-only">Back</span>
+                        </Button>
+                        <div className="space-y-1 min-w-0">
+                            <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase truncate">Meals Center</h1>
+                            <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
+                            <Utensils className="h-4 w-4 text-primary" /> Provision Hub
+                            </p>
+                        </div>
                     </div>
                     <div className="flex gap-2">
                         {myVendorProfile ? (
