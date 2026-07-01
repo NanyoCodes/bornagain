@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useCollection, useFirestore, useUser } from '@/firebase';
@@ -10,7 +11,7 @@ import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format, isToday } from 'date-fns';
 import { useMemo } from 'react';
-import { MessagesSquare, Users, MessageSquare, ArrowLeft } from 'lucide-react';
+import { MessagesSquare, Users, MessageSquare, ArrowLeft, Store } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
@@ -133,7 +134,12 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                         </h3>
                     </div>
                     <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate font-medium flex items-center gap-1.5 mb-1 uppercase tracking-tighter">
-                       {chat.campaignTitle ? (
+                       {chat.vendorId ? (
+                          <>
+                            <Store className="h-2.5 w-2.5 text-primary" />
+                            <span className="truncate italic">"{chat.campaignTitle}" Provider</span>
+                          </>
+                       ) : chat.campaignTitle ? (
                           <>
                             <span className="font-black shrink-0">RE:</span>
                             <span className="truncate italic">"{chat.campaignTitle}"</span>
@@ -236,7 +242,7 @@ export default function ChatsPage() {
                                 <div className="divide-y">
                                     {[...Array(5)].map((_, i) => (
                                         <div key={i} className="flex items-center gap-4 p-4">
-                                            <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-full shrink-0" />
+                                            <Skeleton className="h-10 w-10 rounded-full shrink-0" />
                                             <div className="flex-1 space-y-2 min-w-0">
                                                 <Skeleton className="h-4 w-1/2" />
                                                 <Skeleton className="h-3 w-3/4" />

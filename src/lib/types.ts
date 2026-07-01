@@ -311,6 +311,7 @@ export type Chat = {
   campaignId?: string;
   campaignTitle?: string;
   fellowshipId?: string;
+  vendorId?: string;
   lastUpdatedAt: Timestamp;
   hasMessages?: boolean;
   isGroupChat?: boolean;

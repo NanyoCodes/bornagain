@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
-import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, Chat } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,8 @@ import {
     ChevronRight,
     ShoppingBag,
     Camera,
-    Store
+    Store,
+    MessagesSquare
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -76,6 +78,7 @@ import Image from 'next/image';
 import { ImageUpload } from '@/components/common/image-upload';
 import { Country, State } from 'country-state-city';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 /**
  * Ensures the profile photo displayed in the storefront is always the most recent version.
@@ -122,6 +125,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const [isDeletingStore, setIsDeletingStore] = useState(false);
     const [isDeletingItem, setIsDeletingItem] = useState(false);
     const [isUpdatingItem, setIsUpdatingItem] = useState(false);
+    const [isChatLoading, setIsChatLoading] = useState(false);
 
     // Location State for Edit Profile
     const [editCountry, setEditCountry] = useState('');
@@ -200,6 +204,67 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const addLabel = isGiftVendor ? 'Add New Product' : 'Add New Meal';
     const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
     const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
+
+    const handleInitiateChat = async () => {
+        if (!user || !firestore || !vendor) {
+            toast({ variant: 'destructive', title: 'Please log in', description: 'You must be logged in to start a chat.' });
+            return;
+        }
+        setIsChatLoading(true);
+        try {
+            const participantIds = [user.uid, vendor.userId].sort();
+            const chatsRef = collection(firestore, 'chats');
+
+            const q = query(
+                chatsRef,
+                where('participantIds', '==', participantIds),
+                where('isGroupChat', '==', false)
+            );
+
+            const querySnapshot = await getDocs(q);
+            let existingChat = querySnapshot.docs.find(doc => doc.data().vendorId === vendor.id);
+
+            let chatId: string;
+
+            if (existingChat) {
+                chatId = existingChat.id;
+            } else {
+                const ownerDoc = await getDoc(doc(firestore, "users", vendor.userId));
+                const ownerProfile = ownerDoc.data() as UserProfile | undefined;
+                const [userFirstName, ...userLastNameParts] = user.displayName?.split(' ') || ['User', ''];
+                
+                const newChatData: any = {
+                    participantIds,
+                    participantInfo: {
+                        [user.uid]: {
+                            firstName: userFirstName,
+                            lastName: userLastNameParts.join(' '),
+                            photoURL: user.photoURL || '',
+                        },
+                        [vendor.userId]: {
+                            firstName: vendor.businessName,
+                            lastName: '',
+                            photoURL: ownerProfile?.photoURL || '', 
+                        },
+                    },
+                    vendorId: vendor.id,
+                    campaignTitle: vendor.businessName,
+                    lastUpdatedAt: serverTimestamp(),
+                    hasMessages: false,
+                    isGroupChat: false,
+                };
+                const chatDocRef = await addDoc(chatsRef, newChatData);
+                chatId = chatDocRef.id;
+            }
+            router.push(`/dashboard/chats/${chatId}`);
+
+        } catch (error) {
+            console.error("Error initiating chat:", error);
+            toast({ variant: 'destructive', title: 'Chat Error', description: 'Could not start the chat session.'});
+        } finally {
+            setIsChatLoading(false);
+        }
+    };
 
     const handleAddMeal = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -697,45 +762,68 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <p className="text-[11px] sm:text-sm font-bold text-muted-foreground uppercase tracking-widest leading-relaxed break-words [overflow-wrap:anywhere] opacity-70">{vendor.location || 'Kingdom Network'}</p>
                         </div>
                     </div>
-                    {isOwner && (
-                        <div className="flex gap-2 w-full sm:w-auto px-1 sm:px-0 shrink-0">
-                            {isMobile ? (
-                                <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                                    <SheetTrigger asChild>
-                                        <Button variant="outline" size="sm" className="rounded-xl h-12 sm:h-11 px-6 font-black uppercase tracking-widest text-[10px] flex-1 shadow-lg border-primary/20 text-primary">
-                                            <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
+                    
+                    <div className="flex items-center gap-2 w-full sm:w-auto px-1 sm:px-0 shrink-0">
+                        {!isOwner && (
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button 
+                                            variant="outline" 
+                                            size="icon" 
+                                            className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:bg-primary/5 shrink-0"
+                                            onClick={handleInitiateChat}
+                                            disabled={isChatLoading}
+                                        >
+                                            {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
                                         </Button>
-                                    </SheetTrigger>
-                                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                            <SheetHeader className="text-left">
-                                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</SheetTitle>
-                                                <SheetDescription className="text-sm font-medium mt-1">Refine your Kingdom business details.</SheetDescription>
-                                            </SheetHeader>
-                                        </div>
-                                        <div className="flex-grow overflow-hidden relative">
-                                             {editProfileForm}
-                                        </div>
-                                    </SheetContent>
-                                </Sheet>
-                            ) : (
-                                <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline" size="sm" className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
-                                            <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
-                                        <DialogHeader className="p-8 border-b bg-muted/10">
-                                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</DialogTitle>
-                                            <DialogDescription className="text-sm font-medium mt-1">Refine your business details and payment flow.</DialogDescription>
-                                        </DialogHeader>
-                                        {editProfileForm}
-                                    </DialogContent>
-                                </Dialog>
-                            )}
-                        </div>
-                    )}
+                                    </TooltipTrigger>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
+                                        <p className="text-[10px] font-bold uppercase">Chat with Provider</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        )}
+                        {isOwner && (
+                            <div className="flex gap-2 flex-1 sm:flex-none">
+                                {isMobile ? (
+                                    <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                                        <SheetTrigger asChild>
+                                            <Button variant="outline" size="sm" className="rounded-xl h-12 sm:h-11 px-6 font-black uppercase tracking-widest text-[10px] flex-1 shadow-lg border-primary/20 text-primary">
+                                                <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
+                                            </Button>
+                                        </SheetTrigger>
+                                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                                                <SheetHeader className="text-left">
+                                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</SheetTitle>
+                                                    <SheetDescription className="text-sm font-medium mt-1">Refine your Kingdom business details.</SheetDescription>
+                                                </SheetHeader>
+                                            </div>
+                                            <div className="flex-grow overflow-hidden relative">
+                                                {editProfileForm}
+                                            </div>
+                                        </SheetContent>
+                                    </Sheet>
+                                ) : (
+                                    <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button variant="outline" size="sm" className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
+                                                <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+                                            <DialogHeader className="p-8 border-b bg-muted/10">
+                                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</DialogTitle>
+                                                <DialogDescription className="text-sm font-medium mt-1">Refine your business details and payment flow.</DialogDescription>
+                                            </DialogHeader>
+                                            {editProfileForm}
+                                        </DialogContent>
+                                    </Dialog>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {soulName && (
