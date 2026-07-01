@@ -1,4 +1,3 @@
-
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -11,9 +10,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['"Inter"', 'sans-serif'],
-        headline: ['"Playfair Display"', 'serif'],
-        code: ['"Source Code Pro"', 'monospace'],
+        body: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        headline: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        code: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Source Code Pro', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -103,6 +102,3 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
-
-
-    

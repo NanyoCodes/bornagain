@@ -6,7 +6,15 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { CookieConsentBanner } from '@/components/cookie-consent-banner';
 import { FontSizeProvider } from '@/components/font-size-provider';
+import { Inter } from 'next/font/google';
+import { cn } from '@/lib/utils';
 import Script from 'next/script';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 const testifyLogoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
 
@@ -120,7 +128,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={cn(inter.variable)} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
