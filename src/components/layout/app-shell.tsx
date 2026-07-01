@@ -329,7 +329,7 @@ function BottomNavBar() {
     const pathname = usePathname();
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
+        <div className="flex min-h-[4rem] h-auto items-stretch justify-around px-1 py-1">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -337,11 +337,11 @@ function BottomNavBar() {
                 key={item.href}
                 href={item.href}
                 prefetch={true}
-                className="relative flex flex-1 flex-col items-center justify-center min-w-0"
+                className="relative flex flex-1 flex-col items-center justify-center min-w-0 gap-0.5"
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex items-center justify-center p-1.5 rounded-xl"
+                  className="relative flex items-center justify-center p-1 rounded-xl"
                   whileTap={{ scale: 0.85 }}
                 >
                   {isActive && (
@@ -362,9 +362,15 @@ function BottomNavBar() {
                       isActive ? "text-primary" : "text-muted-foreground"
                     )}
                   >
-                    <item.icon className={cn("h-5.5 w-5.5", !isActive && item.color)} />
+                    <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
                   </motion.div>
                 </motion.div>
+                <span className={cn(
+                  "text-[8px] font-black uppercase tracking-tighter transition-all leading-none mt-0.5",
+                  isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-60"
+                )}>
+                  {item.label}
+                </span>
               </Link>
             )
           })}
