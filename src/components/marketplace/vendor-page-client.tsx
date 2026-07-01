@@ -25,6 +25,8 @@ import {
     ChevronDown,
     ChevronRight,
     ShoppingBag,
+    ShoppingCart,
+    Minus,
     Camera,
     Store,
     MessagesSquare
@@ -111,12 +113,15 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const isMobile = useIsMobile();
     const [mounted, setMounted] = useState(false);
 
+    // Cart State
+    const [cart, setCart] = useState<{ [mealId: string]: { item: Meal; quantity: number } }>({});
+    const [isCartOpen, setIsCartOpen] = useState(false);
+
     const [isAddMealOpen, setIsAddMealOpen] = useState(false);
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [isDeleteStoreOpen, setIsDeleteStoreOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Meal | null>(null);
     const [itemToEdit, setItemToEdit] = useState<Meal | null>(null);
-    const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
     
     const [itemPhotoURL, setItemPhotoURL] = useState('');
     const [isProcessingOrder, setIsProcessingOrder] = useState(false);
@@ -139,7 +144,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         return country ? State.getStatesOfCountry(country.isoCode) : [];
     }, [editCountry, countriesList]);
 
-    const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || itemToEdit || selectedMeal);
+    const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || itemToEdit || isCartOpen);
 
     useEffect(() => {
         if (!isAnyModalOpen && typeof document !== 'undefined') {
@@ -204,6 +209,39 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const addLabel = isGiftVendor ? 'Add New Product' : 'Add New Meal';
     const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
     const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
+
+    const cartItems = useMemo(() => Object.values(cart), [cart]);
+    const cartTotal = useMemo(() => cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0), [cartItems]);
+    const cartCount = useMemo(() => cartItems.reduce((acc, c) => acc + c.quantity, 0), [cartItems]);
+
+    const addToCart = (item: Meal) => {
+        setCart(prev => {
+            const existing = prev[item.id];
+            return {
+                ...prev,
+                [item.id]: {
+                    item,
+                    quantity: (existing?.quantity || 0) + 1
+                }
+            };
+        });
+    };
+
+    const updateQuantity = (itemId: string, delta: number) => {
+        setCart(prev => {
+            const existing = prev[itemId];
+            if (!existing) return prev;
+            const newQty = existing.quantity + delta;
+            if (newQty <= 0) {
+                const { [itemId]: _, ...rest } = prev;
+                return rest;
+            }
+            return {
+                ...prev,
+                [itemId]: { ...existing, quantity: newQty }
+            };
+        });
+    };
 
     const handleInitiateChat = async () => {
         if (!user || !firestore || !vendor) {
@@ -436,40 +474,46 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             });
     };
 
-    const handleGiftMeal = () => {
-        if (!user || !firestore || !selectedMeal || !soulId || !soulName) return;
+    const handleGiftItems = async () => {
+        if (!user || !firestore || cartItems.length === 0 || !soulId || !soulName) return;
 
         setIsProcessingOrder(true);
+        const batch = writeBatch(firestore);
         const giftsRef = collection(firestore, 'mealGifts');
-        const giftData: any = {
-            senderId: user.uid,
-            recipientSoulId: soulId,
-            recipientName: soulName,
-            vendorId: vendorId,
-            vendorName: vendor?.businessName || 'Unknown Vendor',
-            mealId: selectedMeal.id,
-            mealName: selectedMeal.name,
-            price: selectedMeal.price,
-            status: 'ordered',
-            createdAt: serverTimestamp(),
-        };
-
-        const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
-        const globalSoulRef = doc(firestore, 'souls', soulId);
         
-        const displayAction = isGiftVendor ? 'sent a gift' : 'shared a meal';
+        const itemNames = cartItems.map(c => `${c.item.name} (x${c.quantity})`).join(', ');
+        const displayAction = isGiftVendor ? 'sent gifts' : 'shared a meal package';
         const logActionId = isGiftVendor ? 'gave_gift' : 'shared_meal';
         
         const logEntry = {
             date: new Date(),
-            note: `Logged via ${centerLabel}: ${displayAction} (${selectedMeal.name}) via ${vendor?.businessName}. Payment initiated.`,
+            note: `Logged via ${centerLabel}: ${displayAction} [${itemNames}] via ${vendor?.businessName}. Payment of ₦${cartTotal.toLocaleString()} initiated.`,
             actions: [logActionId],
             memberId: user.uid,
             memberName: `${userProfile?.firstName} ${userProfile?.lastName}`,
         };
 
-        const batch = writeBatch(firestore);
-        batch.set(doc(giftsRef), giftData);
+        const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
+        const globalSoulRef = doc(firestore, 'souls', soulId);
+
+        cartItems.forEach(cartItem => {
+            for(let i = 0; i < cartItem.quantity; i++) {
+                const giftRef = doc(giftsRef);
+                batch.set(giftRef, {
+                    senderId: user.uid,
+                    recipientSoulId: soulId,
+                    recipientName: soulName,
+                    vendorId: vendorId,
+                    vendorName: vendor?.businessName || 'Unknown Vendor',
+                    mealId: cartItem.item.id,
+                    mealName: cartItem.item.name,
+                    price: cartItem.item.price,
+                    status: 'ordered',
+                    createdAt: serverTimestamp(),
+                });
+            }
+        });
+
         batch.update(soulRef, {
             followUpLog: arrayUnion(logEntry),
             lastUpdatedAt: serverTimestamp(),
@@ -479,23 +523,22 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             lastUpdatedAt: serverTimestamp(),
         });
 
-        batch.commit()
-            .then(() => {
-                toast({ title: 'Order Placed!', description: `The ${selectedMeal.name} for ${soulName} is now in progress.` });
-                setSelectedMeal(null);
-                router.push('/dashboard/souls-won');
-            })
-            .catch(async (serverError) => {
-                const permissionError = new FirestorePermissionError({
-                    path: `BATCH_WRITE:GIFT_ITEM`,
-                    operation: 'write',
-                    requestResourceData: { giftData, logEntry }
-                }, user);
-                errorEmitter.emit('permission-error', permissionError);
-            })
-            .finally(() => {
-                setIsProcessingOrder(false);
-            });
+        try {
+            await batch.commit();
+            toast({ title: 'Gifts Sent!', description: `Your package for ${soulName} has been ordered.` });
+            setCart({});
+            setIsCartOpen(false);
+            router.push('/dashboard/souls-won');
+        } catch (serverError: any) {
+            const permissionError = new FirestorePermissionError({
+                path: `BATCH_WRITE:GIFT_PACKAGE`,
+                operation: 'write',
+                requestResourceData: { cartTotal, items: itemNames }
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        } finally {
+            setIsProcessingOrder(false);
+        }
     };
 
     const copyPaymentToClipboard = () => {
@@ -652,19 +695,33 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </form>
     );
 
-    const orderConfirmationContent = selectedMeal && vendor && (
-        <div className="space-y-6">
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/30 border shadow-inner">
-                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <ItemIcon className="h-6 w-6 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                    <p className="font-black text-sm uppercase tracking-tight truncate">{selectedMeal.name}</p>
-                    <p className="text-[10px] font-bold text-primary uppercase">₦{selectedMeal.price.toLocaleString()}</p>
+    const cartContent = (
+        <div className="space-y-8">
+            <div className="space-y-3">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Gifts in Package</h4>
+                <div className="space-y-2">
+                    {cartItems.map(c => (
+                        <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner">
+                            <div className="flex items-center gap-3 min-w-0">
+                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                    <ItemIcon className="h-5 w-5 text-primary" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
+                                    <p className="text-[9px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()} x {c.quantity}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0 bg-background rounded-full p-0.5 border">
+                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
+                                <span className="text-xs font-black min-w-[1.5rem] text-center">{c.quantity}</span>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 
-            <div className="space-y-4 bg-primary/5 p-5 rounded-2xl border-2 border-dashed border-primary/20 relative group">
+            <div className="space-y-4 bg-primary/5 p-5 rounded-[2rem] border-2 border-dashed border-primary/20 relative group">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
                     <CreditCard className="h-3 w-3" /> Payment Instructions
                 </Label>
@@ -684,31 +741,31 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="space-y-3">
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
                     <span className="shrink-0">Recipient</span>
-                    <span className="text-foreground truncate">{soulName}</span>
+                    <span className="text-foreground truncate font-black">{soulName}</span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
                     <span className="shrink-0">Provider</span>
-                    <span className="text-foreground truncate">{vendor.businessName}</span>
+                    <span className="text-foreground truncate font-black">{vendor.businessName}</span>
                 </div>
                 <Separator className="opacity-50" />
                 <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4">
-                    <span className="shrink-0">Transfer Amount</span>
-                    <span className="shrink-0">₦{selectedMeal.price.toLocaleString()}</span>
+                    <span className="shrink-0">Total Package Amount</span>
+                    <span className="shrink-0 text-xl">₦{cartTotal.toLocaleString()}</span>
                 </div>
             </div>
         </div>
     );
 
-    const orderConfirmationFooter = (
+    const cartFooter = (
         <div className="flex flex-col sm:flex-row gap-3 w-full">
-            <Button variant="outline" onClick={() => setSelectedMeal(null)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
+            <Button variant="outline" onClick={() => setIsCartOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Back to Menu</Button>
             <Button 
-                onClick={handleGiftMeal} 
+                onClick={handleGiftItems} 
                 disabled={isProcessingOrder} 
                 className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
             >
                 {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                I HAVE PAID
+                I HAVE TRANSFERRED ₦{cartTotal.toLocaleString()}
             </Button>
         </div>
     );
@@ -728,16 +785,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="flex h-full w-full flex-col items-center justify-center py-20">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
                 <p className="mt-4 text-[10px] font-black uppercase tracking-widest animate-pulse">Syncing Inventory...</p>
-            </div>
-        );
-    }
-
-    if (!vendor) {
-        return (
-            <div className="text-center py-32 space-y-4">
-                <Store className="h-16 w-16 text-muted-foreground opacity-10 mx-auto" />
-                <h2 className="text-xl font-bold uppercase tracking-tight">Storefront Not Found</h2>
-                <Button variant="outline" onClick={() => router.push('/dashboard/marketplace')} className="rounded-xl">Return to Hub</Button>
             </div>
         );
     }
@@ -836,7 +883,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 {actionLabel} GIFT FOR {soulName}
                             </p>
                             <p className="text-[11px] sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1.5 text-balance leading-relaxed">
-                                Select an item from the catalog below to gift as a strategic act of Kingdom kindness.
+                                Select items from the catalog below to gift as a strategic act of Kingdom kindness.
                             </p>
                         </div>
                     </div>
@@ -858,56 +905,72 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <CardContent className="h-full bg-muted/30 rounded-[2.5rem]" />
                         </Card>
                     ))
-                ) : meals?.map(meal => (
-                    <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full">
-                        <CardContent className="p-0">
-                            <div className="aspect-[4/3] relative bg-muted">
-                                {meal.photoURL ? (
-                                    <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                        <ItemIcon className="h-12 w-12 text-muted-foreground opacity-10" />
-                                    </div>
-                                )}
-                                <div className="absolute top-4 right-4 flex gap-2">
-                                    {isOwner && (
-                                        <div className="flex gap-2">
-                                            <button 
-                                                className="h-9 w-9 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-xl bg-background flex items-center justify-center border hover:bg-muted active:scale-90"
-                                                onClick={(e) => { e.stopPropagation(); setItemToEdit(meal); }}
-                                            >
-                                                <Edit className="h-4 w-4 text-primary" />
-                                            </button>
-                                            <button 
-                                                className="h-9 w-9 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-xl bg-destructive flex items-center justify-center hover:bg-destructive/90 active:scale-90"
-                                                onClick={(e) => { e.stopPropagation(); setItemToDelete(meal); }}
-                                            >
-                                                <Trash2 className="h-4 w-4 text-white" />
-                                            </button>
+                ) : meals?.map(meal => {
+                    const cartItem = cart[meal.id];
+                    return (
+                        <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full">
+                            <CardContent className="p-0">
+                                <div className="aspect-[4/3] relative bg-muted">
+                                    {meal.photoURL ? (
+                                        <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <ItemIcon className="h-12 w-12 text-muted-foreground opacity-10" />
                                         </div>
                                     )}
-                                    <Badge className="bg-primary text-white font-black text-[10px] sm:text-xs px-3 h-8 rounded-full shadow-lg border-none tracking-widest">
-                                        ₦{meal.price.toLocaleString()}
-                                    </Badge>
+                                    <div className="absolute top-4 right-4 flex gap-2">
+                                        {isOwner && (
+                                            <div className="flex gap-2">
+                                                <button 
+                                                    className="h-9 w-9 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-xl bg-background flex items-center justify-center border hover:bg-muted active:scale-90"
+                                                    onClick={(e) => { e.stopPropagation(); setItemToEdit(meal); }}
+                                                >
+                                                    <Edit className="h-4 w-4 text-primary" />
+                                                </button>
+                                                <button 
+                                                    className="h-9 w-9 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-xl bg-destructive flex items-center justify-center hover:bg-destructive/90 active:scale-90"
+                                                    onClick={(e) => { e.stopPropagation(); setItemToDelete(meal); }}
+                                                >
+                                                    <Trash2 className="h-4 w-4 text-white" />
+                                                </button>
+                                            </div>
+                                        )}
+                                        <Badge className="bg-primary text-white font-black text-[10px] sm:text-xs px-3 h-8 rounded-full shadow-lg border-none tracking-widest">
+                                            ₦{meal.price.toLocaleString()}
+                                        </Badge>
+                                    </div>
+                                    {cartItem && (
+                                        <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in">
+                                            {cartItem.quantity}
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
-                            <div className="p-6 sm:p-8 space-y-4 flex-grow">
-                                <div className="min-w-0">
-                                    <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight">{meal.name}</h3>
-                                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-2 font-medium italic leading-relaxed break-words">{meal.description || `Verified Kingdom service item.`}</p>
+                                <div className="p-6 sm:p-8 space-y-4 flex-grow">
+                                    <div className="min-w-0">
+                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight">{meal.name}</h3>
+                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-2 font-medium italic leading-relaxed break-words">{meal.description || `Verified Kingdom service item.`}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="p-6 sm:p-8 pt-0">
-                            <Button 
-                                onClick={() => setSelectedMeal(meal)}
-                                className="w-full h-12 sm:h-11 rounded-xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-xl shadow-primary/10 transition-all active:scale-95"
-                            >
-                                {soulName ? `GIFT TO ${soulName}` : 'PLACE ORDER'}
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                ))}
+                            </CardContent>
+                            <CardFooter className="p-6 sm:p-8 pt-0">
+                                {cartItem ? (
+                                    <div className="flex items-center gap-3 w-full bg-muted/30 rounded-xl p-1 border">
+                                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-4 w-4" /></Button>
+                                        <span className="flex-1 text-center font-black text-sm">{cartItem.quantity} IN PACKAGE</span>
+                                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => addToCart(meal)}><Plus className="h-4 w-4" /></Button>
+                                    </div>
+                                ) : (
+                                    <Button 
+                                        onClick={() => addToCart(meal)}
+                                        className="w-full h-12 sm:h-11 rounded-xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-xl shadow-primary/10 transition-all active:scale-95"
+                                    >
+                                        {soulName ? `ADD FOR ${soulName}` : 'ADD TO CART'}
+                                    </Button>
+                                )}
+                            </CardFooter>
+                        </Card>
+                    );
+                })}
 
                 {(!meals || meals.length === 0) && !isOwner && (
                     <div className="col-span-full py-32 text-center flex flex-col items-center">
@@ -919,44 +982,44 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 )}
             </div>
 
-            {/* Order Flow */}
-            {isMobile ? (
-                <Sheet open={!!selectedMeal} onOpenChange={(open) => !open && setSelectedMeal(null)}>
-                    <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Confirm Gift</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Please send funds directly to the provider below.</SheetDescription>
-                            </SheetHeader>
-                        </div>
-                        <ScrollArea className="flex-grow">
-                            <div className="p-8">
-                                {orderConfirmationContent}
+            {/* Sticky Cart Button */}
+            {cartCount > 0 && (
+                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-xs px-4 animate-in slide-in-from-bottom-10">
+                    <Button 
+                        onClick={() => setIsCartOpen(true)}
+                        className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="relative">
+                                <ShoppingCart className="h-5 w-5" />
+                                <span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center shadow-sm">{cartCount}</span>
                             </div>
-                        </ScrollArea>
-                        <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
-                            {orderConfirmationFooter}
-                        </SheetFooter>
-                    </SheetContent>
-                </Sheet>
-            ) : (
-                <Dialog open={!!selectedMeal} onOpenChange={(open) => !open && setSelectedMeal(null)}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                        <div className="p-8 border-b bg-muted/10">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Confirm Gift</DialogTitle>
-                                <DialogDescription className="text-sm font-medium mt-1">Please send the funds directly to the provider using the instructions below.</DialogDescription>
-                            </DialogHeader>
+                            <span>REVIEW PACKAGE</span>
                         </div>
-                        <div className="p-8">
-                            {orderConfirmationContent}
-                        </div>
-                        <DialogFooter className="p-8 bg-muted/5 border-t">
-                            {orderConfirmationFooter}
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                        <span className="text-sm">₦{cartTotal.toLocaleString()}</span>
+                    </Button>
+                </div>
             )}
+
+            {/* Cart Review Sheet */}
+            <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+                <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Gift Package for {soulName || 'Convert'}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Review your selection and proceed to payment.</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <ScrollArea className="flex-grow">
+                        <div className="p-8">
+                            {cartContent}
+                        </div>
+                    </ScrollArea>
+                    <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
+                        {cartFooter}
+                    </SheetFooter>
+                </SheetContent>
+            </Sheet>
 
             {/* Add/Edit Item Flows */}
             {isMobile ? (
@@ -1004,7 +1067,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             ) : (
                 <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                        <div className="p-8 border-b bg-muted/10">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Item</DialogTitle>
                                 <DialogDescription className="text-sm font-medium mt-1">Update item details in your catalog.</DialogDescription>
