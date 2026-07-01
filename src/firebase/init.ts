@@ -27,7 +27,8 @@ export function initializeFirebase(): FirebaseServices {
   // Firestore must be initialized before other services that might implicitly call getFirestore()
   if (typeof window !== 'undefined') {
     try {
-      // Force long polling for proxy/station compatibility.
+      // Attempt to initialize with long polling for proxy/station compatibility.
+      // This is a known fix for "INTERNAL ASSERTION FAILED" in proxied environments.
       // experimentalAutoDetectLongPolling: false ensures we don't try standard transport first.
       firestore = initializeFirestore(app, {
         experimentalForceLongPolling: true,
@@ -45,8 +46,9 @@ export function initializeFirebase(): FirebaseServices {
 
   const auth = getAuth(app);
   
-  // Explicitly passing the storage bucket URL to ensure it uses the correct Kingdom repository
-  const storage = getStorage(app, firebaseConfig.storageBucket);
+  // Correctly passing the storage bucket URL with gs:// prefix to resolve permission issues.
+  // Standard Firebase Storage initialization requires the full bucket URL for custom configurations.
+  const storage = getStorage(app, `gs://${firebaseConfig.storageBucket}`);
   
   const services = { app, auth, firestore, storage };
 

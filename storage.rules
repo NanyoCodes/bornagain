@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Immediate access for optimized photos - 2025-08-28T09:00:00Z
+    // Deployment trigger: Reinforced access for storefront and profile media - 2025-08-28T12:30:00Z
     
     // Allow public read access to all miracle evidence and profile photos for the community feed
     match /{allPaths=**} {
@@ -10,17 +10,17 @@ service firebase.storage {
     }
 
     // Explicitly grant write permissions to authenticated owners for their respective folders
-    // We use a specific match for the userId to ensure rules are applied correctly
-    match /profile-pictures/{userId}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == userId;
+    // Using {uid} wildcard to correctly match the sub-directory and authorize the specific owner
+    match /profile-pictures/{uid}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == uid;
     }
     
-    match /testimony-media/{userId}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == userId;
+    match /testimony-media/{uid}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == uid;
     }
 
-    match /vendor-items/{userId}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == userId;
+    match /vendor-items/{uid}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == uid;
     }
   }
 }

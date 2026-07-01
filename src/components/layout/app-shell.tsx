@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -22,8 +21,6 @@ import {
   TrendingUp,
   BookMarked,
   Users,
-  Store,
-  Gift,
 } from "lucide-react";
 
 import {
@@ -43,7 +40,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
-import type { Notification, VendorProfile } from "@/lib/types";
+import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -55,7 +52,7 @@ import { SplashScreen } from "../common/splash-screen";
 const navItems = [
   { href: "/progress", label: "FOLLOW-UP", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
-  { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
+  { href: "/testimonies", label: "Feed", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
@@ -97,12 +94,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 
   const { data: unreadOtherNotifications } = useCollection<Notification>(otherNotificationsQuery);
   const unreadCount = unreadOtherNotifications?.length ?? 0;
-
-  const userVendorsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, 'vendors'), where('userId', '==', user.uid));
-  }, [user?.uid, firestore]);
-  const { data: userVendors } = useCollection<VendorProfile>(userVendorsQuery);
 
   const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
 
@@ -167,9 +158,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   )}
               >
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
-                  <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", isActive ? "scale-110" : item.color)} />
+                  <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
                   <span className={cn(
-                    "text-[8px] font-black uppercase tracking-tighter transition-all duration-300 leading-none",
+                    "text-[9px] font-black uppercase tracking-tighter transition-all leading-none",
                     isActive ? "opacity-100" : "opacity-60 group-hover:opacity-100"
                   )}>
                     {item.label}
@@ -190,8 +181,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="h-9 w-9 md:h-10 md:w-10 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-4 w-4 md:h-5 w-5" />
+          <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-5 w-5 md:h-6 md:w-6" />
             <span className="sr-only">Search</span>
           </Button>
         )}
@@ -200,8 +191,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           <>
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-9 w-9 md:h-10 md:w-10 rounded-full">
-                      <MessagesSquare className="h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
+                      <MessagesSquare className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
                           {unreadChatCount}
@@ -212,8 +203,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-9 w-9 md:h-10 md:w-10 rounded-full">
-                      <Bell className="h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
+                      <Bell className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
                           {unreadNotifCount}
@@ -257,26 +248,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                     <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                  <Link href="/dashboard/marketplace">
-                    <Store className="mr-2 h-4 w-4" />
-                    <span>Meals Center</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                  <Link href="/dashboard/marketplace/gifts">
-                    <Gift className="mr-2 h-4 w-4" />
-                    <span>Kindness Center</span>
-                  </Link>
-                </DropdownMenuItem>
-                {userVendors && userVendors.length > 0 && userVendors.map(v => (
-                  <DropdownMenuItem key={v.id} asChild className="rounded-lg mx-1">
-                    <Link href={`/dashboard/marketplace/vendors/${v.id}`}>
-                      <Store className="mr-2 h-4 w-4 text-primary" />
-                      <span>{v.vendorType === 'meal' ? 'Meals' : 'Kindness'} Storefront</span>
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
                     <Link href="/guide" className="cursor-pointer">
@@ -318,8 +289,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 function BottomNavBar() {
     const pathname = usePathname();
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur-xl md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex h-16 items-stretch justify-around px-2">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
+        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -331,33 +302,30 @@ function BottomNavBar() {
                 aria-label={item.label}
               >
                 <motion.div
-                  className="flex flex-col items-center gap-1"
-                  animate={{ 
-                    color: isActive ? "inherit" : "var(--muted-foreground)"
-                  }}
-                  transition={{ duration: 0.2 }}
+                  className="relative flex items-center justify-center p-1.5 rounded-xl"
+                  whileTap={{ scale: 0.85 }}
                 >
-                  <div className="relative">
-                    <item.icon className={cn(
-                        "h-6 w-6 transition-all duration-300", 
-                        item.color,
-                        !isActive && "opacity-40 grayscale-[0.5]"
-                    )} />
-                  </div>
-                  <span className={cn(
-                    "text-[8px] font-black uppercase tracking-tighter transition-all duration-300 leading-none",
-                    isActive ? "opacity-100" : "opacity-40"
-                  )}>
-                    {item.label}
-                  </span>
-                </motion.div>
-                {isActive && (
+                  {isActive && (
                     <motion.div
-                      layoutId="bottom-nav-highlight-bar"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
+                      layoutId="nav-active-pill"
+                      className="absolute inset-0 bg-primary/10 rounded-xl"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
-                )}
+                  )}
+                  <motion.div
+                    animate={{ 
+                      scale: isActive ? 1.1 : 1,
+                      color: isActive ? "var(--primary)" : "var(--muted-foreground)"
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className={cn(
+                      "relative z-10",
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    )}
+                  >
+                    <item.icon className={cn("h-5.5 w-5.5", !isActive && item.color)} />
+                  </motion.div>
+                </motion.div>
               </Link>
             )
           })}
