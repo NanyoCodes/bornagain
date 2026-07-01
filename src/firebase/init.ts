@@ -47,9 +47,9 @@ export function initializeFirebase(): FirebaseServices {
   const auth = getAuth(app);
   
   /**
-   * Explicitly passing the storage bucket URL with gs:// prefix.
-   * This is required for custom domains and proxied workstation environments 
-   * to ensure the correct storage instance is targeted.
+   * Initialize Storage. 
+   * Passing the storage bucket URL explicitly ensures the SDK connects to the 
+   * correct bucket, even in proxied workstation or custom domain environments.
    */
   const storage = getStorage(app, `gs://${firebaseConfig.storageBucket}`);
   

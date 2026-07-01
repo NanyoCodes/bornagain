@@ -6,16 +6,17 @@ import { useStorage, useUser } from '@/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Camera, X, Loader2, Crop as CropIcon, Trash2 } from 'lucide-react';
+import { Camera, X, Loader2, Crop as CropIcon, Trash2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import Image from 'next/image';
 
 /**
- * Generates a cropped and compressed image blob.
- * Resizes the output to a max width of 1200px and uses 0.8 quality to target ~250kb.
+ * @fileOverview A high-fidelity image upload component with built-in cropping and optimization.
+ * Handles resizing, JPEG compression, and robust error reporting for Firebase Storage.
  */
+
 function getCroppedImg(
   image: HTMLImageElement,
   crop: PixelCrop,
@@ -24,7 +25,6 @@ function getCroppedImg(
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
   
-  // High-fidelity resizing logic
   const MAX_WIDTH = 1200;
   let targetWidth = crop.width * scaleX;
   let targetHeight = crop.height * scaleY;
@@ -44,7 +44,6 @@ function getCroppedImg(
     return Promise.reject(new Error('Canvas context is not available'));
   }
   
-  // Set high quality smoothing for sharpest possible result
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
   
@@ -61,7 +60,6 @@ function getCroppedImg(
   );
 
   return new Promise((resolve, reject) => {
-    // 0.8 quality provides excellent compression (targeting ~250kb) while maintaining sharp details
     canvas.toBlob((blob) => {
       if (!blob) {
         reject(new Error('Canvas is empty'));
@@ -89,7 +87,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Cropping state
   const [imgSrc, setImgSrc] = useState('');
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
@@ -138,19 +135,30 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   };
 
   const handleUpload = async (file: File | Blob): Promise<string> => {
-    if (!user) throw new Error("You must be logged in to upload images.");
-    if (!storage) throw new Error("Firebase Storage is not available.");
+    if (!user) throw new Error("Authentication required. Please sign in to upload photos.");
+    if (!storage) throw new Error("Firebase Storage is currently unavailable.");
 
-    const fileName = file instanceof File ? file.name : 'optimized-identity.jpg';
+    const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
     const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
+    
     try {
         await uploadBytes(fileRef, file);
         return getDownloadURL(fileRef);
     } catch (err: any) {
+        console.error("Firebase Storage Upload Error:", err);
+        
+        // Detailed error mapping for common Storage failures in proxied/new environments
         if (err.code === 'storage/unauthorized') {
-            throw new Error("Permission denied. Ensure your storage bucket is correctly configured.");
+            throw new Error("Access Denied: Your Storage Security Rules do not allow this upload. Please check storage.rules.");
         }
-        throw err;
+        if (err.message?.includes('CORS') || err.code === 'storage/retry-limit-exceeded' || err.message?.includes('cross-origin')) {
+            throw new Error("CORS Configuration Error: The browser blocked the upload. Please refer to docs/storage-cors-guide.md to apply the required CORS policy.");
+        }
+        if (err.code === 'storage/project-not-found') {
+            throw new Error("Project Not Found: Ensure the bucket name in src/firebase/config.ts matches your Firebase project.");
+        }
+        
+        throw new Error(err.message || "A network error occurred while reaching the storage bucket.");
     }
   };
 
@@ -160,26 +168,22 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     setIsLoading(true);
     try {
       const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
-      
       const downloadURL = await handleUpload(croppedImageBlob);
       
       onUploadComplete(downloadURL);
       setPreviewUrl(downloadURL);
-      toast({ title: 'Success', description: 'Identity optimized and saved.' });
+      toast({ title: 'Success', description: 'Photo uploaded and optimized.' });
       
       setIsCropModalOpen(false);
       setImgSrc('');
 
     } catch (error: any) {
-      console.error("Storage upload error:", error);
-      const message = error.message || "An unknown error occurred during upload.";
-        
+      console.error("Photo processing failed:", error);
       toast({ 
         variant: 'destructive', 
         title: 'Upload Failed', 
-        description: message
+        description: error.message
       });
-      setPreviewUrl(initialImageUrl || null);
     } finally {
       setIsLoading(false);
     }
@@ -211,15 +215,15 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         </div>
         
         {isLoading ? (
-          <div className="flex items-center gap-3 bg-muted/50 px-4 py-2 rounded-full border">
+          <div className="flex items-center gap-3 bg-muted/50 px-5 py-2.5 rounded-full border shadow-inner">
             <Loader2 className="h-4 w-4 animate-spin text-primary" />
-            <span className="text-xs font-bold uppercase tracking-widest">Optimizing...</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Transmitting...</span>
           </div>
         ) : (
           <div className="flex flex-col sm:flex-row gap-2">
-            <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm">
+            <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm border-primary/20 hover:bg-primary/5 transition-all">
                 <Camera className="mr-2 h-4 w-4 text-primary"/>
-                {previewUrl ? 'Update Identity' : 'Set Profile Photo'}
+                {previewUrl ? 'Update Photo' : 'Set Profile Photo'}
             </Button>
             {previewUrl && (
               <Button 
@@ -243,15 +247,15 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         />
       </div>
 
-      <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-3xl">
-          <div className="p-6 border-b bg-muted/10">
+      <Dialog open={isCropModalOpen} onOpenChange={(open) => { if (!isLoading) setIsCropModalOpen(open); }}>
+        <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+          <div className="p-8 border-b bg-muted/10">
             <DialogHeader>
-                <DialogTitle className="text-xl font-black font-headline uppercase tracking-tight">Refine Your Identity</DialogTitle>
-                <p className="text-sm text-muted-foreground">Crop the image to set your appearance.</p>
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Refine Your Identity</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1">Adjust the frame to set your Kingdom profile appearance.</DialogDescription>
             </DialogHeader>
           </div>
-          <div className="p-6 overflow-hidden flex justify-center bg-black/5 min-h-[300px]">
+          <div className="p-8 overflow-hidden flex justify-center bg-black/5 min-h-[300px]">
             {imgSrc && (
               <ReactCrop
                 crop={crop}
@@ -266,16 +270,16 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
                   alt="Source"
                   src={imgSrc}
                   onLoad={onImageLoad}
-                  className="max-h-[60vh] w-auto object-contain"
+                  className="max-h-[50vh] w-auto object-contain"
                 />
               </ReactCrop>
             )}
           </div>
-          <DialogFooter className="p-6 border-t bg-muted/10 flex flex-col sm:flex-row gap-3">
-            <Button variant="ghost" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold">Cancel</Button>
-            <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12">
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
-              {isLoading ? 'OPTIMIZING...' : 'CONFIRM APPEARANCE'}
+          <DialogFooter className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3">
+            <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12">Cancel</Button>
+            <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12 rounded-xl uppercase tracking-widest">
+              {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <CropIcon className="mr-2 h-5 w-5" />}
+              {isLoading ? 'OPTIMIZING...' : 'CONFIRM PHOTO'}
             </Button>
           </DialogFooter>
         </DialogContent>
