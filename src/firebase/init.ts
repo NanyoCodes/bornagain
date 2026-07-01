@@ -48,9 +48,9 @@ export function initializeFirebase(): FirebaseServices {
   
   /**
    * Initialize Storage. 
-   * Explicitly providing the storage bucket URL for maximum reliability.
+   * Reverting to standard initialization to ensure it uses the bucket defined in config.
    */
-  const storage = getStorage(app, `gs://${firebaseConfig.storageBucket}`);
+  const storage = getStorage(app);
   
   const services = { app, auth, firestore, storage };
 
