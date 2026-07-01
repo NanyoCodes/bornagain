@@ -1,3 +1,4 @@
+
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, initializeFirestore, type Firestore } from 'firebase/firestore';
@@ -48,10 +49,10 @@ export function initializeFirebase(): FirebaseServices {
   
   /**
    * Explicit Storage Initialization
-   * We pass the bucket name directly from config to ensure the service correctly 
-   * targets the 'studio-6220967431-56fe2.firebasestorage.app' hub.
+   * Using standard getStorage(app) ensures it correctly inherits the 
+   * storageBucket from the initialized app instance's config.
    */
-  const storage = getStorage(app, firebaseConfig.storageBucket);
+  const storage = getStorage(app);
   
   const services = { app, auth, firestore, storage };
 
