@@ -75,6 +75,24 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import Image from 'next/image';
 import { ImageUpload } from '@/components/common/image-upload';
 import { Country, State } from 'country-state-city';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
+/**
+ * Ensures the profile photo displayed in the storefront is always the most recent version.
+ */
+function LiveVendorAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const currentPhotoUrl = profile?.photoURL || fallbackUrl;
+    
+    return (
+        <Avatar className={className}>
+            <AvatarImage src={currentPhotoUrl} className="object-cover" />
+            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
+        </Avatar>
+    );
+}
 
 export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const searchParams = useSearchParams();
@@ -664,35 +682,35 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             className="space-y-8 max-w-4xl mx-auto pb-32"
             inert={isAnyModalOpen ? true : undefined}
         >
-            <div className="px-4 sm:px-0 flex flex-col gap-5 sm:gap-6 pt-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background mt-1 sm:mt-0">
-                            <ArrowLeft className="h-5 w-5" />
+            <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 min-w-0 flex-1">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-10 w-10 sm:h-12 sm:w-12 rounded-full border bg-background shadow-sm">
+                            <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                         </Button>
-                        <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                                <CenterIcon className="h-3 w-3 text-primary" />
+                        <div className="min-w-0 flex-1 space-y-1">
+                            <div className="flex items-center gap-2.5 mb-1.5">
+                                <CenterIcon className="h-3.5 w-3.5 text-primary" />
                                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
-                            <h1 className="text-lg sm:text-2xl md:text-4xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-tight text-balance">{vendor.businessName}</h1>
-                            <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] leading-relaxed break-words [overflow-wrap:anywhere]">{vendor.location || 'Kingdom Network'}</p>
+                            <h1 className="text-2xl sm:text-3xl md:text-5xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-none text-balance">{vendor.businessName}</h1>
+                            <p className="text-[11px] sm:text-sm font-bold text-muted-foreground uppercase tracking-widest leading-relaxed break-words [overflow-wrap:anywhere] opacity-70">{vendor.location || 'Kingdom Network'}</p>
                         </div>
                     </div>
                     {isOwner && (
-                        <div className="flex gap-2 w-full sm:w-auto px-1 sm:px-0">
+                        <div className="flex gap-2 w-full sm:w-auto px-1 sm:px-0 shrink-0">
                             {isMobile ? (
                                 <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
                                     <SheetTrigger asChild>
-                                        <Button variant="outline" size="sm" className="rounded-xl h-11 sm:h-10 px-4 font-bold uppercase tracking-widest text-[10px] flex-1 shadow-sm">
-                                            <Edit className="mr-2 h-4 w-4" /> Profile
+                                        <Button variant="outline" size="sm" className="rounded-xl h-12 sm:h-11 px-6 font-black uppercase tracking-widest text-[10px] flex-1 shadow-lg border-primary/20 text-primary">
+                                            <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
                                         </Button>
                                     </SheetTrigger>
                                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                             <SheetHeader className="text-left">
-                                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Storefront</SheetTitle>
-                                                <SheetDescription className="text-sm font-medium mt-1">Update your business details and payment instructions.</SheetDescription>
+                                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</SheetTitle>
+                                                <SheetDescription className="text-sm font-medium mt-1">Refine your Kingdom business details.</SheetDescription>
                                             </SheetHeader>
                                         </div>
                                         <div className="flex-grow overflow-hidden relative">
@@ -703,14 +721,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             ) : (
                                 <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
                                     <DialogTrigger asChild>
-                                        <Button variant="outline" size="sm" className="rounded-xl h-10 px-4 font-bold uppercase tracking-widest text-[10px] shadow-sm">
-                                            <Edit className="mr-2 h-4 w-4" /> Manage Profile
+                                        <Button variant="outline" size="sm" className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
+                                            <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
                                         </Button>
                                     </DialogTrigger>
-                                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                                    <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
                                         <DialogHeader className="p-8 border-b bg-muted/10">
-                                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Storefront</DialogTitle>
-                                            <DialogDescription className="text-sm font-medium mt-1">Update your business details and payment instructions.</DialogDescription>
+                                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</DialogTitle>
+                                            <DialogDescription className="text-sm font-medium mt-1">Refine your business details and payment flow.</DialogDescription>
                                         </DialogHeader>
                                         {editProfileForm}
                                     </DialogContent>
@@ -721,29 +739,29 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
 
                 {soulName && (
-                    <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-center gap-5 shadow-inner animate-in fade-in slide-in-from-top-4 mx-1 sm:mx-0">
-                        <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shrink-0">
-                            <CenterIcon className="h-6 w-6 text-white" />
+                    <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-4 mx-1 sm:mx-0">
+                        <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0">
+                            <CenterIcon className="h-7 w-7 text-white" />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <p className="text-lg font-black uppercase tracking-tight leading-tight">
-                                {actionLabel} for {soulName}
+                            <p className="text-lg sm:text-xl font-black uppercase tracking-tight leading-tight">
+                                {actionLabel} GIFT FOR {soulName}
                             </p>
-                            <p className="text-[11px] sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1 text-balance">
-                                Select an item from the catalog below to gift as an act of Kingdom love.
+                            <p className="text-[11px] sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1.5 text-balance leading-relaxed">
+                                Select an item from the catalog below to gift as a strategic act of Kingdom kindness.
                             </p>
                         </div>
                     </div>
                 )}
 
                 {vendor.description && (
-                  <p className="text-[11px] sm:text-sm md:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance">
-                    {vendor.description}
+                  <p className="text-[11px] sm:text-sm md:text-lg text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance max-w-3xl">
+                    &ldquo;{vendor.description}&rdquo;
                   </p>
                 )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0">
                 {isOwner && addProductCard}
 
                 {loadingMeals ? (
@@ -767,37 +785,37 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     {isOwner && (
                                         <div className="flex gap-2">
                                             <button 
-                                                className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg bg-background flex items-center justify-center border hover:bg-muted"
+                                                className="h-9 w-9 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-xl bg-background flex items-center justify-center border hover:bg-muted active:scale-90"
                                                 onClick={(e) => { e.stopPropagation(); setItemToEdit(meal); }}
                                             >
                                                 <Edit className="h-4 w-4 text-primary" />
                                             </button>
                                             <button 
-                                                className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg bg-destructive flex items-center justify-center hover:bg-destructive/90"
+                                                className="h-9 w-9 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-xl bg-destructive flex items-center justify-center hover:bg-destructive/90 active:scale-90"
                                                 onClick={(e) => { e.stopPropagation(); setItemToDelete(meal); }}
                                             >
                                                 <Trash2 className="h-4 w-4 text-white" />
                                             </button>
                                         </div>
                                     )}
-                                    <Badge className="bg-primary text-white font-black text-[10px] sm:text-xs px-3 h-8 rounded-full shadow-lg border-none">
+                                    <Badge className="bg-primary text-white font-black text-[10px] sm:text-xs px-3 h-8 rounded-full shadow-lg border-none tracking-widest">
                                         ₦{meal.price.toLocaleString()}
                                     </Badge>
                                 </div>
                             </div>
-                            <div className="p-6 space-y-4 flex-grow">
+                            <div className="p-6 sm:p-8 space-y-4 flex-grow">
                                 <div className="min-w-0">
-                                    <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate">{meal.name}</h3>
-                                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-1.5 font-medium italic leading-relaxed break-words">{meal.description || `Verified Kingdom service item.`}</p>
+                                    <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight">{meal.name}</h3>
+                                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-2 font-medium italic leading-relaxed break-words">{meal.description || `Verified Kingdom service item.`}</p>
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="p-6 pt-0">
+                        <CardFooter className="p-6 sm:p-8 pt-0">
                             <Button 
                                 onClick={() => setSelectedMeal(meal)}
-                                className="w-full h-12 sm:h-11 rounded-xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/10"
+                                className="w-full h-12 sm:h-11 rounded-xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-xl shadow-primary/10 transition-all active:scale-95"
                             >
-                                {soulName ? `Gift to ${soulName}` : 'Order Item'}
+                                {soulName ? `GIFT TO ${soulName}` : 'PLACE ORDER'}
                             </Button>
                         </CardFooter>
                     </Card>
@@ -805,8 +823,10 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
                 {(!meals || meals.length === 0) && !isOwner && (
                     <div className="col-span-full py-32 text-center flex flex-col items-center">
-                        <ItemIcon className="h-16 w-16 text-muted-foreground opacity-10 mb-4" />
-                        <p className="text-sm text-muted-foreground italic font-medium">This provider's catalog is coming soon.</p>
+                        <div className="h-20 w-20 rounded-full bg-muted/20 flex items-center justify-center mb-6">
+                            <ItemIcon className="h-10 w-10 text-muted-foreground opacity-20" />
+                        </div>
+                        <p className="text-sm text-muted-foreground italic font-medium max-w-xs mx-auto">This provider's catalog is being prepared for the harvest.</p>
                     </div>
                 )}
             </div>
@@ -853,10 +873,10 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             {/* Add/Edit Item Flows */}
             {isMobile ? (
                 <Sheet open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                    <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</SheetTitle>
+                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add Offering</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</SheetDescription>
                             </SheetHeader>
                         </div>
@@ -881,7 +901,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
             {isMobile ? (
                 <Sheet open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                    <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Item</SheetTitle>
