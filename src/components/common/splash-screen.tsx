@@ -5,6 +5,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '../ui/button';
 import { Newspaper, Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+const splashScriptures = [
+  "Give praise to the Lord, proclaim his name; make known among the nations what he has done.",
+  "I will speak of your statutes before kings and will not be put to shame.",
+  "Publish his glorious deeds among the nations. Tell everyone about the amazing things he does.",
+  "For we cannot help speaking about what we have seen and heard.",
+  "Go home to your own people and tell them how much the Lord has done for you."
+];
 
 /**
  * @fileOverview A high-fidelity splash screen for the Testify platform.
@@ -18,6 +27,13 @@ interface SplashScreenProps {
 export function SplashScreen({ onDismiss }: SplashScreenProps) {
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
   const logoUrl = logo?.imageUrl;
+  const [activeScripture, setActiveScripture] = useState(splashScriptures[0]);
+
+  useEffect(() => {
+    // Picking a random scripture on mount to ensure freshness and avoid hydration mismatch
+    const randomIndex = Math.floor(Math.random() * splashScriptures.length);
+    setActiveScripture(splashScriptures[randomIndex]);
+  }, []);
 
   return (
     <motion.div 
@@ -59,7 +75,15 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
                 transition={{ delay: 0.8, duration: 1 }}
                 className="text-muted-foreground uppercase font-black tracking-[0.2em] text-[10px] sm:text-xs max-w-[280px] mx-auto leading-relaxed"
             >
-                Give praise to the Lord, proclaim his name; make known among the nations what he has done.
+                {activeScripture}
+            </motion.p>
+            <motion.p
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 1.1, duration: 1 }}
+                className="text-primary font-black uppercase tracking-[0.1em] text-[9px] sm:text-[10px] px-4"
+            >
+                Share your testimony to edify the Body of Christ.
             </motion.p>
         </div>
 
@@ -67,7 +91,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 1.2, duration: 1 }}
+            transition={{ delay: 1.4, duration: 1 }}
             className="w-full pt-4"
           >
             <Button 
