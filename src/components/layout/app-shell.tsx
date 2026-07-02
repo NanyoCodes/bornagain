@@ -39,6 +39,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -700,4 +701,3 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SearchProvider>
   );
 }
-
