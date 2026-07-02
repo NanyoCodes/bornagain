@@ -176,9 +176,9 @@ export default function VictoryHubPage() {
                         <Lock className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1">Confidential Sanctuary</h3>
+                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1">Safe & Flexible Sanctuary</h3>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance">
-                            Participation in Victory Circles is completely <span className="text-foreground font-bold underline decoration-primary/30">anonymous</span>. Your identity is hidden to ensure you can bring your struggles into the Light without fear, receiving support from the global body of Christ.
+                            Participation in Victory Circles offers <span className="text-foreground font-bold underline decoration-primary/30">choice-based anonymity</span>. You can choose to appear as yourself or post anonymously to ensure you can bring your struggles into the Light without fear, receiving support from the global body of Christ.
                         </p>
                     </div>
                 </div>
