@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -65,7 +64,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
 
 const strongholdCategories = [
-    'Pride', 'Lust', 'Anger', 'Addiction', 'Laziness', 'Unbelief', 'Greed', 'Jealousy', 'Other'
+    'Pride', 'Lust', 'Fear', 'Unforgiveness', 'Anger', 'Addiction', 'Laziness', 'Grief', 'Comparison', 'Unbelief', 'Depression', 'Greed', 'Worldliness', 'Jealousy', 'Other'
 ];
 
 export function StrongholdTracker() {
@@ -76,10 +75,9 @@ export function StrongholdTracker() {
     
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [title, setTitle] = useState('');
     const [category, setCategory] = useState('Other');
     
-    const [testimonyStronghold, setTestimonyStronghold] = useState<Stronghold | null>(null);
+    const [testimonyStronghold, setTestimonyStronghold] = setTestimonyStronghold = useState<Stronghold | null>(null);
 
     const strongholdsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
@@ -92,12 +90,12 @@ export function StrongholdTracker() {
     const { data: strongholds, loading } = useCollection<Stronghold>(strongholdsQuery);
 
     const handleAddStronghold = async () => {
-        if (!user || !firestore || !title.trim()) return;
+        if (!user || !firestore) return;
         setIsSubmitting(true);
         
         const strongholdData = {
             userId: user.uid,
-            title: title.trim(),
+            title: category,
             category,
             status: 'active' as StrongholdStatus,
             lastRelapse: serverTimestamp(),
@@ -107,9 +105,8 @@ export function StrongholdTracker() {
 
         try {
             await addDoc(collection(firestore, 'users', user.uid, 'strongholds'), strongholdData);
-            toast({ title: 'Area of Struggle Named', description: 'Transparency is the first step to victory.' });
+            toast({ title: 'Victory Tracker Initialized', description: 'Transparency is the first step to victory.' });
             setIsAddOpen(false);
-            setTitle('');
             setCategory('Other');
         } catch (error) {
             errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -323,17 +320,7 @@ export function StrongholdTracker() {
                     </div>
                     <div className="p-8 space-y-6">
                         <div className="space-y-2">
-                            <Label htmlFor="title" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Area of Struggle</Label>
-                            <Input 
-                                id="title" 
-                                value={title} 
-                                onChange={e => setTitle(e.target.value)} 
-                                placeholder="e.g., Secret Addiction, Anger..." 
-                                className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" 
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category of Struggle</Label>
                             <Select value={category} onValueChange={setCategory}>
                                 <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
                                     <SelectValue />
@@ -352,7 +339,7 @@ export function StrongholdTracker() {
                         <Button variant="outline" onClick={() => setIsAddOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                         <Button 
                             onClick={handleAddStronghold} 
-                            disabled={isSubmitting || !title.trim()} 
+                            disabled={isSubmitting} 
                             className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
                         >
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
