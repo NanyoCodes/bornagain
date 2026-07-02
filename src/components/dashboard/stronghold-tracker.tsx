@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -18,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { 
     Plus, 
     ShieldCheck, 
@@ -26,10 +26,8 @@ import {
     Loader2, 
     Trash2, 
     CheckCircle2, 
-    AlertCircle,
-    Info,
-    TrendingUp,
-    HeartPulse
+    MoreVertical,
+    Info
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -39,6 +37,13 @@ import {
     DialogDescription,
     DialogFooter 
 } from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
     Select, 
     SelectContent, 
@@ -85,7 +90,7 @@ export function StrongholdTracker() {
             title: title.trim(),
             category,
             status: 'active' as StrongholdStatus,
-            lastRelapse: serverTimestamp(), // Initial state starts now
+            lastRelapse: serverTimestamp(),
             createdAt: serverTimestamp(),
             notes: ""
         };
@@ -312,12 +317,3 @@ export function StrongholdTracker() {
         </Card>
     );
 }
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreVertical } from 'lucide-react';
