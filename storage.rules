@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Integrated Production Bucket & Comprehensive Folder Rules - 2025-06-25T14:30:00Z
+    // Deployment trigger: Critical Access Fix for Marketplace & Branding - 2025-06-25T15:45:00Z
     
     /**
      * Global Read Access
@@ -18,14 +18,16 @@ service firebase.storage {
      * only for authenticated users operating on their unique subdirectories.
      */
     
-    // Authorization for categorized folders (profile-pictures, vendor-branding, center-specific items)
-    match /{folder}/{uid}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == uid;
+    // Authorization for categorized folders (profile-pictures, vendor-branding, etc.)
+    // Matches path: /{folder}/{userId}/{allPaths=**}
+    match /{folder}/{userId}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
 
     // Authorization for direct root user directories
-    match /{uid}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == uid;
+    // Matches path: /{userId}/{allPaths=**}
+    match /{userId}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }

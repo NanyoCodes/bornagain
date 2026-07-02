@@ -48,9 +48,9 @@ export function initializeFirebase(): FirebaseServices {
   
   /**
    * Storage Initialization
-   * Explicitly using the production bucket: studio-6220967431-56fe2.firebasestorage.app
+   * Explicitly using the production bucket defined in config.ts
    */
-  const storage = getStorage(app, "studio-6220967431-56fe2.firebasestorage.app");
+  const storage = getStorage(app, firebaseConfig.storageBucket);
   
   const services = { app, auth, firestore, storage };
 
