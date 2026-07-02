@@ -351,10 +351,6 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                         <p className="text-base text-muted-foreground leading-relaxed italic font-medium">
                                                             &ldquo;{post.text}&rdquo;
                                                         </p>
-                                                        <div className="mt-4 flex items-center gap-2 text-primary/60 group-hover/post:text-primary transition-colors">
-                                                            <MessageSquare className="h-4 w-4" />
-                                                            <span className="text-[10px] font-black uppercase tracking-widest">View Community Responses & Solutions</span>
-                                                        </div>
                                                     </div>
                                                 </button>
                                             </PostResponsesDialog>
