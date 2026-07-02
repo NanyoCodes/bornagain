@@ -116,24 +116,6 @@ export function StrongholdTracker() {
         }
     };
 
-    const handleConfessRelapse = async (id: string) => {
-        if (!user || !firestore) return;
-        const strongholdRef = doc(firestore, 'users', user.uid, 'strongholds', id);
-        
-        try {
-            await updateDoc(strongholdRef, {
-                lastRelapse: serverTimestamp(),
-                status: 'overcoming'
-            });
-            toast({ title: 'Confession Recorded', description: 'God is faithful to forgive and strengthen you again.' });
-        } catch (error) {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({
-                path: strongholdRef.path,
-                operation: 'update'
-            }, user));
-        }
-    };
-
     const handleClaimVictory = async (id: string) => {
         if (!user || !firestore) return;
         const strongholdRef = doc(firestore, 'users', user.uid, 'strongholds', id);
@@ -230,14 +212,9 @@ export function StrongholdTracker() {
                                                             <Newspaper className="mr-2 h-4 w-4 text-primary" /> Share Testimony
                                                         </DropdownMenuItem>
                                                     ) : (
-                                                        <>
-                                                            <DropdownMenuItem onClick={() => handleClaimVictory(s.id)} className="rounded-lg">
-                                                                <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> Claim Victory
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem onClick={() => handleConfessRelapse(s.id)} className="rounded-lg">
-                                                                <Zap className="mr-2 h-4 w-4 text-destructive" /> Confess Setback
-                                                            </DropdownMenuItem>
-                                                        </>
+                                                        <DropdownMenuItem onClick={() => handleClaimVictory(s.id)} className="rounded-lg">
+                                                            <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> Claim Victory
+                                                        </DropdownMenuItem>
                                                     )}
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuItem onClick={() => handleDelete(s.id)} className="text-destructive focus:text-destructive rounded-lg">
