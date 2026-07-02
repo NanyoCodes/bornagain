@@ -238,6 +238,18 @@ export function RelationshipTrackerCard() {
         
         // REDIRECT LOGIC FOR GIFTS & MEALS
         if (selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift') {
+            // Set a pending action flag in localStorage for the global hovering cart reminder
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('testify_pending_provision', JSON.stringify({
+                    soulId: soul.id,
+                    soulName: soul.firstName,
+                    actionId: selectedActionId,
+                    timestamp: Date.now()
+                }));
+                // Notify the AppShell of the state change
+                window.dispatchEvent(new Event('testify_pending_action_update'));
+            }
+
             const path = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
             router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
             toast({ title: 'Redirecting to Hub...', description: `Opening provisions for ${soul.firstName}.` });

@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -24,6 +23,9 @@ import {
   Users,
   Store,
   Gift,
+  ShoppingCart,
+  X,
+  ArrowRight
 } from "lucide-react";
 
 import {
@@ -74,6 +76,97 @@ const inspirationalMessages = [
   "STAND FIRM IN FAITH",
   "REJOICE ALWAYS"
 ];
+
+function PendingProvisionReminder() {
+    const [pending, setPending] = useState<{ soulId: string; soulName: string; actionId: string } | null>(null);
+    const pathname = usePathname();
+    const isMobile = useIsMobile();
+
+    const checkPendingAction = () => {
+        if (typeof window === 'undefined') return;
+        const stored = localStorage.getItem('testify_pending_provision');
+        if (stored) {
+            try {
+                setPending(JSON.parse(stored));
+            } catch (e) {
+                setPending(null);
+            }
+        } else {
+            setPending(null);
+        }
+    };
+
+    useEffect(() => {
+        checkPendingAction();
+        // Listen for the custom event triggered by RelationshipTrackerCard
+        window.addEventListener('testify_pending_action_update', checkPendingAction);
+        // Also check on storage changes (from other tabs)
+        window.addEventListener('storage', checkPendingAction);
+        return () => {
+            window.removeEventListener('testify_pending_action_update', checkPendingAction);
+            window.removeEventListener('storage', checkPendingAction);
+        };
+    }, []);
+
+    useEffect(() => {
+        checkPendingAction();
+    }, [pathname]);
+
+    if (!pending) return null;
+
+    // Don't show the hovering reminder if we are already in a marketplace hub
+    if (pathname.includes('/marketplace')) return null;
+
+    const path = pending.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+    const Icon = pending.actionId === 'shared_meal' ? Store : Gift;
+
+    return (
+        <motion.div
+            initial={{ y: 100, opacity: 0, scale: 0.8 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 100, opacity: 0, scale: 0.8 }}
+            className={cn(
+                "fixed z-[100] right-4 sm:right-8 w-[calc(100vw-2rem)] sm:w-[22rem] transition-all",
+                isMobile ? "bottom-24" : "bottom-8"
+            )}
+        >
+            <Card className="rounded-[2rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none">
+                    <ShoppingCart className="h-16 w-16 text-primary" />
+                </div>
+                <CardContent className="p-4 sm:p-5 flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform">
+                        <Icon className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5">Finish Provision</p>
+                        <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight">Complete {pending.actionId === 'shared_meal' ? 'meal' : 'gift'} for {pending.soulName}</p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <Button asChild size="icon" className="h-10 w-10 rounded-full shadow-lg shrink-0">
+                            <Link href={`${path}?soulId=${pending.soulId}&soulName=${encodeURIComponent(pending.soulName)}&actionId=${pending.actionId}`}>
+                                <ArrowRight className="h-5 w-5" />
+                                <span className="sr-only">Go to Hub</span>
+                            </Link>
+                        </Button>
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive shrink-0"
+                            onClick={() => {
+                                localStorage.removeItem('testify_pending_provision');
+                                checkPendingAction();
+                            }}
+                        >
+                            <X className="h-4 w-4" />
+                            <span className="sr-only">Dismiss</span>
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        </motion.div>
+    );
+}
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean }) {
   const { user, loading: authLoading } = useUser();
@@ -600,7 +693,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </DialogContent>
           </Dialog>
         ) : null}
+
+        {/* Floating Reminder for pending Provisions */}
+        {user && <PendingProvisionReminder />}
       </div>
     </SearchProvider>
   );
 }
+

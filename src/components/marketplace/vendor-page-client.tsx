@@ -555,6 +555,19 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
         try {
             await batch.commit();
+            
+            // CLEAR PENDING REMINDER ON SUCCESS
+            if (typeof window !== 'undefined') {
+                const stored = localStorage.getItem('testify_pending_provision');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (parsed.soulId === soulId) {
+                        localStorage.removeItem('testify_pending_provision');
+                        window.dispatchEvent(new Event('testify_pending_action_update'));
+                    }
+                }
+            }
+
             toast({ title: 'Package Ordered!', description: `Your order for ${finalRecipientName} has been submitted.` });
             setCart({});
             setGiftInstructions('');
