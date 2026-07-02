@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -234,7 +234,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         <Users className="h-3.5 w-3.5 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Victory Circle</span>
                     </div>
-                    <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate leading-tight">{categoryTitle} Community</h1>
+                    <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate leading-tight">Victory over {categoryTitle}</h1>
                 </div>
             </div>
 
