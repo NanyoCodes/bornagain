@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useFirestore, useCollection } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -10,9 +10,10 @@ import {
     serverTimestamp, 
     doc, 
     orderBy,
+    updateDoc,
+    deleteDoc,
     where 
 } from 'firebase/firestore';
-import type { UserProfile } from '@/lib/types';
 import { 
     Card, 
     CardContent, 
@@ -33,7 +34,12 @@ import {
     Send,
     Flame,
     Zap,
-    Quote
+    Quote,
+    MoreVertical,
+    Edit,
+    Trash2,
+    X,
+    Check
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +50,13 @@ import { CommentSection } from '../testimonies/comment-section';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function PostResponsesDialog({ post, categoryTitle, children }: { post: any, categoryTitle: string, children: React.ReactNode }) {
     const isMobile = useIsMobile();
@@ -137,6 +150,11 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     const { toast } = useToast();
     const [newPostText, setNewPostText] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Management State
+    const [editingPostId, setEditingPostId] = useState<string | null>(null);
+    const [editingText, setEditingText] = useState('');
+    const [isUpdating, setIsUpdating] = useState(false);
 
     const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 
@@ -156,7 +174,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
         const postData = {
             authorId: user.uid,
-            authorName: 'Anonymous Brethren', // Keep it anonymous to encourage sharing
+            authorName: 'Anonymous Brethren',
             category: category.toLowerCase(),
             text: newPostText.trim(),
             createdAt: serverTimestamp(),
@@ -171,6 +189,37 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             console.error(error);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleUpdatePost = async (postId: string) => {
+        if (!user || !firestore || !editingText.trim()) return;
+        setIsUpdating(true);
+
+        const postRef = doc(firestore, 'victoryCircles', category.toLowerCase(), 'posts', postId);
+        try {
+            await updateDoc(postRef, {
+                text: editingText.trim(),
+                updatedAt: serverTimestamp()
+            });
+            toast({ title: 'Post Updated' });
+            setEditingPostId(null);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    const handleDeletePost = async (postId: string) => {
+        if (!user || !firestore) return;
+
+        const postRef = doc(firestore, 'victoryCircles', category.toLowerCase(), 'posts', postId);
+        try {
+            await deleteDoc(postRef);
+            toast({ title: 'Post Removed' });
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -236,6 +285,9 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     ) : posts && posts.length > 0 ? (
                         posts.map((post: any) => {
                             const postDate = safeToDate(post.createdAt);
+                            const isOwner = user?.uid === post.authorId;
+                            const isEditing = editingPostId === post.id;
+
                             return (
                                 <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5">
                                     <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between">
@@ -250,23 +302,63 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                 </p>
                                             </div>
                                         </div>
-                                        <Badge variant="outline" className="h-5 text-[9px] font-black uppercase tracking-widest bg-background/50">{categoryTitle}</Badge>
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant="outline" className="h-5 text-[9px] font-black uppercase tracking-widest bg-background/50">{categoryTitle}</Badge>
+                                            {isOwner && !isEditing && (
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                                                            <MoreVertical className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" className="rounded-xl">
+                                                        <DropdownMenuItem onClick={() => { setEditingPostId(post.id); setEditingText(post.text); }} className="rounded-lg">
+                                                            <Edit className="mr-2 h-4 w-4" /> Edit Story
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg">
+                                                            <Trash2 className="mr-2 h-4 w-4" /> Remove from Circle
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            )}
+                                        </div>
                                     </CardHeader>
                                     <CardContent className="p-6 pt-4">
-                                        <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                            <button className="w-full text-left outline-none group/post">
-                                                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99]">
-                                                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
-                                                    <p className="text-base text-muted-foreground leading-relaxed italic font-medium">
-                                                        &ldquo;{post.text}&rdquo;
-                                                    </p>
-                                                    <div className="mt-4 flex items-center gap-2 text-primary/60 group-hover/post:text-primary transition-colors">
-                                                        <MessageSquare className="h-4 w-4" />
-                                                        <span className="text-[10px] font-black uppercase tracking-widest">View Community Responses & Solutions</span>
-                                                    </div>
+                                        {isEditing ? (
+                                            <div className="space-y-4">
+                                                <Textarea 
+                                                    value={editingText}
+                                                    onChange={(e) => setEditingText(e.target.value)}
+                                                    className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base"
+                                                    autoFocus
+                                                />
+                                                <div className="flex justify-end gap-2">
+                                                    <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold">
+                                                        <X className="mr-1 h-3 w-3" /> Cancel
+                                                    </Button>
+                                                    <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px]">
+                                                        {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3" />}
+                                                        Save Changes
+                                                    </Button>
                                                 </div>
-                                            </button>
-                                        </PostResponsesDialog>
+                                            </div>
+                                        ) : (
+                                            <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
+                                                <button className="w-full text-left outline-none group/post">
+                                                    <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99]">
+                                                        <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
+                                                        <p className="text-base text-muted-foreground leading-relaxed italic font-medium">
+                                                            &ldquo;{post.text}&rdquo;
+                                                        </p>
+                                                        <div className="mt-4 flex items-center gap-2 text-primary/60 group-hover/post:text-primary transition-colors">
+                                                            <MessageSquare className="h-4 w-4" />
+                                                            <span className="text-[10px] font-black uppercase tracking-widest">View Community Responses & Solutions</span>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            </PostResponsesDialog>
+                                        )}
                                     </CardContent>
                                     <CardFooter className="p-3 bg-muted/5 flex justify-between items-center">
                                          <div className="flex items-center gap-2 px-3">
