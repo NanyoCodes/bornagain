@@ -249,34 +249,39 @@ export function StrongholdTracker() {
                                         </div>
 
                                         {!isVictorious && (
-                                            <div className="flex items-end justify-between gap-4">
-                                                <div className="space-y-1">
-                                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Victory Streak</p>
-                                                    <div className="flex items-baseline gap-1.5">
-                                                        <span className="text-2xl font-black text-primary">{streak}</span>
-                                                        <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/60">Days</span>
+                                            <div className="space-y-3">
+                                                <div className="flex items-end justify-between gap-4">
+                                                    <div className="space-y-1">
+                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Victory Streak</p>
+                                                        <div className="flex items-baseline gap-1.5">
+                                                            <span className="text-2xl font-black text-primary">{streak}</span>
+                                                            <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/60">Days</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <TooltipProvider>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Button 
+                                                                        variant="outline" 
+                                                                        size="sm" 
+                                                                        onClick={() => handleConfessRelapse(s.id)}
+                                                                        className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-background hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
+                                                                    >
+                                                                        CONFESS
+                                                                    </Button>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent className="rounded-xl border-destructive/20 shadow-xl" side="bottom">
+                                                                    <p className="text-[10px] font-bold uppercase text-destructive">Honest Accountability</p>
+                                                                    <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">Click this if you've had a setback. Confession brings it into the light and resets your streak, reminding you of God's faithful grace.</p>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
                                                     </div>
                                                 </div>
-                                                <div className="flex gap-2">
-                                                    <TooltipProvider>
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button 
-                                                                    variant="outline" 
-                                                                    size="sm" 
-                                                                    onClick={() => handleConfessRelapse(s.id)}
-                                                                    className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-background hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
-                                                                >
-                                                                    CONFESS
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent className="rounded-xl border-destructive/20 shadow-xl" side="bottom">
-                                                                <p className="text-[10px] font-bold uppercase text-destructive">Honest Accountability</p>
-                                                                <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">Click this if you've had a setback. Confession brings it into the light and resets your streak, reminding you of God's faithful grace.</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
-                                                </div>
+                                                <p className="text-[9px] text-muted-foreground/60 leading-tight italic px-1">
+                                                    Your streak represents consistency in the Spirit. If you face a setback, use 'Confess' to bring it into the light, receive grace, and start your journey anew with divine strength.
+                                                </p>
                                             </div>
                                         )}
 
