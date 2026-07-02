@@ -46,8 +46,8 @@ import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
-import type { Notification, VendorProfile } from "@/lib/types";
+import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, arrayRemove } from "firebase/firestore";
+import type { Notification, VendorProfile, UserProfile, Soul } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -81,6 +81,9 @@ const inspirationalMessages = [
 ];
 
 function PendingProvisionReminder() {
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const { userProfile } = useUserProfile();
     const [provisions, setProvisions] = useState<{ soulId: string; soulName: string; actionId: string }[]>([]);
     const [showList, setShowList] = useState(false);
     const pathname = usePathname();
@@ -116,10 +119,8 @@ function PendingProvisionReminder() {
         setShowList(false);
     }, [pathname, checkPendingActions]);
 
-    if (provisions.length === 0) return null;
-    if (pathname.includes('/marketplace')) return null;
-
-    const removeOne = (soulId: string, actionId: string) => {
+    const removeOne = async (soulId: string, actionId: string) => {
+        // 1. Update local storage
         const next = provisions.filter(p => !(p.soulId === soulId && p.actionId === actionId));
         if (next.length === 0) {
             localStorage.removeItem('testify_pending_provisions');
@@ -128,7 +129,36 @@ function PendingProvisionReminder() {
         }
         setProvisions(next);
         window.dispatchEvent(new Event('testify_pending_action_update'));
+
+        // 2. Sync with Firestore to revert the dashboard and history
+        if (!user || !firestore) return;
+
+        try {
+            // Remove from daily discipline
+            const userRef = doc(firestore, 'users', user.uid);
+            await updateDoc(userRef, {
+                'dailyDiscipline.completed': arrayRemove(actionId)
+            });
+
+            // Remove from soul history
+            const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulId);
+            const globalSoulRef = doc(firestore, 'souls', soulId);
+
+            const soulDoc = await getDoc(soulUserRef);
+            if (soulDoc.exists()) {
+                const soulData = soulDoc.data() as Soul;
+                const updatedLog = (soulData.followUpLog || []).filter(log => !log.actions?.includes(actionId));
+                
+                await updateDoc(soulUserRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
+                await updateDoc(globalSoulRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
+            }
+        } catch (e) {
+            console.error("Failed to sync cancellation:", e);
+        }
     };
+
+    if (provisions.length === 0) return null;
+    if (pathname.includes('/marketplace')) return null;
 
     const isMultiple = provisions.length > 1;
 
@@ -183,6 +213,16 @@ function PendingProvisionReminder() {
                                 className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive shrink-0"
                                 onClick={() => {
                                     if (isMultiple) {
+                                        // Multiple cancellation
+                                        const stored = localStorage.getItem('testify_pending_provisions');
+                                        if (stored) {
+                                            try {
+                                                const parsed = JSON.parse(stored);
+                                                if (Array.isArray(parsed)) {
+                                                    parsed.forEach(p => removeOne(p.soulId, p.actionId));
+                                                }
+                                            } catch (e) {}
+                                        }
                                         localStorage.removeItem('testify_pending_provisions');
                                         setProvisions([]);
                                         window.dispatchEvent(new Event('testify_pending_action_update'));
@@ -258,9 +298,7 @@ function PendingProvisionReminder() {
                 </ScrollArea>
                 <CardFooter className="p-4 border-t bg-muted/5 justify-center">
                     <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100" onClick={() => {
-                         localStorage.removeItem('testify_pending_provisions');
-                         setProvisions([]);
-                         window.dispatchEvent(new Event('testify_pending_action_update'));
+                         provisions.forEach(p => removeOne(p.soulId, p.actionId));
                     }}>Clear All Pending</Button>
                 </CardFooter>
             </Card>
@@ -712,7 +750,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
             Kingdom Network Active
         </p>
       </div>

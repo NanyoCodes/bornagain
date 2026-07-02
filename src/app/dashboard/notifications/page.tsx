@@ -3,8 +3,8 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useCollection } from '@/firebase';
-import { collection, query, doc, updateDoc, writeBatch, where } from 'firebase/firestore';
-import type { Notification } from '@/lib/types';
+import { collection, query, doc, updateDoc, writeBatch, where, getDoc, serverTimestamp, arrayRemove } from 'firebase/firestore';
+import type { Notification, Soul } from '@/lib/types';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles, X } from 'lucide-react';
@@ -82,25 +82,54 @@ export default function NotificationsPage() {
     };
   }, [checkPending]);
 
-  const handleRemovePending = (e: React.MouseEvent, soulId: string, actionId: string) => {
+  const handleRemovePending = async (e: React.MouseEvent, soulId: string, actionId: string) => {
     e.stopPropagation();
-    if (typeof window === 'undefined') return;
-    const stored = localStorage.getItem('testify_pending_provisions');
-    if (stored) {
-        try {
-            let provisions = JSON.parse(stored);
-            if (Array.isArray(provisions)) {
-                provisions = provisions.filter((p: any) => !(p.soulId === soulId && p.actionId === actionId));
-                if (provisions.length === 0) {
-                    localStorage.removeItem('testify_pending_provisions');
-                } else {
-                    localStorage.setItem('testify_pending_provisions', JSON.stringify(provisions));
+    
+    // 1. Update local storage
+    if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('testify_pending_provisions');
+        if (stored) {
+            try {
+                let provisions = JSON.parse(stored);
+                if (Array.isArray(provisions)) {
+                    provisions = provisions.filter((p: any) => !(p.soulId === soulId && p.actionId === actionId));
+                    if (provisions.length === 0) {
+                        localStorage.removeItem('testify_pending_provisions');
+                    } else {
+                        localStorage.setItem('testify_pending_provisions', JSON.stringify(provisions));
+                    }
+                    window.dispatchEvent(new Event('testify_pending_action_update'));
                 }
-                window.dispatchEvent(new Event('testify_pending_action_update'));
+            } catch (e) {
+                localStorage.removeItem('testify_pending_provisions');
             }
-        } catch (e) {
-            localStorage.removeItem('testify_pending_provisions');
         }
+    }
+
+    // 2. Sync with Firestore to revert the dashboard and history
+    if (!user || !firestore) return;
+
+    try {
+        // Remove from daily discipline
+        const userRef = doc(firestore, 'users', user.uid);
+        await updateDoc(userRef, {
+            'dailyDiscipline.completed': arrayRemove(actionId)
+        });
+
+        // Remove from soul history
+        const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulId);
+        const globalSoulRef = doc(firestore, 'souls', soulId);
+
+        const soulDoc = await getDoc(soulUserRef);
+        if (soulDoc.exists()) {
+            const soulData = soulDoc.data() as Soul;
+            const updatedLog = (soulData.followUpLog || []).filter(log => !log.actions?.includes(actionId));
+            
+            await updateDoc(soulUserRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
+            await updateDoc(globalSoulRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
+        }
+    } catch (error) {
+        console.error("Failed to sync pending removal:", error);
     }
   };
 
