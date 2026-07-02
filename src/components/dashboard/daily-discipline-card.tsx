@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -256,7 +257,18 @@ export function DailyDisciplineCard() {
     if (!isAttendChurchDialogOpen && togglingId === 'attend_church') setTogglingId(null);
   }, [isPrayerDialogOpen, isNotesDialogOpen, isAttendChurchDialogOpen, togglingId]);
 
-  const partners = userProfile?.accountabilityPartners || [];
+  const uniquePartners = useMemo(() => {
+    const partners = userProfile?.accountabilityPartners || [];
+    const uniqueMap = new Map();
+    partners.forEach(p => {
+        if (p.userId) {
+          if (!uniqueMap.has(p.userId) || (!uniqueMap.get(p.userId).photoURL && p.photoURL)) {
+            uniqueMap.set(p.userId, p);
+          }
+        }
+    });
+    return Array.from(uniqueMap.values());
+  }, [userProfile?.accountabilityPartners]);
 
   if (loading) {
     return (
@@ -322,13 +334,13 @@ export function DailyDisciplineCard() {
             })}
             </div>
 
-            {partners.length > 0 && (
+            {uniquePartners.length > 0 && (
                 <div className="space-y-4">
                     <Separator className="opacity-50" />
                     <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-2">
                             <HeartHandshake className="h-4 w-4 text-primary" />
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Partner Activity</h4>
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em]">Partner Activity</h4>
                         </div>
                         <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2">
                             <Link href="/dashboard/accountability">Full View</Link>
@@ -336,7 +348,7 @@ export function DailyDisciplineCard() {
                     </div>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {partners.slice(0, 4).map(partner => (
+                        {uniquePartners.slice(0, 4).map(partner => (
                             <PartnerCompactStatus key={partner.userId} partner={partner} date={new Date()} />
                         ))}
                     </div>
