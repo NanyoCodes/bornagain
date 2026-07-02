@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import { collection, query, doc, updateDoc, writeBatch, where } from 'firebase/firestore';
 import type { Notification } from '@/lib/types';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus } from 'lucide-react';
+import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -28,8 +28,12 @@ const NOTIFICATION_TYPES = [
   'soul_unassigned_from_fellowship'
 ];
 
-function getNotificationIcon(type: string) {
+function getNotificationIcon(type: string, actionId?: string) {
     switch (type) {
+        case 'pending_provision':
+            return actionId === 'shared_meal' 
+                ? <Utensils className="h-4 w-4 text-primary animate-pulse" />
+                : <Gift className="h-4 w-4 text-primary animate-pulse" />;
         case 'campaign_join':
             return <Target className="h-4 w-4 text-orange-500" />;
         case 'accountability_request':
@@ -56,6 +60,28 @@ export default function NotificationsPage() {
   const firestore = useFirestore();
   const router = useRouter();
 
+  const [pendingProvisions, setPendingProvisions] = useState<any[]>([]);
+
+  useEffect(() => {
+    const checkPending = () => {
+      if (typeof window === 'undefined') return;
+      const stored = localStorage.getItem('testify_pending_provisions');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setPendingProvisions(Array.isArray(parsed) ? parsed : []);
+        } catch (e) { setPendingProvisions([]); }
+      } else { setPendingProvisions([]); }
+    };
+    checkPending();
+    window.addEventListener('testify_pending_action_update', checkPending);
+    window.addEventListener('storage', checkPending);
+    return () => {
+      window.removeEventListener('testify_pending_action_update', checkPending);
+      window.removeEventListener('storage', checkPending);
+    };
+  }, []);
+
   const notificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(
@@ -75,10 +101,33 @@ export default function NotificationsPage() {
     });
   }, [notificationsData]);
 
-  const handleNotificationClick = (notification: Notification) => {
+  const allDisplayItems = useMemo(() => {
+    const items = notifications ? [...notifications] : [];
+    
+    // Transform pending provisions into notification-like objects for the feed
+    const virtualNotifs = pendingProvisions.map(p => ({
+        id: `pending-${p.soulId}-${p.actionId}`,
+        userId: user?.uid || '',
+        type: 'pending_provision',
+        title: `Pending act of kindness: ${p.soulName}`,
+        message: `You initiated a ${p.actionId === 'shared_meal' ? 'meal' : 'gift'} provision but haven't fulfilled it yet. Click to finish the order.`,
+        link: p.actionId === 'shared_meal' 
+            ? `/dashboard/marketplace?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`
+            : `/dashboard/marketplace/gifts?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`,
+        isRead: false,
+        createdAt: { toDate: () => new Date(p.timestamp || Date.now()) } as any,
+        isVirtual: true,
+        actionId: p.actionId
+    }));
+
+    // Pending tasks always stay at the top
+    return [...virtualNotifs, ...items];
+  }, [notifications, pendingProvisions, user?.uid]);
+
+  const handleNotificationClick = (notification: any) => {
     if (!user || !firestore) return;
     
-    if (!notification.isRead) {
+    if (!notification.isVirtual && !notification.isRead) {
       const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
       updateDoc(notifRef, { isRead: true }).catch(() => {
          const permissionError = new FirestorePermissionError({
@@ -164,7 +213,7 @@ export default function NotificationsPage() {
                         ))}
                         </div>
                     )}
-                    {!loading && (!notifications || notifications.length === 0) && (
+                    {!loading && allDisplayItems.length === 0 && (
                         <div className="py-24 text-center px-8 flex flex-col items-center justify-center flex-1">
                             <div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
                                 <Bell className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20" />
@@ -176,34 +225,39 @@ export default function NotificationsPage() {
                         </div>
                     )}
                     <div className="divide-y">
-                        {!loading && user && notifications?.map(notification => {
+                        {!loading && user && allDisplayItems.map(notification => {
                             const createdAt = safeToDate(notification.createdAt);
+                            const isVirtual = (notification as any).isVirtual;
+                            
                             return (
                                 <button
                                     key={notification.id} 
                                     onClick={() => handleNotificationClick(notification)}
                                     className={cn(
                                         "w-full text-left p-3.5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
-                                        !notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent"
+                                        isVirtual ? "bg-primary/[0.05] border-l-primary shadow-inner" : (!notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent")
                                     )}
                                 >
                                     <div className="flex items-start gap-2.5 sm:gap-5">
-                                        <div className="mt-0.5 shrink-0 p-2 sm:p-2.5 rounded-xl bg-background border shadow-sm">
-                                            {getNotificationIcon(notification.type)}
+                                        <div className={cn(
+                                            "mt-0.5 shrink-0 p-2 sm:p-2.5 rounded-xl border shadow-sm",
+                                            isVirtual ? "bg-primary text-white border-none scale-110 shadow-lg" : "bg-background"
+                                        )}>
+                                            {getNotificationIcon(notification.type, (notification as any).actionId)}
                                         </div>
                                         <div className="flex-1 min-w-0 space-y-1">
                                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1">
                                                 <p className={cn(
                                                     "font-bold text-sm sm:text-base leading-snug break-words", 
-                                                    !notification.isRead ? "text-foreground" : "text-muted-foreground"
+                                                    isVirtual ? "text-primary" : (!notification.isRead ? "text-foreground" : "text-muted-foreground")
                                                 )}>
                                                     {notification.title}
                                                 </p>
                                                 <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap shrink-0">
-                                                    {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : ''}
+                                                    {isVirtual ? 'ACTION REQUIRED' : (createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : '')}
                                                 </span>
                                             </div>
-                                            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3">
+                                            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance">
                                                 {notification.message}
                                             </p>
                                             {createdAt && (
@@ -212,9 +266,12 @@ export default function NotificationsPage() {
                                                 </p>
                                             )}
                                         </div>
-                                        {!notification.isRead && (
+                                        {(!notification.isRead || isVirtual) && (
                                             <div className="shrink-0 flex items-center h-full pt-1.5 sm:pt-2">
-                                                <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)]" />
+                                                <div className={cn(
+                                                    "h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)]",
+                                                    isVirtual ? "bg-primary scale-125" : "bg-primary"
+                                                )} />
                                             </div>
                                         )}
                                     </div>
