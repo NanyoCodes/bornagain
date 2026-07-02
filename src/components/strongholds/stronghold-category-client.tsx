@@ -72,13 +72,15 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                 </div>
             </div>
             
-            <div className="flex-grow min-h-0">
-                <div className="p-4 sm:p-6 pb-2">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 mb-4">
+            <div className="flex-grow min-h-0 flex flex-col">
+                <div className="p-4 sm:p-6 pb-2 shrink-0">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60">
                         <Zap className="h-3.5 w-3.5" /> Circle Responses & Solutions
                     </div>
                 </div>
-                <CommentSection path={`victoryCircles/${post.category}/posts/${post.id}/comments`} inline />
+                <div className="flex-1 min-h-0">
+                    <CommentSection path={`victoryCircles/${post.category}/posts/${post.id}/comments`} />
+                </div>
             </div>
         </div>
     );
@@ -91,7 +93,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                 </SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left">
+                        <SheetHeader className="text-left flex-shrink-0">
                             <div className="flex items-center gap-2 mb-2">
                                 <Zap className="h-4 w-4 text-primary" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Circle Conversation</span>
@@ -120,7 +122,9 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                         <DialogDescription className="text-base font-medium">Shared wisdom and encouragement for victory.</DialogDescription>
                     </DialogHeader>
                 </div>
-                {content}
+                <div className="flex-grow min-h-0">
+                    {content}
+                </div>
             </DialogContent>
         </Dialog>
     );
