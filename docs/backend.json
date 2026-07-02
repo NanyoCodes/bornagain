@@ -242,6 +242,21 @@
         "email"
       ]
     },
+    "Stronghold": {
+      "title": "Stronghold",
+      "description": "Represents an area of struggle or sin a believer is actively overcoming.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "overcoming", "victorious"] },
+        "lastRelapse": { "type": "object", "description": "Timestamp of the last occurrence or confession." },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "object" }
+      },
+      "required": ["userId", "title", "status"]
+    },
     "VendorProfile": {
       "title": "Vendor Profile",
       "description": "Represents a user who sells meals or services.",
@@ -308,6 +323,10 @@
         "$ref": "#/entities/UserProfile"
       },
       "description": "Stores public user profile data, keyed by user ID."
+    },
+    "/users/{userId}/strongholds/{strongholdId}": {
+      "schema": { "$ref": "#/entities/Stronghold" },
+      "description": "User's private tracker for overcoming areas of struggle."
     },
     "/vendors/{vendorId}": {
       "schema": { "$ref": "#/entities/VendorProfile" },

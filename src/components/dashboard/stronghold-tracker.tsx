@@ -1,0 +1,323 @@
+
+'use client';
+
+import { useState, useMemo } from 'react';
+import { useUser, useFirestore, useCollection } from '@/firebase';
+import { 
+    collection, 
+    query, 
+    addDoc, 
+    serverTimestamp, 
+    doc, 
+    updateDoc, 
+    deleteDoc,
+    orderBy 
+} from 'firebase/firestore';
+import type { Stronghold, StrongholdStatus } from '@/lib/types';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { 
+    Plus, 
+    ShieldCheck, 
+    Flame, 
+    Zap, 
+    Loader2, 
+    Trash2, 
+    CheckCircle2, 
+    AlertCircle,
+    Info,
+    TrendingUp,
+    HeartPulse
+} from 'lucide-react';
+import { 
+    Dialog, 
+    DialogContent, 
+    DialogHeader, 
+    DialogTitle, 
+    DialogDescription,
+    DialogFooter 
+} from '@/components/ui/dialog';
+import { 
+    Select, 
+    SelectContent, 
+    SelectItem, 
+    SelectTrigger, 
+    SelectValue 
+} from '@/components/ui/select';
+import { differenceInDays } from 'date-fns';
+import { safeToDate, cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+
+const strongholdCategories = [
+    'Pride', 'Lust', 'Anger', 'Addiction', 'Laziness', 'Unbelief', 'Greed', 'Jealousy', 'Other'
+];
+
+export function StrongholdTracker() {
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    
+    const [isAddOpen, setIsAddOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [title, setTitle] = useState('');
+    const [category, setCategory] = useState('Other');
+
+    const strongholdsQuery = useMemo(() => {
+        if (!user?.uid || !firestore) return null;
+        return query(
+            collection(firestore, 'users', user.uid, 'strongholds'),
+            orderBy('createdAt', 'desc')
+        );
+    }, [user?.uid, firestore]);
+
+    const { data: strongholds, loading } = useCollection<Stronghold>(strongholdsQuery);
+
+    const handleAddStronghold = async () => {
+        if (!user || !firestore || !title.trim()) return;
+        setIsSubmitting(true);
+        
+        const strongholdData = {
+            userId: user.uid,
+            title: title.trim(),
+            category,
+            status: 'active' as StrongholdStatus,
+            lastRelapse: serverTimestamp(), // Initial state starts now
+            createdAt: serverTimestamp(),
+            notes: ""
+        };
+
+        try {
+            await addDoc(collection(firestore, 'users', user.uid, 'strongholds'), strongholdData);
+            toast({ title: 'Area of Struggle Named', description: 'Transparency is the first step to victory.' });
+            setIsAddOpen(false);
+            setTitle('');
+            setCategory('Other');
+        } catch (error) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: `users/${user.uid}/strongholds`,
+                operation: 'create',
+                requestResourceData: strongholdData
+            }, user));
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleConfessRelapse = async (id: string) => {
+        if (!user || !firestore) return;
+        const strongholdRef = doc(firestore, 'users', user.uid, 'strongholds', id);
+        
+        try {
+            await updateDoc(strongholdRef, {
+                lastRelapse: serverTimestamp(),
+                status: 'overcoming'
+            });
+            toast({ title: 'Confession Recorded', description: 'God is faithful to forgive and strengthen you again.' });
+        } catch (error) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: strongholdRef.path,
+                operation: 'update'
+            }, user));
+        }
+    };
+
+    const handleClaimVictory = async (id: string) => {
+        if (!user || !firestore) return;
+        const strongholdRef = doc(firestore, 'users', user.uid, 'strongholds', id);
+        
+        try {
+            await updateDoc(strongholdRef, {
+                status: 'victorious'
+            });
+            toast({ title: 'Hallelujah!', description: 'You have claimed victory in this area of your life.' });
+        } catch (error) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: strongholdRef.path,
+                operation: 'update'
+            }, user));
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!user || !firestore) return;
+        try {
+            await deleteDoc(doc(firestore, 'users', user.uid, 'strongholds', id));
+            toast({ title: 'Tracker Removed' });
+        } catch (error) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: `users/${user.uid}/strongholds/${id}`,
+                operation: 'delete'
+            }, user));
+        }
+    };
+
+    return (
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/victory">
+            <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/victory:opacity-[0.05] transition-opacity">
+                <ShieldCheck className="h-32 w-32 text-primary rotate-12" />
+            </div>
+
+            <CardHeader className="p-4 sm:p-6 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                        <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                            <Flame className="h-5 w-5 text-primary" />
+                            Victory Tracker
+                        </CardTitle>
+                        <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Overcoming strongholds in Christ</CardDescription>
+                    </div>
+                    <Button onClick={() => setIsAddOpen(true)} className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
+                        <Plus className="mr-2 h-4 w-4" />
+                        NAME A STRUGGLE
+                    </Button>
+                </div>
+            </CardHeader>
+
+            <CardContent className="px-4 sm:px-6 pb-6 space-y-4">
+                {loading ? (
+                    <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
+                ) : strongholds && strongholds.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {strongholds.map((s) => {
+                            const lastRelapse = safeToDate(s.lastRelapse);
+                            const streak = lastRelapse ? differenceInDays(new Date(), lastRelapse) : 0;
+                            const isVictorious = s.status === 'victorious';
+
+                            return (
+                                <div key={s.id} className={cn(
+                                    "p-4 rounded-[1.5rem] border-2 transition-all group/item relative overflow-hidden",
+                                    isVictorious ? "bg-green-500/5 border-green-500/20" : "bg-muted/10 border-transparent hover:border-primary/10"
+                                )}>
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50">{s.category}</Badge>
+                                                {isVictorious && <Badge className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-green-500 text-white border-none">Victorious</Badge>}
+                                            </div>
+                                            <h4 className="font-black text-sm sm:text-base uppercase tracking-tight truncate">{s.title}</h4>
+                                        </div>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                                                    <MoreVertical className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="rounded-xl">
+                                                <DropdownMenuItem onClick={() => handleClaimVictory(s.id)} className="rounded-lg">
+                                                    <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> Claim Victory
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => handleDelete(s.id)} className="text-destructive focus:text-destructive rounded-lg">
+                                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Tracker
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+
+                                    {!isVictorious && (
+                                        <div className="flex items-end justify-between gap-4">
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Victory Streak</p>
+                                                <div className="flex items-baseline gap-1.5">
+                                                    <span className="text-2xl font-black text-primary">{streak}</span>
+                                                    <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/60">Days</span>
+                                                </div>
+                                            </div>
+                                            <Button 
+                                                variant="outline" 
+                                                size="sm" 
+                                                onClick={() => handleConfessRelapse(s.id)}
+                                                className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-background hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
+                                            >
+                                                CONFESS RELAPSE
+                                            </Button>
+                                        </div>
+                                    )}
+
+                                    {isVictorious && (
+                                        <div className="flex items-center gap-3 py-1">
+                                            <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                                                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                            </div>
+                                            <p className="text-[10px] font-bold text-green-700 leading-tight">"Where sin abounded, grace abounded much more." — Romans 5:20</p>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="text-center py-12 bg-muted/20 rounded-[2rem] border-2 border-dashed">
+                        <div className="h-12 w-12 bg-muted/40 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Zap className="h-6 w-6 text-muted-foreground opacity-20" />
+                        </div>
+                        <p className="text-xs text-muted-foreground font-medium italic px-12 text-balance leading-relaxed">"For the weapons of our warfare are not carnal but mighty in God for pulling down strongholds." — 2 Cor 10:4</p>
+                        <Button variant="link" onClick={() => setIsAddOpen(true)} className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest">Initialize a Tracker</Button>
+                    </div>
+                )}
+            </CardContent>
+
+            <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+                <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                    <div className="p-8 border-b bg-muted/10">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Enter the Warfare</DialogTitle>
+                            <DialogDescription className="text-sm font-medium">Naming a struggle is the first step toward the Light.</DialogDescription>
+                        </DialogHeader>
+                    </div>
+                    <div className="p-8 space-y-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="title" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Area of Struggle</Label>
+                            <Input 
+                                id="title" 
+                                value={title} 
+                                onChange={e => setTitle(e.target.value)} 
+                                placeholder="e.g., Secret Addiction, Anger..." 
+                                className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" 
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
+                            <Select value={category} onValueChange={setCategory}>
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-2xl">
+                                    {strongholdCategories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3">
+                            <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                            <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">This record is <span className="font-black text-foreground">strictly private</span>. It exists only for your personal accountability before God.</p>
+                        </div>
+                    </div>
+                    <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
+                        <Button variant="outline" onClick={() => setIsAddOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
+                        <Button 
+                            onClick={handleAddStronghold} 
+                            disabled={isSubmitting || !title.trim()} 
+                            className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
+                        >
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            BEGIN TRACKING
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </Card>
+    );
+}
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVertical } from 'lucide-react';

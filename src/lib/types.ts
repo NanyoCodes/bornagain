@@ -37,6 +37,19 @@ export type DailyDisciplineLog = {
   date: Timestamp;
 };
 
+export type StrongholdStatus = 'active' | 'overcoming' | 'victorious';
+
+export type Stronghold = {
+  id: string;
+  userId: string;
+  title: string;
+  category?: string;
+  status: StrongholdStatus;
+  lastRelapse?: Timestamp | null;
+  notes?: string;
+  createdAt: Timestamp;
+};
+
 export type VideoTestimony = {
   url: string;
   title?: string;

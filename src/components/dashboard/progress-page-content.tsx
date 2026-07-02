@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -44,6 +45,7 @@ import type { Soul, UserProfile, Testimony, ReadingHistoryItem, Campaign, Fellow
 import { useMemo, useEffect, useState, useCallback } from 'react';
 import { DailyDisciplineCard } from '@/components/dashboard/daily-discipline-card';
 import { RelationshipTrackerCard } from '@/components/dashboard/relationship-tracker-card';
+import { StrongholdTracker } from '@/components/dashboard/stronghold-tracker';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -791,6 +793,7 @@ export function ProgressPageContent() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 rounded-none sm:rounded-[2.5rem] overflow-hidden bg-card/50 backdrop-blur-sm border-y sm:border">
             <div className="lg:col-span-2 flex flex-col divide-y">
                 <DailyDisciplineCard />
+                <StrongholdTracker />
                 <RelationshipTrackerCard />
                 <FamilyFriendsTrackerCard 
                     souls={soulsWon || []} 
