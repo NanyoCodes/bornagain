@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -63,6 +63,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
   pride: [
@@ -82,6 +84,24 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "Galatians 5:16", text: "So I say, walk by the Spirit, and you will not gratify the desires of the flesh.", prayer: "I choose to walk step by step with the Holy Spirit today. Lead me away from temptation. Amen." },
     { verse: "James 1:14-15", text: "But each person is tempted when they are dragged away by their own evil desire and enticed.", prayer: "Lord, kill the roots of wrong desires in my heart. Let Your holy fire consume every ungodly urge. Amen." },
     { verse: "1 Thessalonians 4:3-5", text: "It is God’s will that you should be sanctified: that you should avoid sexual immorality.", prayer: "Sanctify me, O God. Help me to control my own body in a way that is holy and honorable. Amen." }
+  ],
+  fear: [
+    { verse: "2 Timothy 1:7", text: "For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.", prayer: "I reject the spirit of fear and claim the power, love, and sound mind You have given me, Lord. Amen." },
+    { verse: "Psalm 34:4", text: "I sought the Lord, and he answered me; he delivered me from all my fears.", prayer: "Thank You for hearing my cry, Father. I stand delivered from every shadow of anxiety today. Amen." },
+    { verse: "Isaiah 41:10", text: "So do not fear, for I am with you; do not be dismayed, for I am your God.", prayer: "I anchor my heart in Your presence. I will not be dismayed, for You are my God. Amen." },
+    { verse: "1 John 4:18", text: "There is no fear in love. But perfect love drives out fear.", prayer: "Let Your perfect love flood my soul, Lord, driving out every anxious thought. Amen." },
+    { verse: "Psalm 56:3", text: "When I am afraid, I put my trust in you.", prayer: "Fear may knock, but I answer with trust. I place my life and future in Your hands. Amen." },
+    { verse: "Matthew 6:34", text: "Therefore do not worry about tomorrow, for tomorrow will worry about itself.", prayer: "I release the weight of tomorrow. I choose to serve You faithfully in this present moment. Amen." },
+    { verse: "Joshua 1:9", text: "Have I not commanded you? Be strong and courageous. Do not be afraid.", prayer: "I step out with Kingdom courage, knowing You are with me wherever I go. Amen." }
+  ],
+  unforgiveness: [
+    { verse: "Matthew 6:14-15", text: "For if you forgive other people when they sin against you, your heavenly Father will also forgive you.", prayer: "Lord, grant me the grace to release those who have hurt me, just as You have forgiven me. Amen." },
+    { verse: "Ephesians 4:31-32", text: "Get rid of all bitterness, rage and anger... forgiving each other, just as in Christ God forgave you.", prayer: "I strip off the garment of bitterness and put on Your heart of compassion today. Amen." },
+    { verse: "Colossians 3:13", text: "Bear with each other and forgive one another... Forgive as the Lord forgave you.", prayer: "I choose to bear with my brethren in love, letting go of every grievance in Jesus' name. Amen." },
+    { verse: "Mark 11:25", text: "And when you stand praying, if you hold anything against anyone, forgive them.", prayer: "I clear the path of my prayers by releasing all offense from my heart right now. Amen." },
+    { verse: "Proverbs 10:12", text: "Hatred stirs up conflict, but love covers over all wrongs.", prayer: "Let Your divine love in me be a shield that covers offenses and heals relationships. Amen." },
+    { verse: "Luke 6:37", text: "Do not judge, and you will not be judged... Forgive, and you will be forgiven.", prayer: "I trade judgment for mercy. I choose to be a channel of Your forgiving grace. Amen." },
+    { verse: "Hebrews 12:15", text: "See to it that... no bitter root grows up to cause trouble and defile many.", prayer: "Holy Spirit, pull up the roots of resentment before they defile my spirit. Amen." }
   ],
   anger: [
     { verse: "James 1:19-20", text: "Everyone should be quick to listen, slow to speak and slow to become angry, because human anger does not produce the righteousness that God desires.", prayer: "Lord, put a guard over my mouth and a peace in my spirit. Let Your righteousness be my response. Amen." },
@@ -110,6 +130,24 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "2 Thessalonians 3:10", text: "For even when we were with you, we gave you this rule: 'The one who is unwilling to work shall not eat.'", prayer: "Lord, remove any sense of entitlement from me. Help me to earn my bread with integrity. Amen." },
     { verse: "Romans 12:11", text: "Never be lacking in zeal, but keep your spiritual fervor, serving the Lord.", prayer: "Ignite a fire in my spirit, Lord. Let me be fervent in my service to You and others. Amen." }
   ],
+  grief: [
+    { verse: "Psalm 34:18", text: "The Lord is close to the brokenhearted and saves those who are crushed in spirit.", prayer: "Thank You for drawing near to me in my pain, Lord. I receive Your healing for my soul. Amen." },
+    { verse: "Matthew 5:4", text: "Blessed are those who mourn, for they will be comforted.", prayer: "I claim Your promise of comfort today. Wrap me in Your peace that surpasses understanding. Amen." },
+    { verse: "Revelation 21:4", text: "He will wipe every tear from their eyes. There will be no more death or mourning or crying or pain.", prayer: "I look to the eternal hope I have in You, where every tear is wiped away forever. Amen." },
+    { verse: "Psalm 147:3", text: "He heals the brokenhearted and binds up their wounds.", prayer: "Mend the broken pieces of my heart, Father. I trust Your gentle hand to bind my wounds. Amen." },
+    { verse: "1 Thessalonians 4:13", text: "Brothers and sisters, we do not want you to be uninformed about those who sleep in death, so that you do not grieve like the rest of mankind, who have no hope.", prayer: "I grieve with hope, knowing that in Christ, we shall see our loved ones again. Amen." },
+    { verse: "Isaiah 61:3", text: "To provide for those who grieve... to bestow on them a crown of beauty instead of ashes.", prayer: "I trade my mourning for Your oil of joy and my spirit of heaviness for Your garment of praise. Amen." },
+    { verse: "John 16:22", text: "Now is your time of grief, but I will see you again and you will rejoice.", prayer: "Though the night is long, I expect the joy that comes with the morning of Your presence. Amen." }
+  ],
+  comparison: [
+    { verse: "Galatians 1:10", text: "Am I now trying to win the approval of human beings, or of God?", prayer: "Lord, deliver me from the trap of people-pleasing. I seek only Your approval today. Amen." },
+    { verse: "Galatians 6:4", text: "Each one should test their own actions. Then they can take pride in themselves alone, without comparing themselves to someone else.", prayer: "I choose to focus on the unique path You have set before me, free from comparison. Amen." },
+    { verse: "2 Corinthians 10:12", text: "When they measure themselves by themselves and compare themselves with themselves, they are not wise.", prayer: "Father, give me the wisdom to see myself through Your eyes rather than the world's standards. Amen." },
+    { verse: "Psalm 139:14", text: "I praise you because I am fearfully and wonderfully made.", prayer: "I celebrate the unique masterpiece You created in me. I am enough because I am Yours. Amen." },
+    { verse: "1 Samuel 16:7", text: "The Lord does not look at the things people look at... the Lord looks at the heart.", prayer: "Search my heart, O God. Let my inner beauty and character be my primary focus. Amen." },
+    { verse: "Romans 12:2", text: "Do not conform to the pattern of this world, but be transformed by the renewing of your mind.", prayer: "I reject the world's standard of success. I align my mind with Your Kingdom purpose. Amen." },
+    { verse: "Philippians 4:11", text: "I have learned to be content whatever the circumstances.", prayer: "I choose contentment today, knowing that Your grace is sufficient for every season. Amen." }
+  ],
   unbelief: [
     { verse: "Mark 9:24", text: "I do believe; help me overcome my unbelief!", prayer: "Lord, I choose to trust You. Where my faith is weak, strengthen it by Your Spirit. Amen." },
     { verse: "Hebrews 11:6", text: "And without faith it is impossible to please God.", prayer: "Father, I approach You believing that You exist and that You reward those who seek You. Amen." },
@@ -119,6 +157,15 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "Hebrews 3:12", text: "See to it, brothers and sisters, that none of you has a sinful, unbelieving heart that turns away from the living God.", prayer: "Guard my heart, O God. Keep me close to You and protect me from the hardness of unbelief. Amen." },
     { verse: "Mark 11:23", text: "Whatever you say will be done for you.", prayer: "I declare that Your Word is true. I align my speech with Your promises and expect Your move. Amen." }
   ],
+  depression: [
+    { verse: "Psalm 42:11", text: "Why, my soul, are you downcast? Why so disturbed within me? Put your hope in God.", prayer: "I command my soul to hope in God! My countenance shall be lifted by His presence. Amen." },
+    { verse: "1 Peter 5:7", text: "Cast all your anxiety on him because he cares for you.", prayer: "I release the heavy burden of my thoughts to You, Lord, knowing Your deep care for me. Amen." },
+    { verse: "Psalm 30:5", text: "Weeping may stay for the night, but rejoicing comes in the morning.", prayer: "I endure this night with hope, knowing Your joy is breaking through at dawn. Amen." },
+    { verse: "Isaiah 40:31", text: "But those who hope in the Lord will renew their strength. They will soar on wings like eagles.", prayer: "Renew my strength today, Father. Lift me above the clouds of heaviness by Your Spirit. Amen." },
+    { verse: "Psalm 40:1-3", text: "He lifted me out of the slimy pit... and set my feet on a rock.", prayer: "Thank You for pulling me out of the pit of despair and establishing my steps on Christ. Amen." },
+    { verse: "Nehemiah 8:10", text: "Do not grieve, for the joy of the Lord is your strength.", prayer: "I claim Your joy as my supernatural fuel. It is my strength when my own fails. Amen." },
+    { verse: "Philippians 4:6-7", text: "The peace of God... will guard your hearts and your minds in Christ Jesus.", prayer: "Let Your peace stand sentry over my mind today, protecting me from dark thoughts. Amen." }
+  ],
   greed: [
     { verse: "Luke 12:15", text: "Watch out! Be on your guard against all kinds of greed; life does not consist in an abundance of possessions.", prayer: "Lord, deliver me from the love of things. Let my life consist of Your presence and Your love. Amen." },
     { verse: "Hebrews 13:5", text: "Keep your lives free from the love of money and be content with what you have.", prayer: "I find my satisfaction in You, Lord. I declare that You are my portion and my enough. Amen." },
@@ -127,6 +174,15 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "Matthew 6:24", text: "No one can serve two masters... You cannot serve both God and money.", prayer: "I serve only You, Lord. Money is my tool, not my master. Amen." },
     { verse: "Ecclesiastes 5:10", text: "Whoever loves money never has enough; whoever loves wealth is never satisfied with their income.", prayer: "I break the cycle of never-ending wanting. I am satisfied with Your daily bread. Amen." },
     { verse: "Ephesians 5:3", text: "But among you there must not be even a hint of... greed, because these are improper for God’s holy people.", prayer: "Let my life be marked by holy simplicity and open-handed giving. Amen." }
+  ],
+  worldliness: [
+    { verse: "1 John 2:15-17", text: "Do not love the world or anything in the world... The world and its desires pass away.", prayer: "Lord, turn my eyes from the temporary to the eternal. I choose Your will above all else. Amen." },
+    { verse: "Romans 12:2", text: "Do not conform to the pattern of this world, but be transformed by the renewing of your mind.", prayer: "I refuse the world's mold. I surrender my mind to be renewed by Your Holy Word. Amen." },
+    { verse: "Colossians 3:2", text: "Set your minds on things above, not on earthly things.", prayer: "I shift my perspective to Your Kingdom, Father. Let my priorities reflect Your heart. Amen." },
+    { verse: "James 4:4", text: "Don’t you know that friendship with the world means enmity against God?", prayer: "I choose friendship with You, Lord. I separate myself from the ungodly ways of this age. Amen." },
+    { verse: "Matthew 6:24", text: "No one can serve two masters.", prayer: "Jesus, You are my only Lord. I reject the siren call of worldly status and comfort. Amen." },
+    { verse: "Titus 2:11-12", text: "Say 'No' to ungodliness and worldly passions, and live self-controlled, upright and godly lives.", prayer: "Your grace teaches me to say 'No'. I live for Your glory in this present age. Amen." },
+    { verse: "Matthew 16:26", text: "What good will it be for someone to gain the whole world, yet forfeit their soul?", prayer: "I guard my soul above all earthly gain. You are my treasure and my great reward. Amen." }
   ],
   jealousy: [
     { verse: "James 3:16", text: "For where you have envy and selfish ambition, there you find disorder and every evil practice.", prayer: "Lord, cast out the spirit of envy. I speak order and peace into my life and relationships. Amen." },
@@ -201,7 +257,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                                 <Zap className="h-4 w-4 text-primary" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Circle Conversation</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Victory over {categoryTitle} Hub</SheetTitle>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Victory over {categoryTitle}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">Community responses and spiritual solutions.</SheetDescription>
                         </SheetHeader>
                     </div>
@@ -221,7 +277,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
             <DialogContent className="sm:max-w-xl max-h-[85vh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col">
                 <div className="p-8 border-b bg-muted/10 shrink-0">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Victory over {categoryTitle} Discussion</DialogTitle>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Victory over {categoryTitle}</DialogTitle>
                         <DialogDescription className="text-base font-medium">Shared wisdom and encouragement for victory.</DialogDescription>
                     </DialogHeader>
                 </div>
@@ -236,10 +292,12 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
 export function StrongholdCategoryClient({ category }: { category: string }) {
     const router = useRouter();
     const { user } = useUser();
+    const { userProfile } = useUserProfile();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [newPostText, setNewPostText] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [isAnonymous, setIsAnonymous] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     
     // Management State
@@ -276,9 +334,14 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         if (!user || !firestore || !newPostText.trim()) return;
         setIsSubmitting(true);
 
+        const authorName = isAnonymous 
+            ? 'Anonymous Brethren' 
+            : `${userProfile?.firstName || 'User'} ${userProfile?.lastName || ''}`.trim();
+
         const postData = {
             authorId: user.uid,
-            authorName: 'Anonymous Brethren',
+            authorName,
+            isAnonymous,
             category: category.toLowerCase(),
             text: newPostText.trim(),
             createdAt: serverTimestamp(),
@@ -364,11 +427,20 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     
                     <div className="space-y-4 pt-2">
                         <Textarea 
-                            placeholder="Share your struggle or a victory strategy anonymously..."
+                            placeholder="Share your struggle or a victory strategy..."
                             value={newPostText}
                             onChange={(e) => setNewPostText(e.target.value)}
                             className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[120px] rounded-2xl text-base focus-visible:ring-white/30"
                         />
+                        <div className="flex items-center space-x-2 px-1">
+                            <Checkbox 
+                                id="anonymous-toggle" 
+                                checked={isAnonymous} 
+                                onCheckedChange={(val) => setIsAnonymous(!!val)}
+                                className="border-white/40 data-[state=checked]:bg-white data-[state=checked]:text-primary"
+                            />
+                            <Label htmlFor="anonymous-toggle" className="text-xs font-bold text-white/80 cursor-pointer uppercase tracking-widest">Post Anonymously</Label>
+                        </div>
                         <Button 
                             onClick={handleCreatePost} 
                             disabled={isSubmitting || !newPostText.trim()}

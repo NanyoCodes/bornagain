@@ -14,7 +14,13 @@ import {
     Lock,
     Award,
     Target,
-    Quote
+    Quote,
+    ShieldAlert,
+    HeartOff,
+    CloudRain,
+    Eye,
+    Cloud,
+    Globe
 } from 'lucide-react';
 import { 
     Card, 
@@ -49,6 +55,22 @@ const strongholdCategories = [
         bg: 'bg-red-500/10' 
     },
     { 
+        name: 'Fear', 
+        desc: 'Conquering anxiety with the perfect love of God.', 
+        mission: 'Living in the peace that surpasses understanding.',
+        icon: ShieldAlert, 
+        color: 'text-blue-600', 
+        bg: 'bg-blue-600/10' 
+    },
+    { 
+        name: 'Unforgiveness', 
+        desc: 'Releasing bitterness to find heart freedom.', 
+        mission: 'Forgiving as we have been forgiven by Christ.',
+        icon: HeartOff, 
+        color: 'text-rose-500', 
+        bg: 'bg-rose-500/10' 
+    },
+    { 
         name: 'Anger', 
         desc: 'Restoring peace where bitterness once ruled.', 
         mission: 'Finding the calm of the Spirit in every storm.',
@@ -73,6 +95,22 @@ const strongholdCategories = [
         bg: 'bg-emerald-500/10' 
     },
     { 
+        name: 'Grief', 
+        desc: 'Walking through loss into the comfort of God.', 
+        mission: 'Trading mourning for the oil of joy.',
+        icon: CloudRain, 
+        color: 'text-indigo-600', 
+        bg: 'bg-indigo-600/10' 
+    },
+    { 
+        name: 'Comparison', 
+        desc: 'Breaking free from the trap of measuring your life against others.', 
+        mission: 'Finding security in your unique Kingdom purpose.',
+        icon: Eye, 
+        color: 'text-violet-500', 
+        bg: 'bg-violet-500/10' 
+    },
+    { 
         name: 'Unbelief', 
         desc: 'Solidifying faith against the waves of doubt.', 
         mission: 'Standing firm on the promises of the Living God.',
@@ -81,12 +119,28 @@ const strongholdCategories = [
         bg: 'bg-indigo-500/10' 
     },
     { 
+        name: 'Depression', 
+        desc: 'Lifting the weight of heaviness through spiritual light.', 
+        mission: 'Claiming the promise of hope in the darkest night.',
+        icon: Cloud, 
+        color: 'text-slate-600', 
+        bg: 'bg-slate-600/10' 
+    },
+    { 
         name: 'Greed', 
         desc: 'Finding contentment in God\'s sufficient provision.', 
         mission: 'Living a life of generosity and trust.',
         icon: Target, 
         color: 'text-green-500', 
         bg: 'bg-green-500/10' 
+    },
+    { 
+        name: 'Worldliness', 
+        desc: 'Prioritizing the eternal over the temporary.', 
+        mission: 'Seeking first the Kingdom and His righteousness.',
+        icon: Globe, 
+        color: 'text-emerald-600', 
+        bg: 'bg-emerald-600/10' 
     },
     { 
         name: 'Jealousy', 
@@ -176,7 +230,7 @@ export default function VictoryHubPage() {
                         <Lock className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1">Safe & Flexible Sanctuary</h3>
+                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1">Choice-Based Sanctuary</h3>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance">
                             Participation in Victory Circles offers <span className="text-foreground font-bold underline decoration-primary/30">choice-based anonymity</span>. You can choose to appear as yourself or post anonymously to ensure you can bring your struggles into the Light without fear, receiving support from the global body of Christ.
                         </p>
