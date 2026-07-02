@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -31,7 +31,8 @@ import {
     MoreVertical,
     Info,
     ArrowRight,
-    Users
+    Users,
+    Newspaper
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -55,11 +56,13 @@ import {
     SelectTrigger, 
     SelectValue 
 } from '@/components/ui/select';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { differenceInDays } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
 
 const strongholdCategories = [
     'Pride', 'Lust', 'Anger', 'Addiction', 'Laziness', 'Unbelief', 'Greed', 'Jealousy', 'Other'
@@ -67,6 +70,7 @@ const strongholdCategories = [
 
 export function StrongholdTracker() {
     const { user } = useUser();
+    const { userProfile } = useUserProfile();
     const firestore = useFirestore();
     const { toast } = useToast();
     
@@ -74,6 +78,8 @@ export function StrongholdTracker() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('Other');
+    
+    const [testimonyStronghold, setTestimonyStronghold] = useState<Stronghold | null>(null);
 
     const strongholdsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
@@ -227,9 +233,15 @@ export function StrongholdTracker() {
                                                             <Users className="mr-2 h-4 w-4" /> Enter Circle
                                                         </Link>
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleClaimVictory(s.id)} className="rounded-lg">
-                                                        <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> Claim Victory
-                                                    </DropdownMenuItem>
+                                                    {isVictorious ? (
+                                                        <DropdownMenuItem onClick={() => setTestimonyStronghold(s)} className="rounded-lg">
+                                                            <Newspaper className="mr-2 h-4 w-4 text-primary" /> Share Testimony
+                                                        </DropdownMenuItem>
+                                                    ) : (
+                                                        <DropdownMenuItem onClick={() => handleClaimVictory(s.id)} className="rounded-lg">
+                                                            <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> Claim Victory
+                                                        </DropdownMenuItem>
+                                                    )}
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuItem onClick={() => handleDelete(s.id)} className="text-destructive focus:text-destructive rounded-lg">
                                                         <Trash2 className="mr-2 h-4 w-4" /> Delete Tracker
@@ -261,11 +273,22 @@ export function StrongholdTracker() {
                                         )}
 
                                         {isVictorious && (
-                                            <div className="flex items-center gap-3 py-1">
-                                                <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
-                                                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                            <div className="flex items-center justify-between gap-4 py-1">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                                                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                                    </div>
+                                                    <p className="text-[10px] font-bold text-green-700 leading-tight">"Where sin abounded, grace abounded much more." — Romans 5:20</p>
                                                 </div>
-                                                <p className="text-[10px] font-bold text-green-700 leading-tight">"Where sin abounded, grace abounded much more." — Romans 5:20</p>
+                                                <Button 
+                                                    size="sm" 
+                                                    variant="outline" 
+                                                    className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20 px-3"
+                                                    onClick={() => setTestimonyStronghold(s)}
+                                                >
+                                                    <Newspaper className="mr-1.5 h-3 w-3" />
+                                                    TESTIFY
+                                                </Button>
                                             </div>
                                         )}
                                     </div>
@@ -336,6 +359,31 @@ export function StrongholdTracker() {
                             BEGIN TRACKING
                         </Button>
                     </div>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!testimonyStronghold} onOpenChange={(open) => !open && setTestimonyStronghold(null)}>
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+                    <div className="p-8 border-b bg-muted/10">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Share Your Victory</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1">
+                                Encourage the body of Christ by sharing how God gave you victory over "{testimonyStronghold?.title}".
+                            </DialogDescription>
+                        </DialogHeader>
+                    </div>
+                    <ScrollArea className="max-h-[70vh]">
+                        <div className="p-8">
+                            {userProfile && testimonyStronghold && (
+                                <CreateTestimonyForm 
+                                    userProfile={userProfile} 
+                                    onTestimonyCreated={() => {
+                                        setTestimonyStronghold(null);
+                                    }} 
+                                />
+                            )}
+                        </div>
+                    </ScrollArea>
                 </DialogContent>
             </Dialog>
         </Card>
