@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -20,11 +19,12 @@ import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { actionItems, statusOptions } from "@/lib/follow-up-data";
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
-import { Church, BookOpen, Heart, Users, Loader2, Sparkles } from "lucide-react";
+import { Church, BookOpen, Heart, Users, Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRouter } from "next/navigation";
 
 const logFollowUpFormSchema = z.object({
   note: z.string().optional(),
@@ -62,6 +62,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
@@ -90,9 +91,8 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   React.useEffect(() => {
     if (isOpen && soul) {
       // Only reset the form when the dialog opens or the soul ID changes.
-      // This prevents losing user input if the soul document updates in the background.
       form.reset({
-        note: form.getValues('note') || '', // Preserves note if they are just editing the same soul
+        note: form.getValues('note') || '',
         status: soul.status || 'New',
         attendingChurch: soul.attendingChurch || false,
         inBibleStudy: soul.inBibleStudy || false,
@@ -233,9 +233,26 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                                             className="h-5 w-5 rounded-md"
                                                         />
                                                     </FormControl>
-                                                    <FormLabel className="font-bold text-sm cursor-pointer text-foreground/80 leading-none">
-                                                        {item.label}
-                                                    </FormLabel>
+                                                    <div className="flex items-center gap-2">
+                                                        <FormLabel className="font-bold text-sm cursor-pointer text-foreground/80 leading-none">
+                                                            {item.label}
+                                                        </FormLabel>
+                                                        {field.value?.includes(item.id) && (item.id === 'shared_meal' || item.id === 'gave_gift') && (
+                                                            <Button 
+                                                                type="button" 
+                                                                variant="link" 
+                                                                size="sm" 
+                                                                className="h-auto p-0 px-2 text-[10px] font-black uppercase text-primary animate-in fade-in slide-in-from-left-1"
+                                                                onClick={() => {
+                                                                    const path = item.id === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+                                                                    router.push(`${path}?soulId=${soul?.id}&soulName=${encodeURIComponent(soul?.firstName || '')}&actionId=${item.id}`);
+                                                                    onOpenChange(false);
+                                                                }}
+                                                            >
+                                                                Go to Hub <ArrowRight className="ml-1 h-2.5 w-2.5" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
                                                 </FormItem>
                                             )}
                                         />

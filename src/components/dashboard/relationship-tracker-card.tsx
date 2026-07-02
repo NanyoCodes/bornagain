@@ -183,19 +183,6 @@ export function RelationshipTrackerCard() {
   const handleSoulSelected = async (soul: Soul) => {
     if (!user || !firestore || !selectedActionId) return;
     
-    // REDIRECT LOGIC FOR GIFTS & MEALS
-    if (selectedActionId === 'shared_meal') {
-        setIsSoulDialogOpen(false);
-        router.push(`/dashboard/marketplace?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
-        return;
-    }
-
-    if (selectedActionId === 'gave_gift') {
-        setIsSoulDialogOpen(false);
-        router.push(`/dashboard/marketplace/gifts?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
-        return;
-    }
-
     setIsSoulDialogOpen(false);
     setTogglingId(selectedActionId);
 
@@ -227,7 +214,7 @@ export function RelationshipTrackerCard() {
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(), 
-        note: `Logged via Kingdom Souls Follow-up: ${action.label}`,
+        note: `Logged via Kingdom Connections: ${action.label}`,
         actions: [selectedActionId],
         memberId: user.uid,
         memberName: memberName,
@@ -248,10 +235,18 @@ export function RelationshipTrackerCard() {
     try {
         await batch.commit();
         setCompletedToday(newCompleted);
-        toast({ 
-            title: 'Kingdom Impact Saved!', 
-            description: `Logged '${action.label}' for ${soul.firstName}.` 
-        });
+        
+        // REDIRECT LOGIC FOR GIFTS & MEALS
+        if (selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift') {
+            const path = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+            router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
+            toast({ title: 'Redirecting to Hub...', description: `Opening provisions for ${soul.firstName}.` });
+        } else {
+            toast({ 
+                title: 'Kingdom Impact Saved!', 
+                description: `Logged '${action.label}' for ${soul.firstName}.` 
+            });
+        }
     } catch (err: any) {
         console.error("Batch update failed:", err);
         const permissionError = new FirestorePermissionError({
@@ -297,7 +292,7 @@ export function RelationshipTrackerCard() {
               <div className="space-y-1">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-primary" />
-                      KINGDOM SOULS FOLLOW-UP
+                      Kingdom Connections
                   </CardTitle>
                   <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
               </div>
@@ -327,7 +322,7 @@ export function RelationshipTrackerCard() {
                                               "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-500 rounded-3xl border-2 overflow-hidden",
                                               isCompleted 
                                                   ? "bg-primary/[0.03] border-primary/40 shadow-inner ring-1 ring-primary/10" 
-                                                  : "bg-background/40 hover:bg-muted/50 hover:border-primary/30"
+                                                  : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
                                           )}
                                           onClick={() => handleActionClick(action.id)}
                                           disabled={togglingId === action.id}
