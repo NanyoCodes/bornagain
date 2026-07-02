@@ -3,7 +3,7 @@ import { AuthLayout } from '@/components/auth/auth-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Flame, ShieldCheck, Award, HeartHandshake, Globe, Zap } from 'lucide-react';
+import { Flame, ShieldCheck, Award, HeartHandshake, Globe, Zap, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -30,6 +30,13 @@ export default function AboutPage() {
             <h2 className="text-2xl font-bold flex items-center gap-2"><Globe className="h-5 w-5 text-primary" /> Our Mission</h2>
             <p className="text-muted-foreground leading-relaxed">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD so that the kingdom of GOD will be built on Earth.
+            </p>
+        </section>
+
+        <section className="space-y-4">
+            <h2 className="text-2xl font-bold flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> Our Vision</h2>
+            <p className="text-muted-foreground leading-relaxed">
+                Testify Global exists to help believers overcome sin, grow in Christ, and become living testimonies through the transforming power of God's Word and the Holy Spirit. We believe lasting discipline is born not merely from stronger willpower, but from deeper revelation of who God is and who we are in Christ.
             </p>
         </section>
 
