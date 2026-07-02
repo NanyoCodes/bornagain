@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
@@ -41,11 +41,94 @@ import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { CommentSection } from '../testimonies/comment-section';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+function PostResponsesDialog({ post, categoryTitle, children }: { post: any, categoryTitle: string, children: React.ReactNode }) {
+    const isMobile = useIsMobile();
+    const [isOpen, setIsOpen] = useState(false);
+    const postDate = safeToDate(post.createdAt);
+
+    const content = (
+        <div className="flex flex-col h-full overflow-hidden">
+            <div className="p-6 border-b bg-muted/5 shrink-0">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner">
+                        <Users className="h-5 w-5 text-muted-foreground/40" />
+                    </div>
+                    <div className="min-w-0">
+                        <p className="text-sm font-black uppercase tracking-tight">{post.authorName}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                            {postDate ? format(postDate, 'PPP') : 'Just now'}
+                        </p>
+                    </div>
+                </div>
+                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2">
+                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
+                    <p className="text-sm text-muted-foreground leading-relaxed italic font-medium">
+                        &ldquo;{post.text}&rdquo;
+                    </p>
+                </div>
+            </div>
+            
+            <div className="flex-grow min-h-0">
+                <div className="p-4 sm:p-6 pb-2">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 mb-4">
+                        <Zap className="h-3.5 w-3.5" /> Circle Responses & Solutions
+                    </div>
+                </div>
+                <CommentSection path={`victoryCircles/${post.category}/posts/${post.id}/comments`} inline />
+            </div>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild>
+                    {children}
+                </SheetTrigger>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Zap className="h-4 w-4 text-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Circle Conversation</span>
+                            </div>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{categoryTitle} Hub</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Community responses and spiritual solutions.</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <div className="flex-grow min-h-0">
+                        {content}
+                    </div>
+                </SheetContent>
+            </Sheet>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                {children}
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-xl max-h-[85vh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col">
+                <div className="p-8 border-b bg-muted/10 shrink-0">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{categoryTitle} Discussion</DialogTitle>
+                        <DialogDescription className="text-base font-medium">Shared wisdom and encouragement for victory.</DialogDescription>
+                    </DialogHeader>
+                </div>
+                {content}
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 export function StrongholdCategoryClient({ category }: { category: string }) {
     const router = useRouter();
     const { user } = useUser();
-    const { userProfile } = useUserProfile();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [newPostText, setNewPostText] = useState('');
@@ -110,7 +193,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         </div>
                         <div className="space-y-1">
                             <h2 className="text-xl font-black uppercase tracking-tight leading-tight">Lasting Solutions Through Transparency</h2>
-                            <p className="text-sm font-medium text-white/80 leading-relaxed">
+                            <p className="text-sm font-medium text-white/80 leading-relaxed text-balance">
                                 This is a sanctuary for brethren struggling with <span className="font-bold text-white underline decoration-white/30 underline-offset-4">{categoryTitle}</span>. By bringing our struggles into the light of the Body, we find strength to overcome.
                             </p>
                         </div>
@@ -137,7 +220,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
             <div className="space-y-6 px-4 sm:px-0">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center">
+                    <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner">
                         <MessageSquare className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <h3 className="text-lg font-black uppercase tracking-tight">Circle Discussions</h3>
@@ -166,32 +249,37 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                         <Badge variant="outline" className="h-5 text-[9px] font-black uppercase tracking-widest bg-background/50">{categoryTitle}</Badge>
                                     </CardHeader>
                                     <CardContent className="p-6 pt-4">
-                                        <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner">
-                                            <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
-                                            <p className="text-base text-muted-foreground leading-relaxed italic font-medium">
-                                                &ldquo;{post.text}&rdquo;
-                                            </p>
-                                            <div className="mt-4 flex items-center gap-2 text-primary/60">
-                                                <MessageSquare className="h-4 w-4" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest">View Responses</span>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter className="p-0 border-t bg-muted/10">
-                                        <div className="w-full">
-                                            <div className="p-6 pb-2">
-                                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 mb-4">
-                                                    <Zap className="h-3.5 w-3.5" /> Circle Responses & Solutions
+                                        <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
+                                            <button className="w-full text-left outline-none group/post">
+                                                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99]">
+                                                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
+                                                    <p className="text-base text-muted-foreground leading-relaxed italic font-medium">
+                                                        &ldquo;{post.text}&rdquo;
+                                                    </p>
+                                                    <div className="mt-4 flex items-center gap-2 text-primary/60 group-hover/post:text-primary transition-colors">
+                                                        <MessageSquare className="h-4 w-4" />
+                                                        <span className="text-[10px] font-black uppercase tracking-widest">View Community Responses & Solutions</span>
+                                                    </div>
                                                 </div>
-                                                <CommentSection path={`victoryCircles/${category.toLowerCase()}/posts/${post.id}/comments`} inline />
-                                            </div>
-                                        </div>
+                                            </button>
+                                        </PostResponsesDialog>
+                                    </CardContent>
+                                    <CardFooter className="p-3 bg-muted/5 flex justify-between items-center">
+                                         <div className="flex items-center gap-2 px-3">
+                                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Victory Support Active</span>
+                                         </div>
+                                         <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
+                                            <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary">
+                                                Participate
+                                            </Button>
+                                         </PostResponsesDialog>
                                     </CardFooter>
                                 </Card>
                             );
                         })
                     ) : (
-                        <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center">
+                        <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0">
                             <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
                                 <Sparkles className="h-10 w-10 text-muted-foreground opacity-10" />
                             </div>
