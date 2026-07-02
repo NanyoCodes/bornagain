@@ -219,7 +219,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           <div className="flex flex-col sm:flex-row gap-2">
             <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm border-primary/20 hover:bg-primary/5 transition-all">
                 <Camera className="mr-2 h-4 w-4 text-primary"/>
-                set profile photo
+                set photo
             </Button>
             {previewUrl && (
               <Button 
@@ -275,7 +275,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12">Cancel</Button>
             <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12 rounded-xl uppercase tracking-widest">
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
-              {isLoading ? 'OPTIMIZING...' : 'CONFIRM & UPLOAD'}
+              {isLoading ? 'OPTIMIZING...' : 'UPLOAD TO KINGDOM STORAGE'}
             </Button>
           </DialogFooter>
         </DialogContent>

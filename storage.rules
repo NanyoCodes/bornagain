@@ -2,50 +2,35 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Critical fix for Storage Access - 2025-06-15T12:00:00Z
+    // Deployment trigger: Universal Storage Authorization for Kingdom Assets - 2025-11-20T15:45:00Z
     
-    // Global public read access for all ministry assets
+    /**
+     * Global Read Access
+     * All shared ministry assets, testimonies, and marketplace photos are publicly readable.
+     */
     match /{allPaths=**} {
       allow read: if true;
     }
 
     /**
      * Authenticated User Authorizations
-     * These rules grant write access to authenticated users for their unique subdirectories.
+     * These rules grant write access to authenticated users for directories where the 
+     * folder structure contains their unique UID.
      */
     
-    // Explicitly allowed folders for user-owned assets
-    match /profile-pictures/{uid}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == uid;
-    }
-
-    match /meals-center/{uid}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == uid;
-    }
-
-    match /kindness-center/{uid}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == uid;
-    }
-
-    match /vendor-branding/{uid}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == uid;
-    }
-
-    match /vendor-items/{uid}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == uid;
-    }
-
-    match /testimony-media/{uid}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == uid;
-    }
-
-    // Comprehensive catch-all for any folder-based user directory (e.g. folder/uid/filename)
+    // Matches: {category}/{uid}/{filename}
+    // Used by: profile-pictures, vendor-branding, meals-center, kindness-center, etc.
     match /{folder}/{uid}/{allPaths=**} {
       allow write: if request.auth != null && request.auth.uid == uid;
     }
-    
-    // Fallback for top-level UID directories (e.g. uid/filename)
+
+    // Matches: {uid}/{filename} (fallback for direct user-root uploads)
     match /{uid}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+    
+    // Matches: {folder}/{subfolder}/{uid}/{allPaths=**} (nested folder support)
+    match /{folder}/{subfolder}/{uid}/{allPaths=**} {
       allow write: if request.auth != null && request.auth.uid == uid;
     }
   }
