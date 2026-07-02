@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -8,7 +7,7 @@ import { collection, query, doc, updateDoc, writeBatch, where } from 'firebase/f
 import type { Notification } from '@/lib/types';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles } from 'lucide-react';
+import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles, X } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -18,13 +17,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 const NOTIFICATION_TYPES = [
   'campaign_join', 
+  'new_chat_message', 
   'accountability_nudge', 
   'accountability_request', 
   'request_accepted', 
   'request_declined', 
   'accountability_partner_removed',
   'new_soul_in_fellowship',
-  'new_chat_message',
   'soul_unassigned_from_fellowship'
 ];
 
@@ -62,17 +61,18 @@ export default function NotificationsPage() {
 
   const [pendingProvisions, setPendingProvisions] = useState<any[]>([]);
 
+  const checkPending = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const stored = localStorage.getItem('testify_pending_provisions');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setPendingProvisions(Array.isArray(parsed) ? parsed : []);
+      } catch (e) { setPendingProvisions([]); }
+    } else { setPendingProvisions([]); }
+  }, []);
+
   useEffect(() => {
-    const checkPending = () => {
-      if (typeof window === 'undefined') return;
-      const stored = localStorage.getItem('testify_pending_provisions');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          setPendingProvisions(Array.isArray(parsed) ? parsed : []);
-        } catch (e) { setPendingProvisions([]); }
-      } else { setPendingProvisions([]); }
-    };
     checkPending();
     window.addEventListener('testify_pending_action_update', checkPending);
     window.addEventListener('storage', checkPending);
@@ -80,7 +80,29 @@ export default function NotificationsPage() {
       window.removeEventListener('testify_pending_action_update', checkPending);
       window.removeEventListener('storage', checkPending);
     };
-  }, []);
+  }, [checkPending]);
+
+  const handleRemovePending = (e: React.MouseEvent, soulId: string, actionId: string) => {
+    e.stopPropagation();
+    if (typeof window === 'undefined') return;
+    const stored = localStorage.getItem('testify_pending_provisions');
+    if (stored) {
+        try {
+            let provisions = JSON.parse(stored);
+            if (Array.isArray(provisions)) {
+                provisions = provisions.filter((p: any) => !(p.soulId === soulId && p.actionId === actionId));
+                if (provisions.length === 0) {
+                    localStorage.removeItem('testify_pending_provisions');
+                } else {
+                    localStorage.setItem('testify_pending_provisions', JSON.stringify(provisions));
+                }
+                window.dispatchEvent(new Event('testify_pending_action_update'));
+            }
+        } catch (e) {
+            localStorage.removeItem('testify_pending_provisions');
+        }
+    }
+  };
 
   const notificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -104,7 +126,6 @@ export default function NotificationsPage() {
   const allDisplayItems = useMemo(() => {
     const items = notifications ? [...notifications] : [];
     
-    // Transform pending provisions into notification-like objects for the feed
     const virtualNotifs = pendingProvisions.map(p => ({
         id: `pending-${p.soulId}-${p.actionId}`,
         userId: user?.uid || '',
@@ -117,10 +138,10 @@ export default function NotificationsPage() {
         isRead: false,
         createdAt: { toDate: () => new Date(p.timestamp || Date.now()) } as any,
         isVirtual: true,
-        actionId: p.actionId
+        actionId: p.actionId,
+        soulId: p.soulId
     }));
 
-    // Pending tasks always stay at the top
     return [...virtualNotifs, ...items];
   }, [notifications, pendingProvisions, user?.uid]);
 
@@ -230,57 +251,68 @@ export default function NotificationsPage() {
                             const isVirtual = (notification as any).isVirtual;
                             
                             return (
-                                <button
-                                    key={notification.id} 
-                                    onClick={() => handleNotificationClick(notification)}
-                                    className={cn(
-                                        "w-full text-left p-3.5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
-                                        isVirtual ? "bg-primary/[0.05] border-l-primary shadow-inner" : (!notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent")
-                                    )}
-                                >
-                                    <div className="flex items-start gap-2.5 sm:gap-5">
-                                        <div className={cn(
-                                            "mt-0.5 shrink-0 p-2 sm:p-2.5 rounded-xl border shadow-sm",
-                                            isVirtual ? "bg-primary text-white border-none scale-110 shadow-lg" : "bg-background"
-                                        )}>
-                                            {getNotificationIcon(notification.type, (notification as any).actionId)}
-                                        </div>
-                                        <div className="flex-1 min-w-0 space-y-1">
-                                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1">
-                                                <p className={cn(
-                                                    "font-bold text-sm sm:text-base leading-snug break-words", 
-                                                    isVirtual ? "text-primary" : (!notification.isRead ? "text-foreground" : "text-muted-foreground")
-                                                )}>
-                                                    {notification.title}
-                                                </p>
-                                                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap shrink-0">
-                                                    {isVirtual ? 'ACTION REQUIRED' : (createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : '')}
-                                                </span>
+                                <div key={notification.id} className="relative">
+                                    <button
+                                        onClick={() => handleNotificationClick(notification)}
+                                        className={cn(
+                                            "w-full text-left p-3.5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
+                                            isVirtual ? "bg-primary/[0.05] border-l-primary shadow-inner" : (!notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent")
+                                        )}
+                                    >
+                                        <div className="flex items-start gap-2.5 sm:gap-5">
+                                            <div className={cn(
+                                                "mt-0.5 shrink-0 p-2 sm:p-2.5 rounded-xl border shadow-sm",
+                                                isVirtual ? "bg-primary text-white border-none scale-110 shadow-lg" : "bg-background"
+                                            )}>
+                                                {getNotificationIcon(notification.type, (notification as any).actionId)}
                                             </div>
-                                            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance">
-                                                {notification.message}
-                                            </p>
-                                            {createdAt && (
-                                                <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1.5">
-                                                    {format(createdAt, 'PPP')}
+                                            <div className="flex-1 min-w-0 space-y-1">
+                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1">
+                                                    <p className={cn(
+                                                        "font-bold text-sm sm:text-base leading-snug break-words pr-8 sm:pr-0", 
+                                                        isVirtual ? "text-primary" : (!notification.isRead ? "text-foreground" : "text-muted-foreground")
+                                                    )}>
+                                                        {notification.title}
+                                                    </p>
+                                                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap shrink-0">
+                                                        {isVirtual ? 'ACTION REQUIRED' : (createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : '')}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance">
+                                                    {notification.message}
                                                 </p>
+                                                {createdAt && (
+                                                    <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1.5">
+                                                        {format(createdAt, 'PPP')}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            {(!notification.isRead || isVirtual) && (
+                                                <div className="shrink-0 flex items-center h-full pt-1.5 sm:pt-2">
+                                                    <div className={cn(
+                                                        "h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)]",
+                                                        isVirtual ? "bg-primary scale-125" : "bg-primary"
+                                                    )} />
+                                                </div>
                                             )}
                                         </div>
-                                        {(!notification.isRead || isVirtual) && (
-                                            <div className="shrink-0 flex items-center h-full pt-1.5 sm:pt-2">
-                                                <div className={cn(
-                                                    "h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)]",
-                                                    isVirtual ? "bg-primary scale-125" : "bg-primary"
-                                                )} />
-                                            </div>
-                                        )}
-                                    </div>
-                                </button>
+                                    </button>
+                                    
+                                    {isVirtual && (
+                                        <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className="absolute top-2 right-2 sm:top-4 sm:right-4 h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive hover:bg-destructive/10 z-10"
+                                            onClick={(e) => handleRemovePending(e, (notification as any).soulId, (notification as any).actionId)}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    )}
+                                </div>
                             )
                         })}
                     </div>
                     
-                    {/* Safe area padding for bottom nav */}
                     <div className="h-20 md:hidden shrink-0" />
                     
                     <footer className="p-8 text-center space-y-2 border-t mt-auto">

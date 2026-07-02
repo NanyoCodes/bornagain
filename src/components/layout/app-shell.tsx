@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -86,7 +86,7 @@ function PendingProvisionReminder() {
     const pathname = usePathname();
     const isMobile = useIsMobile();
 
-    const checkPendingActions = () => {
+    const checkPendingActions = useCallback(() => {
         if (typeof window === 'undefined') return;
         const stored = localStorage.getItem('testify_pending_provisions');
         if (stored) {
@@ -99,28 +99,24 @@ function PendingProvisionReminder() {
         } else {
             setProvisions([]);
         }
-    };
+    }, []);
 
     useEffect(() => {
         checkPendingActions();
-        // Listen for the custom event triggered by RelationshipTrackerCard
         window.addEventListener('testify_pending_action_update', checkPendingActions);
-        // Also check on storage changes (from other tabs)
         window.addEventListener('storage', checkPendingActions);
         return () => {
             window.removeEventListener('testify_pending_action_update', checkPendingActions);
             window.removeEventListener('storage', checkPendingActions);
         };
-    }, []);
+    }, [checkPendingActions]);
 
     useEffect(() => {
         checkPendingActions();
-        setShowList(false); // Reset list view on navigation
-    }, [pathname]);
+        setShowList(false);
+    }, [pathname, checkPendingActions]);
 
     if (provisions.length === 0) return null;
-
-    // Don't show the hovering reminder if we are already in a marketplace hub
     if (pathname.includes('/marketplace')) return null;
 
     const removeOne = (soulId: string, actionId: string) => {
@@ -136,7 +132,6 @@ function PendingProvisionReminder() {
 
     const isMultiple = provisions.length > 1;
 
-    // Single item or minimized multiple
     if (!showList) {
         const displayItem = provisions[0];
         const path = displayItem.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
@@ -190,6 +185,7 @@ function PendingProvisionReminder() {
                                     if (isMultiple) {
                                         localStorage.removeItem('testify_pending_provisions');
                                         setProvisions([]);
+                                        window.dispatchEvent(new Event('testify_pending_action_update'));
                                     } else {
                                         removeOne(displayItem.soulId, displayItem.actionId);
                                     }
@@ -204,7 +200,6 @@ function PendingProvisionReminder() {
         );
     }
 
-    // Expanded List View
     return (
         <motion.div
             initial={{ y: 100, opacity: 0, scale: 0.8 }}
@@ -265,6 +260,7 @@ function PendingProvisionReminder() {
                     <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100" onClick={() => {
                          localStorage.removeItem('testify_pending_provisions');
                          setProvisions([]);
+                         window.dispatchEvent(new Event('testify_pending_action_update'));
                     }}>Clear All Pending</Button>
                 </CardFooter>
             </Card>
@@ -366,8 +362,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
                   <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
                   <span className={cn(
-                    "text-[9px] font-black uppercase tracking-tighter transition-all leading-none",
-                    isActive ? "opacity-100" : "opacity-60 group-hover:opacity-100"
+                    "text-[8px] font-black uppercase tracking-tighter transition-all leading-none mt-0.5",
+                    isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-60"
                   )}>
                     {item.label}
                   </span>
