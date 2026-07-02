@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Universal Storage Authorization for Kingdom Assets - 2025-11-20T15:45:00Z
+    // Deployment trigger: Strategic Path Matching for Kingdom Assets - 2025-02-23T11:00:00Z
     
     /**
      * Global Read Access
