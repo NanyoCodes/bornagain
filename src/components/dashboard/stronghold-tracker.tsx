@@ -62,6 +62,7 @@ import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const strongholdCategories = [
     'Pride', 'Lust', 'Fear', 'Unforgiveness', 'Anger', 'Addiction', 'Laziness', 'Grief', 'Comparison', 'Unbelief', 'Depression', 'Greed', 'Worldliness', 'Jealousy', 'Other'
@@ -257,14 +258,24 @@ export function StrongholdTracker() {
                                                     </div>
                                                 </div>
                                                 <div className="flex gap-2">
-                                                     <Button 
-                                                        variant="outline" 
-                                                        size="sm" 
-                                                        onClick={() => handleConfessRelapse(s.id)}
-                                                        className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-background hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
-                                                    >
-                                                        RELAPSE
-                                                    </Button>
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button 
+                                                                    variant="outline" 
+                                                                    size="sm" 
+                                                                    onClick={() => handleConfessRelapse(s.id)}
+                                                                    className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-background hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
+                                                                >
+                                                                    CONFESS
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent className="rounded-xl border-destructive/20 shadow-xl" side="bottom">
+                                                                <p className="text-[10px] font-bold uppercase text-destructive">Honest Accountability</p>
+                                                                <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">Click this if you've had a setback. Confession brings it into the light and resets your streak, reminding you of God's faithful grace.</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
                                                 </div>
                                             </div>
                                         )}
