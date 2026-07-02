@@ -1,6 +1,8 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import { 
     collection, 
@@ -27,7 +29,9 @@ import {
     Trash2, 
     CheckCircle2, 
     MoreVertical,
-    Info
+    Info,
+    ArrowRight,
+    Users
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -191,66 +195,86 @@ export function StrongholdTracker() {
                             const lastRelapse = safeToDate(s.lastRelapse);
                             const streak = lastRelapse ? differenceInDays(new Date(), lastRelapse) : 0;
                             const isVictorious = s.status === 'victorious';
+                            const circleLink = `/dashboard/strongholds/${(s.category || 'Other').toLowerCase()}`;
 
                             return (
                                 <div key={s.id} className={cn(
-                                    "p-4 rounded-[1.5rem] border-2 transition-all group/item relative overflow-hidden",
+                                    "p-0 rounded-[1.5rem] border-2 transition-all group/item relative overflow-hidden",
                                     isVictorious ? "bg-green-500/5 border-green-500/20" : "bg-muted/10 border-transparent hover:border-primary/10"
                                 )}>
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div className="min-w-0 flex-1">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50">{s.category}</Badge>
-                                                {isVictorious && <Badge className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-green-500 text-white border-none">Victorious</Badge>}
+                                    <div className="p-4">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <Link href={circleLink}>
+                                                        <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50 hover:bg-primary/10 transition-colors cursor-pointer">{s.category}</Badge>
+                                                    </Link>
+                                                    {isVictorious && <Badge className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-green-500 text-white border-none">Victorious</Badge>}
+                                                </div>
+                                                <Link href={circleLink} className="group/title">
+                                                    <h4 className="font-black text-sm sm:text-base uppercase tracking-tight truncate group-hover/title:text-primary transition-colors">{s.title}</h4>
+                                                </Link>
                                             </div>
-                                            <h4 className="font-black text-sm sm:text-base uppercase tracking-tight truncate">{s.title}</h4>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                                                        <MoreVertical className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="rounded-xl">
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={circleLink} className="w-full flex items-center">
+                                                            <Users className="mr-2 h-4 w-4" /> Enter Circle
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleClaimVictory(s.id)} className="rounded-lg">
+                                                        <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> Claim Victory
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem onClick={() => handleDelete(s.id)} className="text-destructive focus:text-destructive rounded-lg">
+                                                        <Trash2 className="mr-2 h-4 w-4" /> Delete Tracker
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                                                    <MoreVertical className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="rounded-xl">
-                                                <DropdownMenuItem onClick={() => handleClaimVictory(s.id)} className="rounded-lg">
-                                                    <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> Claim Victory
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem onClick={() => handleDelete(s.id)} className="text-destructive focus:text-destructive rounded-lg">
-                                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Tracker
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
 
-                                    {!isVictorious && (
-                                        <div className="flex items-end justify-between gap-4">
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Victory Streak</p>
-                                                <div className="flex items-baseline gap-1.5">
-                                                    <span className="text-2xl font-black text-primary">{streak}</span>
-                                                    <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/60">Days</span>
+                                        {!isVictorious && (
+                                            <div className="flex items-end justify-between gap-4">
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Victory Streak</p>
+                                                    <div className="flex items-baseline gap-1.5">
+                                                        <span className="text-2xl font-black text-primary">{streak}</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/60">Days</span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                     <Button 
+                                                        variant="outline" 
+                                                        size="sm" 
+                                                        onClick={() => handleConfessRelapse(s.id)}
+                                                        className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-background hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
+                                                    >
+                                                        RELAPSE
+                                                    </Button>
                                                 </div>
                                             </div>
-                                            <Button 
-                                                variant="outline" 
-                                                size="sm" 
-                                                onClick={() => handleConfessRelapse(s.id)}
-                                                className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-background hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
-                                            >
-                                                CONFESS RELAPSE
-                                            </Button>
-                                        </div>
-                                    )}
+                                        )}
 
-                                    {isVictorious && (
-                                        <div className="flex items-center gap-3 py-1">
-                                            <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
-                                                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                        {isVictorious && (
+                                            <div className="flex items-center gap-3 py-1">
+                                                <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                                                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                                </div>
+                                                <p className="text-[10px] font-bold text-green-700 leading-tight">"Where sin abounded, grace abounded much more." — Romans 5:20</p>
                                             </div>
-                                            <p className="text-[10px] font-bold text-green-700 leading-tight">"Where sin abounded, grace abounded much more." — Romans 5:20</p>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
+                                    
+                                    <Link href={circleLink} className="block w-full py-2 bg-primary/[0.03] border-t border-primary/5 text-center group/circle hover:bg-primary/5 transition-all">
+                                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary/60 group-hover/circle:text-primary flex items-center justify-center gap-1.5">
+                                            ENTER VICTORY CIRCLE <ArrowRight className="h-2.5 w-2.5" />
+                                        </span>
+                                    </Link>
                                 </div>
                             );
                         })}

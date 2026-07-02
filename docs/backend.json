@@ -257,57 +257,18 @@
       },
       "required": ["userId", "title", "status"]
     },
-    "VendorProfile": {
-      "title": "Vendor Profile",
-      "description": "Represents a user who sells meals or services.",
+    "VictoryPost": {
+      "title": "Victory Post",
+      "description": "An anonymous post shared by a believer in a Victory Circle category.",
       "type": "object",
       "properties": {
-        "userId": { "type": "string" },
-        "businessName": { "type": "string" },
-        "description": { "type": "string" },
-        "photoURL": { "type": "string", "format": "uri" },
-        "location": { "type": "string" },
-        "phone": { "type": "string" },
-        "status": { "type": "string", "enum": ["active", "inactive"] },
-        "paymentDetails": {
-          "type": "string",
-          "description": "Bank details or payment instructions for receiving funds."
-        }
+        "authorId": { "type": "string" },
+        "category": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "object" },
+        "supporters": { "type": "array", "items": { "type": "string" } }
       },
-      "required": ["userId", "businessName"]
-    },
-    "Meal": {
-      "title": "Meal",
-      "description": "A food item sold by a vendor.",
-      "type": "object",
-      "properties": {
-        "vendorId": { "type": "string" },
-        "name": { "type": "string" },
-        "description": { "type": "string" },
-        "price": { "type": "number" },
-        "currency": { "type": "string", "default": "NGN" },
-        "photoURL": { "type": "string", "format": "uri" },
-        "category": { "type": "string" }
-      },
-      "required": ["vendorId", "name", "price"]
-    },
-    "MealGift": {
-      "title": "Meal Gift",
-      "description": "A meal purchased by a user and sent to a soul.",
-      "type": "object",
-      "properties": {
-        "senderId": { "type": "string" },
-        "recipientSoulId": { "type": "string" },
-        "recipientName": { "type": "string" },
-        "vendorId": { "type": "string" },
-        "mealId": { "type": "string" },
-        "mealName": { "type": "string" },
-        "price": { "type": "number" },
-        "status": { "type": "string", "enum": ["ordered", "preparing", "delivering", "delivered"] },
-        "instructions": { "type": "string", "description": "Delivery or recipient instructions." },
-        "createdAt": { "type": "object" }
-      },
-      "required": ["senderId", "recipientName", "vendorId", "mealId", "status"]
+      "required": ["authorId", "category", "text"]
     }
   },
   "auth": {
@@ -328,17 +289,13 @@
       "schema": { "$ref": "#/entities/Stronghold" },
       "description": "User's private tracker for overcoming areas of struggle."
     },
-    "/vendors/{vendorId}": {
-      "schema": { "$ref": "#/entities/VendorProfile" },
-      "description": "Collection of meal vendors."
+    "/victoryCircles/{category}/posts/{postId}": {
+      "schema": { "$ref": "#/entities/VictoryPost" },
+      "description": "Community discussion posts for specific struggle categories."
     },
-    "/vendors/{vendorId}/meals/{mealId}": {
-      "schema": { "$ref": "#/entities/Meal" },
-      "description": "Meals offered by a specific vendor."
-    },
-    "/mealGifts/{giftId}": {
-      "schema": { "$ref": "#/entities/MealGift" },
-      "description": "Orders for meals sent to converts."
+    "/victoryCircles/{category}/posts/{postId}/comments/{commentId}": {
+      "schema": { "type": "object" },
+      "description": "Encouragement and solutions shared by brethren in a Victory Circle."
     }
   }
 }

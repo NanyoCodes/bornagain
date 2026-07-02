@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Critical fix for Relationship Tracker & Daily Disciplines - 2025-06-15T10:30:00Z
+    // Deployment trigger: Victory Circles & Support Community - 2025-06-30T10:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -51,6 +52,10 @@ service cloud.firestore {
         ))
       );
 
+      match /strongholds/{id} {
+        allow read, write: if isOwner(userId);
+      }
+
       match /souls/{soulId} {
         allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
         allow create, delete: if isOwner(userId);
@@ -85,6 +90,26 @@ service cloud.firestore {
 
       match /joinedCampaigns/{campaignId} {
         allow get, list, write: if isOwner(userId);
+      }
+    }
+
+    match /victoryCircles/{category}/posts/{postId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+      allow update: if request.auth != null && (
+        (resource.data.authorId == request.auth.uid) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
+      );
+
+      match /comments/{commentId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
+        allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+        allow update: if request.auth != null && (
+          (resource.data.authorId == request.auth.uid) ||
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+        );
       }
     }
     
