@@ -26,7 +26,11 @@ import {
   ShoppingCart,
   X,
   ArrowRight,
-  PlusCircle
+  PlusCircle,
+  ShieldCheck,
+  Flame,
+  Zap,
+  Utensils
 } from "lucide-react";
 
 import {
@@ -46,7 +50,7 @@ import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, arrayRemove } from "firebase/firestore";
+import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, arrayUnion } from "firebase/firestore";
 import type { Notification, VendorProfile, UserProfile, Soul } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -472,6 +476,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   </Link>
                 </DropdownMenuItem>
                 
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Recovery Hub</DropdownMenuLabel>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/dashboard/victory-hub">
+                    <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
+                    <span>Victory Hub</span>
+                  </Link>
+                </DropdownMenuItem>
+
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Marketplace</DropdownMenuLabel>
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
