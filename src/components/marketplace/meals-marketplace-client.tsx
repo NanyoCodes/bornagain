@@ -49,6 +49,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
+import { ImageUpload } from '@/components/common/image-upload';
 
 export default function MealsMarketplaceClient() {
     const { user } = useUser();
@@ -66,6 +67,7 @@ export default function MealsMarketplaceClient() {
     const [searchTerm, setSearchTerm] = useState('');
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [vendorPhotoURL, setVendorPhotoURL] = useState('');
 
     // Location State
     const [selectedCountry, setSelectedCountry] = useState('');
@@ -154,7 +156,7 @@ export default function MealsMarketplaceClient() {
             paymentDetails: paymentDetails || '',
             status: 'active',
             vendorType: 'meal', 
-            photoURL: user.photoURL || '',
+            photoURL: vendorPhotoURL || null,
             createdAt: serverTimestamp(),
         };
 
@@ -187,6 +189,18 @@ export default function MealsMarketplaceClient() {
                     <Utensils className="h-5 w-5 text-primary" />
                     <p className="text-xs font-bold text-primary uppercase tracking-widest">Registering for Meals Center</p>
                 </div>
+
+                <div className="space-y-4">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Storefront Photo</Label>
+                  <ImageUpload 
+                      initialImageUrl={vendorPhotoURL} 
+                      onUploadComplete={setVendorPhotoURL} 
+                      storagePath="vendor-branding" 
+                      cropAspect={21/9}
+                  />
+                  <p className="text-[9px] text-muted-foreground px-1 italic">This will be your storefront's hero image.</p>
+                </div>
+
                 <div className="space-y-2">
                     <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
                     <Input id="businessName" name="businessName" placeholder="e.g., Kingdom Kitchen" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
@@ -281,7 +295,7 @@ export default function MealsMarketplaceClient() {
                             </Button>
                         ) : (
                             <Button onClick={() => setIsRegisterOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20">
-                                <PlusCircle className="mr-2 h-4 w-4" /> Become a Vendor
+                                <PlusCircle className="mr-2 h-4 w-4" /> Become a Provider
                             </Button>
                         )}
                     </div>

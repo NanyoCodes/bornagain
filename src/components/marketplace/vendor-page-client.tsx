@@ -85,23 +85,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import Link from 'next/link';
 import { format } from 'date-fns';
 
-/**
- * Ensures the profile photo displayed in the storefront is always the most recent version.
- */
-function LiveVendorAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
-    const firestore = useFirestore();
-    const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
-    const { data: profile } = useDoc<UserProfile>(userRef);
-    const currentPhotoUrl = profile?.photoURL || fallbackUrl;
-    
-    return (
-        <Avatar className={className}>
-            <AvatarImage src={currentPhotoUrl} className="object-cover" />
-            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
-        </Avatar>
-    );
-}
-
 export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const searchParams = useSearchParams();
     const soulId = searchParams.get('soulId');
@@ -129,6 +112,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const [itemToEdit, setItemToEdit] = useState<Meal | null>(null);
     
     const [itemPhotoURL, setItemPhotoURL] = useState('');
+    const [vendorPhotoURL, setVendorPhotoURL] = useState('');
+    
     const [isProcessingOrder, setIsProcessingOrder] = useState(false);
     const [isSubmittingMeal, setIsSubmittingMeal] = useState(false);
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
@@ -186,6 +171,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             } else if (parts.length === 1) {
                 setEditCountry(parts[0]);
             }
+        }
+        if (vendor?.photoURL) {
+            setVendorPhotoURL(vendor.photoURL);
         }
     }, [vendor]);
 
@@ -444,6 +432,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             description,
             location: locationString,
             paymentDetails,
+            photoURL: vendorPhotoURL || null,
             updatedAt: serverTimestamp(),
         };
 
@@ -618,6 +607,17 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         <form onSubmit={handleUpdateProfile} className="flex flex-col h-full">
             <ScrollArea className="flex-grow">
                 <div className="p-6 sm:p-8 space-y-6">
+                    <div className="space-y-4">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Storefront Branding</Label>
+                        <ImageUpload 
+                            initialImageUrl={vendorPhotoURL} 
+                            onUploadComplete={setVendorPhotoURL} 
+                            storagePath="vendor-branding" 
+                            cropAspect={21/9}
+                        />
+                        <p className="text-[9px] text-muted-foreground px-1 italic">A professional hero image represents your Kingdom business.</p>
+                    </div>
+
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
                         <Input name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
@@ -916,82 +916,109 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             inert={isAnyModalOpen ? true : undefined}
         >
             <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 pb-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-8">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 min-w-0 flex-1">
+                <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-4">
                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-10 w-10 sm:h-12 sm:w-12 rounded-full border bg-background shadow-sm">
                             <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                         </Button>
-                        <div className="min-w-0 flex-1 space-y-1">
-                            <div className="flex items-center gap-2.5 mb-1.5">
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2.5 mb-1">
                                 <CenterIcon className="h-3.5 w-3.5 text-primary" />
                                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                             </div>
-                            <h1 className="text-2xl sm:text-3xl md:text-5xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere] leading-none text-balance">{vendor.businessName}</h1>
-                            <p className="text-[11px] sm:text-sm font-bold text-muted-foreground uppercase tracking-widest leading-relaxed break-words [overflow-wrap:anywhere] opacity-70">{vendor.location || 'Kingdom Network'}</p>
                         </div>
                     </div>
-                    
-                    <div className="flex items-center gap-2 w-full sm:w-auto px-1 sm:px-0 shrink-0">
-                        {!isOwner && (
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button 
-                                            variant="outline" 
-                                            size="icon" 
-                                            className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:bg-primary/5 shrink-0"
-                                            onClick={handleInitiateChat}
-                                            disabled={isChatLoading}
-                                        >
-                                            {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
-                                        <p className="text-[10px] font-bold uppercase">Chat with Provider</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        )}
-                        {isOwner && (
-                            <div className="flex gap-2 flex-1 sm:flex-none">
-                                {isMobile ? (
-                                    <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                                        <SheetTrigger asChild>
-                                            <Button variant="outline" size="sm" className="rounded-xl h-12 sm:h-11 px-6 font-black uppercase tracking-widest text-[10px] flex-1 shadow-lg border-primary/20 text-primary">
-                                                <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
-                                            </Button>
-                                        </SheetTrigger>
-                                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                                <SheetHeader className="text-left">
-                                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</SheetTitle>
-                                                    <SheetDescription className="text-sm font-medium mt-1">Refine your Kingdom business details.</SheetDescription>
-                                                </SheetHeader>
-                                            </div>
-                                            <div className="flex-grow overflow-hidden relative">
-                                                {editProfileForm}
-                                            </div>
-                                        </SheetContent>
-                                    </Sheet>
-                                ) : (
-                                    <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                                        <DialogTrigger asChild>
-                                            <Button variant="outline" size="sm" className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
-                                                <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
-                                            <DialogHeader className="p-8 border-b bg-muted/10">
-                                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</DialogTitle>
-                                                <DialogDescription className="text-sm font-medium mt-1">Refine your business details and payment flow.</DialogDescription>
-                                            </DialogHeader>
-                                            {editProfileForm}
-                                        </DialogContent>
-                                    </Dialog>
-                                )}
+
+                    <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted">
+                        {vendor.photoURL ? (
+                            <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
+                        ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5">
+                                <Store className="h-16 w-16 text-primary opacity-20" />
+                                <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mt-2">Kingdom Storefront</p>
                             </div>
                         )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                        <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%]">
+                            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance">{vendor.businessName}</h1>
+                            <div className="flex items-center gap-2 mt-2 opacity-80">
+                                <MapPin className="h-3.5 w-3.5 text-primary" />
+                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor.location || 'Kingdom Network'}</p>
+                            </div>
+                        </div>
+                        {isOwner && (
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="absolute top-4 right-4 rounded-xl h-10 px-4 font-black uppercase tracking-widest text-[9px] bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80"
+                                onClick={() => setIsEditProfileOpen(true)}
+                            >
+                                <Camera className="mr-2 h-4 w-4" /> CHANGE BRANDING
+                            </Button>
+                        )}
                     </div>
+                </div>
+                
+                <div className="flex items-center justify-between gap-4 px-1">
+                    {!isOwner && (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="outline" 
+                                        size="icon" 
+                                        className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:bg-primary/5 shrink-0"
+                                        onClick={handleInitiateChat}
+                                        disabled={isChatLoading}
+                                    >
+                                        {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
+                                    <p className="text-[10px] font-bold uppercase">Chat with Provider</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    )}
+                    {isOwner && (
+                        <div className="flex gap-2 flex-1 sm:flex-none">
+                            {isMobile ? (
+                                <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                                    <SheetTrigger asChild>
+                                        <Button variant="outline" size="sm" className="rounded-xl h-12 sm:h-11 px-6 font-black uppercase tracking-widest text-[10px] flex-1 shadow-lg border-primary/20 text-primary">
+                                            <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
+                                        </Button>
+                                    </SheetTrigger>
+                                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                                            <SheetHeader className="text-left">
+                                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</SheetTitle>
+                                                <SheetDescription className="text-sm font-medium mt-1">Refine your Kingdom business details.</SheetDescription>
+                                            </SheetHeader>
+                                        </div>
+                                        <div className="flex-grow overflow-hidden relative">
+                                            {editProfileForm}
+                                        </div>
+                                    </SheetContent>
+                                </Sheet>
+                            ) : (
+                                <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button variant="outline" size="sm" className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
+                                            <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+                                        <DialogHeader className="p-8 border-b bg-muted/10">
+                                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</DialogTitle>
+                                            <DialogDescription className="text-sm font-medium mt-1">Refine your business details and payment flow.</DialogDescription>
+                                        </DialogHeader>
+                                        {editProfileForm}
+                                    </DialogContent>
+                                </Dialog>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {soulName && (
