@@ -83,7 +83,6 @@ const inspirationalMessages = [
 function PendingProvisionReminder() {
     const { user } = useUser();
     const firestore = useFirestore();
-    const { userProfile } = useUserProfile();
     const [provisions, setProvisions] = useState<{ soulId: string; soulName: string; actionId: string }[]>([]);
     const [showList, setShowList] = useState(false);
     const pathname = usePathname();
@@ -120,7 +119,6 @@ function PendingProvisionReminder() {
     }, [pathname, checkPendingActions]);
 
     const removeOne = async (soulId: string, actionId: string) => {
-        // 1. Update local storage
         const next = provisions.filter(p => !(p.soulId === soulId && p.actionId === actionId));
         if (next.length === 0) {
             localStorage.removeItem('testify_pending_provisions');
@@ -130,24 +128,21 @@ function PendingProvisionReminder() {
         setProvisions(next);
         window.dispatchEvent(new Event('testify_pending_action_update'));
 
-        // 2. Sync with Firestore to revert the dashboard and history
         if (!user || !firestore) return;
 
         try {
-            // Remove from daily discipline
-            const userRef = doc(firestore, 'users', user.uid);
-            await updateDoc(userRef, {
-                'dailyDiscipline.completed': arrayRemove(actionId)
-            });
-
-            // Remove from soul history
+            // Note: We don't remove from dailyDiscipline because it was never checked for pending items.
+            // We only remove from soul history.
             const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulId);
             const globalSoulRef = doc(firestore, 'souls', soulId);
 
             const soulDoc = await getDoc(soulUserRef);
             if (soulDoc.exists()) {
                 const soulData = soulDoc.data() as Soul;
-                const updatedLog = (soulData.followUpLog || []).filter(log => !log.actions?.includes(actionId));
+                // Identify the "Initiated" interaction entry and remove it
+                const updatedLog = (soulData.followUpLog || []).filter(log => 
+                    !(log.actions?.includes(actionId) && log.note?.includes('Initiated'))
+                );
                 
                 await updateDoc(soulUserRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
                 await updateDoc(globalSoulRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
@@ -165,7 +160,7 @@ function PendingProvisionReminder() {
     if (!showList) {
         const displayItem = provisions[0];
         const path = displayItem.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-        const Icon = displayItem.actionId === 'shared_meal' ? Store : Gift;
+        const Icon = displayItem.actionId === 'shared_meal' ? Utensils : Gift;
 
         return (
             <motion.div
@@ -213,19 +208,7 @@ function PendingProvisionReminder() {
                                 className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive shrink-0"
                                 onClick={() => {
                                     if (isMultiple) {
-                                        // Multiple cancellation
-                                        const stored = localStorage.getItem('testify_pending_provisions');
-                                        if (stored) {
-                                            try {
-                                                const parsed = JSON.parse(stored);
-                                                if (Array.isArray(parsed)) {
-                                                    parsed.forEach(p => removeOne(p.soulId, p.actionId));
-                                                }
-                                            } catch (e) {}
-                                        }
-                                        localStorage.removeItem('testify_pending_provisions');
-                                        setProvisions([]);
-                                        window.dispatchEvent(new Event('testify_pending_action_update'));
+                                        setShowList(true);
                                     } else {
                                         removeOne(displayItem.soulId, displayItem.actionId);
                                     }
@@ -264,7 +247,7 @@ function PendingProvisionReminder() {
                     <div className="p-4 space-y-3">
                         {provisions.map((p) => {
                             const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-                            const Icon = p.actionId === 'shared_meal' ? Store : Gift;
+                            const Icon = p.actionId === 'shared_meal' ? Utensils : Gift;
                             return (
                                 <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group">
                                     <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">

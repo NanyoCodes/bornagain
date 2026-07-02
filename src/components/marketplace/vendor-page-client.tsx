@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
-import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, Chat } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -83,6 +83,7 @@ import { Country, State } from 'country-state-city';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import Link from 'next/link';
+import { format } from 'date-fns';
 
 /**
  * Ensures the profile photo displayed in the storefront is always the most recent version.
@@ -214,7 +215,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
     const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
     
-    // Dynamic storage path based on vendor type
     const storagePath = isGiftVendor ? 'kindness-center' : 'meals-center';
 
     const cartItems = useMemo(() => Object.values(cart), [cart]);
@@ -474,7 +474,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             .then(() => {
                 toast({ title: 'Storefront Deleted', description: 'Your business profile has been removed.' });
                 setIsDeleteStoreOpen(false);
-                // Force a page refresh when returning to the marketplace to ensure real-time consistency
                 window.location.href = isGiftVendor ? '/dashboard/marketplace/gifts' : '/dashboard/marketplace';
             })
             .catch(async (serverError) => {
@@ -511,7 +510,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const displayAction = isGiftVendor ? 'sent gifts' : 'shared a meal package';
         const logActionId = isGiftVendor ? 'gave_gift' : 'shared_meal';
         
-        const logNote = `Logged via ${centerLabel}: ${displayAction} [${itemNames}] via ${vendor?.businessName}. Payment of ₦${cartTotal.toLocaleString()} initiated. Instructions: ${giftInstructions}`;
+        const logNote = `Logged via ${centerLabel}: FULFILLED ${displayAction} [${itemNames}] via ${vendor?.businessName}. Payment of ₦${cartTotal.toLocaleString()} initiated. Instructions: ${giftInstructions}`;
         
         const logEntry = {
             date: new Date(),
@@ -553,6 +552,20 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             });
         }
 
+        // 3. Mark Daily Discipline as Completed (Now that it's physically done)
+        const userRef = doc(firestore, 'users', user.uid);
+        const dateString = format(new Date(), 'yyyy-MM-dd');
+        const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
+        
+        batch.update(userRef, {
+            'dailyDiscipline.completed': arrayUnion(logActionId),
+            'dailyDiscipline.lastUpdated': serverTimestamp()
+        });
+        batch.set(historyRef, {
+            completed: arrayUnion(logActionId),
+            date: serverTimestamp()
+        }, { merge: true });
+
         try {
             await batch.commit();
             
@@ -563,7 +576,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     try {
                         let provisions = JSON.parse(stored);
                         if (Array.isArray(provisions)) {
-                            // Filter out the one we just completed
                             provisions = provisions.filter((p: any) => !(p.soulId === soulId && p.actionId === actionId));
                             if (provisions.length === 0) {
                                 localStorage.removeItem('testify_pending_provisions');
@@ -578,7 +590,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 }
             }
 
-            toast({ title: 'Package Ordered!', description: `Your order for ${finalRecipientName} has been submitted.` });
+            toast({ title: 'Package Fulfilled!', description: `Act of kindness for ${finalRecipientName} recorded.` });
             setCart({});
             setGiftInstructions('');
             setManualRecipientName('');
@@ -586,7 +598,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             router.push('/dashboard/souls-won');
         } catch (serverError: any) {
             const permissionError = new FirestorePermissionError({
-                path: `BATCH_WRITE:GIFT_PACKAGE`,
+                path: `BATCH_WRITE:GIFT_FULFILLMENT`,
                 operation: 'write',
                 requestResourceData: { cartTotal, items: itemNames }
             }, user);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy } from 'firebase/firestore';
@@ -24,7 +24,8 @@ import {
   Gift,
   UserPlus,
   Search,
-  PlusCircle
+  PlusCircle,
+  Hourglass
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -147,6 +148,7 @@ export function RelationshipTrackerCard() {
   const router = useRouter();
   const { toast } = useToast();
   const [completedToday, setCompletedToday] = useState<string[]>([]);
+  const [pendingActions, setPendingActions] = useState<string[]>([]);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
@@ -160,9 +162,31 @@ export function RelationshipTrackerCard() {
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
+  const checkPending = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const stored = localStorage.getItem('testify_pending_provisions');
+    if (stored) {
+        try {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) {
+                setPendingActions(parsed.map((p: any) => p.actionId));
+            }
+        } catch (e) {}
+    } else {
+        setPendingActions([]);
+    }
+  }, []);
+
   useEffect(() => {
     setCurrentDate(new Date());
-  }, []);
+    checkPending();
+    window.addEventListener('testify_pending_action_update', checkPending);
+    window.addEventListener('storage', checkPending);
+    return () => {
+        window.removeEventListener('testify_pending_action_update', checkPending);
+        window.removeEventListener('storage', checkPending);
+    };
+  }, [checkPending]);
 
   useEffect(() => {
     if (userProfile?.dailyDiscipline) {
@@ -193,28 +217,34 @@ export function RelationshipTrackerCard() {
     const dateString = format(today, 'yyyy-MM-dd');
     const batch = writeBatch(firestore);
 
-    // 1. Update user's daily discipline (habit tracking)
-    const wasCompleted = completedToday.includes(selectedActionId);
-    const newCompleted = [...completedToday];
-    if (!wasCompleted) newCompleted.push(selectedActionId);
+    const isProvisionAction = selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift';
 
-    const userRef = doc(firestore, 'users', user.uid);
-    batch.update(userRef, {
-      'dailyDiscipline.completed': newCompleted,
-      'dailyDiscipline.lastUpdated': serverTimestamp(),
-    });
+    // 1. Update user's daily discipline (habit tracking) - SKIP for pending provisions
+    if (!isProvisionAction) {
+        const wasCompleted = completedToday.includes(selectedActionId);
+        const newCompleted = [...completedToday];
+        if (!wasCompleted) newCompleted.push(selectedActionId);
 
-    const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
-    batch.set(historyRef, {
-        completed: newCompleted,
-        date: serverTimestamp()
-    }, { merge: true });
+        const userRef = doc(firestore, 'users', user.uid);
+        batch.update(userRef, {
+            'dailyDiscipline.completed': newCompleted,
+            'dailyDiscipline.lastUpdated': serverTimestamp(),
+        });
+
+        const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
+        batch.set(historyRef, {
+            completed: newCompleted,
+            date: serverTimestamp()
+        }, { merge: true });
+    }
 
     // 2. Update soul's history
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(), 
-        note: `Logged via Kingdom Connections: ${action.label}`,
+        note: isProvisionAction 
+            ? `Initiated ${action.label} via Kingdom Connections` 
+            : `Logged via Kingdom Connections: ${action.label}`,
         actions: [selectedActionId],
         memberId: user.uid,
         memberName: memberName,
@@ -234,11 +264,9 @@ export function RelationshipTrackerCard() {
 
     try {
         await batch.commit();
-        setCompletedToday(newCompleted);
         
         // REDIRECT LOGIC FOR GIFTS & MEALS
-        if (selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift') {
-            // Set a pending action flag in localStorage for the global hovering cart reminder
+        if (isProvisionAction) {
             if (typeof window !== 'undefined') {
                 const stored = localStorage.getItem('testify_pending_provisions');
                 let provisions = [];
@@ -247,7 +275,6 @@ export function RelationshipTrackerCard() {
                     if (!Array.isArray(provisions)) provisions = [];
                 } catch (e) { provisions = []; }
 
-                // Add if not already present for this specific soul and action
                 if (!provisions.some((p: any) => p.soulId === soul.id && p.actionId === selectedActionId)) {
                     provisions.push({
                         soulId: soul.id,
@@ -258,18 +285,18 @@ export function RelationshipTrackerCard() {
                 }
                 
                 localStorage.setItem('testify_pending_provisions', JSON.stringify(provisions));
-                // Notify the AppShell of the state change
                 window.dispatchEvent(new Event('testify_pending_action_update'));
             }
 
             const path = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
             router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
-            toast({ title: 'Redirecting to Hub...', description: `Opening provisions for ${soul.firstName}.` });
+            toast({ title: 'Opening Provision Hub...', description: `Finish act of kindness for ${soul.firstName}.` });
         } else {
             toast({ 
                 title: 'Kingdom Impact Saved!', 
                 description: `Logged '${action.label}' for ${soul.firstName}.` 
             });
+            setCompletedToday(prev => prev.includes(selectedActionId) ? prev : [...prev, selectedActionId]);
         }
     } catch (err: any) {
         console.error("Batch update failed:", err);
@@ -333,8 +360,10 @@ export function RelationshipTrackerCard() {
         <CardContent className="px-4 sm:px-6 pb-2 relative z-10">
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {actionItems.map(action => {
+                  const isPending = pendingActions.includes(action.id);
                   const isCompleted = completedToday.includes(action.id);
                   const Icon = iconMap[action.id] || Heart;
+                  
                   return (
                       <TooltipProvider key={action.id}>
                           <Tooltip>
@@ -346,7 +375,9 @@ export function RelationshipTrackerCard() {
                                               "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-500 rounded-3xl border-2 overflow-hidden",
                                               isCompleted 
                                                   ? "bg-primary/[0.03] border-primary/40 shadow-inner ring-1 ring-primary/10" 
-                                                  : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
+                                                  : isPending 
+                                                    ? "bg-amber-500/[0.05] border-amber-500/40 border-dashed"
+                                                    : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
                                           )}
                                           onClick={() => handleActionClick(action.id)}
                                           disabled={togglingId === action.id}
@@ -362,6 +393,15 @@ export function RelationshipTrackerCard() {
                                                       <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current" />
                                                   </motion.div>
                                               )}
+                                              {isPending && !isCompleted && togglingId !== action.id && (
+                                                  <motion.div 
+                                                      initial={{ scale: 0, opacity: 0 }}
+                                                      animate={{ scale: 1, opacity: 1 }}
+                                                      className="absolute top-2 right-2 bg-amber-500 rounded-full p-0.5 shadow-lg z-20"
+                                                  >
+                                                      <Hourglass className="h-3 w-3 text-white" />
+                                                  </motion.div>
+                                              )}
                                           </AnimatePresence>
 
                                           {togglingId === action.id ? (
@@ -370,17 +410,18 @@ export function RelationshipTrackerCard() {
                                               <>
                                                   <div className={cn(
                                                       "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
-                                                      isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
+                                                      isCompleted ? "bg-primary/20 scale-110 shadow-lg" : isPending ? "bg-amber-500/20" : "bg-muted/30"
                                                   )}>
-                                                      <Icon className={cn("h-5 w-5 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
+                                                      <Icon className={cn("h-5 w-5 transition-all", isCompleted ? "text-primary fill-current" : isPending ? "text-amber-600 animate-pulse" : "text-primary/60")} />
                                                   </div>
                                                   <div className="space-y-0.5 min-w-0 w-full">
                                                       <span className={cn(
                                                           "text-[10px] font-black uppercase tracking-tight block truncate",
-                                                          isCompleted ? "text-primary" : "text-foreground"
+                                                          isCompleted ? "text-primary" : isPending ? "text-amber-700" : "text-foreground"
                                                       )}>
                                                           {action.label}
                                                       </span>
+                                                      {isPending && !isCompleted && <span className="text-[8px] font-black uppercase text-amber-600/60 leading-none">Pending Hub</span>}
                                                   </div>
                                               </>
                                           )}

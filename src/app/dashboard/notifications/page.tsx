@@ -20,8 +20,7 @@ const NOTIFICATION_TYPES = [
   'new_chat_message', 
   'accountability_nudge', 
   'accountability_request', 
-  'request_accepted', 
-  'request_declined', 
+  'request_accepted', 'request_declined', 
   'accountability_partner_removed',
   'new_soul_in_fellowship',
   'soul_unassigned_from_fellowship'
@@ -106,24 +105,19 @@ export default function NotificationsPage() {
         }
     }
 
-    // 2. Sync with Firestore to revert the dashboard and history
+    // 2. Sync with Firestore - Remove only the "Initiated" soul history record
     if (!user || !firestore) return;
 
     try {
-        // Remove from daily discipline
-        const userRef = doc(firestore, 'users', user.uid);
-        await updateDoc(userRef, {
-            'dailyDiscipline.completed': arrayRemove(actionId)
-        });
-
-        // Remove from soul history
         const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulId);
         const globalSoulRef = doc(firestore, 'souls', soulId);
 
         const soulDoc = await getDoc(soulUserRef);
         if (soulDoc.exists()) {
             const soulData = soulDoc.data() as Soul;
-            const updatedLog = (soulData.followUpLog || []).filter(log => !log.actions?.includes(actionId));
+            const updatedLog = (soulData.followUpLog || []).filter(log => 
+                !(log.actions?.includes(actionId) && log.note?.includes('Initiated'))
+            );
             
             await updateDoc(soulUserRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
             await updateDoc(globalSoulRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
