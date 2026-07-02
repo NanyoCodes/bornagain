@@ -288,12 +288,16 @@ export function StrongholdTracker() {
                         </div>
                         <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category of Struggle</Label>
-                            <Select value={category} onValueChange={setCategory}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
-                                    <SelectValue />
+                            <Select value={category} onValueChange={setCategory} defaultValue="Other">
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                                    <SelectValue placeholder="Select Category" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-2xl">
-                                    {strongholdCategories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                <SelectContent className="rounded-2xl border-none shadow-2xl">
+                                    {strongholdCategories.map(c => (
+                                        <SelectItem key={c} value={c} className="rounded-xl">
+                                            {c}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
