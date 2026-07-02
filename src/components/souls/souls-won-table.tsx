@@ -2,7 +2,25 @@
 
 import * as React from "react";
 import { format } from "date-fns";
-import { MoreHorizontal, Church, MapPin, Phone, ChevronDown, Download, HeartHandshake, Edit, Trash2, Users, History, Group, Heart } from "lucide-react";
+import { 
+  MoreHorizontal, 
+  Church, 
+  MapPin, 
+  Phone, 
+  ChevronDown, 
+  Download, 
+  HeartHandshake, 
+  Edit, 
+  Trash2, 
+  Users, 
+  History, 
+  Group, 
+  Heart, 
+  Sparkles,
+  ArrowRight,
+  Gift,
+  Utensils
+} from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +57,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/colla
 import { Badge } from "@/components/ui/badge";
 import { actionItems } from "@/lib/follow-up-data";
 import { Label } from "../ui/label";
+import Link from "next/link";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -63,6 +82,33 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
   onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
 }) => {
+    const [pendingProvisions, setPendingProvisions] = React.useState<{ soulId: string; actionId: string }[]>([]);
+
+    const checkPending = React.useCallback(() => {
+        if (typeof window === 'undefined') return;
+        const stored = localStorage.getItem('testify_pending_provisions');
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                setPendingProvisions(Array.isArray(parsed) ? parsed : []);
+            } catch (e) { setPendingProvisions([]); }
+        } else { setPendingProvisions([]); }
+    }, []);
+
+    React.useEffect(() => {
+        checkPending();
+        window.addEventListener('testify_pending_action_update', checkPending);
+        window.addEventListener('storage', checkPending);
+        return () => {
+            window.removeEventListener('testify_pending_action_update', checkPending);
+            window.removeEventListener('storage', checkPending);
+        };
+    }, [checkPending]);
+
+    const myPending = React.useMemo(() => 
+        pendingProvisions.filter(p => p.soulId === soul.id), 
+    [pendingProvisions, soul.id]);
+
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return [...soul.followUpLog].sort((a, b) => {
@@ -79,9 +125,6 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
     }, [soul.locationWon]);
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
-    // Use requestAnimationFrame to ensure the dropdown menu finishes its closing cycle
-    // before the parent updates its state to open a new dialog/sheet.
-    // This prevents focus-trap and scroll-lock conflicts.
     const triggerAction = (action: (s: Soul) => void) => {
       requestAnimationFrame(() => {
         action(soul);
@@ -105,6 +148,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                     <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                                     {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20">Fellowship</Badge>}
                                     {soul.associationName && <Badge variant="outline" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter border-blue-500/20 text-blue-500 bg-blue-500/5">Association</Badge>}
+                                    {myPending.length > 0 && <Badge className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary text-white animate-pulse border-none">Pending Gift</Badge>}
                                 </div>
                             </div>
                         </div>
@@ -170,18 +214,59 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                             </div>
                             
                             <div className="space-y-4">
+                               {/* Pending Gifting Reminders */}
+                               {myPending.length > 0 && (
+                                   <div className="space-y-2">
+                                       {myPending.map(p => {
+                                           const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+                                           const label = p.actionId === 'shared_meal' ? 'Meal' : 'Gift';
+                                           const Icon = p.actionId === 'shared_meal' ? Utensils : Gift;
+                                           return (
+                                               <div key={p.actionId} className="p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-2 shadow-inner">
+                                                   <div className="flex items-center gap-2.5 min-w-0">
+                                                        <div className="h-6 w-6 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                                                            <Icon className="h-3.5 w-3.5 text-white" />
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="text-[10px] font-black uppercase text-primary leading-tight">PENDING {label} PROVISION</p>
+                                                            <p className="text-[9px] text-primary/60 font-bold uppercase truncate">Click to finish act of kindness</p>
+                                                        </div>
+                                                   </div>
+                                                   <Button asChild size="sm" className="h-7 px-3 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-md">
+                                                       <Link href={`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${p.actionId}`}>
+                                                           FINISH
+                                                       </Link>
+                                                   </Button>
+                                               </div>
+                                           );
+                                       })}
+                                   </div>
+                               )}
+
                                {latestFollowUp && latestFollowUpDate ? (
                                     <div className="text-xs">
-                                        <p className="font-black uppercase tracking-tighter text-primary/70 mb-2">LAST FOLLOW-UP: {format(latestFollowUpDate, "PPP")}</p>
-                                        {latestFollowUp.actions && latestFollowUp.actions.length > 0 && (
-                                            <div className="flex flex-wrap gap-1.5 mb-2">
-                                                {latestFollowUp.actions.map(actionId => {
-                                                    const action = actionItems.find(a => a.id === actionId);
-                                                    return action ? <Badge key={actionId} variant="secondary" className="text-[8px] px-1.5 h-4 font-black uppercase tracking-tight bg-background border leading-none">{action.label}</Badge> : null
-                                                })}
-                                            </div>
+                                        <p className="font-black uppercase tracking-tighter text-primary/70 mb-2">LAST LOG: {format(latestFollowUpDate, "PPP")}</p>
+                                        <div className="flex flex-wrap gap-1.5 mb-2">
+                                            {latestFollowUp.actions?.map(actionId => {
+                                                const action = actionItems.find(a => a.id === actionId);
+                                                return action ? (
+                                                    <Badge key={actionId} variant="secondary" className="text-[8px] px-1.5 h-4 font-black uppercase tracking-tight bg-background border leading-none">
+                                                        {action.label}
+                                                    </Badge>
+                                                ) : null
+                                            })}
+                                            {latestFollowUp.note?.includes('₦') && (
+                                                <Badge variant="outline" className="text-[8px] px-1.5 h-4 font-black uppercase tracking-tight bg-green-500/10 text-green-600 border-green-500/20 leading-none">FULFILLED</Badge>
+                                            )}
+                                        </div>
+                                        {latestFollowUp.note && (
+                                            <p className={cn(
+                                                "italic leading-relaxed text-balance",
+                                                latestFollowUp.note.includes('₦') ? "text-foreground font-medium not-italic" : "text-muted-foreground line-clamp-3"
+                                            )}>
+                                                &ldquo;{latestFollowUp.note}&rdquo;
+                                            </p>
                                         )}
-                                        {latestFollowUp.note && <p className="italic text-muted-foreground line-clamp-3 leading-relaxed text-balance">&ldquo;{latestFollowUp.note}&rdquo;</p>}
                                     </div>
                                 ) : (
                                     <p className="text-xs text-muted-foreground italic py-2 opacity-60">No follow-up interactions recorded yet. Begin their journey today!</p>
