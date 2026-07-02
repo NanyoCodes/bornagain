@@ -29,10 +29,8 @@ export function initializeFirebase(): FirebaseServices {
     try {
       // Attempt to initialize with long polling for proxy/station compatibility.
       // This is a known fix for "INTERNAL ASSERTION FAILED" in proxied environments.
-      // experimentalAutoDetectLongPolling: false ensures we don't try standard transport first.
       firestore = initializeFirestore(app, {
         experimentalForceLongPolling: true,
-        experimentalAutoDetectLongPolling: false,
       });
     } catch (e: any) {
       // If Firestore is already initialized, initializeFirestore throws an error.
@@ -48,9 +46,9 @@ export function initializeFirebase(): FirebaseServices {
   
   /**
    * Storage Initialization
-   * Explicitly using the production bucket defined in config.ts
+   * Relying on the bucket URL defined in config.ts for automatic resolution.
    */
-  const storage = getStorage(app, firebaseConfig.storageBucket);
+  const storage = getStorage(app);
   
   const services = { app, auth, firestore, storage };
 
