@@ -59,6 +59,7 @@ import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
+import { Input } from '@/components/ui/input';
 
 const strongholdCategories = [
     'Pride', 'Lust', 'Fear', 'Unforgiveness', 'Anger', 'Addiction', 'Laziness', 'Grief', 'Comparison', 'Unbelief', 'Depression', 'Greed', 'Worldliness', 'Jealousy', 'Other'
@@ -73,6 +74,7 @@ export function StrongholdTracker() {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [category, setCategory] = useState('Other');
+    const [title, setTitle] = useState('');
     
     const [testimonyStronghold, setTestimonyStronghold] = useState<Stronghold | null>(null);
 
@@ -87,12 +89,12 @@ export function StrongholdTracker() {
     const { data: strongholds, loading } = useCollection<Stronghold>(strongholdsQuery);
 
     const handleAddStronghold = async () => {
-        if (!user || !firestore) return;
+        if (!user || !firestore || !title.trim()) return;
         setIsSubmitting(true);
         
         const strongholdData = {
             userId: user.uid,
-            title: category,
+            title: title.trim(),
             category,
             status: 'active' as StrongholdStatus,
             lastRelapse: serverTimestamp(),
@@ -105,6 +107,7 @@ export function StrongholdTracker() {
             toast({ title: 'Victory Tracker Initialized', description: 'Transparency is the first step to victory.' });
             setIsAddOpen(false);
             setCategory('Other');
+            setTitle('');
         } catch (error) {
             errorEmitter.emit('permission-error', new FirestorePermissionError({
                 path: `users/${user.uid}/strongholds`,
@@ -265,7 +268,7 @@ export function StrongholdTracker() {
                 )}
             </CardContent>
 
-            <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+            <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
                 <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                     <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
@@ -274,6 +277,15 @@ export function StrongholdTracker() {
                         </DialogHeader>
                     </div>
                     <div className="p-8 space-y-6">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Area of Struggle</Label>
+                            <Input 
+                                placeholder="e.g. My hidden pride" 
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                            />
+                        </div>
                         <div className="space-y-2">
                             <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category of Struggle</Label>
                             <Select value={category} onValueChange={setCategory}>
@@ -294,7 +306,7 @@ export function StrongholdTracker() {
                         <Button variant="outline" onClick={() => setIsAddOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                         <Button 
                             onClick={handleAddStronghold} 
-                            disabled={isSubmitting} 
+                            disabled={isSubmitting || !title.trim()} 
                             className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
                         >
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
