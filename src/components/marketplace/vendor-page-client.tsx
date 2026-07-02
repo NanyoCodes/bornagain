@@ -782,7 +782,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <div className="flex items-center gap-1.5 bg-background rounded-full p-0.5 border">
                                     <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
                                     <span className="text-xs font-black min-w-[1.5rem] text-center">{c.quantity}</span>
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-4 w-4" /></Button>
                                 </div>
                                 <Button 
                                     variant="ghost" 
@@ -949,11 +949,12 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         {isOwner && (
                             <Button 
                                 variant="outline" 
-                                size="sm" 
-                                className="absolute top-4 right-4 rounded-xl h-10 px-4 font-black uppercase tracking-widest text-[9px] bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80"
+                                size="icon" 
+                                className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80"
                                 onClick={() => setIsEditProfileOpen(true)}
+                                title="Change Branding"
                             >
-                                <Camera className="mr-2 h-4 w-4" /> CHANGE BRANDING
+                                <Camera className="h-5 w-5" />
                             </Button>
                         )}
                     </div>
