@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Strategic Path Matching for Kingdom Assets - 2025-02-23T11:00:00Z
+    // Deployment trigger: Hierarchical Authorization for Storefronts & Branding - 2025-02-23T12:30:00Z
     
     /**
      * Global Read Access
@@ -18,18 +18,21 @@ service firebase.storage {
      * folder structure contains their unique UID.
      */
     
-    // Matches: {category}/{uid}/{filename}
-    // Used by: profile-pictures, vendor-branding, meals-center, kindness-center, etc.
+    // Categorized Folder Pattern
+    // Matches: {folder}/{uid}/{filename}
+    // Handles: profile-pictures/{uid}/..., vendor-branding/{uid}/..., meals-center/{uid}/..., kindness-center/{uid}/...
     match /{folder}/{uid}/{allPaths=**} {
       allow write: if request.auth != null && request.auth.uid == uid;
     }
 
-    // Matches: {uid}/{filename} (fallback for direct user-root uploads)
+    // Direct User-Root Pattern
+    // Matches: {uid}/{filename}
     match /{uid}/{allPaths=**} {
       allow write: if request.auth != null && request.auth.uid == uid;
     }
     
-    // Matches: {folder}/{subfolder}/{uid}/{allPaths=**} (nested folder support)
+    // Nested Folder Pattern
+    // Matches: {folder}/{subfolder}/{uid}/{allPaths=**}
     match /{folder}/{subfolder}/{uid}/{allPaths=**} {
       allow write: if request.auth != null && request.auth.uid == uid;
     }
