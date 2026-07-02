@@ -16,7 +16,6 @@ import {
 import type { Stronghold, StrongholdStatus } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -39,7 +38,6 @@ import {
     DialogHeader, 
     DialogTitle, 
     DialogDescription,
-    DialogFooter 
 } from '@/components/ui/dialog';
 import {
   DropdownMenu,
@@ -56,13 +54,11 @@ import {
     SelectValue 
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { differenceInDays } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const strongholdCategories = [
     'Pride', 'Lust', 'Fear', 'Unforgiveness', 'Anger', 'Addiction', 'Laziness', 'Grief', 'Comparison', 'Unbelief', 'Depression', 'Greed', 'Worldliness', 'Jealousy', 'Other'
@@ -196,8 +192,6 @@ export function StrongholdTracker() {
                 ) : strongholds && strongholds.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {strongholds.map((s) => {
-                            const lastRelapse = safeToDate(s.lastRelapse);
-                            const streak = lastRelapse ? differenceInDays(new Date(), lastRelapse) : 0;
                             const isVictorious = s.status === 'victorious';
                             const circleLink = `/dashboard/strongholds/${(s.category || 'Other').toLowerCase()}`;
 
@@ -236,9 +230,14 @@ export function StrongholdTracker() {
                                                             <Newspaper className="mr-2 h-4 w-4 text-primary" /> Share Testimony
                                                         </DropdownMenuItem>
                                                     ) : (
-                                                        <DropdownMenuItem onClick={() => handleClaimVictory(s.id)} className="rounded-lg">
-                                                            <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> Claim Victory
-                                                        </DropdownMenuItem>
+                                                        <>
+                                                            <DropdownMenuItem onClick={() => handleClaimVictory(s.id)} className="rounded-lg">
+                                                                <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> Claim Victory
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleConfessRelapse(s.id)} className="rounded-lg">
+                                                                <Zap className="mr-2 h-4 w-4 text-destructive" /> Confess Setback
+                                                            </DropdownMenuItem>
+                                                        </>
                                                     )}
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuItem onClick={() => handleDelete(s.id)} className="text-destructive focus:text-destructive rounded-lg">
@@ -247,38 +246,6 @@ export function StrongholdTracker() {
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </div>
-
-                                        {!isVictorious && (
-                                            <div className="flex items-end justify-between gap-4 mt-2">
-                                                <div className="space-y-1">
-                                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Victory Streak</p>
-                                                    <div className="flex items-baseline gap-1.5">
-                                                        <span className="text-2xl font-black text-primary">{streak}</span>
-                                                        <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/60">Days</span>
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <TooltipProvider>
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button 
-                                                                    variant="outline" 
-                                                                    size="sm" 
-                                                                    onClick={() => handleConfessRelapse(s.id)}
-                                                                    className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-background hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
-                                                                >
-                                                                    CONFESS
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent className="rounded-xl border-destructive/20 shadow-xl" side="bottom">
-                                                                <p className="text-[10px] font-bold uppercase text-destructive">Honest Accountability</p>
-                                                                <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">Click this if you've had a setback. Confession brings it into the light and resets your streak, reminding you of God's faithful grace.</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
-                                                </div>
-                                            </div>
-                                        )}
 
                                         {isVictorious && (
                                             <div className="flex items-center justify-between gap-4 py-1">
