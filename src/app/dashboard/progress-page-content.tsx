@@ -38,7 +38,6 @@ import {
   limit,
   where,
   getCountFromServer,
-  getDocs,
 } from 'firebase/firestore';
 import type { Soul, UserProfile, Testimony, ReadingHistoryItem } from '@/lib/types';
 import { useMemo, useEffect, useState, useCallback } from 'react';
@@ -58,7 +57,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 
-const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
+const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart'), {
   loading: () => <Skeleton className="h-[300px] w-full" />,
   ssr: false
 });
@@ -69,10 +68,10 @@ function RecentSoulsList() {
   const { user } = useUser();
   const firestore = useFirestore();
   const soulsQuery = useMemo(() => user?.uid ? query(collection(firestore, `users/${user.uid}/souls`), orderBy('wonAt', 'desc'), limit(3)) : null, [user?.uid, firestore]);
-  const { data: souls, loading } = useCollection<Soul>( soulsQuery);
+  const { data: souls, loading } = useCollection<Soul>(soulsQuery);
   if (loading) return <div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="flex items-center gap-4"><Skeleton className="h-10 w-10 rounded-full" /><div className="space-y-1 flex-1"><Skeleton className="h-4 w-2/4" /><Skeleton className="h-3 w-1/4" /></div></div>))}</div>;
-  if (!souls || souls.length === 0) return <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30"><div className="mx-auto h-12 w-12 text-muted-foreground"><UserPlus strokeWidth={1.5} /></div><h3 className="mt-4 text-lg font-semibold">Log Your First Soul</h3><p className="mt-1 text-sm text-muted-foreground">Start tracking the lives you impact.</p><Button asChild size="sm" className="mt-4"><Link href="/souls-won">Get Started <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></div>;
-  return (<div className="space-y-1">{souls.map((soul) => { const wonAt = safeToDate(soul.wonAt); return (<Link href="/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors"><Avatar className="h-10 w-10 border"><AvatarFallback>{soul.firstName?.charAt(0) || 'S'}</AvatarFallback></Avatar><div className="flex-1 min-w-0"><p className="font-semibold leading-none truncate">{soul.firstName} {soul.lastName}</p><p className="text-sm text-muted-foreground">Won on {wonAt ? format(wonAt, 'PPP') : 'N/A'}</p></div><ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" /></Link>); })}</div>);
+  if (!souls || souls.length === 0) return <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30"><div className="mx-auto h-12 w-12 text-muted-foreground"><UserPlus strokeWidth={1.5} /></div><h3 className="mt-4 text-lg font-semibold">Log Your First Soul</h3><p className="mt-1 text-sm text-muted-foreground">Start tracking the lives you impact.</p><Button asChild size="sm" className="mt-4"><Link href="/dashboard/souls-won">Get Started <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></div>;
+  return (<div className="space-y-1">{souls.map((soul) => { const wonAt = safeToDate(soul.wonAt); return (<Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors"><Avatar className="h-10 w-10 border"><AvatarFallback>{soul.firstName?.charAt(0) || 'S'}</AvatarFallback></Avatar><div className="flex-1 min-w-0"><p className="font-semibold leading-none truncate">{soul.firstName} {soul.lastName}</p><p className="text-sm text-muted-foreground">Won on {wonAt ? format(wonAt, 'PPP') : 'N/A'}</p></div><ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" /></Link>); })}</div>);
 }
 
 function PrayerRemindersCard({ souls }: { souls: Soul[] }) {
@@ -117,7 +116,7 @@ function PrayerRemindersCard({ souls }: { souls: Soul[] }) {
                 <p className="text-xs text-muted-foreground">No contact for {soul.daysSinceContact} days</p>
               </div>
               <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <Link href="/souls-won">Follow-up</Link>
+                <Link href="/dashboard/souls-won">Follow-up</Link>
               </Button>
             </div>
           ))
@@ -450,7 +449,7 @@ export function ProgressPageContent() {
   const userDocRef = useMemo(() => user?.uid ? doc(firestore, 'users', user.uid) : null, [user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
   const soulsQuery = useMemo(() => user?.uid ? query(collection(firestore, `users/${user.uid}/souls`)) : null, [user?.uid, firestore]);
-  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>( soulsQuery);
+  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
   const testimoniesQuery = useMemo(() => user?.uid ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null, [user?.uid, firestore]);
   const { data: userTestimonies } = useCollection<Testimony>(testimoniesQuery);
 

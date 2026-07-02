@@ -1,4 +1,3 @@
-
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -77,7 +76,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LogSoulForm } from '@/components/souls/log-soul-form';
 
-const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart').then(m => m.MonthlyStatsChart), {
+const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart'), {
   loading: () => <Skeleton className="h-[300px] w-full" />,
   ssr: false
 });
@@ -88,7 +87,7 @@ function RecentSoulsList() {
   const { user } = useUser();
   const firestore = useFirestore();
   const soulsQuery = useMemo(() => user?.uid ? query(collection(firestore, 'users', user.uid, 'souls'), orderBy('wonAt', 'desc'), limit(3)) : null, [user?.uid, firestore]);
-  const { data: souls, loading } = useCollection<Soul>( soulsQuery);
+  const { data: souls, loading } = useCollection<Soul>(soulsQuery);
   
   if (loading) return <div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="flex items-center gap-4"><Skeleton className="h-10 w-10 rounded-full" /><div className="space-y-1 flex-1"><Skeleton className="h-4 w-2/4" /><Skeleton className="h-3 w-1/4" /></div></div>))}</div>;
   if (!souls || souls.length === 0) return <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30"><div className="mx-auto h-12 w-12 text-muted-foreground"><UserPlus strokeWidth={1.5} /></div><h3 className="mt-4 text-lg font-semibold">Log Your First Soul</h3><p className="mt-1 text-sm text-muted-foreground">Start tracking the lives you impact.</p><Button asChild size="sm" className="mt-4"><Link href="/dashboard/souls-won">Get Started <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></div>;
@@ -685,7 +684,7 @@ export function ProgressPageContent() {
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
   
   const soulsQuery = useMemo(() => user?.uid ? query(collection(firestore, 'users', user.uid, 'souls')) : null, [user?.uid, firestore]);
-  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>( soulsQuery);
+  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
   
   const testimoniesQuery = useMemo(() => user?.uid ? query(collection(firestore, 'testimonies'), where('authorId', '==', user.uid)) : null, [user?.uid, firestore]);
   const { data: userTestimonies } = useCollection<Testimony>(testimoniesQuery);
@@ -752,7 +751,7 @@ export function ProgressPageContent() {
     toast({ title: title, description: description });
   };
 
-  if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
 
   return (
     <div className="space-y-8 pb-12">

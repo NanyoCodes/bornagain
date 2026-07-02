@@ -31,7 +31,7 @@ interface MonthlyStatsChartProps {
   monthlySoulsGoal: number;
 }
 
-export function MonthlyStatsChart({ data, monthlySoulsGoal }: MonthlyStatsChartProps) {
+export default function MonthlyStatsChart({ data, monthlySoulsGoal }: MonthlyStatsChartProps) {
   return (
     <ChartContainer config={chartConfig} className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
