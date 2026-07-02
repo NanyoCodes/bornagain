@@ -12,7 +12,9 @@ import {
     Search,
     ChevronRight,
     Lock,
-    Eye
+    Award,
+    Target,
+    Quote
 } from 'lucide-react';
 import { 
     Card, 
@@ -27,6 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 const strongholdCategories = [
     { 
@@ -105,13 +108,14 @@ const strongholdCategories = [
 
 function CategoryCard({ category }: { category: typeof strongholdCategories[0] }) {
     const circleLink = `/dashboard/strongholds/${category.name.toLowerCase()}`;
+    const Icon = category.icon;
     
     return (
         <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5">
             <CardHeader className="p-8 pb-4">
                 <div className="flex justify-between items-start mb-6">
                     <div className={cn("h-16 w-16 rounded-[1.5rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform", category.bg)}>
-                        <category.icon className={cn("h-8 w-8", category.color)} />
+                        <Icon className={cn("h-8 w-8", category.color)} />
                     </div>
                     <Badge variant="outline" className="h-6 px-3 text-[10px] font-black uppercase tracking-widest bg-background/50">Circle</Badge>
                 </div>
@@ -138,8 +142,6 @@ function CategoryCard({ category }: { category: typeof strongholdCategories[0] }
         </Card>
     );
 }
-
-import { Award } from 'lucide-react';
 
 export default function VictoryHubPage() {
     const [searchTerm, setSearchTerm] = useState('');
