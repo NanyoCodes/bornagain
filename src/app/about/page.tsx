@@ -36,7 +36,7 @@ export default function AboutPage() {
         <section className="space-y-4">
             <h2 className="text-2xl font-bold flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> Our Vision</h2>
             <p className="text-muted-foreground leading-relaxed">
-                Testify Global exists to help believers overcome sin, grow in Christ, and become living testimonies through the transforming power of God's Word and the Holy Spirit. We believe lasting discipline is born not merely from stronger willpower, but from deeper revelation of who God is and who we are in Christ.
+                Testify exists to help believers overcome sin, grow in Christ, and become living testimonies through the transforming power of God's Word and the Holy Spirit. We believe lasting discipline is born not merely from stronger willpower, but from deeper revelation of who God is and who we are in Christ.
             </p>
         </section>
 
