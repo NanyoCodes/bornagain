@@ -25,7 +25,8 @@ import {
   Gift,
   ShoppingCart,
   X,
-  ArrowRight
+  ArrowRight,
+  PlusCircle
 } from "lucide-react";
 
 import {
@@ -39,7 +40,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -54,6 +55,7 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const navItems = [
   { href: "/progress", label: "FOLLOW-UP", icon: TrendingUp, color: "text-chart-1" },
@@ -79,91 +81,192 @@ const inspirationalMessages = [
 ];
 
 function PendingProvisionReminder() {
-    const [pending, setPending] = useState<{ soulId: string; soulName: string; actionId: string } | null>(null);
+    const [provisions, setProvisions] = useState<{ soulId: string; soulName: string; actionId: string }[]>([]);
+    const [showList, setShowList] = useState(false);
     const pathname = usePathname();
     const isMobile = useIsMobile();
 
-    const checkPendingAction = () => {
+    const checkPendingActions = () => {
         if (typeof window === 'undefined') return;
-        const stored = localStorage.getItem('testify_pending_provision');
+        const stored = localStorage.getItem('testify_pending_provisions');
         if (stored) {
             try {
-                setPending(JSON.parse(stored));
+                const parsed = JSON.parse(stored);
+                setProvisions(Array.isArray(parsed) ? parsed : []);
             } catch (e) {
-                setPending(null);
+                setProvisions([]);
             }
         } else {
-            setPending(null);
+            setProvisions([]);
         }
     };
 
     useEffect(() => {
-        checkPendingAction();
+        checkPendingActions();
         // Listen for the custom event triggered by RelationshipTrackerCard
-        window.addEventListener('testify_pending_action_update', checkPendingAction);
+        window.addEventListener('testify_pending_action_update', checkPendingActions);
         // Also check on storage changes (from other tabs)
-        window.addEventListener('storage', checkPendingAction);
+        window.addEventListener('storage', checkPendingActions);
         return () => {
-            window.removeEventListener('testify_pending_action_update', checkPendingAction);
-            window.removeEventListener('storage', checkPendingAction);
+            window.removeEventListener('testify_pending_action_update', checkPendingActions);
+            window.removeEventListener('storage', checkPendingActions);
         };
     }, []);
 
     useEffect(() => {
-        checkPendingAction();
+        checkPendingActions();
+        setShowList(false); // Reset list view on navigation
     }, [pathname]);
 
-    if (!pending) return null;
+    if (provisions.length === 0) return null;
 
     // Don't show the hovering reminder if we are already in a marketplace hub
     if (pathname.includes('/marketplace')) return null;
 
-    const path = pending.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-    const Icon = pending.actionId === 'shared_meal' ? Store : Gift;
+    const removeOne = (soulId: string, actionId: string) => {
+        const next = provisions.filter(p => !(p.soulId === soulId && p.actionId === actionId));
+        if (next.length === 0) {
+            localStorage.removeItem('testify_pending_provisions');
+        } else {
+            localStorage.setItem('testify_pending_provisions', JSON.stringify(next));
+        }
+        setProvisions(next);
+        window.dispatchEvent(new Event('testify_pending_action_update'));
+    };
 
+    const isMultiple = provisions.length > 1;
+
+    // Single item or minimized multiple
+    if (!showList) {
+        const displayItem = provisions[0];
+        const path = displayItem.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+        const Icon = displayItem.actionId === 'shared_meal' ? Store : Gift;
+
+        return (
+            <motion.div
+                initial={{ y: 100, opacity: 0, scale: 0.8 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 100, opacity: 0, scale: 0.8 }}
+                className={cn(
+                    "fixed z-[100] right-4 sm:right-8 w-[calc(100vw-2rem)] sm:w-[22rem] transition-all",
+                    isMobile ? "bottom-24" : "bottom-8"
+                )}
+            >
+                <Card 
+                    className="rounded-[2rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden group cursor-pointer"
+                    onClick={() => isMultiple && setShowList(true)}
+                >
+                    <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none">
+                        <ShoppingCart className="h-16 w-16 text-primary" />
+                    </div>
+                    <CardContent className="p-4 sm:p-5 flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform">
+                            {isMultiple ? <PlusCircle className="h-6 w-6 text-white" /> : <Icon className="h-6 w-6 text-white" />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5">
+                                {isMultiple ? `${provisions.length} Acts of Kindness` : 'Finish Provision'}
+                            </p>
+                            <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight">
+                                {isMultiple 
+                                    ? `Click to view pending gifts` 
+                                    : `Complete ${displayItem.actionId === 'shared_meal' ? 'meal' : 'gift'} for ${displayItem.soulName}`
+                                }
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                            {!isMultiple && (
+                                <Button asChild size="icon" className="h-10 w-10 rounded-full shadow-lg shrink-0">
+                                    <Link href={`${path}?soulId=${displayItem.soulId}&soulName=${encodeURIComponent(displayItem.soulName)}&actionId=${displayItem.actionId}`}>
+                                        <ArrowRight className="h-5 w-5" />
+                                    </Link>
+                                </Button>
+                            )}
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive shrink-0"
+                                onClick={() => {
+                                    if (isMultiple) {
+                                        localStorage.removeItem('testify_pending_provisions');
+                                        setProvisions([]);
+                                    } else {
+                                        removeOne(displayItem.soulId, displayItem.actionId);
+                                    }
+                                }}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        );
+    }
+
+    // Expanded List View
     return (
         <motion.div
             initial={{ y: 100, opacity: 0, scale: 0.8 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 100, opacity: 0, scale: 0.8 }}
             className={cn(
-                "fixed z-[100] right-4 sm:right-8 w-[calc(100vw-2rem)] sm:w-[22rem] transition-all",
+                "fixed z-[100] right-4 sm:right-8 w-[calc(100vw-2rem)] sm:w-[24rem] transition-all",
                 isMobile ? "bottom-24" : "bottom-8"
             )}
         >
-            <Card className="rounded-[2rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none">
-                    <ShoppingCart className="h-16 w-16 text-primary" />
-                </div>
-                <CardContent className="p-4 sm:p-5 flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform">
-                        <Icon className="h-6 w-6 text-white" />
+            <Card className="rounded-[2.5rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col max-h-[60vh]">
+                <CardHeader className="p-6 pb-2 border-b bg-muted/5 flex flex-row items-center justify-between shrink-0">
+                    <div className="space-y-0.5">
+                        <CardTitle className="text-lg font-black font-headline uppercase tracking-tight">Kindness Tasks</CardTitle>
+                        <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-primary">Pending acts for the harvest</CardDescription>
                     </div>
-                    <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5">Finish Provision</p>
-                        <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight">Complete {pending.actionId === 'shared_meal' ? 'meal' : 'gift'} for {pending.soulName}</p>
+                    <Button variant="ghost" size="icon" onClick={() => setShowList(false)} className="rounded-full">
+                        <X className="h-5 w-5" />
+                    </Button>
+                </CardHeader>
+                <ScrollArea className="flex-1 min-h-0">
+                    <div className="p-4 space-y-3">
+                        {provisions.map((p) => {
+                            const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+                            const Icon = p.actionId === 'shared_meal' ? Store : Gift;
+                            return (
+                                <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group">
+                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                        <Icon className="h-5 w-5 text-primary" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{p.soulName}</p>
+                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                                            {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md">
+                                            <Link href={`${path}?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`}>
+                                                GO
+                                            </Link>
+                                        </Button>
+                                        <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className="h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive"
+                                            onClick={() => removeOne(p.soulId, p.actionId)}
+                                        >
+                                            <X className="h-3.5 w-3.5" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
-                    <div className="flex items-center gap-1">
-                        <Button asChild size="icon" className="h-10 w-10 rounded-full shadow-lg shrink-0">
-                            <Link href={`${path}?soulId=${pending.soulId}&soulName=${encodeURIComponent(pending.soulName)}&actionId=${pending.actionId}`}>
-                                <ArrowRight className="h-5 w-5" />
-                                <span className="sr-only">Go to Hub</span>
-                            </Link>
-                        </Button>
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive shrink-0"
-                            onClick={() => {
-                                localStorage.removeItem('testify_pending_provision');
-                                checkPendingAction();
-                            }}
-                        >
-                            <X className="h-4 w-4" />
-                            <span className="sr-only">Dismiss</span>
-                        </Button>
-                    </div>
-                </CardContent>
+                </ScrollArea>
+                <CardFooter className="p-4 border-t bg-muted/5 justify-center">
+                    <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100" onClick={() => {
+                         localStorage.removeItem('testify_pending_provisions');
+                         setProvisions([]);
+                    }}>Clear All Pending</Button>
+                </CardFooter>
             </Card>
         </motion.div>
     );
@@ -613,7 +716,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
+        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
             Kingdom Network Active
         </p>
       </div>

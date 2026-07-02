@@ -454,7 +454,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             })
             .catch(async (serverError) => {
                 const permissionError = new FirestorePermissionError({
-                    path: vendorRef.path,
+                    path: updateData ? vendorRef.path : 'unknown',
                     operation: 'update',
                     requestResourceData: updateData
                 }, user);
@@ -558,12 +558,22 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             
             // CLEAR PENDING REMINDER ON SUCCESS
             if (typeof window !== 'undefined') {
-                const stored = localStorage.getItem('testify_pending_provision');
+                const stored = localStorage.getItem('testify_pending_provisions');
                 if (stored) {
-                    const parsed = JSON.parse(stored);
-                    if (parsed.soulId === soulId) {
-                        localStorage.removeItem('testify_pending_provision');
-                        window.dispatchEvent(new Event('testify_pending_action_update'));
+                    try {
+                        let provisions = JSON.parse(stored);
+                        if (Array.isArray(provisions)) {
+                            // Filter out the one we just completed
+                            provisions = provisions.filter((p: any) => !(p.soulId === soulId && p.actionId === actionId));
+                            if (provisions.length === 0) {
+                                localStorage.removeItem('testify_pending_provisions');
+                            } else {
+                                localStorage.setItem('testify_pending_provisions', JSON.stringify(provisions));
+                            }
+                            window.dispatchEvent(new Event('testify_pending_action_update'));
+                        }
+                    } catch (e) {
+                        localStorage.removeItem('testify_pending_provisions');
                     }
                 }
             }
@@ -1054,7 +1064,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <CardFooter className="p-6 sm:p-8 pt-0">
                                 {cartItem ? (
                                     <div className="flex items-center gap-3 w-full bg-muted/30 rounded-xl p-1 border">
-                                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-4 w-4" /></Button>
+                                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3" /></Button>
                                         <span className="flex-1 text-center font-black text-sm">{cartItem.quantity} IN PACKAGE</span>
                                         <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => addToCart(meal)}><Plus className="h-4 w-4" /></Button>
                                     </div>

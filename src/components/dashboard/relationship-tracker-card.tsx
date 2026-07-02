@@ -240,12 +240,24 @@ export function RelationshipTrackerCard() {
         if (selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift') {
             // Set a pending action flag in localStorage for the global hovering cart reminder
             if (typeof window !== 'undefined') {
-                localStorage.setItem('testify_pending_provision', JSON.stringify({
-                    soulId: soul.id,
-                    soulName: soul.firstName,
-                    actionId: selectedActionId,
-                    timestamp: Date.now()
-                }));
+                const stored = localStorage.getItem('testify_pending_provisions');
+                let provisions = [];
+                try {
+                    provisions = stored ? JSON.parse(stored) : [];
+                    if (!Array.isArray(provisions)) provisions = [];
+                } catch (e) { provisions = []; }
+
+                // Add if not already present for this specific soul and action
+                if (!provisions.some((p: any) => p.soulId === soul.id && p.actionId === selectedActionId)) {
+                    provisions.push({
+                        soulId: soul.id,
+                        soulName: soul.firstName,
+                        actionId: selectedActionId,
+                        timestamp: Date.now()
+                    });
+                }
+                
+                localStorage.setItem('testify_pending_provisions', JSON.stringify(provisions));
                 // Notify the AppShell of the state change
                 window.dispatchEvent(new Event('testify_pending_action_update'));
             }
