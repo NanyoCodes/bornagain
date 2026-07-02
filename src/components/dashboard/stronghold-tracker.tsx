@@ -77,7 +77,7 @@ export function StrongholdTracker() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [category, setCategory] = useState('Other');
     
-    const [testimonyStronghold, setTestimonyStronghold] = setTestimonyStronghold = useState<Stronghold | null>(null);
+    const [testimonyStronghold, setTestimonyStronghold] = useState<Stronghold | null>(null);
 
     const strongholdsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
