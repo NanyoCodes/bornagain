@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -30,7 +29,7 @@ import {
     Users, 
     MessageSquare, 
     Sparkles, 
-    ShieldCheck,
+    ShieldCheck, 
     Send,
     Flame,
     Zap,
@@ -94,12 +93,12 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
                         <Users className="h-3.5 w-3.5 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Victory Circle</span>
                     </div>
-                    <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate">{categoryTitle} Community</h1>
+                    <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate leading-tight">{categoryTitle} Community</h1>
                 </div>
             </div>
 
@@ -148,54 +147,59 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     {loading ? (
                         <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20" /></div>
                     ) : posts && posts.length > 0 ? (
-                        posts.map((post: any) => (
-                            <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5">
-                                <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner">
-                                            <Users className="h-5 w-5 text-muted-foreground/40" />
-                                        </div>
-                                        <div className="min-w-0">
-                                            <p className="text-sm font-black uppercase tracking-tight">{post.authorName}</p>
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{format(safeToDate(post.createdAt)!, 'PPP')}</p>
-                                        </div>
-                                    </div>
-                                    <Badge variant="outline" className="h-5 text-[9px] font-black uppercase tracking-widest bg-background/50">{categoryTitle}</Badge>
-                                </CardHeader>
-                                <CardContent className="p-6 pt-4">
-                                    <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner">
-                                        <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
-                                        <p className="text-base text-muted-foreground leading-relaxed italic font-medium">
-                                            &ldquo;{post.text}&rdquo;
-                                        </p>
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="p-0 border-t bg-muted/10">
-                                    <div className="w-full">
-                                        <div className="p-6 pb-2">
-                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 mb-4">
-                                                <Zap className="h-3.5 w-3.5" /> Circle Responses & Solutions
+                        posts.map((post: any) => {
+                            const postDate = safeToDate(post.createdAt);
+                            return (
+                                <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5">
+                                    <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner">
+                                                <Users className="h-5 w-5 text-muted-foreground/40" />
                                             </div>
-                                            <CommentSection path={`victoryCircles/${category.toLowerCase()}/posts/${post.id}/comments`} inline />
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-black uppercase tracking-tight">{post.authorName}</p>
+                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                                                    {postDate ? format(postDate, 'PPP') : 'Just now'}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                </CardFooter>
-                            </Card>
-                        ))
+                                        <Badge variant="outline" className="h-5 text-[9px] font-black uppercase tracking-widest bg-background/50">{categoryTitle}</Badge>
+                                    </CardHeader>
+                                    <CardContent className="p-6 pt-4">
+                                        <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner">
+                                            <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
+                                            <p className="text-base text-muted-foreground leading-relaxed italic font-medium">
+                                                &ldquo;{post.text}&rdquo;
+                                            </p>
+                                        </div>
+                                    </CardContent>
+                                    <CardFooter className="p-0 border-t bg-muted/10">
+                                        <div className="w-full">
+                                            <div className="p-6 pb-2">
+                                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 mb-4">
+                                                    <Zap className="h-3.5 w-3.5" /> Circle Responses & Solutions
+                                                </div>
+                                                <CommentSection path={`victoryCircles/${category.toLowerCase()}/posts/${post.id}/comments`} inline />
+                                            </div>
+                                        </div>
+                                    </CardFooter>
+                                </Card>
+                            );
+                        })
                     ) : (
                         <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center">
                             <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
                                 <Sparkles className="h-10 w-10 text-muted-foreground opacity-10" />
                             </div>
                             <h4 className="text-xl font-black uppercase tracking-tight opacity-40">Circle Silence</h4>
-                            <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
+                            <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
                         </div>
                     )}
                 </div>
             </div>
             
             <footer className="text-center pt-12 border-t mt-12 px-8">
-                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto">
+                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance">
                     "Confess your faults one to another, and pray one for another, that ye may be healed. The effectual fervent prayer of a righteous man availeth much." — James 5:16
                 </p>
             </footer>
