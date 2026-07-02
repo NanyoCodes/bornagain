@@ -283,7 +283,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             <div className="flex-grow min-w-0 space-y-4 pb-2">
                 <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4">
                     <div className="min-w-0">
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight">{displayName}</h1>
+                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize">{displayName}</h1>
                         {(city || state || country) && (
                             <div className="flex items-center justify-center md:justify-start gap-2 text-primary font-black text-xs sm:text-sm uppercase tracking-[0.2em]">
                                 <MapPin className="h-4 w-4" /> 

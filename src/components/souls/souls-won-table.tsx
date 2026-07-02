@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -141,7 +142,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 <Heart className="h-5 w-5 text-primary fill-current" />
                             </div>
                             <div className="min-w-0">
-                                <p className="font-bold truncate text-sm sm:text-base leading-tight uppercase tracking-tight">
+                                <p className="font-bold truncate text-sm sm:text-base leading-tight capitalize tracking-tight">
                                   {soul.firstName || 'Unknown'} {soul.lastName || ''}
                                 </p>
                                 <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
@@ -245,7 +246,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
 
                                {latestFollowUp && latestFollowUpDate ? (
                                     <div className="text-xs">
-                                        <p className="font-black uppercase tracking-tighter text-primary/70 mb-2">LAST LOG: {format(latestFollowUpDate, "PPP")}</p>
+                                        <p className="font-black uppercase tracking-tighter text-primary/70 mb-2">LAST LOG: {format(latestFollowUpDate, "MMM d, yyyy")}</p>
                                         <div className="flex flex-wrap gap-1.5 mb-2">
                                             {latestFollowUp.actions?.map(actionId => {
                                                 const action = actionItems.find(a => a.id === actionId);
@@ -325,7 +326,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                         <Heart className="h-5 w-5 text-primary fill-current" />
                     </div>
                     <div className="min-w-0">
-                        <div className="font-black text-sm sm:text-base truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</div>
+                        <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight">{soul.firstName} {soul.lastName}</div>
                         {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
                     </div>
                 </div>

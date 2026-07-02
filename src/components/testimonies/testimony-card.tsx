@@ -10,7 +10,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -203,7 +203,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
       <div className="space-y-6 pb-6">
-        <div className="text-base sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify px-2">
+        <div className="text-base sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify px-2 capitalize">
             {testimony.content}
         </div>
       </div>
@@ -248,7 +248,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             <div className="min-w-0 flex-1">
                <div className="flex items-center gap-2 flex-wrap">
                     <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
-                        <CardTitle className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px]">{authorFullName}</CardTitle>
+                        <CardTitle className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize">{authorFullName}</CardTitle>
                     </Link>
                     {isPartner && <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20 shrink-0">Partner</Badge>}
                     {!isAuthor && !isPartner && currentUserProfile && (
@@ -286,7 +286,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
           <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify">
-            <p ref={contentRef} className="line-clamp-6 leading-relaxed">{testimony.content}</p>
+            <p ref={contentRef} className="line-clamp-6 leading-relaxed capitalize">{testimony.content}</p>
             {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
           </div>
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
@@ -336,21 +336,21 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <>
                     <Sheet open={showFullText} onOpenChange={setShowFullText}>
                         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b shrink-0 bg-muted/20"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Full Story</SheetTitle><SheetDescription className="text-xs font-bold uppercase tracking-widest">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
+                            <div className="p-8 border-b shrink-0 bg-muted/20"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Full Story</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
                             <div className="flex-grow min-h-0 p-8 overflow-y-auto">{fullTextContent}</div>
                         </SheetContent>
                     </Sheet>
                     <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]"><div className="p-8 border-b shrink-0 bg-muted/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Responses</SheetTitle><SheetDescription className="text-xs font-bold uppercase tracking-widest">GATHERED JOY FOR {authorFullName}</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0"><CommentSection testimonyId={testimony.id} /></div></SheetContent>
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]"><div className="p-8 border-b shrink-0 bg-muted/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Responses</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize">GATHERED JOY FOR {authorFullName}</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0"><CommentSection testimonyId={testimony.id} /></div></SheetContent>
                     </Sheet>
                 </>
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={setShowFullText}>
-                        <DialogContent className="sm:max-w-3xl rounded-3xl overflow-hidden p-0"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8">{fullTextContent}</div></DialogContent>
+                        <DialogContent className="sm:max-w-3xl rounded-3xl overflow-hidden p-0"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest capitalize">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8">{fullTextContent}</div></DialogContent>
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl"><div className="p-8 border-b shrink-0 bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Gathered Responses</DialogTitle><DialogDescription className="text-xs font-bold uppercase tracking-widest">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription></DialogHeader></div><div className="flex-1 min-h-0"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl"><div className="p-8 border-b shrink-0 bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Gathered Responses</DialogTitle><DialogDescription className="text-[10px] font-bold uppercase tracking-widest capitalize">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription></DialogHeader></div><div className="flex-1 min-h-0"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
                     </Dialog>
                 </>
             )}
