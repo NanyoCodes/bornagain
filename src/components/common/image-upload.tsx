@@ -275,7 +275,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12">Cancel</Button>
             <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12 rounded-xl uppercase tracking-widest">
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
-              {isLoading ? 'OPTIMIZING...' : 'fix this access denied issue now. the storage rules must accept this upload immediately'}
+              {isLoading ? 'OPTIMIZING...' : 'CONFIRM & UPLOAD'}
             </Button>
           </DialogFooter>
         </DialogContent>
