@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useCollection } from '@/firebase';
 import { 
@@ -39,7 +39,8 @@ import {
     Edit,
     Trash2,
     X,
-    Check
+    Check,
+    Search
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -57,6 +58,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from '@/components/ui/input';
 
 function PostResponsesDialog({ post, categoryTitle, children }: { post: any, categoryTitle: string, children: React.ReactNode }) {
     const isMobile = useIsMobile();
@@ -111,7 +113,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                                 <Zap className="h-4 w-4 text-primary" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Circle Conversation</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{categoryTitle} Hub</SheetTitle>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Victory over {categoryTitle} Hub</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">Community responses and spiritual solutions.</SheetDescription>
                         </SheetHeader>
                     </div>
@@ -131,7 +133,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
             <DialogContent className="sm:max-w-xl max-h-[85vh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col">
                 <div className="p-8 border-b bg-muted/10 shrink-0">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{categoryTitle} Discussion</DialogTitle>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Victory over {categoryTitle} Discussion</DialogTitle>
                         <DialogDescription className="text-base font-medium">Shared wisdom and encouragement for victory.</DialogDescription>
                     </DialogHeader>
                 </div>
@@ -149,6 +151,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [newPostText, setNewPostText] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     
     // Management State
@@ -167,6 +170,16 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     }, [firestore, category]);
 
     const { data: posts, loading } = useCollection<any>(postsQuery);
+
+    const filteredPosts = useMemo(() => {
+        if (!posts) return [];
+        if (!searchTerm) return posts;
+        const term = searchTerm.toLowerCase();
+        return posts.filter((post: any) => 
+            post.text.toLowerCase().includes(term) ||
+            post.authorName.toLowerCase().includes(term)
+        );
+    }, [posts, searchTerm]);
 
     const handleCreatePost = async () => {
         if (!user || !firestore || !newPostText.trim()) return;
@@ -272,18 +285,29 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             </Card>
 
             <div className="space-y-6 px-4 sm:px-0">
-                <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner">
-                        <MessageSquare className="h-5 w-5 text-muted-foreground" />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner">
+                            <MessageSquare className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <h3 className="text-lg font-black uppercase tracking-tight">Circle Discussions</h3>
                     </div>
-                    <h3 className="text-lg font-black uppercase tracking-tight">Circle Discussions</h3>
+                    <div className="relative flex-1 max-w-sm">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
+                        <Input 
+                            placeholder="Search discussions..." 
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                            className="h-10 pl-9 rounded-xl bg-muted/20 border-none shadow-inner text-sm"
+                        />
+                    </div>
                 </div>
 
                 <div className="space-y-6">
                     {loading ? (
                         <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20" /></div>
-                    ) : posts && posts.length > 0 ? (
-                        posts.map((post: any) => {
+                    ) : filteredPosts && filteredPosts.length > 0 ? (
+                        filteredPosts.map((post: any) => {
                             const postDate = safeToDate(post.createdAt);
                             const isOwner = user?.uid === post.authorId;
                             const isEditing = editingPostId === post.id;
