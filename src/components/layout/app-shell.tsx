@@ -31,7 +31,12 @@ import {
   Flame,
   Zap,
   Utensils,
-  Package
+  Package,
+  Plus,
+  Minus,
+  Trash2,
+  CreditCard,
+  Clipboard
 } from "lucide-react";
 
 import {
@@ -46,21 +51,26 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, arrayUnion } from "firebase/firestore";
-import type { Notification, VendorProfile, UserProfile, Soul } from "@/lib/types";
+import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, writeBatch, addDoc, arrayUnion } from "firebase/firestore";
+import type { Notification, VendorProfile, UserProfile, Soul, MealGift, MealGiftStatus } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const navItems = [
   { href: "/progress", label: "FOLLOW-UP", icon: TrendingUp, color: "text-chart-1" },
@@ -301,7 +311,7 @@ function PendingProvisionReminder() {
     );
 }
 
-function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean }) {
+function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCart }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, onOpenCart: () => void }) {
   const { user, loading: authLoading } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
@@ -352,12 +362,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 
   const { data: unreadOtherNotifications } = useCollection<Notification>(otherNotificationsQuery);
   const unreadCount = unreadOtherNotifications?.length ?? 0;
-
-  const userVendorsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, 'vendors'), where('userId', '==', user.uid));
-  }, [user?.uid, firestore]);
-  const { data: userVendors } = useCollection<VendorProfile>(userVendorsQuery);
 
   const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
 
@@ -453,18 +457,21 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         
         {user ? (
           <>
-            <Link href="/dashboard/marketplace">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
-                      <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
-                      {cartCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
-                          {cartCount}
-                        </div>
-                      )}
-                    </Button>
-                </motion.div>
-            </Link>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full"
+                    onClick={onOpenCart}
+                >
+                  <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
+                  {cartCount > 0 && (
+                    <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
+                      {cartCount}
+                    </div>
+                  )}
+                </Button>
+            </motion.div>
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                     <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
@@ -555,21 +562,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   </Link>
                 </DropdownMenuItem>
                 
-                {userVendors && userVendors.length > 0 && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">My Business</DropdownMenuLabel>
-                    {userVendors.map(v => (
-                      <DropdownMenuItem key={v.id} asChild className="rounded-lg mx-1">
-                        <Link href={`/dashboard/marketplace/vendors/${v.id}`}>
-                          <Store className="mr-2 h-4 w-4 text-primary" />
-                          <span className="truncate">{v.vendorType === 'meal' ? 'Meals' : 'Kindness'} Storefront</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </>
-                )}
-
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
                     <Link href="/guide" className="cursor-pointer">
@@ -669,6 +661,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -676,6 +669,160 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   
   const [showSplash, setShowSplash] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
+
+  // Global Cart State
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cart, setCart] = useState<{ [mealId: string]: { item: any, quantity: number } }>({});
+  const [giftInstructions, setGiftInstructions] = useState('');
+  const [manualRecipientName, setManualRecipientName] = useState('');
+  const [isProcessingOrder, setIsProcessingOrder] = useState(false);
+
+  const updateCart = useCallback(() => {
+    if (typeof window === 'undefined' || !user?.uid) {
+        setCart({});
+        return;
+    }
+    const key = `testify_marketplace_cart_${user.uid}`;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+        try {
+            setCart(JSON.parse(stored));
+        } catch (e) { setCart({}); }
+    } else {
+        setCart({});
+    }
+  }, [user?.uid]);
+
+  useEffect(() => {
+    updateCart();
+    window.addEventListener('testify_marketplace_cart_update', updateCart);
+    window.addEventListener('storage', updateCart);
+    return () => {
+        window.removeEventListener('testify_marketplace_cart_update', updateCart);
+        window.removeEventListener('storage', updateCart);
+    };
+  }, [updateCart]);
+
+  const handleUpdateQuantity = (itemId: string, delta: number) => {
+    if (!user?.uid) return;
+    const key = `testify_marketplace_cart_${user.uid}`;
+    const next = { ...cart };
+    if (!next[itemId]) return;
+    
+    const newQty = next[itemId].quantity + delta;
+    if (newQty <= 0) {
+        delete next[itemId];
+    } else {
+        next[itemId].quantity = newQty;
+    }
+    
+    localStorage.setItem(key, JSON.stringify(next));
+    window.dispatchEvent(new Event('testify_marketplace_cart_update'));
+  };
+
+  const handleRemoveFromCart = (itemId: string) => {
+    if (!user?.uid) return;
+    const key = `testify_marketplace_cart_${user.uid}`;
+    const next = { ...cart };
+    delete next[itemId];
+    localStorage.setItem(key, JSON.stringify(next));
+    window.dispatchEvent(new Event('testify_marketplace_cart_update'));
+  };
+
+  const cartItems = useMemo(() => Object.values(cart), [cart]);
+  const cartByVendor = useMemo(() => {
+    const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number } } = {};
+    cartItems.forEach(c => {
+        const vId = c.item.vendorId;
+        if (!groups[vId]) {
+            groups[vId] = {
+                vendorId: vId,
+                vendorName: c.item.vendorName || 'Kingdom Provider',
+                vendorOwnerId: c.item.vendorOwnerId || '',
+                paymentDetails: c.item.vendorPaymentDetails || '',
+                items: [],
+                deliveryFee: 0
+            };
+        }
+        groups[vId].items.push(c);
+        groups[vId].deliveryFee = Math.max(groups[vId].deliveryFee, c.item.deliveryFee || 0);
+    });
+    return Object.values(groups);
+  }, [cartItems]);
+
+  const cartTotal = useMemo(() => {
+    const subtotal = cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0);
+    const shipping = cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0);
+    return subtotal + shipping;
+  }, [cartItems, cartByVendor]);
+
+  const handleGlobalCheckout = async () => {
+    if (!user || !firestore || !userProfile || cartItems.length === 0) return;
+
+    if (!giftInstructions.trim()) {
+        toast({ variant: 'destructive', title: 'Instructions Required', description: 'Please specify delivery or gifting instructions.' });
+        return;
+    }
+
+    setIsProcessingOrder(true);
+    const batch = writeBatch(firestore);
+    const giftsRef = collection(firestore, 'mealGifts');
+    
+    const senderName = `${userProfile.firstName} ${userProfile.lastName}`;
+
+    cartItems.forEach(cartItem => {
+        for(let i = 0; i < cartItem.quantity; i++) {
+            const giftRef = doc(giftsRef);
+            batch.set(giftRef, {
+                senderId: user.uid,
+                senderName,
+                recipientSoulId: null,
+                recipientName: manualRecipientName || 'Self',
+                vendorId: cartItem.item.vendorId,
+                vendorName: cartItem.item.vendorName || 'Kingdom Store',
+                vendorOwnerId: cartItem.item.vendorOwnerId, 
+                vendorType: cartItem.item.vendorType || 'meal',
+                mealId: cartItem.item.id,
+                mealName: cartItem.item.name,
+                price: cartItem.item.price,
+                deliveryFee: cartItem.item.deliveryFee || 0,
+                status: 'ordered' as MealGiftStatus,
+                instructions: giftInstructions,
+                createdAt: serverTimestamp(),
+            });
+        }
+    });
+
+    cartByVendor.forEach(v => {
+        const vendorNotificationRef = doc(collection(firestore, `users/${v.vendorOwnerId}/notifications`));
+        const vendorItems = v.items.map(c => `${c.item.name} (x${c.quantity})`).join(', ');
+        batch.set(vendorNotificationRef, {
+            userId: v.vendorOwnerId,
+            type: 'new_order',
+            title: 'New Offering Package!',
+            message: `${senderName} has sent ${vendorItems}. Check your orders to coordinate.`,
+            link: `/dashboard/marketplace/orders`,
+            isRead: false,
+            createdAt: serverTimestamp(),
+        });
+    });
+
+    try {
+        await batch.commit();
+        if (user?.uid) {
+            localStorage.removeItem(`testify_marketplace_cart_${user.uid}`);
+            setCart({});
+            window.dispatchEvent(new Event('testify_marketplace_cart_update'));
+        }
+        toast({ title: 'Offerings Confirmed!', description: 'Your acts of kindness have been dispatched to providers.' });
+        setIsCartOpen(false);
+        router.push('/dashboard/marketplace/orders');
+    } catch (e) {
+        toast({ variant: 'destructive', title: 'Checkout Failed' });
+    } finally {
+        setIsProcessingOrder(false);
+    }
+  };
 
   useEffect(() => { 
     setMounted(true); 
@@ -829,6 +976,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 unreadChatCount={unreadChatNotifications?.length || 0} 
                 unreadNotifCount={unreadOtherNotifications?.length || 0}
                 isPublicRoute={isPublicRoute}
+                onOpenCart={() => setIsCartOpen(true)}
             />
             )}
             <div className="flex-1 relative min-h-0">
@@ -882,6 +1030,147 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </DialogContent>
           </Dialog>
         ) : null}
+
+        {/* Global Cart Sheet */}
+        <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+            <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0 rounded-none sm:rounded-l-[2.5rem]">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                    <div className="flex items-center gap-2 mb-2">
+                        <ShoppingCart className="h-4 w-4 text-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span>
+                    </div>
+                    <SheetHeader className="text-left">
+                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle>
+                        <SheetDescription className="text-sm font-medium">Review selection and logistical details.</SheetDescription>
+                    </SheetHeader>
+                </div>
+                <ScrollArea className="flex-grow min-h-0 overscroll-contain">
+                    <div className="p-8 space-y-10">
+                        {cartItems.length > 0 ? (
+                            <div className="space-y-10">
+                                <div className="space-y-8">
+                                    {cartByVendor.map(group => (
+                                        <div key={group.vendorId} className="space-y-3">
+                                            <div className="flex items-center justify-between px-1">
+                                                <div className="flex items-center gap-2">
+                                                    <Store className="h-3.5 w-3.5 text-primary" />
+                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[150px]">{group.vendorName}</h4>
+                                                </div>
+                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">₦{group.deliveryFee.toLocaleString()} Delivery</Badge>
+                                            </div>
+                                            <div className="space-y-2">
+                                                {group.items.map(c => (
+                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
+                                                                {c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}
+                                                            </div>
+                                                            <div className="min-w-0 flex-1">
+                                                                <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
+                                                                <p className="text-[10px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 ml-2">
+                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm">
+                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
+                                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span>
+                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                                                            </div>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive" onClick={() => handleRemoveFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label>
+                                        <Input 
+                                            placeholder="Enter recipient (e.g., Self or a Brother's name)" 
+                                            value={manualRecipientName}
+                                            onChange={(e) => setManualRecipientName(e.target.value)}
+                                            className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label>
+                                        <Textarea 
+                                            placeholder="Specify contact details and physical address for delivery..."
+                                            value={giftInstructions}
+                                            onChange={(e) => setGiftInstructions(e.target.value)}
+                                            className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1">
+                                        <CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE
+                                    </Label>
+                                    <div className="space-y-3">
+                                        {cartByVendor.map(v => (
+                                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden">
+                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity">
+                                                    <Store className="h-10 w-10 text-primary" />
+                                                </div>
+                                                <p className="text-[9px] font-black uppercase text-primary/60 mb-2 tracking-widest">Pay to: {v.vendorName}</p>
+                                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">
+                                                    {v.paymentDetails || 'Contact provider for details.'}
+                                                </p>
+                                                <Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner">
+                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
+                                        <span className="shrink-0">Selection subtotal</span>
+                                        <span className="text-foreground shrink-0 font-black">₦{cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0).toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
+                                        <span className="shrink-0">Delivery Total</span>
+                                        <span className="text-foreground shrink-0 font-black">₦{cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0).toLocaleString()}</span>
+                                    </div>
+                                    <Separator className="opacity-50" />
+                                    <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4">
+                                        <span className="shrink-0">Package Total</span>
+                                        <span className="shrink-0 text-2xl tracking-tighter">₦{cartTotal.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center">
+                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+                                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10" />
+                                </div>
+                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3>
+                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance">Visit the Meals or Kindness hub to start building an offering package.</p>
+                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
+                                    <Link href="/dashboard/marketplace">PROVIDE OFFERING</Link>
+                                </Button>
+                            </div>
+                        )}
+                        <div className="h-24" />
+                    </div>
+                </ScrollArea>
+                {cartItems.length > 0 && (
+                    <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
+                        <Button 
+                            onClick={handleGlobalCheckout} 
+                            disabled={isProcessingOrder || !giftInstructions.trim() || cartItems.length === 0} 
+                            className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase"
+                        >
+                            {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            DISPATCH OFFERINGS
+                        </Button>
+                    </SheetFooter>
+                )}
+            </SheetContent>
+        </Sheet>
 
         {/* Floating Reminder for pending Provisions */}
         {user && <PendingProvisionReminder />}
