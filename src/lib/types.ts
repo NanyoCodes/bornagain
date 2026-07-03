@@ -346,7 +346,7 @@ export type ChatMessage = {
 export type Notification = {
   id: string;
   userId: string;
-  type: 'campaign_join' | 'new_chat_message' | 'accountability_nudge' | 'accountability_request' | 'request_accepted' | 'request_declined' | 'accountability_partner_removed' | 'new_soul_in_fellowship' | 'soul_unassigned_from_fellowship';
+  type: 'campaign_join' | 'new_chat_message' | 'accountability_nudge' | 'accountability_request' | 'request_accepted' | 'request_declined' | 'accountability_partner_removed' | 'new_soul_in_fellowship' | 'soul_unassigned_from_fellowship' | 'new_order' | 'order_update';
   title: string;
   message: string;
   link?: string;
@@ -455,9 +455,12 @@ export type Meal = {
   category?: string;
 };
 
+export type MealGiftStatus = 'ordered' | 'preparing' | 'delivering' | 'delivered';
+
 export type MealGift = {
   id: string;
   senderId: string;
+  senderName: string;
   recipientSoulId?: string | null;
   recipientName: string;
   vendorId: string;
@@ -465,7 +468,7 @@ export type MealGift = {
   mealId: string;
   mealName: string;
   price: number;
-  status: 'ordered' | 'preparing' | 'delivering' | 'delivered';
+  status: MealGiftStatus;
   instructions?: string;
   createdAt: Timestamp;
 };

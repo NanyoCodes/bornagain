@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc } from 'firebase/firestore';
-import type { VendorProfile, Meal, UserProfile, Chat } from '@/lib/types';
+import type { VendorProfile, Meal, UserProfile, Chat, MealGift, MealGiftStatus } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,7 +31,10 @@ import {
     Store,
     MessagesSquare,
     Info,
-    X
+    X,
+    CheckCircle2,
+    Truck,
+    Timer
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -85,6 +89,149 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import Link from 'next/link';
 import { format } from 'date-fns';
 
+function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: string; isOpen: boolean; onOpenChange: (open: boolean) => void }) {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const { toast } = useToast();
+    const isMobile = useIsMobile();
+    
+    const ordersQuery = useMemo(() => {
+        if (!firestore || !vendorId) return null;
+        return query(collection(firestore, 'mealGifts'), where('vendorId', '==', vendorId), orderBy('createdAt', 'desc'));
+    }, [firestore, vendorId]);
+    const { data: orders, loading } = useCollection<MealGift>(ordersQuery);
+
+    const updateOrderStatus = async (orderId: string, newStatus: MealGiftStatus, senderId: string, itemName: string) => {
+        if (!user || !firestore) return;
+        
+        const orderRef = doc(firestore, 'mealGifts', orderId);
+        const batch = writeBatch(firestore);
+
+        batch.update(orderRef, { status: newStatus });
+
+        const notificationRef = doc(collection(firestore, `users/${senderId}/notifications`));
+        batch.set(notificationRef, {
+            userId: senderId,
+            type: 'order_update',
+            title: 'Gift Status Updated',
+            message: `Your gift order for "${itemName}" has been updated to: ${newStatus.toUpperCase()}.`,
+            link: `/dashboard/souls-won`,
+            isRead: false,
+            createdAt: serverTimestamp(),
+        });
+
+        try {
+            await batch.commit();
+            toast({ title: 'Status Updated', description: `Order is now ${newStatus}.` });
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Update Failed' });
+        }
+    };
+
+    const getStatusIcon = (status: MealGiftStatus) => {
+        switch (status) {
+            case 'ordered': return <Timer className="h-4 w-4 text-amber-500" />;
+            case 'preparing': return <Utensils className="h-4 w-4 text-blue-500" />;
+            case 'delivering': return <Truck className="h-4 w-4 text-primary" />;
+            case 'delivered': return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+        }
+    };
+
+    const listContent = (
+        <div className="space-y-4 pb-12">
+            {loading ? (
+                <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
+            ) : orders && orders.length > 0 ? (
+                orders.map(order => (
+                    <Card key={order.id} className="rounded-2xl border-2 overflow-hidden bg-muted/5">
+                        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+                            <div className="min-w-0">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">RECIPIENT: {order.recipientName}</p>
+                                <h4 className="font-bold text-sm truncate uppercase tracking-tight">{order.mealName}</h4>
+                            </div>
+                            <Badge variant="outline" className="h-6 flex items-center gap-1.5 uppercase font-bold text-[9px] tracking-tighter">
+                                {getStatusIcon(order.status)}
+                                {order.status}
+                            </Badge>
+                        </CardHeader>
+                        <CardContent className="p-4 pt-0 space-y-3">
+                            <p className="text-xs text-muted-foreground leading-relaxed italic">
+                                &ldquo;{order.instructions}&rdquo;
+                            </p>
+                            <div className="flex items-center justify-between pt-2 border-t border-dashed">
+                                <p className="text-[9px] font-bold text-muted-foreground uppercase">From: {order.senderName}</p>
+                                <p className="text-[9px] font-bold text-primary uppercase">₦{order.price.toLocaleString()}</p>
+                            </div>
+                        </CardContent>
+                        <CardFooter className="p-2 bg-muted/20 border-t flex gap-1">
+                            {['preparing', 'delivering', 'delivered'].map((status) => (
+                                <Button 
+                                    key={status}
+                                    variant="ghost" 
+                                    size="sm" 
+                                    disabled={order.status === status}
+                                    className={cn(
+                                        "flex-1 h-7 text-[8px] font-black uppercase tracking-tighter rounded-lg",
+                                        order.status === status && "bg-background text-primary shadow-sm"
+                                    )}
+                                    onClick={() => updateOrderStatus(order.id, status as MealGiftStatus, order.senderId, order.mealName)}
+                                >
+                                    {status === 'preparing' && 'Prep'}
+                                    {status === 'delivering' && 'Ship'}
+                                    {status === 'delivered' && 'Done'}
+                                </Button>
+                            ))}
+                        </CardFooter>
+                    </Card>
+                ))
+            ) : (
+                <div className="text-center py-20 bg-muted/10 rounded-3xl border-2 border-dashed">
+                    <ShoppingBag className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" />
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">No orders received yet.</p>
+                </div>
+            )}
+        </div>
+    );
+
+    const sheetTitle = "Order Tracking Hub";
+    const sheetDesc = "Manage and update deliveries for your Kingdom offerings.";
+
+    if (isMobile) {
+        return (
+            <Sheet open={isOpen} onOpenChange={onOpenChange}>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{sheetTitle}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">{sheetDesc}</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <ScrollArea className="flex-grow px-8 pt-6">
+                        {listContent}
+                    </ScrollArea>
+                </SheetContent>
+            </Sheet>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[85vh]">
+                <div className="p-8 border-b shrink-0 bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{sheetTitle}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1">{sheetDesc}</DialogDescription>
+                    </DialogHeader>
+                </div>
+                <ScrollArea className="flex-grow p-8">
+                    {listContent}
+                </ScrollArea>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const searchParams = useSearchParams();
     const soulId = searchParams.get('soulId');
@@ -108,6 +255,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const [isAddMealOpen, setIsAddMealOpen] = useState(false);
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [isDeleteStoreOpen, setIsDeleteStoreOpen] = useState(false);
+    const [isOrdersOpen, setIsOrdersOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<Meal | null>(null);
     const [itemToEdit, setItemToEdit] = useState<Meal | null>(null);
     
@@ -134,7 +282,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         return country ? State.getStatesOfCountry(country.isoCode) : [];
     }, [editCountry, countriesList]);
 
-    const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || itemToEdit || isCartOpen);
+    const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || itemToEdit || isCartOpen || isOrdersOpen);
 
     useEffect(() => {
         if (!isAnyModalOpen && typeof document !== 'undefined') {
@@ -478,7 +626,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     };
 
     const handleGiftItems = async () => {
-        if (!user || !firestore || cartItems.length === 0) return;
+        if (!user || !firestore || !userProfile || cartItems.length === 0) return;
 
         const finalRecipientName = soulName || manualRecipientName;
         if (!finalRecipientName.trim()) {
@@ -494,6 +642,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         setIsProcessingOrder(true);
         const batch = writeBatch(firestore);
         const giftsRef = collection(firestore, 'mealGifts');
+        const notificationsRef = collection(firestore, `users/${vendor?.userId}/notifications`);
         
         const itemNames = cartItems.map(c => `${c.item.name} (x${c.quantity})`).join(', ');
         const displayAction = isGiftVendor ? 'sent gifts' : 'shared a meal package';
@@ -509,11 +658,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             memberName: `${userProfile?.firstName} ${userProfile?.lastName}`,
         };
 
+        const senderName = `${userProfile.firstName} ${userProfile.lastName}`;
+
         cartItems.forEach(cartItem => {
             for(let i = 0; i < cartItem.quantity; i++) {
                 const giftRef = doc(giftsRef);
                 batch.set(giftRef, {
                     senderId: user.uid,
+                    senderName,
                     recipientSoulId: soulId || null,
                     recipientName: finalRecipientName,
                     vendorId: vendorId,
@@ -521,7 +673,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     mealId: cartItem.item.id,
                     mealName: cartItem.item.name,
                     price: cartItem.item.price,
-                    status: 'ordered',
+                    status: 'ordered' as MealGiftStatus,
                     instructions: giftInstructions,
                     createdAt: serverTimestamp(),
                 });
@@ -542,11 +694,11 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         }
 
         // 3. Mark Daily Discipline as Completed (Now that it's physically done)
-        const userRef = doc(firestore, 'users', user.uid);
+        const currentUserRef = doc(firestore, 'users', user.uid);
         const dateString = format(new Date(), 'yyyy-MM-dd');
         const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
         
-        batch.update(userRef, {
+        batch.update(currentUserRef, {
             'dailyDiscipline.completed': arrayUnion(logActionId),
             'dailyDiscipline.lastUpdated': serverTimestamp()
         });
@@ -554,6 +706,18 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             completed: arrayUnion(logActionId),
             date: serverTimestamp()
         }, { merge: true });
+
+        // 4. Notify the Vendor
+        const vendorNotificationRef = doc(notificationsRef);
+        batch.set(vendorNotificationRef, {
+            userId: vendor?.userId,
+            type: 'new_order',
+            title: 'New Package Ordered!',
+            message: `${senderName} has placed a new order for ${itemNames}. Instructions: ${giftInstructions}`,
+            link: `/dashboard/marketplace/vendors/${vendorId}`,
+            isRead: false,
+            createdAt: serverTimestamp(),
+        });
 
         try {
             await batch.commit();
@@ -701,7 +865,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <Label className="text-[10px] font-black uppercase tracking-widest text-destructive ml-1">Danger Zone</Label>
                         <Card className="border-destructive/20 bg-destructive/5 mt-2 overflow-hidden">
                             <CardContent className="p-4 flex items-center justify-between gap-4">
-                                <div className="space-y-1 min-w-0">
+                                <div className="space-y-1 min-0">
                                     <p className="text-xs font-bold text-destructive">Delete Storefront</p>
                                     <p className="text-[10px] text-muted-foreground leading-tight truncate">Permanently remove your business from Testify.</p>
                                 </div>
@@ -918,8 +1082,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 pb-4">
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-10 w-10 sm:h-12 sm:w-12 rounded-full border bg-background shadow-sm">
-                            <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0">
+                            <ArrowLeft className="h-6 w-6" />
                         </Button>
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2.5 mb-1">
@@ -961,7 +1125,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
                 
                 <div className="flex items-center justify-between gap-4 px-1">
-                    {!isOwner && (
+                    {!isOwner ? (
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -977,6 +1141,24 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 </TooltipTrigger>
                                 <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
                                     <p className="text-[10px] font-bold uppercase">Chat with Provider</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    ) : (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="outline" 
+                                        size="icon" 
+                                        className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:bg-primary/5 shrink-0"
+                                        onClick={() => setIsOrdersOpen(true)}
+                                    >
+                                        <ShoppingBag className="h-5 w-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
+                                    <p className="text-[10px] font-bold uppercase">Order Tracker</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -1225,6 +1407,15 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         {itemForm(itemToEdit, true)}
                     </DialogContent>
                 </Dialog>
+            )}
+
+            {/* Vendor Orders Hub */}
+            {isOwner && (
+                <VendorOrdersSheet 
+                    vendorId={vendorId} 
+                    isOpen={isOrdersOpen} 
+                    onOpenChange={setIsOrdersOpen} 
+                />
             )}
 
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>

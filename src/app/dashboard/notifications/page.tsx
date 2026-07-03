@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect, useCallback } from 'react';
@@ -7,7 +8,7 @@ import { collection, query, doc, updateDoc, writeBatch, where, getDoc, serverTim
 import type { Notification, Soul } from '@/lib/types';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles, X } from 'lucide-react';
+import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles, X, ShoppingBag, Package } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -23,11 +24,17 @@ const NOTIFICATION_TYPES = [
   'request_accepted', 'request_declined', 
   'accountability_partner_removed',
   'new_soul_in_fellowship',
-  'soul_unassigned_from_fellowship'
+  'soul_unassigned_from_fellowship',
+  'new_order',
+  'order_update'
 ];
 
 function getNotificationIcon(type: string, actionId?: string) {
     switch (type) {
+        case 'new_order':
+            return <ShoppingBag className="h-4 w-4 text-primary" />;
+        case 'order_update':
+            return <Package className="h-4 w-4 text-primary" />;
         case 'pending_provision':
             return actionId === 'shared_meal' 
                 ? <Utensils className="h-4 w-4 text-primary animate-pulse" />
