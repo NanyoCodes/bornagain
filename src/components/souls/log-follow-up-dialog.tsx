@@ -32,7 +32,9 @@ import {
   Phone, 
   MessageSquare, 
   Calendar,
-  CheckCircle2
+  CheckCircle2,
+  Send,
+  X
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,6 +42,7 @@ import * as z from "zod";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { Label } from "../ui/label";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -53,6 +56,14 @@ const iconMap: Record<string, any> = {
     'helped_with_need': Heart,
     'invited_to_event': Calendar,
 };
+
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+  );
+}
 
 const logFollowUpFormSchema = z.object({
   note: z.string().optional(),
@@ -95,6 +106,10 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
+  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
+  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = React.useState(false);
+  const [helpNeedNote, setHelpNeedNote] = React.useState('');
+
   const currentUserRef = React.useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: fetchedProfile } = useDoc<UserProfile>(currentUserRef);
   const userProfile = providedProfile || fetchedProfile;
@@ -118,15 +133,14 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   
   React.useEffect(() => {
     if (isOpen && soul) {
-      // Only reset the form when the dialog opens or the soul ID changes.
       form.reset({
-        note: form.getValues('note') || '',
+        note: '',
         status: soul.status || 'New',
         attendingChurch: soul.attendingChurch || false,
         inBibleStudy: soul.inBibleStudy || false,
         attendingPrayer: soul.attendingPrayer || false,
         inServiceDepartment: soul.inServiceDepartment || false,
-        actions: form.getValues('actions') || [],
+        actions: [],
       });
     }
   }, [isOpen, soul?.id, form]);
@@ -141,9 +155,14 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
 
+    let finalNote = values.note || '';
+    if (values.actions?.includes('helped_with_need') && helpNeedNote) {
+        finalNote = finalNote ? `${finalNote}\n\nKindness Note: ${helpNeedNote}` : `Kindness Note: ${helpNeedNote}`;
+    }
+
     const newLogEntry = {
         date: new Date(), 
-        note: values.note || '',
+        note: finalNote,
         actions: values.actions || [],
         memberId: user.uid,
         memberName: memberName,
@@ -169,6 +188,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
         toast({ title: 'Follow-up Logged', description: 'Your interaction has been saved to the history.' });
         onFollowUpLogged();
         form.reset();
+        setHelpNeedNote('');
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
         const permissionError = new FirestorePermissionError({
@@ -182,9 +202,62 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     }
   }
 
+  const handleActionToggle = (actionId: string) => {
+      if (!soul) return;
+      const currentActions = form.getValues('actions') || [];
+      const isSelected = currentActions.includes(actionId);
+
+      if (isSelected) {
+          form.setValue('actions', currentActions.filter(id => id !== actionId));
+          if (actionId === 'helped_with_need') setHelpNeedNote('');
+          return;
+      }
+
+      if (actionId === 'phone_call' || actionId === 'text_message') {
+          if (!soul.phone) {
+              toast({ variant: 'destructive', title: 'Phone Missing', description: `Please save a number for ${soul.firstName} first.` });
+              return;
+          }
+      }
+
+      if (actionId === 'text_message') {
+          setIsCommChannelDialogOpen(true);
+      } else if (actionId === 'phone_call') {
+          window.location.href = `tel:${soul.phone}`;
+          form.setValue('actions', [...currentActions, actionId]);
+      } else if (actionId === 'helped_with_need') {
+          setIsHelpNeedDialogOpen(true);
+      } else {
+          form.setValue('actions', [...currentActions, actionId]);
+      }
+  };
+
+  const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
+      if (!soul?.phone) return;
+      const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
+      const messageText = encodeURIComponent(`Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`);
+      
+      if (channel === 'whatsapp') {
+          window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
+      } else {
+          window.location.href = `sms:${soul.phone}?body=${messageText}`;
+      }
+      
+      const current = form.getValues('actions') || [];
+      form.setValue('actions', [...current, 'text_message']);
+      setIsCommChannelDialogOpen(false);
+  };
+
+  const handleHelpNeedConfirm = (note: string) => {
+      setHelpNeedNote(note);
+      const current = form.getValues('actions') || [];
+      form.setValue('actions', [...current, 'helped_with_need']);
+      setIsHelpNeedDialogOpen(false);
+  };
+
   const formBody = (
     <Form {...form}>
-        <form id="log-follow-up-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-6">
             <div className="space-y-1.5">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Interaction Notes</label>
                 <FormField
@@ -248,12 +321,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                                         ? "bg-primary/5 border-primary/40 shadow-inner ring-1 ring-primary/10" 
                                                         : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
                                                 )}
-                                                onClick={() => {
-                                                    const nextValue = isSelected
-                                                        ? field.value?.filter(v => v !== item.id)
-                                                        : [...(field.value || []), item.id];
-                                                    field.onChange(nextValue);
-                                                }}
+                                                onClick={() => handleActionToggle(item.id)}
                                             >
                                                 <AnimatePresence>
                                                     {isSelected && (
@@ -341,11 +409,58 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                      </AccordionContent>
                 </AccordionItem>
             </Accordion>
-        </form>
+        </div>
     </Form>
   );
 
   if (!mounted) return null;
+
+  const CommDialog = (
+    <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
+        <DialogHeader className="text-center space-y-2">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                <MessageSquare className="h-7 w-7 text-primary" />
+            </div>
+          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Message Hub</DialogTitle>
+          <DialogDescription className="text-sm font-medium">How would you like to encourage {soul?.firstName}?</DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-3 pt-6">
+          <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+            <WhatsAppIcon className="h-5 w-5" /> WhatsApp
+          </Button>
+          <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+            <MessageSquare className="h-5 w-5" /> Standard SMS
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
+  const NeedDialog = (
+    <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
+      <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+        <div className="p-8 border-b bg-muted/10">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DialogTitle>
+            <DialogDescription className="text-sm font-medium">Describe how you supported {soul?.firstName}.</DialogDescription>
+          </DialogHeader>
+        </div>
+        <div className="p-8 space-y-6">
+          <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
+              <Textarea 
+                  placeholder="e.g. Provided food items, helped with bill..." 
+                  value={helpNeedNote}
+                  onChange={e => setHelpNeedNote(e.target.value)}
+                  className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
+              />
+          </div>
+          <Button onClick={() => handleHelpNeedConfirm(helpNeedNote)} className="w-full h-12 rounded-xl font-bold">Confirm Service</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 
   if (isMobile) {
     return (
@@ -369,11 +484,13 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                 </div>
               </ScrollArea>
               <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
-                <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
+                <Button type="button" onClick={form.handleSubmit(onSubmit)} disabled={isLoading} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     SAVE INTERACTION
                 </Button>
               </div>
+              {CommDialog}
+              {NeedDialog}
             </>
           )}
         </SheetContent>
@@ -382,32 +499,36 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg flex flex-col max-h-[90vh] p-0 rounded-3xl overflow-hidden">
-        {soul && (
-          <>
-            <div className="p-6 border-b shrink-0 bg-muted/10">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold font-headline">Log Follow-up for {soul.firstName}</DialogTitle>
-                    <DialogDescription className="text-sm font-medium">Record this interaction in the shared history.</DialogDescription>
-                </DialogHeader>
-            </div>
-            <ScrollArea className="flex-grow px-6">
-                <div className="py-6">
-                    {formBody}
-                </div>
-            </ScrollArea>
-            <div className="p-6 border-t shrink-0">
-                <DialogFooter>
-                    <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full h-12 rounded-2xl font-bold">
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Save Interaction
-                    </Button>
-                </DialogFooter>
-            </div>
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-lg flex flex-col max-h-[90vh] p-0 rounded-3xl overflow-hidden">
+          {soul && (
+            <>
+              <div className="p-6 border-b shrink-0 bg-muted/10">
+                  <DialogHeader>
+                      <DialogTitle className="text-2xl font-bold font-headline">Log Follow-up for {soul.firstName}</DialogTitle>
+                      <DialogDescription className="text-sm font-medium">Record this interaction in the shared history.</DialogDescription>
+                  </DialogHeader>
+              </div>
+              <ScrollArea className="flex-grow px-6">
+                  <div className="py-6">
+                      {formBody}
+                  </div>
+              </ScrollArea>
+              <div className="p-6 border-t shrink-0">
+                  <DialogFooter>
+                      <Button type="button" onClick={form.handleSubmit(onSubmit)} disabled={isLoading} className="w-full h-12 rounded-2xl font-bold">
+                          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          Save Interaction
+                      </Button>
+                  </DialogFooter>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+      {CommDialog}
+      {NeedDialog}
+    </>
   );
 }
