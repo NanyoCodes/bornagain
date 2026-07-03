@@ -106,19 +106,19 @@ export default function OrdersListClient() {
   }, [user?.uid, firestore]);
   const { data: myVendors, loading: loadingVendors } = useCollection<VendorProfile>(myVendorsQuery);
 
-  const vendorIds = React.useMemo(() => myVendors?.map(v => v.id) || [], [myVendors]);
   const isVendorOfCurrentType = React.useMemo(() => {
       return myVendors?.some(v => v.vendorType === activeCategory) || false;
   }, [myVendors, activeCategory]);
 
   // Fetch Received Orders (if vendor)
   const receivedOrdersQuery = React.useMemo(() => {
-    if (!user?.uid || !firestore) return null;
+    // SECURITY: Guard query to ensure it only runs for authorized suppliers
+    if (!user?.uid || !firestore || !isVendorOfCurrentType) return null;
     return query(
         collection(firestore, 'mealGifts'),
         where('vendorOwnerId', '==', user.uid)
     );
-  }, [user?.uid, firestore]);
+  }, [user?.uid, firestore, isVendorOfCurrentType]);
   const { data: rawReceivedOrders, loading: loadingReceived } = useCollection<MealGift>(receivedOrdersQuery);
 
   // Client-side filtering and sorting
@@ -173,7 +173,7 @@ export default function OrdersListClient() {
     }
   };
 
-  const loading = loadingSent || loadingVendors || loadingReceived;
+  const loading = loadingSent || loadingVendors || (isVendorOfCurrentType && loadingReceived);
 
   const renderOrderCard = (order: MealGift, type: 'sent' | 'received') => {
       const createdAt = safeToDate(order.createdAt);
@@ -247,7 +247,7 @@ export default function OrdersListClient() {
                     )}
                     
                     {order.instructions && (
-                        <div className="p-4 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/10 text-xs text-muted-foreground italic leading-relaxed relative overflow-hidden group/text shadow-inner">
+                        <div className="p-4 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/10 text-xs text-muted-foreground italic font-medium leading-relaxed relative overflow-hidden group/text shadow-inner">
                             <ShoppingBag className="absolute top-2 right-4 h-12 w-12 opacity-[0.03] rotate-12 group-hover/text:rotate-0 transition-transform pointer-events-none" />
                             <p className="relative z-10">&ldquo;{order.instructions}&rdquo;</p>
                         </div>
@@ -269,7 +269,7 @@ export default function OrdersListClient() {
                             onClick={() => updateOrderStatus(order.id, status as MealGiftStatus, order.senderId, order.mealName)}
                         >
                             {status === 'preparing' && 'PREPARE'}
-                            {status === 'delivering' && 'DELIVER'}
+                            {status === 'delivering' && 'SHIPPING'}
                             {status === 'delivered' && 'MARK DONE'}
                         </Button>
                     ))}
@@ -293,7 +293,7 @@ export default function OrdersListClient() {
         </p>
         {activeType === 'sent' && (
             <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
-                <Link href={activeCategory === 'meal' ? "/dashboard/marketplace" : "/dashboard/marketplace/gifts"}>VISIT {activeCategory.toUpperCase()} HUB</Link>
+                <Link href={activeCategory === 'meal' ? "/dashboard/marketplace" : "/dashboard/marketplace/gifts"}>VISIT {activeCategory === 'meal' ? 'MEALS' : 'GIFT'} HUB</Link>
             </Button>
         )}
     </div>
@@ -320,7 +320,7 @@ export default function OrdersListClient() {
                     <Tabs value={activeCategory} onValueChange={(val: any) => setActiveCategory(val)} className="flex-1">
                         <TabsList className="grid w-full grid-cols-2 h-12 bg-muted/40 p-1 rounded-2xl">
                             <TabsTrigger value="meal" className="font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center gap-2">
-                                <Utensils className="h-3.5 w-3.5" /> Provision Hub
+                                <Utensils className="h-3.5 w-3.5" /> Meals Hub
                             </TabsTrigger>
                             <TabsTrigger value="gift" className="font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center gap-2">
                                 <Gift className="h-3.5 w-3.5" /> Kindness Center
