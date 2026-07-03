@@ -67,6 +67,17 @@ const strongholdCategories = [
     'Pride', 'Lust', 'Fear', 'Unforgiveness', 'Anger', 'Addiction', 'Laziness', 'Grief', 'Comparison', 'Unbelief', 'Depression', 'Greed', 'Worldliness', 'Jealousy', 'Other'
 ];
 
+const victoryScriptures = [
+    { text: "But thanks be to God, who gives us the victory through our Lord Jesus Christ.", ref: "1 Corinthians 15:57" },
+    { text: "In all these things we are more than conquerors through him who loved us.", ref: "Romans 8:37" },
+    { text: "For everyone born of God overcomes the world.", ref: "1 John 5:4" },
+    { text: "The one who is in you is greater than the one who is in the world.", ref: "1 John 4:4" },
+    { text: "I have given you authority... to overcome all the power of the enemy.", ref: "Luke 10:19" },
+    { text: "Where sin abounded, grace abounded much more.", ref: "Romans 5:20" },
+    { text: "No weapon forged against you will prevail.", ref: "Isaiah 54:17" },
+    { text: "The Lord will fight for you; you need only to be still.", ref: "Exodus 14:14" }
+];
+
 export function StrongholdTracker() {
     const { user } = useUser();
     const { userProfile } = useUserProfile();
@@ -80,7 +91,7 @@ export function StrongholdTracker() {
     const [category, setCategory] = useState('Other');
     const [title, setTitle] = useState('');
     
-    const [testimonyStronghold, setTestimonyStronghold] = useState<Stronghold | null>(null);
+    const [testimonyStronghold, setTestimonyStronghold] = setTestimonyStronghold = useState<Stronghold | null>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -236,6 +247,10 @@ export function StrongholdTracker() {
                         {strongholds.map((s) => {
                             const isVictorious = s.status === 'victorious';
                             const circleLink = `/dashboard/strongholds/${(s.category || 'Other').toLowerCase()}`;
+                            
+                            // Deterministically pick a victory scripture based on ID to avoid hydration mismatch
+                            const scriptureIdx = s.id.charCodeAt(s.id.length - 1) % victoryScriptures.length;
+                            const victoryVerse = victoryScriptures[scriptureIdx];
 
                             return (
                                 <div key={s.id} className={cn(
@@ -286,16 +301,18 @@ export function StrongholdTracker() {
 
                                         {isVictorious && (
                                             <div className="flex items-center justify-between gap-4 py-1">
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex items-center gap-3 min-w-0">
                                                     <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
                                                         <CheckCircle2 className="h-5 w-5 text-green-600" />
                                                     </div>
-                                                    <p className="text-[10px] font-bold text-green-700 leading-tight">"Where sin abounded, grace abounded much more." — Romans 5:20</p>
+                                                    <p className="text-[10px] font-bold text-green-700 leading-tight italic break-words">
+                                                        "{victoryVerse.text}" — {victoryVerse.ref}
+                                                    </p>
                                                 </div>
                                                 <Button 
                                                     size="sm" 
                                                     variant="outline" 
-                                                    className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20 px-3"
+                                                    className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20 px-3 shrink-0"
                                                     onClick={() => setTestimonyStronghold(s)}
                                                 >
                                                     <Newspaper className="mr-1.5 h-3 w-3" />
@@ -305,7 +322,7 @@ export function StrongholdTracker() {
                                         )}
                                     </div>
                                     
-                                    <Link href={circleLink} className="block w-full py-2.5 bg-primary/10 border-t border-primary/20 text-center group/circle hover:bg-primary/20 transition-all">
+                                    <Link href={circleLink} className="block w-full py-2.5 bg-primary/20 border-t border-primary/20 text-center group/circle hover:bg-primary/30 transition-all">
                                         <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary group-hover/circle:scale-105 transition-transform flex items-center justify-center gap-1.5">
                                             ENTER VICTORY CIRCLE <ArrowRight className="h-3 w-3" />
                                         </span>
