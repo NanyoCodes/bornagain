@@ -3,37 +3,61 @@
 import * as React from 'react';
 import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
 import { collection, query, where, doc } from 'firebase/firestore';
-import type { MealGift, VendorProfile } from '@/lib/types';
-import { Card, CardContent } from '@/components/ui/card';
+import type { MealGift, VendorProfile, UserProfile } from '@/lib/types';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Package, Truck, Utensils, CheckCircle2, Timer, ArrowLeft, ShoppingBag, MapPin, Store } from 'lucide-react';
+import { Package, Truck, Utensils, CheckCircle2, Timer, ArrowLeft, ShoppingBag, MapPin, Store, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 /**
  * Ensures vendor details in the order tracker are always current.
+ * Now includes owner (believer) name and photo.
  */
 function LiveVendorInfo({ vendorId, fallbackName }: { vendorId: string, fallbackName: string }) {
     const firestore = useFirestore();
     const vendorRef = React.useMemo(() => vendorId ? doc(firestore, 'vendors', vendorId) : null, [firestore, vendorId]);
     const { data: vendor } = useDoc<VendorProfile>(vendorRef);
     
+    const ownerRef = React.useMemo(() => vendor?.userId ? doc(firestore, 'users', vendor.userId) : null, [firestore, vendor?.userId]);
+    const { data: owner } = useDoc<UserProfile>(ownerRef);
+    const ownerName = owner ? `${owner.firstName} ${owner.lastName}` : 'Kingdom Believer';
+
     return (
-        <div className="flex flex-col gap-0.5 min-w-0">
-            <p className="text-[9px] font-black uppercase text-primary tracking-[0.2em] mb-0.5">Kingdom Provider</p>
-            <Link href={`/dashboard/marketplace/vendors/${vendorId}`} className="text-sm font-black truncate hover:underline uppercase tracking-tight flex items-center gap-2">
-                <Store className="h-3 w-3 shrink-0" />
-                {vendor?.businessName || fallbackName}
-            </Link>
-            {vendor?.location && (
-                <p className="text-[9px] text-muted-foreground font-bold truncate flex items-center gap-1 uppercase tracking-tighter opacity-70">
-                    <MapPin className="h-2.5 w-2.5 shrink-0" /> {vendor.location}
-                </p>
-            )}
+        <div className="flex flex-col gap-1 min-w-0">
+            <p className="text-[9px] font-black uppercase text-primary tracking-[0.2em] mb-1">Kingdom Provider</p>
+            <div className="flex items-center gap-3">
+                 <Link href={`/dashboard/marketplace/vendors/${vendorId}`} className="shrink-0 active:scale-95 transition-transform">
+                    <Avatar className="h-9 w-9 border-2 border-primary/10 shadow-sm">
+                        <AvatarImage src={vendor?.photoURL || owner?.photoURL} className="object-cover" />
+                        <AvatarFallback className="text-[10px] font-black bg-primary/5 text-primary">
+                            {owner?.firstName?.charAt(0) || vendor?.businessName?.charAt(0) || 'K'}
+                        </AvatarFallback>
+                    </Avatar>
+                 </Link>
+                 <div className="min-w-0 flex-1">
+                    <Link href={`/dashboard/marketplace/vendors/${vendorId}`} className="text-sm font-black truncate hover:text-primary transition-colors uppercase tracking-tight flex items-center gap-1.5">
+                        <Store className="h-3 w-3 shrink-0" />
+                        {vendor?.businessName || fallbackName}
+                    </Link>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5">
+                         <Link href={vendor?.userId ? `/dashboard/profile/${vendor.userId}` : '#'} className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                            <User className="h-2.5 w-2.5 opacity-60" />
+                            {ownerName}
+                        </Link>
+                        {vendor?.location && (
+                            <p className="text-[10px] text-muted-foreground font-medium truncate flex items-center gap-1 uppercase tracking-tighter opacity-70">
+                                <MapPin className="h-2.5 w-2.5 shrink-0" /> {vendor.location}
+                            </p>
+                        )}
+                    </div>
+                 </div>
+            </div>
         </div>
     );
 }
@@ -45,7 +69,6 @@ export default function OrdersListClient() {
 
   const ordersQuery = React.useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    // We sort on client side to avoid index requirements
     return query(
       collection(firestore, 'mealGifts'),
       where('senderId', '==', user.uid)
