@@ -360,8 +360,6 @@ export default function OrdersListClient() {
       }
   };
 
-  const loading = loadingSent || loadingVendors || (isVendorOfCurrentType && activeType === 'received' && loadingReceived);
-
   const renderOrderCard = (order: MealGift, type: 'sent' | 'received') => {
       const createdAt = safeToDate(order.createdAt);
       const isGift = order.vendorType === 'gift';
@@ -466,7 +464,8 @@ export default function OrdersListClient() {
                         </Button>
                     ))}
                 </CardFooter>
-            </Card>
+            )}
+        </Card>
       );
   };
 
@@ -550,27 +549,22 @@ export default function OrdersListClient() {
             </div>
         </header>
 
-        <div className="grid gap-6 px-4 sm:px-0 pt-8">
-            {loading ? (
-                [...Array(3)].map((_, i) => (
-                    <Card key={i} className="rounded-[2.5rem] border-none shadow-sm animate-pulse h-40 bg-muted/20" />
-                ))
-            ) : (
-                <div className="space-y-6">
-                    {activeType === 'sent' ? (
-                        filteredSentOrders.length > 0 ? (
-                            filteredSentOrders.map(order => renderOrderCard(order, 'sent'))
-                        ) : emptyState
-                    ) : (
-                        filteredReceivedOrders.length > 0 ? (
-                            filteredReceivedOrders.map(order => renderOrderCard(order, 'received'))
-                        ) : emptyState
-                    )}
-                </div>
-            )}
-        </div>
+        <ScrollArea className="flex-1 w-full px-4 sm:px-0 mt-8">
+            <div className="space-y-6">
+                {activeType === 'sent' ? (
+                    filteredSentOrders.length > 0 ? (
+                        filteredSentOrders.map(order => renderOrderCard(order, 'sent'))
+                    ) : emptyState
+                ) : (
+                    filteredReceivedOrders.length > 0 ? (
+                        filteredReceivedOrders.map(order => renderOrderCard(order, 'received'))
+                    ) : emptyState
+                )}
+                <div className="h-24 sm:hidden" />
+            </div>
+        </ScrollArea>
 
-        <footer className="text-center pt-12 border-t mt-12 px-8">
+        <footer className="text-center pt-8 border-t mt-auto px-8 bg-background shrink-0">
             <p className="text-[10px] text-muted-foreground italic font-bold uppercase tracking-[0.2em] max-w-md mx-auto opacity-40">
               "Whatever you did for one of the least of these brothers and sisters of mine, you did for me." — Matthew 25:40
             </p>
