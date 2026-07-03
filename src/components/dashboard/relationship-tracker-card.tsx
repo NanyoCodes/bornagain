@@ -3,8 +3,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
-import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy } from 'firebase/firestore';
-import type { UserProfile, Soul } from '@/lib/types';
+import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc } from 'firebase/firestore';
+import type { UserProfile, Soul, Chat } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -26,7 +26,10 @@ import {
   Search,
   PlusCircle,
   Hourglass,
-  Send
+  Send,
+  Share2,
+  Share,
+  X
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -48,6 +51,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '../ui/separator';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -75,6 +79,7 @@ function SoulSelectionDialog({
   onOpenChange, 
   souls, 
   onSelect,
+  onShare,
   actionLabel,
   isLoading
 }: { 
@@ -82,6 +87,7 @@ function SoulSelectionDialog({
   onOpenChange: (open: boolean) => void; 
   souls: Soul[] | null; 
   onSelect: (soul: Soul) => void;
+  onShare: (soul: Soul) => void;
   actionLabel: string;
   isLoading: boolean;
 }) {
@@ -106,7 +112,7 @@ function SoulSelectionDialog({
                         <Input 
                             placeholder="Search by name..." 
                             value={search} 
-                            onChange={e => setSearch(e.target.value)}
+                            onChange={e => setSearchTerm(e.target.value)}
                             className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
@@ -114,24 +120,40 @@ function SoulSelectionDialog({
                         <div className="p-2 space-y-1.5">
                             {filteredSouls.length > 0 ? (
                                 filteredSouls.map(soul => (
-                                    <Button 
-                                        key={soul.id} 
-                                        variant="ghost" 
-                                        className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group"
-                                        onClick={() => onSelect(soul)}
-                                        disabled={isLoading}
-                                    >
-                                        <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
-                                            <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="text-left min-w-0 flex-1">
-                                            <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
-                                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
-                                        </div>
-                                        <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <PlusCircle className="h-4 w-4" />
-                                        </div>
-                                    </Button>
+                                    <div key={soul.id} className="flex items-center gap-1 group">
+                                        <Button 
+                                            variant="ghost" 
+                                            className="flex-1 justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group/btn"
+                                            onClick={() => onSelect(soul)}
+                                            disabled={isLoading}
+                                        >
+                                            <Avatar className="h-10 w-10 border-2 group-hover/btn:border-primary/20 transition-colors shadow-sm">
+                                                <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="text-left min-w-0 flex-1">
+                                                <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
+                                            </div>
+                                            <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover/btn:opacity-100 transition-opacity">
+                                                <PlusCircle className="h-4 w-4" />
+                                            </div>
+                                        </Button>
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        size="icon" 
+                                                        className="h-16 w-12 rounded-2xl text-muted-foreground hover:text-primary hover:bg-primary/5 shrink-0"
+                                                        onClick={() => onShare(soul)}
+                                                    >
+                                                        <Share2 className="h-4 w-4" />
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Share Details</p></TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </div>
                                 ))
                             ) : (
                                 <div className="text-center py-16 px-8 space-y-3">
@@ -189,6 +211,43 @@ function CommChannelDialog({
   );
 }
 
+function ShareTargetDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onChoice 
+}: { 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  soul: Soul | null; 
+  onChoice: (target: 'whatsapp' | 'partner') => void; 
+}) {
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
+        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none">
+            <Share2 className="h-24 w-24 text-primary" />
+        </div>
+        <DialogHeader className="text-center space-y-2">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                <Share className="h-7 w-7 text-primary" />
+            </div>
+          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Share Details</DialogTitle>
+          <DialogDescription className="text-sm font-medium">Where would you like to share {soul?.firstName}'s info?</DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-3 pt-6">
+          <Button onClick={() => onChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+            <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
+          </Button>
+          <Button onClick={() => onChoice('partner')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+            <HeartHandshake className="h-5 w-5" /> Partner on App
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function RelationshipTrackerCard() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
@@ -199,8 +258,14 @@ export function RelationshipTrackerCard() {
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
+  
   const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
   const [commTargetSoul, setCommTargetSoul] = useState<Soul | null>(null);
+
+  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
+  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
+  const [sharingSoul, setSharingSoul] = useState<Soul | null>(null);
+
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
   const { userProfile, loading: profileLoading } = useUserProfile();
@@ -257,10 +322,104 @@ export function RelationshipTrackerCard() {
       setIsSoulDialogOpen(true);
   };
 
+  const performLogging = async (soul: Soul, actionId: string) => {
+      if (!user || !firestore) return;
+
+      const action = actionItems.find(a => a.id === actionId);
+      if (!action) return;
+
+      const today = new Date();
+      const dateString = format(today, 'yyyy-MM-dd');
+      const batch = writeBatch(firestore);
+
+      const isProvisionAction = actionId === 'shared_meal' || actionId === 'gave_gift';
+
+      // 1. Update user's daily discipline (habit tracking) - SKIP for pending provisions
+      if (!isProvisionAction) {
+          const wasCompleted = completedToday.includes(actionId);
+          const newCompleted = wasCompleted ? completedToday : [...completedToday, actionId];
+
+          const userRef = doc(firestore, 'users', user.uid);
+          batch.update(userRef, {
+              'dailyDiscipline.completed': newCompleted,
+              'dailyDiscipline.lastUpdated': serverTimestamp(),
+          });
+
+          const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
+          batch.set(historyRef, {
+              completed: newCompleted,
+              date: serverTimestamp()
+          }, { merge: true });
+          
+          setCompletedToday(newCompleted);
+      }
+
+      // 2. Update soul's history
+      const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
+      const logEntry = {
+          date: new Date(), 
+          note: isProvisionAction 
+              ? `Initiated ${action.label} via Kingdom Connections` 
+              : `Logged via Kingdom Connections: ${action.label}`,
+          actions: [actionId],
+          memberId: user.uid,
+          memberName: memberName,
+      };
+
+      const soulUserRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+      const globalSoulRef = doc(firestore, 'souls', soul.id);
+      
+      batch.update(soulUserRef, {
+          followUpLog: arrayUnion(logEntry),
+          lastUpdatedAt: serverTimestamp(),
+      });
+      batch.update(globalSoulRef, {
+          followUpLog: arrayUnion(logEntry),
+          lastUpdatedAt: serverTimestamp(),
+      });
+
+      try {
+          await batch.commit();
+
+          if (isProvisionAction) {
+              if (typeof window !== 'undefined') {
+                  const key = `testify_pending_provisions_${user.uid}`;
+                  const stored = localStorage.getItem(key);
+                  let provisions = [];
+                  try {
+                      provisions = stored ? JSON.parse(stored) : [];
+                      if (!Array.isArray(provisions)) provisions = [];
+                  } catch (e) { provisions = []; }
+
+                  if (!provisions.some((p: any) => p.soulId === soul.id && p.actionId === actionId)) {
+                      provisions.push({
+                          soulId: soul.id,
+                          soulName: soul.firstName,
+                          actionId: actionId,
+                          timestamp: Date.now()
+                      });
+                  }
+                  localStorage.setItem(key, JSON.stringify(provisions));
+                  window.dispatchEvent(new Event('testify_pending_action_update'));
+              }
+              const path = actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+              router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${actionId}`);
+              toast({ title: 'Opening Hub...', description: `Finish act of kindness for ${soul.firstName}.` });
+          } else {
+              toast({ title: 'Kingdom Impact Saved!', description: `Logged '${action.label}' for ${soul.firstName}.` });
+          }
+      } catch (err: any) {
+          const permissionError = new FirestorePermissionError({
+              path: `BATCH_WRITE:RELATION_TRACKER:${soul.id}`,
+              operation: 'write',
+          }, user);
+          errorEmitter.emit('permission-error', permissionError);
+      }
+  };
+
   const handleSoulSelected = async (soul: Soul) => {
     if (!user || !firestore || !selectedActionId) return;
     
-    // Communication Channel Check: Ensure soul has a phone number for call/message actions
     const isCommAction = selectedActionId === 'phone_call' || selectedActionId === 'text_message';
     if (isCommAction && !soul.phone) {
         toast({
@@ -273,136 +432,105 @@ export function RelationshipTrackerCard() {
     }
 
     setIsSoulDialogOpen(false);
-    setTogglingId(selectedActionId);
 
-    const action = actionItems.find(a => a.id === selectedActionId);
-    if (!action) return;
-
-    const today = new Date();
-    const dateString = format(today, 'yyyy-MM-dd');
-    const batch = writeBatch(firestore);
-
-    const isProvisionAction = selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift';
-
-    // 1. Update user's daily discipline (habit tracking) - SKIP for pending provisions
-    if (!isProvisionAction) {
-        const wasCompleted = completedToday.includes(selectedActionId);
-        const newCompleted = wasCompleted
-            ? completedToday.filter((id) => id !== selectedActionId)
-            : [...completedToday, selectedActionId];
-
-        const userRef = doc(firestore, 'users', user.uid);
-        batch.update(userRef, {
-            'dailyDiscipline.completed': newCompleted,
-            'dailyDiscipline.lastUpdated': serverTimestamp(),
-        });
-
-        const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
-        batch.set(historyRef, {
-            completed: newCompleted,
-            date: serverTimestamp()
-        }, { merge: true });
+    if (selectedActionId === 'text_message') {
+        setCommTargetSoul(soul);
+        setIsCommChannelDialogOpen(true);
+        return;
     }
-
-    // 2. Update soul's history
-    const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
-    const logEntry = {
-        date: new Date(), 
-        note: isProvisionAction 
-            ? `Initiated ${action.label} via Kingdom Connections` 
-            : `Logged via Kingdom Connections: ${action.label}`,
-        actions: [selectedActionId],
-        memberId: user.uid,
-        memberName: memberName,
-    };
-
-    const soulUserRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
-    const globalSoulRef = doc(firestore, 'souls', soul.id);
     
-    batch.update(soulUserRef, {
-        followUpLog: arrayUnion(logEntry),
-        lastUpdatedAt: serverTimestamp(),
-    });
-    batch.update(globalSoulRef, {
-        followUpLog: arrayUnion(logEntry),
-        lastUpdatedAt: serverTimestamp(),
-    });
-
-    try {
-        await batch.commit();
-
-        // COMMUNICATION TRIGGERS
-        if (soul.phone) {
-            if (selectedActionId === 'phone_call') {
-                window.location.href = `tel:${soul.phone}`;
-            } else if (selectedActionId === 'text_message') {
-                setCommTargetSoul(soul);
-                setIsCommChannelDialogOpen(true);
-            }
-        }
-        
-        // REDIRECT LOGIC FOR GIFTS & MEALS
-        if (isProvisionAction) {
-            if (typeof window !== 'undefined') {
-                const key = `testify_pending_provisions_${user.uid}`;
-                const stored = localStorage.getItem(key);
-                let provisions = [];
-                try {
-                    provisions = stored ? JSON.parse(stored) : [];
-                    if (!Array.isArray(provisions)) provisions = [];
-                } catch (e) { provisions = []; }
-
-                if (!provisions.some((p: any) => p.soulId === soul.id && p.actionId === selectedActionId)) {
-                    provisions.push({
-                        soulId: soul.id,
-                        soulName: soul.firstName,
-                        actionId: selectedActionId,
-                        timestamp: Date.now()
-                    });
-                }
-                
-                localStorage.setItem(key, JSON.stringify(provisions));
-                window.dispatchEvent(new Event('testify_pending_action_update'));
-            }
-
-            const path = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-            router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
-            toast({ title: 'Opening Provision Hub...', description: `Finish act of kindness for ${soul.firstName}.` });
-        } else if (selectedActionId !== 'text_message' && selectedActionId !== 'phone_call') {
-            toast({ 
-                title: 'Kingdom Impact Saved!', 
-                description: `Logged '${action.label}' for ${soul.firstName}.` 
-            });
-            setCompletedToday(prev => prev.includes(selectedActionId) ? prev : [...prev, selectedActionId]);
-        }
-    } catch (err: any) {
-        console.error("Batch update failed:", err);
-        const permissionError = new FirestorePermissionError({
-            path: `BATCH_WRITE:RELATION_TRACKER:${soul.id}`,
-            operation: 'write',
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-    } finally {
-        setTogglingId(null);
-        setSelectedActionId(null);
+    if (selectedActionId === 'phone_call') {
+        await performLogging(soul, 'phone_call');
+        window.location.href = `tel:${soul.phone}`;
+        return;
     }
+
+    setTogglingId(selectedActionId);
+    await performLogging(soul, selectedActionId);
+    setTogglingId(null);
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
       if (!commTargetSoul || !commTargetSoul.phone) return;
       
-      const cleanPhone = commTargetSoul.phone.replace(/\+/g, '').replace(/\D/g, '');
-      const messageText = encodeURIComponent(`Hi ${commTargetSoul.firstName}, I'm thinking of you today and praying for you. God bless you!`);
+      const soul = commTargetSoul;
+      const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
+      const messageText = encodeURIComponent(`Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`);
       
-      if (channel === 'whatsapp') {
-          window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
-      } else {
-          window.location.href = `sms:${commTargetSoul.phone}?body=${messageText}`;
-      }
+      performLogging(soul, 'text_message').then(() => {
+          if (channel === 'whatsapp') {
+              window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
+          } else {
+              window.location.href = `sms:${soul.phone}?body=${messageText}`;
+          }
+      });
       
       setIsCommChannelDialogOpen(false);
       setCommTargetSoul(null);
-      toast({ title: 'Opening Messaging App...' });
+  };
+
+  const handleShareSoul = (soul: Soul) => {
+      setSharingSoul(soul);
+      setIsSoulDialogOpen(false);
+      setIsShareTargetDialogOpen(true);
+  };
+
+  const handleShareToWhatsApp = () => {
+      if (!sharingSoul) return;
+      const wonAt = safeToDate(sharingSoul.wonAt);
+      const details = `Here is a soul I'm following up with on Testify:\nName: ${sharingSoul.firstName} ${sharingSoul.lastName}\nStatus: ${sharingSoul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nLet's keep them in our prayers.`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
+      setIsShareTargetDialogOpen(false);
+      setSharingSoul(null);
+  };
+
+  const handleShareToPartner = async (partner: UserProfile['accountabilityPartners'][0]) => {
+      if (!user || !firestore || !sharingSoul || !userProfile) return;
+
+      const wonAt = safeToDate(sharingSoul.wonAt);
+      const text = `SHARING SOUL DATA:\nName: ${sharingSoul.firstName} ${sharingSoul.lastName}\nStatus: ${sharingSoul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nRelationship: ${sharingSoul.relationship || 'Outreach'}\nLet's keep them in our prayers and coordinate follow-up.`;
+
+      try {
+          const participantIds = [user.uid, partner.userId].sort();
+          const chatsRef = collection(firestore, 'chats');
+          const q = query(chatsRef, where('participantIds', '==', participantIds), where('isGroupChat', '==', false));
+          const snap = await getDocs(q);
+          let chatId: string;
+
+          if (!snap.empty) {
+              chatId = snap.docs[0].id;
+          } else {
+              const otherDoc = await getDoc(doc(firestore, 'users', partner.userId));
+              const otherProfile = otherDoc.data() as UserProfile;
+              const newChat = {
+                  participantIds,
+                  participantInfo: {
+                      [user.uid]: { firstName: userProfile.firstName, lastName: userProfile.lastName, photoURL: userProfile.photoURL || '' },
+                      [partner.userId]: { firstName: partner.firstName, lastName: partner.lastName, photoURL: partner.photoURL || '' }
+                  },
+                  lastUpdatedAt: serverTimestamp(),
+                  isGroupChat: false,
+                  hasMessages: true
+              };
+              const ref = await addDoc(chatsRef, newChat);
+              chatId = ref.id;
+          }
+
+          await addDoc(collection(firestore, 'chats', chatId, 'messages'), {
+              senderId: user.uid,
+              text,
+              createdAt: serverTimestamp()
+          });
+
+          await updateDoc(doc(firestore, 'chats', chatId), { lastUpdatedAt: serverTimestamp(), hasMessages: true });
+          
+          toast({ title: 'Shared with Partner!', description: `Details sent to ${partner.firstName}.` });
+          setIsPartnerSelectionDialogOpen(false);
+          setIsShareTargetDialogOpen(false);
+          setSharingSoul(null);
+      } catch (e) {
+          toast({ variant: 'destructive', title: 'Share Failed' });
+      }
   };
 
   const activeActionLabel = useMemo(() => 
@@ -550,6 +678,7 @@ export function RelationshipTrackerCard() {
           onOpenChange={setIsSoulDialogOpen} 
           souls={souls} 
           onSelect={handleSoulSelected} 
+          onShare={handleShareSoul}
           actionLabel={activeActionLabel}
           isLoading={togglingId !== null}
       />
@@ -560,6 +689,50 @@ export function RelationshipTrackerCard() {
         soul={commTargetSoul}
         onChoice={handleCommChoice}
       />
+
+      <ShareTargetDialog 
+          isOpen={isShareTargetDialogOpen} 
+          onOpenChange={setIsShareTargetDialogOpen} 
+          soul={sharingSoul} 
+          onChoice={(choice) => {
+              if (choice === 'whatsapp') handleShareToWhatsApp();
+              else setIsPartnerSelectionDialogOpen(true);
+          }} 
+      />
+
+      <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
+          <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+              <div className="p-8 border-b bg-muted/10">
+                  <DialogHeader>
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
+                      <DialogDescription className="text-sm font-medium">Which partner should receive these details?</DialogDescription>
+                  </DialogHeader>
+              </div>
+              <div className="p-6">
+                <ScrollArea className="h-64">
+                    <div className="space-y-2">
+                        {userProfile?.accountabilityPartners?.map(p => (
+                            <Button 
+                                key={p.userId} 
+                                variant="ghost" 
+                                className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group"
+                                onClick={() => handleShareToPartner(p)}
+                            >
+                                <Avatar className="h-8 w-8 border shrink-0">
+                                    <AvatarImage src={p.photoURL} />
+                                    <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <span className="font-bold text-sm group-hover:text-primary transition-colors">{p.firstName} {p.lastName}</span>
+                            </Button>
+                        ))}
+                        {(!userProfile?.accountabilityPartners || userProfile.accountabilityPartners.length === 0) && (
+                            <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
+                        )}
+                    </div>
+                </ScrollArea>
+              </div>
+          </DialogContent>
+      </Dialog>
     </>
   );
 }

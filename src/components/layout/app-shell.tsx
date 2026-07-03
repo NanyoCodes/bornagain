@@ -68,7 +68,7 @@ import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "../ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
@@ -166,6 +166,28 @@ function PendingProvisionReminder() {
         if (!firestore) return;
 
         try {
+            const batch = writeBatch(firestore);
+
+            // 1. Remove from User's daily discipline checklist if it was checked
+            const userRef = doc(firestore, 'users', user.uid);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                const userData = userDoc.data() as UserProfile;
+                const updatedCompleted = (userData.dailyDiscipline?.completed || []).filter(id => id !== actionId);
+                batch.update(userRef, {
+                    'dailyDiscipline.completed': updatedCompleted,
+                    'dailyDiscipline.lastUpdated': serverTimestamp()
+                });
+                
+                const dateString = format(new Date(), 'yyyy-MM-dd');
+                const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
+                batch.set(historyRef, {
+                    completed: updatedCompleted,
+                    date: serverTimestamp()
+                }, { merge: true });
+            }
+
+            // 2. Remove "Initiated" log from soul
             const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulId);
             const globalSoulRef = doc(firestore, 'souls', soulId);
 
@@ -176,9 +198,11 @@ function PendingProvisionReminder() {
                     !(log.actions?.includes(actionId) && log.note?.includes('Initiated'))
                 );
                 
-                await updateDoc(soulUserRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
-                await updateDoc(globalSoulRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
+                batch.update(soulUserRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
+                batch.update(globalSoulRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
             }
+
+            await batch.commit();
         } catch (e) {
             console.error("Failed to sync cancellation:", e);
         }
@@ -314,7 +338,17 @@ function PendingProvisionReminder() {
                 <CardFooter className="p-4 border-t bg-muted/5 justify-center">
                     <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100" onClick={() => {
                          if(user?.uid) {
-                             localStorage.removeItem(`testify_pending_provisions_${user.uid}`);
+                             const key = `testify_pending_provisions_${user.uid}`;
+                             const stored = localStorage.getItem(key);
+                             if (stored) {
+                                 try {
+                                     const items = JSON.parse(stored);
+                                     if (Array.isArray(items)) {
+                                         items.forEach(i => removeOne(i.soulId, i.actionId));
+                                     }
+                                 } catch (e) {}
+                             }
+                             localStorage.removeItem(key);
                              setProvisions([]);
                              window.dispatchEvent(new Event('testify_pending_action_update'));
                          }
@@ -772,7 +806,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return subtotal + shipping;
   }, [cartItems, cartByVendor]);
 
-  const cartCount = useMemo(() => Object.values(cart).reduce((acc, c) => acc + c.quantity, 0), [cart]);
+  const cartCount = useMemo(() => Object.values(cart).reduce((acc, c) => acc + (c.quantity || 0), 0), [cart]);
 
   const handleGlobalCheckout = async () => {
     if (!user || !firestore || !userProfile || cartItems.length === 0) return;
@@ -1057,9 +1091,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         <ShoppingCart className="h-4 w-4 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span>
                     </div>
-                    <SheetHeader className="text-left">
+                    <SheetHeader className="text-left flex-shrink-0">
                         <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle>
-                        <SheetDescription className="text-sm font-medium">Review selection and logistical details.</SheetDescription>
+                        <SheetDescription className="text-sm font-medium mt-1">Review selection and logistical details.</SheetDescription>
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 overscroll-contain">
