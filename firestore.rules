@@ -179,7 +179,9 @@ service cloud.firestore {
       match /messages/{messageId} {
         allow read: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data);
         allow create: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data) && request.resource.data.senderId == request.auth.uid;
-        allow update, delete: if false; 
+        allow update, delete: if isOwner(resource.data.senderId)
+          && canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data)
+          && (request.time < resource.data.createdAt + duration.value(5, 'm'));
       }
     }
 
@@ -223,7 +225,7 @@ service cloud.firestore {
     match /vendors/{vendorId} {
       allow get, list: if true;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null && request.resource.data.userId == request.auth.uid;
 
       match /meals/{mealId} {
         allow get, list: if true;

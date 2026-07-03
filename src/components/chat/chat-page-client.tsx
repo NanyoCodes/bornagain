@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -24,7 +25,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
-import { format, isToday, differenceInHours, isSameDay } from 'date-fns';
+import { format, isToday, differenceInMinutes, isSameDay } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ChatParticipantsDialog } from '@/components/chat/participants-dialog';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -134,8 +135,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         return query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc'));
     }, [user?.uid, firestore, chatId]);
     
-    // We use serverTimestamps: 'estimate' to ensure the 24-hour edit window check 
-    // works immediately after a message is sent locally.
     const { data: messages, loading: loadingMessages } = useCollection<ChatMessage>(messagesQuery, {
         snapshotOptions: { serverTimestamps: 'estimate' }
     });
@@ -188,7 +187,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         const now = new Date();
         if (endDateTime > now) return false;
 
-        return differenceInHours(now, endDateTime) > 24;
+        return differenceInMinutes(now, endDateTime) > 1440; // Maintain 24h freeze but 5m edit
     }, [chat, campaign]);
 
     const messageGroups = useMemo(() => {
@@ -286,7 +285,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     const title = chat.isGroupChat
                         ? `New ${replyingTo ? 'reply' : 'message'} in ${chat.campaignTitle}`
                         : `New Message from ${user.displayName || 'User'}`;
-                    const message = chat.campaignTitle
+                    const messageText = chat.campaignTitle
                         ? `${user.displayName || 'User'}: ${newMessage.substring(0, 50)}${newMessage.length > 50 ? '...' : ''}`
                         : `You have a new message from your accountability partner.`;
 
@@ -294,7 +293,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                         userId: participantId,
                         type: 'new_chat_message',
                         title: title,
-                        message: message,
+                        message: messageText,
                         link: `/dashboard/chats/${chatId}`,
                         isRead: false,
                         createdAt: serverTimestamp()
@@ -366,7 +365,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             })
             .catch((err: any) => {
                 const message = err.code === 'permission-denied' 
-                    ? 'Could not update message. Time window may have expired (24h limit).' 
+                    ? 'Could not update message. Time window may have expired (5 mins max).' 
                     : 'An unexpected error occurred. Please try again.';
                 toast({ variant: 'destructive', title: 'Edit Failed', description: message });
             })
@@ -383,7 +382,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             })
             .catch((err: any) => {
                 const message = err.code === 'permission-denied' 
-                    ? 'Could not delete message. Time window may have expired (24h limit).' 
+                    ? 'Could not delete message. Time window may have expired (5 mins max).' 
                     : 'An unexpected error occurred.';
                 toast({ variant: 'destructive', title: 'Delete Failed', description: message });
             });
@@ -552,8 +551,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                             const senderInfo = chat.participantInfo[msg.senderId];
                                             const isOwnMessage = msg.senderId === user?.uid;
                                             const createdAtDate = safeToDate(msg.createdAt);
-                                            // 24 hour edit window
-                                            const canEdit = isOwnMessage && createdAtDate && differenceInHours(new Date(), createdAtDate) < 24;
+                                            // 5 minute edit window
+                                            const canEdit = isOwnMessage && createdAtDate && differenceInMinutes(new Date(), createdAtDate) < 5;
                                             const isEditing = editingMessageId === msg.id;
 
                                             return (
