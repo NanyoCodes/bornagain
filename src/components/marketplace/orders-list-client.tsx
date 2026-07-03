@@ -24,7 +24,8 @@ import {
     Mail,
     Phone,
     Download,
-    MessagesSquare
+    MessagesSquare,
+    X
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
@@ -425,7 +426,7 @@ export default function OrdersListClient() {
                             disabled={isChatLoading === order.id}
                         >
                             {isChatLoading === order.id ? <Loader2 className="mr-1.5 h-3 w-3 animate-spin" /> : <MessagesSquare className="mr-1.5 h-3 w-3" />}
-                            Chat {type === 'sent' ? 'Provider' : 'Sender'}
+                            CHAT
                         </Button>
                     </div>
                 </div>
@@ -465,8 +466,7 @@ export default function OrdersListClient() {
                         </Button>
                     ))}
                 </CardFooter>
-            )}
-        </Card>
+            </Card>
       );
   };
 
