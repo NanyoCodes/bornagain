@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
@@ -60,6 +60,8 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
 import { Input } from '@/components/ui/input';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 
 const strongholdCategories = [
     'Pride', 'Lust', 'Fear', 'Unforgiveness', 'Anger', 'Addiction', 'Laziness', 'Grief', 'Comparison', 'Unbelief', 'Depression', 'Greed', 'Worldliness', 'Jealousy', 'Other'
@@ -70,6 +72,8 @@ export function StrongholdTracker() {
     const { userProfile } = useUserProfile();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const isMobile = useIsMobile();
+    const [mounted, setMounted] = useState(false);
     
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,6 +81,10 @@ export function StrongholdTracker() {
     const [title, setTitle] = useState('');
     
     const [testimonyStronghold, setTestimonyStronghold] = useState<Stronghold | null>(null);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const strongholdsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
@@ -148,6 +156,55 @@ export function StrongholdTracker() {
             }, user));
         }
     };
+
+    const formFields = (
+        <div className="space-y-6">
+            <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Area of Struggle</Label>
+                <Input 
+                    placeholder="e.g. My hidden pride" 
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                />
+            </div>
+            <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category of Struggle</Label>
+                <Select value={category} onValueChange={setCategory}>
+                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                        <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-none shadow-2xl">
+                        <ScrollArea className="h-64">
+                            {strongholdCategories.map(c => (
+                                <SelectItem key={c} value={c} className="rounded-xl">
+                                    {c}
+                                </SelectItem>
+                            ))}
+                        </ScrollArea>
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3">
+                <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">This record is <span className="font-black text-foreground">strictly private</span>. It exists only for your personal accountability before God.</p>
+            </div>
+        </div>
+    );
+
+    const formFooter = (
+        <>
+            <Button variant="outline" onClick={() => setIsAddOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
+            <Button 
+                onClick={handleAddStronghold} 
+                disabled={isSubmitting || !title.trim()} 
+                className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
+            >
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                BEGIN TRACKING
+            </Button>
+        </>
+    );
 
     return (
         <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/victory">
@@ -268,57 +325,43 @@ export function StrongholdTracker() {
                 )}
             </CardContent>
 
-            <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                    <div className="p-8 border-b bg-muted/10">
-                        <DialogHeader>
-                            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Enter the Warfare</DialogTitle>
-                            <DialogDescription className="text-sm font-medium">Naming a struggle is the first step toward the Light.</DialogDescription>
-                        </DialogHeader>
-                    </div>
-                    <div className="p-8 space-y-6">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Area of Struggle</Label>
-                            <Input 
-                                placeholder="e.g. My hidden pride" 
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
-                            />
+            {mounted && isMobile ? (
+                <Sheet open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
+                    <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <SheetHeader className="text-left">
+                                <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Enter the Warfare</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1">Naming a struggle is the first step toward the Light.</SheetDescription>
+                            </SheetHeader>
                         </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category of Struggle</Label>
-                            <Select value={category} onValueChange={setCategory} defaultValue="Other">
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                    <SelectValue placeholder="Select Category" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-none shadow-2xl">
-                                    {strongholdCategories.map(c => (
-                                        <SelectItem key={c} value={c} className="rounded-xl">
-                                            {c}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                        <ScrollArea className="flex-grow">
+                            <div className="p-8">
+                                {formFields}
+                            </div>
+                        </ScrollArea>
+                        <div className="p-8 border-t flex flex-col sm:flex-row gap-3 bg-background/80 backdrop-blur-sm">
+                            {formFooter}
                         </div>
-                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3">
-                            <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                            <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">This record is <span className="font-black text-foreground">strictly private</span>. It exists only for your personal accountability before God.</p>
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                        <div className="p-8 border-b bg-muted/10">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Enter the Warfare</DialogTitle>
+                                <DialogDescription className="text-sm font-medium">Naming a struggle is the first step toward the Light.</DialogDescription>
+                            </DialogHeader>
                         </div>
-                    </div>
-                    <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
-                        <Button variant="outline" onClick={() => setIsAddOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
-                        <Button 
-                            onClick={handleAddStronghold} 
-                            disabled={isSubmitting || !title.trim()} 
-                            className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
-                        >
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            BEGIN TRACKING
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
+                        <div className="p-8">
+                            {formFields}
+                        </div>
+                        <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
+                            {formFooter}
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            )}
 
             <Dialog open={!!testimonyStronghold} onOpenChange={(open) => !open && setTestimonyStronghold(null)}>
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
