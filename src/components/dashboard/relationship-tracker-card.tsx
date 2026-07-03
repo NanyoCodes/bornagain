@@ -123,44 +123,29 @@ function SoulSelectionDialog({
                     <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
                         <div className="p-2 space-y-1.5">
                             {filteredSouls.length > 0 ? (
-                                filteredSouls.map(soul => (
-                                    <div key={soul.id} className="flex items-center gap-1 group">
+                                filteredSouls.map(soul => {
+                                    const isShareAction = actionLabel === 'Introduce to a friend';
+                                    return (
                                         <Button 
+                                            key={soul.id} 
                                             variant="ghost" 
-                                            className="flex-1 justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group/btn"
-                                            onClick={() => onSelect(soul)}
+                                            className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group"
+                                            onClick={() => isShareAction ? onShare(soul) : onSelect(soul)}
                                             disabled={isLoading}
                                         >
-                                            <Avatar className="h-10 w-10 border-2 group-hover/btn:border-primary/20 transition-colors shadow-sm">
+                                            <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
                                                 <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
                                             </Avatar>
                                             <div className="text-left min-w-0 flex-1">
                                                 <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
                                                 <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
                                             </div>
-                                            <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover/btn:opacity-100 transition-opacity">
-                                                <PlusCircle className="h-4 w-4" />
+                                            <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                {isShareAction ? <Share2 className="h-4 w-4" /> : <PlusCircle className="h-4 w-4" />}
                                             </div>
                                         </Button>
-                                        {actionLabel === 'Introduce to a friend' && (
-                                            <TooltipProvider>
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <Button 
-                                                            variant="ghost" 
-                                                            size="icon" 
-                                                            className="h-16 w-12 rounded-2xl text-muted-foreground hover:text-primary hover:bg-primary/5 shrink-0"
-                                                            onClick={() => onShare(soul)}
-                                                        >
-                                                            <Share2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Share Details</p></TooltipContent>
-                                                </Tooltip>
-                                            </TooltipProvider>
-                                        )}
-                                    </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <div className="text-center py-16 px-8 space-y-3">
                                     <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
