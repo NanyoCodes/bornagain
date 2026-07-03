@@ -53,11 +53,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '../ui/separator';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -144,21 +139,23 @@ function SoulSelectionDialog({
                                                 <PlusCircle className="h-4 w-4" />
                                             </div>
                                         </Button>
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        className="h-16 w-12 rounded-2xl text-muted-foreground hover:text-primary hover:bg-primary/5 shrink-0"
-                                                        onClick={() => onShare(soul)}
-                                                    >
-                                                        <Share2 className="h-4 w-4" />
-                                                    </Button>
-                                                </TooltipTrigger>
-                                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Share Details</p></TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
+                                        {actionLabel === 'Introduce to a friend' && (
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            className="h-16 w-12 rounded-2xl text-muted-foreground hover:text-primary hover:bg-primary/5 shrink-0"
+                                                            onClick={() => onShare(soul)}
+                                                        >
+                                                            <Share2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Share Details</p></TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        )}
                                     </div>
                                 ))
                             ) : (
@@ -737,11 +734,11 @@ export function RelationshipTrackerCard() {
                                                       "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
                                                       isCompleted ? "bg-primary/20 scale-110 shadow-lg" : isPending ? "bg-amber-500/20" : "bg-muted/30"
                                                   )}>
-                                                      <Icon className={cn("h-5 w-5 transition-all", isCompleted ? "text-primary fill-current" : isPending ? "text-amber-600 animate-pulse" : "text-primary/60")} />
+                                                      <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : isPending ? "text-amber-600 animate-pulse" : "text-primary/60")} />
                                                   </div>
                                                   <div className="space-y-0.5 min-w-0 w-full">
                                                       <span className={cn(
-                                                          "text-[10px] font-black uppercase tracking-tight block truncate",
+                                                          "text-[9px] font-black uppercase tracking-tight block truncate",
                                                           isCompleted ? "text-primary" : isPending ? "text-amber-700" : "text-foreground"
                                                       )}>
                                                           {action.label}
@@ -812,7 +809,7 @@ export function RelationshipTrackerCard() {
       />
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
               <div className="p-8 border-b bg-muted/10">
                   <DialogHeader>
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
