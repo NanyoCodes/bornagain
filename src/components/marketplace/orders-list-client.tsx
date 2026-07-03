@@ -21,7 +21,9 @@ import {
     Loader2,
     Inbox,
     Send,
-    Gift
+    Gift,
+    Mail,
+    Phone
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
@@ -45,6 +47,9 @@ function LiveVendorInfo({ vendorId, fallbackName }: { vendorId: string, fallback
     const { data: owner } = useDoc<UserProfile>(ownerRef);
     const ownerName = owner ? `${owner.firstName} ${owner.lastName}` : 'Kingdom Believer';
 
+    const phone = vendor?.phone || owner?.phone;
+    const email = owner?.email;
+
     return (
         <div className="flex flex-col gap-1 min-w-0">
             <p className="text-[9px] font-black uppercase text-primary tracking-[0.2em] mb-1">Kingdom Provider</p>
@@ -62,11 +67,23 @@ function LiveVendorInfo({ vendorId, fallbackName }: { vendorId: string, fallback
                         <Store className="h-3 w-3 shrink-0" />
                         {vendor?.businessName || fallbackName}
                     </Link>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
                          <Link href={vendor?.userId ? `/dashboard/profile/${vendor.userId}` : '#'} className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
                             <User className="h-2.5 w-2.5 opacity-60" />
                             {ownerName}
                         </Link>
+                        {email && (
+                            <a href={`mailto:${email}`} className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                                <Mail className="h-2.5 w-2.5 opacity-60" />
+                                {email}
+                            </a>
+                        )}
+                        {phone && (
+                            <a href={`tel:${phone}`} className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                                <Phone className="h-2.5 w-2.5 opacity-60" />
+                                {phone}
+                            </a>
+                        )}
                         {vendor?.location && (
                             <p className="text-[10px] text-muted-foreground font-medium truncate flex items-center gap-1 uppercase tracking-tighter opacity-70">
                                 <MapPin className="h-2.5 w-2.5 shrink-0" /> {vendor.location}
@@ -204,6 +221,7 @@ export default function OrdersListClient() {
                         </div>
                         <div className="min-w-0">
                             <div className="flex items-center gap-2 mb-1.5">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 mr-1">Status:</span>
                                 <Badge variant="outline" className={cn(
                                     "h-5 px-2 uppercase font-black text-[9px] tracking-widest gap-1.5 border-2 shadow-sm",
                                     order.status === 'delivered' ? "bg-green-500/10 text-green-600 border-green-500/20" : "bg-primary/5 text-primary border-primary/20"
@@ -297,7 +315,7 @@ export default function OrdersListClient() {
   );
 
   return (
-    <div className="space-y-10 max-w-4xl mx-auto pb-32">
+    <div className="flex flex-col h-full w-full bg-background overflow-hidden">
         <header className="px-4 sm:px-0 space-y-8 pt-4">
             <div className="flex flex-col gap-6">
                 <div className="flex items-center gap-4">
@@ -341,7 +359,7 @@ export default function OrdersListClient() {
             </div>
         </header>
 
-        <div className="grid gap-6 px-4 sm:px-0">
+        <div className="grid gap-6 px-4 sm:px-0 pt-8">
             {loading ? (
                 [...Array(3)].map((_, i) => (
                     <Card key={i} className="rounded-[2.5rem] border-none shadow-sm animate-pulse h-40 bg-muted/20" />
