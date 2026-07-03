@@ -222,8 +222,9 @@ export function RelationshipTrackerCard() {
     // 1. Update user's daily discipline (habit tracking) - SKIP for pending provisions
     if (!isProvisionAction) {
         const wasCompleted = completedToday.includes(selectedActionId);
-        const newCompleted = [...completedToday];
-        if (!wasCompleted) newCompleted.push(selectedActionId);
+        const newCompleted = wasCompleted
+            ? completedToday.filter((id) => id !== selectedActionId)
+            : [...completedToday, selectedActionId];
 
         const userRef = doc(firestore, 'users', user.uid);
         batch.update(userRef, {
@@ -343,7 +344,7 @@ export function RelationshipTrackerCard() {
               <div className="space-y-1">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-primary" />
-                      Kingdom Connections
+                      KINGDOM SOULS FOLLOW-UP
                   </CardTitle>
                   <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
               </div>

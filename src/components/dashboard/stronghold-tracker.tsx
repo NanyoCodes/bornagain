@@ -223,7 +223,7 @@ export function StrongholdTracker() {
                     </div>
                     <Button onClick={() => setIsAddOpen(true)} className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
                         <Plus className="mr-2 h-4 w-4" />
-                        NAME A STRUGGLE
+                        DEFEAT A STRONGHOLD
                     </Button>
                 </div>
             </CardHeader>
