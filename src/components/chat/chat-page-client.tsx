@@ -1,8 +1,7 @@
-
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { useUser, useAuth, useFirestore, useCollection, useDoc } from '@/firebase';
+import { useUser, useAuth, useDoc, useCollection, useFirestore } from '@/firebase';
 import {
   collection,
   query,
@@ -15,6 +14,9 @@ import {
   where,
   getDocs,
   deleteDoc,
+  getDoc,
+  arrayUnion,
+  arrayRemove
 } from 'firebase/firestore';
 import type { Chat, ChatMessage, Campaign, Fellowship, UserProfile } from '@/lib/types';
 import { Loader2, Send, ArrowLeft, Reply, X, ChevronDown, MessagesSquare, MoreHorizontal, Edit, Trash2, Check } from 'lucide-react';
@@ -23,6 +25,7 @@ import { cn, safeToDate } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { format, isToday, differenceInMinutes, isSameDay } from 'date-fns';
@@ -33,7 +36,6 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 
 /**
@@ -187,7 +189,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         const now = new Date();
         if (endDateTime > now) return false;
 
-        return differenceInMinutes(now, endDateTime) > 1440; // Maintain 24h freeze but 5m edit
+        return differenceInMinutes(now, endDateTime) > 1440; // 24h freeze
     }, [chat, campaign]);
 
     const messageGroups = useMemo(() => {
@@ -252,7 +254,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             
             const newDocData: any = {
                 senderId: user.uid,
-                text: newMessage,
+                text: newMessage.trim(),
                 createdAt: serverTimestamp(),
             };
 
@@ -397,18 +399,19 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Escape' && editingMessageId) {
+            setEditingMessageId(null);
+            setNewMessage('');
+        }
+        // Allow Cmd+Enter or Ctrl+Enter to send as a convenient shortcut
+        if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();
             if (editingMessageId) {
                 handleUpdateMessage();
             } else {
                 sendMessage();
             }
-        }
-        if (e.key === 'Escape' && editingMessageId) {
-            setEditingMessageId(null);
-            setNewMessage('');
         }
     };
 
@@ -782,15 +785,14 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                         </div>
                     )}
                     <form onSubmit={handleFormSubmit} className="flex gap-3 w-full items-center">
-                        <Input
+                        <Textarea
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder={editingMessageId ? "Edit your message..." : (replyingTo ? "Type your reply..." : "Type a message...")}
                             disabled={isSending || isUpdatingMessage}
-                            autoComplete="off"
                             className={cn(
-                                "h-12 sm:h-14 rounded-2xl shadow-inner border-muted-foreground/20 text-base", 
+                                "min-h-[3rem] max-h-32 py-3 px-4 rounded-2xl shadow-inner border-muted-foreground/20 text-base resize-none", 
                                 (replyingTo || editingMessageId) && "rounded-t-none border-t-0"
                             )}
                         />
