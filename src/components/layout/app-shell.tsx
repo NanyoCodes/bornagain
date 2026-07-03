@@ -51,6 +51,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { cn, safeToDate } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
@@ -71,29 +72,6 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
-const navItems = [
-  { href: "/progress", label: "FOLLOW-UP", icon: TrendingUp, color: "text-chart-1" },
-  { href: "/souls-won", label: "SOULS", icon: UserPlus, color: "text-chart-2" },
-  { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
-  { href: "/campaigns", label: "CAMPAIGNS", icon: Target, color: "text-chart-4" },
-  { href: "/fellowships", label: "GROUPS", icon: Users, color: "text-primary" },
-  { href: "/accountability", label: "PARTNERS", icon: HeartHandshake, color: "text-primary" },
-];
-
-const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship', 'soul_unassigned_from_fellowship'];
-
-const inspirationalMessages = [
-  "GOD FIRST",
-  "SEEK THE KINGDOM",
-  "POWER IN TESTIMONY",
-  "GLORY TO THE MOST HIGH",
-  "EMPOWERING THE HARVEST",
-  "JESUS IS LORD",
-  "THE HARVEST IS PLENTIFUL",
-  "STAND FIRM IN FAITH",
-  "REJOICE ALWAYS"
-];
 
 function PendingProvisionReminder() {
     const { user } = useUser();
