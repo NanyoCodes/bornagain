@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc } from 'firebase/firestore';
@@ -108,7 +108,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
         if (!rawOrders) return [];
         return [...rawOrders].sort((a, b) => {
             const timeA = safeToDate(b.createdAt)?.getTime() ?? 0;
-            const dateB = safeToDate(a.createdAt)?.getTime() ?? 0;
+            const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
             return timeB - timeA;
         });
     }, [rawOrders]);
@@ -261,8 +261,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const isMobile = useIsMobile();
     const [mounted, setMounted] = useState(false);
 
-    // Cart State
-    const [cart, setCart] = useState<{ [mealId: string]: { item: Meal; quantity: number } }>({});
+    // Persistent Multi-Vendor Cart State
+    const [cart, setCart] = useState<{ [mealId: string]: { item: Meal & { vendorName?: string; vendorOwnerId?: string; vendorPaymentDetails?: string; vendorPhotoURL?: string }; quantity: number } }>({});
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [giftInstructions, setGiftInstructions] = useState('');
     const [manualRecipientName, setManualRecipientName] = useState('');
@@ -311,7 +311,20 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     useEffect(() => {
         setMounted(true);
+        // Load persistent cart
+        const stored = localStorage.getItem('testify_marketplace_cart');
+        if (stored) {
+            try {
+                setCart(JSON.parse(stored));
+            } catch (e) {}
+        }
     }, []);
+
+    useEffect(() => {
+        if (mounted) {
+            localStorage.setItem('testify_marketplace_cart', JSON.stringify(cart));
+        }
+    }, [cart, mounted]);
 
     const vendorDocRef = useMemo(() => vendorId ? doc(firestore, 'vendors', vendorId) : null, [firestore, vendorId]);
     const { data: vendor, loading: loadingVendor } = useDoc<VendorProfile>(vendorDocRef);
@@ -369,7 +382,35 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const storagePath = isGiftVendor ? 'kindness-center' : 'meals-center';
 
     const cartItems = useMemo(() => Object.values(cart), [cart]);
-    const cartTotal = useMemo(() => cartItems.reduce((acc, c) => acc + ((c.item.price + (c.item.deliveryFee || 0)) * c.quantity), 0), [cartItems]);
+
+    // Group items by vendor for aggregated delivery fee logic
+    const cartByVendor = useMemo(() => {
+        const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number } } = {};
+        cartItems.forEach(c => {
+            const vId = c.item.vendorId;
+            if (!groups[vId]) {
+                groups[vId] = {
+                    vendorId: vId,
+                    vendorName: c.item.vendorName || 'Kingdom Provider',
+                    vendorOwnerId: c.item.vendorOwnerId || '',
+                    paymentDetails: c.item.vendorPaymentDetails || '',
+                    items: [],
+                    deliveryFee: 0
+                };
+            }
+            groups[vId].items.push(c);
+            // Apply delivery fee once per supplier (highest item fee)
+            groups[vId].deliveryFee = Math.max(groups[vId].deliveryFee, c.item.deliveryFee || 0);
+        });
+        return Object.values(groups);
+    }, [cartItems]);
+
+    const cartTotal = useMemo(() => {
+        const itemsSubtotal = cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0);
+        const deliveryTotal = cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0);
+        return itemsSubtotal + deliveryTotal;
+    }, [cartItems, cartByVendor]);
+
     const cartCount = useMemo(() => cartItems.reduce((acc, c) => acc + c.quantity, 0), [cartItems]);
 
     const addToCart = (item: Meal) => {
@@ -378,7 +419,13 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             return {
                 ...prev,
                 [item.id]: {
-                    item,
+                    item: {
+                        ...item,
+                        vendorName: vendor?.businessName,
+                        vendorOwnerId: vendor?.userId,
+                        vendorPaymentDetails: vendor?.paymentDetails,
+                        vendorPhotoURL: vendor?.photoURL
+                    },
                     quantity: (existing?.quantity || 0) + 1
                 }
             };
@@ -647,7 +694,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     };
 
     const handleGiftItems = async () => {
-        if (!user || !firestore || !userProfile || !vendor || cartItems.length === 0) return;
+        if (!user || !firestore || !userProfile || cartItems.length === 0) return;
 
         const finalRecipientName = soulName || manualRecipientName;
         if (!finalRecipientName.trim()) {
@@ -663,13 +710,12 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         setIsProcessingOrder(true);
         const batch = writeBatch(firestore);
         const giftsRef = collection(firestore, 'mealGifts');
-        const notificationsRef = collection(firestore, `users/${vendor?.userId}/notifications`);
         
         const itemNames = cartItems.map(c => `${c.item.name} (x${c.quantity})`).join(', ');
-        const displayAction = isGiftVendor ? 'sent gifts' : 'shared a meal package';
+        const displayAction = isGiftVendor ? 'sent gifts' : 'shared physical provisions';
         const logActionId = isGiftVendor ? 'gave_gift' : 'shared_meal';
         
-        const logNote = `Logged via ${centerLabel}: FULFILLED ${displayAction} [${itemNames}] via ${vendor?.businessName}. Payment of ₦${cartTotal.toLocaleString()} initiated. Instructions: ${giftInstructions}`;
+        const logNote = `Logged via Kingdom Hub: FULFILLED ${displayAction} [${itemNames}]. Total offering value: ₦${cartTotal.toLocaleString()}. Instructions: ${giftInstructions}`;
         
         const logEntry = {
             date: new Date(),
@@ -681,6 +727,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
         const senderName = `${userProfile.firstName} ${userProfile.lastName}`;
 
+        // Create individual items for tracking
         cartItems.forEach(cartItem => {
             for(let i = 0; i < cartItem.quantity; i++) {
                 const giftRef = doc(giftsRef);
@@ -689,10 +736,10 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     senderName,
                     recipientSoulId: soulId || null,
                     recipientName: finalRecipientName,
-                    vendorId: vendorId,
-                    vendorName: vendor?.businessName || 'Unknown Vendor',
-                    vendorOwnerId: vendor.userId, 
-                    vendorType: vendor.vendorType || 'meal',
+                    vendorId: cartItem.item.vendorId,
+                    vendorName: cartItem.item.vendorName || 'Kingdom Store',
+                    vendorOwnerId: cartItem.item.vendorOwnerId, 
+                    vendorType: cartItem.item.vendorType || 'meal',
                     mealId: cartItem.item.id,
                     mealName: cartItem.item.name,
                     price: cartItem.item.price,
@@ -702,6 +749,21 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     createdAt: serverTimestamp(),
                 });
             }
+        });
+
+        // Notify each vendor
+        cartByVendor.forEach(v => {
+            const vendorNotificationRef = doc(collection(firestore, `users/${v.vendorOwnerId}/notifications`));
+            const vendorItems = v.items.map(c => `${c.item.name} (x${c.quantity})`).join(', ');
+            batch.set(vendorNotificationRef, {
+                userId: v.vendorOwnerId,
+                type: 'new_order',
+                title: 'New Offering Package!',
+                message: `${senderName} has sent ${vendorItems}. Check your orders to coordinate.`,
+                link: `/dashboard/marketplace/orders`,
+                isRead: false,
+                createdAt: serverTimestamp(),
+            });
         });
 
         if (soulId) {
@@ -730,51 +792,16 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             date: serverTimestamp()
         }, { merge: true });
 
-        const vendorNotificationRef = doc(notificationsRef);
-        batch.set(vendorNotificationRef, {
-            userId: vendor?.userId,
-            type: 'new_order',
-            title: 'New Package Ordered!',
-            message: `${senderName} has placed a new order for ${itemNames}. Instructions: ${giftInstructions}`,
-            link: `/dashboard/marketplace/orders`,
-            isRead: false,
-            createdAt: serverTimestamp(),
-        });
-
         try {
             await batch.commit();
-            
-            if (typeof window !== 'undefined') {
-                const stored = localStorage.getItem('testify_pending_provisions');
-                if (stored) {
-                    try {
-                        let provisions = JSON.parse(stored);
-                        if (Array.isArray(provisions)) {
-                            provisions = provisions.filter((p: any) => !(p.soulId === soulId && p.actionId === actionId));
-                            if (provisions.length === 0) {
-                                localStorage.removeItem('testify_pending_provisions');
-                            } else {
-                                localStorage.setItem('testify_pending_provisions', JSON.stringify(provisions));
-                            }
-                            window.dispatchEvent(new Event('testify_pending_action_update'));
-                        }
-                    } catch (e) {
-                        localStorage.removeItem('testify_pending_provisions');
-                    }
-                }
-            }
-
-            toast({ title: 'Package Fulfilled!', description: `Act of kindness for ${finalRecipientName} recorded.` });
+            localStorage.removeItem('testify_marketplace_cart');
             setCart({});
-            setGiftInstructions('');
-            setManualRecipientName('');
-            setIsCartOpen(false);
-            router.push('/dashboard/souls-won');
+            toast({ title: 'Offering Confirmed!', description: `Act of kindness for ${finalRecipientName} recorded.` });
+            onSoulWonRedirect();
         } catch (serverError: any) {
             const permissionError = new FirestorePermissionError({
                 path: `BATCH_WRITE:GIFT_FULFILLMENT`,
                 operation: 'write',
-                requestResourceData: { cartTotal, items: itemNames }
             }, user);
             errorEmitter.emit('permission-error', permissionError);
         } finally {
@@ -782,9 +809,12 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         }
     };
 
-    const copyPaymentToClipboard = () => {
-        if (!vendor?.paymentDetails) return;
-        navigator.clipboard.writeText(vendor.paymentDetails);
+    const onSoulWonRedirect = () => {
+        router.push('/dashboard/souls-won');
+    }
+
+    const copyPaymentToClipboard = (details: string) => {
+        navigator.clipboard.writeText(details);
         toast({ title: 'Copied!', description: 'Payment details copied to clipboard.' });
     };
 
@@ -800,72 +830,40 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             storagePath="vendor-branding" 
                             cropAspect={21/9}
                         />
-                        <p className="text-[9px] text-muted-foreground px-1 italic">A professional hero image represents your Kingdom business.</p>
                     </div>
 
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
                         <Input name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                     </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Service Hub</Label>
-                        <div className="flex items-center gap-2 p-3 bg-primary/5 rounded-xl border border-primary/20">
-                           {isGiftVendor ? <Gift className="h-4 w-4 text-primary" /> : <Utensils className="h-4 w-4 text-primary" />}
-                           <span className="text-xs font-bold text-primary uppercase tracking-widest">{centerLabel}</span>
-                        </div>
-                    </div>
 
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="editAddress" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Street Address</Label>
-                            <Input 
-                                id="editAddress" 
-                                value={editAddress} 
-                                onChange={e => setEditAddress(e.target.value)} 
-                                placeholder="e.g., 123 Kingdom Way" 
-                                className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" 
-                                required 
-                            />
+                            <Input id="editAddress" value={editAddress} onChange={e => setEditAddress(e.target.value)} placeholder="e.g., 123 Kingdom Way" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                         </div>
-
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Country</Label>
-                            <Select onValueChange={(val) => { setEditCountry(val); setEditState(''); }} value={editCountry}>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
-                                    <SelectValue placeholder="Select Country" />
-                                </SelectTrigger>
-                                <SelectContent className="max-h-[300px] overflow-y-auto">
-                                    {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">State</Label>
-                                <Select 
-                                    onValueChange={setEditState} 
-                                    value={editState}
-                                    disabled={!editCountry || statesList.length === 0}
-                                >
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Country</Label>
+                                <Select onValueChange={(val) => { setEditCountry(val); setEditState(''); }} value={editCountry}>
                                     <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
-                                        <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
+                                        <SelectValue placeholder="Country" />
                                     </SelectTrigger>
-                                    <SelectContent className="max-h-[300px] overflow-y-auto">
-                                        {statesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
+                                    <SelectContent className="max-h-[300px]">
+                                        {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="editCity" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">City</Label>
-                                <Input 
-                                    id="editCity" 
-                                    value={editCity} 
-                                    onChange={e => setEditCity(e.target.value)} 
-                                    placeholder="Enter City" 
-                                    className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" 
-                                    required
-                                />
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">State</Label>
+                                <Select onValueChange={setEditState} value={editState} disabled={!editCountry || statesList.length === 0}>
+                                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
+                                        <SelectValue placeholder="State" />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-[300px]">
+                                        {statesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
                     </div>
@@ -877,25 +875,19 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <div className="space-y-2">
                         <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payment Instructions</Label>
                         <Textarea name="paymentDetails" defaultValue={vendor.paymentDetails} placeholder="Bank details..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" required />
-                        <p className="text-[9px] text-muted-foreground px-1 italic">Users see this to pay you for gifts.</p>
                     </div>
 
                     <Separator />
 
-                    <div className="pt-4">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-destructive ml-1">Danger Zone</Label>
-                        <Card className="border-destructive/20 bg-destructive/5 mt-2 overflow-hidden">
-                            <CardContent className="p-4 flex items-center justify-between gap-4">
-                                <div className="space-y-1 min-w-0 flex-1">
-                                    <p className="text-xs font-bold text-destructive">Delete Storefront</p>
-                                    <p className="text-[10px] text-muted-foreground leading-tight truncate">Permanently remove your business from Testify.</p>
-                                </div>
-                                <Button type="button" variant="destructive" size="sm" onClick={() => setIsDeleteStoreOpen(true)} className="rounded-xl h-8 font-black uppercase tracking-widest text-[9px] shrink-0">
-                                    Delete
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </div>
+                    <Card className="border-destructive/20 bg-destructive/5 overflow-hidden">
+                        <CardContent className="p-4 flex items-center justify-between gap-4">
+                            <div className="space-y-1 flex-1">
+                                <p className="text-xs font-bold text-destructive uppercase">Delete Storefront</p>
+                                <p className="text-[10px] text-muted-foreground leading-tight">Remove business permanently.</p>
+                            </div>
+                            <Button type="button" variant="destructive" size="sm" onClick={() => setIsDeleteStoreOpen(true)} className="rounded-xl h-8 text-[9px] font-black uppercase tracking-widest">Delete</Button>
+                        </CardContent>
+                    </Card>
                 </div>
             </ScrollArea>
             <div className="p-6 sm:p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row mt-auto shrink-0">
@@ -922,16 +914,16 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Name</Label>
-                    <Input name="name" defaultValue={initialItem?.name} placeholder={`e.g., ${isGiftVendor ? 'Study Bible' : 'Jollof Rice'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                    <Input name="name" defaultValue={initialItem?.name} placeholder={`e.g., ${isGiftVendor ? 'Study Bible' : 'Jollof Rice'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price (₦)</Label>
-                        <Input name="price" type="number" defaultValue={initialItem?.price} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                        <Input name="price" type="number" defaultValue={initialItem?.price} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
                     </div>
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Fee (₦)</Label>
-                        <Input name="deliveryFee" type="number" defaultValue={initialItem?.deliveryFee} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+                        <Input name="deliveryFee" type="number" defaultValue={initialItem?.deliveryFee} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                     </div>
                 </div>
                 <div className="space-y-2">
@@ -954,51 +946,57 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     );
 
     const cartContent = (
-        <div className="space-y-8">
-            <div className="space-y-3">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Gifts in Package</h4>
-                <div className="space-y-2">
-                    {cartItems.map(c => (
-                        <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner">
-                            <div className="flex items-center gap-3 min-w-0">
-                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                                    <ItemIcon className="h-5 w-5 text-primary" />
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
-                                    <p className="text-[9px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()} x {c.quantity}</p>
-                                    {c.item.deliveryFee ? (
-                                        <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-tighter flex items-center gap-1 mt-0.5">
-                                            <Truck className="h-2 w-2" /> + ₦{c.item.deliveryFee.toLocaleString()} Delivery
-                                        </p>
-                                    ) : null}
-                                </div>
+        <div className="space-y-10">
+            <div className="space-y-6">
+                {cartByVendor.map(vendorGroup => (
+                    <div key={vendorGroup.vendorId} className="space-y-3">
+                        <div className="flex items-center justify-between px-1">
+                            <div className="flex items-center gap-2">
+                                <Store className="h-3 w-3 text-primary" />
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary truncate max-w-[150px]">{vendorGroup.vendorName} Offering</h4>
                             </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                                <div className="flex items-center gap-1.5 bg-background rounded-full p-0.5 border">
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
-                                    <span className="text-xs font-black min-w-[1.5rem] text-center">{c.quantity}</span>
-                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-4 w-4" /></Button>
-                                </div>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10" 
-                                    onClick={() => removeFromCart(c.item.id)}
-                                    title="Remove item"
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </div>
+                            <Badge variant="secondary" className="h-5 px-2 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20">
+                                ₦{vendorGroup.deliveryFee.toLocaleString()} Shipping
+                            </Badge>
                         </div>
-                    ))}
-                </div>
+                        <div className="space-y-2">
+                            {vendorGroup.items.map(c => (
+                                <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner">
+                                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
+                                            <ItemIcon className="h-5 w-5 text-primary" />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="font-black text-xs sm:text-sm uppercase tracking-tight truncate">{c.item.name}</p>
+                                            <p className="text-[9px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()} x {c.quantity}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 shrink-0 ml-2">
+                                        <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm">
+                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
+                                            <span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span>
+                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                                        </div>
+                                        <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10" 
+                                            onClick={() => removeFromCart(c.item.id)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
                 {!soulName && (
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this gift? (You can order for self)</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this offering? (Can be self)</Label>
                         <Input 
                             placeholder="Enter recipient name" 
                             value={manualRecipientName}
@@ -1010,47 +1008,57 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
-                        {soulId ? 'Special Instructions' : 'Delivery & Recipient Instructions'}
+                        {soulId ? 'Special Instructions' : 'Delivery & Gifting Instructions'}
                     </Label>
                     <Textarea 
-                        placeholder={soulId ? "e.g., Deliver to their home with a message of hope..." : "Please specify who receives this and how to deliver..."}
+                        placeholder={soulId ? "e.g., Deliver to their home with a word of life..." : "Specify recipient contact and physical address..."}
                         value={giftInstructions}
                         onChange={(e) => setGiftInstructions(e.target.value)}
-                        className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner"
+                        className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base"
                     />
                 </div>
             </div>
 
-            <div className="space-y-4 bg-primary/5 p-5 rounded-[2rem] border-2 border-dashed border-primary/20 relative group">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                    <CreditCard className="h-3 w-3" /> Payment Instructions
+            <div className="space-y-4">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1">
+                    <CreditCard className="h-3 w-3" /> FULFILLMENT INSTRUCTIONS
                 </Label>
-                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words [overflow-wrap:anywhere] text-balance">
-                    {vendor?.paymentDetails || 'Contact provider for payment details.'}
-                </p>
-                <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    className="absolute top-4 right-4 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={copyPaymentToClipboard}
-                >
-                    <Clipboard className="h-4 w-4" />
-                </Button>
+                <div className="space-y-3">
+                    {cartByVendor.map(v => (
+                        <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden">
+                            <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity">
+                                <Store className="h-10 w-10 text-primary" />
+                            </div>
+                            <p className="text-[9px] font-black uppercase text-primary/60 mb-2 tracking-widest">Pay to: {v.vendorName}</p>
+                            <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">
+                                {v.paymentDetails || 'Contact provider for details.'}
+                            </p>
+                            <Button 
+                                size="icon" 
+                                variant="ghost" 
+                                className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => copyPaymentToClipboard(v.paymentDetails)}
+                            >
+                                <Clipboard className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner">
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
                     <span className="shrink-0">Recipient</span>
                     <span className="text-foreground truncate font-black">{soulName || manualRecipientName || 'Unspecified'}</span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
-                    <span className="shrink-0">Provider</span>
-                    <span className="text-foreground truncate font-black">{vendor?.businessName || 'Kingdom Store'}</span>
+                    <span className="shrink-0">Logistics Total</span>
+                    <span className="text-foreground shrink-0 font-black">₦{cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0).toLocaleString()}</span>
                 </div>
                 <Separator className="opacity-50" />
                 <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4">
                     <span className="shrink-0">Total Package Amount</span>
-                    <span className="shrink-0 text-xl">₦{cartTotal.toLocaleString()}</span>
+                    <span className="shrink-0 text-2xl tracking-tighter">₦{cartTotal.toLocaleString()}</span>
                 </div>
             </div>
         </div>
@@ -1058,63 +1066,27 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     const cartFooter = (
         <div className="flex flex-col sm:flex-row gap-3 w-full">
-            <Button variant="outline" onClick={() => setIsCartOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Back to Catalog</Button>
+            <Button variant="outline" onClick={() => setIsCartOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Catalog</Button>
             <Button 
                 onClick={handleGiftItems} 
-                disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} 
-                className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
+                disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim() || cartItems.length === 0} 
+                className="rounded-xl h-12 flex-1 font-black shadow-xl shadow-primary/20 uppercase tracking-widest"
             >
                 {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                I HAVE TRANSFERRED ₦{cartTotal.toLocaleString()}
+                CONFIRM TRANSFER OF ₦{cartTotal.toLocaleString()}
             </Button>
         </div>
     );
-
-    const addProductCard = (
-        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-6 sm:p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[200px] sm:min-h-[280px] shadow-sm" onClick={() => setIsAddMealOpen(true)}>
-            <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                <Plus className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-            </div>
-            <h3 className="font-black uppercase tracking-widest text-primary text-xs sm:text-sm">{addLabel}</h3>
-            <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-2 font-medium">Update your digital storefront catalog</p>
-        </Card>
-    );
-
-    if (loadingVendor || !mounted) {
-        return (
-            <div className="flex h-full w-full flex-col items-center justify-center py-20">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="mt-4 text-[10px] font-black uppercase tracking-widest animate-pulse">Syncing Inventory...</p>
-            </div>
-        );
-    }
-
-    if (!vendor || vendor.status === 'inactive') {
-        return (
-            <div className="flex h-full w-full flex-col items-center justify-center py-24 text-center px-8">
-                <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
-                    <Store className="h-10 w-10 text-muted-foreground opacity-20" />
-                </div>
-                <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Not Found</h3>
-                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed">
-                    This business might have closed or moved. Return to the hub to find other Kingdom providers.
-                </p>
-                <Button variant="outline" asChild className="mt-8 h-12 px-8 rounded-2xl font-bold">
-                    <Link href={isGiftVendor ? '/dashboard/marketplace/gifts' : '/dashboard/marketplace'}>Return to Marketplace</Link>
-                </Button>
-            </div>
-        );
-    }
 
     return (
         <div 
             className="space-y-8 pb-32 max-w-4xl mx-auto"
             inert={isAnyModalOpen ? true : undefined}
         >
-            <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 pb-4">
+            <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4">
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
                             <ArrowLeft className="h-6 w-6" />
                         </Button>
                         <div className="flex-1 min-w-0">
@@ -1130,8 +1102,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
                         ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5">
-                                <Store className="h-16 w-16 text-primary opacity-20" />
-                                <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mt-2">Kingdom Storefront</p>
+                                <Store className="h-16 w-16 text-primary opacity-10" />
+                                <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mt-2">Kingdom Hub</p>
                             </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
@@ -1148,7 +1120,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 size="icon" 
                                 className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80"
                                 onClick={() => setIsEditProfileOpen(true)}
-                                title="Change Branding"
                             >
                                 <Camera className="h-5 w-5" />
                             </Button>
@@ -1171,9 +1142,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
                                     </Button>
                                 </TooltipTrigger>
-                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
-                                    <p className="text-[10px] font-bold uppercase">Chat with Provider</p>
-                                </TooltipContent>
+                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Provider Chat</p></TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     ) : (
@@ -1189,84 +1158,35 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         <ShoppingBag className="h-5 w-5" />
                                     </Button>
                                 </TooltipTrigger>
-                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
-                                    <p className="text-[10px] font-bold uppercase">Order Tracker</p>
-                                </TooltipContent>
+                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Manage Orders</p></TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     )}
                     {isOwner && (
-                        <div className="flex gap-2 flex-1 sm:flex-none">
-                            {isMobile ? (
-                                <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                                    <SheetTrigger asChild>
-                                        <Button variant="outline" size="sm" className="rounded-xl h-12 sm:h-11 px-6 font-black uppercase tracking-widest text-[10px] flex-1 shadow-lg border-primary/20 text-primary">
-                                            <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
-                                        </Button>
-                                    </SheetTrigger>
-                                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                            <SheetHeader className="text-left flex-shrink-0">
-                                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</SheetTitle>
-                                                <SheetDescription className="text-sm font-medium mt-1">Refine your Kingdom business details.</SheetDescription>
-                                            </SheetHeader>
-                                        </div>
-                                        <div className="flex-grow overflow-hidden relative">
-                                            {editProfileForm}
-                                        </div>
-                                    </SheetContent>
-                                </Sheet>
-                            ) : (
-                                <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline" size="sm" className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
-                                            <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
-                                        <DialogHeader className="p-8 border-b bg-muted/10">
-                                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</DialogTitle>
-                                            <DialogDescription className="text-sm font-medium mt-1">Refine your business details and payment flow.</DialogDescription>
-                                        </DialogHeader>
-                                        {editProfileForm}
-                                    </DialogContent>
-                                </Dialog>
-                            )}
-                        </div>
+                        <Button variant="outline" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
+                            <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
+                        </Button>
                     )}
                 </div>
 
-                {soulName && (
-                    <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-4 mx-1 sm:mx-0">
-                        <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0">
-                            <CenterIcon className="h-7 w-7 text-white" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                            <p className="text-lg font-black uppercase tracking-tight leading-tight">
-                                {actionLabel} GIFT FOR {soulName}
-                            </p>
-                            <p className="text-[11px] sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1.5 text-balance leading-relaxed">
-                                Select items from the catalog below to gift as a strategic act of Kingdom kindness.
-                            </p>
-                        </div>
-                    </div>
-                )}
-
                 {vendor.description && (
-                  <p className="text-[11px] sm:text-sm md:text-lg text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance max-w-3xl">
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance max-w-3xl">
                     &ldquo;{vendor.description}&rdquo;
                   </p>
                 )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0">
-                {isOwner && addProductCard}
+                {isOwner && (
+                    <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm" onClick={() => setIsAddMealOpen(true)}>
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4"><Plus className="h-6 w-6 text-primary" /></div>
+                        <h3 className="font-black uppercase tracking-widest text-primary text-xs">{addLabel}</h3>
+                    </Card>
+                )}
 
                 {loadingMeals ? (
                      [...Array(3)].map((_, i) => (
-                        <Card key={i} className="rounded-[2.5rem] border-none shadow-sm animate-pulse h-[300px]">
-                            <CardContent className="h-full bg-muted/30 rounded-[2.5rem]" />
-                        </Card>
+                        <Card key={i} className="rounded-[2.5rem] border-none shadow-sm animate-pulse h-[300px]"><CardContent className="h-full bg-muted/30 rounded-[2.5rem]" /></Card>
                     ))
                 ) : meals?.map(meal => {
                     const cartItem = cart[meal.id];
@@ -1277,211 +1197,85 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     {meal.photoURL ? (
                                         <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <ItemIcon className="h-12 w-12 text-muted-foreground opacity-10" />
-                                        </div>
+                                        <div className="w-full h-full flex items-center justify-center"><ItemIcon className="h-12 w-12 text-muted-foreground opacity-10" /></div>
                                     )}
-                                    <div className="absolute top-4 right-4 flex gap-2">
-                                        {isOwner && (
-                                            <div className="flex gap-2">
-                                                <button 
-                                                    className="h-9 w-9 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-xl bg-background flex items-center justify-center border hover:bg-muted active:scale-90"
-                                                    onClick={(e) => { e.stopPropagation(); setItemToEdit(meal); }}
-                                                >
-                                                    <Edit className="h-4 w-4 text-primary" />
-                                                </button>
-                                                <button 
-                                                    className="h-9 w-9 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-xl bg-destructive flex items-center justify-center hover:bg-destructive/90 active:scale-90"
-                                                    onClick={(e) => { e.stopPropagation(); setItemToDelete(meal); }}
-                                                >
-                                                    <Trash2 className="h-4 w-4 text-white" />
-                                                </button>
-                                            </div>
-                                        )}
-                                        <div className="flex flex-col items-end gap-1">
-                                            <Badge className="bg-primary text-white font-black text-[10px] sm:text-xs px-3 h-8 rounded-full shadow-lg border-none tracking-widest">
-                                                ₦{meal.price.toLocaleString()}
+                                    <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5">
+                                        <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest">
+                                            ₦{meal.price.toLocaleString()}
+                                        </Badge>
+                                        {meal.deliveryFee ? (
+                                            <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm">
+                                                + ₦{meal.deliveryFee.toLocaleString()} DEL
                                             </Badge>
-                                            {meal.deliveryFee ? (
-                                                <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter">
-                                                    + ₦{meal.deliveryFee.toLocaleString()} DEL
-                                                </Badge>
-                                            ) : null}
-                                        </div>
+                                        ) : null}
                                     </div>
                                     {cartItem && (
-                                        <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in">
-                                            {cartItem.quantity}
-                                        </div>
+                                        <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in">{cartItem.quantity}</div>
                                     )}
                                 </div>
                                 <div className="p-6 sm:p-8 space-y-4 flex-grow">
-                                    <div className="min-w-0">
-                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight">{meal.name}</h3>
-                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-2 font-medium italic leading-relaxed break-words">{meal.description || `Verified Kingdom service item.`}</p>
-                                    </div>
+                                    <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight">{meal.name}</h3>
+                                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed">{meal.description || `Verified Kingdom service item.`}</p>
                                 </div>
                             </CardContent>
-                            <CardFooter className="p-6 sm:p-8 pt-0">
-                                {cartItem ? (
-                                    <div className="flex items-center gap-3 w-full bg-muted/30 rounded-xl p-1 border">
-                                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3" /></Button>
-                                        <span className="flex-1 text-center font-black text-sm">{cartItem.quantity} IN PACKAGE</span>
-                                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-4 w-4" /></Button>
+                            <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2">
+                                {isOwner && (
+                                    <div className="flex gap-2 w-full">
+                                        <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0" onClick={() => setItemToEdit(meal)}><Edit className="h-4 w-4 text-primary" /></Button>
+                                        <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0 text-destructive hover:bg-destructive/10" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4" /></Button>
                                     </div>
-                                ) : (
-                                    <Button 
-                                        onClick={() => addToCart(meal)}
-                                        className="w-full h-12 sm:h-11 rounded-xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-xl shadow-primary/10 transition-all active:scale-95"
-                                    >
-                                        {soulName ? `ADD FOR ${soulName}` : 'ADD TO CART'}
-                                    </Button>
                                 )}
+                                <div className="flex-grow">
+                                    {cartItem ? (
+                                        <div className="flex items-center gap-3 w-full bg-muted/30 rounded-xl p-1 border">
+                                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3" /></Button>
+                                            <span className="flex-1 text-center font-black text-xs">IN PACKAGE</span>
+                                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3" /></Button>
+                                        </div>
+                                    ) : (
+                                        <Button 
+                                            onClick={() => addToCart(meal)}
+                                            className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/10 transition-all active:scale-95"
+                                        >
+                                            {soulName ? `ADD FOR ${soulName}` : 'ADD TO PACKAGE'}
+                                        </Button>
+                                    )}
+                                </div>
                             </CardFooter>
                         </Card>
                     );
                 })}
-
-                {(!meals || meals.length === 0) && !isOwner && (
-                    <div className="col-span-full py-32 text-center flex flex-col items-center">
-                        <div className="h-20 w-20 rounded-full bg-muted/20 flex items-center justify-center mb-6">
-                            <ItemIcon className="h-10 w-10 text-muted-foreground opacity-10" />
-                        </div>
-                        <p className="text-sm text-muted-foreground italic font-medium max-w-xs mx-auto">This provider's catalog is being prepared for the harvest.</p>
-                    </div>
-                )}
             </div>
 
-            {/* Sticky Cart Button */}
+            {/* Sticky Multi-Vendor Cart Button */}
             {cartCount > 0 && (
                 <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10">
                     <Button 
                         onClick={() => setIsCartOpen(true)}
-                        className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-5 sm:px-8 overflow-hidden"
+                        className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8"
                     >
-                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <div className="relative shrink-0">
-                                <ShoppingCart className="h-5 w-5" />
-                                <span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center shadow-sm">{cartCount}</span>
-                            </div>
-                            <span className="truncate text-[10px] sm:text-xs">OPEN CART</span>
+                        <div className="flex items-center gap-3">
+                            <div className="relative"><ShoppingCart className="h-5 w-5" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center">{cartCount}</span></div>
+                            <span className="text-xs">VIEW PACKAGE</span>
                         </div>
-                        <span className="text-[11px] sm:text-sm whitespace-nowrap ml-2">₦{cartTotal.toLocaleString()}</span>
+                        <span className="text-sm">₦{cartTotal.toLocaleString()}</span>
                     </Button>
                 </div>
             )}
 
             {/* Cart Review Sheet */}
             <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Gift Package Hub</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Review selection and provide instructions for {soulName || 'the recipient'}.</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Review selection for {soulName || 'recipient'}. One delivery fee per supplier.</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0">
+                    <ScrollArea className="flex-grow min-h-0">
                         <div className="p-8">
-                            <div className="space-y-8">
-                                <div className="space-y-3">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Gifts in Package</h4>
-                                    <div className="space-y-2">
-                                        {cartItems.map(c => (
-                                            <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner">
-                                                <div className="flex items-center gap-3 min-w-0">
-                                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                                                        <ItemIcon className="h-5 w-5 text-primary" />
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
-                                                        <p className="text-[9px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()} x {c.quantity}</p>
-                                                        {c.item.deliveryFee ? (
-                                                            <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-tighter flex items-center gap-1 mt-0.5">
-                                                                <Truck className="h-2 w-2" /> + ₦{c.item.deliveryFee.toLocaleString()} Delivery
-                                                            </p>
-                                                        ) : null}
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-2 shrink-0">
-                                                    <div className="flex items-center gap-1.5 bg-background rounded-full p-0.5 border">
-                                                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
-                                                        <span className="text-xs font-black min-w-[1.5rem] text-center">{c.quantity}</span>
-                                                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-4 w-4" /></Button>
-                                                    </div>
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10" 
-                                                        onClick={() => removeFromCart(c.item.id)}
-                                                        title="Remove item"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    {!soulName && (
-                                        <div className="space-y-2">
-                                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this gift? (You can order for self)</Label>
-                                            <Input 
-                                                placeholder="Enter recipient name" 
-                                                value={manualRecipientName}
-                                                onChange={(e) => setManualRecipientName(e.target.value)}
-                                                className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
-                                            />
-                                        </div>
-                                    )}
-                                    
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
-                                            {soulId ? 'Special Instructions' : 'Delivery & Recipient Instructions'}
-                                        </Label>
-                                        <Textarea 
-                                            placeholder={soulId ? "e.g., Deliver to their home with a message of hope..." : "Please specify who receives this and how to deliver..."}
-                                            value={giftInstructions}
-                                            onChange={(e) => setGiftInstructions(e.target.value)}
-                                            className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4 bg-primary/5 p-5 rounded-[2rem] border-2 border-dashed border-primary/20 relative group">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                                        <CreditCard className="h-3 w-3" /> Payment Instructions
-                                    </Label>
-                                    <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words [overflow-wrap:anywhere] text-balance">
-                                        {vendor?.paymentDetails || 'Contact provider for payment details.'}
-                                    </p>
-                                    <Button 
-                                        size="icon" 
-                                        variant="ghost" 
-                                        className="absolute top-4 right-4 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        onClick={copyPaymentToClipboard}
-                                    >
-                                        <Clipboard className="h-4 w-4" />
-                                    </Button>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
-                                        <span className="shrink-0">Recipient</span>
-                                        <span className="text-foreground truncate font-black">{soulName || manualRecipientName || 'Unspecified'}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
-                                        <span className="shrink-0">Provider</span>
-                                        <span className="text-foreground truncate font-black">{vendor?.businessName || 'Kingdom Store'}</span>
-                                    </div>
-                                    <Separator className="opacity-50" />
-                                    <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4">
-                                        <span className="shrink-0">Total Package Amount</span>
-                                        <span className="shrink-0 text-xl">₦{cartTotal.toLocaleString()}</span>
-                                    </div>
-                                </div>
-                            </div>
+                            {cartContent}
+                            <div className="h-24" />
                         </div>
                     </ScrollArea>
                     <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
@@ -1490,107 +1284,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </SheetContent>
             </Sheet>
 
-            {/* Add/Edit Item Flows */}
-            {isMobile ? (
-                <Sheet open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left flex-shrink-0">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add Offering</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</SheetDescription>
-                            </SheetHeader>
-                        </div>
-                        <ScrollArea className="flex-grow">
-                            {itemForm()}
-                        </ScrollArea>
-                    </SheetContent>
-                </Sheet>
-            ) : (
-                <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</DialogTitle>
-                                <DialogDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</DialogDescription>
-                            </DialogHeader>
-                        </div>
-                        {itemForm()}
-                    </DialogContent>
-                </Dialog>
-            )}
-
-            {isMobile ? (
-                <Sheet open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left flex-shrink-0">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Item</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Update item details in your catalog.</SheetDescription>
-                            </SheetHeader>
-                        </div>
-                        <ScrollArea className="flex-grow">
-                            {itemForm(itemToEdit, true)}
-                        </ScrollArea>
-                    </SheetContent>
-                </Sheet>
-            ) : (
-                <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Item</DialogTitle>
-                                <DialogDescription className="text-sm font-medium mt-1">Update item details in your catalog.</DialogDescription>
-                            </DialogHeader>
-                        </div>
-                        {itemForm(itemToEdit, true)}
-                    </DialogContent>
-                </Dialog>
-            )}
-
-            {/* Vendor Orders Hub */}
-            {isOwner && (
-                <VendorOrdersSheet 
-                    vendorId={vendorId} 
-                    isOpen={isOrdersOpen} 
-                    onOpenChange={setIsOrdersOpen} 
-                />
-            )}
-
-            <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
-                <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Delete Storefront?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed">
-                            This action is permanent and will remove "{vendor?.businessName}" and its entire catalog from the Testify Network.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter className="mt-6 gap-3">
-                        <AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
-                            {isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                            Confirm Delete
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-
-            <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl">
-                    <AlertDialogHeader>
-                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl">Remove Item?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium">
-                            Are you sure you want to delete "{itemToDelete?.name}" from your storefront?
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter className="mt-6 gap-3">
-                        <AlertDialogCancel disabled={isDeletingItem} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
-                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                            Delete Item
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            {/* Add/Edit/Other Dialogs */}
+            <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</DialogTitle></DialogHeader></div>{itemForm()}</DialogContent></Dialog>
+            <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Offering</DialogTitle></DialogHeader></div>{itemForm(itemToEdit, true)}</DialogContent></Dialog>
+            {isOwner && <VendorOrdersSheet vendorId={vendorId} isOpen={isOrdersOpen} onOpenChange={setIsOrdersOpen} />}
+            
+            <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}><AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed">This is permanent. All items and records for this store will be removed.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="mt-6 gap-3"><AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}Confirm</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+            <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}><AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl"><AlertDialogHeader><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="mt-6 gap-3"><AlertDialogCancel disabled={isDeletingItem} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
         </div>
     );
 }
+
