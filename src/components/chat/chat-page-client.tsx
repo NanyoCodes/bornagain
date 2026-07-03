@@ -69,7 +69,6 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
     // Editing State
     const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-    const [editingText, setEditingText] = useState('');
     const [isUpdatingMessage, setIsUpdatingMessage] = useState(false);
 
     const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>, msg: ChatMessage) => {
@@ -345,19 +344,20 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     };
 
     const handleUpdateMessage = async () => {
-        if (!editingMessageId || !editingText.trim() || !user || !firestore || isUpdatingMessage) return;
+        if (!editingMessageId || !newMessage.trim() || !user || !firestore || isUpdatingMessage) return;
         
         setIsUpdatingMessage(true);
         const messageRef = doc(firestore, 'chats', chatId, 'messages', editingMessageId);
         const updateData = {
-            text: editingText.trim(),
+            text: newMessage.trim(),
             updatedAt: serverTimestamp()
         };
 
         updateDoc(messageRef, updateData)
             .then(() => {
                 setEditingMessageId(null);
-                setEditingText('');
+                setNewMessage('');
+                toast({ title: 'Message Updated' });
             })
             .catch(() => {
                 toast({ variant: 'destructive', title: 'Edit Failed', description: 'Could not update message. Time window may have expired.' });
@@ -380,13 +380,25 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        sendMessage();
+        if (editingMessageId) {
+            handleUpdateMessage();
+        } else {
+            sendMessage();
+        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            sendMessage();
+            if (editingMessageId) {
+                handleUpdateMessage();
+            } else {
+                sendMessage();
+            }
+        }
+        if (e.key === 'Escape' && editingMessageId) {
+            setEditingMessageId(null);
+            setNewMessage('');
         }
     };
 
@@ -590,7 +602,11 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                                     </Button>
                                                                 </DropdownMenuTrigger>
                                                                 <DropdownMenuContent align={isOwnMessage ? "end" : "start"} className="rounded-xl">
-                                                                    <DropdownMenuItem onSelect={() => { setEditingMessageId(msg.id); setEditingText(msg.text || ''); }}>
+                                                                    <DropdownMenuItem onSelect={() => { 
+                                                                        setEditingMessageId(msg.id); 
+                                                                        setNewMessage(msg.text || '');
+                                                                        setReplyingTo(null);
+                                                                    }}>
                                                                         <Edit className="mr-2 h-4 w-4" /> Edit
                                                                     </DropdownMenuItem>
                                                                     <DropdownMenuItem onSelect={() => handleDeleteMessage(msg.id)} className="text-destructive focus:text-destructive">
@@ -649,32 +665,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                                 </div>
                                                             )}
 
-                                                            {isEditing ? (
-                                                                <div className="space-y-2 py-1">
-                                                                    <Textarea 
-                                                                        value={editingText}
-                                                                        onChange={(e) => setEditingText(e.target.value)}
-                                                                        className="min-h-[60px] text-sm bg-background/50 border-none shadow-inner rounded-xl focus-visible:ring-0 text-foreground"
-                                                                        autoFocus
-                                                                        onKeyDown={(e) => {
-                                                                            if (e.key === 'Enter' && !e.shiftKey) {
-                                                                                e.preventDefault();
-                                                                                handleUpdateMessage();
-                                                                            }
-                                                                            if (e.key === 'Escape') {
-                                                                                setEditingMessageId(null);
-                                                                                setEditingText('');
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                    <div className="flex justify-end gap-1.5">
-                                                                        <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full text-destructive hover:bg-destructive/10" onClick={() => setEditingMessageId(null)} disabled={isUpdatingMessage}><X className="h-3.5 w-3.5" /></Button>
-                                                                        <Button size="icon" className="h-7 w-7 rounded-full shadow-lg" onClick={handleUpdateMessage} disabled={isUpdatingMessage || !editingText.trim()}><Check className="h-3.5 w-3.5" /></Button>
-                                                                    </div>
-                                                                </div>
-                                                            ) : (
-                                                                <p className="text-sm leading-relaxed">{msg.text}</p>
-                                                            )}
+                                                            <p className="text-sm leading-relaxed">{msg.text}</p>
 
                                                             {createdAtDate && (
                                                                 <div className={cn(
@@ -736,21 +727,47 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     <>
                     {replyingTo && (
                         <div className="relative rounded-t-[1.5rem] border-x border-t bg-muted/40 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200">
-                            <div className="flex items-center gap-2 mb-1.5">
-                                <Reply className="h-3 w-3 text-primary" />
-                                <p className="text-[10px] font-black uppercase tracking-widest text-primary">
-                                    Replying to {chat.participantInfo[replyingTo.senderId]?.firstName || 'User'}
-                                </p>
+                            <div className="flex items-center justify-between mb-1.5">
+                                <div className="flex items-center gap-2">
+                                    <Reply className="h-3 w-3 text-primary" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+                                        Replying to {chat.participantInfo[replyingTo.senderId]?.firstName || 'User'}
+                                    </p>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 rounded-full hover:bg-background shadow-sm"
+                                    onClick={() => setReplyingTo(null)}
+                                >
+                                    <X className="h-3.5 w-3.5" />
+                                </Button>
                             </div>
                             <p className="line-clamp-1 text-sm text-muted-foreground italic">&ldquo;{replyingTo.text}&rdquo;</p>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="absolute right-2 top-2 h-7 w-7 rounded-full hover:bg-background shadow-sm"
-                                onClick={() => setReplyingTo(null)}
-                            >
-                                <X className="h-4 w-4" />
-                            </Button>
+                        </div>
+                    )}
+                    {editingMessageId && (
+                        <div className="relative rounded-t-[1.5rem] border-x border-t bg-primary/10 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200 border-primary/20">
+                            <div className="flex items-center justify-between mb-1.5">
+                                <div className="flex items-center gap-2">
+                                    <Edit className="h-3 w-3 text-primary" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+                                        Editing Message
+                                    </p>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 rounded-full hover:bg-background shadow-sm"
+                                    onClick={() => {
+                                        setEditingMessageId(null);
+                                        setNewMessage('');
+                                    }}
+                                >
+                                    <X className="h-3.5 w-3.5" />
+                                </Button>
+                            </div>
+                            <p className="line-clamp-1 text-sm text-muted-foreground italic">&ldquo;{messages?.find(m => m.id === editingMessageId)?.text}&rdquo;</p>
                         </div>
                     )}
                     <form onSubmit={handleFormSubmit} className="flex gap-3 w-full items-center">
@@ -758,13 +775,16 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder={replyingTo ? "Type your reply..." : "Type a message..."}
-                            disabled={isSending}
+                            placeholder={editingMessageId ? "Edit your message..." : (replyingTo ? "Type your reply..." : "Type a message...")}
+                            disabled={isSending || isUpdatingMessage}
                             autoComplete="off"
-                            className={cn("h-12 sm:h-14 rounded-2xl shadow-inner border-muted-foreground/20 text-base", replyingTo && "rounded-t-none border-t-0")}
+                            className={cn(
+                                "h-12 sm:h-14 rounded-2xl shadow-inner border-muted-foreground/20 text-base", 
+                                (replyingTo || editingMessageId) && "rounded-t-none border-t-0"
+                            )}
                         />
-                        <Button type="submit" size="icon" className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 rounded-2xl shadow-xl transition-all active:scale-90 bg-primary hover:shadow-primary/20" disabled={!newMessage.trim() || isSending}>
-                            {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5 fill-current" />}
+                        <Button type="submit" size="icon" className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 rounded-2xl shadow-xl transition-all active:scale-90 bg-primary hover:shadow-primary/20" disabled={!newMessage.trim() || isSending || isUpdatingMessage}>
+                            {isSending || isUpdatingMessage ? <Loader2 className="h-5 w-5 animate-spin" /> : (editingMessageId ? <Check className="h-5 w-5" /> : <Send className="h-5 w-5 fill-current" />)}
                         </Button>
                     </form>
                     </>
