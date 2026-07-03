@@ -25,7 +25,8 @@ import {
   UserPlus,
   Search,
   PlusCircle,
-  Hourglass
+  Hourglass,
+  Send
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -142,6 +143,44 @@ function SoulSelectionDialog({
     );
 }
 
+function CommChannelDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onChoice 
+}: { 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  soul: Soul | null; 
+  onChoice: (channel: 'whatsapp' | 'sms') => void; 
+}) {
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
+        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none rotate-12">
+            <Send className="h-24 w-24 text-primary" />
+        </div>
+        <DialogHeader className="text-center space-y-2">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                <MessageSquare className="h-7 w-7 text-primary" />
+            </div>
+          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Message Channel</DialogTitle>
+          <DialogDescription className="text-sm font-medium">How would you like to encourage {soul?.firstName}?</DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-3 pt-6">
+          <Button onClick={() => onChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+            <MessageSquare className="h-5 w-5" /> WhatsApp
+          </Button>
+          <Button onClick={() => onChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+            <Phone className="h-5 w-5" /> Standard SMS
+          </Button>
+        </div>
+        <p className="text-[10px] text-center text-muted-foreground mt-6 font-bold uppercase tracking-widest opacity-40">Choose your platform</p>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function RelationshipTrackerCard() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
@@ -152,6 +191,8 @@ export function RelationshipTrackerCard() {
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
+  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
+  const [commTargetSoul, setCommTargetSoul] = useState<Soul | null>(null);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
   const { userProfile, loading: profileLoading } = useUserProfile();
@@ -163,7 +204,10 @@ export function RelationshipTrackerCard() {
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
   const checkPending = useCallback(() => {
-    if (typeof window === 'undefined' || !user?.uid) return;
+    if (typeof window === 'undefined' || !user?.uid) {
+        setPendingActions([]);
+        return;
+    }
     const key = `testify_pending_provisions_${user.uid}`;
     const stored = localStorage.getItem(key);
     if (stored) {
@@ -252,7 +296,7 @@ export function RelationshipTrackerCard() {
         memberName: memberName,
     };
 
-    const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soul.id);
+    const soulUserRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
     
     batch.update(soulUserRef, {
@@ -269,13 +313,11 @@ export function RelationshipTrackerCard() {
 
         // COMMUNICATION TRIGGERS
         if (soul.phone) {
-            const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
             if (selectedActionId === 'phone_call') {
                 window.location.href = `tel:${soul.phone}`;
             } else if (selectedActionId === 'text_message') {
-                const messageText = encodeURIComponent(`Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`);
-                // Open WhatsApp as the primary messaging channel
-                window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
+                setCommTargetSoul(soul);
+                setIsCommChannelDialogOpen(true);
             }
         }
         
@@ -306,7 +348,7 @@ export function RelationshipTrackerCard() {
             const path = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
             router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
             toast({ title: 'Opening Provision Hub...', description: `Finish act of kindness for ${soul.firstName}.` });
-        } else {
+        } else if (selectedActionId !== 'text_message') {
             toast({ 
                 title: 'Kingdom Impact Saved!', 
                 description: `Logged '${action.label}' for ${soul.firstName}.` 
@@ -324,6 +366,23 @@ export function RelationshipTrackerCard() {
         setTogglingId(null);
         setSelectedActionId(null);
     }
+  };
+
+  const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
+      if (!commTargetSoul || !commTargetSoul.phone) return;
+      
+      const cleanPhone = commTargetSoul.phone.replace(/\+/g, '').replace(/\D/g, '');
+      const messageText = encodeURIComponent(`Hi ${commTargetSoul.firstName}, I'm thinking of you today and praying for you. God bless you!`);
+      
+      if (channel === 'whatsapp') {
+          window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
+      } else {
+          window.location.href = `sms:${commTargetSoul.phone}?body=${messageText}`;
+      }
+      
+      setIsCommChannelDialogOpen(false);
+      setCommTargetSoul(null);
+      toast({ title: 'Opening Messaging App...' });
   };
 
   const activeActionLabel = useMemo(() => 
@@ -473,6 +532,13 @@ export function RelationshipTrackerCard() {
           onSelect={handleSoulSelected} 
           actionLabel={activeActionLabel}
           isLoading={togglingId !== null}
+      />
+
+      <CommChannelDialog
+        isOpen={isCommChannelDialogOpen}
+        onOpenChange={setIsCommChannelDialogOpen}
+        soul={commTargetSoul}
+        onChoice={handleCommChoice}
       />
     </>
   );
