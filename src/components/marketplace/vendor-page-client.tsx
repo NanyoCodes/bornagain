@@ -107,8 +107,8 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     const orders = useMemo(() => {
         if (!rawOrders) return [];
         return [...rawOrders].sort((a, b) => {
-            const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-            const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
+            const timeA = safeToDate(b.createdAt)?.getTime() ?? 0;
+            const dateB = safeToDate(a.createdAt)?.getTime() ?? 0;
             return timeB - timeA;
         });
     }, [rawOrders]);
@@ -125,8 +125,8 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
         batch.set(notificationRef, {
             userId: senderId,
             type: 'order_update',
-            title: 'Gift Status Updated',
-            message: `Your gift order for "${itemName}" has been updated to: ${newStatus.toUpperCase()}.`,
+            title: 'Provision Status Updated',
+            message: `Your offering of "${itemName}" is now ${newStatus.toUpperCase()}.`,
             link: `/dashboard/marketplace/orders`,
             isRead: false,
             createdAt: serverTimestamp(),
@@ -174,8 +174,8 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                             <div className="flex items-center justify-between pt-2 border-t border-dashed">
                                 <p className="text-[9px] font-bold text-muted-foreground uppercase">From: {order.senderName}</p>
                                 <div className="text-right">
-                                    <p className="text-[9px] font-bold text-primary uppercase">₦{order.price.toLocaleString()}</p>
-                                    {order.deliveryFee && <p className="text-[7px] font-black uppercase text-muted-foreground">+ ₦{order.deliveryFee.toLocaleString()} Delivery</p>}
+                                    <p className="text-[10px] font-bold text-primary uppercase">₦{(order.price + (order.deliveryFee || 0)).toLocaleString()}</p>
+                                    {order.deliveryFee ? <p className="text-[7px] font-black uppercase text-muted-foreground">Incl. ₦{order.deliveryFee.toLocaleString()} Delivery</p> : null}
                                 </div>
                             </div>
                         </CardContent>
@@ -967,7 +967,11 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <div className="min-w-0">
                                     <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
                                     <p className="text-[9px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()} x {c.quantity}</p>
-                                    {c.item.deliveryFee ? <p className="text-[8px] font-bold text-muted-foreground uppercase">+ ₦{c.item.deliveryFee.toLocaleString()} Delivery</p> : null}
+                                    {c.item.deliveryFee ? (
+                                        <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-tighter flex items-center gap-1 mt-0.5">
+                                            <Truck className="h-2 w-2" /> + ₦{c.item.deliveryFee.toLocaleString()} Delivery
+                                        </p>
+                                    ) : null}
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
@@ -1378,7 +1382,106 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     </div>
                     <ScrollArea className="flex-grow">
                         <div className="p-8">
-                            {cartContent}
+                            <div className="space-y-8">
+                                <div className="space-y-3">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Gifts in Package</h4>
+                                    <div className="space-y-2">
+                                        {cartItems.map(c => (
+                                            <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner">
+                                                <div className="flex items-center gap-3 min-w-0">
+                                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                                        <ItemIcon className="h-5 w-5 text-primary" />
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
+                                                        <p className="text-[9px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()} x {c.quantity}</p>
+                                                        {c.item.deliveryFee ? (
+                                                            <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-tighter flex items-center gap-1 mt-0.5">
+                                                                <Truck className="h-2 w-2" /> + ₦{c.item.deliveryFee.toLocaleString()} Delivery
+                                                            </p>
+                                                        ) : null}
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2 shrink-0">
+                                                    <div className="flex items-center gap-1.5 bg-background rounded-full p-0.5 border">
+                                                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
+                                                        <span className="text-xs font-black min-w-[1.5rem] text-center">{c.quantity}</span>
+                                                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-4 w-4" /></Button>
+                                                    </div>
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        size="icon" 
+                                                        className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10" 
+                                                        onClick={() => removeFromCart(c.item.id)}
+                                                        title="Remove item"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {!soulName && (
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this gift? (You can order for self)</Label>
+                                            <Input 
+                                                placeholder="Enter recipient name" 
+                                                value={manualRecipientName}
+                                                onChange={(e) => setManualRecipientName(e.target.value)}
+                                                className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                    
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                                            {soulId ? 'Special Instructions' : 'Delivery & Recipient Instructions'}
+                                        </Label>
+                                        <Textarea 
+                                            placeholder={soulId ? "e.g., Deliver to their home with a message of hope..." : "Please specify who receives this and how to deliver..."}
+                                            value={giftInstructions}
+                                            onChange={(e) => setGiftInstructions(e.target.value)}
+                                            className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 bg-primary/5 p-5 rounded-[2rem] border-2 border-dashed border-primary/20 relative group">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                                        <CreditCard className="h-3 w-3" /> Payment Instructions
+                                    </Label>
+                                    <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words [overflow-wrap:anywhere] text-balance">
+                                        {vendor?.paymentDetails || 'Contact provider for payment details.'}
+                                    </p>
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        className="absolute top-4 right-4 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        onClick={copyPaymentToClipboard}
+                                    >
+                                        <Clipboard className="h-4 w-4" />
+                                    </Button>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
+                                        <span className="shrink-0">Recipient</span>
+                                        <span className="text-foreground truncate font-black">{soulName || manualRecipientName || 'Unspecified'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
+                                        <span className="shrink-0">Provider</span>
+                                        <span className="text-foreground truncate font-black">{vendor?.businessName || 'Kingdom Store'}</span>
+                                    </div>
+                                    <Separator className="opacity-50" />
+                                    <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4">
+                                        <span className="shrink-0">Total Package Amount</span>
+                                        <span className="shrink-0 text-xl">₦{cartTotal.toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </ScrollArea>
                     <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
@@ -1392,7 +1495,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <Sheet open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
+                            <SheetHeader className="text-left flex-shrink-0">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Add Offering</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">Post a new offering for believers to gift.</SheetDescription>
                             </SheetHeader>

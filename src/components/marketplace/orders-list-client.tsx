@@ -1,8 +1,7 @@
-
 'use client';
 
 import * as React from 'react';
-import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
+import { useUser, useAuth, useCollection, useDoc, useFirestore } from '@/firebase';
 import { collection, query, where, doc, updateDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { MealGift, VendorProfile, UserProfile, MealGiftStatus, Soul } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -288,7 +287,10 @@ export default function OrdersListClient() {
                     </div>
                     <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 border-t sm:border-t-0 pt-4 sm:pt-0">
                         <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest sm:hidden">Price Value</p>
-                        <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter">₦{order.price.toLocaleString()}</p>
+                        <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter">₦{(order.price + (order.deliveryFee || 0)).toLocaleString()}</p>
+                        {order.deliveryFee ? (
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">Incl. ₦{order.deliveryFee.toLocaleString()} Delivery</p>
+                        ) : null}
                     </div>
                 </div>
 
