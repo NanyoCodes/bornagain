@@ -107,7 +107,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     const orders = useMemo(() => {
         if (!rawOrders) return [];
         return [...rawOrders].sort((a, b) => {
-            const timeA = safeToDate(b.createdAt)?.getTime() ?? 0;
+            const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
             const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
             return dateB - timeA;
         });
@@ -394,7 +394,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const cartItems = useMemo(() => Object.values(cart), [cart]);
 
     const cartByVendor = useMemo(() => {
-        const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number } } = {};
+        const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number; subtotal: number } } = {};
         cartItems.forEach(c => {
             const vId = c.item.vendorId;
             if (!groups[vId]) {
@@ -404,10 +404,12 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     vendorOwnerId: c.item.vendorOwnerId || '',
                     paymentDetails: c.item.vendorPaymentDetails || '',
                     items: [],
-                    deliveryFee: 0
+                    deliveryFee: 0,
+                    subtotal: 0
                 };
             }
             groups[vId].items.push(c);
+            groups[vId].subtotal += (c.item.price * c.quantity);
             groups[vId].deliveryFee = Math.max(groups[vId].deliveryFee, c.item.deliveryFee || 0);
         });
         return Object.values(groups);
@@ -1040,7 +1042,12 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity">
                                 <Store className="h-10 w-10 text-primary" />
                             </div>
-                            <p className="text-[9px] font-black uppercase text-primary/60 mb-2 tracking-widest">Pay to: {v.vendorName}</p>
+                            <div className="flex justify-between items-start mb-2">
+                                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p>
+                                <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">
+                                    ₦{(v.subtotal + v.deliveryFee).toLocaleString()}
+                                </Badge>
+                            </div>
                             <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">
                                 {v.paymentDetails || 'Contact provider for details.'}
                             </p>
@@ -1306,7 +1313,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <div className="h-24" />
                         </div>
                     </ScrollArea>
-                    <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
+                    <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
                         {cartFooter}
                     </SheetFooter>
                 </SheetContent>

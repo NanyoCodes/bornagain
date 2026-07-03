@@ -745,7 +745,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const cartItems = useMemo(() => Object.values(cart), [cart]);
   const cartByVendor = useMemo(() => {
-    const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number } } = {};
+    const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number; subtotal: number } } = {};
     cartItems.forEach(c => {
         const vId = c.item.vendorId;
         if (!groups[vId]) {
@@ -755,10 +755,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 vendorOwnerId: c.item.vendorOwnerId || '',
                 paymentDetails: c.item.vendorPaymentDetails || '',
                 items: [],
-                deliveryFee: 0
+                deliveryFee: 0,
+                subtotal: 0
             };
         }
         groups[vId].items.push(c);
+        groups[vId].subtotal += (c.item.price * c.quantity);
         groups[vId].deliveryFee = Math.max(groups[vId].deliveryFee, c.item.deliveryFee || 0);
     });
     return Object.values(groups);
@@ -769,6 +771,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const shipping = cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0);
     return subtotal + shipping;
   }, [cartItems, cartByVendor]);
+
+  const cartCount = useMemo(() => Object.values(cart).reduce((acc, c) => acc + c.quantity, 0), [cart]);
 
   const handleGlobalCheckout = async () => {
     if (!user || !firestore || !userProfile || cartItems.length === 0) return;
@@ -1130,7 +1134,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                                 <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity">
                                                     <Store className="h-10 w-10 text-primary" />
                                                 </div>
-                                                <p className="text-[9px] font-black uppercase text-primary/60 mb-2 tracking-widest">Pay to: {v.vendorName}</p>
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p>
+                                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">
+                                                        ₦{(v.subtotal + v.deliveryFee).toLocaleString()}
+                                                    </Badge>
+                                                </div>
                                                 <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">
                                                     {v.paymentDetails || 'Contact provider for details.'}
                                                 </p>
