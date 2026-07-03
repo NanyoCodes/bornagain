@@ -116,7 +116,7 @@ function SoulSelectionDialog({
                         <Input 
                             placeholder="Search by name..." 
                             value={search} 
-                            onChange={e => setSearch(e.target.value)}
+                            onChange={e => setSearchTerm(e.target.value)}
                             className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
@@ -183,12 +183,14 @@ function CommChannelDialog({
   isOpen, 
   onOpenChange, 
   soul, 
-  onChoice 
+  onChoice,
+  isPrayerMode
 }: { 
   isOpen: boolean; 
   onOpenChange: (open: boolean) => void; 
   soul: Soul | null; 
   onChoice: (channel: 'whatsapp' | 'sms') => void; 
+  isPrayerMode?: boolean;
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -198,9 +200,9 @@ function CommChannelDialog({
         </div>
         <DialogHeader className="text-center space-y-2">
             <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
-                <MessageSquare className="h-7 w-7 text-primary" />
+                {isPrayerMode ? <Sparkles className="h-7 w-7 text-primary" /> : <MessageSquare className="h-7 w-7 text-primary" />}
             </div>
-          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Message Channel</DialogTitle>
+          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">{isPrayerMode ? 'Send Prayer' : 'Message Hub'}</DialogTitle>
           <DialogDescription className="text-sm font-medium">How would you like to encourage {soul?.firstName}?</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-3 pt-6">
@@ -508,7 +510,7 @@ export function RelationshipTrackerCard() {
   const handleSoulSelected = async (soul: Soul) => {
     if (!user || !firestore || !selectedActionId) return;
     
-    const isCommAction = selectedActionId === 'phone_call' || selectedActionId === 'text_message';
+    const isCommAction = selectedActionId === 'phone_call' || selectedActionId === 'text_message' || selectedActionId === 'prayed_together';
     if (isCommAction && !soul.phone) {
         toast({
             variant: 'destructive',
@@ -527,7 +529,7 @@ export function RelationshipTrackerCard() {
         return;
     }
 
-    if (selectedActionId === 'text_message') {
+    if (selectedActionId === 'text_message' || selectedActionId === 'prayed_together') {
         setCommTargetSoul(soul);
         setIsCommChannelDialogOpen(true);
         return;
@@ -558,9 +560,15 @@ export function RelationshipTrackerCard() {
       
       const soul = commTargetSoul;
       const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
-      const messageText = encodeURIComponent(`Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`);
       
-      performLogging(soul, 'text_message').then(() => {
+      let message = `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
+      if (selectedActionId === 'prayed_together') {
+          message = `Hi ${soul.firstName}, I just spent a moment praying for you. May God's grace and peace be with you today!`;
+      }
+      
+      const messageText = encodeURIComponent(message);
+      
+      performLogging(soul, selectedActionId!).then(() => {
           if (channel === 'whatsapp') {
               window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
           } else {
@@ -791,6 +799,7 @@ export function RelationshipTrackerCard() {
         onOpenChange={setIsCommChannelDialogOpen}
         soul={commTargetSoul}
         onChoice={handleCommChoice}
+        isPrayerMode={selectedActionId === 'prayed_together'}
       />
 
       <ShareTargetDialog 
