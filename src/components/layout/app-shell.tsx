@@ -36,7 +36,8 @@ import {
   Minus,
   Trash2,
   CreditCard,
-  Clipboard
+  Clipboard,
+  Hourglass
 } from "lucide-react";
 
 import {
@@ -58,7 +59,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, writeBatch, addDoc, arrayUnion } from "firebase/firestore";
-import type { Notification, VendorProfile, UserProfile, Soul, MealGift, MealGiftStatus } from "@/lib/types";
+import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
@@ -72,6 +73,41 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+
+const NOTIFICATION_TYPES = [
+  'campaign_join', 
+  'new_chat_message', 
+  'accountability_nudge', 
+  'accountability_request', 
+  'request_accepted', 
+  'request_declined', 
+  'accountability_partner_removed', 
+  'new_soul_in_fellowship', 
+  'soul_unassigned_from_fellowship',
+  'new_order',
+  'order_update'
+];
+
+const inspirationalMessages = [
+  "GOD FIRST",
+  "SEEK THE KINGDOM",
+  "POWER IN TESTIMONY",
+  "GLORY TO THE MOST HIGH",
+  "EMPOWERING THE HARVEST",
+  "JESUS IS LORD",
+  "THE HARVEST IS PLENTIFUL",
+  "STAND FIRM IN FAITH",
+  "REJOICE ALWAYS"
+];
+
+const navItems = [
+  { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
+  { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
+  { href: "/testimonies", label: "Feed", icon: Newspaper, color: "text-chart-3" },
+  { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
+  { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
+  { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
+];
 
 function PendingProvisionReminder() {
     const { user } = useUser();
