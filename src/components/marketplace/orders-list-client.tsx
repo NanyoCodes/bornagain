@@ -20,7 +20,8 @@ import {
     User,
     Loader2,
     Inbox,
-    Send
+    Send,
+    Gift
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
@@ -106,7 +107,6 @@ export default function OrdersListClient() {
   const isVendor = vendorIds.length > 0;
 
   // Fetch Received Orders (if vendor)
-  // Refactored to query by vendorOwnerId for security rule compliance
   const receivedOrdersQuery = React.useMemo(() => {
     if (!isVendor || !firestore || !user?.uid) return null;
     return query(
@@ -175,8 +175,28 @@ export default function OrdersListClient() {
 
   const renderOrderCard = (order: MealGift, type: 'sent' | 'received') => {
       const createdAt = safeToDate(order.createdAt);
+      const isGift = order.vendorType === 'gift';
+      const CenterIcon = isGift ? Gift : Utensils;
+      const categoryLabel = isGift ? 'Kindness Offering' : 'Meal Provision';
+
       return (
         <Card key={order.id} className="rounded-[2rem] overflow-hidden border shadow-sm bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all border-b-8 border-b-primary/5">
+            <CardHeader className="p-4 sm:p-6 pb-2 flex flex-row items-center justify-between border-b bg-muted/5">
+                <div className="flex items-center gap-2">
+                    <div className={cn(
+                        "h-8 w-8 rounded-xl flex items-center justify-center shadow-inner",
+                        isGift ? "bg-primary/10 text-primary" : "bg-blue-500/10 text-blue-500"
+                    )}>
+                        <CenterIcon className="h-4 w-4" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">{categoryLabel}</span>
+                </div>
+                {createdAt && (
+                    <span className="text-[9px] text-muted-foreground font-black uppercase tracking-tighter">
+                        {format(createdAt, 'MMM d, p')}
+                    </span>
+                )}
+            </CardHeader>
             <CardContent className="p-6 sm:p-8 space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="flex items-start gap-5 min-w-0">
@@ -191,11 +211,6 @@ export default function OrdersListClient() {
                                 )}>
                                     {order.status}
                                 </Badge>
-                                {createdAt && (
-                                    <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">
-                                        {format(createdAt, 'MMM d, h:mm a')}
-                                    </span>
-                                )}
                             </div>
                             <h3 className="font-black text-lg sm:text-xl uppercase tracking-tight truncate leading-tight mb-1">
                                 {order.mealName}

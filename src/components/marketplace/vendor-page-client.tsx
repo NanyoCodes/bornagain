@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, Chat, MealGift, MealGiftStatus } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -129,7 +129,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
             type: 'order_update',
             title: 'Gift Status Updated',
             message: `Your gift order for "${itemName}" has been updated to: ${newStatus.toUpperCase()}.`,
-            link: `/dashboard/souls-won`,
+            link: `/dashboard/marketplace/orders`,
             isRead: false,
             createdAt: serverTimestamp(),
         });
@@ -685,6 +685,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     vendorId: vendorId,
                     vendorName: vendor?.businessName || 'Unknown Vendor',
                     vendorOwnerId: vendor.userId, 
+                    vendorType: vendor.vendorType || 'meal',
                     mealId: cartItem.item.id,
                     mealName: cartItem.item.name,
                     price: cartItem.item.price,
@@ -825,7 +826,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
                                     <SelectValue placeholder="Select Country" />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[300px]">
+                                <SelectContent className="max-h-[300px] overflow-y-auto">
                                     {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
                                 </SelectContent>
                             </Select>
@@ -842,7 +843,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
                                         <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                                     </SelectTrigger>
-                                    <SelectContent className="max-h-[300px]">
+                                    <SelectContent className="max-h-[300px] overflow-y-auto">
                                         {statesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
@@ -1222,7 +1223,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <CenterIcon className="h-7 w-7 text-white" />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <p className="text-lg sm:text-xl font-black uppercase tracking-tight leading-tight">
+                            <p className="text-lg font-black uppercase tracking-tight leading-tight">
                                 {actionLabel} GIFT FOR {soulName}
                             </p>
                             <p className="text-[11px] sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-70 mt-1.5 text-balance leading-relaxed">
@@ -1412,7 +1413,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Item</DialogTitle>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Item</SheetTitle>
                                 <DialogDescription className="text-sm font-medium mt-1">Update item details in your catalog.</DialogDescription>
                             </DialogHeader>
                         </div>
