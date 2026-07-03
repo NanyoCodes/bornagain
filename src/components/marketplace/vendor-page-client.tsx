@@ -96,9 +96,14 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     const isMobile = useIsMobile();
     
     const ordersQuery = useMemo(() => {
-        if (!firestore || !vendorId) return null;
-        return query(collection(firestore, 'mealGifts'), where('vendorId', '==', vendorId));
-    }, [firestore, vendorId]);
+        if (!firestore || !vendorId || !user?.uid) return null;
+        // Optimization: Filter by vendorOwnerId to satisfy security rules while maintaining specific vendor context
+        return query(
+            collection(firestore, 'mealGifts'), 
+            where('vendorOwnerId', '==', user.uid),
+            where('vendorId', '==', vendorId)
+        );
+    }, [firestore, vendorId, user?.uid]);
     const { data: rawOrders, loading } = useCollection<MealGift>(ordersQuery);
 
     const orders = useMemo(() => {
@@ -679,7 +684,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     recipientName: finalRecipientName,
                     vendorId: vendorId,
                     vendorName: vendor?.businessName || 'Unknown Vendor',
-                    vendorOwnerId: vendor.userId, // Added for security rules verification
+                    vendorOwnerId: vendor.userId, 
                     mealId: cartItem.item.id,
                     mealName: cartItem.item.name,
                     price: cartItem.item.price,
@@ -703,7 +708,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             });
         }
 
-        // 3. Mark Daily Discipline as Completed (Now that it's physically done)
         const currentUserRef = doc(firestore, 'users', user.uid);
         const dateString = format(new Date(), 'yyyy-MM-dd');
         const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
@@ -717,7 +721,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             date: serverTimestamp()
         }, { merge: true });
 
-        // 4. Notify the Vendor
         const vendorNotificationRef = doc(notificationsRef);
         batch.set(vendorNotificationRef, {
             userId: vendor?.userId,
@@ -732,7 +735,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         try {
             await batch.commit();
             
-            // CLEAR PENDING REMINDER ON SUCCESS
             if (typeof window !== 'undefined') {
                 const stored = localStorage.getItem('testify_pending_provisions');
                 if (stored) {
@@ -1215,7 +1217,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
 
                 {soulName && (
-                    <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-4 mx-1 sm:mx-0">
+                    <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-4 mx-1 sm:mx-0">
                         <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0">
                             <CenterIcon className="h-7 w-7 text-white" />
                         </div>
