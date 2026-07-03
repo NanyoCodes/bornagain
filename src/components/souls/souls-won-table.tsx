@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -59,6 +58,7 @@ import { Badge } from "@/components/ui/badge";
 import { actionItems } from "@/lib/follow-up-data";
 import { Label } from "../ui/label";
 import Link from "next/link";
+import { useUser } from "@/firebase";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -83,18 +83,23 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
   onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
 }) => {
+    const { user } = useUser();
     const [pendingProvisions, setPendingProvisions] = React.useState<{ soulId: string; actionId: string }[]>([]);
 
     const checkPending = React.useCallback(() => {
-        if (typeof window === 'undefined') return;
-        const stored = localStorage.getItem('testify_pending_provisions');
+        if (typeof window === 'undefined' || !user?.uid) {
+            setPendingProvisions([]);
+            return;
+        }
+        const key = `testify_pending_provisions_${user.uid}`;
+        const stored = localStorage.getItem(key);
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
                 setPendingProvisions(Array.isArray(parsed) ? parsed : []);
             } catch (e) { setPendingProvisions([]); }
         } else { setPendingProvisions([]); }
-    }, []);
+    }, [user?.uid]);
 
     React.useEffect(() => {
         checkPending();
@@ -148,7 +153,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
                                     <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                                     {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20">Fellowship</Badge>}
-                                    {soul.associationName && <Badge variant="outline" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter border-blue-500/20 text-blue-500 bg-blue-500/5">Association</Badge>}
+                                    {soul.associationName && <Badge variant="outline" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter border-blue-500/20 text-blue-600 bg-blue-500/5">Association</Badge>}
                                     {myPending.length > 0 && <Badge className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary text-white animate-pulse border-none">Pending Gift</Badge>}
                                 </div>
                             </div>
@@ -254,7 +259,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                                     <Badge key={actionId} variant="secondary" className="text-[8px] px-1.5 h-4 font-black uppercase tracking-tight bg-background border leading-none">
                                                         {action.label}
                                                     </Badge>
-                                                ) : null
+                                                ) : null;
                                             })}
                                             {latestFollowUp.note?.includes('₦') && (
                                                 <Badge variant="outline" className="text-[8px] px-1.5 h-4 font-black uppercase tracking-tight bg-green-500/10 text-green-600 border-green-500/20 leading-none">FULFILLED</Badge>

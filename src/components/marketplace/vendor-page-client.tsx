@@ -698,7 +698,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
         const finalRecipientName = soulName || manualRecipientName;
         if (!finalRecipientName.trim()) {
-            toast({ variant: 'destructive', title: 'Recipient Required', description: 'Please specify who receives this gift.' });
+            toast({ variant: 'destructive', title: 'Recipient Required', description: 'Please specify who receives this offering.' });
             return;
         }
 
@@ -794,8 +794,11 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
         try {
             await batch.commit();
+            const key = `testify_pending_provisions_${user.uid}`;
+            localStorage.removeItem(key);
             localStorage.removeItem('testify_marketplace_cart');
             setCart({});
+            window.dispatchEvent(new Event('testify_pending_action_update'));
             toast({ title: 'Offering Confirmed!', description: `Act of kindness for ${finalRecipientName} recorded.` });
             onSoulWonRedirect();
         } catch (serverError: any) {
@@ -996,7 +999,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="space-y-6">
                 {!soulName && (
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this offering? (Can be self)</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this offering? (You can order for self)</Label>
                         <Input 
                             placeholder="Enter recipient name" 
                             value={manualRecipientName}
@@ -1049,7 +1052,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner">
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
                     <span className="shrink-0">Recipient</span>
-                    <span className="text-foreground truncate font-black">{soulName || manualRecipientName || 'Unspecified'}</span>
+                    <span className="text-foreground truncate font-black">{soulName || manualRecipientName || 'Self'}</span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
                     <span className="shrink-0">Logistics Total</span>
@@ -1167,7 +1170,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <Button 
                                         variant="outline" 
                                         size="icon" 
-                                        className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:bg-primary/5 shrink-0"
+                                        className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0"
                                         onClick={() => setIsOrdersOpen(true)}
                                     >
                                         <ShoppingBag className="h-5 w-5" />
@@ -1284,7 +1287,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0">
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Review selection for {soulName || 'recipient'}. One delivery fee per supplier.</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1">Review selection for {soulName || 'Self'}. One delivery fee per supplier.</SheetDescription>
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow min-h-0">

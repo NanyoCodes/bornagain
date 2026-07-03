@@ -94,8 +94,12 @@ function PendingProvisionReminder() {
     const isMobile = useIsMobile();
 
     const checkPendingActions = useCallback(() => {
-        if (typeof window === 'undefined') return;
-        const stored = localStorage.getItem('testify_pending_provisions');
+        if (typeof window === 'undefined' || !user?.uid) {
+            setProvisions([]);
+            return;
+        }
+        const key = `testify_pending_provisions_${user.uid}`;
+        const stored = localStorage.getItem(key);
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
@@ -106,7 +110,7 @@ function PendingProvisionReminder() {
         } else {
             setProvisions([]);
         }
-    }, []);
+    }, [user?.uid]);
 
     useEffect(() => {
         checkPendingActions();
@@ -124,27 +128,26 @@ function PendingProvisionReminder() {
     }, [pathname, checkPendingActions]);
 
     const removeOne = async (soulId: string, actionId: string) => {
+        if (!user?.uid) return;
+        const key = `testify_pending_provisions_${user.uid}`;
         const next = provisions.filter(p => !(p.soulId === soulId && p.actionId === actionId));
         if (next.length === 0) {
-            localStorage.removeItem('testify_pending_provisions');
+            localStorage.removeItem(key);
         } else {
-            localStorage.setItem('testify_pending_provisions', JSON.stringify(next));
+            localStorage.setItem(key, JSON.stringify(next));
         }
         setProvisions(next);
         window.dispatchEvent(new Event('testify_pending_action_update'));
 
-        if (!user || !firestore) return;
+        if (!firestore) return;
 
         try {
-            // Note: We don't remove from dailyDiscipline because it was never checked for pending items.
-            // We only remove from soul history.
             const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulId);
             const globalSoulRef = doc(firestore, 'souls', soulId);
 
             const soulDoc = await getDoc(soulUserRef);
             if (soulDoc.exists()) {
                 const soulData = soulDoc.data() as Soul;
-                // Identify the "Initiated" interaction entry and remove it
                 const updatedLog = (soulData.followUpLog || []).filter(log => 
                     !(log.actions?.includes(actionId) && log.note?.includes('Initiated'))
                 );
@@ -286,7 +289,11 @@ function PendingProvisionReminder() {
                 </ScrollArea>
                 <CardFooter className="p-4 border-t bg-muted/5 justify-center">
                     <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100" onClick={() => {
-                         provisions.forEach(p => removeOne(p.soulId, p.actionId));
+                         if(user?.uid) {
+                             localStorage.removeItem(`testify_pending_provisions_${user.uid}`);
+                             setProvisions([]);
+                             window.dispatchEvent(new Event('testify_pending_action_update'));
+                         }
                     }}>Clear All Pending</Button>
                 </CardFooter>
             </Card>
@@ -745,7 +752,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
         <div className="relative mb-8">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
             <div className="absolute inset-0 flex items-center justify-center">
                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
             </div>

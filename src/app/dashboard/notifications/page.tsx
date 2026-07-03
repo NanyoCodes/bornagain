@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect, useCallback } from 'react';
@@ -68,15 +67,16 @@ export default function NotificationsPage() {
   const [pendingProvisions, setPendingProvisions] = useState<any[]>([]);
 
   const checkPending = useCallback(() => {
-    if (typeof window === 'undefined') return;
-    const stored = localStorage.getItem('testify_pending_provisions');
+    if (typeof window === 'undefined' || !user?.uid) return;
+    const key = `testify_pending_provisions_${user.uid}`;
+    const stored = localStorage.getItem(key);
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
         setPendingProvisions(Array.isArray(parsed) ? parsed : []);
       } catch (e) { setPendingProvisions([]); }
     } else { setPendingProvisions([]); }
-  }, []);
+  }, [user?.uid]);
 
   useEffect(() => {
     checkPending();
@@ -90,30 +90,32 @@ export default function NotificationsPage() {
 
   const handleRemovePending = async (e: React.MouseEvent, soulId: string, actionId: string) => {
     e.stopPropagation();
+    if (!user?.uid) return;
     
+    const key = `testify_pending_provisions_${user.uid}`;
     // 1. Update local storage
     if (typeof window !== 'undefined') {
-        const stored = localStorage.getItem('testify_pending_provisions');
+        const stored = localStorage.getItem(key);
         if (stored) {
             try {
                 let provisions = JSON.parse(stored);
                 if (Array.isArray(provisions)) {
                     provisions = provisions.filter((p: any) => !(p.soulId === soulId && p.actionId === actionId));
                     if (provisions.length === 0) {
-                        localStorage.removeItem('testify_pending_provisions');
+                        localStorage.removeItem(key);
                     } else {
-                        localStorage.setItem('testify_pending_provisions', JSON.stringify(provisions));
+                        localStorage.setItem(key, JSON.stringify(provisions));
                     }
                     window.dispatchEvent(new Event('testify_pending_action_update'));
                 }
             } catch (e) {
-                localStorage.removeItem('testify_pending_provisions');
+                localStorage.removeItem(key);
             }
         }
     }
 
     // 2. Sync with Firestore - Remove only the "Initiated" soul history record
-    if (!user || !firestore) return;
+    if (!firestore) return;
 
     try {
         const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulId);

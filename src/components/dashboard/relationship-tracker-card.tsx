@@ -163,8 +163,9 @@ export function RelationshipTrackerCard() {
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
   const checkPending = useCallback(() => {
-    if (typeof window === 'undefined') return;
-    const stored = localStorage.getItem('testify_pending_provisions');
+    if (typeof window === 'undefined' || !user?.uid) return;
+    const key = `testify_pending_provisions_${user.uid}`;
+    const stored = localStorage.getItem(key);
     if (stored) {
         try {
             const parsed = JSON.parse(stored);
@@ -175,7 +176,7 @@ export function RelationshipTrackerCard() {
     } else {
         setPendingActions([]);
     }
-  }, []);
+  }, [user?.uid]);
 
   useEffect(() => {
     setCurrentDate(new Date());
@@ -269,7 +270,8 @@ export function RelationshipTrackerCard() {
         // REDIRECT LOGIC FOR GIFTS & MEALS
         if (isProvisionAction) {
             if (typeof window !== 'undefined') {
-                const stored = localStorage.getItem('testify_pending_provisions');
+                const key = `testify_pending_provisions_${user.uid}`;
+                const stored = localStorage.getItem(key);
                 let provisions = [];
                 try {
                     provisions = stored ? JSON.parse(stored) : [];
@@ -285,7 +287,7 @@ export function RelationshipTrackerCard() {
                     });
                 }
                 
-                localStorage.setItem('testify_pending_provisions', JSON.stringify(provisions));
+                localStorage.setItem(key, JSON.stringify(provisions));
                 window.dispatchEvent(new Event('testify_pending_action_update'));
             }
 
