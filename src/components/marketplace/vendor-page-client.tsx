@@ -1523,7 +1523,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <Sheet open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
+                            <SheetHeader className="text-left flex-shrink-0">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Item</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">Update item details in your catalog.</SheetDescription>
                             </SheetHeader>
