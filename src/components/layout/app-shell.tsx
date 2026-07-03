@@ -30,7 +30,8 @@ import {
   ShieldCheck,
   Flame,
   Zap,
-  Utensils
+  Utensils,
+  Package
 } from "lucide-react";
 
 import {
@@ -497,6 +498,12 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   <Link href="/dashboard/marketplace/gifts">
                     <Gift className="mr-2 h-4 w-4" />
                     <span>Kindness Center</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/dashboard/marketplace/orders">
+                    <Package className="mr-2 h-4 w-4" />
+                    <span>Order Tracker</span>
                   </Link>
                 </DropdownMenuItem>
                 
