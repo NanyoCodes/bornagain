@@ -266,6 +266,18 @@ export function RelationshipTrackerCard() {
 
     try {
         await batch.commit();
+
+        // COMMUNICATION TRIGGERS
+        if (soul.phone) {
+            const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
+            if (selectedActionId === 'phone_call') {
+                window.location.href = `tel:${soul.phone}`;
+            } else if (selectedActionId === 'text_message') {
+                const messageText = encodeURIComponent(`Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`);
+                // Open WhatsApp as the primary messaging channel
+                window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
+            }
+        }
         
         // REDIRECT LOGIC FOR GIFTS & MEALS
         if (isProvisionAction) {
