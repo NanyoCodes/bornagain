@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
-import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc } from 'firebase/firestore';
+import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc, updateDoc } from 'firebase/firestore';
 import type { UserProfile, Soul, Chat } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -52,6 +52,10 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '../ui/separator';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -112,7 +116,7 @@ function SoulSelectionDialog({
                         <Input 
                             placeholder="Search by name..." 
                             value={search} 
-                            onChange={e => setSearchTerm(e.target.value)}
+                            onChange={e => setSearch(e.target.value)}
                             className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
@@ -248,11 +252,88 @@ function ShareTargetDialog({
   );
 }
 
+function HelpNeedNoteDialog({
+  isOpen,
+  onOpenChange,
+  soul,
+  onConfirm,
+  isLoading
+}: {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  soul: Soul | null;
+  onConfirm: (note: string) => void;
+  isLoading: boolean;
+}) {
+  const [note, setNote] = useState('');
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (isOpen) setNote('');
+  }, [isOpen]);
+
+  const content = (
+      <div className="p-6 sm:p-8 space-y-6">
+          <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Details of Support</Label>
+              <Textarea 
+                  placeholder="e.g., Provided groceries, assisted with transportation..." 
+                  value={note}
+                  onChange={e => setNote(e.target.value)}
+                  className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base"
+              />
+          </div>
+          <Button 
+              onClick={() => onConfirm(note)} 
+              disabled={isLoading || !note.trim()} 
+              className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
+          >
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Log Act of Kindness
+          </Button>
+      </div>
+  );
+
+  if (isMobile) {
+      return (
+          <Sheet open={isOpen} onOpenChange={onOpenChange}>
+              <SheetContent side="bottom" className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                  <div className="p-8 border-b shrink-0 bg-muted/10">
+                      <SheetHeader className="text-left">
+                          <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Kindness</SheetTitle>
+                          <SheetDescription className="text-sm font-medium mt-1">How did you help {soul?.firstName} today?</SheetDescription>
+                      </SheetHeader>
+                  </div>
+                  <ScrollArea className="flex-grow">
+                      {content}
+                  </ScrollArea>
+              </SheetContent>
+          </Sheet>
+      );
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+        <div className="p-8 border-b bg-muted/10">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Kindness</DialogTitle>
+            <DialogDescription className="text-sm font-medium">How did you help {soul?.firstName} today?</DialogDescription>
+          </DialogHeader>
+        </div>
+        {content}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function RelationshipTrackerCard() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
+  
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [pendingActions, setPendingActions] = useState<string[]>([]);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -265,6 +346,9 @@ export function RelationshipTrackerCard() {
   const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
   const [sharingSoul, setSharingSoul] = useState<Soul | null>(null);
+
+  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
+  const [helpNeedTargetSoul, setHelpNeedTargetSoul] = useState<Soul | null>(null);
 
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
@@ -322,7 +406,7 @@ export function RelationshipTrackerCard() {
       setIsSoulDialogOpen(true);
   };
 
-  const performLogging = async (soul: Soul, actionId: string) => {
+  const performLogging = async (soul: Soul, actionId: string, customNote?: string) => {
       if (!user || !firestore) return;
 
       const action = actionItems.find(a => a.id === actionId);
@@ -358,9 +442,11 @@ export function RelationshipTrackerCard() {
       const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
       const logEntry = {
           date: new Date(), 
-          note: isProvisionAction 
-              ? `Initiated ${action.label} via Kingdom Connections` 
-              : `Logged via Kingdom Connections: ${action.label}`,
+          note: customNote 
+              ? `Logged via Kingdom Connections: ${action.label}. Note: ${customNote}`
+              : isProvisionAction 
+                  ? `Initiated ${action.label} via Kingdom Connections` 
+                  : `Logged via Kingdom Connections: ${action.label}`,
           actions: [actionId],
           memberId: user.uid,
           memberName: memberName,
@@ -433,6 +519,12 @@ export function RelationshipTrackerCard() {
 
     setIsSoulDialogOpen(false);
 
+    if (selectedActionId === 'helped_with_need') {
+        setHelpNeedTargetSoul(soul);
+        setIsHelpNeedDialogOpen(true);
+        return;
+    }
+
     if (selectedActionId === 'text_message') {
         setCommTargetSoul(soul);
         setIsCommChannelDialogOpen(true);
@@ -448,6 +540,15 @@ export function RelationshipTrackerCard() {
     setTogglingId(selectedActionId);
     await performLogging(soul, selectedActionId);
     setTogglingId(null);
+  };
+
+  const handleHelpNeedConfirm = async (note: string) => {
+      if (!helpNeedTargetSoul || !selectedActionId) return;
+      setTogglingId(selectedActionId);
+      setIsHelpNeedDialogOpen(false);
+      await performLogging(helpNeedTargetSoul, selectedActionId, note);
+      setTogglingId(null);
+      setHelpNeedTargetSoul(null);
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
@@ -698,6 +799,14 @@ export function RelationshipTrackerCard() {
               if (choice === 'whatsapp') handleShareToWhatsApp();
               else setIsPartnerSelectionDialogOpen(true);
           }} 
+      />
+
+      <HelpNeedNoteDialog
+        isOpen={isHelpNeedDialogOpen}
+        onOpenChange={setIsHelpNeedDialogOpen}
+        soul={helpNeedTargetSoul}
+        onConfirm={handleHelpNeedConfirm}
+        isLoading={togglingId !== null}
       />
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
