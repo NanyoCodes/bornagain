@@ -91,7 +91,7 @@ export function StrongholdTracker() {
     const [category, setCategory] = useState('Other');
     const [title, setTitle] = useState('');
     
-    const [testimonyStronghold, setTestimonyStronghold] = setTestimonyStronghold = useState<Stronghold | null>(null);
+    const [testimonyStronghold, setTestimonyStronghold] = useState<Stronghold | null>(null);
 
     useEffect(() => {
         setMounted(true);
