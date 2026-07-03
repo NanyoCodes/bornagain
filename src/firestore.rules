@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Message Editing/Deletion Support - 2025-09-22T10:00:00Z
+    // Deployment trigger: Message Editing/Deletion Time Window Support - 2025-10-01T12:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -179,7 +179,9 @@ service cloud.firestore {
       match /messages/{messageId} {
         allow read: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data);
         allow create: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data) && request.resource.data.senderId == request.auth.uid;
-        allow update, delete: if request.auth != null && request.auth.uid == resource.data.senderId && (request.time < resource.data.createdAt + duration.value(24, 'h'));
+        allow update, delete: if isOwner(resource.data.senderId)
+          && canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data)
+          && (request.time < resource.data.createdAt + duration.value(24, 'h'));
       }
     }
 

@@ -133,7 +133,12 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         if (!user?.uid || !firestore || !chatId) return null;
         return query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc'));
     }, [user?.uid, firestore, chatId]);
-    const { data: messages, loading: loadingMessages } = useCollection<ChatMessage>(messagesQuery);
+    
+    // We use serverTimestamps: 'estimate' to ensure the 24-hour edit window check 
+    // works immediately after a message is sent locally.
+    const { data: messages, loading: loadingMessages } = useCollection<ChatMessage>(messagesQuery, {
+        snapshotOptions: { serverTimestamps: 'estimate' }
+    });
     
     const loading = userLoading || loadingChat || loadingMessages || loadingCampaign || loadingFellowship;
 
@@ -359,8 +364,11 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                 setNewMessage('');
                 toast({ title: 'Message Updated' });
             })
-            .catch(() => {
-                toast({ variant: 'destructive', title: 'Edit Failed', description: 'Could not update message. Time window may have expired.' });
+            .catch((err: any) => {
+                const message = err.code === 'permission-denied' 
+                    ? 'Could not update message. Time window may have expired (24h limit).' 
+                    : 'An unexpected error occurred. Please try again.';
+                toast({ variant: 'destructive', title: 'Edit Failed', description: message });
             })
             .finally(() => setIsUpdatingMessage(false));
     };
@@ -373,8 +381,11 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             .then(() => {
                 toast({ title: 'Message Removed' });
             })
-            .catch(() => {
-                toast({ variant: 'destructive', title: 'Delete Failed', description: 'Could not delete message. Time window may have expired.' });
+            .catch((err: any) => {
+                const message = err.code === 'permission-denied' 
+                    ? 'Could not delete message. Time window may have expired (24h limit).' 
+                    : 'An unexpected error occurred.';
+                toast({ variant: 'destructive', title: 'Delete Failed', description: message });
             });
     };
 
@@ -541,6 +552,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                             const senderInfo = chat.participantInfo[msg.senderId];
                                             const isOwnMessage = msg.senderId === user?.uid;
                                             const createdAtDate = safeToDate(msg.createdAt);
+                                            // 24 hour edit window
                                             const canEdit = isOwnMessage && createdAtDate && differenceInHours(new Date(), createdAtDate) < 24;
                                             const isEditing = editingMessageId === msg.id;
 
