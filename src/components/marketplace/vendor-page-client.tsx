@@ -253,7 +253,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const soulName = searchParams.get('soulName');
     const actionId = searchParams.get('actionId');
     
-    const { user } = useUser();
+    const { user, loading: userLoading } = useUser();
     const { userProfile } = useUserProfile();
     const firestore = useFirestore();
     const router = useRouter();
@@ -1078,6 +1078,21 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 
+    const loading = loadingVendor || loadingMeals || userLoading;
+
+    if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
+    
+    if (!vendor) {
+        return (
+            <div className="flex h-full w-full flex-col items-center justify-center bg-background">
+                <p className="text-muted-foreground">Storefront not found.</p>
+                 <Button variant="outline" asChild className="mt-4">
+                    <Link href="/dashboard/marketplace"><ArrowLeft className="mr-2 h-4 w-4" />Back to Marketplace</Link>
+                </Button>
+            </div>
+        );
+    }
+
     return (
         <div 
             className="space-y-8 pb-32 max-w-4xl mx-auto"
@@ -1098,7 +1113,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     </div>
 
                     <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted">
-                        {vendor.photoURL ? (
+                        {vendor?.photoURL ? (
                             <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
                         ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5">
@@ -1108,10 +1123,10 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                         <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%]">
-                            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance">{vendor.businessName}</h1>
+                            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance">{vendor?.businessName}</h1>
                             <div className="flex items-center gap-2 mt-2 opacity-80">
                                 <MapPin className="h-3.5 w-3.5 text-primary" />
-                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor.location || 'Kingdom Network'}</p>
+                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor?.location || 'Kingdom Network'}</p>
                             </div>
                         </div>
                         {isOwner && (
@@ -1135,7 +1150,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <Button 
                                         variant="outline" 
                                         size="icon" 
-                                        className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:bg-primary/5 shrink-0"
+                                        className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0"
                                         onClick={handleInitiateChat}
                                         disabled={isChatLoading}
                                     >
@@ -1169,7 +1184,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     )}
                 </div>
 
-                {vendor.description && (
+                {vendor?.description && (
                   <p className="text-sm sm:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance max-w-3xl">
                     &ldquo;{vendor.description}&rdquo;
                   </p>
@@ -1294,4 +1309,3 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 }
-
