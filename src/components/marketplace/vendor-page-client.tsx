@@ -1327,7 +1327,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <div className="flex items-center gap-3 w-full bg-muted/30 rounded-xl p-1 border">
                                         <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3" /></Button>
                                         <span className="flex-1 text-center font-black text-sm">{cartItem.quantity} IN PACKAGE</span>
-                                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => addToCart(meal)}><Plus className="h-4 w-4" /></Button>
+                                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-4 w-4" /></Button>
                                     </div>
                                 ) : (
                                     <Button 
@@ -1373,14 +1373,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
             {/* Cart Review Sheet */}
             <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-                <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left">
+                        <SheetHeader className="text-left flex-shrink-0">
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Gift Package Hub</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">Review selection and provide instructions for {soulName || 'the recipient'}.</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <ScrollArea className="flex-grow">
+                    <ScrollArea className="flex-1 min-h-0">
                         <div className="p-8">
                             <div className="space-y-8">
                                 <div className="space-y-3">
