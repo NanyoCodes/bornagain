@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -97,9 +96,18 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     
     const ordersQuery = useMemo(() => {
         if (!firestore || !vendorId) return null;
-        return query(collection(firestore, 'mealGifts'), where('vendorId', '==', vendorId), orderBy('createdAt', 'desc'));
+        return query(collection(firestore, 'mealGifts'), where('vendorId', '==', vendorId));
     }, [firestore, vendorId]);
-    const { data: orders, loading } = useCollection<MealGift>(ordersQuery);
+    const { data: rawOrders, loading } = useCollection<MealGift>(ordersQuery);
+
+    const orders = useMemo(() => {
+        if (!rawOrders) return [];
+        return [...rawOrders].sort((a, b) => {
+            const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+            const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+            return timeB - timeA;
+        });
+    }, [rawOrders]);
 
     const updateOrderStatus = async (orderId: string, newStatus: MealGiftStatus, senderId: string, itemName: string) => {
         if (!user || !firestore) return;
@@ -202,7 +210,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left">
+                        <SheetHeader className="text-left flex-shrink-0">
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{sheetTitle}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">{sheetDesc}</SheetDescription>
                         </SheetHeader>

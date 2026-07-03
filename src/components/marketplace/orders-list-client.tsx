@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import type { MealGift } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,12 +23,20 @@ export default function OrdersListClient() {
     if (!user?.uid || !firestore) return null;
     return query(
       collection(firestore, 'mealGifts'),
-      where('senderId', '==', user.uid),
-      orderBy('createdAt', 'desc')
+      where('senderId', '==', user.uid)
     );
   }, [user?.uid, firestore]);
 
-  const { data: orders, loading } = useCollection<MealGift>(ordersQuery);
+  const { data: rawOrders, loading } = useCollection<MealGift>(ordersQuery);
+
+  const orders = useMemo(() => {
+    if (!rawOrders) return [];
+    return [...rawOrders].sort((a, b) => {
+      const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
+      const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+      return timeB - timeA;
+    });
+  }, [rawOrders]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
