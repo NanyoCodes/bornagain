@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
 import { collection, query, where, doc, updateDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
-import type { MealGift, VendorProfile, UserProfile, MealGiftStatus } from '@/lib/types';
+import type { MealGift, VendorProfile, UserProfile, MealGiftStatus, Soul } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -91,6 +91,46 @@ function LiveVendorInfo({ vendorId, fallbackName }: { vendorId: string, fallback
                         )}
                     </div>
                  </div>
+            </div>
+        </div>
+    );
+}
+
+/**
+ * For received orders, shows the recipient soul's contact details.
+ */
+function LiveRecipientInfo({ soulId, fallbackName }: { soulId?: string | null, fallbackName: string }) {
+    const firestore = useFirestore();
+    const soulRef = React.useMemo(() => soulId ? doc(firestore, 'souls', soulId) : null, [firestore, soulId]);
+    const { data: soul } = useDoc<Soul>(soulRef);
+
+    return (
+        <div className="flex flex-col gap-1 min-w-0">
+            <p className="text-[9px] font-black uppercase text-primary tracking-[0.2em] mb-1">Recipient</p>
+            <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-muted flex items-center justify-center shrink-0 border border-dashed">
+                    <User className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <div className="min-w-0 flex-1">
+                    <p className="text-sm font-black truncate uppercase tracking-tight">{soul?.firstName ? `${soul.firstName} ${soul.lastName || ''}` : fallbackName}</p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-0.5">
+                        {soul?.email && (
+                            <a href={`mailto:${soul.email}`} className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                                <Mail className="h-2.5 w-2.5 opacity-60" />
+                                {soul.email}
+                            </a>
+                        )}
+                        {soul?.phone && (
+                            <a href={`tel:${soul.phone}`} className="text-[10px] font-bold text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                                <Phone className="h-2.5 w-2.5 opacity-60" />
+                                {soul.phone}
+                            </a>
+                        )}
+                        {!soul?.email && !soul?.phone && (
+                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter opacity-70">Kingdom Member</p>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -187,6 +227,15 @@ export default function OrdersListClient() {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+      switch (status) {
+          case 'preparing': return 'PREPARING';
+          case 'delivering': return 'SHIPPING';
+          case 'delivered': return 'DONE';
+          default: return 'ORDERED';
+      }
+  };
+
   const loading = loadingSent || loadingVendors || (isVendorOfCurrentType && activeType === 'received' && loadingReceived);
 
   const renderOrderCard = (order: MealGift, type: 'sent' | 'received') => {
@@ -226,7 +275,7 @@ export default function OrdersListClient() {
                                     "h-5 px-2 uppercase font-black text-[9px] tracking-widest gap-1.5 border-2 shadow-sm",
                                     order.status === 'delivered' ? "bg-green-500/10 text-green-600 border-green-500/20" : "bg-primary/5 text-primary border-primary/20"
                                 )}>
-                                    {order.status}
+                                    {getStatusLabel(order.status)}
                                 </Badge>
                             </div>
                             <h3 className="font-black text-lg sm:text-xl uppercase tracking-tight truncate leading-tight mb-1">
@@ -247,18 +296,7 @@ export default function OrdersListClient() {
                     {type === 'sent' ? (
                         <LiveVendorInfo vendorId={order.vendorId} fallbackName={order.vendorName} />
                     ) : (
-                        <div className="flex flex-col gap-1 min-w-0">
-                            <p className="text-[9px] font-black uppercase text-primary tracking-[0.2em] mb-1">Recipient</p>
-                            <div className="flex items-center gap-3">
-                                <div className="h-9 w-9 rounded-xl bg-muted flex items-center justify-center shrink-0 border border-dashed">
-                                    <User className="h-5 w-5 text-muted-foreground" />
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-sm font-black truncate uppercase tracking-tight">{order.recipientName}</p>
-                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter opacity-70">Kingdom Member</p>
-                                </div>
-                            </div>
-                        </div>
+                        <LiveRecipientInfo soulId={order.recipientSoulId} fallbackName={order.recipientName} />
                     )}
                     
                     {order.instructions && (
