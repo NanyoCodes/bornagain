@@ -108,7 +108,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
         if (!rawOrders) return [];
         return [...rawOrders].sort((a, b) => {
             const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-            const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+            const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
             return timeB - timeA;
         });
     }, [rawOrders]);
@@ -173,7 +173,10 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                             </p>
                             <div className="flex items-center justify-between pt-2 border-t border-dashed">
                                 <p className="text-[9px] font-bold text-muted-foreground uppercase">From: {order.senderName}</p>
-                                <p className="text-[9px] font-bold text-primary uppercase">₦{order.price.toLocaleString()}</p>
+                                <div className="text-right">
+                                    <p className="text-[9px] font-bold text-primary uppercase">₦{order.price.toLocaleString()}</p>
+                                    {order.deliveryFee && <p className="text-[7px] font-black uppercase text-muted-foreground">+ ₦{order.deliveryFee.toLocaleString()} Delivery</p>}
+                                </div>
                             </div>
                         </CardContent>
                         <CardFooter className="p-2 bg-muted/20 border-t flex gap-1">
@@ -366,7 +369,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const storagePath = isGiftVendor ? 'kindness-center' : 'meals-center';
 
     const cartItems = useMemo(() => Object.values(cart), [cart]);
-    const cartTotal = useMemo(() => cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0), [cartItems]);
+    const cartTotal = useMemo(() => cartItems.reduce((acc, c) => acc + ((c.item.price + (c.item.deliveryFee || 0)) * c.quantity), 0), [cartItems]);
     const cartCount = useMemo(() => cartItems.reduce((acc, c) => acc + c.quantity, 0), [cartItems]);
 
     const addToCart = (item: Meal) => {
@@ -473,7 +476,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const formData = new FormData(e.currentTarget);
         const name = formData.get('name') as string;
         const priceValue = formData.get('price') as string;
+        const deliveryFeeValue = formData.get('deliveryFee') as string;
         const price = parseFloat(priceValue);
+        const deliveryFee = parseFloat(deliveryFeeValue) || 0;
         const description = formData.get('description') as string;
         const category = formData.get('category') as string;
 
@@ -485,6 +490,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             vendorId,
             name,
             price,
+            deliveryFee,
             description,
             category,
             currency: 'NGN',
@@ -517,7 +523,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const formData = new FormData(e.currentTarget);
         const name = formData.get('name') as string;
         const priceValue = formData.get('price') as string;
+        const deliveryFeeValue = formData.get('deliveryFee') as string;
         const price = parseFloat(priceValue);
+        const deliveryFee = parseFloat(deliveryFeeValue) || 0;
         const description = formData.get('description') as string;
         const category = formData.get('category') as string;
 
@@ -528,6 +536,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const updateData = {
             name,
             price,
+            deliveryFee,
             description,
             category,
             photoURL: itemPhotoURL || null,
@@ -687,6 +696,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     mealId: cartItem.item.id,
                     mealName: cartItem.item.name,
                     price: cartItem.item.price,
+                    deliveryFee: cartItem.item.deliveryFee || 0,
                     status: 'ordered' as MealGiftStatus,
                     instructions: giftInstructions,
                     createdAt: serverTimestamp(),
@@ -914,9 +924,15 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Name</Label>
                     <Input name="name" defaultValue={initialItem?.name} placeholder={`e.g., ${isGiftVendor ? 'Study Bible' : 'Jollof Rice'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                 </div>
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price (₦)</Label>
-                    <Input name="price" type="number" defaultValue={initialItem?.price} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price (₦)</Label>
+                        <Input name="price" type="number" defaultValue={initialItem?.price} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Fee (₦)</Label>
+                        <Input name="deliveryFee" type="number" defaultValue={initialItem?.deliveryFee} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" />
+                    </div>
                 </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</Label>
@@ -951,6 +967,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <div className="min-w-0">
                                     <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
                                     <p className="text-[9px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()} x {c.quantity}</p>
+                                    {c.item.deliveryFee ? <p className="text-[8px] font-bold text-muted-foreground uppercase">+ ₦{c.item.deliveryFee.toLocaleString()} Delivery</p> : null}
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
@@ -977,7 +994,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             <div className="space-y-4">
                 {!soulName && (
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this gift?</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this gift? (You can order for self)</Label>
                         <Input 
                             placeholder="Enter recipient name" 
                             value={manualRecipientName}
@@ -1277,9 +1294,16 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                                 </button>
                                             </div>
                                         )}
-                                        <Badge className="bg-primary text-white font-black text-[10px] sm:text-xs px-3 h-8 rounded-full shadow-lg border-none tracking-widest">
-                                            ₦{meal.price.toLocaleString()}
-                                        </Badge>
+                                        <div className="flex flex-col items-end gap-1">
+                                            <Badge className="bg-primary text-white font-black text-[10px] sm:text-xs px-3 h-8 rounded-full shadow-lg border-none tracking-widest">
+                                                ₦{meal.price.toLocaleString()}
+                                            </Badge>
+                                            {meal.deliveryFee ? (
+                                                <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter">
+                                                    + ₦{meal.deliveryFee.toLocaleString()} DEL
+                                                </Badge>
+                                            ) : null}
+                                        </div>
                                     </div>
                                     {cartItem && (
                                         <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in">
@@ -1317,7 +1341,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 {(!meals || meals.length === 0) && !isOwner && (
                     <div className="col-span-full py-32 text-center flex flex-col items-center">
                         <div className="h-20 w-20 rounded-full bg-muted/20 flex items-center justify-center mb-6">
-                            <ItemIcon className="h-10 w-10 text-muted-foreground opacity-20" />
+                            <ItemIcon className="h-10 w-10 text-muted-foreground opacity-10" />
                         </div>
                         <p className="text-sm text-muted-foreground italic font-medium max-w-xs mx-auto">This provider's catalog is being prepared for the harvest.</p>
                     </div>

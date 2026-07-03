@@ -1,4 +1,3 @@
-
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -450,6 +449,7 @@ export type Meal = {
   name: string;
   description?: string;
   price: number;
+  deliveryFee?: number;
   currency: string;
   photoURL?: string;
   category?: string;
@@ -470,6 +470,7 @@ export type MealGift = {
   mealId: string;
   mealName: string;
   price: number;
+  deliveryFee?: number;
   status: MealGiftStatus;
   instructions?: string;
   createdAt: Timestamp;
