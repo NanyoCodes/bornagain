@@ -465,6 +465,7 @@ export type MealGift = {
   recipientName: string;
   vendorId: string;
   vendorName: string;
+  vendorOwnerId: string;
   mealId: string;
   mealName: string;
   price: number;

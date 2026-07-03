@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -634,7 +635,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     };
 
     const handleGiftItems = async () => {
-        if (!user || !firestore || !userProfile || cartItems.length === 0) return;
+        if (!user || !firestore || !userProfile || !vendor || cartItems.length === 0) return;
 
         const finalRecipientName = soulName || manualRecipientName;
         if (!finalRecipientName.trim()) {
@@ -678,6 +679,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     recipientName: finalRecipientName,
                     vendorId: vendorId,
                     vendorName: vendor?.businessName || 'Unknown Vendor',
+                    vendorOwnerId: vendor.userId, // Added for security rules verification
                     mealId: cartItem.item.id,
                     mealName: cartItem.item.name,
                     price: cartItem.item.price,
@@ -722,7 +724,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             type: 'new_order',
             title: 'New Package Ordered!',
             message: `${senderName} has placed a new order for ${itemNames}. Instructions: ${giftInstructions}`,
-            link: `/dashboard/marketplace/vendors/${vendorId}`,
+            link: `/dashboard/marketplace/orders`,
             isRead: false,
             createdAt: serverTimestamp(),
         });
@@ -1084,7 +1086,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     return (
         <div 
-            className="space-y-8 max-w-4xl mx-auto pb-32"
+            className="space-y-8 pb-32 max-w-4xl mx-auto"
             inert={isAnyModalOpen ? true : undefined}
         >
             <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 pb-4">

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -105,13 +106,14 @@ export default function OrdersListClient() {
   const isVendor = vendorIds.length > 0;
 
   // Fetch Received Orders (if vendor)
+  // Refactored to query by vendorOwnerId for security rule compliance
   const receivedOrdersQuery = React.useMemo(() => {
-    if (!isVendor || !firestore) return null;
+    if (!isVendor || !firestore || !user?.uid) return null;
     return query(
         collection(firestore, 'mealGifts'),
-        where('vendorId', 'in', vendorIds)
+        where('vendorOwnerId', '==', user.uid)
     );
-  }, [vendorIds, isVendor, firestore]);
+  }, [isVendor, firestore, user?.uid]);
   const { data: rawReceivedOrders, loading: loadingReceived } = useCollection<MealGift>(receivedOrdersQuery);
 
   const sentOrders = React.useMemo(() => {
