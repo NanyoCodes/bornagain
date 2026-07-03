@@ -65,6 +65,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     const [isSending, setIsSending] = useState(false);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
     const [showScrollBottom, setShowScrollBottom] = useState(false);
     const [swipeState, setSwipeState] = useState<{ id: string | null; startX: number; startY: number; deltaX: number }>({ id: null, startX: 0, startY: 0, deltaX: 0 });
@@ -73,6 +74,14 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     // Editing State
     const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
     const [isUpdatingMessage, setIsUpdatingMessage] = useState(false);
+
+    // Auto-resize textarea
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        }
+    }, [newMessage]);
 
     const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>, msg: ChatMessage) => {
         if (e.touches.length === 1) {
@@ -786,13 +795,14 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     )}
                     <form onSubmit={handleFormSubmit} className="flex gap-3 w-full items-center">
                         <Textarea
+                            ref={textareaRef}
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder={editingMessageId ? "Edit your message..." : (replyingTo ? "Type your reply..." : "Type a message...")}
                             disabled={isSending || isUpdatingMessage}
                             className={cn(
-                                "min-h-[3rem] max-h-32 py-3 px-4 rounded-2xl shadow-inner border-muted-foreground/20 text-base resize-none", 
+                                "min-h-[3rem] max-h-32 py-3 px-4 rounded-2xl shadow-inner border-muted-foreground/20 text-base resize-none overflow-y-auto", 
                                 (replyingTo || editingMessageId) && "rounded-t-none border-t-0"
                             )}
                         />
