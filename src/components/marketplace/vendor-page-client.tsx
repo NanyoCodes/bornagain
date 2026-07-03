@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -97,7 +96,6 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     
     const ordersQuery = useMemo(() => {
         if (!firestore || !vendorId || !user?.uid) return null;
-        // Optimization: Filter by vendorOwnerId to satisfy security rules while maintaining specific vendor context
         return query(
             collection(firestore, 'mealGifts'), 
             where('vendorOwnerId', '==', user.uid),
@@ -878,7 +876,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <Label className="text-[10px] font-black uppercase tracking-widest text-destructive ml-1">Danger Zone</Label>
                         <Card className="border-destructive/20 bg-destructive/5 mt-2 overflow-hidden">
                             <CardContent className="p-4 flex items-center justify-between gap-4">
-                                <div className="space-y-1 min-0">
+                                <div className="space-y-1 min-w-0 flex-1">
                                     <p className="text-xs font-bold text-destructive">Delete Storefront</p>
                                     <p className="text-[10px] text-muted-foreground leading-tight truncate">Permanently remove your business from Testify.</p>
                                 </div>
@@ -890,7 +888,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     </div>
                 </div>
             </ScrollArea>
-            <div className="p-6 sm:p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row mt-auto">
+            <div className="p-6 sm:p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row mt-auto shrink-0">
                 <Button type="button" variant="outline" onClick={() => setIsEditProfileOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
                 <Button type="submit" disabled={isUpdatingProfile} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isUpdatingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -1187,7 +1185,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     </SheetTrigger>
                                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                            <SheetHeader className="text-left">
+                                            <SheetHeader className="text-left flex-shrink-0">
                                                 <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Hub</SheetTitle>
                                                 <SheetDescription className="text-sm font-medium mt-1">Refine your Kingdom business details.</SheetDescription>
                                             </SheetHeader>
@@ -1413,7 +1411,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Item</SheetTitle>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Item</DialogTitle>
                                 <DialogDescription className="text-sm font-medium mt-1">Update item details in your catalog.</DialogDescription>
                             </DialogHeader>
                         </div>
