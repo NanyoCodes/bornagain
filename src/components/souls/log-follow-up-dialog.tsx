@@ -11,7 +11,6 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Switch } from "../ui/switch";
 import { Textarea } from "../ui/textarea";
@@ -19,12 +18,41 @@ import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { actionItems, statusOptions } from "@/lib/follow-up-data";
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
-import { Church, BookOpen, Heart, Users, Loader2, Sparkles, ArrowRight } from "lucide-react";
+import { 
+  Church, 
+  BookOpen, 
+  Heart, 
+  Users, 
+  Loader2, 
+  Sparkles, 
+  ArrowRight, 
+  Utensils, 
+  Home, 
+  Gift, 
+  Phone, 
+  MessageSquare, 
+  Calendar,
+  CheckCircle2
+} from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+
+const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+};
 
 const logFollowUpFormSchema = z.object({
   note: z.string().optional(),
@@ -198,71 +226,89 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                 />
             </div>
             
-            <Accordion type="single" collapsible className="w-full space-y-3">
-                <AccordionItem value="actions" className="border rounded-2xl overflow-hidden px-4 bg-muted/10">
-                    <AccordionTrigger className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:no-underline">Relationship Actions</AccordionTrigger>
-                    <AccordionContent>
-                        <FormField
-                            control={form.control}
-                            name="actions"
-                            render={() => (
-                                <FormItem className="space-y-3 pt-2 pb-4">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
-                                        {actionItems.map((item) => (
-                                        <FormField
-                                            key={item.id}
-                                            control={form.control}
-                                            name="actions"
-                                            render={({ field }) => (
-                                                <FormItem
-                                                    key={item.id}
-                                                    className="flex flex-row items-center space-x-3 space-y-0"
-                                                >
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value?.includes(item.id)}
-                                                            onCheckedChange={(checked) => {
-                                                                return checked
-                                                                ? field.onChange([...(field.value || []), item.id])
-                                                                : field.onChange(
-                                                                    field.value?.filter(
-                                                                        (value) => value !== item.id
-                                                                    )
-                                                                    )
+            <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Relationship Actions</label>
+                <FormField
+                    control={form.control}
+                    name="actions"
+                    render={({ field }) => (
+                        <FormItem className="space-y-3">
+                            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                                {actionItems.map((item) => {
+                                    const isSelected = field.value?.includes(item.id);
+                                    const Icon = iconMap[item.id] || Heart;
+                                    return (
+                                        <motion.div key={item.id} whileTap={{ scale: 0.95 }} className="w-full">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                className={cn(
+                                                    "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden",
+                                                    isSelected 
+                                                        ? "bg-primary/5 border-primary/40 shadow-inner ring-1 ring-primary/10" 
+                                                        : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
+                                                )}
+                                                onClick={() => {
+                                                    const nextValue = isSelected
+                                                        ? field.value?.filter(v => v !== item.id)
+                                                        : [...(field.value || []), item.id];
+                                                    field.onChange(nextValue);
+                                                }}
+                                            >
+                                                <AnimatePresence>
+                                                    {isSelected && (
+                                                        <motion.div 
+                                                            initial={{ scale: 0, opacity: 0 }}
+                                                            animate={{ scale: 1, opacity: 1 }}
+                                                            exit={{ scale: 0, opacity: 0 }}
+                                                            className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20"
+                                                        >
+                                                            <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current" />
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+
+                                                <div className={cn(
+                                                    "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
+                                                    isSelected ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
+                                                )}>
+                                                    <Icon className={cn("h-4 w-4 transition-all", isSelected ? "text-primary fill-current" : "text-primary/60")} />
+                                                </div>
+                                                
+                                                <div className="space-y-0.5 min-w-0 w-full">
+                                                    <span className={cn(
+                                                        "text-[9px] font-black uppercase tracking-tight block truncate",
+                                                        isSelected ? "text-primary" : "text-foreground"
+                                                    )}>
+                                                        {item.label}
+                                                    </span>
+                                                    {isSelected && (item.id === 'shared_meal' || item.id === 'gave_gift') && (
+                                                        <button 
+                                                            type="button" 
+                                                            className="text-[8px] font-black uppercase text-primary underline animate-in fade-in slide-in-from-bottom-1"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                const path = item.id === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+                                                                router.push(`${path}?soulId=${soul?.id}&soulName=${encodeURIComponent(soul?.firstName || '')}&actionId=${item.id}`);
+                                                                onOpenChange(false);
                                                             }}
-                                                            className="h-5 w-5 rounded-md"
-                                                        />
-                                                    </FormControl>
-                                                    <div className="flex items-center gap-2">
-                                                        <FormLabel className="font-bold text-sm cursor-pointer text-foreground/80 leading-none">
-                                                            {item.label}
-                                                        </FormLabel>
-                                                        {field.value?.includes(item.id) && (item.id === 'shared_meal' || item.id === 'gave_gift') && (
-                                                            <Button 
-                                                                type="button" 
-                                                                variant="link" 
-                                                                size="sm" 
-                                                                className="h-auto p-0 px-2 text-[10px] font-black uppercase text-primary animate-in fade-in slide-in-from-left-1"
-                                                                onClick={() => {
-                                                                    const path = item.id === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-                                                                    router.push(`${path}?soulId=${soul?.id}&soulName=${encodeURIComponent(soul?.firstName || '')}&actionId=${item.id}`);
-                                                                    onOpenChange(false);
-                                                                }}
-                                                            >
-                                                                Go to Hub <ArrowRight className="ml-1 h-2.5 w-2.5" />
-                                                            </Button>
-                                                        )}
-                                                    </div>
-                                                </FormItem>
-                                            )}
-                                        />
-                                        ))}
-                                    </div>
-                                </FormItem>
-                            )}
-                        />
-                    </AccordionContent>
-                </AccordionItem>
+                                                        >
+                                                            GO TO HUB
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </Button>
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
+            
+            <Accordion type="single" collapsible className="w-full space-y-3">
                 <AccordionItem value="progress" className="border rounded-2xl overflow-hidden px-4 bg-muted/10">
                      <AccordionTrigger className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:no-underline">Growth Milestones</AccordionTrigger>
                      <AccordionContent>
@@ -324,7 +370,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
               </ScrollArea>
               <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
                 <Button type="submit" form="log-follow-up-form" disabled={isLoading} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
-                    {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     SAVE INTERACTION
                 </Button>
               </div>
