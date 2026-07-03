@@ -109,7 +109,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
         return [...rawOrders].sort((a, b) => {
             const timeA = safeToDate(b.createdAt)?.getTime() ?? 0;
             const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
-            return timeB - timeA;
+            return dateB - timeA;
         });
     }, [rawOrders]);
 
@@ -262,7 +262,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const [mounted, setMounted] = useState(false);
 
     // Persistent Multi-Vendor Cart State
-    const [cart, setCart] = useState<{ [mealId: string]: { item: Meal & { vendorName?: string; vendorOwnerId?: string; vendorPaymentDetails?: string; vendorPhotoURL?: string }; quantity: number } }>({});
+    const [cart, setCart] = useState<{ [mealId: string]: { item: Meal & { vendorName?: string; vendorOwnerId?: string; vendorPaymentDetails?: string; vendorPhotoURL?: string; vendorType?: 'meal' | 'gift' }; quantity: number } }>({});
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [giftInstructions, setGiftInstructions] = useState('');
     const [manualRecipientName, setManualRecipientName] = useState('');
@@ -311,22 +311,33 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     useEffect(() => {
         setMounted(true);
-        // Load persistent cart
-        const stored = localStorage.getItem('testify_marketplace_cart');
-        if (stored) {
-            try {
-                setCart(JSON.parse(stored));
-            } catch (e) {}
-        }
     }, []);
 
-    useEffect(() => {
-        if (mounted) {
-            localStorage.setItem('testify_marketplace_cart', JSON.stringify(cart));
-        }
-    }, [cart, mounted]);
+    const cartKey = useMemo(() => user?.uid ? `testify_marketplace_cart_${user.uid}` : null, [user?.uid]);
 
-    const vendorDocRef = useMemo(() => vendorId ? doc(firestore, 'vendors', vendorId) : null, [firestore, vendorId]);
+    useEffect(() => {
+        if (mounted && cartKey) {
+            const stored = localStorage.getItem(cartKey);
+            if (stored) {
+                try {
+                    setCart(JSON.parse(stored));
+                } catch (e) {
+                    setCart({});
+                }
+            } else {
+                setCart({});
+            }
+        }
+    }, [mounted, cartKey]);
+
+    useEffect(() => {
+        if (mounted && cartKey) {
+            localStorage.setItem(cartKey, JSON.stringify(cart));
+            window.dispatchEvent(new Event('testify_marketplace_cart_update'));
+        }
+    }, [cart, mounted, cartKey]);
+
+    const vendorDocRef = useMemo(() => (firestore && vendorId) ? doc(firestore, 'vendors', vendorId) : null, [firestore, vendorId]);
     const { data: vendor, loading: loadingVendor } = useDoc<VendorProfile>(vendorDocRef);
 
     useEffect(() => {
@@ -374,7 +385,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const ItemIcon = isGiftVendor ? Package : Utensils;
     const centerLabel = isGiftVendor ? 'Kindness Center' : 'Meals Center';
     const itemLabel = isGiftVendor ? 'Product' : 'Meal';
-    const actionLabel = isGiftVendor ? 'Gifting' : 'Provisioning';
     const addLabel = isGiftVendor ? 'Add New Product' : 'Add New Meal';
     const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
     const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
@@ -383,7 +393,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     const cartItems = useMemo(() => Object.values(cart), [cart]);
 
-    // Group items by vendor for aggregated delivery fee logic
     const cartByVendor = useMemo(() => {
         const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number } } = {};
         cartItems.forEach(c => {
@@ -399,7 +408,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 };
             }
             groups[vId].items.push(c);
-            // Apply delivery fee once per supplier (highest item fee)
             groups[vId].deliveryFee = Math.max(groups[vId].deliveryFee, c.item.deliveryFee || 0);
         });
         return Object.values(groups);
@@ -414,6 +422,10 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const cartCount = useMemo(() => cartItems.reduce((acc, c) => acc + c.quantity, 0), [cartItems]);
 
     const addToCart = (item: Meal) => {
+        if (!user?.uid) {
+            toast({ variant: 'destructive', title: 'Login Required', description: 'Please sign in to building your offering package.' });
+            return;
+        }
         setCart(prev => {
             const existing = prev[item.id];
             return {
@@ -424,7 +436,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         vendorName: vendor?.businessName,
                         vendorOwnerId: vendor?.userId,
                         vendorPaymentDetails: vendor?.paymentDetails,
-                        vendorPhotoURL: vendor?.photoURL
+                        vendorPhotoURL: vendor?.photoURL,
+                        vendorType: vendor?.vendorType
                     },
                     quantity: (existing?.quantity || 0) + 1
                 }
@@ -659,7 +672,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             })
             .catch(async (serverError) => {
                 const permissionError = new FirestorePermissionError({
-                    path: updateData ? vendorRef.path : 'unknown',
+                    path: vendorRef.path,
                     operation: 'update',
                     requestResourceData: updateData
                 }, user);
@@ -727,7 +740,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
         const senderName = `${userProfile.firstName} ${userProfile.lastName}`;
 
-        // Create individual items for tracking
         cartItems.forEach(cartItem => {
             for(let i = 0; i < cartItem.quantity; i++) {
                 const giftRef = doc(giftsRef);
@@ -751,7 +763,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             }
         });
 
-        // Notify each vendor
         cartByVendor.forEach(v => {
             const vendorNotificationRef = doc(collection(firestore, `users/${v.vendorOwnerId}/notifications`));
             const vendorItems = v.items.map(c => `${c.item.name} (x${c.quantity})`).join(', ');
@@ -796,11 +807,12 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             await batch.commit();
             const key = `testify_pending_provisions_${user.uid}`;
             localStorage.removeItem(key);
-            localStorage.removeItem('testify_marketplace_cart');
+            if (cartKey) localStorage.removeItem(cartKey);
             setCart({});
             window.dispatchEvent(new Event('testify_pending_action_update'));
+            window.dispatchEvent(new Event('testify_marketplace_cart_update'));
             toast({ title: 'Offering Confirmed!', description: `Act of kindness for ${finalRecipientName} recorded.` });
-            onSoulWonRedirect();
+            router.push('/dashboard/souls-won');
         } catch (serverError: any) {
             const permissionError = new FirestorePermissionError({
                 path: `BATCH_WRITE:GIFT_FULFILLMENT`,
@@ -811,10 +823,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             setIsProcessingOrder(false);
         }
     };
-
-    const onSoulWonRedirect = () => {
-        router.push('/dashboard/souls-won');
-    }
 
     const copyPaymentToClipboard = (details: string) => {
         navigator.clipboard.writeText(details);
@@ -1239,7 +1247,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2">
                                 {isOwner && (
                                     <div className="flex gap-2 w-full">
-                                        <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0" onClick={() => setItemToEdit(meal)}><Edit className="h-4 w-4 text-primary" /></Button>
+                                        <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0" onClick={() => {
+                                            setItemToEdit(meal);
+                                        }}><Edit className="h-4 w-4 text-primary" /></Button>
                                         <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0 text-destructive hover:bg-destructive/10" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4" /></Button>
                                     </div>
                                 )}

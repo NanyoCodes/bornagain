@@ -311,6 +311,35 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+
+  const updateCartCount = useCallback(() => {
+    if (typeof window === 'undefined' || !user?.uid) {
+        setCartCount(0);
+        return;
+    }
+    const key = `testify_marketplace_cart_${user.uid}`;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+        try {
+            const cart = JSON.parse(stored);
+            const count = Object.values(cart).reduce((acc: number, c: any) => acc + (c.quantity || 0), 0);
+            setCartCount(count);
+        } catch (e) { setCartCount(0); }
+    } else {
+        setCartCount(0);
+    }
+  }, [user?.uid]);
+
+  useEffect(() => {
+    updateCartCount();
+    window.addEventListener('testify_marketplace_cart_update', updateCartCount);
+    window.addEventListener('storage', updateCartCount);
+    return () => {
+        window.removeEventListener('testify_marketplace_cart_update', updateCartCount);
+        window.removeEventListener('storage', updateCartCount);
+    };
+  }, [updateCartCount]);
 
   const otherNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -424,6 +453,18 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         
         {user ? (
           <>
+            <Link href="/dashboard/marketplace">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
+                      <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
+                      {cartCount > 0 && (
+                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
+                          {cartCount}
+                        </div>
+                      )}
+                    </Button>
+                </motion.div>
+            </Link>
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                     <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
@@ -754,7 +795,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="relative mb-8">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
             <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             </div>
         </div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
