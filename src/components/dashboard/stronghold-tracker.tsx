@@ -305,9 +305,9 @@ export function StrongholdTracker() {
                                         )}
                                     </div>
                                     
-                                    <Link href={circleLink} className="block w-full py-2 bg-primary/[0.03] border-t border-primary/5 text-center group/circle hover:bg-primary/5 transition-all">
-                                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary/60 group-hover/circle:text-primary flex items-center justify-center gap-1.5">
-                                            ENTER VICTORY CIRCLE <ArrowRight className="h-2.5 w-2.5" />
+                                    <Link href={circleLink} className="block w-full py-2.5 bg-primary/10 border-t border-primary/20 text-center group/circle hover:bg-primary/20 transition-all">
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary group-hover/circle:scale-105 transition-transform flex items-center justify-center gap-1.5">
+                                            ENTER VICTORY CIRCLE <ArrowRight className="h-3 w-3" />
                                         </span>
                                     </Link>
                                 </div>
