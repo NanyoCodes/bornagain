@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useUser, useAuth, useCollection, useDoc, useFirestore } from '@/firebase';
-import { collection, query, where, doc, updateDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { collection, query, where, doc, updateDoc, serverTimestamp, writeBatch, getDocs, addDoc, getDoc } from 'firebase/firestore';
 import type { MealGift, VendorProfile, UserProfile, MealGiftStatus, Soul } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +22,9 @@ import {
     Send,
     Gift,
     Mail,
-    Phone
+    Phone,
+    Download,
+    MessagesSquare
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
@@ -33,6 +35,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 /**
  * Ensures vendor details in the order tracker are always current.
@@ -143,6 +151,7 @@ export default function OrdersListClient() {
   
   const [activeCategory, setActiveCategory] = React.useState<'meal' | 'gift'>('meal');
   const [activeType, setActiveType] = React.useState<'sent' | 'received'>('sent');
+  const [isChatLoading, setIsChatLoading] = React.useState<string | null>(null);
 
   // Guarded Sent Orders Query
   const sentOrdersQuery = React.useMemo(() => {
@@ -216,6 +225,119 @@ export default function OrdersListClient() {
     }
   };
 
+  const handleExportHistory = async (formatType: 'csv' | 'pdf') => {
+    const ordersToExport = activeType === 'sent' ? filteredSentOrders : filteredReceivedOrders;
+    if (ordersToExport.length === 0) {
+        toast({ variant: 'destructive', title: 'Empty History', description: 'No records found to export.' });
+        return;
+    }
+
+    const { jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
+    const headers = ["Item", "Recipient", "Sender", "Provider", "Amount", "Status", "Date"];
+    const body = ordersToExport.map(o => [
+      o.mealName,
+      o.recipientName,
+      o.senderName,
+      o.vendorName,
+      `N${(o.price + (o.deliveryFee || 0)).toLocaleString()}`,
+      o.status.toUpperCase(),
+      o.createdAt ? format(o.createdAt.toDate(), 'yyyy-MM-dd') : ''
+    ]);
+
+    if (formatType === 'pdf') {
+        const docObj = new jsPDF({ orientation: 'landscape' });
+        docObj.text(`Transaction History - ${activeCategory === 'meal' ? 'Meals' : 'Gifts'} (${activeType})`, 14, 15);
+        autoTable(docObj, { 
+          head: [headers], 
+          body: body, 
+          startY: 20,
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [249, 116, 22] }
+        });
+        docObj.save(`orders-${activeCategory}-${activeType}-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+    } else {
+        const csvRows = [headers.join(",")];
+        body.forEach(row => {
+          csvRows.push(row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","));
+        });
+        const csvString = csvRows.join("\n");
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `orders-${activeCategory}-${activeType}-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+    toast({ title: "History Exported" });
+  };
+
+  const handleInitiateChat = async (order: MealGift, type: 'sent' | 'received') => {
+    if (!user || !firestore) return;
+    
+    const otherParticipantId = type === 'sent' ? order.vendorOwnerId : order.senderId;
+    if (!otherParticipantId) return;
+
+    setIsChatLoading(order.id);
+    try {
+        const participantIds = [user.uid, otherParticipantId].sort();
+        const chatsRef = collection(firestore, 'chats');
+        
+        const q = query(
+            chatsRef,
+            where('participantIds', '==', participantIds),
+            where('isGroupChat', '==', false)
+        );
+
+        const querySnapshot = await getDocs(q);
+        let existingChat = querySnapshot.docs.find(doc => doc.data().vendorId === order.vendorId);
+        
+        let chatId: string;
+
+        if (existingChat) {
+            chatId = existingChat.id;
+        } else {
+            // Need profiles for info
+            const [myDoc, otherDoc] = await Promise.all([
+                getDoc(doc(firestore, 'users', user.uid)),
+                getDoc(doc(firestore, 'users', otherParticipantId))
+            ]);
+            const myProfile = myDoc.data() as UserProfile;
+            const otherProfile = otherDoc.data() as UserProfile;
+
+            const newChatData = {
+                participantIds,
+                participantInfo: {
+                    [user.uid]: {
+                        firstName: myProfile.firstName || '',
+                        lastName: myProfile.lastName || '',
+                        photoURL: myProfile.photoURL || '',
+                    },
+                    [otherParticipantId]: {
+                        firstName: type === 'sent' ? order.vendorName : otherProfile.firstName,
+                        lastName: type === 'sent' ? '' : otherProfile.lastName,
+                        photoURL: type === 'sent' ? (order as any).vendorPhotoURL || otherProfile.photoURL || '' : otherProfile.photoURL || '', 
+                    },
+                },
+                vendorId: order.vendorId,
+                campaignTitle: order.vendorName,
+                lastUpdatedAt: serverTimestamp(),
+                isGroupChat: false,
+                hasMessages: false,
+            };
+            const chatDocRef = await addDoc(chatsRef, newChatData);
+            chatId = chatDocRef.id;
+        }
+        router.push(`/dashboard/chats/${chatId}`);
+    } catch (error) {
+        toast({ variant: 'destructive', title: 'Chat Error', description: 'Could not open communication channel.' });
+    } finally {
+        setIsChatLoading(null);
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
         case 'ordered': return <Timer className="h-5 w-5 text-amber-500" />;
@@ -263,11 +385,11 @@ export default function OrdersListClient() {
             </CardHeader>
             <CardContent className="p-6 sm:p-8 space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="flex items-start gap-5 min-w-0">
+                    <div className="flex items-start gap-5 min-w-0 flex-1">
                         <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
                             {getStatusIcon(order.status)}
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 mb-1.5">
                                 <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 mr-1">Status:</span>
                                 <Badge variant="outline" className={cn(
@@ -285,12 +407,24 @@ export default function OrdersListClient() {
                             </p>
                         </div>
                     </div>
-                    <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 border-t sm:border-t-0 pt-4 sm:pt-0">
-                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest sm:hidden">Price Value</p>
-                        <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter">₦{(order.price + (order.deliveryFee || 0)).toLocaleString()}</p>
-                        {order.deliveryFee ? (
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">Incl. ₦{order.deliveryFee.toLocaleString()} Delivery</p>
-                        ) : null}
+                    <div className="flex flex-col items-end gap-2 shrink-0">
+                         <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-t-0 pt-4 sm:pt-0">
+                            <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest sm:hidden">Price Value</p>
+                            <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter">₦{(order.price + (order.deliveryFee || 0)).toLocaleString()}</p>
+                            {order.deliveryFee ? (
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">Incl. ₦{order.deliveryFee.toLocaleString()} Delivery</p>
+                            ) : null}
+                        </div>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 transition-transform active:scale-95"
+                            onClick={() => handleInitiateChat(order, type)}
+                            disabled={isChatLoading === order.id}
+                        >
+                            {isChatLoading === order.id ? <Loader2 className="mr-1.5 h-3 w-3 animate-spin" /> : <MessagesSquare className="mr-1.5 h-3 w-3" />}
+                            Chat {type === 'sent' ? 'Provider' : 'Sender'}
+                        </Button>
                     </div>
                 </div>
 
@@ -358,17 +492,32 @@ export default function OrdersListClient() {
     <div className="flex flex-col h-full w-full bg-background overflow-hidden">
         <header className="px-4 sm:px-0 space-y-8 pt-4">
             <div className="flex flex-col gap-6">
-                <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
-                        <ArrowLeft className="h-6 w-6" />
-                        <span className="sr-only">Back</span>
-                    </Button>
-                    <div className="space-y-1 min-w-0">
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase truncate">Order Hub</h1>
-                        <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
-                            <Package className="h-4 w-4 text-primary" /> Provision Logistics
-                        </p>
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 min-w-0">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
+                            <ArrowLeft className="h-6 w-6" />
+                            <span className="sr-only">Back</span>
+                        </Button>
+                        <div className="space-y-1 min-w-0">
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase truncate">Order Hub</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
+                                <Package className="h-4 w-4 text-primary" /> Provision Logistics
+                            </p>
+                        </div>
                     </div>
+                    
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="icon" className="rounded-full shadow-lg border-primary/20 text-primary h-10 w-10">
+                                <Download className="h-5 w-5" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="rounded-xl">
+                            <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Export History</DropdownMenuLabel>
+                            <DropdownMenuItem onSelect={() => handleExportHistory('csv')}>CSV (Excel)</DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => handleExportHistory('pdf')}>PDF Report</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4">
