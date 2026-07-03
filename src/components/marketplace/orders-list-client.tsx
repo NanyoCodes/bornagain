@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -21,7 +20,8 @@ import {
     Loader2,
     Inbox,
     Send,
-    Gift
+    Gift,
+    Sparkles
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
@@ -84,7 +84,10 @@ export default function OrdersListClient() {
   const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = React.useState<'sent' | 'received'>('sent');
+  
+  // State for dual-level filtering
+  const [activeCategory, setActiveCategory] = React.useState<'meal' | 'gift'>('meal');
+  const [activeType, setActiveType] = React.useState<'sent' | 'received'>('sent');
 
   // Fetch Sent Orders
   const sentOrdersQuery = React.useMemo(() => {
@@ -104,35 +107,34 @@ export default function OrdersListClient() {
   const { data: myVendors, loading: loadingVendors } = useCollection<VendorProfile>(myVendorsQuery);
 
   const vendorIds = React.useMemo(() => myVendors?.map(v => v.id) || [], [myVendors]);
-  const isVendor = vendorIds.length > 0;
+  const isVendorOfCurrentType = React.useMemo(() => {
+      return myVendors?.some(v => v.vendorType === activeCategory) || false;
+  }, [myVendors, activeCategory]);
 
   // Fetch Received Orders (if vendor)
   const receivedOrdersQuery = React.useMemo(() => {
-    if (!isVendor || !firestore || !user?.uid) return null;
+    if (!user?.uid || !firestore) return null;
     return query(
         collection(firestore, 'mealGifts'),
         where('vendorOwnerId', '==', user.uid)
     );
-  }, [isVendor, firestore, user?.uid]);
+  }, [user?.uid, firestore]);
   const { data: rawReceivedOrders, loading: loadingReceived } = useCollection<MealGift>(receivedOrdersQuery);
 
-  const sentOrders = React.useMemo(() => {
+  // Client-side filtering and sorting
+  const filteredSentOrders = React.useMemo(() => {
     if (!rawSentOrders) return [];
-    return [...rawSentOrders].sort((a, b) => {
-      const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-      const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
-      return timeB - timeA;
-    });
-  }, [rawSentOrders]);
+    return rawSentOrders
+        .filter(o => o.vendorType === activeCategory)
+        .sort((a, b) => (safeToDate(b.createdAt)?.getTime() ?? 0) - (safeToDate(a.createdAt)?.getTime() ?? 0));
+  }, [rawSentOrders, activeCategory]);
 
-  const receivedOrders = React.useMemo(() => {
+  const filteredReceivedOrders = React.useMemo(() => {
     if (!rawReceivedOrders) return [];
-    return [...rawReceivedOrders].sort((a, b) => {
-      const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-      const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
-      return timeB - timeA;
-    });
-  }, [rawReceivedOrders]);
+    return rawReceivedOrders
+        .filter(o => o.vendorType === activeCategory)
+        .sort((a, b) => (safeToDate(b.createdAt)?.getTime() ?? 0) - (safeToDate(a.createdAt)?.getTime() ?? 0));
+  }, [rawReceivedOrders, activeCategory]);
 
   const updateOrderStatus = async (orderId: string, newStatus: MealGiftStatus, senderId: string, itemName: string) => {
     if (!user || !firestore) return;
@@ -171,7 +173,7 @@ export default function OrdersListClient() {
     }
   };
 
-  const loading = loadingSent || loadingVendors || (isVendor && loadingReceived);
+  const loading = loadingSent || loadingVendors || loadingReceived;
 
   const renderOrderCard = (order: MealGift, type: 'sent' | 'received') => {
       const createdAt = safeToDate(order.createdAt);
@@ -231,14 +233,14 @@ export default function OrdersListClient() {
                         <LiveVendorInfo vendorId={order.vendorId} fallbackName={order.vendorName} />
                     ) : (
                         <div className="flex flex-col gap-1 min-w-0">
-                            <p className="text-[9px] font-black uppercase text-primary tracking-[0.2em] mb-1">Gifting Recipient</p>
+                            <p className="text-[9px] font-black uppercase text-primary tracking-[0.2em] mb-1">Recipient</p>
                             <div className="flex items-center gap-3">
                                 <div className="h-9 w-9 rounded-xl bg-muted flex items-center justify-center shrink-0 border border-dashed">
                                     <User className="h-5 w-5 text-muted-foreground" />
                                 </div>
                                 <div className="min-w-0">
                                     <p className="text-sm font-black truncate uppercase tracking-tight">{order.recipientName}</p>
-                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter opacity-70">Kingdom Brother/Sister</p>
+                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter opacity-70">Kingdom Member</p>
                                 </div>
                             </div>
                         </div>
@@ -277,10 +279,30 @@ export default function OrdersListClient() {
       );
   };
 
+  const emptyState = (
+    <div className="py-32 text-center px-8 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center">
+        <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+            <Inbox className="h-10 w-10 text-muted-foreground opacity-10" />
+        </div>
+        <h3 className="text-2xl font-black font-headline uppercase tracking-tight opacity-40">No {activeCategory === 'meal' ? 'Meals' : 'Gifts'} Found</h3>
+        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto leading-relaxed text-balance">
+            {activeType === 'sent' 
+                ? `Your acts of kindness in the ${activeCategory === 'meal' ? 'Meals' : 'Gifts'} category will appear here.`
+                : `When believers order ${activeCategory === 'meal' ? 'meals' : 'gifts'} from your storefront, they will appear here.`
+            }
+        </p>
+        {activeType === 'sent' && (
+            <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
+                <Link href={activeCategory === 'meal' ? "/dashboard/marketplace" : "/dashboard/marketplace/gifts"}>VISIT {activeCategory.toUpperCase()} HUB</Link>
+            </Button>
+        )}
+    </div>
+  );
+
   return (
     <div className="space-y-10 max-w-4xl mx-auto pb-32">
-        <header className="px-4 sm:px-0 space-y-6 pt-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <header className="px-4 sm:px-0 space-y-8 pt-4">
+            <div className="flex flex-col gap-6">
                 <div className="flex items-center gap-4">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
                         <ArrowLeft className="h-6 w-6" />
@@ -293,18 +315,32 @@ export default function OrdersListClient() {
                         </p>
                     </div>
                 </div>
-                {isVendor && (
-                    <Tabs value={activeTab} onValueChange={(val: any) => setActiveTab(val)} className="w-full sm:w-auto">
-                        <TabsList className="grid w-full grid-cols-2 h-11 bg-muted/40 p-1 rounded-xl">
-                            <TabsTrigger value="sent" className="font-black text-[10px] uppercase tracking-widest rounded-lg flex items-center gap-2">
-                                <Send className="h-3 w-3" /> Sent
+
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <Tabs value={activeCategory} onValueChange={(val: any) => setActiveCategory(val)} className="flex-1">
+                        <TabsList className="grid w-full grid-cols-2 h-12 bg-muted/40 p-1 rounded-2xl">
+                            <TabsTrigger value="meal" className="font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center gap-2">
+                                <Utensils className="h-3.5 w-3.5" /> Provision Hub
                             </TabsTrigger>
-                            <TabsTrigger value="received" className="font-black text-[10px] uppercase tracking-widest rounded-lg flex items-center gap-2">
-                                <Inbox className="h-3 w-3" /> Received
+                            <TabsTrigger value="gift" className="font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center gap-2">
+                                <Gift className="h-3.5 w-3.5" /> Kindness Center
                             </TabsTrigger>
                         </TabsList>
                     </Tabs>
-                )}
+
+                    {isVendorOfCurrentType && (
+                        <Tabs value={activeType} onValueChange={(val: any) => setActiveType(val)} className="sm:w-[240px]">
+                            <TabsList className="grid w-full grid-cols-2 h-12 bg-primary/10 p-1 rounded-2xl border-2 border-primary/20">
+                                <TabsTrigger value="sent" className="font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center gap-2">
+                                    <Send className="h-3.5 w-3.5" /> Sent
+                                </TabsTrigger>
+                                <TabsTrigger value="received" className="font-black text-[10px] uppercase tracking-widest rounded-xl flex items-center gap-2">
+                                    <Inbox className="h-3.5 w-3.5" /> Received
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    )}
+                </div>
             </div>
         </header>
 
@@ -315,37 +351,14 @@ export default function OrdersListClient() {
                 ))
             ) : (
                 <div className="space-y-6">
-                    {activeTab === 'sent' ? (
-                        sentOrders.length > 0 ? (
-                            sentOrders.map(order => renderOrderCard(order, 'sent'))
-                        ) : (
-                            <div className="py-32 text-center px-8 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center">
-                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
-                                    <Package className="h-10 w-10 text-muted-foreground opacity-10" />
-                                </div>
-                                <h3 className="text-2xl font-black font-headline uppercase tracking-tight opacity-40">No Sent Gifts</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto leading-relaxed text-balance">
-                                    Your acts of kindness will appear here so you can track their progress from provider to recipient.
-                                </p>
-                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
-                                    <Link href="/dashboard/marketplace">VISIT MARKETPLACE</Link>
-                                </Button>
-                            </div>
-                        )
+                    {activeType === 'sent' ? (
+                        filteredSentOrders.length > 0 ? (
+                            filteredSentOrders.map(order => renderOrderCard(order, 'sent'))
+                        ) : emptyState
                     ) : (
-                        receivedOrders.length > 0 ? (
-                            receivedOrders.map(order => renderOrderCard(order, 'received'))
-                        ) : (
-                            <div className="py-32 text-center px-8 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center">
-                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
-                                    <Inbox className="h-10 w-10 text-muted-foreground opacity-10" />
-                                </div>
-                                <h3 className="text-2xl font-black font-headline uppercase tracking-tight opacity-40">No Orders Yet</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto leading-relaxed text-balance">
-                                    When believers order gifts or meals from your storefront, they will appear here for fulfillment.
-                                </p>
-                            </div>
-                        )
+                        filteredReceivedOrders.length > 0 ? (
+                            filteredReceivedOrders.map(order => renderOrderCard(order, 'received'))
+                        ) : emptyState
                     )}
                 </div>
             )}
