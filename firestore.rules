@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Victory Circle Authorization - 2025-07-02T14:30:00Z
+    // Deployment trigger: Hardened Order Hub Permissions - 2025-09-20T10:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -233,8 +233,14 @@ service cloud.firestore {
 
     match /mealGifts/{giftId} {
       allow create: if request.auth != null;
-      allow read: if request.auth != null && (request.auth.uid == resource.data.senderId || request.auth.uid == resource.data.vendorOwnerId);
-      allow update: if request.auth != null && (request.auth.uid == resource.data.vendorOwnerId || request.auth.uid == resource.data.senderId);
+      allow get, list: if request.auth != null && (
+        request.auth.uid == resource.data.get('senderId', '') || 
+        request.auth.uid == resource.data.get('vendorOwnerId', '')
+      );
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.get('vendorOwnerId', '') || 
+        request.auth.uid == resource.data.get('senderId', '')
+      );
     }
 
     match /mail/{mailId} {

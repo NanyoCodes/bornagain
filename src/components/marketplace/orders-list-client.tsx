@@ -1,7 +1,8 @@
+
 'use client';
 
 import * as React from 'react';
-import { useUser, useAuth, useFirestore, useCollection, useDoc } from '@/firebase';
+import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
 import { collection, query, where, doc, updateDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { MealGift, VendorProfile, UserProfile, MealGiftStatus } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -20,8 +21,7 @@ import {
     Loader2,
     Inbox,
     Send,
-    Gift,
-    Sparkles
+    Gift
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
@@ -30,7 +30,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 
 /**
@@ -85,21 +85,20 @@ export default function OrdersListClient() {
   const router = useRouter();
   const { toast } = useToast();
   
-  // State for dual-level filtering
   const [activeCategory, setActiveCategory] = React.useState<'meal' | 'gift'>('meal');
   const [activeType, setActiveType] = React.useState<'sent' | 'received'>('sent');
 
-  // Fetch Sent Orders
+  // Guarded Sent Orders Query
   const sentOrdersQuery = React.useMemo(() => {
-    if (!user?.uid || !firestore) return null;
+    if (!user?.uid || !firestore || activeType !== 'sent') return null;
     return query(
       collection(firestore, 'mealGifts'),
       where('senderId', '==', user.uid)
     );
-  }, [user?.uid, firestore]);
+  }, [user?.uid, firestore, activeType]);
   const { data: rawSentOrders, loading: loadingSent } = useCollection<MealGift>(sentOrdersQuery);
 
-  // Fetch User Vendors (to identify received orders)
+  // User Vendors lookup to identify received order capability
   const myVendorsQuery = React.useMemo(() => {
       if (!user?.uid || !firestore) return null;
       return query(collection(firestore, 'vendors'), where('userId', '==', user.uid));
@@ -110,18 +109,16 @@ export default function OrdersListClient() {
       return myVendors?.some(v => v.vendorType === activeCategory) || false;
   }, [myVendors, activeCategory]);
 
-  // Fetch Received Orders (if vendor)
+  // Guarded Received Orders Query
   const receivedOrdersQuery = React.useMemo(() => {
-    // SECURITY: Guard query to ensure it only runs for authorized suppliers
-    if (!user?.uid || !firestore || !isVendorOfCurrentType) return null;
+    if (!user?.uid || !firestore || !isVendorOfCurrentType || activeType !== 'received') return null;
     return query(
         collection(firestore, 'mealGifts'),
         where('vendorOwnerId', '==', user.uid)
     );
-  }, [user?.uid, firestore, isVendorOfCurrentType]);
+  }, [user?.uid, firestore, isVendorOfCurrentType, activeType]);
   const { data: rawReceivedOrders, loading: loadingReceived } = useCollection<MealGift>(receivedOrdersQuery);
 
-  // Client-side filtering and sorting
   const filteredSentOrders = React.useMemo(() => {
     if (!rawSentOrders) return [];
     return rawSentOrders
@@ -173,7 +170,7 @@ export default function OrdersListClient() {
     }
   };
 
-  const loading = loadingSent || loadingVendors || (isVendorOfCurrentType && loadingReceived);
+  const loading = loadingSent || loadingVendors || (isVendorOfCurrentType && activeType === 'received' && loadingReceived);
 
   const renderOrderCard = (order: MealGift, type: 'sent' | 'received') => {
       const createdAt = safeToDate(order.createdAt);
