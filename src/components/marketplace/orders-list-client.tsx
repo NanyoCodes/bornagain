@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useUser, useFirestore, useCollection, useDoc } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useDoc } from '@/firebase';
 import { collection, query, where, doc, updateDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { MealGift, VendorProfile, UserProfile, MealGiftStatus } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -107,8 +107,6 @@ export default function OrdersListClient() {
   // Fetch Received Orders (if vendor)
   const receivedOrdersQuery = React.useMemo(() => {
     if (!isVendor || !firestore) return null;
-    // Note: Due to Firestore limit of 30 items for 'in', we handle this carefully.
-    // Assuming a user won't have more than 30 vendors for now.
     return query(
         collection(firestore, 'mealGifts'),
         where('vendorId', 'in', vendorIds)
@@ -283,7 +281,7 @@ export default function OrdersListClient() {
                         <TabsList className="grid w-full grid-cols-2 h-11 bg-muted/40 p-1 rounded-xl">
                             <TabsTrigger value="sent" className="font-black text-[10px] uppercase tracking-widest rounded-lg flex items-center gap-2">
                                 <Send className="h-3 w-3" /> Sent
-                            </Badge>
+                            </TabsTrigger>
                             <TabsTrigger value="received" className="font-black text-[10px] uppercase tracking-widest rounded-lg flex items-center gap-2">
                                 <Inbox className="h-3 w-3" /> Received
                             </TabsTrigger>
