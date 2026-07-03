@@ -260,6 +260,18 @@ export function RelationshipTrackerCard() {
   const handleSoulSelected = async (soul: Soul) => {
     if (!user || !firestore || !selectedActionId) return;
     
+    // Communication Channel Check: Ensure soul has a phone number for call/message actions
+    const isCommAction = selectedActionId === 'phone_call' || selectedActionId === 'text_message';
+    if (isCommAction && !soul.phone) {
+        toast({
+            variant: 'destructive',
+            title: 'Phone Number Missing',
+            description: `You haven't saved a phone number for ${soul.firstName}. Please add one in 'Souls Won' to use this feature.`,
+        });
+        setIsSoulDialogOpen(false);
+        return;
+    }
+
     setIsSoulDialogOpen(false);
     setTogglingId(selectedActionId);
 
@@ -356,7 +368,7 @@ export function RelationshipTrackerCard() {
             const path = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
             router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
             toast({ title: 'Opening Provision Hub...', description: `Finish act of kindness for ${soul.firstName}.` });
-        } else if (selectedActionId !== 'text_message') {
+        } else if (selectedActionId !== 'text_message' && selectedActionId !== 'phone_call') {
             toast({ 
                 title: 'Kingdom Impact Saved!', 
                 description: `Logged '${action.label}' for ${soul.firstName}.` 
