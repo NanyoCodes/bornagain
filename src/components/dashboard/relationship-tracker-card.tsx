@@ -116,7 +116,7 @@ function SoulSelectionDialog({
                         <Input 
                             placeholder="Search by name..." 
                             value={search} 
-                            onChange={e => setSearchTerm(e.target.value)}
+                            onChange={e => setSearch(e.target.value)}
                             className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
@@ -644,6 +644,17 @@ export function RelationshipTrackerCard() {
       }
   };
 
+  const uniquePartners = useMemo(() => {
+    const partners = userProfile?.accountabilityPartners || [];
+    const uniqueMap = new Map();
+    partners.forEach(p => {
+        if (p.userId && !uniqueMap.has(p.userId)) {
+            uniqueMap.set(p.userId, p);
+        }
+    });
+    return Array.from(uniqueMap.values());
+  }, [userProfile?.accountabilityPartners]);
+
   const activeActionLabel = useMemo(() => 
     actionItems.find(a => a.id === selectedActionId)?.label || "Connect with", 
   [selectedActionId]);
@@ -831,7 +842,7 @@ export function RelationshipTrackerCard() {
               <div className="p-6">
                 <ScrollArea className="h-64">
                     <div className="space-y-2">
-                        {userProfile?.accountabilityPartners?.map(p => (
+                        {uniquePartners.map(p => (
                             <Button 
                                 key={p.userId} 
                                 variant="ghost" 
@@ -845,7 +856,7 @@ export function RelationshipTrackerCard() {
                                 <span className="font-bold text-sm group-hover:text-primary transition-colors">{p.firstName} {p.lastName}</span>
                             </Button>
                         ))}
-                        {(!userProfile?.accountabilityPartners || userProfile.accountabilityPartners.length === 0) && (
+                        {uniquePartners.length === 0 && (
                             <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
                         )}
                     </div>
