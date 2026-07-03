@@ -13,9 +13,10 @@ import {
   writeBatch,
   where,
   getDocs,
+  deleteDoc,
 } from 'firebase/firestore';
 import type { Chat, ChatMessage, Campaign, Fellowship, UserProfile } from '@/lib/types';
-import { Loader2, Send, ArrowLeft, Reply, X, ChevronDown, MessagesSquare } from 'lucide-react';
+import { Loader2, Send, ArrowLeft, Reply, X, ChevronDown, MessagesSquare, MoreHorizontal, Edit, Trash2, Check } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn, safeToDate } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -30,6 +31,8 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 
 /**
@@ -63,6 +66,11 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     const [showScrollBottom, setShowScrollBottom] = useState(false);
     const [swipeState, setSwipeState] = useState<{ id: string | null; startX: number; startY: number; deltaX: number }>({ id: null, startX: 0, startY: 0, deltaX: 0 });
     const swipeThreshold = 60;
+
+    // Editing State
+    const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+    const [editingText, setEditingText] = useState('');
+    const [isUpdatingMessage, setIsUpdatingMessage] = useState(false);
 
     const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>, msg: ChatMessage) => {
         if (e.touches.length === 1) {
@@ -336,6 +344,40 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         }
     };
 
+    const handleUpdateMessage = async () => {
+        if (!editingMessageId || !editingText.trim() || !user || !firestore || isUpdatingMessage) return;
+        
+        setIsUpdatingMessage(true);
+        const messageRef = doc(firestore, 'chats', chatId, 'messages', editingMessageId);
+        const updateData = {
+            text: editingText.trim(),
+            updatedAt: serverTimestamp()
+        };
+
+        updateDoc(messageRef, updateData)
+            .then(() => {
+                setEditingMessageId(null);
+                setEditingText('');
+            })
+            .catch(() => {
+                toast({ variant: 'destructive', title: 'Edit Failed', description: 'Could not update message. Time window may have expired.' });
+            })
+            .finally(() => setIsUpdatingMessage(false));
+    };
+
+    const handleDeleteMessage = async (msgId: string) => {
+        if (!user || !firestore) return;
+        
+        const messageRef = doc(firestore, 'chats', chatId, 'messages', msgId);
+        deleteDoc(messageRef)
+            .then(() => {
+                toast({ title: 'Message Removed' });
+            })
+            .catch(() => {
+                toast({ variant: 'destructive', title: 'Delete Failed', description: 'Could not delete message. Time window may have expired.' });
+            });
+    };
+
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         sendMessage();
@@ -487,6 +529,9 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                             const senderInfo = chat.participantInfo[msg.senderId];
                                             const isOwnMessage = msg.senderId === user?.uid;
                                             const createdAtDate = safeToDate(msg.createdAt);
+                                            const canEdit = isOwnMessage && createdAtDate && differenceInHours(new Date(), createdAtDate) < 24;
+                                            const isEditing = editingMessageId === msg.id;
+
                                             return (
                                             <div key={msg.id} id={`message-${msg.id}`} className={cn(
                                                 "group flex w-full items-end gap-2",
@@ -510,7 +555,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                     </Tooltip>
                                                 )}
                                                 
-                                                <div className="relative flex items-center gap-1 group">
+                                                <div className="relative flex items-center gap-1 group/bubble">
                                                     <div className={cn(
                                                         "absolute top-0 flex h-full items-center justify-center transition-opacity",
                                                         isOwnMessage ? "right-full pr-3" : "left-full pl-3"
@@ -525,12 +570,35 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
 
                                                     {!isOwnMessage && (
                                                         <button
-                                                            className="h-7 w-7 text-muted-foreground hover:text-primary transition-all rounded-full opacity-0 group-hover:opacity-100 order-last shrink-0"
+                                                            className="h-7 w-7 text-muted-foreground hover:text-primary transition-all rounded-full opacity-0 group-hover/bubble:opacity-100 order-last shrink-0"
                                                             onClick={() => setReplyingTo(msg)}
                                                             title="Reply"
                                                         >
                                                             <Reply className="h-3.5 w-3.5" />
                                                         </button>
+                                                    )}
+
+                                                    {canEdit && !isEditing && (
+                                                        <div className={cn(
+                                                            "opacity-0 group-hover/bubble:opacity-100 transition-opacity",
+                                                            isOwnMessage ? "order-first" : "order-last"
+                                                        )}>
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild>
+                                                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-muted-foreground hover:text-primary">
+                                                                        <MoreHorizontal className="h-3.5 w-3.5" />
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align={isOwnMessage ? "end" : "start"} className="rounded-xl">
+                                                                    <DropdownMenuItem onSelect={() => { setEditingMessageId(msg.id); setEditingText(msg.text || ''); }}>
+                                                                        <Edit className="mr-2 h-4 w-4" /> Edit
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem onSelect={() => handleDeleteMessage(msg.id)} className="text-destructive focus:text-destructive">
+                                                                        <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
+                                                        </div>
                                                     )}
 
                                                     <div
@@ -544,7 +612,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                         onTouchEnd={() => handleTouchEnd(msg)}
                                                         className={cn(
                                                             "relative z-10 rounded-2xl px-4 py-2.5 max-w-[280px] sm:max-w-md break-words flex flex-col shadow-sm",
-                                                            isOwnMessage ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-background border rounded-bl-sm"
+                                                            isOwnMessage ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-background border rounded-bl-sm",
+                                                            isEditing && "ring-2 ring-primary border-transparent"
                                                         )}>
                                                             {msg.replyTo && (
                                                                 <div className="flex items-center gap-1 text-[9px] font-black text-muted-foreground/60 mb-1.5 uppercase tracking-widest">
@@ -579,20 +648,50 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                                     {senderInfo.firstName} {senderInfo.lastName}
                                                                 </div>
                                                             )}
-                                                            {msg.text && <p className="text-sm leading-relaxed">{msg.text}</p>}
+
+                                                            {isEditing ? (
+                                                                <div className="space-y-2 py-1">
+                                                                    <Textarea 
+                                                                        value={editingText}
+                                                                        onChange={(e) => setEditingText(e.target.value)}
+                                                                        className="min-h-[60px] text-sm bg-background/50 border-none shadow-inner rounded-xl focus-visible:ring-0 text-foreground"
+                                                                        autoFocus
+                                                                        onKeyDown={(e) => {
+                                                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                                                e.preventDefault();
+                                                                                handleUpdateMessage();
+                                                                            }
+                                                                            if (e.key === 'Escape') {
+                                                                                setEditingMessageId(null);
+                                                                                setEditingText('');
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                    <div className="flex justify-end gap-1.5">
+                                                                        <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full text-destructive hover:bg-destructive/10" onClick={() => setEditingMessageId(null)} disabled={isUpdatingMessage}><X className="h-3.5 w-3.5" /></Button>
+                                                                        <Button size="icon" className="h-7 w-7 rounded-full shadow-lg" onClick={handleUpdateMessage} disabled={isUpdatingMessage || !editingText.trim()}><Check className="h-3.5 w-3.5" /></Button>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-sm leading-relaxed">{msg.text}</p>
+                                                            )}
+
                                                             {createdAtDate && (
-                                                                <p className={cn(
-                                                                    "text-[9px] font-bold mt-1 self-end opacity-50",
-                                                                    isOwnMessage ? "text-primary-foreground" : "text-muted-foreground"
+                                                                <div className={cn(
+                                                                    "flex items-center gap-1.5 mt-1 self-end",
+                                                                    isOwnMessage ? "text-primary-foreground/60" : "text-muted-foreground/60"
                                                                 )}>
-                                                                    {format(createdAtDate, 'p')}
-                                                                </p>
+                                                                    {msg.updatedAt && <span className="text-[8px] font-black uppercase tracking-tighter">Edited</span>}
+                                                                    <p className="text-[9px] font-bold">
+                                                                        {format(createdAtDate, 'p')}
+                                                                    </p>
+                                                                </div>
                                                             )}
                                                     </div>
 
                                                     {isOwnMessage && (
                                                         <button
-                                                            className="h-7 w-7 text-muted-foreground hover:text-primary transition-all rounded-full opacity-0 group-hover:opacity-100 order-first shrink-0"
+                                                            className="h-7 w-7 text-muted-foreground hover:text-primary transition-all rounded-full opacity-0 group-hover/bubble:opacity-100 order-first shrink-0"
                                                             onClick={() => setReplyingTo(msg)}
                                                             title="Reply"
                                                         >

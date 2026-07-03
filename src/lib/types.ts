@@ -334,6 +334,7 @@ export type ChatMessage = {
   senderId: string;
   text?: string;
   createdAt: Timestamp;
+  updatedAt?: Timestamp;
   replyTo?: {
     messageId: string;
     text: string;
