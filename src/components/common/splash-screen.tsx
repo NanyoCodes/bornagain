@@ -83,7 +83,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
                 transition={{ delay: 1.1, duration: 1 }}
                 className="text-primary font-black uppercase tracking-[0.1em] text-[9px] sm:text-[10px] px-4"
             >
-                Share your testimony to edify the Body of Christ.
+                When you Testify, the Glory goes to Jesus.
             </motion.p>
         </div>
 
