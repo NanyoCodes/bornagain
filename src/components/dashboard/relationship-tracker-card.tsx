@@ -6,7 +6,7 @@ import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc, updateDoc, where, getDocs } from 'firebase/firestore';
 import type { UserProfile, Soul, Chat } from '@/lib/types';
 import { isToday, format } from 'date-fns';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '../ui/skeleton';
 import { 
   Heart, 
   MessageSquare, 
@@ -670,7 +670,7 @@ export function RelationshipTrackerCard() {
           <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 min-h-[5rem]">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
               <div className="space-y-1">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
@@ -680,11 +680,11 @@ export function RelationshipTrackerCard() {
                   <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                {currentDate && (
+                {currentDate ? (
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
                     {format(currentDate, 'PPPP')}
                   </div>
-                )}
+                ) : <div className="h-6 w-32 bg-muted/20 rounded-full animate-pulse" />}
               </div>
           </div>
         </CardHeader>
@@ -695,71 +695,76 @@ export function RelationshipTrackerCard() {
                   const isPending = pendingActions.includes(action.id);
                   const isCompleted = completedToday.includes(action.id);
                   const Icon = iconMap[action.id] || Heart;
+                  const isToggling = togglingId === action.id;
                   
+                  const buttonEl = (
+                      <motion.div whileTap={{ scale: 0.95 }} whileHover={isMobile ? {} : { y: -2 }} className="w-full h-24">
+                          <Button
+                              variant="outline"
+                              className={cn(
+                                  "relative flex flex-col items-center justify-center gap-2 p-3 h-full w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden",
+                                  isCompleted 
+                                      ? "bg-primary/[0.03] border-primary/40 shadow-inner ring-1 ring-primary/10" 
+                                      : isPending 
+                                        ? "bg-amber-500/[0.05] border-amber-500/40 border-dashed"
+                                        : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
+                              )}
+                              onClick={() => handleActionClick(action.id)}
+                              disabled={isToggling}
+                          >
+                              <AnimatePresence>
+                                  {isCompleted && !isToggling && (
+                                      <motion.div 
+                                          initial={{ scale: 0, opacity: 0 }}
+                                          animate={{ scale: 1, opacity: 1 }}
+                                          exit={{ scale: 0, opacity: 0 }}
+                                          className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20"
+                                      >
+                                          <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current" />
+                                      </motion.div>
+                                  )}
+                                  {isPending && !isCompleted && !isToggling && (
+                                      <motion.div 
+                                          initial={{ scale: 0, opacity: 0 }}
+                                          animate={{ scale: 1, opacity: 1 }}
+                                          className="absolute top-2 right-2 bg-amber-500 rounded-full p-0.5 shadow-lg z-20"
+                                      >
+                                          <Hourglass className="h-3 w-3 text-white" />
+                                      </motion.div>
+                                  )}
+                              </AnimatePresence>
+
+                              <div className={cn(
+                                  "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500 relative",
+                                  isCompleted ? "bg-primary/20 scale-110 shadow-lg" : isPending ? "bg-amber-500/20" : "bg-muted/30"
+                              )}>
+                                  {isToggling ? (
+                                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                                  ) : (
+                                      <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : isPending ? "text-amber-600 animate-pulse" : "text-primary/60")} />
+                                  )}
+                              </div>
+                              
+                              <div className="space-y-0.5 min-w-0 w-full">
+                                  <span className={cn(
+                                      "text-[9px] font-black uppercase tracking-tight block truncate",
+                                      isCompleted ? "text-primary" : isPending ? "text-amber-700" : "text-foreground"
+                                  )}>
+                                      {action.label}
+                                  </span>
+                                  {isPending && !isCompleted && !isToggling && <span className="text-[8px] font-black uppercase text-amber-600/60 leading-none">Pending Hub</span>}
+                              </div>
+                          </Button>
+                      </motion.div>
+                  );
+
+                  if (isMobile) return <div key={action.id}>{buttonEl}</div>;
+
                   return (
                       <TooltipProvider key={action.id}>
                           <Tooltip>
                               <TooltipTrigger asChild>
-                                  <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }}>
-                                      <Button
-                                          variant="outline"
-                                          className={cn(
-                                              "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden",
-                                              isCompleted 
-                                                  ? "bg-primary/[0.03] border-primary/40 shadow-inner ring-1 ring-primary/10" 
-                                                  : isPending 
-                                                    ? "bg-amber-500/[0.05] border-amber-500/40 border-dashed"
-                                                    : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
-                                          )}
-                                          onClick={() => handleActionClick(action.id)}
-                                          disabled={togglingId === action.id}
-                                      >
-                                          <AnimatePresence>
-                                              {isCompleted && togglingId !== action.id && (
-                                                  <motion.div 
-                                                      initial={{ scale: 0, opacity: 0 }}
-                                                      animate={{ scale: 1, opacity: 1 }}
-                                                      exit={{ scale: 0, opacity: 0 }}
-                                                      className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20"
-                                                  >
-                                                      <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current" />
-                                                  </motion.div>
-                                              )}
-                                              {isPending && !isCompleted && togglingId !== action.id && (
-                                                  <motion.div 
-                                                      initial={{ scale: 0, opacity: 0 }}
-                                                      animate={{ scale: 1, opacity: 1 }}
-                                                      className="absolute top-2 right-2 bg-amber-500 rounded-full p-0.5 shadow-lg z-20"
-                                                  >
-                                                      <Hourglass className="h-3 w-3 text-white" />
-                                                  </motion.div>
-                                              )}
-                                          </AnimatePresence>
-
-                                          {togglingId === action.id ? (
-                                              <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                                          ) : (
-                                              <>
-                                                  <div className={cn(
-                                                      "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
-                                                      isCompleted ? "bg-primary/20 scale-110 shadow-lg" : isPending ? "bg-amber-500/20" : "bg-muted/30"
-                                                  )}>
-                                                      <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : isPending ? "text-amber-600 animate-pulse" : "text-primary/60")} />
-                                                  </div>
-                                                  
-                                                  <div className="space-y-0.5 min-w-0 w-full">
-                                                      <span className={cn(
-                                                          "text-[9px] font-black uppercase tracking-tight block truncate",
-                                                          isCompleted ? "text-primary" : isPending ? "text-amber-700" : "text-foreground"
-                                                      )}>
-                                                          {action.label}
-                                                      </span>
-                                                      {isPending && !isCompleted && <span className="text-[8px] font-black uppercase text-amber-600/60 leading-none">Pending Hub</span>}
-                                                  </div>
-                                              </>
-                                          )}
-                                      </Button>
-                                  </motion.div>
+                                  {buttonEl}
                               </TooltipTrigger>
                               <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
                                   <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
