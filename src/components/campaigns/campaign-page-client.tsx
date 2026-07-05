@@ -40,7 +40,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { JoinCampaignDialog } from './join-campaign-dialog';
 import { ScrollArea } from '../ui/scroll-area';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function CampaignPageClient({ campaignId }: { campaignId: string }) {
     const router = useRouter();
@@ -219,7 +219,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <span className="sr-only">Back</span>
                 </Button>
                 <div className="min-w-0 flex-1">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight text-balance">{campaign.title}</h1>
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight text-balance break-words [overflow-wrap:anywhere]">{campaign.title}</h1>
                     <div className="flex items-center gap-2 mt-1">
                         <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'} className="uppercase font-bold tracking-widest text-[10px]">
                             {status}
@@ -236,13 +236,13 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <CardTitle className="text-lg font-bold uppercase tracking-widest text-muted-foreground">About this Mission</CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 sm:px-8 pb-8">
-                            <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance">
+                            <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words [overflow-wrap:anywhere]">
                                 {campaign.description}
                             </p>
                             {campaign.scripture && (
                                 <div className="mt-8 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative">
                                     <span className="absolute -top-3 left-6 bg-background px-3 text-[10px] font-black text-primary uppercase tracking-[0.2em]">Inspiration</span>
-                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-justify text-balance">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-justify text-balance break-words [overflow-wrap:anywhere]">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
                                     <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest">— {campaign.scripture}</p>
                                 </div>
                             )}
@@ -258,7 +258,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm font-bold text-foreground text-balance">{campaign.location}</p>
+                                <p className="text-sm font-bold text-foreground text-balance break-words">{campaign.location}</p>
                                 <p className="text-[10px] text-muted-foreground mt-1 font-medium uppercase tracking-tighter">Physical Meeting Point</p>
                             </CardContent>
                         </Card>
@@ -414,7 +414,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                     <AvatarFallback className="font-black text-lg">{campaign.organizerFirstName?.charAt(0)}{campaign.organizerLastName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0 flex-1">
-                                    <span className="font-black text-base group-hover:text-primary transition-colors block leading-tight">
+                                    <span className="font-black text-base group-hover:text-primary transition-colors block leading-tight truncate">
                                         {campaign.organizerFirstName} {campaign.organizerLastName}
                                     </span>
                                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Mission Leader</span>
@@ -445,15 +445,15 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             </div>
 
             <Dialog open={isLogSoulOpen} onOpenChange={(open) => { setIsLogSoulOpen(open); if(!open) router.refresh(); }}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden">
-                    <div className="p-6 border-b bg-muted/10">
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+                    <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold font-headline">Log Harvest</DialogTitle>
-                            <DialogDescription className="text-sm">Record a soul won during "{campaign.title}".</DialogDescription>
+                            <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Log Harvest</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1">Record a soul won during "{campaign.title}".</DialogDescription>
                         </DialogHeader>
                     </div>
                     <ScrollArea className="max-h-[70vh]">
-                        <div className="p-6">
+                        <div className="p-8">
                             <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultCampaign={campaign} />
                         </div>
                     </ScrollArea>
@@ -461,15 +461,15 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             </Dialog>
 
             <Dialog open={isTestimonyOpen} onOpenChange={(open) => { setIsTestimonyOpen(open); if(!open) router.refresh(); }}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden">
-                    <div className="p-6 border-b bg-muted/10">
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+                    <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold font-headline text-balance">Share Victory</DialogTitle>
-                            <DialogDescription className="text-sm">What miracles occurred during "{campaign.title}"?</DialogDescription>
+                            <DialogTitle className="text-2xl font-bold font-headline text-balance uppercase tracking-tight">Share Victory</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1">What miracles occurred during "{campaign.title}"?</DialogDescription>
                         </DialogHeader>
                     </div>
                     <ScrollArea className="max-h-[70vh]">
-                        <div className="p-6">
+                        <div className="p-8">
                             {userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={() => setIsTestimonyOpen(false)} campaign={campaign} />}
                         </div>
                     </ScrollArea>
@@ -477,15 +477,15 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             </Dialog>
 
             <Dialog open={isManageOpen} onOpenChange={(open) => { setIsManageOpen(open); if(!open) router.refresh(); }}>
-                <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden">
-                    <div className="p-6 border-b bg-muted/10">
+                <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+                    <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold font-headline text-balance">Manage Mission</DialogTitle>
-                            <DialogDescription className="text-sm">Update the details of your active campaign.</DialogDescription>
+                            <DialogTitle className="text-2xl font-bold font-headline text-balance uppercase tracking-tight">Manage Mission</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1">Update the details of your active campaign.</DialogDescription>
                         </DialogHeader>
                     </div>
                     <ScrollArea className="max-h-[75vh]">
-                        <div className="p-6">
+                        <div className="p-8">
                             <ManageCampaignForm 
                                 campaign={campaign} 
                                 onCampaignUpdated={() => setIsManageOpen(false)} 
@@ -512,16 +512,16 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
             {campaignToDelete && (
                 <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => { if (!open) setCampaignToDelete(null); router.refresh(); }}>
-                    <AlertDialogContent className="rounded-3xl p-8">
+                    <AlertDialogContent className="rounded-3xl p-8 border-none shadow-2xl">
                         <AlertDialogHeader>
-                            <AlertDialogTitle className="text-2xl font-bold font-headline text-balance">Delete Campaign?</AlertDialogTitle>
-                            <AlertDialogDescription className="text-sm font-medium">
+                            <AlertDialogTitle className="text-2xl font-bold font-headline text-balance uppercase tracking-tight">Delete Campaign?</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm font-medium leading-relaxed">
                                 This will permanently remove "{campaignToDelete.title}" from the platform. This action cannot be undone.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter className="mt-6 gap-3">
-                            <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold">
+                            <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
                                 {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Confirm Deletion
                             </AlertDialogAction>
