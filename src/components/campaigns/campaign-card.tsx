@@ -283,7 +283,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
                     <DialogHeader>
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance">{campaign.title}</DialogTitle>
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight text-balance">{campaign.title}</DialogTitle>
                         <DialogDescription className="text-sm font-medium">Full Campaign Description</DialogDescription>
                     </DialogHeader>
                 </div>
@@ -582,39 +582,41 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         )}
         onClick={handleCardClick}
       >
-        <CardHeader className="p-4 sm:p-6 flex flex-row items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-                <CardTitle className="font-bold text-lg md:text-xl truncate">
+        <CardHeader className="p-4 sm:p-6 flex flex-col sm:flex-row items-start justify-between gap-4 pb-3 sm:pb-6">
+            <div className="flex-1 min-w-0 w-full">
+                <CardTitle className="font-bold text-lg md:text-xl leading-tight">
                   {campaign.title}
                 </CardTitle>
                 <CardDescription className="text-sm mt-1 truncate font-medium">{campaign.goal}</CardDescription>
                 {distance != null && (
-                    <CardDescription className="text-xs text-primary font-black mt-1.5 flex items-center gap-1 uppercase tracking-widest">
+                    <CardDescription className="text-xs text-primary font-black mt-2 flex items-center gap-1 uppercase tracking-widest">
                         <MapPin className="h-3 w-3" />
                         {distance.toFixed(1)} km away
                     </CardDescription>
                 )}
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      size="icon" 
-                      className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" 
-                      onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/campaigns/${campaign.id}`); }}
-                    >
-                      <BarChart3 className="h-4 w-4 sm:h-5 w-5" />
-                      <span className="sr-only">View Insights</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Kingdom Insights</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'} className="uppercase font-bold tracking-widest text-[10px] h-6">
+            <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-none pt-3 sm:pt-0">
+              <div className="flex items-center gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className="h-8 w-8 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" 
+                        onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/campaigns/${campaign.id}`); }}
+                      >
+                        <BarChart3 className="h-4 w-4 sm:h-5 w-5" />
+                        <span className="sr-only">View Insights</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Kingdom Insights</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <Badge variant={status === 'Ongoing' ? 'default' : status === 'Upcoming' ? 'secondary' : 'outline'} className="uppercase font-bold tracking-widest text-[9px] sm:text-[10px] h-6 px-2">
                   {status}
               </Badge>
             </div>
