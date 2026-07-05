@@ -52,7 +52,7 @@ import { useRouter } from "next/navigation";
 
 function CampaignSkeletons() {
   return (
-    <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto">
+    <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto -mx-3">
       {[...Array(3)].map((_, i) => (
         <Card key={i} className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
           <CardContent className="p-6 space-y-4">
@@ -416,7 +416,7 @@ export default function CampaignsPage() {
           </CardContent>
         </Card>
 
-        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-1">
+        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-0">
           <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
               <TabsList className="grid w-full grid-cols-3 h-11 bg-muted/40 p-1 rounded-xl">
                   <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">All</TabsTrigger>
