@@ -478,7 +478,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       if (navigator && navigator.share) {
         await navigator.share(shareData);
       } else {
-        throw new Error('Native share not supported');
+        throw new Error('Share API not supported');
       }
     } catch (err: any) {
         if (err.name === 'AbortError') return;
@@ -584,10 +584,10 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       >
         <CardHeader className="p-4 sm:p-6 flex flex-col sm:flex-row items-start justify-between gap-4 pb-3 sm:pb-6">
             <div className="flex-1 min-w-0 w-full">
-                <CardTitle className="font-bold text-lg md:text-xl leading-tight">
+                <CardTitle className="font-bold text-lg md:text-xl leading-tight break-words [overflow-wrap:anywhere]">
                   {campaign.title}
                 </CardTitle>
-                <CardDescription className="text-sm mt-1 truncate font-medium">{campaign.goal}</CardDescription>
+                <CardDescription className="text-sm mt-1 line-clamp-1 font-medium">{campaign.goal}</CardDescription>
                 {distance != null && (
                     <CardDescription className="text-xs text-primary font-black mt-2 flex items-center gap-1 uppercase tracking-widest">
                         <MapPin className="h-3 w-3" />
@@ -621,10 +621,10 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
               </Badge>
             </div>
         </CardHeader>
-        <CardContent className="p-6 pt-0 flex-grow space-y-4">
+        <CardContent className="p-4 sm:p-6 pt-0 flex-grow space-y-4">
             
             <div className="space-y-1">
-                <p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium">{campaign.description}</p>
+                <p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium break-words [overflow-wrap:anywhere]">{campaign.description}</p>
                 {isDescriptionTruncated && (
                     <FullDescriptionDialog campaign={campaign}>
                         <Button variant="link" className="p-0 h-auto text-sm font-bold text-primary">Read More</Button>
@@ -651,7 +651,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             </div>
 
         </CardContent>
-        <CardFooter className="p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm">
+        <CardFooter className="p-4 sm:p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm">
             <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-tighter text-muted-foreground">
                 <ParticipantsDialog campaign={campaign}>
                     <Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors" onClick={stopPropagation}>

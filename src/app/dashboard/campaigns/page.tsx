@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState, useEffect, Fragment } from "react";
@@ -384,7 +383,7 @@ export default function CampaignsPage() {
         inert={isAnyModalOpen ? true : undefined}
       >
         {/* Responsive Single-Row Interaction Box */}
-        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
+        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-3 sm:mx-0">
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-row items-center gap-2 sm:gap-3">
               <Button 
@@ -440,7 +439,7 @@ export default function CampaignsPage() {
 
 
         {/* Single Column Content List */}
-        <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
+        <div className="flex flex-col gap-0 w-full -mx-3 sm:mx-0">
           {loading && <CampaignSkeletons />}
           {!loading && sortedAndFilteredCampaigns?.map((campaign) => (
             <CampaignCard 
