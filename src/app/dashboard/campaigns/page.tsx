@@ -379,7 +379,7 @@ export default function CampaignsPage() {
   return (
     <>
       <div 
-        className="space-y-8 pb-32 w-full max-w-2xl mx-auto"
+        className="space-y-8 pb-32 w-full max-w-2xl mx-auto px-0"
         inert={isAnyModalOpen ? true : undefined}
       >
         {/* Interaction Box - Full Bleed Mobile */}
@@ -416,7 +416,7 @@ export default function CampaignsPage() {
           </CardContent>
         </Card>
 
-        <div className="flex flex-wrap gap-4 items-center justify-between px-1">
+        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-1">
           <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
               <TabsList className="grid w-full grid-cols-3 h-11 bg-muted/40 p-1 rounded-xl">
                   <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">All</TabsTrigger>

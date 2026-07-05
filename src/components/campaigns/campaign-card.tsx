@@ -213,7 +213,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                     <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <div className="min-w-0">
                         <p className="text-[10px] font-black uppercase text-muted-foreground mb-1 tracking-widest">Meeting Point</p>
-                        <p className="text-xs font-bold leading-snug text-balance break-words">{campaign.location}</p>
+                        <p className="text-xs font-bold leading-snug text-balance break-words [overflow-wrap:anywhere]">{campaign.location}</p>
                     </div>
                 </div>
                 <div className="p-3.5 rounded-2xl bg-muted/30 border border-dashed flex items-start gap-3">
@@ -237,8 +237,8 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
             {campaign.scripture && (
                 <div className="p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative">
                     <span className="absolute -top-3 left-6 bg-background px-3 text-[10px] font-black text-primary uppercase tracking-[0.2em]">Inspirational Word</span>
-                    <p className="italic text-base text-primary font-serif leading-relaxed text-justify text-balance break-words">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
-                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest">— {campaign.scripture}</p>
+                    <p className="italic text-base text-primary font-serif leading-relaxed text-justify text-balance break-words [overflow-wrap:anywhere]">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest break-words [overflow-wrap:anywhere]">— {campaign.scripture}</p>
                 </div>
             )}
         </div>
@@ -257,7 +257,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                         </div>
                         <SheetHeader className="text-left">
-                            <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance break-words">{campaign.title}</SheetTitle>
+                            <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance break-words [overflow-wrap:anywhere]">{campaign.title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium">Full Mission Details & Vision</SheetDescription>
                         </SheetHeader>
                     </div>
@@ -283,7 +283,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
                     <DialogHeader>
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight text-balance break-words">{campaign.title}</DialogTitle>
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight text-balance break-words [overflow-wrap:anywhere]">{campaign.title}</DialogTitle>
                         <DialogDescription className="text-sm font-medium">Full Campaign Description</DialogDescription>
                     </DialogHeader>
                 </div>
@@ -587,7 +587,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 <CardTitle className="font-bold text-lg md:text-xl leading-tight break-words [overflow-wrap:anywhere] text-balance">
                   {campaign.title}
                 </CardTitle>
-                <CardDescription className="text-sm mt-1 line-clamp-2 font-medium break-words">{campaign.goal}</CardDescription>
+                <CardDescription className="text-sm mt-1 line-clamp-2 font-medium break-words [overflow-wrap:anywhere]">{campaign.goal}</CardDescription>
                 {distance != null && (
                     <CardDescription className="text-xs text-primary font-black mt-2 flex items-center gap-1 uppercase tracking-widest">
                         <MapPin className="h-3 w-3" />
@@ -637,7 +637,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                     <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                     <div className="min-w-0 flex-1">
                         <p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Location</p>
-                        <p className="font-bold text-foreground break-words leading-snug line-clamp-3 text-balance">{campaign.location}</p>
+                        <p className="font-bold text-foreground break-words [overflow-wrap:anywhere] leading-snug line-clamp-3 text-balance">{campaign.location}</p>
                     </div>
                 </div>
                 <div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto">
@@ -732,9 +732,9 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
             </div>
         </CardFooter>
         <CardFooter className="p-3 bg-black/5 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 flex justify-between">
-            <span className="truncate">
+            <span className="truncate min-w-0 flex-1 mr-4">
                 BY{" "}
-                <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} onClick={stopPropagation} className="text-primary hover:underline">
+                <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} onClick={stopPropagation} className="text-primary hover:underline truncate">
                     {campaign.organizerFirstName} {campaign.organizerLastName}
                 </Link>
             </span>
