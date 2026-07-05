@@ -621,6 +621,10 @@ export function RelationshipTrackerCard() {
           await updateDoc(doc(firestore, 'chats', chatId), { lastUpdatedAt: serverTimestamp(), hasMessages: true });
           
           toast({ title: 'Shared with Partner!', description: `Details sent to ${partner.firstName}.` });
+          
+          // Log the action in tracker progress
+          performLogging(sharingSoul, 'introduced_friend');
+
           setIsPartnerSelectionDialogOpen(false);
           setIsShareTargetDialogOpen(false);
           setSharingSoul(null);

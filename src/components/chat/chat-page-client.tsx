@@ -650,7 +650,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                         onTouchMove={(e) => handleTouchMove(e, msg)}
                                                         onTouchEnd={() => handleTouchEnd(msg)}
                                                         className={cn(
-                                                            "relative z-10 rounded-2xl px-4 py-2.5 max-w-[280px] sm:max-w-md break-words flex flex-col shadow-sm",
+                                                            "relative z-10 rounded-2xl px-4 py-2.5 max-w-[280px] sm:max-w-md break-words flex flex-col shadow-sm whitespace-pre-wrap",
                                                             isOwnMessage ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-background border rounded-bl-sm",
                                                             isEditing && "ring-2 ring-primary border-transparent"
                                                         )}>
