@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -946,6 +947,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 vendorId: cartItem.item.vendorId,
                 vendorName: cartItem.item.vendorName || 'Kingdom Store',
                 vendorOwnerId: cartItem.item.vendorOwnerId, 
+                vendorPhotoURL: cartItem.item.vendorPhotoURL || null,
                 vendorType: cartItem.item.vendorType || 'meal',
                 mealId: cartItem.item.id,
                 mealName: cartItem.item.name,

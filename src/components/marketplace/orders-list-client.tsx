@@ -60,7 +60,7 @@ import {
 /**
  * Ensures vendor details in the order tracker are always current.
  */
-function LiveVendorInfo({ vendorId, fallbackName }: { vendorId: string, fallbackName: string }) {
+function LiveVendorInfo({ vendorId, fallbackName, orderPhotoURL }: { vendorId: string, fallbackName: string, orderPhotoURL?: string }) {
     const firestore = useFirestore();
     const vendorRef = React.useMemo(() => vendorId ? doc(firestore, 'vendors', vendorId) : null, [firestore, vendorId]);
     const { data: vendor } = useDoc<VendorProfile>(vendorRef);
@@ -78,7 +78,7 @@ function LiveVendorInfo({ vendorId, fallbackName }: { vendorId: string, fallback
             <div className="flex items-center gap-3">
                  <Link href={`/dashboard/marketplace/vendors/${vendorId}`} className="shrink-0 active:scale-95 transition-transform">
                     <Avatar className="h-9 w-9 border-2 border-primary/10 shadow-sm">
-                        <AvatarImage src={vendor?.photoURL || owner?.photoURL} className="object-cover" />
+                        <AvatarImage src={vendor?.photoURL || orderPhotoURL || owner?.photoURL} className="object-cover" />
                         <AvatarFallback className="text-[10px] font-black bg-primary/5 text-primary">
                             {owner?.firstName?.charAt(0) || vendor?.businessName?.charAt(0) || 'K'}
                         </AvatarFallback>
@@ -367,7 +367,7 @@ export default function OrdersListClient() {
                     [otherParticipantId]: {
                         firstName: type === 'sent' ? order.vendorName : otherProfile.firstName,
                         lastName: type === 'sent' ? '' : otherProfile.lastName,
-                        photoURL: type === 'sent' ? (order as any).vendorPhotoURL || otherProfile.photoURL || '' : otherProfile.photoURL || '', 
+                        photoURL: type === 'sent' ? order.vendorPhotoURL || otherProfile.photoURL || '' : otherProfile.photoURL || '', 
                     },
                 },
                 vendorId: order.vendorId,
@@ -493,7 +493,7 @@ export default function OrdersListClient() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-dashed">
                     {type === 'sent' ? (
-                        <LiveVendorInfo vendorId={order.vendorId} fallbackName={order.vendorName} />
+                        <LiveVendorInfo vendorId={order.vendorId} fallbackName={order.vendorName} orderPhotoURL={order.vendorPhotoURL} />
                     ) : (
                         <LiveRecipientInfo soulId={order.recipientSoulId} fallbackName={order.recipientName} />
                     )}
@@ -525,6 +525,13 @@ export default function OrdersListClient() {
                             {status === 'delivered' && 'MARK DONE'}
                         </Button>
                     ))}
+                </CardFooter>
+            )}
+            {order.status === 'cancelled' && (
+                <CardFooter className="p-3 bg-destructive/5 border-t justify-center">
+                    <p className="text-[9px] font-bold text-destructive uppercase tracking-widest flex items-center gap-2">
+                        <XCircle className="h-3 w-3" /> Provision Cancelled. Chat with provider for logistics support.
+                    </p>
                 </CardFooter>
             )}
         </Card>

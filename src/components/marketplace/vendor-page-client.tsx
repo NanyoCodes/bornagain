@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -147,6 +148,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
             case 'preparing': return <Utensils className="h-4 w-4 text-blue-500" />;
             case 'delivering': return <Truck className="h-4 w-4 text-primary" />;
             case 'delivered': return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+            case 'cancelled': return <XCircle className="h-4 w-4 text-destructive" />;
         }
     };
 
@@ -179,25 +181,27 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter className="p-2 bg-muted/20 border-t flex gap-1">
-                            {['preparing', 'delivering', 'delivered'].map((status) => (
-                                <Button 
-                                    key={status}
-                                    variant="ghost" 
-                                    size="sm" 
-                                    disabled={order.status === status}
-                                    className={cn(
-                                        "flex-1 h-7 text-[8px] font-black uppercase tracking-tighter rounded-lg",
-                                        order.status === status && "bg-background text-primary shadow-sm"
-                                    )}
-                                    onClick={() => updateOrderStatus(order.id, status as MealGiftStatus, order.senderId, order.mealName)}
-                                >
-                                    {status === 'preparing' && 'Prep'}
-                                    {status === 'delivering' && 'Ship'}
-                                    {status === 'delivered' && 'Done'}
-                                </Button>
-                            ))}
-                        </CardFooter>
+                        {order.status !== 'cancelled' && (
+                            <CardFooter className="p-2 bg-muted/20 border-t flex gap-1">
+                                {['preparing', 'delivering', 'delivered'].map((status) => (
+                                    <Button 
+                                        key={status}
+                                        variant="ghost" 
+                                        size="sm" 
+                                        disabled={order.status === status}
+                                        className={cn(
+                                            "flex-1 h-7 text-[8px] font-black uppercase tracking-tighter rounded-lg",
+                                            order.status === status && "bg-background text-primary shadow-sm"
+                                        )}
+                                        onClick={() => updateOrderStatus(order.id, status as MealGiftStatus, order.senderId, order.mealName)}
+                                    >
+                                        {status === 'preparing' && 'Prep'}
+                                        {status === 'delivering' && 'Ship'}
+                                        {status === 'delivered' && 'Done'}
+                                    </Button>
+                                ))}
+                            </CardFooter>
+                        )}
                     </Card>
                 ))
             ) : (
@@ -753,6 +757,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     vendorId: cartItem.item.vendorId,
                     vendorName: cartItem.item.vendorName || 'Kingdom Store',
                     vendorOwnerId: cartItem.item.vendorOwnerId, 
+                    vendorPhotoURL: cartItem.item.vendorPhotoURL || null,
                     vendorType: cartItem.item.vendorType || 'meal',
                     mealId: cartItem.item.id,
                     mealName: cartItem.item.name,

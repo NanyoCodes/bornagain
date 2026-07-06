@@ -469,6 +469,7 @@ export type MealGift = {
   vendorId: string;
   vendorName: string;
   vendorOwnerId: string;
+  vendorPhotoURL?: string;
   vendorType: 'meal' | 'gift';
   mealId: string;
   mealName: string;
