@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -309,7 +308,7 @@ function PendingProvisionReminder() {
                             const Icon = p.actionId === 'shared_meal' ? Utensils : Gift;
                             return (
                                 <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group">
-                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
                                         <Icon className="h-5 w-5 text-primary" />
                                     </div>
                                     <div className="min-w-0 flex-1">
@@ -508,6 +507,14 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
         
         {user ? (
           <>
+            <Link href="/dashboard/events" className="sm:hidden">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full">
+                      <CalendarDays className="h-5 w-5 md:h-6 md:w-6" />
+                      <span className="sr-only">Events Hub</span>
+                    </Button>
+                </motion.div>
+            </Link>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                 <Button 
                     variant="ghost" 

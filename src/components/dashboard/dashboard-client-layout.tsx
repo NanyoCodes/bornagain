@@ -1,4 +1,3 @@
-
 'use client';
 
 /**
@@ -32,6 +31,7 @@ import {
   Users,
   Store,
   Gift,
+  CalendarDays
 } from "lucide-react";
 
 import {
@@ -64,6 +64,7 @@ const navItems = [
   { href: "/souls-won", label: "Souls Won", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
+  { href: "/dashboard/events", label: "Events", icon: CalendarDays, color: "text-primary" },
   { href: "/fellowships", label: "Fellowship", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Accountability", icon: HeartHandshake, color: "text-primary" },
 ];
@@ -202,6 +203,14 @@ function AppHeader({ unreadChatCount }: { unreadChatCount: number }) {
             <span className="sr-only">Search</span>
           </Button>
         )}
+        <Link href="/dashboard/events" className="sm:hidden">
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <CalendarDays className="h-4 w-4" />
+                  <span className="sr-only">Events Hub</span>
+                </Button>
+            </motion.div>
+        </Link>
         <Link href="/dashboard/chats" className="shrink-0">
             <Button variant="ghost" size="icon" className="relative h-9 w-9">
               <MessagesSquare className="h-4 w-4" />
