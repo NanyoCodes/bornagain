@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useToast } from "@/hooks/use-toast";
-import { doc, arrayUnion, writeBatch, serverTimestamp } from "firebase/firestore";
+import { doc, arrayUnion, writeBatch, serverTimestamp, collection, query, where, getDocs, addDoc, getDoc, updateDoc } from "firebase/firestore";
 import { useFirestore, useUser, useDoc } from "@/firebase";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { actionItems, statusOptions } from "@/lib/follow-up-data";
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
 import { 
@@ -34,7 +34,10 @@ import {
   Calendar,
   CheckCircle2,
   Send,
-  X
+  X,
+  Share2,
+  Share,
+  HeartHandshake
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,6 +46,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Label } from "../ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -108,7 +112,9 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
   const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
   const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = React.useState(false);
-  const [helpNeedNote, setHelpNeedNote] = React.useState('');
+  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = React.useState(false);
+  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = React.useState(false);
+  const [clickedActionId, setClickedActionId] = React.useState<string | null>(null);
 
   const currentUserRef = React.useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: fetchedProfile } = useDoc<UserProfile>(currentUserRef);
@@ -155,14 +161,9 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
 
-    let finalNote = values.note || '';
-    if (values.actions?.includes('helped_with_need') && helpNeedNote) {
-        finalNote = finalNote ? `${finalNote}\n\nKindness Note: ${helpNeedNote}` : `Kindness Note: ${helpNeedNote}`;
-    }
-
     const newLogEntry = {
         date: new Date(), 
-        note: finalNote,
+        note: values.note || '',
         actions: values.actions || [],
         memberId: user.uid,
         memberName: memberName,
@@ -188,7 +189,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
         toast({ title: 'Follow-up Logged', description: 'Your interaction has been saved to the history.' });
         onFollowUpLogged();
         form.reset();
-        setHelpNeedNote('');
+        setClickedActionId(null);
     } catch (err: any) {
         console.error("Failed to log follow-up:", err);
         const permissionError = new FirestorePermissionError({
@@ -209,19 +210,22 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
       if (isSelected) {
           form.setValue('actions', currentActions.filter(id => id !== actionId));
-          if (actionId === 'helped_with_need') setHelpNeedNote('');
           return;
       }
 
-      if (actionId === 'phone_call' || actionId === 'text_message') {
+      setClickedActionId(actionId);
+
+      if (actionId === 'phone_call' || actionId === 'text_message' || actionId === 'prayed_together') {
           if (!soul.phone) {
               toast({ variant: 'destructive', title: 'Phone Missing', description: `Please save a number for ${soul.firstName} first.` });
               return;
           }
       }
 
-      if (actionId === 'text_message') {
+      if (actionId === 'text_message' || actionId === 'prayed_together') {
           setIsCommChannelDialogOpen(true);
+      } else if (actionId === 'introduced_friend') {
+          setIsShareTargetDialogOpen(true);
       } else if (actionId === 'phone_call') {
           window.location.href = `tel:${soul.phone}`;
           form.setValue('actions', [...currentActions, actionId]);
@@ -233,9 +237,15 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
-      if (!soul?.phone) return;
+      if (!soul?.phone || !clickedActionId) return;
       const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
-      const messageText = encodeURIComponent(`Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`);
+      
+      let message = `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
+      if (clickedActionId === 'prayed_together') {
+          message = `Hi ${soul.firstName}, I just spent a moment praying for you. May God's grace and peace be with you today!`;
+      }
+      
+      const messageText = encodeURIComponent(message);
       
       if (channel === 'whatsapp') {
           window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
@@ -244,16 +254,95 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
       }
       
       const current = form.getValues('actions') || [];
-      form.setValue('actions', [...current, 'text_message']);
+      form.setValue('actions', [...current, clickedActionId]);
       setIsCommChannelDialogOpen(false);
   };
 
   const handleHelpNeedConfirm = (note: string) => {
-      setHelpNeedNote(note);
-      const current = form.getValues('actions') || [];
-      form.setValue('actions', [...current, 'helped_with_need']);
+      const currentNote = form.getValues('note') || '';
+      const finalNote = currentNote ? `${currentNote}\n\nAct of Kindness: ${note}` : `Act of Kindness: ${note}`;
+      form.setValue('note', finalNote);
+      
+      const currentActions = form.getValues('actions') || [];
+      form.setValue('actions', [...currentActions, 'helped_with_need']);
       setIsHelpNeedDialogOpen(false);
   };
+
+  const handleShareToWhatsApp = () => {
+      if (!soul) return;
+      const wonAt = safeToDate(soul.wonAt);
+      const details = `Here is a soul I'm following up with on Testify:\nName: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nLet's keep them in our prayers.`;
+      
+      window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
+
+      const current = form.getValues('actions') || [];
+      form.setValue('actions', [...current, 'introduced_friend']);
+      setIsShareTargetDialogOpen(false);
+  };
+
+  const handleShareToPartner = async (partner: UserProfile['accountabilityPartners'][0]) => {
+      if (!user || !firestore || !soul || !userProfile) return;
+
+      const wonAt = safeToDate(soul.wonAt);
+      const text = `SHARING SOUL DATA:\nName: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nRelationship: ${soul.relationship || 'Outreach'}\nLet's keep them in our prayers and coordinate follow-up.`;
+
+      try {
+          const participantIds = [user.uid, partner.userId].sort();
+          const chatsRef = collection(firestore, 'chats');
+          const q = query(chatsRef, where('participantIds', '==', participantIds), where('isGroupChat', '==', false));
+          const snap = await getDocs(q);
+          let chatId: string;
+
+          if (!snap.empty) {
+              chatId = snap.docs[0].id;
+          } else {
+              const otherDoc = await getDoc(doc(firestore, 'users', partner.userId));
+              const otherProfile = otherDoc.data() as UserProfile;
+              const newChat = {
+                  participantIds,
+                  participantInfo: {
+                      [user.uid]: { firstName: userProfile.firstName, lastName: userProfile.lastName, photoURL: userProfile.photoURL || '' },
+                      [partner.userId]: { firstName: partner.firstName, lastName: partner.lastName, photoURL: partner.photoURL || '' }
+                  },
+                  lastUpdatedAt: serverTimestamp(),
+                  isGroupChat: false,
+                  hasMessages: true
+              };
+              const ref = await addDoc(chatsRef, newChat);
+              chatId = ref.id;
+          }
+
+          await addDoc(collection(firestore, 'chats', chatId, 'messages'), {
+              senderId: user.uid,
+              text,
+              createdAt: serverTimestamp()
+          });
+
+          await updateDoc(doc(firestore, 'chats', chatId), { lastUpdatedAt: serverTimestamp(), hasMessages: true });
+          
+          toast({ title: 'Shared with Partner!', description: `Details sent to ${partner.firstName}.` });
+          
+          const current = form.getValues('actions') || [];
+          form.setValue('actions', [...current, 'introduced_friend']);
+
+          setIsPartnerSelectionDialogOpen(false);
+          setIsShareTargetDialogOpen(false);
+          router.push(`/dashboard/chats/${chatId}`);
+      } catch (e) {
+          toast({ variant: 'destructive', title: 'Share Failed' });
+      }
+  };
+
+  const uniquePartners = React.useMemo(() => {
+    const partners = userProfile?.accountabilityPartners || [];
+    const uniqueMap = new Map();
+    partners.forEach(p => {
+        if (p.userId && !uniqueMap.has(p.userId)) {
+            uniqueMap.set(p.userId, p);
+        }
+    });
+    return Array.from(uniqueMap.values());
+  }, [userProfile?.accountabilityPartners]);
 
   const formBody = (
     <Form {...form}>
@@ -361,15 +450,6 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                                                 router.push(`${path}?soulId=${soul?.id}&soulName=${encodeURIComponent(soul?.firstName || '')}&actionId=${item.id}`);
                                                                 onOpenChange(false);
                                                             }}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                                    e.preventDefault();
-                                                                    e.stopPropagation();
-                                                                    const path = item.id === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-                                                                    router.push(`${path}?soulId=${soul?.id}&soulName=${encodeURIComponent(soul?.firstName || '')}&actionId=${item.id}`);
-                                                                    onOpenChange(false);
-                                                                }
-                                                            }}
                                                         >
                                                             GO TO HUB
                                                         </span>
@@ -461,7 +541,6 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
               <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
               <Textarea 
                   placeholder="e.g. Provided food items, helped with bill..." 
-                  value={helpNeedNote}
                   onChange={e => setHelpNeedNote(e.target.value)}
                   className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
               />
@@ -469,6 +548,64 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
           <Button onClick={() => handleHelpNeedConfirm(helpNeedNote)} className="w-full h-12 rounded-xl font-bold">Confirm Service</Button>
         </div>
       </DialogContent>
+    </Dialog>
+  );
+
+  const ShareTargetDialogEl = (
+    <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
+        <DialogHeader className="text-center space-y-2">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                <Share className="h-7 w-7 text-primary" />
+            </div>
+          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Share Details</DialogTitle>
+          <DialogDescription className="text-sm font-medium">Where would you like to share {soul?.firstName}'s info?</DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-3 pt-6">
+          <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+            <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
+          </Button>
+          <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+            <HeartHandshake className="h-5 w-5" /> Partner on App
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
+  const PartnerSelectionDialog = (
+    <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+            <div className="p-8 border-b bg-muted/10">
+                <DialogHeader>
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
+                    <DialogDescription className="text-sm font-medium">Which partner should receive these details?</DialogDescription>
+                </DialogHeader>
+            </div>
+            <div className="p-6">
+            <ScrollArea className="h-64">
+                <div className="space-y-2">
+                    {uniquePartners.map(p => (
+                        <Button 
+                            key={p.userId} 
+                            variant="ghost" 
+                            className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group"
+                            onClick={() => handleShareToPartner(p)}
+                        >
+                            <Avatar className="h-8 w-8 border shrink-0">
+                                <AvatarImage src={p.photoURL} />
+                                <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <span className="font-bold text-sm group-hover:text-primary transition-colors">{p.firstName} {p.lastName}</span>
+                        </Button>
+                    ))}
+                    {uniquePartners.length === 0 && (
+                        <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
+                    )}
+                </div>
+            </ScrollArea>
+            </div>
+        </DialogContent>
     </Dialog>
   );
 
@@ -501,6 +638,8 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
               </div>
               {CommDialog}
               {NeedDialog}
+              {ShareTargetDialogEl}
+              {PartnerSelectionDialog}
             </>
           )}
         </SheetContent>
@@ -539,6 +678,8 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
       </Dialog>
       {CommDialog}
       {NeedDialog}
+      {ShareTargetDialogEl}
+      {PartnerSelectionDialog}
     </>
   );
 }
