@@ -2,6 +2,6 @@
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/generate-campaign-ideas.ts';
-import '@/ai/flows/generate-follow-up-insights.ts';
-import '@/ai/flows/generate-ministry-innovation.ts';
+import '@/ai/flows/generate-campaign-ideas';
+import '@/ai/flows/generate-follow-up-insights';
+import '@/ai/flows/generate-ministry-innovation';
