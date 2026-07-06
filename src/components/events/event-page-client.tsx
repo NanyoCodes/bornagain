@@ -100,7 +100,7 @@ export default function EventPageClient() {
     if (activeTab === 'mine') {
       list = list.filter(e => e.organizerId === user?.uid);
     } else if (activeTab === 'joined') {
-      list = list.filter(e => joinedIds.has(event.id));
+      list = list.filter(e => joinedIds.has(e.id));
     }
 
     if (!searchTerm) return list;
@@ -133,7 +133,7 @@ export default function EventPageClient() {
   };
 
   return (
-    <div className="space-y-10 max-w-5xl mx-auto pb-32">
+    <div className="space-y-8 md:space-y-12 max-w-5xl mx-auto pb-32 w-full">
         <header className="px-4 sm:px-0 space-y-6 pt-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
@@ -141,13 +141,13 @@ export default function EventPageClient() {
                         <ArrowLeft className="h-6 w-6" />
                     </Button>
                     <div className="space-y-1">
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Kingdom Hub</h1>
-                        <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
+                        <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">Kingdom Hub</h1>
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
                             <CalendarDays className="h-4 w-4 text-primary" /> Event Directory
                         </p>
                     </div>
                 </div>
-                <Button onClick={() => setIsCreateOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20">
+                <Button onClick={() => setIsCreateOpen(true)} className="w-full sm:w-auto rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20">
                     <PlusCircle className="mr-2 h-4 w-4" /> HOST AN EVENT
                 </Button>
             </div>
@@ -172,10 +172,10 @@ export default function EventPageClient() {
             </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 sm:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 sm:gap-8 px-0 sm:px-0 -mx-4 sm:mx-0">
             {loading ? (
                 [...Array(4)].map((_, i) => (
-                    <Card key={i} className="rounded-[2.5rem] border-none shadow-sm animate-pulse h-[350px]">
+                    <Card key={i} className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-none sm:shadow-sm animate-pulse h-[350px]">
                         <CardContent className="h-full bg-muted/30" />
                     </Card>
                 ))
@@ -191,11 +191,11 @@ export default function EventPageClient() {
                     />
                 ))
             ) : (
-                <div className="col-span-full py-32 text-center flex flex-col items-center">
+                <div className="col-span-full py-32 text-center flex flex-col items-center px-8">
                     <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
                         <CalendarDays className="h-10 w-10 text-muted-foreground opacity-10" />
                     </div>
-                    <h3 className="text-2xl font-black font-headline uppercase tracking-tight opacity-40">Hub Silence</h3>
+                    <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40">Hub Silence</h3>
                     <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto">No events found in this category. Why not host one for the body of Christ?</p>
                 </div>
             )}
@@ -206,7 +206,7 @@ export default function EventPageClient() {
                 <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
+                            <SheetHeader className="text-left flex-shrink-0">
                                 <SheetTitle className="text-2xl font-black font-headline">Host for the Kingdom</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">Organize a gathering to strengthen and equip the saints.</SheetDescription>
                             </SheetHeader>
@@ -242,7 +242,7 @@ export default function EventPageClient() {
                 <Sheet open={!!eventToEdit} onOpenChange={(open) => !open && setEventToEdit(null)}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
+                            <SheetHeader className="text-left flex-shrink-0">
                                 <SheetTitle className="text-2xl font-black font-headline">Manage Hub</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">Refine the vision for your gathering.</SheetDescription>
                             </SheetHeader>
