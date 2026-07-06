@@ -4,9 +4,9 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc, updateDoc, where, getDocs } from 'firebase/firestore';
-import type { UserProfile, Soul, Chat, SoulRelationship } from '@/lib/types';
+import type { UserProfile, Soul, Chat } from '@/lib/types';
 import { isToday, format } from 'date-fns';
-import { Skeleton } from '../ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Heart, 
   MessageSquare, 
@@ -56,19 +56,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
-
-const iconMap: Record<string, any> = {
-    'prayed_together': Sparkles,
-    'studied_bible': BookOpen,
-    'shared_meal': Utensils,
-    'visited_home': Home,
-    'introduced_friend': Users,
-    'gave_gift': Gift,
-    'phone_call': Phone,
-    'text_message': MessageSquare,
-    'helped_with_need': Heart,
-    'invited_to_event': Calendar,
-};
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
