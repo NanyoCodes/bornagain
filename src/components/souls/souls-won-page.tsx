@@ -358,13 +358,7 @@ export default function SoulsWonPage() {
         className="space-y-6 md:space-y-12 pb-32" 
         inert={isAnyModalOpen ? true : undefined}
       >
-        <RelationshipCircleTracker 
-            souls={souls || []}
-            campaigns={campaigns}
-            fellowships={activeFellowships}
-            className="-mx-4 sm:mx-0 rounded-none sm:rounded-3xl"
-        />
-
+        {/* Interaction Box - Now at Top */}
         <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-row items-center gap-2 sm:gap-3">
@@ -410,6 +404,13 @@ export default function SoulsWonPage() {
             </div>
           </CardContent>
         </Card>
+
+        <RelationshipCircleTracker 
+            souls={souls || []}
+            campaigns={campaigns}
+            fellowships={activeFellowships}
+            className="-mx-4 sm:mx-0 rounded-none sm:rounded-3xl"
+        />
 
         <div className="-mx-4 sm:mx-0">
           <SoulsWonTable 
