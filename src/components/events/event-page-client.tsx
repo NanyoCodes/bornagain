@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -101,7 +100,7 @@ export default function EventPageClient() {
     if (activeTab === 'mine') {
       list = list.filter(e => e.organizerId === user?.uid);
     } else if (activeTab === 'joined') {
-      list = list.filter(e => joinedIds.has(e.id));
+      list = list.filter(e => joinedIds.has(event.id));
     }
 
     if (!searchTerm) return list;
@@ -161,13 +160,13 @@ export default function EventPageClient() {
                         <TabsTrigger value="joined" className="font-black text-[10px] uppercase tracking-widest rounded-xl">I'm Going</TabsTrigger>
                     </TabsList>
                 </Tabs>
-                <div className="relative flex-1 max-w-sm">
+                <div className="relative flex-1 w-full sm:max-w-sm">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
                     <Input 
                         placeholder="Search for gatherings..." 
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                        className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold w-full"
                     />
                 </div>
             </div>
