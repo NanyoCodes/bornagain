@@ -208,10 +208,10 @@ service cloud.firestore {
     match /chats/{chatId} {
       allow create: if request.auth != null && (
         (!request.resource.data.get('isGroupChat', false)) ||
-        isFellowshipOrganizer(request.resource.data.get('fellowshipId', '')) ||
-        isFellowshipMember(request.resource.data.get('associationId', '')) ||
-        isCampaignOrganizer(request.resource.data.get('campaignId', '')) ||
-        isEventOrganizer(request.resource.data.get('eventId', ''))
+        (request.resource.data.get('fellowshipId', '') != '' && isFellowshipOrganizer(request.resource.data.fellowshipId)) ||
+        (request.resource.data.get('associationId', '') != '' && isFellowshipMember(request.resource.data.associationId)) ||
+        (request.resource.data.get('campaignId', '') != '' && isCampaignOrganizer(request.resource.data.campaignId)) ||
+        (request.resource.data.get('eventId', '') != '' && isEventOrganizer(request.resource.data.eventId))
       );
       allow read, update: if canAccessChatDoc(resource.data);
       allow delete: if false;

@@ -331,7 +331,12 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             const permissionError = new FirestorePermissionError({
                 path: `chats/${event.id}`,
                 operation: 'create',
-                requestResourceData: { action: 'Initialize event chat', organizer: user.uid }
+                requestResourceData: { 
+                  participantIds: participants?.map(p => p.userId) || [],
+                  eventId: event.id,
+                  isGroupChat: true,
+                  campaignTitle: event.title
+                }
             }, user);
             errorEmitter.emit('permission-error', permissionError);
         } else {
