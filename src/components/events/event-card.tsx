@@ -121,8 +121,17 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
     try {
         await batch.commit();
         router.push(`/dashboard/chats/${event.id}`);
-    } catch (e) {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `chats/${event.id}`, operation: 'create' }, user));
+    } catch (e: any) {
+        if (e.code === 'permission-denied') {
+            const permissionError = new FirestorePermissionError({
+                path: chatDocRef.path,
+                operation: 'create',
+                requestResourceData: { participantIds, eventId: event.id }
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        } else {
+            toast({ variant: 'destructive', title: 'Chat Error', description: 'Could not initialize group conversation.' });
+        }
     } finally {
         setIsChatLoading(false);
     }
@@ -239,7 +248,9 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
 
 function LiveAuthor({ userId, fallbackInitials }: { userId: string, fallbackInitials: string }) {
   const firestore = useFirestore();
-  const { data: profile } = useDoc<UserProfile>(doc(firestore, 'users', userId));
+  const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+  const { data: profile } = useDoc<UserProfile>(userRef);
+  
   return (
     <Avatar className="h-5 w-5 border shadow-sm">
       <AvatarImage src={profile?.photoURL} />
