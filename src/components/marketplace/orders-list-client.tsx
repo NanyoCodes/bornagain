@@ -245,6 +245,12 @@ export default function OrdersListClient() {
   const handleCancelOrder = async () => {
     if (!user || !firestore || !orderToCancel) return;
     
+    // Safety check: Only sender can cancel
+    if (orderToCancel.senderId !== user.uid) {
+        toast({ variant: 'destructive', title: 'Action Denied', description: 'Only the sender can cancel this offering.' });
+        return;
+    }
+
     setIsCancelling(true);
     const orderRef = doc(firestore, 'mealGifts', orderToCancel.id);
     const batch = writeBatch(firestore);
@@ -516,7 +522,7 @@ export default function OrdersListClient() {
                             disabled={order.status === status}
                             className={cn(
                                 "flex-1 h-8 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all",
-                                order.status === status ? "bg-background text-primary shadow-md scale-105" : "hover:bg-background/50"
+                                order.status === status ? "bg-background text-primary shadow-sm scale-105" : "hover:bg-background/50"
                             )}
                             onClick={() => updateOrderStatus(order.id, status as MealGiftStatus, order.senderId, order.mealName)}
                         >

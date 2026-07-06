@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Event & Campaign Chat Access Hardening - 2025-10-16T10:00:00Z
+    // Deployment trigger: Provision Security Hardening (Sender Cancellation Only) - 2025-10-18T12:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -265,7 +265,7 @@ service cloud.firestore {
     match /vendors/{vendorId} {
       allow get, list: if true;
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null && request.resource.data.userId == request.auth.uid;
 
       match /meals/{mealId} {
         allow get, list: if true;
@@ -280,8 +280,8 @@ service cloud.firestore {
         request.auth.uid == resource.data.get('vendorOwnerId', '')
       );
       allow update: if request.auth != null && (
-        request.auth.uid == resource.data.get('vendorOwnerId', '') || 
-        request.auth.uid == request.resource.data.get('senderId', '')
+        (request.auth.uid == resource.data.senderId && request.resource.data.status == 'cancelled' && resource.data.status == 'ordered') ||
+        (request.auth.uid == resource.data.vendorOwnerId && request.resource.data.status in ['preparing', 'delivering', 'delivered'] && resource.data.status != 'cancelled')
       );
     }
 

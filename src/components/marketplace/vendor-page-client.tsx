@@ -34,7 +34,8 @@ import {
     X,
     CheckCircle2,
     Truck,
-    Timer
+    Timer,
+    XCircle
 } from 'lucide-react';
 import { 
     Dialog, 
