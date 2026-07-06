@@ -8,6 +8,7 @@ import {
   BookMarked, 
   Quote, 
   ArrowLeft, 
+  ArrowRight,
   Users, 
   ShieldAlert, 
   Crosshair, 
@@ -286,9 +287,9 @@ export default function DashboardResourcesPage() {
           </div>
       </section>
 
-      <footer className="text-center pt-12 opacity-60">
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">
-          © {new Date().getFullYear()} Testify Global • Equipping for the Harvest
+      <footer className="text-center pt-12 border-t mt-12 px-8">
+        <p className="text-[10px] text-muted-foreground italic font-bold uppercase tracking-[0.2em] max-w-md mx-auto opacity-40">
+          "© {new Date().getFullYear()} Testify Global • Equipping for the Harvest"
         </p>
       </footer>
     </div>
