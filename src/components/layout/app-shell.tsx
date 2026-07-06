@@ -63,7 +63,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, writeBatch, addDoc, arrayUnion } from "firebase/firestore";
-import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus } from "@/lib/types";
+import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter, SheetTrigger } from "@/components/ui/sheet";
@@ -109,6 +109,7 @@ const navItems = [
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
+  { href: "/dashboard/events", label: "Events Hub", icon: CalendarDays, color: "text-primary" },
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
@@ -375,6 +376,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const updateCartCount = useCallback(() => {
     if (typeof window === 'undefined' || !user?.uid) {
@@ -420,6 +422,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
   const handleLogout = async () => {
     if (!auth) return;
+    setIsMenuOpen(false);
     await signOut(auth);
     router.push("/login");
   };
@@ -452,7 +455,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
   const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
-    <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
+    <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
       <div className="flex items-center shrink-0">
         <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
@@ -510,14 +513,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
         
         {user ? (
           <>
-            <Link href="/dashboard/events" className="hidden lg:inline-flex">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full">
-                      <CalendarDays className="h-5 w-5 md:h-6 md:w-6" />
-                      <span className="sr-only">Events Hub</span>
-                    </Button>
-                </motion.div>
-            </Link>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                 <Button 
                     variant="ghost" 
@@ -560,7 +555,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
             {/* Combined Profile & Navigation Hub for Mobile/Tablet */}
             <div className="lg:hidden">
-                <Sheet>
+                <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0">
                             <Avatar className="h-9 w-9 md:h-11 md:w-11 border shadow-sm">
@@ -595,11 +590,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                         <ScrollArea className="flex-grow">
                             <div className="p-6 space-y-2">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Identity</p>
-                                <Link href="/profile" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                                     <User className="h-6 w-6 text-primary" />
                                     <span className="font-black uppercase tracking-widest text-sm">Profile</span>
                                 </Link>
-                                <Link href="/settings" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                                     <Settings className="h-6 w-6 text-primary" />
                                     <span className="font-black uppercase tracking-widest text-sm">Settings</span>
                                 </Link>
@@ -610,6 +605,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                                     <Link 
                                         key={item.href} 
                                         href={item.href}
+                                        onClick={() => setIsMenuOpen(false)}
                                         className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"
                                     >
                                         <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", item.color)} />
@@ -619,45 +615,41 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
                                 <Separator className="my-6 opacity-50" />
                                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Provision & Recovery</p>
-                                <Link href="/dashboard/victory-hub" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                                     <ShieldCheck className="h-6 w-6 text-primary" />
                                     <span className="font-black uppercase tracking-widest text-sm">Victory Hub</span>
                                 </Link>
-                                <Link href="/dashboard/events" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                                    <CalendarDays className="h-6 w-6 text-primary" />
-                                    <span className="font-black uppercase tracking-widest text-sm">Events Hub</span>
-                                </Link>
-                                <Link href="/dashboard/marketplace" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                                     <Store className="h-6 w-6 text-primary" />
                                     <span className="font-black uppercase tracking-widest text-sm">Meals Center</span>
                                 </Link>
-                                <Link href="/dashboard/marketplace/gifts" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                                     <Gift className="h-6 w-6 text-primary" />
                                     <span className="font-black uppercase tracking-widest text-sm">Kindness Center</span>
                                 </Link>
-                                <Link href="/dashboard/marketplace/orders" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                                     <Package className="h-6 w-6 text-primary" />
                                     <span className="font-black uppercase tracking-widest text-sm">Order Tracker</span>
                                 </Link>
 
                                 <Separator className="my-6 opacity-50" />
                                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Study Tools</p>
-                                <Link href="/dashboard/bible" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                                     <BookOpen className="h-6 w-6 text-primary" />
                                     <span className="font-black uppercase tracking-widest text-sm">Bible Reader</span>
                                 </Link>
-                                <Link href="/dashboard/notes" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                                     <Edit className="h-6 w-6 text-primary" />
                                     <span className="font-black uppercase tracking-widest text-sm">Journal</span>
                                 </Link>
                                 
                                 <Separator className="my-6 opacity-50" />
                                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
-                                <Link href="/guide" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                                     <BookMarked className="h-6 w-6 text-primary" />
                                     <span className="font-black uppercase tracking-widest text-sm">App Guide</span>
                                 </Link>
-                                <Link href="/resources" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                                     <BookOpen className="h-6 w-6 text-primary" />
                                     <span className="font-black uppercase tracking-widest text-sm">Resources</span>
                                 </Link>
@@ -681,7 +673,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                 </Sheet>
             </div>
 
-            {/* Desktop Profile Dropdown (unchanged layout, just hidden on smaller screens) */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="hidden lg:inline-flex">
                 <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0">
