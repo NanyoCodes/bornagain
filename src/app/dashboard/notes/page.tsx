@@ -27,19 +27,17 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  getDoc,
 } from 'firebase/firestore';
 import type { Note, NoteCategory } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { cn, safeToDate } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import jsPDF from 'jspdf';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
 import { Label } from '@/components/ui/label';
@@ -76,7 +74,7 @@ export default function NotesPage() {
   }, []);
 
   const notesQuery = useMemo(() => {
-    if (!user) return null;
+    if (!user || !firestore) return null;
     return query(
       collection(firestore, 'users', user.uid, 'notes'),
       orderBy('updatedAt', 'desc')
@@ -97,7 +95,7 @@ export default function NotesPage() {
   }, [notes, searchTerm]);
   
   const groupedNotes = useMemo(() => {
-    if (!filteredNotes) return {};
+    if (!filteredNotes) return {} as Record<NoteCategory, Note[]>;
     return filteredNotes.reduce((acc, note) => {
       const cat = note.category || 'Other';
       if (!acc[cat]) {
@@ -181,10 +179,11 @@ export default function NotesPage() {
       setIsDiscardAlertOpen(false);
   };
 
-  const handleExportPdf = () => {
+  const handleExportPdf = async () => {
     if (!selectedNote) return;
 
     try {
+        const { default: jsPDF } = await import('jspdf');
         const doc = new jsPDF();
         
         doc.setFontSize(22);
@@ -264,8 +263,8 @@ export default function NotesPage() {
         setIsDirty(false);
       }
       handleBackToList();
-    } catch (e) {
-      if ((e as any)?.name !== 'FirestorePermissionError') {
+    } catch (e: any) {
+      if (e.code === 'permission-denied') {
         const permissionError = new FirestorePermissionError({ path: `users/${user.uid}/notes`, operation: 'write' }, user);
         errorEmitter.emit('permission-error', permissionError);
       }
@@ -283,8 +282,6 @@ export default function NotesPage() {
     const noteRef = doc(firestore, 'users', user.uid, 'notes', noteId);
 
     try {
-        // Atomic UI reset before background deletion
-        // This ensures the editor unmounts and dialogs close properly
         if (selectedNote?.id === noteId) {
             handleBackToList();
         }
