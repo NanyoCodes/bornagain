@@ -3,7 +3,7 @@ import { ProgressPageContent } from '@/components/dashboard/progress-page-conten
 import { AppShell } from '@/components/layout/app-shell';
 
 export const metadata: Metadata = {
-  title: 'Spiritual Progress & Evangelism Tracking',
+  title: 'Spiritual Growth & Evangelism Tracking',
   description: 'Track your personal and city impact. Monitor souls won, discipline streaks, and monthly harvest goals to stay motivated in your service to the Kingdom.',
 };
 

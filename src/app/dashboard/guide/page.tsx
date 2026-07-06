@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const gettingStartedItems = [
   { step: "1", title: "Complete Profile", desc: "Set your identity.", icon: UserPlus, color: "text-blue-500", bg: "bg-blue-500/10" },
@@ -65,7 +66,7 @@ const journeyPhases = [
   },
   {
     title: "Phase 3: Into the Harvest",
-    description: "Mobilize for evangelism and track progress.",
+    description: "Mobilize for evangelism and track growth.",
     icon: Flame,
     color: "text-orange-600",
     bgColor: "bg-orange-600/10",
@@ -235,7 +236,23 @@ export default function GuidePage() {
         </div>
       </section>
 
-      <footer className="text-center pt-12 border-t mt-12">
+      <footer className="text-center pt-12 border-t mt-12 px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-6">
+                <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic">
+                    Testify is built for believers to share the greatness of Jesus Christ.
+                </p>
+            </div>
+            <div className="space-y-4">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Platform</h4>
+                <ul className="space-y-3">
+                    <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Glory Feed</Link></li>
+                    <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Mission Hub</Link></li>
+                    <li><Link href="/progress" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Harvest Growth</Link></li>
+                    <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Directory</Link></li>
+                </ul>
+            </div>
+        </div>
         <p className="text-xs text-muted-foreground italic font-medium">
           "But ye shall receive power, after that the Holy Ghost is come upon you: and ye shall be witnesses unto me both in Jerusalem, and in all Judaea, and in Samaria, and unto the uttermost part of the earth." — Acts 1:8
         </p>
