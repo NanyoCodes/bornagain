@@ -34,10 +34,10 @@ service cloud.firestore {
     function canAccessChatDoc(chatData) {
       return request.auth != null && (
         request.auth.uid in chatData.get('participantIds', []) ||
-        (chatData.get('fellowshipId', '') != '' && isFellowshipMember(chatData.fellowshipId)) ||
-        (chatData.get('associationId', '') != '' && isFellowshipMember(chatData.associationId)) ||
-        (chatData.get('campaignId', '') != '' && exists(/databases/$(database)/documents/campaigns/$(chatData.campaignId)/participants/$(request.auth.uid))) ||
-        (chatData.get('eventId', '') != '' && exists(/databases/$(database)/documents/events/$(chatData.eventId)/participants/$(request.auth.uid)))
+        (chatData.get('fellowshipId', '') != '' && isFellowshipMember(chatData.get('fellowshipId', ''))) ||
+        (chatData.get('associationId', '') != '' && isFellowshipMember(chatData.get('associationId', ''))) ||
+        (chatData.get('campaignId', '') != '' && exists(/databases/$(database)/documents/campaigns/$(chatData.get('campaignId', ''))/participants/$(request.auth.uid))) ||
+        (chatData.get('eventId', '') != '' && exists(/databases/$(database)/documents/events/$(chatData.get('eventId', ''))/participants/$(request.auth.uid)))
       );
     }
 
@@ -189,10 +189,10 @@ service cloud.firestore {
     match /chats/{chatId} {
       allow create: if request.auth != null && (
         (!request.resource.data.get('isGroupChat', false)) ||
-        (request.resource.data.get('fellowshipId', '') != '' && isFellowshipOrganizer(request.resource.data.fellowshipId)) ||
-        (request.resource.data.get('associationId', '') != '' && isFellowshipMember(request.resource.data.associationId)) ||
-        (request.resource.data.get('campaignId', '') != '' && get(/databases/$(database)/documents/campaigns/$(request.resource.data.campaignId)).data.organizerId == request.auth.uid) ||
-        (request.resource.data.get('eventId', '') != '' && get(/databases/$(database)/documents/events/$(request.resource.data.eventId)).data.organizerId == request.auth.uid)
+        (request.resource.data.get('fellowshipId', '') != '' && isFellowshipOrganizer(request.resource.data.get('fellowshipId', ''))) ||
+        (request.resource.data.get('associationId', '') != '' && isFellowshipMember(request.resource.data.get('associationId', ''))) ||
+        (request.resource.data.get('campaignId', '') != '' && get(/databases/$(database)/documents/campaigns/$(request.resource.data.get('campaignId', ''))).data.organizerId == request.auth.uid) ||
+        (request.resource.data.get('eventId', '') != '' && get(/databases/$(database)/documents/events/$(request.resource.data.get('eventId', ''))).data.organizerId == request.auth.uid)
       );
       allow read, update: if canAccessChatDoc(resource.data);
       allow delete: if false;
