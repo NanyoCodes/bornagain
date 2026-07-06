@@ -39,7 +39,8 @@ import {
   Clipboard,
   Hourglass,
   CalendarDays,
-  Menu
+  Menu,
+  Edit
 } from "lucide-react";
 
 import {
@@ -519,6 +520,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                 </div>
                 <ScrollArea className="flex-grow">
                     <div className="p-6 space-y-2">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
                         {navItems.map((item) => {
                             const isActive = pathname.startsWith(item.href);
                             return (
@@ -535,10 +537,53 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                                 </Link>
                             )
                         })}
-                        <Separator className="my-4 opacity-50" />
+
+                        <Separator className="my-6 opacity-50" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Recovery Hub</p>
+                        <Link href="/dashboard/victory-hub" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                            <ShieldCheck className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Victory Hub</span>
+                        </Link>
+
+                        <Separator className="my-6 opacity-50" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Provision Hub</p>
                         <Link href="/dashboard/events" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                             <CalendarDays className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
                             <span className="font-black uppercase tracking-widest text-sm text-foreground">Events Hub</span>
+                        </Link>
+                        <Link href="/dashboard/marketplace" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                            <Store className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Meals Center</span>
+                        </Link>
+                        <Link href="/dashboard/marketplace/gifts" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                            <Gift className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Kindness Center</span>
+                        </Link>
+                        <Link href="/dashboard/marketplace/orders" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                            <Package className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Order Tracker</span>
+                        </Link>
+
+                        <Separator className="my-6 opacity-50" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Study & Tools</p>
+                        <Link href="/dashboard/bible" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                            <BookOpen className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Bible Reader</span>
+                        </Link>
+                        <Link href="/dashboard/notes" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                            <Edit className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Journal</span>
+                        </Link>
+                        
+                        <Separator className="my-6 opacity-50" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Others</p>
+                        <Link href="/guide" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                            <BookMarked className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+                            <span className="font-black uppercase tracking-widest text-sm text-foreground">App Guide</span>
+                        </Link>
+                        <Link href="/resources" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                            <BookOpen className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Resources</span>
                         </Link>
                     </div>
                 </ScrollArea>
