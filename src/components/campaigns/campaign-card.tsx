@@ -424,8 +424,8 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       if (existingChat) {
         chatId = existingChat.id;
       } else {
-         const organizerDoc = await getDoc(doc(firestore, "users", campaign.organizerId));
-         const organizerProfile = organizerDoc.data() as UserProfile | undefined;
+         const ownerDoc = await getDoc(doc(firestore, "users", campaign.organizerId));
+         const organizerProfile = ownerDoc.data() as UserProfile | undefined;
          const [userFirstName, ...userLastNameParts] = user.displayName?.split(' ') || ['User', ''];
          const newChatData = {
               participantIds,
@@ -577,7 +577,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
       <Card
         id={campaign.id}
         className={cn(
-          "flex flex-col h-full w-full overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 scroll-mt-48 border-t-4 cursor-pointer rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm",
+          "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 border-t-4 cursor-pointer rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm",
           borderColorClass
         )}
         onClick={handleCardClick}
