@@ -16,7 +16,10 @@ import {
     ArrowRight, 
     Calendar,
     Target,
-    Heart
+    Heart,
+    ArrowLeft,
+    RefreshCw,
+    BookOpen
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
