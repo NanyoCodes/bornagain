@@ -69,7 +69,7 @@ import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "../ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
@@ -106,7 +106,6 @@ const navItems = [
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
-  { href: "/dashboard/events", label: "Events", icon: CalendarDays, color: "text-primary" },
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
@@ -190,8 +189,9 @@ function PendingProvisionReminder() {
             }
 
             // 2. Remove "Initiated" log from soul
-            const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulId);
-            const globalSoulRef = doc(firestore, 'souls', soulId);
+            const soulIdStr = soulId;
+            const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulIdStr);
+            const globalSoulRef = doc(firestore, 'souls', soulIdStr);
 
             const soulDoc = await getDoc(soulUserRef);
             if (soulDoc.exists()) {
