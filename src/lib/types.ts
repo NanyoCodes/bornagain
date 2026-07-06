@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -475,4 +476,43 @@ export type MealGift = {
   status: MealGiftStatus;
   instructions?: string;
   createdAt: Timestamp;
+};
+
+export type EventCategory = 'Conference' | 'Worship' | 'Seminar' | 'Outreach' | 'Prayer' | 'Youth' | 'Other';
+export type EventStatus = 'active' | 'cancelled' | 'concluded';
+
+export type Event = {
+  id: string;
+  title: string;
+  description: string;
+  category: EventCategory;
+  location: string;
+  locationType: 'Physical' | 'Virtual' | 'Both';
+  startDate: Timestamp;
+  endDate: Timestamp;
+  startTime: string;
+  endTime: string;
+  organizerId: string;
+  organizerName: string;
+  organizerPhotoURL?: string;
+  participantCount: number;
+  maxParticipants?: number;
+  status: EventStatus;
+  streamUrl?: string;
+  createdAt: Timestamp;
+};
+
+export type EventParticipant = {
+  id: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  photoURL?: string;
+  joinedAt: Timestamp;
+};
+
+export type JoinedEvent = {
+  id: string;
+  eventId: string;
+  joinedAt: Timestamp;
 };

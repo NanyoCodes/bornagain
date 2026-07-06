@@ -242,33 +242,30 @@
         "email"
       ]
     },
-    "Stronghold": {
-      "title": "Stronghold",
-      "description": "Represents an area of struggle or sin a believer is actively overcoming.",
+    "Event": {
+      "title": "Christian Event",
+      "description": "Represents a faith-based gathering such as a conference, worship night, or seminar.",
       "type": "object",
       "properties": {
-        "userId": { "type": "string" },
         "title": { "type": "string" },
-        "category": { "type": "string" },
-        "status": { "type": "string", "enum": ["active", "overcoming", "victorious"] },
-        "lastRelapse": { "type": "object", "description": "Timestamp of the last occurrence or confession." },
-        "notes": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string", "enum": ["Conference", "Worship", "Seminar", "Outreach", "Prayer", "Youth", "Other"] },
+        "location": { "type": "string" },
+        "locationType": { "type": "string", "enum": ["Physical", "Virtual", "Both"] },
+        "startDate": { "type": "object" },
+        "endDate": { "type": "object" },
+        "startTime": { "type": "string" },
+        "endTime": { "type": "string" },
+        "organizerId": { "type": "string" },
+        "organizerName": { "type": "string" },
+        "organizerPhotoURL": { "type": "string", "format": "uri" },
+        "participantCount": { "type": "number" },
+        "maxParticipants": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "cancelled", "concluded"] },
+        "streamUrl": { "type": "string", "format": "uri" },
         "createdAt": { "type": "object" }
       },
-      "required": ["userId", "title", "status"]
-    },
-    "VictoryPost": {
-      "title": "Victory Post",
-      "description": "An anonymous post shared by a believer in a Victory Circle category.",
-      "type": "object",
-      "properties": {
-        "authorId": { "type": "string" },
-        "category": { "type": "string" },
-        "text": { "type": "string" },
-        "createdAt": { "type": "object" },
-        "supporters": { "type": "array", "items": { "type": "string" } }
-      },
-      "required": ["authorId", "category", "text"]
+      "required": ["title", "description", "category", "startDate", "endDate", "organizerId", "status"]
     }
   },
   "auth": {
@@ -285,17 +282,17 @@
       },
       "description": "Stores public user profile data, keyed by user ID."
     },
-    "/users/{userId}/strongholds/{strongholdId}": {
-      "schema": { "$ref": "#/entities/Stronghold" },
-      "description": "User's private tracker for overcoming areas of struggle."
+    "/events/{eventId}": {
+      "schema": { "$ref": "#/entities/Event" },
+      "description": "Global directory of Christian events."
     },
-    "/victoryCircles/{category}/posts/{postId}": {
-      "schema": { "$ref": "#/entities/VictoryPost" },
-      "description": "Community discussion posts for specific struggle categories."
-    },
-    "/victoryCircles/{category}/posts/{postId}/comments/{commentId}": {
+    "/events/{eventId}/participants/{userId}": {
       "schema": { "type": "object" },
-      "description": "Encouragement and solutions shared by brethren in a Victory Circle."
+      "description": "Directory of users who have joined a specific event."
+    },
+    "/users/{userId}/joinedEvents/{eventId}": {
+      "schema": { "type": "object" },
+      "description": "Index of events a specific user has joined."
     }
   }
 }

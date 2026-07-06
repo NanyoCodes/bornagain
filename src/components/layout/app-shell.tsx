@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -37,7 +38,8 @@ import {
   Trash2,
   CreditCard,
   Clipboard,
-  Hourglass
+  Hourglass,
+  CalendarDays
 } from "lucide-react";
 
 import {
@@ -105,6 +107,7 @@ const navItems = [
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
+  { href: "/dashboard/events", label: "Events", icon: CalendarDays, color: "text-primary" },
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
@@ -590,7 +593,13 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
-                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Marketplace</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Provision Hub</DropdownMenuLabel>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/dashboard/events">
+                    <CalendarDays className="mr-2 h-4 w-4 text-primary" />
+                    <span>Events Hub</span>
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
                   <Link href="/dashboard/marketplace">
                     <Store className="mr-2 h-4 w-4" />
@@ -939,7 +948,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     '/terms-of-service', 
     '/privacy-policy',
     '/progress',
-    '/fellowships'
+    '/fellowships',
+    '/events'
   ];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
@@ -992,7 +1002,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
         <div className="relative mb-8">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
             <div className="absolute inset-0 flex items-center justify-center">
                 <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             </div>

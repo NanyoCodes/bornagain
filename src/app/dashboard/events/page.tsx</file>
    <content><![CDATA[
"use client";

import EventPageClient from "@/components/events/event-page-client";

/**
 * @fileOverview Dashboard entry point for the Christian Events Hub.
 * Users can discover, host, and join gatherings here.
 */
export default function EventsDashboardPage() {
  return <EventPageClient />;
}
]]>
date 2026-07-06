@@ -1,0 +1,11 @@
+"use client";
+
+import EventPageClient from "@/components/events/event-page-client";
+
+/**
+ * @fileOverview Dashboard entry point for the Christian Events Hub.
+ * Users can discover, host, and join gatherings here.
+ */
+export default function EventsDashboardPage() {
+  return <EventPageClient />;
+}
