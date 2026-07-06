@@ -11,10 +11,10 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "../ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Switch } from "../ui/switch";
-import { Textarea } from "../ui/textarea";
-import { ScrollArea } from "../ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { actionItems, statusOptions } from "@/lib/follow-up-data";
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
@@ -351,18 +351,28 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                                         {item.label}
                                                     </span>
                                                     {isSelected && (item.id === 'shared_meal' || item.id === 'gave_gift') && (
-                                                        <button 
-                                                            type="button" 
-                                                            className="text-[8px] font-black uppercase text-primary underline animate-in fade-in slide-in-from-bottom-1"
+                                                        <span 
+                                                            role="button"
+                                                            tabIndex={0}
+                                                            className="text-[8px] font-black uppercase text-primary underline animate-in fade-in slide-in-from-bottom-1 cursor-pointer"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 const path = item.id === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
                                                                 router.push(`${path}?soulId=${soul?.id}&soulName=${encodeURIComponent(soul?.firstName || '')}&actionId=${item.id}`);
                                                                 onOpenChange(false);
                                                             }}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    const path = item.id === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+                                                                    router.push(`${path}?soulId=${soul?.id}&soulName=${encodeURIComponent(soul?.firstName || '')}&actionId=${item.id}`);
+                                                                    onOpenChange(false);
+                                                                }
+                                                            }}
                                                         >
                                                             GO TO HUB
-                                                        </button>
+                                                        </span>
                                                     )}
                                                 </div>
                                             </Button>
