@@ -1,23 +1,26 @@
+
 "use client";
 
 import { useMemo, useState } from "react";
 import { format, isSameDay } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, PlayCircle, Loader2, UserCheck, Sparkles, MoreVertical, Trash2 } from "lucide-react";
-import type { Event, UserProfile } from "@/lib/types";
+import { CalendarDays, MapPin, Users, Share2, PlayCircle, Loader2, UserCheck, Sparkles, MoreVertical, Trash2, MessagesSquare } from "lucide-react";
+import type { Event, UserProfile, EventParticipant, Chat } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useUser, useFirestore, useDoc } from "@/firebase";
-import { doc, runTransaction, serverTimestamp, collection, deleteDoc, updateDoc } from "firebase/firestore";
+import { useUser, useFirestore, useDoc, useCollection } from "@/firebase";
+import { doc, runTransaction, serverTimestamp, collection, deleteDoc, updateDoc, writeBatch, query, getDocs } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { cn, safeToDate } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface EventCardProps {
   event: Event;
@@ -29,8 +32,10 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   const [isJoining, setIsJoining] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isChatLoading, setIsChatLoading] = useState(false);
 
   const isOwner = user?.uid === event.organizerId;
   const startDate = safeToDate(event.startDate);
@@ -73,6 +78,56 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
     }
   };
 
+  const handleStartGroupChat = async () => {
+    if (!user || !firestore || !isOwner) return;
+    setIsChatLoading(true);
+
+    const participantsQuery = query(collection(firestore, 'events', event.id, 'participants'));
+    const snap = await getDocs(participantsQuery);
+    const participants = snap.docs.map(d => ({ id: d.id, ...d.data() } as EventParticipant));
+
+    if (participants.length < 2) {
+        toast({ title: "Need Members", description: "You need at least one participant to start a group chat." });
+        setIsChatLoading(false);
+        return;
+    }
+
+    const participantIds = participants.map(p => p.userId);
+    const participantInfo: { [key: string]: any } = {};
+    participants.forEach(p => {
+        participantInfo[p.userId] = {
+            firstName: p.firstName,
+            lastName: p.lastName,
+            photoURL: p.photoURL || '',
+        };
+    });
+
+    const batch = writeBatch(firestore);
+    const chatDocRef = doc(firestore, 'chats', event.id);
+    
+    batch.set(chatDocRef, {
+        participantIds,
+        participantInfo,
+        eventId: event.id,
+        campaignTitle: event.title,
+        lastUpdatedAt: serverTimestamp(),
+        isGroupChat: true,
+        hasMessages: false,
+    }, { merge: true });
+
+    const eventRef = doc(firestore, 'events', event.id);
+    batch.update(eventRef, { hasGroupChat: true });
+
+    try {
+        await batch.commit();
+        router.push(`/dashboard/chats/${event.id}`);
+    } catch (e) {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `chats/${event.id}`, operation: 'create' }, user));
+    } finally {
+        setIsChatLoading(false);
+    }
+  };
+
   const handleDelete = async () => {
     if (!user || !firestore || !isOwner) return;
     setIsDeleting(true);
@@ -87,26 +142,46 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
   };
 
   return (
-    <Card className="rounded-[2rem] overflow-hidden border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all">
+    <Card className="rounded-[2rem] overflow-hidden border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col">
       <CardHeader className="p-6 pb-2">
         <div className="flex justify-between items-start">
           <Badge className="h-5 text-[8px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20">
             {event.category}
           </Badge>
-          {isOwner && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem className="text-destructive" onClick={handleDelete} disabled={isDeleting}>
-                  <Trash2 className="mr-2 h-4 w-4" /> Cancel Event
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          <div className="flex items-center gap-2">
+            {(isJoined || isOwner) && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                        variant={event.hasGroupChat ? "default" : "outline"}
+                        size="icon" 
+                        className={cn("h-8 w-8 rounded-full shadow-sm", event.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90")}
+                        onClick={(e) => { e.stopPropagation(); event.hasGroupChat ? router.push(`/dashboard/chats/${event.id}`) : handleStartGroupChat(); }}
+                        disabled={isChatLoading}
+                    >
+                        {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessagesSquare className="h-4 w-4" />}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent><p>{event.hasGroupChat ? "Open Group Chat" : isOwner ? "Start Group Chat" : "Chat coming soon"}</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+            {isOwner && (
+                <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                    <MoreVertical className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem className="text-destructive" onClick={handleDelete} disabled={isDeleting}>
+                    <Trash2 className="mr-2 h-4 w-4" /> Cancel Event
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+                </DropdownMenu>
+            )}
+          </div>
         </div>
         <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase mt-2">{event.title}</CardTitle>
         <CardDescription className="flex items-center gap-2 mt-1">
@@ -115,7 +190,7 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="p-6 space-y-4">
+      <CardContent className="p-6 space-y-4 flex-grow">
         <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed font-medium italic">
           &ldquo;{event.description}&rdquo;
         </p>

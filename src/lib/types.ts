@@ -325,6 +325,7 @@ export type Chat = {
   campaignTitle?: string;
   fellowshipId?: string;
   vendorId?: string;
+  eventId?: string;
   lastUpdatedAt: Timestamp;
   hasMessages?: boolean;
   isGroupChat?: boolean;
@@ -500,6 +501,7 @@ export type Event = {
   status: EventStatus;
   streamUrl?: string;
   createdAt: Timestamp;
+  hasGroupChat?: boolean;
 };
 
 export type EventParticipant = {

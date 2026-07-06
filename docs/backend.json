@@ -263,7 +263,8 @@
         "maxParticipants": { "type": "number" },
         "status": { "type": "string", "enum": ["active", "cancelled", "concluded"] },
         "streamUrl": { "type": "string", "format": "uri" },
-        "createdAt": { "type": "object" }
+        "createdAt": { "type": "object" },
+        "hasGroupChat": { "type": "boolean" }
       },
       "required": ["title", "description", "category", "startDate", "endDate", "organizerId", "status"]
     }

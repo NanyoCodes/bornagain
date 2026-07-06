@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -18,7 +19,7 @@ import {
   arrayUnion,
   arrayRemove
 } from 'firebase/firestore';
-import type { Chat, ChatMessage, Campaign, Fellowship, UserProfile } from '@/lib/types';
+import type { Chat, ChatMessage, Campaign, Fellowship, UserProfile, Event } from '@/lib/types';
 import { Loader2, Send, ArrowLeft, Reply, X, ChevronDown, MessagesSquare, MoreHorizontal, Edit, Trash2, Check } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn, safeToDate } from '@/lib/utils';
@@ -141,6 +142,12 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     }, [firestore, chat?.fellowshipId]);
     const { data: fellowship, loading: loadingFellowship } = useDoc<Fellowship>(fellowshipDocRef);
 
+    const eventDocRef = useMemo(() => {
+        if (!firestore || !chat?.eventId) return null;
+        return doc(firestore, 'events', chat.eventId);
+    }, [firestore, chat?.eventId]);
+    const { data: event, loading: loadingEvent } = useDoc<Event>(eventDocRef);
+
     const messagesQuery = useMemo(() => {
         if (!user?.uid || !firestore || !chatId) return null;
         return query(collection(firestore, 'chats', chatId, 'messages'), orderBy('createdAt', 'asc'));
@@ -150,7 +157,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         snapshotOptions: { serverTimestamps: 'estimate' }
     });
     
-    const loading = userLoading || loadingChat || loadingMessages || loadingCampaign || loadingFellowship;
+    const loading = userLoading || loadingChat || loadingMessages || loadingCampaign || loadingFellowship || loadingEvent;
 
     useEffect(() => {
         if (!user?.uid || !firestore || !chatId) return;
@@ -376,7 +383,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             })
             .catch((err: any) => {
                 const message = err.code === 'permission-denied' 
-                    ? 'Could not update message. Time window may have expired (5 mins max).' 
+                    ? 'Could not update message. Time window may have expired (24h max).' 
                     : 'An unexpected error occurred. Please try again.';
                 toast({ variant: 'destructive', title: 'Edit Failed', description: message });
             })
@@ -393,7 +400,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
             })
             .catch((err: any) => {
                 const message = err.code === 'permission-denied' 
-                    ? 'Could not delete message. Time window may have expired (5 mins max).' 
+                    ? 'Could not delete message. Time window may have expired (24h max).' 
                     : 'An unexpected error occurred.';
                 toast({ variant: 'destructive', title: 'Delete Failed', description: message });
             });
@@ -445,8 +452,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     }
     
     if (!user || !chat.participantIds.includes(user.uid)) {
-        const backUrl = chat.fellowshipId ? `/dashboard/fellowship/${chat.fellowshipId}` : chat.campaignId ? `/dashboard/campaigns/${chat.campaignId}` : "/dashboard/chats";
-        const backLabel = chat.fellowshipId || chat.campaignId ? "Return to Group" : "Back to Conversations";
+        const backUrl = chat.fellowshipId ? `/dashboard/fellowship/${chat.fellowshipId}` : chat.campaignId ? `/dashboard/campaigns/${chat.campaignId}` : chat.eventId ? "/dashboard/events" : "/dashboard/chats";
+        const backLabel = chat.fellowshipId || chat.campaignId || chat.eventId ? "Return to Group" : "Back to Conversations";
         return (
             <div className="flex h-full w-full flex-col items-center justify-center bg-background">
                 <p className="text-muted-foreground">You do not have permission to view this chat.</p>
@@ -480,6 +487,10 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                     </Link>
                                 ) : chat.fellowshipId && fellowship ? (
                                     <Link href={`/dashboard/fellowship/${chat.fellowshipId}`} className="hover:underline">
+                                        {chat.campaignTitle}
+                                    </Link>
+                                ) : chat.eventId && event ? (
+                                    <Link href={`/dashboard/events`} className="hover:underline">
                                         {chat.campaignTitle}
                                     </Link>
                                 ) : (
@@ -563,8 +574,8 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                             const senderInfo = chat.participantInfo[msg.senderId];
                                             const isOwnMessage = msg.senderId === user?.uid;
                                             const createdAtDate = safeToDate(msg.createdAt);
-                                            // 5 minute edit window
-                                            const canEdit = isOwnMessage && createdAtDate && differenceInMinutes(new Date(), createdAtDate) < 5;
+                                            // 24 hour edit window
+                                            const canEdit = isOwnMessage && createdAtDate && differenceInMinutes(new Date(), createdAtDate) < 1440;
                                             const isEditing = editingMessageId === msg.id;
 
                                             return (
