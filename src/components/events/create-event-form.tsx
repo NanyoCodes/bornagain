@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
-import { Loader2, Video, CalendarIcon, MapPin } from "lucide-react";
+import { Loader2, Video, CalendarIcon, MapPin, User } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser, useFirestore } from "@/firebase";
 import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore";
@@ -33,6 +33,7 @@ const formSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters.").max(100),
   description: z.string().min(10, "Description must be at least 10 characters.").max(5000),
   category: z.string({ required_error: "Please select a category." }),
+  organizerName: z.string().min(2, "Host name is required.").max(100),
   location: z.string().min(3, "A location is required.").max(200),
   locationType: z.enum(['Physical', 'Virtual', 'Both'], { required_error: "Select location type." }),
   startDate: z.date({ required_error: "Start date is required." }),
@@ -57,6 +58,7 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
     defaultValues: {
       title: "",
       description: "",
+      organizerName: `${userProfile.firstName} ${userProfile.lastName}`,
       location: "",
       locationType: 'Physical',
       startTime: "10:00",
@@ -76,7 +78,6 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
         const eventData = {
             ...values,
             organizerId: user.uid,
-            organizerName: `${userProfile.firstName} ${userProfile.lastName}`,
             organizerPhotoURL: userProfile.photoURL || null,
             participantCount: 1,
             status: 'active' as const,
@@ -114,8 +115,22 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField control={form.control} name="title" render={({ field }) => (
             <FormItem>
-              <FormLabel>Event Title</FormLabel>
-              <FormControl><Input placeholder="e.g., Night of Wonders" {...field} /></FormControl>
+              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Event Title</FormLabel>
+              <FormControl><Input placeholder="e.g., Night of Wonders" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl>
+              <FormMessage />
+            </FormItem>
+        )} />
+
+        <FormField control={form.control} name="organizerName" render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Event Host / Organizer</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                  <Input placeholder="e.g., Pastor John Smith" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold pl-10" />
+                </div>
+              </FormControl>
+              <FormDescription className="text-[10px]">Defaults to your name, but can be any Kingdom leader.</FormDescription>
               <FormMessage />
             </FormItem>
         )} />
@@ -123,11 +138,15 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField control={form.control} name="category" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl><SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      {eventCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded-2xl border-none shadow-2xl">
+                      {eventCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -135,13 +154,17 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
             )} />
             <FormField control={form.control} name="locationType" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Meeting Format</FormLabel>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Meeting Format</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl><SelectTrigger><SelectValue placeholder="Format" /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      <SelectItem value="Physical">Physical Only</SelectItem>
-                      <SelectItem value="Virtual">Virtual Only</SelectItem>
-                      <SelectItem value="Both">Hybrid (Physical & Virtual)</SelectItem>
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                        <SelectValue placeholder="Format" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded-2xl border-none shadow-2xl">
+                      <SelectItem value="Physical" className="rounded-xl">Physical Only</SelectItem>
+                      <SelectItem value="Virtual" className="rounded-xl">Virtual Only</SelectItem>
+                      <SelectItem value="Both" className="rounded-xl">Hybrid</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -151,8 +174,13 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
 
         <FormField control={form.control} name="location" render={({ field }) => (
             <FormItem>
-              <FormLabel>Address / Venue</FormLabel>
-              <FormControl><Input placeholder="e.g., Kingdom Hall, Center City" {...field} /></FormControl>
+              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Address / Venue</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                  <Input placeholder="e.g., Kingdom Hall, Center City" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold pl-10" />
+                </div>
+              </FormControl>
               <FormMessage />
             </FormItem>
         )} />
@@ -160,18 +188,18 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField control={form.control} name="startDate" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Start Date</FormLabel>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Start Date</FormLabel>
                   <FormControl>
-                    <Input type="date" value={field.value ? format(field.value, "yyyy-MM-dd") : ""} onChange={e => field.onChange(e.target.value ? new Date(e.target.value) : undefined)} />
+                    <Input type="date" value={field.value ? format(field.value, "yyyy-MM-dd") : ""} onChange={e => field.onChange(e.target.value ? new Date(e.target.value) : undefined)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
             )} />
             <FormField control={form.control} name="endDate" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>End Date</FormLabel>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">End Date</FormLabel>
                   <FormControl>
-                    <Input type="date" value={field.value ? format(field.value, "yyyy-MM-dd") : ""} onChange={e => field.onChange(e.target.value ? new Date(e.target.value) : undefined)} />
+                    <Input type="date" value={field.value ? format(field.value, "yyyy-MM-dd") : ""} onChange={e => field.onChange(e.target.value ? new Date(e.target.value) : undefined)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -181,15 +209,15 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField control={form.control} name="startTime" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Start Time</FormLabel>
-                  <FormControl><Input type="time" {...field} /></FormControl>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Start Time</FormLabel>
+                  <FormControl><Input type="time" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl>
                   <FormMessage />
                 </FormItem>
             )} />
             <FormField control={form.control} name="endTime" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>End Time</FormLabel>
-                  <FormControl><Input type="time" {...field} /></FormControl>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">End Time</FormLabel>
+                  <FormControl><Input type="time" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl>
                   <FormMessage />
                 </FormItem>
             )} />
@@ -197,23 +225,28 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
 
         <FormField control={form.control} name="streamUrl" render={({ field }) => (
             <FormItem>
-              <FormLabel>Meeting Link (Optional)</FormLabel>
-              <FormControl><Input placeholder="https://meet.google.com/..." {...field} /></FormControl>
+              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Meeting Link (Optional)</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Video className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                  <Input placeholder="https://meet.google.com/..." {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold pl-10" />
+                </div>
+              </FormControl>
               <FormMessage />
             </FormItem>
         )} />
 
         <FormField control={form.control} name="description" render={({ field }) => (
             <FormItem>
-              <FormLabel>About this Event</FormLabel>
-              <FormControl><Textarea placeholder="Share the vision and schedule..." className="min-h-[120px]" {...field} /></FormControl>
+              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About this Event</FormLabel>
+              <FormControl><Textarea placeholder="Share the vision and schedule..." className="min-h-[120px] rounded-[2rem] p-6 bg-muted/10 border-2 border-dashed text-base leading-relaxed" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
         )} />
 
-        <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isSubmitting}>
+        <Button type="submit" className="w-full h-14 text-xl font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            LAUNCH EVENT
+            LAUNCH HUB
         </Button>
       </form>
     </Form>

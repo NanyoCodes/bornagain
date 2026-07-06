@@ -3,14 +3,14 @@
 
 import { useMemo, useState } from "react";
 import { format, isSameDay } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, PlayCircle, Loader2, UserCheck, Sparkles, MoreVertical, Trash2, MessagesSquare } from "lucide-react";
-import type { Event, UserProfile, EventParticipant, Chat } from "@/lib/types";
+import { CalendarDays, MapPin, Users, Share2, PlayCircle, Loader2, UserCheck, Sparkles, MoreVertical, Trash2, MessagesSquare, Edit } from "lucide-react";
+import type { Event, UserProfile, EventParticipant } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useUser, useFirestore, useDoc, useCollection } from "@/firebase";
-import { doc, runTransaction, serverTimestamp, collection, deleteDoc, updateDoc, writeBatch, query, getDocs } from "firebase/firestore";
+import { useUser, useFirestore, useDoc } from "@/firebase";
+import { doc, runTransaction, serverTimestamp, collection, updateDoc, writeBatch, query, getDocs } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { cn, safeToDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -19,22 +19,27 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { FirestorePermissionError } from "@/firebase/errors";
+import { errorEmitter } from "@/firebase/error-emitter";
 
 interface EventCardProps {
   event: Event;
   isJoined: boolean;
   userProfile: UserProfile | null;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
-export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
+export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: EventCardProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
   const [isJoining, setIsJoining] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isChatLoading, setIsChatLoading] = useState(false);
 
   const isOwner = user?.uid === event.organizerId;
@@ -137,21 +142,26 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
     }
   };
 
-  const handleDelete = async () => {
-    if (!user || !firestore || !isOwner) return;
-    setIsDeleting(true);
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/dashboard/events`;
+    const shareData = {
+        title: event.title,
+        text: `Join the '${event.title}' gathering on Testify!`,
+        url: shareUrl,
+    };
+
     try {
-      await updateDoc(doc(firestore, 'events', event.id), { status: 'cancelled' });
-      toast({ title: 'Event Cancelled' });
-    } catch (e) {
-      toast({ variant: 'destructive', title: 'Error' });
-    } finally {
-      setIsDeleting(false);
-    }
+      if (navigator && navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${event.title}: ${shareUrl}`);
+        toast({ title: 'Link Copied' });
+      }
+    } catch (e) {}
   };
 
   return (
-    <Card className="rounded-[2rem] overflow-hidden border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col">
+    <Card className="rounded-[2rem] overflow-hidden border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-8 border-b-primary/5">
       <CardHeader className="p-6 pb-2">
         <div className="flex justify-between items-start">
           <Badge className="h-5 text-[8px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20">
@@ -180,22 +190,28 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                    <MoreVertical className="h-4 w-4" />
+                        <MoreVertical className="h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem className="text-destructive" onClick={handleDelete} disabled={isDeleting}>
-                    <Trash2 className="mr-2 h-4 w-4" /> Cancel Event
+                <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl">
+                    <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Manage Gathering</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={onEdit} className="rounded-lg">
+                        <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Event
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onClick={onDelete}>
+                        <Trash2 className="mr-2 h-4 w-4" /> Cancel Event
                     </DropdownMenuItem>
                 </DropdownMenuContent>
                 </DropdownMenu>
             )}
           </div>
         </div>
-        <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase mt-2">{event.title}</CardTitle>
+        <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase mt-2 leading-tight truncate">{event.title}</CardTitle>
         <CardDescription className="flex items-center gap-2 mt-1">
           <LiveAuthor userId={event.organizerId} fallbackInitials={event.organizerName.charAt(0)} />
-          <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Host: {event.organizerName}</span>
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">Host: {event.organizerName}</span>
         </CardDescription>
       </CardHeader>
       
@@ -205,13 +221,19 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
         </p>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex items-center gap-2 text-muted-foreground bg-muted/30 p-2.5 rounded-xl border border-dashed">
             <CalendarDays className="h-4 w-4 text-primary shrink-0" />
-            <span className="font-bold">{dateStr} • {event.startTime}</span>
+            <div className="min-w-0">
+                <p className="font-bold leading-tight">{dateStr}</p>
+                <p className="text-[9px] font-black uppercase tracking-tighter opacity-60">{event.startTime} - {event.endTime}</p>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex items-center gap-2 text-muted-foreground bg-muted/30 p-2.5 rounded-xl border border-dashed">
             <MapPin className="h-4 w-4 text-primary shrink-0" />
-            <span className="font-bold truncate">{event.location}</span>
+            <div className="min-w-0">
+                <p className="font-bold truncate leading-tight uppercase tracking-tighter">{event.location}</p>
+                <p className="text-[9px] font-black uppercase tracking-tighter opacity-60">{event.locationType}</p>
+            </div>
           </div>
         </div>
       </CardContent>
@@ -219,10 +241,14 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
       <CardFooter className="p-4 sm:p-6 bg-muted/20 border-t flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
           <Users className="h-4 w-4 text-primary" />
-          {event.participantCount || 0} Brethren
+          {event.participantCount || 0} mobilized
         </div>
         
         <div className="flex gap-2">
+          <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl shadow-md bg-background" onClick={handleShare}>
+            <Share2 className="h-4 w-4 text-primary" />
+          </Button>
+          
           {event.streamUrl && (
             <Button variant="outline" size="sm" className="rounded-xl h-9" asChild>
               <a href={event.streamUrl} target="_blank" rel="noopener noreferrer">
@@ -236,7 +262,7 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
               <UserCheck className="h-4 w-4" /> JOINED
             </Badge>
           ) : (
-            <Button onClick={handleJoin} disabled={isJoining || event.status !== 'active'} className="h-9 px-6 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+            <Button onClick={handleJoin} disabled={isJoining || event.status !== 'active'} className="h-9 px-6 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-95">
               {isJoining ? <Loader2 className="h-4 w-4 animate-spin" /> : "JOIN HUB"}
             </Button>
           )}
@@ -248,13 +274,13 @@ export function EventCard({ event, isJoined, userProfile }: EventCardProps) {
 
 function LiveAuthor({ userId, fallbackInitials }: { userId: string, fallbackInitials: string }) {
   const firestore = useFirestore();
-  const userRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
-  const { data: profile } = useDoc<UserProfile>(userRef);
+  const userDocRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+  const { data: profile } = useDoc<UserProfile>(userDocRef);
   
   return (
     <Avatar className="h-5 w-5 border shadow-sm">
-      <AvatarImage src={profile?.photoURL} />
-      <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
+      <AvatarImage src={profile?.photoURL} className="object-cover" />
+      <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary">{fallbackInitials || 'U'}</AvatarFallback>
     </Avatar>
   );
 }
