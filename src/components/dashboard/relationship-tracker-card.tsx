@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc, updateDoc, where, getDocs } from 'firebase/firestore';
@@ -116,7 +116,7 @@ function SoulSelectionDialog({
                         <Input 
                             placeholder="Search by name..." 
                             value={search} 
-                            onChange={e => setSearchTerm(e.target.value)}
+                            onChange={e => setSearch(e.target.value)}
                             className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
@@ -329,15 +329,15 @@ export function RelationshipTrackerCard() {
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
   
-  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
-  const [commTargetSoul, setCommTargetSoul] = React.useState<Soul | null>(null);
+  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
+  const [commTargetSoul, setCommTargetSoul] = useState<Soul | null>(null);
 
-  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = React.useState(false);
-  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = React.useState(false);
-  const [sharingSoul, setSharingSoul] = React.useState<Soul | null>(null);
+  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
+  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
+  const [sharingSoul, setSharingSoul] = useState<Soul | null>(null);
 
-  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = React.useState(false);
-  const [helpNeedTargetSoul, setHelpNeedTargetSoul] = React.useState<Soul | null>(null);
+  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
+  const [helpNeedTargetSoul, setHelpNeedTargetSoul] = useState<Soul | null>(null);
 
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
