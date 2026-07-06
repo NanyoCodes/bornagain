@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '', priority: 1, changeFrequency: 'daily' },
     { path: '/testimonies', priority: 1, changeFrequency: 'daily' },
     { path: '/campaigns', priority: 0.9, changeFrequency: 'daily' },
-    { path: '/progress', priority: 0.8, changeFrequency: 'weekly' },
+    { path: '/growth', priority: 0.8, changeFrequency: 'weekly' },
     { path: '/fellowships', priority: 0.8, changeFrequency: 'weekly' },
     { path: '/about', priority: 0.7, changeFrequency: 'monthly' },
     { path: '/contact', priority: 0.7, changeFrequency: 'monthly' },

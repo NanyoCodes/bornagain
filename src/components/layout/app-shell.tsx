@@ -103,7 +103,7 @@ const inspirationalMessages = [
 ];
 
 const navItems = [
-  { href: "/progress", label: "GROWTH", icon: TrendingUp, color: "text-chart-1" },
+  { href: "/growth", label: "GROWTH", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
@@ -1006,7 +1006,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     '/guide', 
     '/terms-of-service', 
     '/privacy-policy',
-    '/progress',
+    '/growth',
     '/fellowships',
     '/events'
   ];

@@ -321,7 +321,7 @@ export default function LandingPage() {
               <ul className="space-y-3">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Glory Feed</Link></li>
                 <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Mission Hub</Link></li>
-                <li><Link href="/progress" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Harvest Growth</Link></li>
+                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Harvest Growth</Link></li>
                 <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Directory</Link></li>
               </ul>
             </div>

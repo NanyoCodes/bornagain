@@ -9,7 +9,7 @@ Allow: /resources
 Allow: /guide
 Allow: /testimonies
 Allow: /campaigns
-Allow: /progress
+Allow: /growth
 Allow: /fellowships
 Disallow: /dashboard/
 Disallow: /chats/
