@@ -71,6 +71,7 @@ function SoulSelectionDialog({
   souls, 
   onSelect,
   onShare,
+  actionId,
   actionLabel,
   isLoading
 }: { 
@@ -79,6 +80,7 @@ function SoulSelectionDialog({
   souls: Soul[] | null; 
   onSelect: (soul: Soul) => void;
   onShare: (soul: Soul) => void;
+  actionId: string | null;
   actionLabel: string;
   isLoading: boolean;
 }) {
@@ -89,6 +91,8 @@ function SoulSelectionDialog({
         const term = search.toLowerCase();
         return souls.filter(s => `${s.firstName} ${s.lastName}`.toLowerCase().includes(term));
     }, [souls, search]);
+
+    const isShareAction = actionId === 'introduced_friend';
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -110,29 +114,26 @@ function SoulSelectionDialog({
                     <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
                         <div className="p-2 space-y-1.5">
                             {filteredSouls.length > 0 ? (
-                                filteredSouls.map(soul => {
-                                    const isShareAction = actionLabel === 'Introduce to a friend';
-                                    return (
-                                        <Button 
-                                            key={soul.id} 
-                                            variant="ghost" 
-                                            className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group"
-                                            onClick={() => isShareAction ? onShare(soul) : onSelect(soul)}
-                                            disabled={isLoading}
-                                        >
-                                            <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
-                                                <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
-                                            </Avatar>
-                                            <div className="text-left min-w-0 flex-1">
-                                                <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
-                                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
-                                            </div>
-                                            <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                {isShareAction ? <Share2 className="h-4 w-4" /> : <PlusCircle className="h-4 w-4" />}
-                                            </div>
-                                        </Button>
-                                    );
-                                })
+                                filteredSouls.map(soul => (
+                                    <Button 
+                                        key={soul.id} 
+                                        variant="ghost" 
+                                        className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group"
+                                        onClick={() => isShareAction ? onShare(soul) : onSelect(soul)}
+                                        disabled={isLoading}
+                                    >
+                                        <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
+                                            <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="text-left min-w-0 flex-1">
+                                            <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
+                                        </div>
+                                        <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            {isShareAction ? <Share2 className="h-4 w-4" /> : <PlusCircle className="h-4 w-4" />}
+                                        </div>
+                                    </Button>
+                                ))
                             ) : (
                                 <div className="text-center py-16 px-8 space-y-3">
                                     <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
@@ -303,6 +304,19 @@ function HelpNeedNoteDialog({
   );
 }
 
+const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+};
+
 export function RelationshipTrackerCard() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
@@ -394,7 +408,6 @@ export function RelationshipTrackerCard() {
 
       const isProvisionAction = actionId === 'shared_meal' || actionId === 'gave_gift';
 
-      // 1. Update user's daily discipline (habit tracking) - SKIP for pending provisions
       if (!isProvisionAction) {
           const wasCompleted = completedToday.includes(actionId);
           const newCompleted = wasCompleted ? completedToday : [...completedToday, actionId];
@@ -414,7 +427,6 @@ export function RelationshipTrackerCard() {
           setCompletedToday(newCompleted);
       }
 
-      // 2. Update soul's history
       const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
       const logEntry = {
           date: new Date(), 
@@ -555,14 +567,20 @@ export function RelationshipTrackerCard() {
   const handleShareSoul = (soul: Soul) => {
       setSharingSoul(soul);
       setIsSoulDialogOpen(false);
-      setIsShareTargetDialogOpen(true);
+      requestAnimationFrame(() => {
+          setIsShareTargetDialogOpen(true);
+      });
   };
 
   const handleShareToWhatsApp = () => {
       if (!sharingSoul) return;
       const wonAt = safeToDate(sharingSoul.wonAt);
       const details = `Here is a soul I'm following up with on Testify:\nName: ${sharingSoul.firstName} ${sharingSoul.lastName}\nStatus: ${sharingSoul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nLet's keep them in our prayers.`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
+      
+      performLogging(sharingSoul, 'introduced_friend').then(() => {
+          window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
+      });
+
       setIsShareTargetDialogOpen(false);
       setSharingSoul(null);
   };
@@ -609,14 +627,12 @@ export function RelationshipTrackerCard() {
           
           toast({ title: 'Shared with Partner!', description: `Details sent to ${partner.firstName}.` });
           
-          // Log the action in tracker progress
           performLogging(sharingSoul, 'introduced_friend');
 
           setIsPartnerSelectionDialogOpen(false);
           setIsShareTargetDialogOpen(false);
           setSharingSoul(null);
 
-          // Redirect to the chat
           router.push(`/dashboard/chats/${chatId}`);
       } catch (e) {
           toast({ variant: 'destructive', title: 'Share Failed' });
@@ -795,6 +811,7 @@ export function RelationshipTrackerCard() {
           souls={souls} 
           onSelect={handleSoulSelected} 
           onShare={handleShareSoul}
+          actionId={selectedActionId}
           actionLabel={activeActionLabel}
           isLoading={togglingId !== null}
       />
@@ -813,7 +830,10 @@ export function RelationshipTrackerCard() {
           soul={sharingSoul} 
           onChoice={(choice) => {
               if (choice === 'whatsapp') handleShareToWhatsApp();
-              else setIsPartnerSelectionDialogOpen(true);
+              else {
+                  setIsShareTargetDialogOpen(false);
+                  requestAnimationFrame(() => setIsPartnerSelectionDialogOpen(true));
+              }
           }} 
       />
 
