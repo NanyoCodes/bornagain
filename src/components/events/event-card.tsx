@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState } from "react";
@@ -241,7 +240,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
       <CardFooter className="p-4 sm:p-6 bg-muted/20 border-t flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
           <Users className="h-4 w-4 text-primary" />
-          {event.participantCount || 0} mobilized
+          {event.participantCount || 0} {event.participantCount === 1 ? 'MEMBER' : 'MEMBERS'}
         </div>
         
         <div className="flex gap-2">
