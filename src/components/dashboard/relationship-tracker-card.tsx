@@ -30,7 +30,8 @@ import {
   Share2,
   Share,
   X,
-  HeartHandshake
+  HeartHandshake,
+  Lightbulb
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -68,6 +69,7 @@ const iconMap: Record<string, any> = {
     'text_message': MessageSquare,
     'helped_with_need': Heart,
     'invited_to_event': Calendar,
+    'innovate': Lightbulb,
 };
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -495,6 +497,12 @@ export function RelationshipTrackerCard() {
   const handleSoulSelected = async (soul: Soul) => {
     if (!user || !firestore || !selectedActionId) return;
     
+    if (selectedActionId === 'innovate') {
+        setIsSoulDialogOpen(false);
+        router.push(`/dashboard/innovations?soulId=${soul.id}`);
+        return;
+    }
+
     const isCommAction = selectedActionId === 'phone_call' || selectedActionId === 'text_message' || selectedActionId === 'prayed_together';
     if (isCommAction && !soul.phone) {
         toast({
