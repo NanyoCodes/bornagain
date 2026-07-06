@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -25,7 +26,8 @@ import {
     Phone,
     Download,
     MessagesSquare,
-    X
+    X,
+    XCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
@@ -44,6 +46,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 /**
  * Ensures vendor details in the order tracker are always current.
@@ -155,6 +167,8 @@ export default function OrdersListClient() {
   const [activeCategory, setActiveCategory] = React.useState<'meal' | 'gift'>('meal');
   const [activeType, setActiveType] = React.useState<'sent' | 'received'>('sent');
   const [isChatLoading, setIsChatLoading] = React.useState<string | null>(null);
+  const [orderToCancel, setOrderToCancel] = React.useState<MealGift | null>(null);
+  const [isCancelling, setIsCancelling] = React.useState(false);
 
   // Guarded Sent Orders Query
   const sentOrdersQuery = React.useMemo(() => {
@@ -225,6 +239,38 @@ export default function OrdersListClient() {
         toast({ title: 'Status Established', description: `Order is now marked as ${newStatus}.` });
     } catch (e) {
         toast({ variant: 'destructive', title: 'Update Failed' });
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!user || !firestore || !orderToCancel) return;
+    
+    setIsCancelling(true);
+    const orderRef = doc(firestore, 'mealGifts', orderToCancel.id);
+    const batch = writeBatch(firestore);
+
+    batch.update(orderRef, { status: 'cancelled' });
+
+    // Notify vendor about cancellation
+    const vendorNotificationRef = doc(collection(firestore, `users/${orderToCancel.vendorOwnerId}/notifications`));
+    batch.set(vendorNotificationRef, {
+        userId: orderToCancel.vendorOwnerId,
+        type: 'order_update',
+        title: 'Order Cancelled',
+        message: `The order for "${orderToCancel.mealName}" by ${orderToCancel.senderName} was cancelled by the sender.`,
+        link: `/dashboard/marketplace/orders`,
+        isRead: false,
+        createdAt: serverTimestamp(),
+    });
+
+    try {
+        await batch.commit();
+        toast({ title: 'Order Cancelled', description: 'Your offering has been cancelled.' });
+        setOrderToCancel(null);
+    } catch (e) {
+        toast({ variant: 'destructive', title: 'Cancellation Failed' });
+    } finally {
+        setIsCancelling(false);
     }
   };
 
@@ -347,6 +393,7 @@ export default function OrdersListClient() {
         case 'preparing': return <Utensils className="h-5 w-5 text-blue-500" />;
         case 'delivering': return <Truck className="h-5 w-5 text-primary" />;
         case 'delivered': return <CheckCircle2 className="h-5 w-5 text-green-500" />;
+        case 'cancelled': return <XCircle className="h-5 w-5 text-destructive" />;
         default: return <Package className="h-5 w-5" />;
     }
   };
@@ -356,6 +403,7 @@ export default function OrdersListClient() {
           case 'preparing': return 'PREPARING';
           case 'delivering': return 'SHIPPING';
           case 'delivered': return 'DONE';
+          case 'cancelled': return 'CANCELLED';
           default: return 'ORDERED';
       }
   };
@@ -395,7 +443,9 @@ export default function OrdersListClient() {
                                 <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 mr-1">Status:</span>
                                 <Badge variant="outline" className={cn(
                                     "h-5 px-2 uppercase font-black text-[9px] tracking-widest gap-1.5 border-2 shadow-sm",
-                                    order.status === 'delivered' ? "bg-green-500/10 text-green-600 border-green-500/20" : "bg-primary/5 text-primary border-primary/20"
+                                    order.status === 'delivered' ? "bg-green-500/10 text-green-600 border-green-500/20" : 
+                                    order.status === 'cancelled' ? "bg-destructive/5 text-destructive border-destructive/20" :
+                                    "bg-primary/5 text-primary border-primary/20"
                                 )}>
                                     {getStatusLabel(order.status)}
                                 </Badge>
@@ -416,16 +466,28 @@ export default function OrdersListClient() {
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">Incl. ₦{order.deliveryFee.toLocaleString()} Delivery</p>
                             ) : null}
                         </div>
-                        <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 transition-transform active:scale-95"
-                            onClick={() => handleInitiateChat(order, type)}
-                            disabled={isChatLoading === order.id}
-                        >
-                            {isChatLoading === order.id ? <Loader2 className="mr-1.5 h-3 w-3 animate-spin" /> : <MessagesSquare className="mr-1.5 h-3 w-3" />}
-                            CHAT
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 transition-transform active:scale-95"
+                                onClick={() => handleInitiateChat(order, type)}
+                                disabled={isChatLoading === order.id}
+                            >
+                                {isChatLoading === order.id ? <Loader2 className="mr-1.5 h-3 w-3 animate-spin" /> : <MessagesSquare className="mr-1.5 h-3 w-3" />}
+                                CHAT
+                            </Button>
+                            {type === 'sent' && order.status === 'ordered' && (
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest text-destructive hover:bg-destructive/10"
+                                    onClick={() => setOrderToCancel(order)}
+                                >
+                                    CANCEL
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -444,7 +506,7 @@ export default function OrdersListClient() {
                     )}
                 </div>
             </CardContent>
-            {type === 'received' && (
+            {type === 'received' && order.status !== 'cancelled' && (
                 <CardFooter className="p-2 bg-muted/20 border-t flex flex-wrap gap-1">
                     {['preparing', 'delivering', 'delivered'].map((status) => (
                         <Button 
@@ -569,6 +631,28 @@ export default function OrdersListClient() {
               "Whatever you did for one of the least of these brothers and sisters of mine, you did for me." — Matthew 25:40
             </p>
         </footer>
+
+        <AlertDialog open={!!orderToCancel} onOpenChange={(open) => !open && setOrderToCancel(null)}>
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">
+                <AlertDialogHeader>
+                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight">Cancel Offering?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+                        Are you sure you want to cancel your offering of "{orderToCancel?.mealName}" for {orderToCancel?.recipientName}?
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="mt-6 gap-3">
+                    <AlertDialogCancel disabled={isCancelling} className="rounded-xl h-12 font-bold">Close</AlertDialogCancel>
+                    <AlertDialogAction 
+                        onClick={handleCancelOrder} 
+                        disabled={isCancelling}
+                        className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold"
+                    >
+                        {isCancelling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Confirm Cancellation
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     </div>
   );
 }

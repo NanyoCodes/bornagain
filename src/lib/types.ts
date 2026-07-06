@@ -458,7 +458,7 @@ export type Meal = {
   category?: string;
 };
 
-export type MealGiftStatus = 'ordered' | 'preparing' | 'delivering' | 'delivered';
+export type MealGiftStatus = 'ordered' | 'preparing' | 'delivering' | 'delivered' | 'cancelled';
 
 export type MealGift = {
   id: string;
