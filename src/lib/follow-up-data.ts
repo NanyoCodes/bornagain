@@ -11,7 +11,6 @@ export const actionItems = [
   { id: 'text_message', label: 'Message' },
   { id: 'helped_with_need', label: 'Help with a need' },
   { id: 'invited_to_event', label: 'Invite to an event' },
-  { id: 'innovate', label: 'Kingdom Innovation' },
 ];
 
 export const statusOptions: FollowUpStatus[] = ['New', 'Contacted', 'Established'];

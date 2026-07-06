@@ -30,8 +30,7 @@ import {
   Share2,
   Share,
   X,
-  HeartHandshake,
-  Lightbulb
+  HeartHandshake
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -69,7 +68,6 @@ const iconMap: Record<string, any> = {
     'text_message': MessageSquare,
     'helped_with_need': Heart,
     'invited_to_event': Calendar,
-    'innovate': Lightbulb,
 };
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -118,7 +116,7 @@ function SoulSelectionDialog({
                         <Input 
                             placeholder="Search by name..." 
                             value={search} 
-                            onChange={e => setSearch(e.target.value)}
+                            onChange={e => setSearchTerm(e.target.value)}
                             className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
@@ -331,15 +329,15 @@ export function RelationshipTrackerCard() {
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
   
-  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
-  const [commTargetSoul, setCommTargetSoul] = useState<Soul | null>(null);
+  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
+  const [commTargetSoul, setCommTargetSoul] = React.useState<Soul | null>(null);
 
-  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
-  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
-  const [sharingSoul, setSharingSoul] = useState<Soul | null>(null);
+  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = React.useState(false);
+  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = React.useState(false);
+  const [sharingSoul, setSharingSoul] = React.useState<Soul | null>(null);
 
-  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
-  const [helpNeedTargetSoul, setHelpNeedTargetSoul] = useState<Soul | null>(null);
+  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = React.useState(false);
+  const [helpNeedTargetSoul, setHelpNeedTargetSoul] = React.useState<Soul | null>(null);
 
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
@@ -497,12 +495,6 @@ export function RelationshipTrackerCard() {
   const handleSoulSelected = async (soul: Soul) => {
     if (!user || !firestore || !selectedActionId) return;
     
-    if (selectedActionId === 'innovate') {
-        setIsSoulDialogOpen(false);
-        router.push(`/dashboard/innovations?soulId=${soul.id}`);
-        return;
-    }
-
     const isCommAction = selectedActionId === 'phone_call' || selectedActionId === 'text_message' || selectedActionId === 'prayed_together';
     if (isCommAction && !soul.phone) {
         toast({
@@ -764,7 +756,7 @@ export function RelationshipTrackerCard() {
                                 <div className="space-y-0.5 min-w-0 w-full text-center px-1">
                                     <span className={cn(
                                         "text-[9px] font-black uppercase tracking-tight block truncate",
-                                        isCompleted ? "text-primary" : isPending ? "text-amber-700" : "text-foreground"
+                                        isCompleted ? "text-primary" : "text-foreground"
                                     )}>
                                         {action.label}
                                     </span>
