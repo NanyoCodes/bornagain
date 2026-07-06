@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -365,7 +364,7 @@ function PendingProvisionReminder() {
 }
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCart }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, onOpenCart: () => void }) {
-  const { user, loading: authLoading } = useUser();
+  const { user } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
@@ -501,101 +500,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
       </nav>
         
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
-        <Sheet>
-            <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full lg:hidden">
-                    <Menu className="h-5 w-5 md:h-6 md:w-6" />
-                    <span className="sr-only">Open Menu</span>
-                </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Zap className="h-4 w-4 text-primary" />
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Navigation</span>
-                    </div>
-                    <SheetHeader className="text-left flex-shrink-0">
-                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Main Menu</SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1">Access all Kingdom sectors.</SheetDescription>
-                    </SheetHeader>
-                </div>
-                <ScrollArea className="flex-grow">
-                    <div className="p-6 space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
-                        {navItems.map((item) => {
-                            const isActive = pathname.startsWith(item.href);
-                            return (
-                                <Link 
-                                    key={item.href} 
-                                    href={item.href}
-                                    className={cn(
-                                        "flex items-center gap-4 p-4 rounded-2xl transition-all group",
-                                        isActive ? "bg-primary/10 text-primary border-2 border-primary/20" : "hover:bg-muted"
-                                    )}
-                                >
-                                    <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", !isActive && item.color)} />
-                                    <span className="font-black uppercase tracking-widest text-sm">{item.label}</span>
-                                </Link>
-                            )
-                        })}
-
-                        <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Recovery Hub</p>
-                        <Link href="/dashboard/victory-hub" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                            <ShieldCheck className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Victory Hub</span>
-                        </Link>
-
-                        <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Provision Hub</p>
-                        <Link href="/dashboard/events" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                            <CalendarDays className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Events Hub</span>
-                        </Link>
-                        <Link href="/dashboard/marketplace" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                            <Store className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Meals Center</span>
-                        </Link>
-                        <Link href="/dashboard/marketplace/gifts" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                            <Gift className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Kindness Center</span>
-                        </Link>
-                        <Link href="/dashboard/marketplace/orders" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                            <Package className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Order Tracker</span>
-                        </Link>
-
-                        <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Study & Tools</p>
-                        <Link href="/dashboard/bible" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                            <BookOpen className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Bible Reader</span>
-                        </Link>
-                        <Link href="/dashboard/notes" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                            <Edit className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Journal</span>
-                        </Link>
-                        
-                        <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Others</p>
-                        <Link href="/guide" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                            <BookMarked className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-                            <span className="font-black uppercase tracking-widest text-sm text-foreground">App Guide</span>
-                        </Link>
-                        <Link href="/resources" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                            <BookOpen className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
-                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Resources</span>
-                        </Link>
-                    </div>
-                </ScrollArea>
-                <div className="p-8 border-t bg-muted/5 flex-shrink-0">
-                    <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">
-                        Testify Global • Built for the Harvest
-                    </p>
-                </div>
-            </SheetContent>
-        </Sheet>
-
         {isSearchVisible && (
           <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-5 w-5 md:h-6 md:w-6" />
@@ -652,8 +556,133 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                     </Button>
                 </motion.div>
             </Link>
+
+            {/* Combined Profile & Navigation Hub for Mobile/Tablet */}
+            <div className="lg:hidden">
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0">
+                            <Avatar className="h-9 w-9 md:h-11 md:w-11 border shadow-sm">
+                                <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
+                                <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                            </Avatar>
+                            {isProfileIncomplete && (
+                                <span className="absolute top-0 right-0 flex h-3 w-3">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background"></span>
+                                </span>
+                            )}
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <div className="flex items-center gap-3 mb-4">
+                                <Avatar className="h-12 w-12 border-2 border-primary/20">
+                                    <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
+                                    <AvatarFallback className="font-black bg-primary/10 text-primary">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                                </Avatar>
+                                <div className="min-w-0">
+                                    <p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{user.displayName || 'User'}</p>
+                                    <p className="text-[10px] text-muted-foreground truncate font-medium">{user.email}</p>
+                                </div>
+                            </div>
+                            <SheetHeader className="text-left flex-shrink-0">
+                                <SheetTitle className="text-xl font-black font-headline uppercase tracking-tight">Kingdom Hub</SheetTitle>
+                                <SheetDescription className="text-[10px] font-bold uppercase tracking-widest text-primary">Mission Navigation</SheetDescription>
+                            </SheetHeader>
+                        </div>
+                        <ScrollArea className="flex-grow">
+                            <div className="p-6 space-y-2">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Identity</p>
+                                <Link href="/profile" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                    <User className="h-6 w-6 text-primary" />
+                                    <span className="font-black uppercase tracking-widest text-sm">Profile</span>
+                                </Link>
+                                <Link href="/settings" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                    <Settings className="h-6 w-6 text-primary" />
+                                    <span className="font-black uppercase tracking-widest text-sm">Settings</span>
+                                </Link>
+
+                                <Separator className="my-6 opacity-50" />
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
+                                {navItems.map((item) => (
+                                    <Link 
+                                        key={item.href} 
+                                        href={item.href}
+                                        className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"
+                                    >
+                                        <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", item.color)} />
+                                        <span className="font-black uppercase tracking-widest text-sm">{item.label}</span>
+                                    </Link>
+                                ))}
+
+                                <Separator className="my-6 opacity-50" />
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Provision & Recovery</p>
+                                <Link href="/dashboard/victory-hub" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                    <ShieldCheck className="h-6 w-6 text-primary" />
+                                    <span className="font-black uppercase tracking-widest text-sm">Victory Hub</span>
+                                </Link>
+                                <Link href="/dashboard/events" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                    <CalendarDays className="h-6 w-6 text-primary" />
+                                    <span className="font-black uppercase tracking-widest text-sm">Events Hub</span>
+                                </Link>
+                                <Link href="/dashboard/marketplace" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                    <Store className="h-6 w-6 text-primary" />
+                                    <span className="font-black uppercase tracking-widest text-sm">Meals Center</span>
+                                </Link>
+                                <Link href="/dashboard/marketplace/gifts" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                    <Gift className="h-6 w-6 text-primary" />
+                                    <span className="font-black uppercase tracking-widest text-sm">Kindness Center</span>
+                                </Link>
+                                <Link href="/dashboard/marketplace/orders" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                    <Package className="h-6 w-6 text-primary" />
+                                    <span className="font-black uppercase tracking-widest text-sm">Order Tracker</span>
+                                </Link>
+
+                                <Separator className="my-6 opacity-50" />
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Study Tools</p>
+                                <Link href="/dashboard/bible" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                    <BookOpen className="h-6 w-6 text-primary" />
+                                    <span className="font-black uppercase tracking-widest text-sm">Bible Reader</span>
+                                </Link>
+                                <Link href="/dashboard/notes" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                    <Edit className="h-6 w-6 text-primary" />
+                                    <span className="font-black uppercase tracking-widest text-sm">Journal</span>
+                                </Link>
+                                
+                                <Separator className="my-6 opacity-50" />
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
+                                <Link href="/guide" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                    <BookMarked className="h-6 w-6 text-primary" />
+                                    <span className="font-black uppercase tracking-widest text-sm">App Guide</span>
+                                </Link>
+                                <Link href="/resources" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                                    <BookOpen className="h-6 w-6 text-primary" />
+                                    <span className="font-black uppercase tracking-widest text-sm">Resources</span>
+                                </Link>
+
+                                <Separator className="my-6 opacity-50" />
+                                <button 
+                                    onClick={handleLogout}
+                                    className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive"
+                                >
+                                    <LogOut className="h-6 w-6" />
+                                    <span className="font-black uppercase tracking-widest text-sm">Logout</span>
+                                </button>
+                            </div>
+                        </ScrollArea>
+                        <div className="p-8 border-t bg-muted/5 flex-shrink-0">
+                            <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">
+                                Testify Global • Mobilizing the Body
+                            </p>
+                        </div>
+                    </SheetContent>
+                </Sheet>
+            </div>
+
+            {/* Desktop Profile Dropdown (unchanged layout, just hidden on smaller screens) */}
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger asChild className="hidden lg:inline-flex">
                 <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0">
                   <Avatar className="h-9 w-9 md:h-11 md:w-11 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />

@@ -17,7 +17,9 @@ import {
   HeartHandshake,
   TrendingUp,
   MessageSquare,
-  Compass
+  ChevronRight,
+  Store,
+  Package
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -27,8 +29,8 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Kingdom Library - Spiritual Resources & Equipping',
-  description: 'Access the complete Kingdom library for prayer, Bible study, soul winning, and spiritual warfare. Equipping the Body of Christ for a global harvest.',
+  title: 'Kingdom Library - Dashboard Resources',
+  description: 'Access practical guides and growth tracks for your spiritual walk and evangelism mission.',
 };
 
 const growthTracks = [
@@ -164,40 +166,31 @@ const growthTracks = [
   }
 ];
 
-export default function ResourcesPage() {
+export default function DashboardResourcesPage() {
   return (
-    <div className="space-y-12 max-w-6xl mx-auto p-4 md:p-12 pb-32 w-full">
-      {/* Header Section */}
-      <header className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-5">
-                <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 shrink-0 border-primary/20 text-primary">
-                    <Link href="/"><ArrowLeft className="h-5 w-5" /></Link>
-                </Button>
-                <div className="space-y-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <BookMarked className="h-5 w-5 text-primary" />
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Equipping</span>
-                    </div>
-                    <h1 className="text-3xl md:text-5xl font-black font-headline tracking-tight uppercase">Kingdom Library</h1>
+    <div className="space-y-12 max-w-6xl mx-auto pb-32 w-full">
+      <header className="px-4 sm:px-0 space-y-4 pt-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div className="space-y-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                    <BookMarked className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Equipping</span>
                 </div>
+                <h1 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase">Kingdom Library</h1>
             </div>
             <div className="flex gap-2">
-                <Badge className="bg-primary/20 text-primary border-primary/20 px-3 py-1 font-bold uppercase tracking-widest text-[10px]">Ministry Hub</Badge>
-                <Badge variant="outline" className="px-3 py-1 font-bold uppercase tracking-widest text-[10px]">v1.4 Ready</Badge>
+                <Badge className="bg-primary/20 text-primary border-primary/20 px-3 py-1 font-bold uppercase tracking-widest text-[10px]">Active Workforce</Badge>
             </div>
         </div>
-        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed italic text-balance">
-            Equipping the Body of Christ for growth, discipleship, and the Great Commission through curated spiritual tracks.
+        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed italic text-balance px-1">
+            Access growth tracks to equip yourself for the harvest field and the building of the Body.
         </p>
-        <Separator className="opacity-50" />
       </header>
 
-      {/* Growth Tracks Grid */}
       <div className="grid grid-cols-1 gap-12 sm:gap-16">
         {growthTracks.map((track) => (
           <section key={track.id} className="space-y-8">
-            <div className="flex items-center gap-5 px-1">
+            <div className="flex items-center gap-5 px-5 sm:px-1">
                 <div className={cn("h-14 w-14 rounded-[1.25rem] flex items-center justify-center shadow-xl border-2", track.bgColor, "border-white/10")}>
                     <track.icon className={cn("h-7 w-7", track.color)} />
                 </div>
@@ -207,9 +200,9 @@ export default function ResourcesPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 sm:gap-8 px-0 sm:px-0 -mx-4 sm:mx-0">
                 {track.items.map((res) => (
-                    <Card key={res.id} className="rounded-[2.5rem] overflow-hidden border shadow-sm bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all duration-300 flex flex-col h-full border-b-8 border-b-primary/5">
+                    <Card key={res.id} className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-x-0 sm:border shadow-sm bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all duration-300 flex flex-col h-full border-t-2 sm:border-t-0 border-b-8 border-b-primary/5">
                         <CardHeader className="p-8 pb-4">
                             <div className="flex justify-between items-start mb-4">
                                 <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight group-hover:text-primary transition-colors">
@@ -259,44 +252,38 @@ export default function ResourcesPage() {
         ))}
       </div>
 
-      {/* Global Mission Banner */}
-      <section className="mt-20 p-8 sm:p-12 rounded-[3rem] bg-zinc-950 text-white relative overflow-hidden shadow-2xl border-4 border-primary/20">
-        <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none rotate-12">
-            <Target className="h-48 w-48 text-primary" />
-        </div>
-        <div className="max-w-3xl mx-auto text-center space-y-8 relative z-10">
-          <div className="h-16 w-16 rounded-3xl bg-primary/20 flex items-center justify-center mx-auto border border-primary/30">
-            <TrendingUp className="h-8 w-8 text-primary" />
-          </div>
-          <div className="space-y-4">
-            <h2 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight">The Growth Mandate</h2>
-            <p className="text-zinc-400 italic text-base sm:text-xl font-medium leading-relaxed text-balance px-4">
-                "But grow in the grace and knowledge of our Lord and Savior Jesus Christ. To him be glory both now and forever! Amen." — 2 Peter 3:18
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-4 text-left pt-4">
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                <div className="h-7 w-7 rounded-lg bg-primary/20 flex items-center justify-center text-primary font-black text-xs">1</div>
-                <p className="text-xs font-bold text-zinc-300">Daily Study</p>
-                <p className="text-[10px] text-zinc-500 leading-tight">Study to show yourself approved unto God.</p>
+      {/* Provision Hub Quick Links */}
+      <section className="px-4 sm:px-0">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-12 w-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                <Store className="h-6 w-6 text-blue-500" />
             </div>
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                <div className="h-7 w-7 rounded-lg bg-primary/20 flex items-center justify-center text-primary font-black text-xs">2</div>
-                <p className="text-xs font-bold text-zinc-300">Active Logging</p>
-                <p className="text-[10px] text-zinc-500 leading-tight">Maintain consistency using the daily disciplines tracker.</p>
-            </div>
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                <div className="h-7 w-7 rounded-lg bg-primary/20 flex items-center justify-center text-primary font-black text-xs">3</div>
-                <p className="text-xs font-bold text-zinc-300">Shared Victory</p>
-                <p className="text-[10px] text-zinc-500 leading-tight">Accountability is the shield of the harvest workforce.</p>
-            </div>
+            <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Support Services</h2>
           </div>
-          <div className="pt-6">
-              <Button asChild size="lg" className="h-14 px-10 rounded-2xl font-black text-base uppercase tracking-widest shadow-xl shadow-primary/20">
-                  <Link href="/login">INITIALIZE GROWTH HUB</Link>
-              </Button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <Card className="rounded-[2rem] bg-blue-500 text-white overflow-hidden border-none shadow-xl">
+                    <CardHeader className="p-8">
+                        <CardTitle className="text-2xl font-black uppercase tracking-tight leading-tight">Meals Center</CardTitle>
+                        <CardDescription className="text-blue-100 text-sm font-medium">Coordinate physical provision for the brethren.</CardDescription>
+                    </CardHeader>
+                    <CardFooter className="p-0 border-t border-white/10">
+                        <Button asChild variant="ghost" className="w-full h-14 rounded-none text-white hover:bg-white/10 font-black uppercase tracking-widest text-xs">
+                            <Link href="/dashboard/marketplace">Enter Provision Hub <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                        </Button>
+                    </CardFooter>
+                </Card>
+                <Card className="rounded-[2rem] bg-indigo-600 text-white overflow-hidden border-none shadow-xl">
+                    <CardHeader className="p-8">
+                        <CardTitle className="text-2xl font-black uppercase tracking-tight leading-tight">Kindness Center</CardTitle>
+                        <CardDescription className="text-indigo-100 text-sm font-medium">Gifts and spiritual tokens to nourish the soul.</CardDescription>
+                    </CardHeader>
+                    <CardFooter className="p-0 border-t border-white/10">
+                        <Button asChild variant="ghost" className="w-full h-14 rounded-none text-white hover:bg-white/10 font-black uppercase tracking-widest text-xs">
+                            <Link href="/dashboard/marketplace/gifts">Enter Kindness Center <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                        </Button>
+                    </CardFooter>
+                </Card>
           </div>
-        </div>
       </section>
 
       <footer className="text-center pt-12 opacity-60">
