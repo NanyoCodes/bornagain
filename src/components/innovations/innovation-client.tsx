@@ -19,7 +19,8 @@ import {
     Heart,
     ArrowLeft,
     RefreshCw,
-    BookOpen
+    BookOpen,
+    Info
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function InnovationClient({ soulId }: { soulId: string | null }) {
     const router = useRouter();
@@ -241,7 +243,23 @@ export default function InnovationClient({ soulId }: { soulId: string | null }) 
                         </div>
                         <h4 className="text-xl font-black uppercase tracking-tight opacity-40">Ready to strategize?</h4>
                         <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance">The Innovation Agent is waiting to suggest a Kingdom strategy for {soul.firstName}.</p>
-                        <Button onClick={handleGenerate} className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] shadow-lg">INITIALIZE AGENT</Button>
+                        <div className="flex flex-col items-center">
+                            <Button onClick={handleGenerate} className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] shadow-lg">INITIALIZE AGENT</Button>
+                            
+                            <div className="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Info className="h-3 w-3 cursor-help text-primary/40" />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="max-w-[200px] rounded-xl border-primary/20 shadow-xl">
+                                            <p>These AI insights are provided using the Gemini Flash model through the developer free-tier. There are no additional charges to you.</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                                <span>FREE KINGDOM RESOURCE</span>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
