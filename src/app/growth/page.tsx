@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { ProgressPageContent } from '@/app/dashboard/progress-page-content';
+import { ProgressPageContent } from '@/components/dashboard/progress-page-content';
 import { AppShell } from '@/components/layout/app-shell';
 
 export const metadata: Metadata = {

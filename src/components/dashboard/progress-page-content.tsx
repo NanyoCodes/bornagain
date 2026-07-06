@@ -101,7 +101,7 @@ function RecentSoulsList() {
         return (
           <Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors">
             <Avatar className="h-10 w-10 border">
-              <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+              <AvatarFallback className="font-bold bg-primary/5 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="font-semibold leading-none truncate">{soul.firstName} {soul.lastName}</p>
