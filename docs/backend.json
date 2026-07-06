@@ -249,7 +249,7 @@
       "properties": {
         "title": { "type": "string" },
         "description": { "type": "string" },
-        "category": { "type": "string", "enum": ["Conference", "Worship", "Seminar", "Outreach", "Prayer", "Youth", "Other"] },
+        "category": { "type": "string", "enum": ["Conference", "Worship", "Seminar", "Outreach", "Prayer", "Youth", "Church Service", "Other"] },
         "location": { "type": "string" },
         "locationType": { "type": "string", "enum": ["Physical", "Virtual", "Both"] },
         "startDate": { "type": "object" },

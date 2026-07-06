@@ -478,7 +478,7 @@ export type MealGift = {
   createdAt: Timestamp;
 };
 
-export type EventCategory = 'Conference' | 'Worship' | 'Seminar' | 'Outreach' | 'Prayer' | 'Youth' | 'Other';
+export type EventCategory = 'Conference' | 'Worship' | 'Seminar' | 'Outreach' | 'Prayer' | 'Youth' | 'Church Service' | 'Other';
 export type EventStatus = 'active' | 'cancelled' | 'concluded';
 
 export type Event = {

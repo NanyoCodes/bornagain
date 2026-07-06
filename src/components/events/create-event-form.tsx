@@ -26,7 +26,7 @@ import { format, isSameDay } from "date-fns";
 import type { UserProfile, EventCategory } from "@/lib/types";
 
 const eventCategories: EventCategory[] = [
-  'Conference', 'Worship', 'Seminar', 'Outreach', 'Prayer', 'Youth', 'Other'
+  'Conference', 'Worship', 'Seminar', 'Outreach', 'Prayer', 'Youth', 'Church Service', 'Other'
 ];
 
 const formSchema = z.object({
