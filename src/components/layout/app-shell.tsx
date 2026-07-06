@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -40,7 +41,8 @@ import {
   Hourglass,
   CalendarDays,
   Menu,
-  Edit
+  Edit,
+  ChevronRight
 } from "lucide-react";
 
 import {
@@ -364,7 +366,7 @@ function PendingProvisionReminder() {
 }
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCart }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, onOpenCart: () => void }) {
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
