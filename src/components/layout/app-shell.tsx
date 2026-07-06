@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -1188,7 +1187,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
                 <div className={cn(
                 "mx-auto h-full", 
-                !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col" 
+                !isTakeoverPage ? "max-w-7xl p-4 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col" 
                 )}>
                     <PageTransition>{children}</PageTransition>
                 </div>
@@ -1275,7 +1274,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                                                 <span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span>
                                                                 <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
                                                             </div>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive" onClick={() => handleRemoveFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => handleRemoveFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button>
                                                         </div>
                                                     </div>
                                                 ))}

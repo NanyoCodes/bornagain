@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -501,7 +500,7 @@ export default function FellowshipPage() {
     const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
     
     const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const [createType, setCreateType] = useState<'Fellowship' | 'Association'>('Fellowship');
+    const [createType, setCreateType] = useState<'Fellowship' | 'Association'>( 'Fellowship');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [fellowshipToManage, setFellowshipToManage] = useState<Fellowship | null>(null);
     const [fellowshipToDelete, setFellowshipToDelete] = useState<Fellowship | null>(null);
