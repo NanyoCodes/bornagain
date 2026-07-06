@@ -7,7 +7,6 @@ import type { Event, UserProfile, EventParticipant } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser, useFirestore, useDoc } from "@/firebase";
 import { doc, runTransaction, serverTimestamp, collection, updateDoc, writeBatch, query, getDocs } from "firebase/firestore";
 import { useToast } from "@/hooks/use-toast";
@@ -262,7 +261,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             </Badge>
           ) : (
             <Button onClick={handleJoin} disabled={isJoining || event.status !== 'active'} className="h-9 px-6 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-95">
-              {isJoining ? <Loader2 className="h-4 w-4 animate-spin" /> : "JOIN HUB"}
+              {isJoining ? <Loader2 className="h-4 w-4 animate-spin" /> : "JOIN"}
             </Button>
           )}
         </div>
@@ -273,7 +272,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
 
 function LiveAuthor({ userId, fallbackInitials }: { userId: string, fallbackInitials: string }) {
   const firestore = useFirestore();
-  const userDocRef = useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+  const userDocRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
   const { data: profile } = useDoc<UserProfile>(userDocRef);
   
   return (
