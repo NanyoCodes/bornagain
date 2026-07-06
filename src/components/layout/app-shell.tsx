@@ -452,7 +452,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
   const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
-    <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
+    <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
       <div className="flex items-center shrink-0">
         <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
@@ -1340,7 +1340,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                                     </div>
                                     <Separator className="opacity-50" />
                                     <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4">
-                                        <span className="shrink-0">Package Total</span>
+                                        <span className="shrink-0">Total Package Amount</span>
                                         <span className="shrink-0 text-2xl tracking-tighter">₦{cartTotal.toLocaleString()}</span>
                                     </div>
                                 </div>

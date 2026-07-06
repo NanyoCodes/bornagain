@@ -355,7 +355,7 @@ export default function SoulsWonPage() {
   return (
     <>
       <div 
-        className="space-y-8 pb-32" 
+        className="space-y-8 pb-32 w-full max-w-3xl mx-auto" 
         inert={isAnyModalOpen ? true : undefined}
       >
         {/* Interaction Box - Full Width Mobile */}

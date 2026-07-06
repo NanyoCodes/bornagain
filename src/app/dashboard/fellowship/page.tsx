@@ -600,8 +600,6 @@ export default function FellowshipPage() {
     const handleUpdateFellowship = async (values: any) => {
         if (!user || !fellowshipToManage) return;
         setIsSubmitting(true);
-        const fellowshipRef = doc(firestore, 'vendors', vendorId); // ERROR in previous code: this was wrong.
-        // Wait, vendorId is from marketplace. This should be fellowshipRef.
         const actualFellowshipRef = doc(firestore, 'fellowships', fellowshipToManage.id);
         
         const location = [values.city, values.state, values.country].filter(Boolean).join(', ');
@@ -714,7 +712,7 @@ export default function FellowshipPage() {
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
     return (
-        <div className="space-y-8 pb-32 w-full max-w-2xl mx-auto">
+        <div className="space-y-8 pb-32 w-full max-w-3xl mx-auto">
             {/* Responsive Single-Row Interaction Box */}
             <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0">
                 <CardContent className="p-3 sm:p-4">

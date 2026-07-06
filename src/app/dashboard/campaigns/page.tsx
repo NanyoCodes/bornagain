@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState, useEffect, Fragment } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Target, Loader2, PlusCircle } from "lucide-react";
+import { Target, Loader2 } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
@@ -10,7 +10,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Sheet,
@@ -52,7 +51,7 @@ import { useRouter } from "next/navigation";
 
 function CampaignSkeletons() {
   return (
-    <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto -mx-4 sm:mx-0">
+    <div className="flex flex-col gap-6 w-full max-w-3xl mx-auto -mx-4 sm:mx-0">
       {[...Array(3)].map((_, i) => (
         <Card key={i} className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
           <CardContent className="p-6 space-y-4">
@@ -379,7 +378,7 @@ export default function CampaignsPage() {
   return (
     <>
       <div 
-        className="space-y-8 pb-32 w-full max-w-2xl mx-auto px-0"
+        className="space-y-8 pb-32 w-full max-w-3xl mx-auto px-0"
         inert={isAnyModalOpen ? true : undefined}
       >
         {/* Interaction Box - Full Bleed Mobile */}
