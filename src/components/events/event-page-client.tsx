@@ -38,6 +38,7 @@ import { CreateEventForm } from "./create-event-form";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
+import { safeToDate } from "@/lib/utils";
 
 export default function EventPageClient() {
   const { user } = useUser();
@@ -51,9 +52,10 @@ export default function EventPageClient() {
 
   const eventsQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'events'), where('status', '==', 'active'), orderBy('startDate', 'asc'));
+    // Optimization: Remove server-side orderBy to avoid composite index requirement
+    return query(collection(firestore, 'events'), where('status', '==', 'active'));
   }, [firestore]);
-  const { data: events, loading } = useCollection<Event>(eventsQuery);
+  const { data: rawEvents, loading } = useCollection<Event>(eventsQuery);
 
   const joinedQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -64,8 +66,15 @@ export default function EventPageClient() {
   const joinedIds = useMemo(() => new Set(joinedEvents?.map(j => j.eventId)), [joinedEvents]);
 
   const filteredEvents = useMemo(() => {
-    if (!events) return [];
-    let list = events;
+    if (!rawEvents) return [];
+    
+    // Client-side sorting by startDate
+    let list = [...rawEvents].sort((a, b) => {
+        const dateA = safeToDate(a.startDate)?.getTime() ?? 0;
+        const dateB = safeToDate(b.startDate)?.getTime() ?? 0;
+        return dateA - dateB;
+    });
+
     if (activeTab === 'mine') {
       list = list.filter(e => e.organizerId === user?.uid);
     } else if (activeTab === 'joined') {
@@ -79,7 +88,7 @@ export default function EventPageClient() {
       e.description.toLowerCase().includes(term) ||
       e.location.toLowerCase().includes(term)
     );
-  }, [events, searchTerm, activeTab, user?.uid, joinedIds]);
+  }, [rawEvents, searchTerm, activeTab, user?.uid, joinedIds]);
 
   return (
     <div className="space-y-10 max-w-5xl mx-auto pb-32">
