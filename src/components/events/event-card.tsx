@@ -4,7 +4,7 @@
 import * as React from "react";
 import { format, isSameDay } from "date-fns";
 import { CalendarDays, MapPin, Users, Share2, PlayCircle, Loader2, UserCheck, Sparkles, MoreVertical, Trash2, MessagesSquare, Edit } from "lucide-react";
-import type { Event, UserProfile, EventParticipant } from "@/lib/types";
+import type { Event, UserProfile, EventParticipant, Chat } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, serverTimestamp, query, where, getDocs, addDoc, doc, getDoc, runTransaction, writeBatch } from "firebase/firestore";
+import { collection, serverTimestamp, query, where, getDocs, addDoc, doc, getDoc, runTransaction, writeBatch, arrayUnion } from "firebase/firestore";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -193,6 +193,19 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
   );
 }
 
+function LiveAuthor({ userId, fallbackInitials }: { userId: string, fallbackInitials: string }) {
+    const firestore = useFirestore();
+    const userDocRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userDocRef);
+    
+    return (
+      <Avatar className="h-5 w-5 border shadow-sm">
+        <AvatarImage src={profile?.photoURL} className="object-cover" />
+        <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary">{fallbackInitials || 'U'}</AvatarFallback>
+      </Avatar>
+    );
+  }
+
 export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: EventCardProps) {
   const { user } = useUser();
   const firestore = useFirestore();
@@ -248,17 +261,17 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
 
     const participantsQuery = query(collection(firestore, 'events', event.id, 'participants'));
     const snap = await getDocs(participantsQuery);
-    const participants = snap.docs.map(d => ({ id: d.id, ...d.data() } as EventParticipant));
+    const participantsList = snap.docs.map(d => ({ id: d.id, ...d.data() } as EventParticipant));
 
-    if (participants.length < 2) {
-        toast({ title: "Need Members", description: "You need at least one participant to start a group chat." });
+    if (participantsList.length < 2) {
+        toast({ title: "Need Members", description: "You need at least one other participant to start a group chat." });
         setIsChatLoading(false);
         return;
     }
 
-    const participantIds = participants.map(p => p.userId);
+    const participantIds = participantsList.map(p => p.userId);
     const participantInfo: { [key: string]: any } = {};
-    participants.forEach(p => {
+    participantsList.forEach(p => {
         participantInfo[p.userId] = {
             firstName: p.firstName,
             lastName: p.lastName,
@@ -302,6 +315,40 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
     }
   };
 
+  const handleOpenGroupChat = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user || !firestore || !userProfile) return;
+    
+    if (event.hasGroupChat) {
+        setIsChatLoading(true);
+        const chatRef = doc(firestore, 'chats', event.id);
+        try {
+            const chatDoc = await getDoc(chatRef);
+            if (chatDoc.exists()) {
+                const chatData = chatDoc.data() as Chat;
+                if (!chatData.participantIds.includes(user.uid)) {
+                    // Add missing participant
+                    await updateDoc(chatRef, {
+                        participantIds: arrayUnion(user.uid),
+                        [`participantInfo.${user.uid}`]: {
+                            firstName: userProfile.firstName || '',
+                            lastName: userProfile.lastName || '',
+                            photoURL: userProfile.photoURL || '',
+                        }
+                    });
+                }
+            }
+            router.push(`/dashboard/chats/${event.id}`);
+        } catch (e) {
+            console.error("Failed to join event chat:", e);
+        } finally {
+            setIsChatLoading(false);
+        }
+    } else if (isOwner) {
+        handleStartGroupChat();
+    }
+  };
+
   const handleShare = async () => {
     const shareUrl = `${window.location.origin}/dashboard/events`;
     const shareData = {
@@ -336,7 +383,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
                         variant={event.hasGroupChat ? "default" : "outline"}
                         size="icon" 
                         className={cn("h-8 w-8 rounded-full shadow-sm", event.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90")}
-                        onClick={(e) => { e.stopPropagation(); event.hasGroupChat ? router.push(`/dashboard/chats/${event.id}`) : handleStartGroupChat(); }}
+                        onClick={handleOpenGroupChat}
                         disabled={isChatLoading}
                     >
                         {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessagesSquare className="h-4 w-4" />}
@@ -431,18 +478,5 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
         </div>
       </CardFooter>
     </Card>
-  );
-}
-
-function LiveAuthor({ userId, fallbackInitials }: { userId: string, fallbackInitials: string }) {
-  const firestore = useFirestore();
-  const userDocRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
-  const { data: profile } = useDoc<UserProfile>(userDocRef);
-  
-  return (
-    <Avatar className="h-5 w-5 border shadow-sm">
-      <AvatarImage src={profile?.photoURL} className="object-cover" />
-      <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary">{fallbackInitials || 'U'}</AvatarFallback>
-    </Avatar>
   );
 }
