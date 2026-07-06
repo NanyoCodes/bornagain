@@ -3,7 +3,20 @@
 
 import * as React from "react";
 import { format, isSameDay } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, PlayCircle, Loader2, UserCheck, Sparkles, MoreVertical, Trash2, MessagesSquare, Edit } from "lucide-react";
+import { 
+  CalendarDays, 
+  MapPin, 
+  Users, 
+  Share2, 
+  PlayCircle, 
+  Loader2, 
+  UserCheck, 
+  Sparkles, 
+  MoreVertical, 
+  Trash2, 
+  MessagesSquare, 
+  Edit 
+} from "lucide-react";
 import type { Event, UserProfile, EventParticipant, Chat } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +46,20 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, serverTimestamp, query, where, getDocs, addDoc, doc, getDoc, runTransaction, writeBatch, arrayUnion } from "firebase/firestore";
+import { 
+  collection, 
+  serverTimestamp, 
+  query, 
+  where, 
+  getDocs, 
+  addDoc, 
+  doc, 
+  getDoc, 
+  runTransaction, 
+  writeBatch, 
+  arrayUnion, 
+  updateDoc 
+} from "firebase/firestore";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
@@ -59,8 +85,8 @@ interface EventCardProps {
  */
 function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
-    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
-    const { data: profile } = useDoc<UserProfile>(userRef);
+    const userDocRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userDocRef);
     const currentPhotoUrl = profile?.photoURL || fallbackUrl;
     
     return (
@@ -259,52 +285,53 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
     if (!user || !firestore || !isOwner) return;
     setIsChatLoading(true);
 
-    const participantsQuery = query(collection(firestore, 'events', event.id, 'participants'));
-    const snap = await getDocs(participantsQuery);
-    const participantsList = snap.docs.map(d => ({ id: d.id, ...d.data() } as EventParticipant));
-
-    if (participantsList.length < 2) {
-        toast({ title: "Need Members", description: "You need at least one other participant to start a group chat." });
-        setIsChatLoading(false);
-        return;
-    }
-
-    const participantIds = participantsList.map(p => p.userId);
-    const participantInfo: { [key: string]: any } = {};
-    participantsList.forEach(p => {
-        participantInfo[p.userId] = {
-            firstName: p.firstName,
-            lastName: p.lastName,
-            photoURL: p.photoURL || '',
-        };
-    });
-
-    const batch = writeBatch(firestore);
-    const chatDocRef = doc(firestore, 'chats', event.id);
-    const chatPayload = {
-        participantIds,
-        participantInfo,
-        eventId: event.id,
-        campaignTitle: event.title,
-        lastUpdatedAt: serverTimestamp(),
-        isGroupChat: true,
-        hasMessages: false,
-    };
-    
-    batch.set(chatDocRef, chatPayload, { merge: true });
-
-    const eventRef = doc(firestore, 'events', event.id);
-    batch.update(eventRef, { hasGroupChat: true });
-
     try {
+        const participantsQuery = query(collection(firestore, 'events', event.id, 'participants'));
+        const snap = await getDocs(participantsQuery);
+        const participantsList = snap.docs.map(d => ({ id: d.id, ...d.data() } as EventParticipant));
+
+        if (participantsList.length < 2) {
+            toast({ title: "Need Members", description: "You need at least one other participant to start a group chat." });
+            setIsChatLoading(false);
+            return;
+        }
+
+        const participantIds = participantsList.map(p => p.userId);
+        const participantInfo: { [key: string]: any } = {};
+        participantsList.forEach(p => {
+            participantInfo[p.userId] = {
+                firstName: p.firstName,
+                lastName: p.lastName,
+                photoURL: p.photoURL || '',
+            };
+        });
+
+        const batch = writeBatch(firestore);
+        const chatDocRef = doc(firestore, 'chats', event.id);
+        const chatPayload = {
+            participantIds,
+            participantInfo,
+            eventId: event.id,
+            campaignTitle: event.title,
+            lastUpdatedAt: serverTimestamp(),
+            isGroupChat: true,
+            hasMessages: false,
+        };
+        
+        batch.set(chatDocRef, chatPayload, { merge: true });
+
+        const eventRef = doc(firestore, 'events', event.id);
+        batch.update(eventRef, { hasGroupChat: true });
+
         await batch.commit();
         router.push(`/dashboard/chats/${event.id}`);
     } catch (e: any) {
+        console.error("Chat initialization failed:", e);
         if (e.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
-                path: chatDocRef.path,
+                path: `chats/${event.id}`,
                 operation: 'create',
-                requestResourceData: chatPayload
+                requestResourceData: { action: 'Initialize event chat', organizer: user.uid }
             }, user);
             errorEmitter.emit('permission-error', permissionError);
         } else {
@@ -341,6 +368,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             router.push(`/dashboard/chats/${event.id}`);
         } catch (e) {
             console.error("Failed to join event chat:", e);
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: chatRef.path, operation: 'update' }, user));
         } finally {
             setIsChatLoading(false);
         }
