@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -267,8 +268,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
 
     const batch = writeBatch(firestore);
     const chatDocRef = doc(firestore, 'chats', event.id);
-    
-    batch.set(chatDocRef, {
+    const chatPayload = {
         participantIds,
         participantInfo,
         eventId: event.id,
@@ -276,7 +276,9 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
         lastUpdatedAt: serverTimestamp(),
         isGroupChat: true,
         hasMessages: false,
-    }, { merge: true });
+    };
+    
+    batch.set(chatDocRef, chatPayload, { merge: true });
 
     const eventRef = doc(firestore, 'events', event.id);
     batch.update(eventRef, { hasGroupChat: true });
@@ -289,7 +291,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             const permissionError = new FirestorePermissionError({
                 path: chatDocRef.path,
                 operation: 'create',
-                requestResourceData: { participantIds, eventId: event.id }
+                requestResourceData: chatPayload
             }, user);
             errorEmitter.emit('permission-error', permissionError);
         } else {
@@ -340,7 +342,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
                         {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessagesSquare className="h-4 w-4" />}
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent><p>{event.hasGroupChat ? "Open Group Chat" : isOwner ? "Start Group Chat" : "Chat coming soon"}</p></TooltipContent>
+                  <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">{event.hasGroupChat ? "Open Group Chat" : isOwner ? "Start Group Chat" : "Chat coming soon"}</p></TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
