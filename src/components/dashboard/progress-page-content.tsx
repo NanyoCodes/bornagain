@@ -1,4 +1,3 @@
-
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -46,6 +45,7 @@ import { useMemo, useEffect, useState, useCallback } from 'react';
 import { DailyDisciplineCard } from '@/components/dashboard/daily-discipline-card';
 import { RelationshipTrackerCard } from '@/components/dashboard/relationship-tracker-card';
 import { StrongholdTracker } from '@/components/dashboard/stronghold-tracker';
+import { RelationshipCircleTracker } from '@/components/souls/relationship-circle-tracker';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -303,255 +303,6 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   );
 }
 
-function CategorySoulList({ souls }: { souls: Soul[] }) {
-  if (!souls || souls.length === 0) {
-    return (
-      <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic">No souls logged in this category yet.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-2 pb-4">
-      {souls.map((soul) => {
-        const wonAt = safeToDate(soul.wonAt);
-        return (
-          <Link 
-            href="/dashboard/souls-won" 
-            key={soul.id} 
-            className="flex items-center gap-4 p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group"
-          >
-            <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
-              <AvatarFallback className="font-black bg-primary/5 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
-                <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
-              </div>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
-                Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
-              </p>
-            </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-          </Link>
-        );
-      })}
-    </div>
-  );
-}
-
-function FamilyFriendsTrackerCard({ 
-  souls,
-  campaigns,
-  fellowships
-}: { 
-  souls: Soul[],
-  campaigns: Campaign[],
-  fellowships: Fellowship[]
-}) {
-    const [selectedCategoryName, setSelectedCategoryName] = useState<string | null>(null);
-    const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
-    const isMobile = useIsMobile();
-
-    const stats = useMemo(() => {
-        const family = souls.filter(s => s.relationship === 'Family');
-        const friends = souls.filter(s => ['Friend', 'Colleague', 'Neighbor'].includes(s.relationship || ''));
-        const outreach = souls.filter(s => ['Stranger', 'Other'].includes(s.relationship || '') || !s.relationship);
-        
-        return {
-            family: { count: family.length, list: family },
-            friends: { count: friends.length, list: friends },
-            outreach: { count: outreach.length, list: outreach },
-        };
-    }, [souls]);
-
-    const activeCategorySouls = useMemo(() => {
-        if (!selectedCategoryName) return [];
-        if (selectedCategoryName === 'Family') return stats.family.list;
-        if (selectedCategoryName === 'Friends') return stats.friends.list;
-        if (selectedCategoryName === 'Outreach') return stats.outreach.list;
-        return [];
-    }, [selectedCategoryName, stats]);
-
-    const handleCategoryClick = (name: string) => {
-        setSelectedCategoryName(name);
-    };
-
-    const handleOpenLogFromCircle = (e: React.MouseEvent, name: string) => {
-        e.stopPropagation();
-        setSelectedCategoryName(name);
-        setIsLogSoulOpen(true);
-    };
-
-    const relationshipType = useMemo(() => {
-        const map: Record<string, SoulRelationship> = {
-            'Family': 'Family',
-            'Friends': 'Friend',
-            'Outreach': 'Stranger'
-        };
-        return map[selectedCategoryName || ''] || 'Other';
-    }, [selectedCategoryName]);
-
-    const dialogContent = selectedCategoryName && (
-        <>
-            {isMobile ? (
-                <Sheet open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
-                    <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="min-w-0">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Users className="h-4 w-4 text-primary" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Relationship Directory</span>
-                                    </div>
-                                    <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase leading-tight">{selectedCategoryName} Circle</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1">Viewing all converts in your {selectedCategoryName.toLowerCase()} group.</SheetDescription>
-                                </div>
-                                <Button 
-                                    onClick={(e) => handleOpenLogFromCircle(e, selectedCategoryName)}
-                                    size="icon"
-                                    className="shrink-0 rounded-full shadow-lg h-10 w-10"
-                                    title={`Log ${selectedCategoryName}`}
-                                >
-                                    <PlusCircle className="h-5 w-5" />
-                                    <span className="sr-only">Log {selectedCategoryName}</span>
-                                </Button>
-                            </div>
-                        </div>
-                        <div className="flex-grow overflow-hidden relative">
-                            <ScrollArea className="h-full px-8 pt-6">
-                                <CategorySoulList souls={activeCategorySouls} />
-                                <div className="h-24" />
-                            </ScrollArea>
-                        </div>
-                    </SheetContent>
-                </Sheet>
-            ) : (
-                <Dialog open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
-                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
-                        <div className="p-8 border-b bg-muted/10">
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="min-w-0">
-                                    <DialogHeader>
-                                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedCategoryName} Directory</DialogTitle>
-                                        <DialogDescription className="text-sm font-medium">Souls won within your {selectedCategoryName.toLowerCase()} circle.</DialogDescription>
-                                    </DialogHeader>
-                                </div>
-                                <Button 
-                                    onClick={(e) => handleOpenLogFromCircle(e, selectedCategoryName)}
-                                    size="icon"
-                                    className="shrink-0 rounded-full shadow-lg h-10 w-10"
-                                    title={`Log ${selectedCategoryName}`}
-                                >
-                                    <PlusCircle className="h-5 w-5" />
-                                    <span className="sr-only">Log {selectedCategoryName}</span>
-                                </Button>
-                            </div>
-                        </div>
-                        <ScrollArea className="max-h-[60vh] p-6">
-                            <CategorySoulList souls={activeCategorySouls} />
-                        </ScrollArea>
-                    </DialogContent>
-                </Dialog>
-            )}
-        </>
-    );
-
-    const logSoulView = isLogSoulOpen && (
-        isMobile ? (
-            <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left">
-                            <SheetTitle className="text-2xl font-black font-headline">Log {selectedCategoryName} Soul</SheetTitle>
-                            <SheetDescription className="text-sm font-medium">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</SheetDescription>
-                        </SheetHeader>
-                    </div>
-                    <div className="flex-grow overflow-y-auto p-8">
-                        <LogSoulForm 
-                            onSoulLogged={() => setIsLogSoulOpen(false)} 
-                            fellowships={fellowships} 
-                            campaigns={campaigns}
-                            defaultRelationship={relationshipType}
-                        />
-                    </div>
-                </SheetContent>
-            </Sheet>
-        ) : (
-            <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <DialogContent className="sm:max-w-lg">
-                    <DialogHeader>
-                        <DialogTitle>Log {selectedCategoryName} Soul</DialogTitle>
-                        <DialogDescription>Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</DialogDescription>
-                    </DialogHeader>
-                    <div className="max-h-[70vh] overflow-y-auto pr-2">
-                        <LogSoulForm 
-                            onSoulLogged={() => setIsLogSoulOpen(false)} 
-                            fellowships={fellowships} 
-                            campaigns={campaigns}
-                            defaultRelationship={relationshipType}
-                        />
-                    </div>
-                </DialogContent>
-            </Dialog>
-        )
-    );
-
-    return (
-        <>
-            <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden">
-                <CardHeader className="pb-3">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                        <Home className="h-5 w-5 text-primary" />
-                        Relationship Circle Tracker
-                    </CardTitle>
-                    <CardDescription>
-                        Ensuring your closest circles are saved and nurtured in faith.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="grid grid-cols-3 gap-2">
-                        <div 
-                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
-                            onClick={() => handleCategoryClick('Family')}
-                        >
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Family</p>
-                            <p className="text-xl font-black text-primary">{stats.family.count}</p>
-                        </div>
-                        <div 
-                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
-                            onClick={() => handleCategoryClick('Friends')}
-                        >
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Friends</p>
-                            <p className="text-xl font-black text-primary">{stats.friends.count}</p>
-                        </div>
-                        <div 
-                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
-                            onClick={() => handleCategoryClick('Outreach')}
-                        >
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Outreach</p>
-                            <p className="text-xl font-black text-foreground">{stats.outreach.count}</p>
-                        </div>
-                    </div>
-
-                    {stats.family.count === 0 && (
-                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/20 flex items-start gap-3 shadow-inner">
-                            <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                            <p className="text-xs text-primary font-medium leading-relaxed">
-                                Have you shared the Gospel with your household? Log your family members here to prioritize their spiritual growth.
-                            </p>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
-            {dialogContent}
-            {logSoulView}
-        </>
-    );
-}
-
 function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
   const lastRead = useMemo(() => {
     if (!history || history.length === 0) return null;
@@ -795,10 +546,11 @@ export function ProgressPageContent() {
                 <DailyDisciplineCard />
                 <StrongholdTracker />
                 <RelationshipTrackerCard />
-                <FamilyFriendsTrackerCard 
+                <RelationshipCircleTracker 
                     souls={soulsWon || []} 
                     campaigns={activeCampaigns || []} 
                     fellowships={activeFellowships || []} 
+                    className="rounded-none"
                 />
                 {userProfile && <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />}
                 
