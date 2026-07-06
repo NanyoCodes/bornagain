@@ -12,6 +12,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
@@ -42,6 +44,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
+
+interface EventCardProps {
+    event: Event;
+    isJoined: boolean;
+    userProfile: UserProfile | null;
+    onEdit: () => void;
+    onDelete: () => void;
+}
 
 /**
  * Ensures the profile photo displayed in the directory is always the most recent version.
