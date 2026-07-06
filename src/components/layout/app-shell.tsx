@@ -38,7 +38,8 @@ import {
   CreditCard,
   Clipboard,
   Hourglass,
-  CalendarDays
+  CalendarDays,
+  Menu
 } from "lucide-react";
 
 import {
@@ -63,7 +64,7 @@ import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, writ
 import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter, SheetTrigger } from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -462,7 +463,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
         </Link>
       </div>
 
-      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 md:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
+      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 lg:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
         <div className="flex items-center gap-1.5 lg:gap-3 h-full">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
@@ -498,6 +499,57 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
       </nav>
         
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full lg:hidden">
+                    <Menu className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="sr-only">Open Menu</span>
+                </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Zap className="h-4 w-4 text-primary" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Navigation</span>
+                    </div>
+                    <SheetHeader className="text-left flex-shrink-0">
+                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Main Menu</SheetTitle>
+                        <SheetDescription className="text-sm font-medium mt-1">Access all Kingdom sectors.</SheetDescription>
+                    </SheetHeader>
+                </div>
+                <ScrollArea className="flex-grow">
+                    <div className="p-6 space-y-2">
+                        {navItems.map((item) => {
+                            const isActive = pathname.startsWith(item.href);
+                            return (
+                                <Link 
+                                    key={item.href} 
+                                    href={item.href}
+                                    className={cn(
+                                        "flex items-center gap-4 p-4 rounded-2xl transition-all group",
+                                        isActive ? "bg-primary/10 text-primary border-2 border-primary/20" : "hover:bg-muted"
+                                    )}
+                                >
+                                    <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", !isActive && item.color)} />
+                                    <span className="font-black uppercase tracking-widest text-sm">{item.label}</span>
+                                </Link>
+                            )
+                        })}
+                        <Separator className="my-4 opacity-50" />
+                        <Link href="/dashboard/events" className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                            <CalendarDays className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+                            <span className="font-black uppercase tracking-widest text-sm text-foreground">Events Hub</span>
+                        </Link>
+                    </div>
+                </ScrollArea>
+                <div className="p-8 border-t bg-muted/5 flex-shrink-0">
+                    <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">
+                        Testify Global • Built for the Harvest
+                    </p>
+                </div>
+            </SheetContent>
+        </Sheet>
+
         {isSearchVisible && (
           <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-5 w-5 md:h-6 md:w-6" />
@@ -507,7 +559,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
         
         {user ? (
           <>
-            <Link href="/dashboard/events" className="sm:hidden">
+            <Link href="/dashboard/events" className="hidden lg:inline-flex">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                     <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full">
                       <CalendarDays className="h-5 w-5 md:h-6 md:w-6" />
