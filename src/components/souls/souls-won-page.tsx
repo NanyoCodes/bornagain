@@ -355,11 +355,11 @@ export default function SoulsWonPage() {
   return (
     <>
       <div 
-        className="space-y-6 md:space-y-12 pb-32" 
+        className="space-y-8 pb-32" 
         inert={isAnyModalOpen ? true : undefined}
       >
-        {/* Interaction Box - Now at Top */}
-        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
+        {/* Interaction Box - Full Width Mobile */}
+        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0">
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-row items-center gap-2 sm:gap-3">
               <Button 
@@ -376,7 +376,7 @@ export default function SoulsWonPage() {
                 <Button 
                   variant="secondary" 
                   size="icon" 
-                  className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
+                  className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-lg"
                   onClick={() => setIsLogDialogOpen(true)}
                   disabled={loading}
                   title="Log Soul"
@@ -388,16 +388,16 @@ export default function SoulsWonPage() {
                     <Button 
                       variant="outline" 
                       size="icon" 
-                      className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
+                      className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-md bg-background"
                       disabled={loading}
                       title="Export Harvest"
                     >
                       <Download className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')}>CSV</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')}>PDF</DropdownMenuItem>
+                  <DropdownMenuContent align="end" className="rounded-xl">
+                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')}>CSV (Excel)</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')}>PDF Document</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -405,6 +405,7 @@ export default function SoulsWonPage() {
           </CardContent>
         </Card>
 
+        {/* Relationship Circle Tracker - Full Width Mobile */}
         <RelationshipCircleTracker 
             souls={souls || []}
             campaigns={campaigns}
@@ -412,6 +413,7 @@ export default function SoulsWonPage() {
             className="-mx-4 sm:mx-0 rounded-none sm:rounded-3xl"
         />
 
+        {/* Table Content - Full Width Mobile */}
         <div className="-mx-4 sm:mx-0">
           <SoulsWonTable 
             souls={filteredSouls || []} 
@@ -460,8 +462,8 @@ export default function SoulsWonPage() {
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-2xl font-black font-headline">Edit Soul Record</SheetTitle>
-                <SheetDescription className="text-sm">Update information for {soulToEdit?.firstName}.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Soul Record</SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1">Update information for {soulToEdit?.firstName}.</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow">
@@ -480,21 +482,25 @@ export default function SoulsWonPage() {
         </Sheet>
       ) : (
         <Dialog open={!!editSoulId} onOpenChange={(open) => { if(!open) setEditSoulId(null); }}>
-            <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                    <DialogTitle className="font-headline text-2xl">Edit Soul Details</DialogTitle>
-                    <DialogDescription>Update information for {soulToEdit?.firstName}.</DialogDescription>
-                </DialogHeader>
-                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                    {soulToEdit && (
-                      <EditSoulForm 
-                          soul={soulToEdit} 
-                          onSoulUpdated={() => { setEditSoulId(null); }} 
-                          fellowships={activeFellowships || []}
-                          campaigns={campaigns || []}
-                      />
-                    )}
+            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+                <div className="p-8 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Edit Soul Details</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1">Update information for {soulToEdit?.firstName}.</DialogDescription>
+                    </DialogHeader>
                 </div>
+                <ScrollArea className="max-h-[70vh]">
+                    <div className="p-8">
+                        {soulToEdit && (
+                          <EditSoulForm 
+                              soul={soulToEdit} 
+                              onSoulUpdated={() => { setEditSoulId(null); }} 
+                              fellowships={activeFellowships || []}
+                              campaigns={campaigns || []}
+                          />
+                        )}
+                    </div>
+                </ScrollArea>
             </DialogContent>
         </Dialog>
       )}
@@ -504,8 +510,8 @@ export default function SoulsWonPage() {
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                 <SheetHeader className="text-left">
-                    <SheetTitle className="font-black font-headline text-2xl">Log a New Soul</SheetTitle>
-                    <SheetDescription className="text-sm">Record the details of the person you've ministered to.</SheetDescription>
+                    <SheetTitle className="font-black font-headline text-2xl uppercase tracking-tight">Log a New Soul</SheetTitle>
+                    <SheetDescription className="text-sm font-medium mt-1">Record the details of the person you've ministered to.</SheetDescription>
                 </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8">
@@ -517,32 +523,36 @@ export default function SoulsWonPage() {
         </Sheet>
       ) : (
         <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Log a New Soul</DialogTitle>
-              <DialogDescription>
-                  Record the details of the person you've ministered to.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[70vh] overflow-y-auto pr-2">
-              <LogSoulForm onSoulLogged={() => {
-                setIsLogDialogOpen(false);
-              }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+          <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+            <div className="p-8 border-b bg-muted/10">
+                <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold uppercase tracking-tight">Log a New Soul</DialogTitle>
+                    <DialogDescription className="text-sm font-medium mt-1">
+                        Record the details of the person you've ministered to.
+                    </DialogDescription>
+                </DialogHeader>
             </div>
+            <ScrollArea className="max-h-[70vh]">
+                <div className="p-8">
+                    <LogSoulForm onSoulLogged={() => {
+                        setIsLogDialogOpen(false);
+                    }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+                </div>
+            </ScrollArea>
           </DialogContent>
         </Dialog>
       )}
 
       <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => { if(!open) setDeleteSoulId(null); }}>
-        <AlertDialogContent className="w-[90vw] max-w-lg rounded-lg">
+        <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Record?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight">Delete Record?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm font-medium leading-relaxed">
               Are you sure you want to permanently remove {soulToDelete?.firstName} {soulToDelete?.lastName} from your records? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="gap-3 mt-6">
+            <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12">Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Confirm Delete

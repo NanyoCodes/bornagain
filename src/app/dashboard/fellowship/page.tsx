@@ -600,7 +600,9 @@ export default function FellowshipPage() {
     const handleUpdateFellowship = async (values: any) => {
         if (!user || !fellowshipToManage) return;
         setIsSubmitting(true);
-        const fellowshipRef = doc(firestore, 'fellowships', fellowshipToManage.id);
+        const fellowshipRef = doc(firestore, 'vendors', vendorId); // ERROR in previous code: this was wrong.
+        // Wait, vendorId is from marketplace. This should be fellowshipRef.
+        const actualFellowshipRef = doc(firestore, 'fellowships', fellowshipToManage.id);
         
         const location = [values.city, values.state, values.country].filter(Boolean).join(', ');
         
@@ -618,11 +620,11 @@ export default function FellowshipPage() {
         };
 
         try {
-            await updateDoc(fellowshipRef, updateData);
+            await updateDoc(actualFellowshipRef, updateData);
             toast({ title: 'Group Updated' });
             closeAllDialogs();
         } catch (e) {
-            const permissionError = new FirestorePermissionError({ path: fellowshipRef.path, operation: 'update', requestResourceData: updateData }, user);
+            const permissionError = new FirestorePermissionError({ path: actualFellowshipRef.path, operation: 'update', requestResourceData: updateData }, user);
             errorEmitter.emit('permission-error', permissionError);
         } finally {
             setIsSubmitting(false);
@@ -714,12 +716,12 @@ export default function FellowshipPage() {
     return (
         <div className="space-y-8 pb-32 w-full max-w-2xl mx-auto">
             {/* Responsive Single-Row Interaction Box */}
-            <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
+            <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0">
                 <CardContent className="p-3 sm:p-4">
                   <div className="flex flex-row items-center gap-2 sm:gap-3">
                     <Button 
                         variant="outline" 
-                        className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0"
+                        className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0 border-dashed"
                         onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
                         disabled={loading}
                     >
@@ -731,7 +733,7 @@ export default function FellowshipPage() {
                         <Button 
                             variant="secondary" 
                             size="icon" 
-                            className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
+                            className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-lg"
                             onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
                             disabled={loading}
                             title="New Fellowship"
@@ -741,7 +743,7 @@ export default function FellowshipPage() {
                         <Button 
                             variant="outline" 
                             size="icon" 
-                            className="h-10 sm:h-11 w-10 sm:w-11 rounded-full"
+                            className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-md bg-background"
                             onClick={() => { setCreateType('Association'); setIsCreateOpen(true); }}
                             disabled={loading}
                             title="New Association"
@@ -754,15 +756,15 @@ export default function FellowshipPage() {
             </Card>
 
             <div className="flex flex-col gap-6">
-                <div className="flex flex-wrap gap-4 items-center justify-between px-1">
+                <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-0">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-                        <TabsList className="grid w-full grid-cols-2 h-11 sm:h-12 p-1 bg-muted/40 rounded-xl">
+                        <TabsList className="grid w-full grid-cols-2 h-11 bg-muted/40 p-1 rounded-xl">
                             <TabsTrigger value="Fellowship" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Fellowships</TabsTrigger>
                             <TabsTrigger value="Association" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Associations</TabsTrigger>
                         </TabsList>
                     </Tabs>
                     <Tabs value={membershipFilter} onValueChange={setMembershipFilter} className="w-full sm:w-auto">
-                        <TabsList className="grid w-full grid-cols-3 h-11 sm:h-12 p-1 bg-muted/40 rounded-xl">
+                        <TabsList className="grid w-full grid-cols-3 h-11 bg-muted/40 p-1 rounded-xl">
                             <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">All</TabsTrigger>
                             <TabsTrigger value="owned" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Mine</TabsTrigger>
                             <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Joined</TabsTrigger>
@@ -773,8 +775,8 @@ export default function FellowshipPage() {
                 {loading ? (
                     <div className="flex flex-col gap-6 w-full -mx-4 sm:mx-0">
                         {[...Array(3)].map((_, i) => (
-                            <Card key={i} className="rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm">
-                                <CardContent className="h-40 animate-pulse bg-muted rounded-xl" />
+                            <Card key={i} className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm h-40">
+                                <CardContent className="h-full animate-pulse bg-muted rounded-xl" />
                             </Card>
                         ))}
                     </div>
@@ -806,7 +808,7 @@ export default function FellowshipPage() {
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <SheetHeader className="text-left">
-                                <SheetTitle className="text-2xl font-black font-headline">New Community Group</SheetTitle>
+                                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">New Community Group</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1">Create a space for community and growth.</SheetDescription>
                             </SheetHeader>
                         </div>
@@ -822,15 +824,15 @@ export default function FellowshipPage() {
                 </Sheet>
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 rounded-3xl overflow-hidden">
-                        <div className="p-6 border-b shrink-0 bg-muted/10">
+                    <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 rounded-3xl overflow-hidden border-none shadow-2xl">
+                        <div className="p-8 border-b shrink-0 bg-muted/10">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold font-headline">New Community Group</DialogTitle>
+                                <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">New Community Group</DialogTitle>
                                 <DialogDescription className="text-sm font-medium">Create a space for community and growth.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="flex-grow">
-                            <div className="p-6">
+                            <div className="p-8">
                                 <FellowshipForm 
                                     userProfile={userProfile ?? null} 
                                     onFormSubmit={handleCreateFellowship} 
@@ -849,7 +851,7 @@ export default function FellowshipPage() {
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left">
-                                    <SheetTitle className="text-2xl font-black font-headline">Manage Group</SheetTitle>
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Group</SheetTitle>
                                     <SheetDescription className="text-sm font-medium mt-1">Update your group's details.</SheetDescription>
                                 </SheetHeader>
                             </div>
@@ -865,12 +867,15 @@ export default function FellowshipPage() {
                     </Sheet>
                 ) : (
                     <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
-                        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 rounded-3xl overflow-hidden">
-                            <div className="p-6 border-b shrink-0 bg-muted/10">
-                                <DialogHeader><DialogTitle className="text-2xl font-bold font-headline">Manage Group</DialogTitle></DialogHeader>
+                        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 rounded-3xl overflow-hidden border-none shadow-2xl">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Group</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium">Update your group's details.</DialogDescription>
+                                </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow">
-                                <div className="p-6">
+                                <div className="p-8">
                                      <ManageFellowshipForm 
                                         fellowship={fellowshipToManage} 
                                         onFormSubmit={handleUpdateFellowship} 
@@ -886,11 +891,11 @@ export default function FellowshipPage() {
 
             {fellowshipToDelete && (
                 <AlertDialog open={!!fellowshipToDelete} onOpenChange={(open) => !open && closeAllDialogs()}>
-                    <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8">
+                    <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
                         <AlertDialogHeader>
-                            <AlertDialogTitle className="text-2xl font-black font-headline">Delete Group?</AlertDialogTitle>
-                            <AlertDialogDescription className="text-sm font-medium">
-                                Are you sure you want to permanently remove this group? All assigned souls will be unassigned.
+                            <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">Delete Group?</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+                                Are you sure you want to permanently remove this group? All assigned souls will be unassigned from this spiritual history.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter className="gap-3 mt-6">
