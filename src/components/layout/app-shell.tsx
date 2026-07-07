@@ -190,9 +190,8 @@ function PendingProvisionReminder() {
                 }, { merge: true });
             }
 
-            const soulIdStr = soulId;
-            const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulIdStr);
-            const globalSoulRef = doc(firestore, 'souls', soulIdStr);
+            const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulId);
+            const globalSoulRef = doc(firestore, 'souls', soulId);
 
             const soulDoc = await getDoc(soulUserRef);
             if (soulDoc.exists()) {
@@ -957,7 +956,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     }
   }, [profileLoading, userProfile]);
 
-  if (authLoading || (profileLoading && !isPublicRoute) || (!user && !isPublicRoute)) {
+  if (authLoading || (profileLoading && !userProfile && !isPublicRoute) || (!user && !isPublicRoute)) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
         <div className="relative mb-8"><Loader2 className="h-12 w-12 animate-spin text-primary" /><div className="absolute inset-0 flex items-center justify-center"><div className="h-2 w-2 rounded-full bg-primary animate-pulse" /></div></div>

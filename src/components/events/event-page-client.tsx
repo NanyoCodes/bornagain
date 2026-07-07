@@ -133,7 +133,7 @@ export default function EventPageClient() {
   };
 
   return (
-    <div className="space-y-8 md:space-y-12 max-w-5xl mx-auto pb-32 w-full">
+    <div className="space-y-8 md:space-y-12 max-w-3xl mx-auto pb-32 w-full">
         <header className="px-4 sm:px-0 space-y-6 pt-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
