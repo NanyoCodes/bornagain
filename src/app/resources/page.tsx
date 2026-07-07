@@ -30,7 +30,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Kingdom Library - Dashboard Resources',
+  title: 'Kingdom Library - Testify Global Resources',
   description: 'Access practical guides and growth tracks for your spiritual walk and evangelism mission.',
 };
 
@@ -167,10 +167,10 @@ const growthTracks = [
   }
 ];
 
-export default function DashboardResourcesPage() {
+export default function ResourcesPage() {
   return (
-    <div className="space-y-12 max-w-6xl mx-auto pb-32 w-full">
-      <header className="px-4 sm:px-0 space-y-4 pt-4">
+    <div className="space-y-12 max-w-6xl mx-auto pb-32 w-full p-4 sm:p-8">
+      <header className="space-y-4 pt-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="space-y-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">

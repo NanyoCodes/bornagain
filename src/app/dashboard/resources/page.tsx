@@ -289,7 +289,7 @@ export default function DashboardResourcesPage() {
 
       <footer className="text-center pt-12 border-t mt-12 px-8">
         <p className="text-[10px] text-muted-foreground italic font-bold uppercase tracking-[0.2em] max-w-md mx-auto opacity-40">
-          "Study to shew thyself approved unto God, a workman that needeth not to be ashamed, rightly dividing the word of truth." — 2 Timothy 2:15
+          "© {new Date().getFullYear()} Testify Global • Equipping for the Harvest"
         </p>
       </footer>
     </div>
