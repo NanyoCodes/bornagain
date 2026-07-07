@@ -268,9 +268,9 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange, currencySymbol }: {
 
 export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const searchParams = useSearchParams();
-    const soulId = searchParams.get('soulId');
-    const soulName = searchParams.get('soulName');
-    const actionId = searchParams.get('actionId');
+    const soulId = searchParams?.get('soulId') || null;
+    const soulName = searchParams?.get('soulName') || null;
+    const actionId = searchParams?.get('actionId') || null;
     
     const { user, loading: userLoading } = useUser();
     const { userProfile } = useUserProfile();
@@ -318,16 +318,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     }, [editCountry, countriesList]);
 
     const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || itemToEdit || isCartOpen || isOrdersOpen);
-
-    useEffect(() => {
-        if (!isAnyModalOpen && typeof document !== 'undefined') {
-            const timer = setTimeout(() => {
-                document.body.style.pointerEvents = 'auto';
-                document.body.removeAttribute('aria-hidden');
-            }, 300);
-            return () => clearTimeout(timer);
-        }
-    }, [isAnyModalOpen]);
 
     useEffect(() => {
         setMounted(true);
@@ -439,6 +429,13 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         });
         return Object.values(groups);
     }, [cartItems]);
+
+    const cartTotal = useMemo(() => {
+        // This is a rough sum, but since givers pay vendors individually, the real totals are in cartByVendor
+        const subtotal = cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0);
+        const shippingTotal = cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0);
+        return subtotal + shippingTotal;
+    }, [cartItems, cartByVendor]);
 
     const cartCount = useMemo(() => cartItems.reduce((acc, c) => acc + c.quantity, 0), [cartItems]);
 
@@ -870,7 +867,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
-                        <Input name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                        <Input name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
                     </div>
 
                     <div className="space-y-2">
@@ -901,7 +898,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
                                         <SelectValue placeholder="Country" />
                                     </SelectTrigger>
-                                    <SelectContent className="max-h-[300px]">
+                                    <SelectContent className="max-h-[300px] overflow-y-auto">
                                         {countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
@@ -910,9 +907,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">State</Label>
                                 <Select onValueChange={setEditState} value={editState} disabled={!editCountry || statesList.length === 0}>
                                     <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner">
-                                        <SelectValue placeholder="State" />
+                                        <SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} />
                                     </SelectTrigger>
-                                    <SelectContent className="max-h-[300px]">
+                                    <SelectContent className="max-h-[300px] overflow-y-auto">
                                         {statesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
@@ -1017,7 +1014,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 {vendorGroup.items.map(c => (
                                     <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner">
                                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
+                                            <div className="h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
                                                 <ItemIcon className="h-5 w-5 text-primary" />
                                             </div>
                                             <div className="min-w-0 flex-1">
@@ -1155,215 +1152,204 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 
-    const loading = loadingVendor || loadingMeals || userLoading;
-
     if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
     
-    if (!vendor) {
-        return (
-            <div className="flex h-full w-full flex-col items-center justify-center bg-background">
-                <p className="text-muted-foreground">Storefront not found.</p>
-                 <Button variant="outline" asChild className="mt-4">
-                    <Link href="/dashboard/marketplace"><ArrowLeft className="mr-2 h-4 w-4" />Back to Marketplace</Link>
-                </Button>
-            </div>
-        );
-    }
-
     return (
-        <div 
-            className="space-y-8 pb-32 max-w-4xl mx-auto"
-            inert={isAnyModalOpen ? true : undefined}
-        >
-            <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4">
-                <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
-                            <ArrowLeft className="h-6 w-6" />
-                        </Button>
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2.5 mb-1">
-                                <CenterIcon className="h-3.5 w-3.5 text-primary" />
-                                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
+        <div className="w-full">
+            <div 
+                className="space-y-8 pb-32 max-w-4xl mx-auto"
+                inert={isAnyModalOpen ? true : undefined}
+            >
+                <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4">
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-4">
+                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
+                                <ArrowLeft className="h-6 w-6" />
+                            </Button>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2.5 mb-1">
+                                    <CenterIcon className="h-3.5 w-3.5 text-primary" />
+                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
+                                </div>
                             </div>
+                        </div>
+
+                        <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted">
+                            {vendor?.photoURL ? (
+                                <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
+                            ) : (
+                                <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5">
+                                    <Store className="h-16 w-16 text-primary opacity-10" />
+                                    <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mt-2">Kingdom Hub</p>
+                                </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                            <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%]">
+                                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance">{vendor?.businessName}</h1>
+                                <div className="flex items-center gap-2 mt-2 opacity-80">
+                                    <MapPin className="h-3.5 w-3.5 text-primary" />
+                                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor?.location || 'Kingdom Network'}</p>
+                                </div>
+                            </div>
+                            {isOwner && (
+                                <Button 
+                                    variant="outline" 
+                                    size="icon" 
+                                    className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80"
+                                    onClick={() => setIsEditProfileOpen(true)}
+                                >
+                                    <Camera className="h-5 w-5" />
+                                </Button>
+                            )}
+                            {vendor?.currency && (
+                                <Badge className="absolute top-4 right-4 rounded-xl bg-primary text-white border-none h-10 px-4 font-black uppercase tracking-widest shadow-xl hidden sm:flex">
+                                    <Globe className="mr-2 h-4 w-4" /> {vendor.currency}
+                                </Badge>
+                            )}
                         </div>
                     </div>
-
-                    <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted">
-                        {vendor?.photoURL ? (
-                            <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
+                    
+                    <div className="flex items-center justify-between gap-4 px-1">
+                        {!isOwner ? (
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button 
+                                            variant="outline" 
+                                            size="icon" 
+                                            className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0"
+                                            onClick={handleInitiateChat}
+                                            disabled={isChatLoading}
+                                        >
+                                            {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Provider Chat</p></TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         ) : (
-                            <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5">
-                                <Store className="h-16 w-16 text-primary opacity-10" />
-                                <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mt-2">Kingdom Hub</p>
-                            </div>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button 
+                                            variant="outline" 
+                                            size="icon" 
+                                            className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0"
+                                            onClick={() => setIsOrdersOpen(true)}
+                                        >
+                                            <ShoppingBag className="h-5 w-5" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Manage Orders</p></TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                        <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%]">
-                            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance">{vendor?.businessName}</h1>
-                            <div className="flex items-center gap-2 mt-2 opacity-80">
-                                <MapPin className="h-3.5 w-3.5 text-primary" />
-                                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor?.location || 'Kingdom Network'}</p>
-                            </div>
-                        </div>
                         {isOwner && (
-                            <Button 
-                                variant="outline" 
-                                size="icon" 
-                                className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80"
-                                onClick={() => setIsEditProfileOpen(true)}
-                            >
-                                <Camera className="h-5 w-5" />
+                            <Button variant="outline" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
+                                <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
                             </Button>
                         )}
-                        {vendor?.currency && (
-                            <Badge className="absolute top-4 right-4 rounded-xl bg-primary text-white border-none h-10 px-4 font-black uppercase tracking-widest shadow-xl hidden sm:flex">
-                                <Globe className="mr-2 h-4 w-4" /> {vendor.currency}
-                            </Badge>
-                        )}
                     </div>
-                </div>
-                
-                <div className="flex items-center justify-between gap-4 px-1">
-                    {!isOwner ? (
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button 
-                                        variant="outline" 
-                                        size="icon" 
-                                        className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0"
-                                        onClick={handleInitiateChat}
-                                        disabled={isChatLoading}
-                                    >
-                                        {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Provider Chat</p></TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    ) : (
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button 
-                                        variant="outline" 
-                                        size="icon" 
-                                        className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0"
-                                        onClick={() => setIsOrdersOpen(true)}
-                                    >
-                                        <ShoppingBag className="h-5 w-5" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Manage Orders</p></TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+
+                    {vendor?.description && (
+                    <p className="text-sm sm:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance max-w-3xl">
+                        &ldquo;{vendor.description}&rdquo;
+                    </p>
                     )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0">
                     {isOwner && (
-                        <Button variant="outline" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
-                            <Edit className="mr-2 h-4 w-4" /> MANAGE PROFILE
-                        </Button>
-                    )}
-                </div>
-
-                {vendor?.description && (
-                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance max-w-3xl">
-                    &ldquo;{vendor.description}&rdquo;
-                  </p>
-                )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0">
-                {isOwner && (
-                    <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm" onClick={() => setIsAddMealOpen(true)}>
-                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4"><Plus className="h-6 w-6 text-primary" /></div>
-                        <h3 className="font-black uppercase tracking-widest text-primary text-xs">{addLabel}</h3>
-                    </Card>
-                )}
-
-                {loadingMeals ? (
-                     [...Array(3)].map((_, i) => (
-                        <Card key={i} className="rounded-[2.5rem] border-none shadow-sm animate-pulse h-[300px]"><CardContent className="h-full bg-muted/30 rounded-[2.5rem]" /></Card>
-                    ))
-                ) : meals?.map(meal => {
-                    const cartItem = cart[meal.id];
-                    const itemSymbol = getCurrencySymbol(meal.currency);
-                    return (
-                        <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full">
-                            <CardContent className="p-0">
-                                <div className="aspect-[4/3] relative bg-muted">
-                                    {meal.photoURL ? (
-                                        <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center"><ItemIcon className="h-12 w-12 text-muted-foreground opacity-10" /></div>
-                                    )}
-                                    <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5">
-                                        <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest">
-                                            {itemSymbol}{meal.price.toLocaleString()}
-                                        </Badge>
-                                        {meal.deliveryFee ? (
-                                            <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm">
-                                                + {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL
-                                            </Badge>
-                                        ) : null}
-                                    </div>
-                                    {cartItem && (
-                                        <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in">{cartItem.quantity}</div>
-                                    )}
-                                </div>
-                                <div className="p-6 sm:p-8 space-y-4 flex-grow">
-                                    <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight">{meal.name}</h3>
-                                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed">{meal.description || `Verified Kingdom service item.`}</p>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2">
-                                {isOwner && (
-                                    <div className="flex gap-2 w-full">
-                                        <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0" onClick={() => {
-                                            setItemToEdit(meal);
-                                        }}><Edit className="h-4 w-4 text-primary" /></Button>
-                                        <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0 text-destructive hover:bg-destructive/10" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4" /></Button>
-                                    </div>
-                                )}
-                                <div className="flex-grow">
-                                    {cartItem ? (
-                                        <div className="flex items-center gap-3 w-full bg-muted/30 rounded-xl p-1 border">
-                                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3" /></Button>
-                                            <span className="flex-1 text-center font-black text-xs">IN PACKAGE</span>
-                                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3" /></Button>
-                                        </div>
-                                    ) : (
-                                        <Button 
-                                            onClick={() => addToCart(meal)}
-                                            className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/10 transition-all active:scale-95"
-                                        >
-                                            {soulName ? `ADD FOR ${soulName}` : 'ADD TO PACKAGE'}
-                                        </Button>
-                                    )}
-                                </div>
-                            </CardFooter>
+                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm" onClick={() => setIsAddMealOpen(true)}>
+                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4"><Plus className="h-6 w-6 text-primary" /></div>
+                            <h3 className="font-black uppercase tracking-widest text-primary text-xs">{addLabel}</h3>
                         </Card>
-                    );
-                })}
+                    )}
+
+                    {loadingMeals ? (
+                        [...Array(3)].map((_, i) => (
+                            <Card key={i} className="rounded-[2.5rem] border-none shadow-sm animate-pulse h-[300px]"><CardContent className="h-full bg-muted/30 rounded-[2.5rem]" /></Card>
+                        ))
+                    ) : meals?.map(meal => {
+                        const cartItem = cart[meal.id];
+                        const itemSymbol = getCurrencySymbol(meal.currency);
+                        return (
+                            <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full">
+                                <CardContent className="p-0">
+                                    <div className="aspect-[4/3] relative bg-muted">
+                                        {meal.photoURL ? (
+                                            <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center"><ItemIcon className="h-12 w-12 text-muted-foreground opacity-10" /></div>
+                                        )}
+                                        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5">
+                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest">
+                                                {itemSymbol}{meal.price.toLocaleString()}
+                                            </Badge>
+                                            {meal.deliveryFee ? (
+                                                <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm">
+                                                    + {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL
+                                                </Badge>
+                                            ) : null}
+                                        </div>
+                                        {cartItem && (
+                                            <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in">{cartItem.quantity}</div>
+                                        )}
+                                    </div>
+                                    <div className="p-6 sm:p-8 space-y-4 flex-grow">
+                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight">{meal.name}</h3>
+                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed">{meal.description || `Verified Kingdom service item.`}</p>
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2">
+                                    {isOwner && (
+                                        <div className="flex gap-2 w-full">
+                                            <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0" onClick={() => {
+                                                setItemToEdit(meal);
+                                            }}><Edit className="h-4 w-4 text-primary" /></Button>
+                                            <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0 text-destructive hover:bg-destructive/10" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4" /></Button>
+                                        </div>
+                                    )}
+                                    <div className="flex-grow">
+                                        {cartItem ? (
+                                            <div className="flex items-center gap-3 w-full bg-muted/30 rounded-xl p-1 border">
+                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3" /></Button>
+                                                <span className="flex-1 text-center font-black text-xs">IN PACKAGE</span>
+                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3" /></Button>
+                                            </div>
+                                        ) : (
+                                            <Button 
+                                                onClick={() => addToCart(meal)}
+                                                className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/10 transition-all active:scale-95"
+                                            >
+                                                {soulName ? `ADD FOR ${soulName}` : 'ADD TO PACKAGE'}
+                                            </Button>
+                                        )}
+                                    </div>
+                                </CardFooter>
+                            </Card>
+                        );
+                    })}
+                </div>
+
+                {/* Sticky Multi-Vendor Cart Button */}
+                {cartCount > 0 && (
+                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10">
+                        <Button 
+                            onClick={() => setIsCartOpen(true)}
+                            className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="relative"><ShoppingCart className="h-5 w-5" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center">{cartCount}</span></div>
+                                <span className="text-xs">VIEW PACKAGE</span>
+                            </div>
+                            <span className="text-sm">₦/$/€ Selection</span>
+                        </Button>
+                    </div>
+                )}
             </div>
 
-            {/* Sticky Multi-Vendor Cart Button */}
-            {cartCount > 0 && (
-                <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10">
-                    <Button 
-                        onClick={() => setIsCartOpen(true)}
-                        className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="relative"><ShoppingCart className="h-5 w-5" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center">{cartCount}</span></div>
-                            <span className="text-xs">VIEW PACKAGE</span>
-                        </div>
-                        <span className="text-sm">₦/$/€ Selection</span>
-                    </Button>
-                </div>
-            )}
-
-            {/* Cart Review Sheet */}
+            {/* Modals outside inert container */}
             <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
@@ -1384,13 +1370,102 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </SheetContent>
             </Sheet>
 
-            {/* Add/Edit/Other Dialogs */}
-            <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</DialogTitle></DialogHeader></div>{itemForm()}</DialogContent></Dialog>
-            <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Offering</DialogTitle></DialogHeader></div>{itemForm(itemToEdit, true)}</DialogContent></Dialog>
-            {isOwner && <VendorOrdersSheet vendorId={vendorId} isOpen={isOrdersOpen} onOpenChange={setIsOrdersOpen} currencySymbol={currencySymbol} />}
+            <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                    <div className="p-8 border-b bg-muted/10">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</DialogTitle>
+                        </DialogHeader>
+                    </div>
+                    {itemForm()}
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                    <div className="p-8 border-b bg-muted/10">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Offering</DialogTitle>
+                        </DialogHeader>
+                    </div>
+                    {itemForm(itemToEdit, true)}
+                </DialogContent>
+            </Dialog>
+
+            {isOwner && (
+                <VendorOrdersSheet 
+                    vendorId={vendorId} 
+                    isOpen={isOrdersOpen} 
+                    onOpenChange={setIsOrdersOpen} 
+                    currencySymbol={currencySymbol} 
+                />
+            )}
+
+            {isEditProfileOpen && (
+                mounted && isMobile ? (
+                    <Sheet open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                                <SheetHeader className="text-left flex-shrink-0">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Storefront</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1">Refine your business details and mission.</SheetDescription>
+                                </SheetHeader>
+                            </div>
+                            <div className="flex-grow overflow-hidden">
+                                {editProfileForm}
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                ) : (
+                    <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                        <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Storefront</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1">Refine your business details and mission.</SheetDescription>
+                                </DialogHeader>
+                            </div>
+                            <div className="flex-grow overflow-hidden">
+                                {editProfileForm}
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                )
+            )}
             
-            <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}><AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed">This is permanent. All items and records for this store will be removed.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}Confirm</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
-            <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}><AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl"><AlertDialogHeader><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="mt-6 gap-3"><AlertDialogCancel disabled={isDeletingItem} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+            <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Delete Storefront?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+                            This is permanent. All items and records for this store will be removed.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6">
+                        <AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
+                            {isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                            Confirm
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl">Remove Offering?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="mt-6 gap-3">
+                        <AlertDialogCancel disabled={isDeletingItem} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
+                            {isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
