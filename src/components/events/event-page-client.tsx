@@ -141,7 +141,7 @@ export default function EventPageClient() {
                         <ArrowLeft className="h-6 w-6" />
                     </Button>
                     <div className="space-y-1">
-                        <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">Kingdom Hub</h1>
+                        <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">EVENTS HUB</h1>
                         <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
                             <CalendarDays className="h-4 w-4 text-primary" /> Event Directory
                         </p>
