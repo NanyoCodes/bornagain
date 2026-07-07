@@ -454,6 +454,7 @@ export type VendorProfile = {
   status: 'active' | 'inactive';
   paymentDetails?: string;
   vendorType?: 'meal' | 'gift';
+  currency?: string;
 };
 
 export type Meal = {
@@ -485,6 +486,7 @@ export type MealGift = {
   mealName: string;
   price: number;
   deliveryFee?: number;
+  currency: string;
   status: MealGiftStatus;
   instructions?: string;
   createdAt: Timestamp;

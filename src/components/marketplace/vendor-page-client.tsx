@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -34,7 +35,8 @@ import {
     CheckCircle2,
     Truck,
     Timer,
-    XCircle
+    XCircle,
+    Globe
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -89,7 +91,20 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import Link from 'next/link';
 import { format } from 'date-fns';
 
-function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: string; isOpen: boolean; onOpenChange: (open: boolean) => void }) {
+const currencyOptions = [
+    { value: 'NGN', label: 'Naira (₦)', symbol: '₦' },
+    { value: 'USD', label: 'US Dollar ($)', symbol: '$' },
+    { value: 'EUR', label: 'Euro (€)', symbol: '€' },
+    { value: 'GBP', label: 'British Pound (£)', symbol: '£' },
+    { value: 'GHS', label: 'Ghanaian Cedi (₵)', symbol: '₵' },
+    { value: 'KES', label: 'Kenyan Shilling (KSh)', symbol: 'KSh' },
+];
+
+const getCurrencySymbol = (code?: string) => {
+    return currencyOptions.find(opt => opt.value === code)?.symbol || '₦';
+};
+
+function VendorOrdersSheet({ vendorId, isOpen, onOpenChange, currencySymbol }: { vendorId: string; isOpen: boolean; onOpenChange: (open: boolean) => void; currencySymbol: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
@@ -176,8 +191,8 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                             <div className="flex items-center justify-between pt-2 border-t border-dashed">
                                 <p className="text-[9px] font-bold text-muted-foreground uppercase">From: {order.senderName}</p>
                                 <div className="text-right">
-                                    <p className="text-[10px] font-bold text-primary uppercase">₦{(order.price + (order.deliveryFee || 0)).toLocaleString()}</p>
-                                    {order.deliveryFee ? <p className="text-[7px] font-black uppercase text-muted-foreground">Incl. ₦{order.deliveryFee.toLocaleString()} Delivery</p> : null}
+                                    <p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(order.currency)}{(order.price + (order.deliveryFee || 0)).toLocaleString()}</p>
+                                    {order.deliveryFee ? <p className="text-[7px] font-black uppercase text-muted-foreground">Incl. {getCurrencySymbol(order.currency)}{order.deliveryFee.toLocaleString()} Delivery</p> : null}
                                 </div>
                             </div>
                         </CardContent>
@@ -294,6 +309,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const [editState, setEditState] = useState('');
     const [editCity, setEditCity] = useState('');
     const [editAddress, setEditAddress] = useState('');
+    const [editCurrency, setEditCurrency] = useState('NGN');
 
     const countriesList = useMemo(() => Country.getAllCountries(), []);
     const statesList = useMemo(() => {
@@ -366,6 +382,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         if (vendor?.photoURL) {
             setVendorPhotoURL(vendor.photoURL);
         }
+        if (vendor?.currency) {
+            setEditCurrency(vendor.currency);
+        }
     }, [vendor]);
 
     useEffect(() => {
@@ -392,13 +411,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const addLabel = isGiftVendor ? 'Add New Product' : 'Add New Meal';
     const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
     const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
+    const currencySymbol = getCurrencySymbol(vendor?.currency);
     
     const storagePath = isGiftVendor ? 'kindness-center' : 'meals-center';
 
     const cartItems = useMemo(() => Object.values(cart), [cart]);
 
     const cartByVendor = useMemo(() => {
-        const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number; subtotal: number } } = {};
+        const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number; subtotal: number; currency: string } } = {};
         cartItems.forEach(c => {
             const vId = c.item.vendorId;
             if (!groups[vId]) {
@@ -407,6 +427,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     vendorName: c.item.vendorName || 'Kingdom Provider',
                     vendorOwnerId: c.item.vendorOwnerId || '',
                     paymentDetails: c.item.vendorPaymentDetails || '',
+                    currency: c.item.currency || 'NGN',
                     items: [],
                     deliveryFee: 0,
                     subtotal: 0
@@ -418,12 +439,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         });
         return Object.values(groups);
     }, [cartItems]);
-
-    const cartTotal = useMemo(() => {
-        const itemsSubtotal = cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0);
-        const deliveryTotal = cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0);
-        return itemsSubtotal + deliveryTotal;
-    }, [cartItems, cartByVendor]);
 
     const cartCount = useMemo(() => cartItems.reduce((acc, c) => acc + c.quantity, 0), [cartItems]);
 
@@ -443,7 +458,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         vendorOwnerId: vendor?.userId,
                         vendorPaymentDetails: vendor?.paymentDetails,
                         vendorPhotoURL: vendor?.photoURL,
-                        vendorType: vendor?.vendorType
+                        vendorType: vendor?.vendorType,
+                        currency: vendor?.currency || 'NGN'
                     },
                     quantity: (existing?.quantity || 0) + 1
                 }
@@ -559,7 +575,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             deliveryFee,
             description,
             category,
-            currency: 'NGN',
+            currency: vendor?.currency || 'NGN',
             photoURL: itemPhotoURL || null,
             createdAt: serverTimestamp(),
         };
@@ -667,6 +683,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             description,
             location: locationString,
             paymentDetails,
+            currency: editCurrency,
             photoURL: vendorPhotoURL || null,
             updatedAt: serverTimestamp(),
         };
@@ -734,7 +751,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const displayAction = isGiftVendor ? 'sent gifts' : 'shared physical provisions';
         const logActionId = isGiftVendor ? 'gave_gift' : 'shared_meal';
         
-        const logNote = `Logged via Kingdom Hub: FULFILLED ${displayAction} [${itemNames}]. Total offering value: ₦${cartTotal.toLocaleString()}. Instructions: ${giftInstructions}`;
+        const logNote = `Logged via Kingdom Hub: FULFILLED ${displayAction} [${itemNames}]. Instructions: ${giftInstructions}`;
         
         const logEntry = {
             date: new Date(),
@@ -763,6 +780,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     mealName: cartItem.item.name,
                     price: cartItem.item.price,
                     deliveryFee: cartItem.item.deliveryFee || 0,
+                    currency: cartItem.item.currency || 'NGN',
                     status: 'ordered' as MealGiftStatus,
                     instructions: giftInstructions,
                     createdAt: serverTimestamp(),
@@ -855,6 +873,22 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <Input name="businessName" defaultValue={vendor.businessName} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                     </div>
 
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Store Currency</Label>
+                        <Select onValueChange={setEditCurrency} value={editCurrency}>
+                            <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                <SelectValue placeholder="Select Currency" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border-none shadow-2xl">
+                                {currencyOptions.map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value} className="rounded-xl font-bold">
+                                        {opt.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="editAddress" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Street Address</Label>
@@ -936,11 +970,11 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price (NGN ₦)</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Price ({vendor?.currency} {currencySymbol})</Label>
                         <Input name="price" type="number" defaultValue={initialItem?.price} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Fee (NGN ₦)</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Delivery Fee ({vendor?.currency} {currencySymbol})</Label>
                         <Input name="deliveryFee" type="number" defaultValue={initialItem?.deliveryFee} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                     </div>
                 </div>
@@ -966,55 +1000,58 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const cartContent = (
         <div className="space-y-10">
             <div className="space-y-6">
-                {cartByVendor.map(vendorGroup => (
-                    <div key={vendorGroup.vendorId} className="space-y-3">
-                        <div className="flex items-center justify-between px-1">
-                            <div className="flex items-center gap-2">
-                                <Store className="h-3 w-3 text-primary" />
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary truncate max-w-[150px]">{vendorGroup.vendorName} Offering</h4>
-                            </div>
-                            <Badge variant="secondary" className="h-5 px-2 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20">
-                                ₦{vendorGroup.deliveryFee.toLocaleString()} Shipping
-                            </Badge>
-                        </div>
-                        <div className="space-y-2">
-                            {vendorGroup.items.map(c => (
-                                <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner">
-                                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
-                                            <ItemIcon className="h-5 w-5 text-primary" />
-                                        </div>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="font-black text-xs sm:text-sm uppercase tracking-tight truncate">{c.item.name}</p>
-                                            <p className="text-[9px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()} x {c.quantity}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2 shrink-0 ml-2">
-                                        <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm">
-                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
-                                            <span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span>
-                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
-                                        </div>
-                                        <Button 
-                                            variant="ghost" 
-                                            size="icon" 
-                                            className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10" 
-                                            onClick={() => removeFromCart(c.item.id)}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
+                {cartByVendor.map(vendorGroup => {
+                    const groupSymbol = getCurrencySymbol(vendorGroup.currency);
+                    return (
+                        <div key={vendorGroup.vendorId} className="space-y-3">
+                            <div className="flex items-center justify-between px-1">
+                                <div className="flex items-center gap-2">
+                                    <Store className="h-3 w-3 text-primary" />
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary truncate max-w-[150px]">{vendorGroup.vendorName} Offering</h4>
                                 </div>
-                            ))}
+                                <Badge variant="secondary" className="h-5 px-2 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20">
+                                    {groupSymbol}{vendorGroup.deliveryFee.toLocaleString()} Shipping
+                                </Badge>
+                            </div>
+                            <div className="space-y-2">
+                                {vendorGroup.items.map(c => (
+                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner">
+                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
+                                                <ItemIcon className="h-5 w-5 text-primary" />
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-black text-xs sm:text-sm uppercase tracking-tight truncate">{c.item.name}</p>
+                                                <p className="text-[9px] font-bold text-primary uppercase">{groupSymbol}{c.item.price.toLocaleString()} x {c.quantity}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 shrink-0 ml-2">
+                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm">
+                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
+                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span>
+                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                                            </div>
+                                            <Button 
+                                                variant="ghost" 
+                                                size="icon" 
+                                                className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10" 
+                                                onClick={() => removeFromCart(c.item.id)}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             <div className="space-y-6">
                 {!soulName && (
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this offering? (You can order for self)</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this offering?</Label>
                         <Input 
                             placeholder="Enter recipient name" 
                             value={manualRecipientName}
@@ -1042,30 +1079,33 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <CreditCard className="h-3 w-3" /> FULFILLMENT INSTRUCTIONS
                 </Label>
                 <div className="space-y-3">
-                    {cartByVendor.map(v => (
-                        <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden">
-                            <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity">
-                                <Store className="h-10 w-10 text-primary" />
+                    {cartByVendor.map(v => {
+                        const groupSymbol = getCurrencySymbol(v.currency);
+                        return (
+                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden">
+                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity">
+                                    <Store className="h-10 w-10 text-primary" />
+                                </div>
+                                <div className="flex justify-between items-start mb-2">
+                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p>
+                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">
+                                        {groupSymbol}{(v.subtotal + v.deliveryFee).toLocaleString()}
+                                    </Badge>
+                                </div>
+                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">
+                                    {v.paymentDetails || 'Contact provider for details.'}
+                                </p>
+                                <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => copyPaymentToClipboard(v.paymentDetails)}
+                                >
+                                    <Clipboard className="h-4 w-4" />
+                                </Button>
                             </div>
-                            <div className="flex justify-between items-start mb-2">
-                                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p>
-                                <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">
-                                    ₦{(v.subtotal + v.deliveryFee).toLocaleString()}
-                                </Badge>
-                            </div>
-                            <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">
-                                {v.paymentDetails || 'Contact provider for details.'}
-                            </p>
-                            <Button 
-                                size="icon" 
-                                variant="ghost" 
-                                className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={() => copyPaymentToClipboard(v.paymentDetails)}
-                            >
-                                <Clipboard className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
 
@@ -1074,15 +1114,29 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     <span className="shrink-0">Recipient</span>
                     <span className="text-foreground truncate font-black">{soulName || manualRecipientName || 'Self'}</span>
                 </div>
-                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
-                    <span className="shrink-0">Logistics Total</span>
-                    <span className="text-foreground shrink-0 font-black">₦{cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0).toLocaleString()}</span>
-                </div>
-                <Separator className="opacity-50" />
-                <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4">
-                    <span className="shrink-0">Total Package Amount</span>
-                    <span className="shrink-0 text-2xl tracking-tighter">₦{cartTotal.toLocaleString()}</span>
-                </div>
+                {cartByVendor.length === 1 ? (
+                    <>
+                        <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
+                            <span className="shrink-0">Logistics Total</span>
+                            <span className="text-foreground shrink-0 font-black">{getCurrencySymbol(cartByVendor[0].currency)}{cartByVendor[0].deliveryFee.toLocaleString()}</span>
+                        </div>
+                        <Separator className="opacity-50" />
+                        <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4">
+                            <span className="shrink-0">Total Package Amount</span>
+                            <span className="shrink-0 text-2xl tracking-tighter">{getCurrencySymbol(cartByVendor[0].currency)}{cartTotal.toLocaleString()}</span>
+                        </div>
+                    </>
+                ) : (
+                    <div className="flex flex-col gap-2">
+                        <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Multi-currency summary</p>
+                        {cartByVendor.map(v => (
+                            <div key={v.vendorId} className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-primary">
+                                <span>{v.vendorName}</span>
+                                <span>{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</span>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -1096,7 +1150,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 className="rounded-xl h-12 flex-1 font-black shadow-xl shadow-primary/20 uppercase tracking-widest"
             >
                 {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                CONFIRM TRANSFER OF ₦{cartTotal.toLocaleString()}
+                CONFIRM TRANSFERS
             </Button>
         </div>
     );
@@ -1161,6 +1215,11 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             >
                                 <Camera className="h-5 w-5" />
                             </Button>
+                        )}
+                        {vendor?.currency && (
+                            <Badge className="absolute top-4 right-4 rounded-xl bg-primary text-white border-none h-10 px-4 font-black uppercase tracking-widest shadow-xl hidden sm:flex">
+                                <Globe className="mr-2 h-4 w-4" /> {vendor.currency}
+                            </Badge>
                         )}
                     </div>
                 </div>
@@ -1228,6 +1287,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     ))
                 ) : meals?.map(meal => {
                     const cartItem = cart[meal.id];
+                    const itemSymbol = getCurrencySymbol(meal.currency);
                     return (
                         <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full">
                             <CardContent className="p-0">
@@ -1239,11 +1299,11 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     )}
                                     <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5">
                                         <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest">
-                                            ₦{meal.price.toLocaleString()}
+                                            {itemSymbol}{meal.price.toLocaleString()}
                                         </Badge>
                                         {meal.deliveryFee ? (
                                             <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm">
-                                                + ₦{meal.deliveryFee.toLocaleString()} DEL
+                                                + {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL
                                             </Badge>
                                         ) : null}
                                     </div>
@@ -1298,7 +1358,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <div className="relative"><ShoppingCart className="h-5 w-5" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center">{cartCount}</span></div>
                             <span className="text-xs">VIEW PACKAGE</span>
                         </div>
-                        <span className="text-sm">₦{cartTotal.toLocaleString()}</span>
+                        <span className="text-sm">₦/$/€ Selection</span>
                     </Button>
                 </div>
             )}
@@ -1327,9 +1387,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             {/* Add/Edit/Other Dialogs */}
             <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{addLabel}</DialogTitle></DialogHeader></div>{itemForm()}</DialogContent></Dialog>
             <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}><DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Offering</DialogTitle></DialogHeader></div>{itemForm(itemToEdit, true)}</DialogContent></Dialog>
-            {isOwner && <VendorOrdersSheet vendorId={vendorId} isOpen={isOrdersOpen} onOpenChange={setIsOrdersOpen} />}
+            {isOwner && <VendorOrdersSheet vendorId={vendorId} isOpen={isOrdersOpen} onOpenChange={setIsOrdersOpen} currencySymbol={currencySymbol} />}
             
-            <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}><AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed">This is permanent. All items and records for this store will be removed.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="mt-6 gap-3"><AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}Confirm</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+            <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}><AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed">This is permanent. All items and records for this store will be removed.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}Confirm</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}><AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl"><AlertDialogHeader><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="mt-6 gap-3"><AlertDialogCancel disabled={isDeletingItem} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
         </div>
     );

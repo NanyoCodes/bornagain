@@ -27,7 +27,8 @@ import {
     Download,
     MessagesSquare,
     X,
-    XCircle
+    XCircle,
+    Globe
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
@@ -56,6 +57,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+const currencyOptions = [
+    { value: 'NGN', symbol: '₦' },
+    { value: 'USD', symbol: '$' },
+    { value: 'EUR', symbol: '€' },
+    { value: 'GBP', symbol: '£' },
+    { value: 'GHS', symbol: '₵' },
+    { value: 'KES', symbol: 'KSh' },
+];
+
+const getCurrencySymbol = (code?: string) => {
+    return currencyOptions.find(opt => opt.value === code)?.symbol || '₦';
+};
 
 /**
  * Ensures vendor details in the order tracker are always current.
@@ -291,15 +305,18 @@ export default function OrdersListClient() {
     const { default: autoTable } = await import('jspdf-autotable');
 
     const headers = ["Item", "Recipient", "Sender", "Provider", "Amount", "Status", "Date"];
-    const body = ordersToExport.map(o => [
-      o.mealName,
-      o.recipientName,
-      o.senderName,
-      o.vendorName,
-      `N${(o.price + (o.deliveryFee || 0)).toLocaleString()}`,
-      o.status.toUpperCase(),
-      o.createdAt ? format(o.createdAt.toDate(), 'yyyy-MM-dd') : ''
-    ]);
+    const body = ordersToExport.map(o => {
+      const sym = getCurrencySymbol(o.currency);
+      return [
+        o.mealName,
+        o.recipientName,
+        o.senderName,
+        o.vendorName,
+        `${sym}${(o.price + (o.deliveryFee || 0)).toLocaleString()}`,
+        o.status.toUpperCase(),
+        o.createdAt ? format(o.createdAt.toDate(), 'yyyy-MM-dd') : ''
+      ];
+    });
 
     if (formatType === 'pdf') {
         const docObj = new jsPDF({ orientation: 'landscape' });
@@ -419,6 +436,7 @@ export default function OrdersListClient() {
       const isGift = order.vendorType === 'gift';
       const CenterIcon = isGift ? Gift : Utensils;
       const categoryLabel = isGift ? 'Kindness Offering' : 'Meal Provision';
+      const orderSymbol = getCurrencySymbol(order.currency);
 
       return (
         <Card key={order.id} className="rounded-[2rem] overflow-hidden border shadow-sm bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all border-b-8 border-b-primary/5">
@@ -432,11 +450,14 @@ export default function OrdersListClient() {
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">{categoryLabel}</span>
                 </div>
-                {createdAt && (
-                    <span className="text-[9px] text-muted-foreground font-black uppercase tracking-tighter">
-                        {format(createdAt, 'MMM d, p')}
-                    </span>
-                )}
+                <div className="flex items-center gap-3">
+                    {order.currency && <Badge variant="outline" className="h-5 px-1.5 font-black uppercase text-[8px] bg-background/50 border-primary/20"><Globe className="h-2 w-2 mr-1" />{order.currency}</Badge>}
+                    {createdAt && (
+                        <span className="text-[9px] text-muted-foreground font-black uppercase tracking-tighter">
+                            {format(createdAt, 'MMM d, p')}
+                        </span>
+                    )}
+                </div>
             </CardHeader>
             <CardContent className="p-6 sm:p-8 space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
@@ -467,9 +488,9 @@ export default function OrdersListClient() {
                     <div className="flex flex-col items-end gap-2 shrink-0">
                          <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-t-0 pt-4 sm:pt-0">
                             <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest sm:hidden">Price Value</p>
-                            <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter">₦{(order.price + (order.deliveryFee || 0)).toLocaleString()}</p>
+                            <p className="text-xl sm:text-2xl font-black text-primary tracking-tighter">{orderSymbol}{(order.price + (order.deliveryFee || 0)).toLocaleString()}</p>
                             {order.deliveryFee ? (
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">Incl. ₦{order.deliveryFee.toLocaleString()} Delivery</p>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">Incl. {orderSymbol}{order.deliveryFee.toLocaleString()} Delivery</p>
                             ) : null}
                         </div>
                         <div className="flex items-center gap-2">
@@ -653,7 +674,7 @@ export default function OrdersListClient() {
                         Are you sure you want to cancel your offering of "{orderToCancel?.mealName}" for {orderToCancel?.recipientName}?
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="mt-6 gap-3">
+                <AlertDialogFooter className="gap-3 mt-6">
                     <AlertDialogCancel disabled={isCancelling} className="rounded-xl h-12 font-bold">Close</AlertDialogCancel>
                     <AlertDialogAction 
                         onClick={handleCancelOrder} 

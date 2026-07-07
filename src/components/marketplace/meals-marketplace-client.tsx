@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -17,7 +18,8 @@ import {
     ChevronRight,
     ShoppingBag,
     CreditCard,
-    ArrowLeft
+    ArrowLeft,
+    Globe
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -51,6 +53,15 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Country, State } from 'country-state-city';
 import { ImageUpload } from '@/components/common/image-upload';
 
+const currencyOptions = [
+    { value: 'NGN', label: 'Naira (₦)', symbol: '₦' },
+    { value: 'USD', label: 'US Dollar ($)', symbol: '$' },
+    { value: 'EUR', label: 'Euro (€)', symbol: '€' },
+    { value: 'GBP', label: 'British Pound (£)', symbol: '£' },
+    { value: 'GHS', label: 'Ghanaian Cedi (₵)', symbol: '₵' },
+    { value: 'KES', label: 'Kenyan Shilling (KSh)', symbol: 'KSh' },
+];
+
 export default function MealsMarketplaceClient() {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -68,6 +79,7 @@ export default function MealsMarketplaceClient() {
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [vendorPhotoURL, setVendorPhotoURL] = useState('');
+    const [selectedCurrency, setSelectedCurrency] = useState('NGN');
 
     // Location State
     const [selectedCountry, setSelectedCountry] = useState('');
@@ -154,6 +166,7 @@ export default function MealsMarketplaceClient() {
             description,
             location: locationString,
             paymentDetails: paymentDetails || '',
+            currency: selectedCurrency,
             status: 'active',
             vendorType: 'meal', 
             photoURL: vendorPhotoURL || null,
@@ -204,6 +217,22 @@ export default function MealsMarketplaceClient() {
                 <div className="space-y-2">
                     <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
                     <Input id="businessName" name="businessName" placeholder="e.g., Kingdom Kitchen" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                </div>
+
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Base Currency</Label>
+                    <Select onValueChange={setSelectedCurrency} value={selectedCurrency}>
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                            <SelectValue placeholder="Select Currency" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-none shadow-2xl">
+                            {currencyOptions.map(opt => (
+                                <SelectItem key={opt.value} value={opt.value} className="rounded-xl font-bold">
+                                    {opt.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="space-y-4">
@@ -357,6 +386,11 @@ export default function MealsMarketplaceClient() {
                                             <MapPin className="h-3 w-3 text-primary" /> {vendor.location || 'Local Delivery'}
                                         </div>
                                     </div>
+                                    {vendor.currency && (
+                                        <Badge className="absolute top-4 right-4 bg-background/80 backdrop-blur-md text-primary font-black uppercase text-[10px] px-2 h-6 border-none shadow-sm">
+                                            {vendor.currency}
+                                        </Badge>
+                                    )}
                                 </div>
                                 <div className="p-6">
                                     <p className="text-sm text-muted-foreground line-clamp-2 font-medium leading-relaxed italic mb-4">
