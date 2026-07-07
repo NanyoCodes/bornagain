@@ -233,9 +233,6 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange, currencySymbol }: {
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
-                <SheetTrigger asChild>
-                    <div />
-                </SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0">
@@ -402,20 +399,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         return query(collection(firestore, 'vendors', vendorId, 'meals'), orderBy('createdAt', 'desc'));
     }, [firestore, vendorId]);
     const { data: meals, loading: loadingMeals } = useCollection<Meal>(mealsQuery);
-
-    const isOwner = user?.uid === vendor?.userId;
-    const isGiftVendor = vendor?.vendorType === 'gift';
-    
-    const CenterIcon = isGiftVendor ? Gift : ChefHat;
-    const ItemIcon = isGiftVendor ? Package : Utensils;
-    const centerLabel = isGiftVendor ? 'Kindness Center' : 'Meals Center';
-    const itemLabel = isGiftVendor ? 'Product' : 'Meal';
-    const addLabel = isGiftVendor ? 'Add New Product' : 'Add New Meal';
-    const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
-    const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
-    const currencySymbol = getCurrencySymbol(vendor?.currency);
-    
-    const storagePath = isGiftVendor ? 'kindness-center' : 'meals-center';
 
     const cartItems = useMemo(() => Object.values(cart), [cart]);
 
@@ -723,7 +706,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             .then(() => {
                 toast({ title: 'Storefront Deleted', description: 'Your business profile has been removed.' });
                 setIsDeleteStoreOpen(false);
-                window.location.href = isGiftVendor ? '/dashboard/marketplace/gifts' : '/dashboard/marketplace';
+                window.location.href = vendor?.vendorType === 'gift' ? '/dashboard/marketplace/gifts' : '/dashboard/marketplace';
             })
             .catch(async (serverError) => {
                 const permissionError = new FirestorePermissionError({
@@ -756,8 +739,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         const giftsRef = collection(firestore, 'mealGifts');
         
         const itemNames = cartItems.map(c => `${c.item.name} (x${c.quantity})`).join(', ');
-        const displayAction = isGiftVendor ? 'sent gifts' : 'shared physical provisions';
-        const logActionId = isGiftVendor ? 'gave_gift' : 'shared_meal';
+        const displayAction = vendor?.vendorType === 'gift' ? 'sent gifts' : 'shared physical provisions';
+        const logActionId = vendor?.vendorType === 'gift' ? 'gave_gift' : 'shared_meal';
         
         const logNote = `Logged via Kingdom Hub: FULFILLED ${displayAction} [${itemNames}]. Instructions: ${giftInstructions}`;
         
@@ -1005,163 +988,22 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </form>
     );
 
-    const cartContent = (
-        <div className="space-y-10">
-            <div className="space-y-6">
-                {cartByVendor.map(vendorGroup => {
-                    const groupSymbol = getCurrencySymbol(vendorGroup.currency);
-                    return (
-                        <div key={vendorGroup.vendorId} className="space-y-3">
-                            <div className="flex items-center justify-between px-1">
-                                <div className="flex items-center gap-2">
-                                    <Store className="h-3 w-3 text-primary" />
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary truncate max-w-[150px]">{vendorGroup.vendorName} Offering</h4>
-                                </div>
-                                <Badge variant="secondary" className="h-5 px-2 text-[8px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20">
-                                    {groupSymbol}{vendorGroup.deliveryFee.toLocaleString()} Shipping
-                                </Badge>
-                            </div>
-                            <div className="space-y-2">
-                                {vendorGroup.items.map(c => (
-                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner">
-                                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                                            <div className="h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
-                                                <ItemIcon className="h-5 w-5 text-primary" />
-                                            </div>
-                                            <div className="min-w-0 flex-1">
-                                                <p className="font-black text-xs sm:text-sm uppercase tracking-tight truncate">{c.item.name}</p>
-                                                <p className="text-[9px] font-bold text-primary uppercase">{groupSymbol}{c.item.price.toLocaleString()} x {c.quantity}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2 shrink-0 ml-2">
-                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm">
-                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
-                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span>
-                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
-                                            </div>
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
-                                                className="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10" 
-                                                onClick={() => removeFromCart(c.item.id)}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            <div className="space-y-6">
-                {!soulName && (
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Who receives this offering?</Label>
-                        <Input 
-                            placeholder="Enter recipient name" 
-                            value={manualRecipientName}
-                            onChange={(e) => setManualRecipientName(e.target.value)}
-                            className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
-                        />
-                    </div>
-                )}
-                
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">
-                        {soulId ? 'Special Instructions' : 'Delivery & Gifting Instructions'}
-                    </Label>
-                    <Textarea 
-                        placeholder={soulId ? "e.g., Deliver to their home with a word of life..." : "Specify recipient contact and physical address..."}
-                        value={giftInstructions}
-                        onChange={(e) => setGiftInstructions(e.target.value)}
-                        className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base"
-                    />
-                </div>
-            </div>
-
-            <div className="space-y-4">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1">
-                    <CreditCard className="h-3 w-3" /> FULFILLMENT INSTRUCTIONS
-                </Label>
-                <div className="space-y-3">
-                    {cartByVendor.map(v => {
-                        const groupSymbol = getCurrencySymbol(v.currency);
-                        return (
-                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden">
-                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity">
-                                    <Store className="h-10 w-10 text-primary" />
-                                </div>
-                                <div className="flex justify-between items-start mb-2"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">{groupSymbol}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div>
-                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">
-                                    {v.paymentDetails || 'Contact provider for details.'}
-                                </p>
-                                <Button 
-                                    size="icon" 
-                                    variant="ghost" 
-                                    className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => copyPaymentToClipboard(v.paymentDetails)}
-                                >
-                                    <Clipboard className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-
-            <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner">
-                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
-                    <span className="shrink-0">Recipient</span>
-                    <span className="text-foreground truncate font-black">{soulName || manualRecipientName || 'Self'}</span>
-                </div>
-                {cartByVendor.length === 1 ? (
-                    <>
-                        <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4">
-                            <span className="shrink-0">Logistics Total</span>
-                            <span className="text-foreground shrink-0 font-black">{getCurrencySymbol(cartByVendor[0].currency)}{cartByVendor[0].deliveryFee.toLocaleString()}</span>
-                        </div>
-                        <Separator className="opacity-50" />
-                        <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4">
-                            <span className="shrink-0">Total Package Amount</span>
-                            <span className="shrink-0 text-2xl tracking-tighter">{getCurrencySymbol(cartByVendor[0].currency)}{cartTotal.toLocaleString()}</span>
-                        </div>
-                    </>
-                ) : (
-                    <div className="flex flex-col gap-2">
-                        <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Multi-currency summary</p>
-                        {cartByVendor.map(v => (
-                            <div key={v.vendorId} className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-primary">
-                                <span>{v.vendorName}</span>
-                                <span>{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</span>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-
-    const cartFooter = (
-        <div className="flex flex-col sm:flex-row gap-3 w-full">
-            <Button variant="outline" onClick={() => setIsCartOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Catalog</Button>
-            <Button 
-                onClick={handleGiftItems} 
-                disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim() || cartItems.length === 0} 
-                className="rounded-xl h-12 flex-1 font-black shadow-xl shadow-primary/20 uppercase tracking-widest"
-            >
-                {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                CONFIRM TRANSFERS
-            </Button>
-        </div>
-    );
-
     const loading = userLoading || loadingVendor || loadingMeals;
 
     if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
     
+    if (!vendor) return <div className="text-center p-12"><p>Storefront not found.</p></div>;
+
+    const isOwner = user?.uid === vendor.userId;
+    const isGiftVendor = vendor.vendorType === 'gift';
+    const centerLabel = isGiftVendor ? 'Kindness Center' : 'Meals Center';
+    const itemLabel = isGiftVendor ? 'Product' : 'Meal';
+    const addLabel = isGiftVendor ? 'Add New Product' : 'Add New Meal';
+    const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
+    const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
+    const currencySymbol = getCurrencySymbol(vendor.currency);
+    const storagePath = isGiftVendor ? 'kindness-center' : 'meals-center';
+
     return (
         <div className="w-full">
             <div 
@@ -1176,14 +1018,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             </Button>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2.5 mb-1">
-                                    <CenterIcon className="h-3.5 w-3.5 text-primary" />
+                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary" /> : <Utensils className="h-3.5 w-3.5 text-primary" />}
                                     <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{centerLabel}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted">
-                            {vendor?.photoURL ? (
+                            {vendor.photoURL ? (
                                 <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
                             ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5">
@@ -1193,10 +1035,10 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             )}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                             <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%]">
-                                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance">{vendor?.businessName}</h1>
+                                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance">{vendor.businessName}</h1>
                                 <div className="flex items-center gap-2 mt-2 opacity-80">
                                     <MapPin className="h-3.5 w-3.5 text-primary" />
-                                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor?.location || 'Kingdom Network'}</p>
+                                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor.location || 'Kingdom Network'}</p>
                                 </div>
                             </div>
                             {isOwner && (
@@ -1209,7 +1051,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <Camera className="h-5 w-5" />
                                 </Button>
                             )}
-                            {vendor?.currency && (
+                            {vendor.currency && (
                                 <Badge className="absolute top-4 right-4 rounded-xl bg-primary text-white border-none h-10 px-4 font-black uppercase tracking-widest shadow-xl hidden sm:flex">
                                     <Globe className="mr-2 h-4 w-4" /> {vendor.currency}
                                 </Badge>
@@ -1259,7 +1101,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         )}
                     </div>
 
-                    {vendor?.description && (
+                    {vendor.description && (
                     <p className="text-sm sm:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance max-w-3xl">
                         &ldquo;{vendor.description}&rdquo;
                     </p>
@@ -1274,11 +1116,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         </Card>
                     )}
 
-                    {loadingMeals ? (
-                        [...Array(3)].map((_, i) => (
-                            <Card key={i} className="rounded-[2.5rem] border-none shadow-sm animate-pulse h-[300px]"><CardContent className="h-full bg-muted/30 rounded-[2.5rem]" /></Card>
-                        ))
-                    ) : meals?.map(meal => {
+                    {meals?.map(meal => {
                         const cartItem = cart[meal.id];
                         const itemSymbol = getCurrencySymbol(meal.currency);
                         return (
@@ -1288,7 +1126,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         {meal.photoURL ? (
                                             <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center"><ItemIcon className="h-12 w-12 text-muted-foreground opacity-10" /></div>
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                {isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10" />}
+                                            </div>
                                         )}
                                         <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5">
                                             <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest">
@@ -1340,7 +1180,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                     })}
                 </div>
 
-                {/* Sticky Multi-Vendor Cart Button */}
                 {cartCount > 0 && (
                     <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10">
                         <Button 
@@ -1351,29 +1190,28 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <div className="relative"><ShoppingCart className="h-5 w-5" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center">{cartCount}</span></div>
                                 <span className="text-xs">VIEW PACKAGE</span>
                             </div>
-                            <span className="text-sm">₦/$/€ Selection</span>
+                            <span className="text-sm">CHECKOUT</span>
                         </Button>
                     </div>
                 )}
             </div>
 
-            {/* Modals outside inert container */}
             <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10"><div className="flex items-center gap-2 mb-2"><ShoppingCart className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span></div><SheetHeader className="text-left flex-shrink-0"><SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Review selection for {soulName || manualRecipientName || 'Self'}. One delivery fee per supplier.</SheetDescription></SheetHeader></div>
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10"><div className="flex items-center gap-2 mb-2"><ShoppingCart className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span></div><SheetHeader className="text-left flex-shrink-0"><SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Review selection for {soulName || manualRecipientName || 'Self'}.</SheetDescription></SheetHeader></div>
                     <ScrollArea className="flex-grow min-h-0 overscroll-contain">
                         <div className="p-8 space-y-10">{cartItems.length > 0 ? (
                             <div className="space-y-10">
-                                <div className="space-y-8">{cartByVendor.map(group => (<div key={group.vendorId} className="space-y-3"><div className="flex items-center justify-between px-1"><div className="flex items-center gap-2"><Store className="h-3.5 w-3.5 text-primary" /><h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[150px]">{group.vendorName}</h4></div><Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">₦{group.deliveryFee.toLocaleString()} Delivery</Badge></div><div className="space-y-2">{group.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group"><div className="flex items-center gap-3 min-w-0 flex-1"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div><div className="min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => handleRemoveFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button></div></div>))}</div></div>))}</div>
-                                <div className="space-y-6"><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label><Input placeholder="Enter recipient (e.g., Self or a Brother's name)" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label><Textarea placeholder="Specify contact details and physical address for delivery..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" /></div></div>
-                                <div className="space-y-4"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label><div className="space-y-3">{cartByVendor.map(v => (<div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity"><Store className="h-10 w-10 text-primary" /></div><div className="flex justify-between items-start mb-2"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">₦{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button></div>))}</div></div>
-                                <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner"><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Selection subtotal</span><span className="text-foreground shrink-0 font-black">₦{cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0).toLocaleString()}</span></div><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Delivery Total</span><span className="text-foreground shrink-0 font-black">₦{cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0).toLocaleString()}</span></div><Separator className="opacity-50" /><div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4"><span className="shrink-0">Total Package Amount</span><span className="shrink-0 text-2xl tracking-tighter">₦{cartTotal.toLocaleString()}</span></div></div>
+                                <div className="space-y-6">{cartByVendor.map(group => (<div key={group.vendorId} className="space-y-3"><div className="flex items-center justify-between px-1"><div className="flex items-center gap-2"><Store className="h-3.5 w-3.5 text-primary" /><h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[150px]">{group.vendorName}</h4></div><Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge></div><div className="space-y-2">{group.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group"><div className="flex items-center gap-3 min-w-0 flex-1"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div><div className="min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button></div></div>))}</div></div>))}</div>
+                                <div className="space-y-6"><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label><Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label><Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" /></div></div>
+                                <div className="space-y-4"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label><div className="space-y-3">{cartByVendor.map(v => (<div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity"><Store className="h-10 w-10 text-primary" /></div><div className="flex justify-between items-start mb-2"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => copyPaymentToClipboard(v.paymentDetails)}><Clipboard className="h-4 w-4" /></Button></div>))}</div></div>
+                                <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner"><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Selection subtotal</span><span className="text-foreground shrink-0 font-black">₦/$/€ Selection</span></div><Separator className="opacity-50" /><div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4"><span className="shrink-0">Action Required</span><span className="shrink-0 text-xl tracking-tighter">Review Vendors Below</span></div></div>
                             </div>
                         ) : (
-                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance">Visit the Meals or Kindness hub to start building an offering package.</p><Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}><Link href="/dashboard/marketplace">PROVIDE OFFERING</Link></Button></div>
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance">Add items to start building an offering package.</p></div>
                         )}<div className="h-24" /></div>
                     </ScrollArea>
-                    {cartItems.length > 0 && (<SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm shadow-[0_-10px_20px_rgba(0,0,0,0.05)]"><Button onClick={handleGlobalCheckout} disabled={isProcessingOrder || !giftInstructions.trim() || cartItems.length === 0} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">{isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}DISPATCH OFFERINGS</Button></SheetFooter>)}
+                    {cartItems.length > 0 && (<SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">{isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}DISPATCH OFFERINGS</Button></SheetFooter>)}
                 </SheetContent>
             </Sheet>
 
