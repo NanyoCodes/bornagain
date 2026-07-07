@@ -1,9 +1,8 @@
-
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useUser, useAuth, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc } from 'firebase/firestore';
 import type { VendorProfile, Meal, UserProfile, Chat, MealGift, MealGiftStatus } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -234,6 +233,9 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange, currencySymbol }: {
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
+                <SheetTrigger asChild>
+                    <div />
+                </SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0">
@@ -318,6 +320,16 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     }, [editCountry, countriesList]);
 
     const isAnyModalOpen = !!(isAddMealOpen || isEditProfileOpen || isDeleteStoreOpen || itemToDelete || itemToEdit || isCartOpen || isOrdersOpen);
+
+    useEffect(() => {
+        if (!isAnyModalOpen && typeof document !== 'undefined') {
+            const timer = setTimeout(() => {
+                document.body.style.pointerEvents = 'auto';
+                document.body.removeAttribute('aria-hidden');
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [isAnyModalOpen]);
 
     useEffect(() => {
         setMounted(true);
@@ -431,7 +443,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     }, [cartItems]);
 
     const cartTotal = useMemo(() => {
-        // This is a rough sum, but since givers pay vendors individually, the real totals are in cartByVendor
         const subtotal = cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0);
         const shippingTotal = cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0);
         return subtotal + shippingTotal;
@@ -1083,12 +1094,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity">
                                     <Store className="h-10 w-10 text-primary" />
                                 </div>
-                                <div className="flex justify-between items-start mb-2">
-                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p>
-                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">
-                                        {groupSymbol}{(v.subtotal + v.deliveryFee).toLocaleString()}
-                                    </Badge>
-                                </div>
+                                <div className="flex justify-between items-start mb-2"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">{groupSymbol}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div>
                                 <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">
                                     {v.paymentDetails || 'Contact provider for details.'}
                                 </p>
@@ -1352,21 +1358,20 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             {/* Modals outside inert container */}
             <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left flex-shrink-0">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Review selection for {soulName || 'Self'}. One delivery fee per supplier.</SheetDescription>
-                        </SheetHeader>
-                    </div>
-                    <ScrollArea className="flex-grow min-h-0">
-                        <div className="p-8">
-                            {cartContent}
-                            <div className="h-24" />
-                        </div>
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10"><div className="flex items-center gap-2 mb-2"><ShoppingCart className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span></div><SheetHeader className="text-left flex-shrink-0"><SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Review selection for {soulName || manualRecipientName || 'Self'}. One delivery fee per supplier.</SheetDescription></SheetHeader></div>
+                    <ScrollArea className="flex-grow min-h-0 overscroll-contain">
+                        <div className="p-8 space-y-10">{cartItems.length > 0 ? (
+                            <div className="space-y-10">
+                                <div className="space-y-8">{cartByVendor.map(group => (<div key={group.vendorId} className="space-y-3"><div className="flex items-center justify-between px-1"><div className="flex items-center gap-2"><Store className="h-3.5 w-3.5 text-primary" /><h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[150px]">{group.vendorName}</h4></div><Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">₦{group.deliveryFee.toLocaleString()} Delivery</Badge></div><div className="space-y-2">{group.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group"><div className="flex items-center gap-3 min-w-0 flex-1"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div><div className="min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => handleRemoveFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button></div></div>))}</div></div>))}</div>
+                                <div className="space-y-6"><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label><Input placeholder="Enter recipient (e.g., Self or a Brother's name)" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label><Textarea placeholder="Specify contact details and physical address for delivery..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" /></div></div>
+                                <div className="space-y-4"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label><div className="space-y-3">{cartByVendor.map(v => (<div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity"><Store className="h-10 w-10 text-primary" /></div><div className="flex justify-between items-start mb-2"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">₦{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button></div>))}</div></div>
+                                <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner"><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Selection subtotal</span><span className="text-foreground shrink-0 font-black">₦{cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0).toLocaleString()}</span></div><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Delivery Total</span><span className="text-foreground shrink-0 font-black">₦{cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0).toLocaleString()}</span></div><Separator className="opacity-50" /><div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4"><span className="shrink-0">Total Package Amount</span><span className="shrink-0 text-2xl tracking-tighter">₦{cartTotal.toLocaleString()}</span></div></div>
+                            </div>
+                        ) : (
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance">Visit the Meals or Kindness hub to start building an offering package.</p><Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}><Link href="/dashboard/marketplace">PROVIDE OFFERING</Link></Button></div>
+                        )}<div className="h-24" /></div>
                     </ScrollArea>
-                    <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
-                        {cartFooter}
-                    </SheetFooter>
+                    {cartItems.length > 0 && (<SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm shadow-[0_-10px_20px_rgba(0,0,0,0.05)]"><Button onClick={handleGlobalCheckout} disabled={isProcessingOrder || !giftInstructions.trim() || cartItems.length === 0} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">{isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}DISPATCH OFFERINGS</Button></SheetFooter>)}
                 </SheetContent>
             </Sheet>
 
@@ -1422,7 +1427,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Storefront</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1">Refine your business details and mission.</SheetDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1">Refine your business details and mission.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <div className="flex-grow overflow-hidden">
