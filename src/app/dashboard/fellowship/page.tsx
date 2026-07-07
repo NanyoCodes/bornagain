@@ -714,7 +714,7 @@ export default function FellowshipPage() {
     return (
         <div className="space-y-8 pb-32 w-full max-w-3xl mx-auto">
             {/* Responsive Single-Row Interaction Box */}
-            <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0">
+            <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm">
                 <CardContent className="p-3 sm:p-4">
                   <div className="flex flex-row items-center gap-2 sm:gap-3">
                     <Button 
@@ -771,15 +771,15 @@ export default function FellowshipPage() {
                 </div>
 
                 {loading ? (
-                    <div className="flex flex-col gap-6 w-full -mx-4 sm:mx-0">
+                    <div className="flex flex-col gap-6 w-full">
                         {[...Array(3)].map((_, i) => (
-                            <Card key={i} className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm h-40">
-                                <CardContent className="h-full animate-pulse bg-muted rounded-xl" />
+                            <Card key={i} className="rounded-2xl shadow-none h-40">
+                                <CardContent className="h-full animate-pulse bg-muted rounded-2xl" />
                             </Card>
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
+                    <div className="flex flex-col gap-4 w-full">
                         {filteredFellowships.map((f) => (
                             <FellowshipCard 
                               key={f.id} 
@@ -794,7 +794,7 @@ export default function FellowshipPage() {
                             <div className="col-span-full text-center py-24 px-8 flex flex-col items-center">
                                 <Users className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
                                 <h3 className="text-xl font-bold font-headline uppercase tracking-tight">No {activeTab.toLowerCase()}s Found</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">Try a different filter or start a new group in your area.</p>
+                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto">Try a different filter or start a new group in your area.</p>
                             </div>
                         )}
                     </div>
@@ -822,7 +822,7 @@ export default function FellowshipPage() {
                 </Sheet>
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 rounded-3xl overflow-hidden border-none shadow-2xl">
+                    <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
                         <div className="p-8 border-b shrink-0 bg-muted/10">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">New Community Group</DialogTitle>
@@ -865,7 +865,7 @@ export default function FellowshipPage() {
                     </Sheet>
                 ) : (
                     <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
-                        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 rounded-3xl overflow-hidden border-none shadow-2xl">
+                        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Group</DialogTitle>
@@ -897,7 +897,7 @@ export default function FellowshipPage() {
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter className="gap-3 mt-6">
-                            <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12">Cancel</AlertDialogCancel>
+                            <AlertDialogCancel className="rounded-2xl h-12">Cancel</AlertDialogCancel>
                             <AlertDialogAction onClick={handleDeleteFellowship} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
                                 {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Confirm Delete

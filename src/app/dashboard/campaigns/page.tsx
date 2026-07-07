@@ -51,9 +51,9 @@ import { useRouter } from "next/navigation";
 
 function CampaignSkeletons() {
   return (
-    <div className="flex flex-col gap-6 w-full max-w-3xl mx-auto -mx-4 sm:mx-0">
+    <div className="flex flex-col gap-6 w-full max-w-3xl mx-auto">
       {[...Array(3)].map((_, i) => (
-        <Card key={i} className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+        <Card key={i} className="rounded-2xl border bg-card/50 backdrop-blur-sm">
           <CardContent className="p-6 space-y-4">
             <div className="space-y-2">
               <Skeleton className="h-6 w-3/4" />
@@ -381,8 +381,8 @@ export default function CampaignsPage() {
         className="space-y-8 pb-32 w-full max-w-3xl mx-auto px-0"
         inert={isAnyModalOpen ? true : undefined}
       >
-        {/* Interaction Box - Full Bleed Mobile */}
-        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0">
+        {/* Interaction Box */}
+        <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm">
           <CardContent className="p-3 sm:p-4">
             <div className="flex flex-row items-center gap-2 sm:gap-3">
               <Button 
@@ -437,8 +437,8 @@ export default function CampaignsPage() {
         </div>
 
 
-        {/* Campaign List - Full Bleed Mobile */}
-        <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
+        {/* Campaign List */}
+        <div className="flex flex-col gap-4 w-full">
           {loading && <CampaignSkeletons />}
           {!loading && sortedAndFilteredCampaigns?.map((campaign) => (
             <CampaignCard 
@@ -562,7 +562,7 @@ export default function CampaignsPage() {
 
       {/* Action Dialogs */}
       <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => { if (!open) setCampaignToDelete(null); router.refresh(); }}>
-        <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8">
+        <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
           <AlertDialogHeader>
               <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">Delete Mission?</AlertDialogTitle>
               <AlertDialogDescription className="text-sm font-medium">
