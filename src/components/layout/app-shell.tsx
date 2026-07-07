@@ -572,7 +572,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
               <DropdownMenuContent className="w-64 rounded-2xl shadow-xl" align="end">
                 <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-bold leading-tight truncate">{user.displayName || 'User'}</p>
+                    <p className="text-sm font-bold leading-none">{user.displayName || 'User'}</p>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
@@ -721,7 +721,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const soulName = searchParams.get('soulName');
+  const soulName = searchParams?.get('soulName') || null;
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);

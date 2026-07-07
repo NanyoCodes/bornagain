@@ -381,7 +381,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
   };
 
   return (
-    <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-2 sm:border-b-8 border-b-primary/5">
+    <Card className="rounded-none sm:rounded-xl overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-2 sm:border-b-8 border-b-primary/5">
       <CardHeader className="p-4 sm:p-6 pb-2">
         <div className="flex justify-between items-start">
           <Badge className="h-5 text-[8px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20">

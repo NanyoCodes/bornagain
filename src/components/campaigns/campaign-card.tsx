@@ -174,7 +174,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
             <DialogHeader>
                 <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance">Participants for "{campaign.title}"</DialogTitle>
                 <DialogDescription className="text-sm font-medium">
-                    {campaign.participants || 0} people have joined this mission.
+                    {campaign.participantCount || 0} people have joined this mission.
                 </DialogDescription>
             </DialogHeader>
         </div>
@@ -531,7 +531,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" className="rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onShareTestimony(); }}>
+          <Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onShareTestimony(); }}>
             <Newspaper className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
@@ -546,7 +546,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline" size="icon" className="rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}>
+          <Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onLogSoul(); }}>
             <UserPlus className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
@@ -562,7 +562,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     <Button 
         variant="outline" 
         size="icon" 
-        className="rounded-full shadow-sm"
+        className="h-9 w-9 rounded-full shadow-sm"
         onClick={handleShare} 
         disabled={status === 'Past'}
     >
@@ -686,7 +686,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                       <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="outline" size="icon" className="rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onManage(); }}>
+                                <Button variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm" onClick={(e) => { e.stopPropagation(); onManage(); }}>
                                     <Edit className="h-4 w-4" /><span className="sr-only">Manage Campaign</span>
                                 </Button>
                             </TooltipTrigger>
@@ -719,7 +719,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button onClick={handleInitiateChat} variant="outline" size="icon" className="rounded-full shadow-sm" disabled={!userId || isChatLoading}>
+                                    <Button onClick={handleInitiateChat} variant="outline" size="icon" className="h-9 w-9 rounded-full shadow-sm" disabled={!userId || isChatLoading}>
                                          {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessagesSquare className="h-4 w-4" />}
                                     </Button>
                                 </TooltipTrigger>
