@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Stronghold Resources & Provisions Support - 2025-10-20T10:00:00Z
+    // Deployment trigger: Stronghold Victory & Kingdom Provision Support - 2025-06-25T16:45:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

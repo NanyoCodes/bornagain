@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Events Support & Security Refinement - 2025-10-15T10:00:00Z
+    // Deployment trigger: Stronghold Victory & Kingdom Provision Support - 2025-06-25T16:45:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -26,17 +26,37 @@ service cloud.firestore {
     function isFellowshipOrganizer(fId) {
       return request.auth != null && 
              fId != null &&
+             fId is string &&
              fId != "" &&
              exists(/databases/$(database)/documents/fellowships/$(fId)) &&
              get(/databases/$(database)/documents/fellowships/$(fId)).data.organizerId == request.auth.uid;
     }
 
+    function isCampaignOrganizer(cId) {
+      return request.auth != null && 
+             cId != null &&
+             cId is string &&
+             cId != "" &&
+             exists(/databases/$(database)/documents/campaigns/$(cId)) &&
+             get(/databases/$(database)/documents/campaigns/$(cId)).data.organizerId == request.auth.uid;
+    }
+
+    function isEventOrganizer(eId) {
+      return request.auth != null && 
+             eId != null &&
+             eId is string &&
+             eId != "" &&
+             exists(/databases/$(database)/documents/events/$(eId)) &&
+             get(/databases/$(database)/documents/events/$(eId)).data.organizerId == request.auth.uid;
+    }
+
     function canAccessChatDoc(chatData) {
       return request.auth != null && (
         request.auth.uid in chatData.get('participantIds', []) ||
-        (chatData.get('fellowshipId', '') != '' && isFellowshipMember(chatData.fellowshipId)) ||
-        (chatData.get('associationId', '') != '' && isFellowshipMember(chatData.associationId)) ||
-        (chatData.get('campaignId', '') != '' && exists(/databases/$(database)/documents/campaigns/$(chatData.campaignId)/participants/$(request.auth.uid)))
+        (chatData.get('fellowshipId', '') != '' && isFellowshipMember(chatData.get('fellowshipId', ''))) ||
+        (chatData.get('associationId', '') != '' && isFellowshipMember(chatData.get('associationId', ''))) ||
+        (chatData.get('campaignId', '') != '' && exists(/databases/$(database)/documents/campaigns/$(chatData.get('campaignId', ''))/participants/$(request.auth.uid))) ||
+        (chatData.get('eventId', '') != '' && exists(/databases/$(database)/documents/events/$(chatData.get('eventId', ''))/participants/$(request.auth.uid)))
       );
     }
 
@@ -102,7 +122,7 @@ service cloud.firestore {
       allow create: if request.auth != null;
       allow update: if request.auth != null && (
         request.auth.uid == resource.data.organizerId ||
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount'])
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'hasGroupChat'])
       );
       allow delete: if request.auth != null && resource.data.organizerId == request.auth.uid;
 
@@ -130,6 +150,13 @@ service cloud.firestore {
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
         );
       }
+    }
+    
+    match /victoryCircles/{category}/resources/{resourceId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+      allow update: if false;
     }
     
     match /souls/{soulId} {
@@ -190,7 +217,8 @@ service cloud.firestore {
         (!request.resource.data.get('isGroupChat', false)) ||
         (request.resource.data.get('fellowshipId', '') != '' && isFellowshipOrganizer(request.resource.data.fellowshipId)) ||
         (request.resource.data.get('associationId', '') != '' && isFellowshipMember(request.resource.data.associationId)) ||
-        (request.resource.data.get('campaignId', '') != '' && get(/databases/$(database)/documents/campaigns/$(request.resource.data.get('campaignId', ''))).data.get('organizerId', '') == request.auth.uid)
+        (request.resource.data.get('campaignId', '') != '' && isCampaignOrganizer(request.resource.data.campaignId)) ||
+        (request.resource.data.get('eventId', '') != '' && isEventOrganizer(request.resource.data.eventId))
       );
       allow read, update: if canAccessChatDoc(resource.data);
       allow delete: if false;
@@ -200,7 +228,7 @@ service cloud.firestore {
         allow create: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data) && request.resource.data.senderId == request.auth.uid;
         allow update, delete: if isOwner(resource.data.senderId)
           && canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data)
-          && (request.time < resource.data.createdAt + duration.value(5, 'm'));
+          && (request.time < resource.data.createdAt + duration.value(24, 'h'));
       }
     }
 
@@ -259,8 +287,8 @@ service cloud.firestore {
         request.auth.uid == resource.data.get('vendorOwnerId', '')
       );
       allow update: if request.auth != null && (
-        request.auth.uid == resource.data.get('vendorOwnerId', '') || 
-        request.auth.uid == resource.data.get('senderId', '')
+        (request.auth.uid == resource.data.senderId && request.resource.data.status == 'cancelled' && resource.data.status == 'ordered') ||
+        (request.auth.uid == resource.data.vendorOwnerId && request.resource.data.status in ['preparing', 'delivering', 'delivered'] && resource.data.status != 'cancelled')
       );
     }
 
