@@ -1,8 +1,8 @@
 'use client';
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useMemo, useState, useRef, useCallback, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -172,8 +172,6 @@ function PendingProvisionReminder() {
 
         try {
             const batch = writeBatch(firestore);
-
-            // 1. Remove from User's daily discipline checklist if it was checked
             const userRef = doc(firestore, 'users', user.uid);
             const userDoc = await getDoc(userRef);
             if (userDoc.exists()) {
@@ -192,7 +190,6 @@ function PendingProvisionReminder() {
                 }, { merge: true });
             }
 
-            // 2. Remove "Initiated" log from soul
             const soulIdStr = soulId;
             const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulIdStr);
             const globalSoulRef = doc(firestore, 'souls', soulIdStr);
@@ -718,12 +715,14 @@ function BottomNavBar() {
     );
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+function ShellInner({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useUser();
   const { userProfile, loading: profileLoading } = useUserProfile();
   const firestore = useFirestore();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const soulName = searchParams.get('soulName');
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
@@ -734,10 +733,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [showSplash, setShowSplash] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
 
-  // Navigation Drawer State
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // Global Cart State
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cart, setCart] = useState<{ [mealId: string]: { item: any, quantity: number } }>({});
   const [giftInstructions, setGiftInstructions] = useState('');
@@ -775,14 +771,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const key = `testify_marketplace_cart_${user.uid}`;
     const next = { ...cart };
     if (!next[itemId]) return;
-    
     const newQty = next[itemId].quantity + delta;
     if (newQty <= 0) {
         delete next[itemId];
     } else {
         next[itemId].quantity = newQty;
     }
-    
     localStorage.setItem(key, JSON.stringify(next));
     window.dispatchEvent(new Event('testify_marketplace_cart_update'));
   };
@@ -802,15 +796,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     cartItems.forEach(c => {
         const vId = c.item.vendorId;
         if (!groups[vId]) {
-            groups[vId] = {
-                vendorId: vId,
-                vendorName: c.item.vendorName || 'Kingdom Provider',
-                vendorOwnerId: c.item.vendorOwnerId || '',
-                paymentDetails: c.item.vendorPaymentDetails || '',
-                items: [],
-                deliveryFee: 0,
-                subtotal: 0
-            };
+            groups[vId] = { vendorId: vId, vendorName: c.item.vendorName || 'Kingdom Provider', vendorOwnerId: c.item.vendorOwnerId || '', paymentDetails: c.item.vendorPaymentDetails || '', items: [], deliveryFee: 0, subtotal: 0 };
         }
         groups[vId].items.push(c);
         groups[vId].subtotal += (c.item.price * c.quantity);
@@ -828,13 +814,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const handleGlobalCheckout = async () => {
     if (!user || !firestore || !userProfile || cartItems.length === 0) return;
     if (!giftInstructions.trim()) {
-        toast({ variant: 'destructive', title: 'Instructions Required', description: 'Please specify delivery or gifting instructions.' });
+        toast({ variant: 'destructive', title: 'Instructions Required', description: 'Please specify delivery instructions.' });
         return;
     }
     setIsProcessingOrder(true);
     const batch = writeBatch(firestore);
     const giftsRef = collection(firestore, 'mealGifts');
     const senderName = `${userProfile.firstName} ${userProfile.lastName}`;
+    
     cartItems.forEach(cartItem => {
         for(let i = 0; i < cartItem.quantity; i++) {
             const giftRef = doc(giftsRef);
@@ -842,7 +829,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 senderId: user.uid,
                 senderName,
                 recipientSoulId: null,
-                recipientName: manualRecipientName || 'Self',
+                recipientName: manualRecipientName || soulName || 'Self',
                 vendorId: cartItem.item.vendorId,
                 vendorName: cartItem.item.vendorName || 'Kingdom Store',
                 vendorOwnerId: cartItem.item.vendorOwnerId, 
@@ -858,6 +845,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             });
         }
     });
+
     cartByVendor.forEach(v => {
         const vendorNotificationRef = doc(collection(firestore, `users/${v.vendorOwnerId}/notifications`));
         const vendorItems = v.items.map(c => `${c.item.name} (x${c.quantity})`).join(', ');
@@ -871,6 +859,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             createdAt: serverTimestamp(),
         });
     });
+
     try {
         await batch.commit();
         if (user?.uid) {
@@ -878,7 +867,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             setCart({});
             window.dispatchEvent(new Event('testify_marketplace_cart_update'));
         }
-        toast({ title: 'Offerings Confirmed!', description: 'Your acts of kindness have been dispatched to providers.' });
+        toast({ title: 'Offerings Confirmed!', description: 'Acts of kindness dispatched.' });
         setIsCartOpen(false);
         router.push('/dashboard/marketplace/orders');
     } catch (e) {
@@ -982,87 +971,100 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const showBottomNav = !isTakeoverPage;
 
   return (
+    <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+      <AnimatePresence>{showSplash && <SplashScreen onDismiss={handleDismissSplash} />}</AnimatePresence>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0">
+          {!isTakeoverPage && <AppHeader unreadChatCount={unreadChatNotifications?.length || 0} unreadNotifCount={unreadOtherNotifications?.length || 0} isPublicRoute={isPublicRoute} onOpenCart={() => setIsCartOpen(true)} onOpenMenu={() => setIsMenuOpen(true)} />}
+          <div className="flex-1 relative min-h-0">
+          <main ref={scrollContainerRef} className={cn("absolute inset-0", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
+              <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-3xl p-4 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
+                  <PageTransition>{children}</PageTransition>
+              </div>
+          </main>
+          </div>
+      </motion.div>
+
+      {user && showBottomNav && <BottomNavBar />}
+      {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
+      
+      {user && mounted && isMobile ? (
+        <Sheet open={!!isProfileIncomplete}>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl"><div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]"><SheetHeader className="text-left"><SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle><SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription></SheetHeader></div><div className="flex-grow overflow-y-auto p-6">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div></SheetContent>
+        </Sheet>
+      ) : user ? (
+        <Dialog open={!!isProfileIncomplete}><DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0"><div className="p-6 border-b bg-muted/10"><DialogHeader><DialogTitle>Complete Your Profile</DialogTitle><DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription></DialogHeader></div><div className="p-6 max-h-[70vh] overflow-y-auto">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div></DialogContent></Dialog>
+      ) : null}
+
+      {/* Global Navigation Drawer */}
+      <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+          <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
+              <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                  <div className="flex items-center gap-3 mb-4">
+                      <Avatar className="h-12 w-12 border-2 border-primary/20"><AvatarImage src={user?.photoURL ?? undefined} className="object-cover" /><AvatarFallback className="font-black bg-primary/10 text-primary">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback></Avatar>
+                      <div className="min-w-0"><p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{user?.displayName || 'User'}</p><p className="text-[10px] text-muted-foreground truncate font-medium">{user?.email}</p></div>
+                  </div>
+                  <SheetHeader className="text-left flex-shrink-0"><SheetTitle className="text-xl font-black font-headline uppercase tracking-tight">Kingdom Hub</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest text-primary">Mission Navigation</SheetDescription></SheetHeader>
+              </div>
+              <ScrollArea className="flex-grow">
+                  <div className="p-6 space-y-2">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Identity</p>
+                      <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><User className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Profile</span></Link>
+                      <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Settings className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Settings</span></Link>
+                      <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
+                      {navItems.map((item) => (<Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", item.color)} /><span className="font-black uppercase tracking-widest text-sm">{item.label}</span></Link>))}
+                      <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Recovery & Provision</p>
+                      <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><ShieldCheck className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Victory Hub</span></Link>
+                      <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Store className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Meals Center</span></Link>
+                      <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Gift className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Kindness Center</span></Link>
+                      <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Package className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Order Tracker</span></Link>
+                      <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Study Tools</p>
+                      <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><BookOpen className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Bible Reader</span></Link>
+                      <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Edit className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Journal</span></Link>
+                      <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
+                      <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><BookMarked className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">App Guide</span></Link>
+                      <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><BookOpen className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Resources</span></Link>
+                      <Separator className="my-6 opacity-50" /><button onClick={() => { setIsMenuOpen(false); auth && signOut(auth); router.push("/login"); }} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive"><LogOut className="h-6 w-6" /><span className="font-black uppercase tracking-widest text-sm">Logout</span></button>
+                  </div>
+              </ScrollArea>
+              <div className="p-8 border-t bg-muted/5 flex-shrink-0"><p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">Testify Global • Mobilizing the Body</p></div>
+          </SheetContent>
+      </Sheet>
+
+      {/* Global Cart Sheet */}
+      <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+          <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0 rounded-none sm:rounded-l-[2.5rem]">
+              <div className="p-8 border-b flex-shrink-0 bg-muted/10"><div className="flex items-center gap-2 mb-2"><ShoppingCart className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span></div><SheetHeader className="text-left flex-shrink-0"><SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Review selection for {soulName || manualRecipientName || 'Self'}. One delivery fee per supplier.</SheetDescription></SheetHeader></div>
+              <ScrollArea className="flex-grow min-h-0 overscroll-contain">
+                  <div className="p-8 space-y-10">{cartItems.length > 0 ? (
+                      <div className="space-y-10">
+                          <div className="space-y-8">{cartByVendor.map(group => (<div key={group.vendorId} className="space-y-3"><div className="flex items-center justify-between px-1"><div className="flex items-center gap-2"><Store className="h-3.5 w-3.5 text-primary" /><h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[150px]">{group.vendorName}</h4></div><Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">₦{group.deliveryFee.toLocaleString()} Delivery</Badge></div><div className="space-y-2">{group.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group"><div className="flex items-center gap-3 min-w-0 flex-1"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div><div className="min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => handleRemoveFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button></div></div>))}</div></div>))}</div>
+                          <div className="space-y-6"><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label><Input placeholder="Enter recipient (e.g., Self or a Brother's name)" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label><Textarea placeholder="Specify contact details and physical address for delivery..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" /></div></div>
+                          <div className="space-y-4"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label><div className="space-y-3">{cartByVendor.map(v => (<div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity"><Store className="h-10 w-10 text-primary" /></div><div className="flex justify-between items-start mb-2"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">₦{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button></div>))}</div></div>
+                          <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner"><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Selection subtotal</span><span className="text-foreground shrink-0 font-black">₦{cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0).toLocaleString()}</span></div><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Delivery Total</span><span className="text-foreground shrink-0 font-black">₦{cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0).toLocaleString()}</span></div><Separator className="opacity-50" /><div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4"><span className="shrink-0">Total Package Amount</span><span className="shrink-0 text-2xl tracking-tighter">₦{cartTotal.toLocaleString()}</span></div></div>
+                      </div>
+                  ) : (
+                      <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance">Visit the Meals or Kindness hub to start building an offering package.</p><Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}><Link href="/dashboard/marketplace">PROVIDE OFFERING</Link></Button></div>
+                  )}<div className="h-24" /></div>
+              </ScrollArea>
+              {cartItems.length > 0 && (<SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm shadow-[0_-10px_20px_rgba(0,0,0,0.05)]"><Button onClick={handleGlobalCheckout} disabled={isProcessingOrder || !giftInstructions.trim() || cartItems.length === 0} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">{isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}DISPATCH OFFERINGS</Button></SheetFooter>)}
+          </SheetContent>
+      </Sheet>
+      {user && <PendingProvisionReminder />}
+    </div>
+  );
+}
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  return (
     <SearchProvider>
-      <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
-        <AnimatePresence>{showSplash && <SplashScreen onDismiss={handleDismissSplash} />}</AnimatePresence>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0">
-            {!isTakeoverPage && <AppHeader unreadChatCount={unreadChatNotifications?.length || 0} unreadNotifCount={unreadOtherNotifications?.length || 0} isPublicRoute={isPublicRoute} onOpenCart={() => setIsCartOpen(true)} onOpenMenu={() => setIsMenuOpen(true)} />}
-            <div className="flex-1 relative min-h-0">
-            <main ref={scrollContainerRef} className={cn("absolute inset-0", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
-                <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-3xl p-4 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
-                    <PageTransition>{children}</PageTransition>
-                </div>
-            </main>
-            </div>
-        </motion.div>
-
-        {user && showBottomNav && <BottomNavBar />}
-        {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
-        
-        {user && mounted && isMobile ? (
-          <Sheet open={!!isProfileIncomplete}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl"><div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]"><SheetHeader className="text-left"><SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle><SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription></SheetHeader></div><div className="flex-grow overflow-y-auto p-6">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div></SheetContent>
-          </Sheet>
-        ) : user ? (
-          <Dialog open={!!isProfileIncomplete}><DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0"><div className="p-6 border-b bg-muted/10"><DialogHeader><DialogTitle>Complete Your Profile</DialogTitle><DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription></DialogHeader></div><div className="p-6 max-h-[70vh] overflow-y-auto">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div></DialogContent></Dialog>
-        ) : null}
-
-        {/* Global Navigation Drawer */}
-        <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-            <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                    <div className="flex items-center gap-3 mb-4">
-                        <Avatar className="h-12 w-12 border-2 border-primary/20"><AvatarImage src={user?.photoURL ?? undefined} className="object-cover" /><AvatarFallback className="font-black bg-primary/10 text-primary">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback></Avatar>
-                        <div className="min-w-0"><p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{user?.displayName || 'User'}</p><p className="text-[10px] text-muted-foreground truncate font-medium">{user?.email}</p></div>
-                    </div>
-                    <SheetHeader className="text-left flex-shrink-0"><SheetTitle className="text-xl font-black font-headline uppercase tracking-tight">Kingdom Hub</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest text-primary">Mission Navigation</SheetDescription></SheetHeader>
-                </div>
-                <ScrollArea className="flex-grow">
-                    <div className="p-6 space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Identity</p>
-                        <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><User className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Profile</span></Link>
-                        <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Settings className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Settings</span></Link>
-                        <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
-                        {navItems.map((item) => (<Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", item.color)} /><span className="font-black uppercase tracking-widest text-sm">{item.label}</span></Link>))}
-                        <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Recovery & Provision</p>
-                        <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><ShieldCheck className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Victory Hub</span></Link>
-                        <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Store className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Meals Center</span></Link>
-                        <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Gift className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Kindness Center</span></Link>
-                        <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Package className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Order Tracker</span></Link>
-                        <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Study Tools</p>
-                        <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><BookOpen className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Bible Reader</span></Link>
-                        <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Edit className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Journal</span></Link>
-                        <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
-                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><BookMarked className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">App Guide</span></Link>
-                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><BookOpen className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Resources</span></Link>
-                        <Separator className="my-6 opacity-50" /><button onClick={() => { setIsMenuOpen(false); auth && signOut(auth); router.push("/login"); }} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive"><LogOut className="h-6 w-6" /><span className="font-black uppercase tracking-widest text-sm">Logout</span></button>
-                    </div>
-                </ScrollArea>
-                <div className="p-8 border-t bg-muted/5 flex-shrink-0"><p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">Testify Global • Mobilizing the Body</p></div>
-            </SheetContent>
-        </Sheet>
-
-        {/* Global Cart Sheet */}
-        <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-            <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0 rounded-none sm:rounded-l-[2.5rem]">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10"><div className="flex items-center gap-2 mb-2"><ShoppingCart className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span></div><SheetHeader className="text-left flex-shrink-0"><SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Review selection for {soulName || 'Self'}. One delivery fee per supplier.</SheetDescription></SheetHeader></div>
-                <ScrollArea className="flex-grow min-h-0 overscroll-contain">
-                    <div className="p-8 space-y-10">{cartItems.length > 0 ? (
-                        <div className="space-y-10">
-                            <div className="space-y-8">{cartByVendor.map(group => (<div key={group.vendorId} className="space-y-3"><div className="flex items-center justify-between px-1"><div className="flex items-center gap-2"><Store className="h-3.5 w-3.5 text-primary" /><h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[150px]">{group.vendorName}</h4></div><Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">₦{group.deliveryFee.toLocaleString()} Delivery</Badge></div><div className="space-y-2">{group.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group"><div className="flex items-center gap-3 min-w-0 flex-1"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div><div className="min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => handleRemoveFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button></div></div>))}</div></div>))}</div>
-                            <div className="space-y-6"><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label><Input placeholder="Enter recipient (e.g., Self or a Brother's name)" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label><Textarea placeholder="Specify contact details and physical address for delivery..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" /></div></div>
-                            <div className="space-y-4"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label><div className="space-y-3">{cartByVendor.map(v => (<div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity"><Store className="h-10 w-10 text-primary" /></div><div className="flex justify-between items-start mb-2"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">₦{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button></div>))}</div></div>
-                            <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner"><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Selection subtotal</span><span className="text-foreground shrink-0 font-black">₦{cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0).toLocaleString()}</span></div><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Delivery Total</span><span className="text-foreground shrink-0 font-black">₦{cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0).toLocaleString()}</span></div><Separator className="opacity-50" /><div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4"><span className="shrink-0">Total Package Amount</span><span className="shrink-0 text-2xl tracking-tighter">₦{cartTotal.toLocaleString()}</span></div></div>
-                        </div>
-                    ) : (
-                        <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance">Visit the Meals or Kindness hub to start building an offering package.</p><Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}><Link href="/dashboard/marketplace">PROVIDE OFFERING</Link></Button></div>
-                    )}<div className="h-24" /></div>
-                </ScrollArea>
-                {cartItems.length > 0 && (<SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm shadow-[0_-10px_20px_rgba(0,0,0,0.05)]"><Button onClick={handleGlobalCheckout} disabled={isProcessingOrder || !giftInstructions.trim() || cartItems.length === 0} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">{isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}DISPATCH OFFERINGS</Button></SheetFooter>)}
-            </SheetContent>
-        </Sheet>
-        {user && <PendingProvisionReminder />}
-      </div>
+      <Suspense fallback={
+          <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+              <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Kingdom Network Active</p>
+          </div>
+      }>
+          <ShellInner>{children}</ShellInner>
+      </Suspense>
     </SearchProvider>
   );
 }
