@@ -27,7 +27,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { PlusCircle, Download, Loader2, Trash2 } from "lucide-react";
+import { PlusCircle, Download, Loader2, Trash2, HeartHandshake, Sparkles, Info } from "lucide-react";
 import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
@@ -49,6 +49,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import { RelationshipCircleTracker } from "./relationship-circle-tracker";
+import { Separator } from "../ui/separator";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -404,6 +405,41 @@ export default function SoulsWonPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Mission Dashboard Description */}
+        <div className="px-4 sm:px-0 space-y-4">
+            <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
+                    <HeartHandshake className="h-5 w-5 text-primary" />
+                </div>
+                <div className="min-w-0">
+                    <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">Harvest Mobilization</h2>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Record • Nurture • Establish</p>
+                </div>
+            </div>
+            <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
+                <CardContent className="p-6 space-y-4">
+                    <div className="flex items-start gap-4">
+                        <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center shrink-0 shadow-sm">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed font-medium text-balance italic">
+                            "The harvest is plentiful, but the laborers are few." Use this dashboard to organize your personal and collective evangelism efforts. Every soul registered here represents a life to be nurtured and established in the Kingdom.
+                        </p>
+                    </div>
+                    <Separator className="opacity-50" />
+                    <div className="flex items-start gap-4">
+                        <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center shrink-0 shadow-sm">
+                            <Info className="h-4 w-4 text-primary" />
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed font-medium text-balance">
+                            <span className="text-foreground font-black uppercase text-[10px] tracking-wider block mb-0.5">Strategy for Victory</span>
+                            Assign souls to your local Fellowship or Association to share the responsibility of follow-up and discipleship with other believers.
+                        </p>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
 
         {/* Relationship Circle Tracker - Full Width Mobile */}
         <RelationshipCircleTracker 
