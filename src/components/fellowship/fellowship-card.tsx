@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useUser, useAuth, useFirestore, useDoc, useCollection } from '@/firebase';
+import { useUser, useAuth, useDoc, useCollection, useFirestore } from '@/firebase';
 import type { Fellowship, UserProfile, DailyDevotional, TestimonyComment } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { doc, runTransaction, arrayUnion, arrayRemove, increment, serverTimestamp, collection, query, updateDoc } from 'firebase/firestore';
