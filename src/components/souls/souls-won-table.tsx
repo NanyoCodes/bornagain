@@ -19,7 +19,8 @@ import {
   Sparkles,
   ArrowRight,
   Gift,
-  Utensils
+  Utensils,
+  Hourglass
 } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -138,7 +139,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
     };
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300">
+        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300">
             <Collapsible>
                 <CollapsibleTrigger className="group w-full p-4 text-left hover:bg-muted/30 transition-colors">
                      <div className="flex items-center justify-between gap-4">
@@ -413,7 +414,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 
   if (loading || !mounted) {
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none bg-card/50 backdrop-blur-sm">
+        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none bg-card/50 backdrop-blur-sm">
             <CardHeader><Skeleton className="h-8 w-48" /><Skeleton className="h-4 w-full max-w-sm" /></CardHeader>
             <CardContent className="space-y-4">
                 {[...Array(5)].map((_, i) => (
@@ -429,7 +430,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   
   if (souls.length === 0) {
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none bg-card/50 backdrop-blur-sm border-2 border-dashed">
+        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none bg-card/50 backdrop-blur-sm border-2 border-dashed">
             <CardContent>
                 <div className="text-center py-24 flex flex-col items-center">
                     <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20">

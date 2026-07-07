@@ -424,7 +424,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
 
     return (
         <Card onClick={onClick} className="cursor-pointer rounded-none sm:rounded-xl border-x-0 sm:border-x transition-all duration-300 shadow-none sm:shadow-lg border-t-2 border-t-primary/10 border-b-8 border-b-primary/10 sm:border-b-8 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="p-5 sm:p-6 pb-2">
+            <CardHeader className="p-4 sm:p-6 pb-2">
                 <div className="flex justify-between items-start gap-4">
                     <div className="min-w-0 flex-1">
                         <CardTitle className="text-lg sm:text-xl font-black leading-tight mb-2 uppercase tracking-tight break-words [overflow-wrap:anywhere]">
@@ -518,7 +518,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 </div>
             </CardHeader>
             
-            <CardContent className="px-5 sm:px-6 pb-4 space-y-4 pt-4">
+            <CardContent className="px-4 sm:px-6 pb-4 space-y-4 pt-4">
                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium break-words [overflow-wrap:anywhere]">{fellowship.description}</p>
                 
                 {todayDevotional && (
@@ -607,7 +607,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 </div>
             </CardContent>
             
-            <CardFooter className="px-5 sm:px-6 py-4 flex justify-between items-center border-t bg-black/5">
+            <CardFooter className="px-4 sm:px-6 py-4 flex justify-between items-center border-t bg-black/5">
                 <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground font-black uppercase tracking-widest">
                     <Users className="mr-2 h-4 w-4 text-primary" /> {fellowship.memberCount} {fellowship.memberCount === 1 ? 'MEMBER' : 'MEMBERS'}
                 </div>
