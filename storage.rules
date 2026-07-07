@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Synchronized Authorization for Kingdom Assets - 2025-06-27T09:00:00Z
+    // Deployment trigger: Structured Authorization for v1 Kingdom Assets - 2025-06-27T10:00:00Z
     
     /**
      * Global Read Access
@@ -14,17 +14,21 @@ service firebase.storage {
 
     /**
      * Authenticated User Authorizations
-     * These rules ensure users can only write to their own designated subdirectories.
-     * Path structure: {folder}/{userId}/{filename}
+     * Structure: testify-v1/users/{userId}/{folder}/{filename}
      */
     
-    // Matches categorized paths: /{folder}/{userId}/{allPaths=**}
-    // Covers: vendor-branding, profile-pictures, meals-center, kindness-center.
-    match /{folder}/{userId}/{allPaths=**} {
+    match /testify-v1/users/{userId}/{allPaths=**} {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Matches root user paths for legacy or direct uploads
+    /**
+     * Legacy & Migration Paths
+     * Maintain support for existing folders while moving new uploads to testify-v1.
+     */
+    match /{folder}/{userId}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
     match /{userId}/{allPaths=**} {
       allow write: if request.auth != null && request.auth.uid == userId;
     }

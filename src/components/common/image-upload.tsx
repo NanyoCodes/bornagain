@@ -14,7 +14,7 @@ import Image from 'next/image';
 
 /**
  * @fileOverview A high-fidelity image upload component with built-in cropping and optimization.
- * Handles resizing, JPEG compression, and robust error reporting for Firebase Storage.
+ * Handles resizing, JPEG compression, and structured storage in the testify-v1 folder.
  */
 
 function getCroppedImg(
@@ -139,7 +139,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     if (!storage) throw new Error("Firebase Storage is currently unavailable.");
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
-    const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
+    // Structures images under testify-v1/users/{userId}/{folder}/{filename} for better organization and security
+    const fileRef = ref(storage, `testify-v1/users/${user.uid}/${storagePath}/${Date.now()}_${fileName}`);
     
     try {
         await uploadBytes(fileRef, file);
