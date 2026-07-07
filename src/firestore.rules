@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Stronghold Victory & Kingdom Provision Support - 2025-06-25T16:45:00Z
+    // Deployment trigger: Kingdom Provision Management (Edit/Delete) - 2025-06-25T18:00:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;
@@ -156,7 +156,7 @@ service cloud.firestore {
       allow read: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
       allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
-      allow update: if false;
+      allow update: if request.auth != null && resource.data.authorId == request.auth.uid;
     }
     
     match /souls/{soulId} {

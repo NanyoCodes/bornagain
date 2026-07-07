@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -227,6 +227,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     
     // Resource Management
     const [isAddResourceOpen, setIsAddResourceOpen] = useState(false);
+    const [resourceToEdit, setResourceToEdit] = useState<CircleResource | null>(null);
     const [isSubmittingResource, setIsSubmittingResource] = useState(false);
     
     // Scripture Dropdown
@@ -299,7 +300,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         }
     };
 
-    const handleCreateResource = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleCreateOrUpdateResource = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!user || !firestore || !userProfile) return;
         
@@ -311,23 +312,43 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         if (!title || !url) return;
 
         setIsSubmittingResource(true);
-        const resourceData = {
+        
+        const resourceData: any = {
             title,
             url,
             type,
-            authorId: user.uid,
-            authorName: `${userProfile.firstName} ${userProfile.lastName}`,
-            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
         };
 
         try {
-            await addDoc(collection(firestore, 'victoryCircles', category.toLowerCase(), 'resources'), resourceData);
-            toast({ title: 'Provision Shared', description: 'Your resource has been added to the battle supplies.' });
+            if (resourceToEdit) {
+                const resourceRef = doc(firestore, 'victoryCircles', category.toLowerCase(), 'resources', resourceToEdit.id);
+                await updateDoc(resourceRef, resourceData);
+                toast({ title: 'Resource Updated' });
+            } else {
+                resourceData.authorId = user.uid;
+                resourceData.authorName = `${userProfile.firstName} ${userProfile.lastName}`;
+                resourceData.createdAt = serverTimestamp();
+                await addDoc(collection(firestore, 'victoryCircles', category.toLowerCase(), 'resources'), resourceData);
+                toast({ title: 'Provision Shared', description: 'Your resource has been added to the battle supplies.' });
+            }
             setIsAddResourceOpen(false);
+            setResourceToEdit(null);
         } catch (error) {
             toast({ variant: 'destructive', title: 'Action Failed' });
         } finally {
             setIsSubmittingResource(false);
+        }
+    };
+
+    const handleDeleteResource = async (resourceId: string) => {
+        if (!user || !firestore) return;
+        const resourceRef = doc(firestore, 'victoryCircles', category.toLowerCase(), 'resources', resourceId);
+        try {
+            await deleteDoc(resourceRef);
+            toast({ title: 'Resource Removed' });
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Action Failed' });
         }
     };
 
@@ -502,7 +523,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Shared battle supplies</p>
                         </div>
                     </div>
-                    <Button onClick={() => setIsAddResourceOpen(true)} variant="outline" size="sm" className="h-9 rounded-xl font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm">
+                    <Button onClick={() => { setResourceToEdit(null); setIsAddResourceOpen(true); }} variant="outline" size="sm" className="h-9 rounded-xl font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm">
                         <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> DROP PROVISION
                     </Button>
                 </div>
@@ -511,9 +532,11 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     {resourcesLoading ? (
                         <div className="col-span-full flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
                     ) : resources && resources.length > 0 ? (
-                        resources.map(res => (
+                        resources.map(res => {
+                            const isResAuthor = user?.uid === res.authorId;
+                            return (
                             <Card key={res.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all group">
-                                <CardContent className="p-4 flex items-center gap-4">
+                                <CardContent className="p-4 flex items-center gap-4 relative">
                                     <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
                                         {getResourceIcon(res.type)}
                                     </div>
@@ -529,9 +552,29 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                             </a>
                                         </Button>
                                     </div>
+                                    {isResAuthor && (
+                                        <div className="absolute top-2 right-2">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <MoreVertical className="h-3.5 w-3.5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="rounded-xl">
+                                                    <DropdownMenuItem onClick={() => { setResourceToEdit(res); setIsAddResourceOpen(true); }} className="rounded-lg">
+                                                        <Edit className="mr-2 h-4 w-4" /> Edit
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem onClick={() => handleDeleteResource(res.id)} className="text-destructive focus:text-destructive rounded-lg">
+                                                        <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
+                                    )}
                                 </CardContent>
                             </Card>
-                        ))
+                        )})
                     ) : (
                         <div className="col-span-full text-center py-16 border-2 border-dashed rounded-[2rem] bg-muted/5">
                             <p className="text-xs text-muted-foreground italic font-medium px-12">No provisions dropped yet. Share a sermon or article that helped you!</p>
@@ -663,19 +706,21 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             </div>
 
             {/* Drop Provision Dialog */}
-            <Dialog open={isAddResourceOpen} onOpenChange={setIsAddResourceOpen}>
+            <Dialog open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
                 <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                     <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Drop Provision</DialogTitle>
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">
+                                {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
+                            </DialogTitle>
                             <DialogDescription className="text-sm font-medium mt-1">Share a resource that fueled your victory.</DialogDescription>
                         </DialogHeader>
                     </div>
-                    <form onSubmit={handleCreateResource}>
+                    <form onSubmit={handleCreateOrUpdateResource}>
                         <div className="p-8 space-y-6">
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Type of Supply</Label>
-                                <Select name="type" defaultValue="Video">
+                                <Select name="type" defaultValue={resourceToEdit?.type || "Video"}>
                                     <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
                                         <SelectValue placeholder="Resource Type" />
                                     </SelectTrigger>
@@ -690,18 +735,18 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</Label>
-                                <Input name="title" placeholder="e.g. Breaking Chains Sermon" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
+                                <Input name="title" defaultValue={resourceToEdit?.title} placeholder="e.g. Breaking Chains Sermon" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL / Link</Label>
-                                <Input name="url" placeholder="https://..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                                <Input name="url" defaultValue={resourceToEdit?.url} placeholder="https://..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                             </div>
                         </div>
                         <div className="p-8 bg-muted/5 border-t flex gap-3">
-                            <Button type="button" variant="outline" onClick={() => setIsAddResourceOpen(false)} className="flex-1 h-12 rounded-xl font-bold">Cancel</Button>
+                            <Button type="button" variant="outline" onClick={() => { setIsAddResourceOpen(false); setResourceToEdit(null); }} className="flex-1 h-12 rounded-xl font-bold">Cancel</Button>
                             <Button type="submit" disabled={isSubmittingResource} className="flex-1 h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                                 {isSubmittingResource && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                SHARE SUPPLY
+                                {resourceToEdit ? 'SAVE CHANGES' : 'SHARE SUPPLY'}
                             </Button>
                         </div>
                     </form>
