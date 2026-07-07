@@ -124,6 +124,16 @@ export type UserProfile = {
   isVendor?: boolean;
 };
 
+export type CircleResource = {
+  id: string;
+  title: string;
+  url: string;
+  type: 'Video' | 'Article' | 'Book' | 'Sermon' | 'Other';
+  authorId: string;
+  authorName: string;
+  createdAt: Timestamp;
+};
+
 export type Achievement = {
   id: string;
   level: 1 | 2 | 3 | 4 | 5;

@@ -242,31 +242,19 @@
         "email"
       ]
     },
-    "Event": {
-      "title": "Christian Event",
-      "description": "Represents a faith-based gathering such as a conference, worship night, or seminar.",
+    "CircleResource": {
+      "title": "Circle Resource",
+      "description": "A shared resource (link, video, book) to help overcome a stronghold.",
       "type": "object",
       "properties": {
         "title": { "type": "string" },
-        "description": { "type": "string" },
-        "category": { "type": "string", "enum": ["Conference", "Worship", "Seminar", "Outreach", "Prayer", "Youth", "Church Service", "Other"] },
-        "location": { "type": "string" },
-        "locationType": { "type": "string", "enum": ["Physical", "Virtual", "Both"] },
-        "startDate": { "type": "object" },
-        "endDate": { "type": "object" },
-        "startTime": { "type": "string" },
-        "endTime": { "type": "string" },
-        "organizerId": { "type": "string" },
-        "organizerName": { "type": "string" },
-        "organizerPhotoURL": { "type": "string", "format": "uri" },
-        "participantCount": { "type": "number" },
-        "maxParticipants": { "type": "number" },
-        "status": { "type": "string", "enum": ["active", "cancelled", "concluded"] },
-        "streamUrl": { "type": "string", "format": "uri" },
-        "createdAt": { "type": "object" },
-        "hasGroupChat": { "type": "boolean" }
+        "url": { "type": "string", "format": "uri" },
+        "type": { "type": "string", "enum": ["Video", "Article", "Book", "Sermon", "Other"] },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "createdAt": { "type": "object" }
       },
-      "required": ["title", "description", "category", "startDate", "endDate", "organizerId", "status"]
+      "required": ["title", "url", "type", "authorId", "authorName"]
     }
   },
   "auth": {
@@ -283,17 +271,13 @@
       },
       "description": "Stores public user profile data, keyed by user ID."
     },
-    "/events/{eventId}": {
-      "schema": { "$ref": "#/entities/Event" },
-      "description": "Global directory of Christian events."
-    },
-    "/events/{eventId}/participants/{userId}": {
+    "/victoryCircles/{category}/posts/{postId}": {
       "schema": { "type": "object" },
-      "description": "Directory of users who have joined a specific event."
+      "description": "Community discussions within specific victory circles."
     },
-    "/users/{userId}/joinedEvents/{eventId}": {
-      "schema": { "type": "object" },
-      "description": "Index of events a specific user has joined."
+    "/victoryCircles/{category}/resources/{resourceId}": {
+      "schema": { "$ref": "#/entities/CircleResource" },
+      "description": "Community-shared resources for a specific victory circle."
     }
   }
 }
