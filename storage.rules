@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Enhanced Authorization for Ministry Hub Assets - 2025-06-26T10:00:00Z
+    // Deployment trigger: Synchronized Authorization for Kingdom Assets - 2025-06-27T09:00:00Z
     
     /**
      * Global Read Access
@@ -15,18 +15,18 @@ service firebase.storage {
     /**
      * Authenticated User Authorizations
      * These rules ensure users can only write to their own designated subdirectories.
-     * Path structure: {storagePath}/{userId}/{filename}
+     * Path structure: {folder}/{userId}/{filename}
      */
     
-    // Matches categorized paths: /{folder}/{uid}/{allPaths=**}
+    // Matches categorized paths: /{folder}/{userId}/{allPaths=**}
     // Covers: vendor-branding, profile-pictures, meals-center, kindness-center.
-    match /{folder}/{uid}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == uid;
+    match /{folder}/{userId}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
 
     // Matches root user paths for legacy or direct uploads
-    match /{uid}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == uid;
+    match /{userId}/{allPaths=**} {
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
