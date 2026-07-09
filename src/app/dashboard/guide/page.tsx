@@ -230,9 +230,14 @@ export default function GuidePage() {
         <div className="max-w-md mx-auto space-y-6 relative z-10">
             <h3 className="font-black text-3xl font-headline tracking-tight uppercase">Ready to mobilize?</h3>
             <p className="text-sm text-muted-foreground font-medium">Connect more believers to the harvest network by sharing this platform.</p>
-            <Button onClick={handleShare} size="lg" className="w-full sm:w-auto font-black h-12 rounded-2xl shadow-xl shadow-primary/10 tracking-widest uppercase">
-                <Share2 className="mr-2 h-4 w-4" /> REFER BRETHREN
-            </Button>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Button asChild variant="outline" className="rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
+                    <Link href="/dashboard/marketplace">MEALS CENTER</Link>
+                </Button>
+                <Button asChild variant="outline" className="rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
+                    <Link href="/dashboard/marketplace/gifts">KINDNESS CENTER</Link>
+                </Button>
+            </div>
         </div>
       </section>
 

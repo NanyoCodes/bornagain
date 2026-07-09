@@ -568,6 +568,21 @@ export function ProgressPageContent() {
                 </Card>
 
                 <ActionAnalyticsCard souls={soulsWon || []} />
+                
+                <div className="p-8 sm:p-12 text-center bg-primary/5">
+                    <h3 className="text-2xl font-black font-headline uppercase tracking-tight mb-4">Support the Body</h3>
+                    <p className="text-sm text-muted-foreground font-medium max-w-md mx-auto mb-8 leading-relaxed italic">
+                        "Carry each other's burdens, and in this way you will fulfill the law of Christ." Choose a center to start your act of kindness.
+                    </p>
+                    <div className="flex flex-col sm:flex-row justify-center gap-4">
+                        <Button variant="outline" asChild className="rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
+                            <Link href="/dashboard/marketplace">MEALS CENTER</Link>
+                        </Button>
+                        <Button variant="outline" asChild className="rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
+                            <Link href="/dashboard/marketplace/gifts">KINDNESS CENTER</Link>
+                        </Button>
+                    </div>
+                </div>
             </div>
             
             <div className="flex flex-col divide-y lg:border-l bg-muted/5">
