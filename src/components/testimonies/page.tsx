@@ -46,6 +46,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form";
 import { EditPrayerRequestForm } from "@/components/prayer/EditPrayerRequestForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { FeedSidebar } from "@/components/layout/feed-sidebar";
 import { cn } from "@/lib/utils";
 
 export default function TestimoniesPage() {
@@ -302,119 +303,123 @@ export default function TestimoniesPage() {
 
   return (
     <div 
-      className="space-y-6 md:space-y-10 w-full max-w-3xl mx-auto pt-4"
+      className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4"
       {...(isAnyModalOpen ? { inert: true } : {})}
     >
-      {/* Interaction Box - Full Width Mobile */}
-      <Card className="border-y sm:border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm -mx-4 sm:mx-0">
-        <CardContent className="p-3 sm:p-6">
-          <div className="flex flex-row items-center gap-2 sm:gap-4 w-full">
-            <Button 
-              variant="outline" 
-              className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
-              onClick={() => setIsTestimonyDialogOpen(true)}
-              disabled={loading}
-            >
-              <span className="truncate">What has God done today?</span>
-            </Button>
-            <div className="flex items-center gap-2 shrink-0">
-              <Button 
-                variant="secondary" 
-                size="icon" 
-                className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg"
-                onClick={() => setIsTestimonyDialogOpen(true)}
-                disabled={loading}
-                title="Share Testimony"
-              >
-                < Newspaper className="h-5 w-5" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-md bg-background"
-                onClick={() => setIsPrayerDialogOpen(true)}
-                disabled={loading}
-                title="Request Prayer"
-              >
-                <HandHeart className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+        {/* Main Feed Column */}
+        <div className="lg:col-span-8 space-y-6 md:space-y-10">
+            {/* Interaction Box */}
+            <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden">
+                <CardContent className="p-3 sm:p-6">
+                <div className="flex flex-row items-center gap-2 sm:gap-4 w-full">
+                    <Button 
+                    variant="outline" 
+                    className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
+                    onClick={() => setIsTestimonyDialogOpen(true)}
+                    disabled={loading}
+                    >
+                    <span className="truncate">What has God done today?</span>
+                    </Button>
+                    <div className="flex items-center gap-2 shrink-0">
+                    <Button 
+                        variant="secondary" 
+                        size="icon" 
+                        className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg"
+                        onClick={() => setIsTestimonyDialogOpen(true)}
+                        disabled={loading}
+                        title="Share Testimony"
+                    >
+                        < Newspaper className="h-5 w-5" />
+                    </Button>
+                    <Button 
+                        variant="outline" 
+                        size="icon" 
+                        className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-md bg-background"
+                        onClick={() => setIsPrayerDialogOpen(true)}
+                        disabled={loading}
+                        title="Request Prayer"
+                    >
+                        <HandHeart className="h-5 w-5" />
+                    </Button>
+                    </div>
+                </div>
+                </CardContent>
+            </Card>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          {/* Tabs List - Full Width Mobile */}
-          <div className="-mx-4 sm:mx-0">
-            <TabsList className="grid w-full grid-cols-2 rounded-none sm:rounded-xl bg-muted/10 sm:bg-muted/40 p-1 border-y sm:border-none h-12 sm:h-14">
-                <TabsTrigger value="testimonies" className="rounded-none sm:rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Testimonies</TabsTrigger>
-                <TabsTrigger value="prayers" className="rounded-none sm:rounded-lg font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Prayer Requests</TabsTrigger>
-            </TabsList>
-          </div>
-          
-          {/* Feed Content - Full Width Mobile */}
-          <TabsContent value="testimonies" className="mt-4 sm:mt-10 outline-none -mx-4 sm:mx-0">
-              <div className="flex flex-col gap-0 w-full pb-24 sm:pb-12">
-                {loading && (
-                  [...Array(3)].map((_, i) => (
-                    <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
-                  ))
-                )}
-                {!loading && filteredTestimonies.map((testimony) => (
-                    <TestimonyCard 
-                        key={testimony.id}
-                        testimony={testimony} 
-                        isPartner={testimony._isPartner}
-                        hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
-                        currentUserProfile={userProfile}
-                        onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
-                        onEdit={() => setTestimonyToEdit(testimony)}
-                    />
-                ))}
-                 {!loading && filteredTestimonies?.length === 0 && (
-                  <div className="col-span-full text-center py-24 px-8 flex flex-col items-center">
-                    <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                    <h3 className="text-2xl font-black font-headline tracking-tight uppercase">Your Altar of Praise</h3>
-                    <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
-                      Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
-                    </p>
-                  </div>
-                )}
-              </div>
-          </TabsContent>
-          
-          <TabsContent value="prayers" className="mt-4 sm:mt-10 outline-none -mx-4 sm:mx-0">
-              <div className="flex flex-col gap-0 w-full pb-24 sm:pb-12">
-                {loading && (
-                  [...Array(3)].map((_, i) => (
-                    <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-xl border-x-0 sm:border-x bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
-                  ))
-                )}
-                {!loading && filteredPrayerRequests?.map((req) => (
-                  <PrayerRequestCard 
-                      key={req.id}
-                      prayerRequest={req}
-                      onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
-                      onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
-                      onEdit={() => setPrayerToEdit(req)}
-                  />
-                ))}
-                {!loading && filteredPrayerRequests?.length === 0 && (
-                  <div className="col-span-full text-center py-24 px-8 flex flex-col items-center">
-                    <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                    <h3 className="text-2xl font-black font-headline tracking-tight uppercase">United in Faith</h3>
-                    <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
-                       No one should walk through a trial alone. Share your request with the global community.
-                    </p>
-                  </div>
-                )}
-              </div>
-          </TabsContent>
-      </Tabs>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8">
+                    <TabsTrigger value="testimonies" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Testimonies</TabsTrigger>
+                    <TabsTrigger value="prayers" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Prayer Requests</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="testimonies" className="outline-none">
+                    <div className="flex flex-col gap-4 w-full pb-24 sm:pb-12">
+                        {loading ? (
+                        [...Array(3)].map((_, i) => (
+                            <Card key={i} className="flex flex-col h-full rounded-2xl border bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
+                        ))
+                        ) : filteredTestimonies.map((testimony) => (
+                            <TestimonyCard 
+                                key={testimony.id}
+                                testimony={testimony} 
+                                isPartner={testimony._isPartner}
+                                hasPendingRequest={pendingRequestIds.has(testimony.authorId)}
+                                currentUserProfile={userProfile}
+                                onDelete={() => setItemToDelete({ type: 'testimony', data: testimony })}
+                                onEdit={() => setTestimonyToEdit(testimony)}
+                            />
+                        ))}
+                        {!loading && filteredTestimonies?.length === 0 && (
+                        <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
+                            <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
+                            <h3 className="text-2xl font-black font-headline tracking-tight uppercase">Your Altar of Praise</h3>
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
+                            Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
+                            </p>
+                        </div>
+                        )}
+                    </div>
+                </TabsContent>
+                
+                <TabsContent value="prayers" className="outline-none">
+                    <div className="flex flex-col gap-4 w-full pb-24 sm:pb-12">
+                        {loading ? (
+                        [...Array(3)].map((_, i) => (
+                            <Card key={i} className="flex flex-col h-full rounded-2xl border bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
+                        ))
+                        ) : filteredPrayerRequests?.map((req) => (
+                        <PrayerRequestCard 
+                            key={req.id}
+                            prayerRequest={req}
+                            onDelete={() => setItemToDelete({ type: 'prayer', data: req })}
+                            onAnswerPrayer={() => handleOpenTestimonyDialog(req)}
+                            onEdit={() => setPrayerToEdit(req)}
+                        />
+                        ))}
+                        {!loading && filteredPrayerRequests?.length === 0 && (
+                        <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
+                            <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
+                            <h3 className="text-2xl font-black font-headline tracking-tight uppercase">United in Faith</h3>
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
+                            No one should walk through a trial alone. Share your request with the global community.
+                            </p>
+                        </div>
+                        )}
+                    </div>
+                </TabsContent>
+            </Tabs>
+        </div>
+
+        {/* Desktop Sidebar Column */}
+        <div className="lg:col-span-4">
+            <FeedSidebar />
+        </div>
+      </div>
       
       {/* Delete Confirmation */}
       <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && closeDeleteDialog()}>
-          <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8">
+          <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
           <AlertDialogHeader>
               <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight">Remove from Feed?</AlertDialogTitle>
               <AlertDialogDescription className="text-sm font-medium">
@@ -503,7 +508,7 @@ export default function TestimoniesPage() {
           ) : (
             <>
               <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden">
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black font-headline">Edit Testimony</DialogTitle>
@@ -519,7 +524,7 @@ export default function TestimoniesPage() {
               </Dialog>
 
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden">
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black font-headline">Edit Prayer Request</DialogTitle>
@@ -535,7 +540,7 @@ export default function TestimoniesPage() {
               </Dialog>
 
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden">
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black font-headline">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
@@ -551,7 +556,7 @@ export default function TestimoniesPage() {
               </Dialog>
 
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden">
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black font-headline">Share Prayer Request</DialogTitle>

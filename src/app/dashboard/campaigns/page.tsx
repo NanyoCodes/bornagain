@@ -48,6 +48,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
+import { FeedSidebar } from "@/components/layout/feed-sidebar";
 
 function CampaignSkeletons() {
   return (
@@ -376,95 +377,102 @@ export default function CampaignsPage() {
     }
 
   return (
-    <>
-      <div 
-        className="space-y-8 pb-32 w-full max-w-3xl mx-auto px-0"
+    <div 
+        className="w-full max-w-6xl mx-auto"
         inert={isAnyModalOpen ? true : undefined}
-      >
-        {/* Interaction Box */}
-        <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex flex-row items-center gap-2 sm:gap-3">
-              <Button 
-                variant="outline" 
-                className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0 border-dashed"
-                onClick={() => setIsCreateOpen(true)}
-                disabled={!user || profileLoading}
-              >
-                <span className="truncate">
-                  {profileLoading ? "Preparing mission field..." : "Launch a mission for the Kingdom?"}
-                </span>
-              </Button>
-              <div className="flex items-center gap-2 shrink-0">
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="lg:col-span-8 space-y-8 pb-32">
+            {/* Interaction Box */}
+            <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden">
+            <CardContent className="p-3 sm:p-6">
+                <div className="flex flex-row items-center gap-2 sm:gap-4 w-full">
                 <Button 
-                  variant="secondary" 
-                  size="icon" 
-                  className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-lg"
-                  onClick={() => setIsCreateOpen(true)}
-                  disabled={!user || profileLoading}
-                  title="New Campaign"
+                    variant="outline" 
+                    className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
+                    onClick={() => setIsCreateOpen(true)}
+                    disabled={!user || profileLoading}
                 >
-                  {profileLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Target className="h-4 w-4" />
-                  )}
+                    <span className="truncate">
+                    {profileLoading ? "Preparing mission field..." : "Launch a mission for the Kingdom?"}
+                    </span>
                 </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                <div className="flex items-center gap-2 shrink-0">
+                    <Button 
+                    variant="secondary" 
+                    size="icon" 
+                    className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg"
+                    onClick={() => setIsCreateOpen(true)}
+                    disabled={!user || profileLoading}
+                    title="New Campaign"
+                    >
+                    {profileLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                        <Target className="h-4 w-4" />
+                    )}
+                    </Button>
+                </div>
+                </div>
+            </CardContent>
+            </Card>
 
-        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-0">
-          <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
-              <TabsList className="grid w-full grid-cols-3 h-11 bg-muted/40 p-1 rounded-xl">
-                  <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">All</TabsTrigger>
-                  <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Mine</TabsTrigger>
-                  <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Joined</TabsTrigger>
-              </TabsList>
-          </Tabs>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[150px] h-11">
-                  <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="ongoing">Ongoing</SelectItem>
-                  <SelectItem value="upcoming">Upcoming</SelectItem>
-                  <SelectItem value="past">Past</SelectItem>
-              </SelectContent>
-          </Select>
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-0">
+                <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
+                    <TabsList className="grid w-full grid-cols-3 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl">
+                        <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">All</TabsTrigger>
+                        <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Mine</TabsTrigger>
+                        <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Joined</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-full sm:w-[150px] h-12 sm:h-14 rounded-2xl border-2 font-bold uppercase tracking-widest text-[10px]">
+                        <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl shadow-xl">
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="ongoing">Ongoing</SelectItem>
+                        <SelectItem value="upcoming">Upcoming</SelectItem>
+                        <SelectItem value="past">Past</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+
+
+            {/* Campaign List */}
+            <div className="flex flex-col gap-6 w-full">
+            {loading && <CampaignSkeletons />}
+            {!loading && sortedAndFilteredCampaigns?.map((campaign) => (
+                <CampaignCard 
+                key={campaign.id}
+                campaign={campaign} 
+                userId={user?.uid}
+                userProfile={userProfile}
+                isJoined={joinedCampaignIds.has(campaign.id)}
+                distance={campaign._distance}
+                onManage={() => setCampaignToManage(campaign)}
+                onShareTestimony={() => setCampaignForTestimony(campaign)}
+                onDelete={() => setCampaignToDelete(campaign)}
+                onLogSoul={() => setCampaignForSoul(campaign)}
+                />
+            ))}
+            {!loading && sortedAndFilteredCampaigns?.length === 0 && (
+                <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
+                <Target className="h-16 w-16 text-muted-foreground opacity-10 mb-6" />
+                <h3 className="text-xl font-bold font-headline uppercase tracking-tight">{noResultsMessage}</h3>
+                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
+                    {filter === 'created'
+                    ? 'Why not start a new one to reach your community?'
+                    : filter === 'joined' ? 'Explore all campaigns and join one!' : 'Try a different search term or create a new campaign.'}
+                </p>
+                </div>
+            )}
+            </div>
         </div>
 
-
-        {/* Campaign List */}
-        <div className="flex flex-col gap-4 w-full">
-          {loading && <CampaignSkeletons />}
-          {!loading && sortedAndFilteredCampaigns?.map((campaign) => (
-            <CampaignCard 
-              key={campaign.id}
-              campaign={campaign} 
-              userId={user?.uid}
-              userProfile={userProfile}
-              isJoined={joinedCampaignIds.has(campaign.id)}
-              distance={campaign._distance}
-              onManage={() => setCampaignToManage(campaign)}
-              onShareTestimony={() => setCampaignForTestimony(campaign)}
-              onDelete={() => setCampaignToDelete(campaign)}
-              onLogSoul={() => setCampaignForSoul(campaign)}
-            />
-          ))}
-          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
-            <div className="col-span-full text-center py-24 px-8 flex flex-col items-center">
-              <Target className="h-16 w-16 text-muted-foreground opacity-10 mb-6" />
-              <h3 className="text-xl font-bold font-headline uppercase tracking-tight">{noResultsMessage}</h3>
-              <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
-                {filter === 'created'
-                  ? 'Why not start a new one to reach your community?'
-                  : filter === 'joined' ? 'Explore all campaigns and join one!' : 'Try a different search term or create a new campaign.'}
-              </p>
-            </div>
-          )}
+        {/* Desktop Sidebar Column */}
+        <div className="lg:col-span-4">
+            <FeedSidebar />
         </div>
       </div>
       
@@ -677,6 +685,6 @@ export default function CampaignsPage() {
             </DialogContent>
         </Dialog>
       )}
-    </>
+    </div>
   );
 }

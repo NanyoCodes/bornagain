@@ -52,6 +52,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Country, State } from 'country-state-city';
 import { Skeleton } from "@/components/ui/skeleton";
+import { FeedSidebar } from '@/components/layout/feed-sidebar';
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters.").max(100),
@@ -393,7 +394,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                             <FormItem className="flex items-center space-x-2 space-y-0">
                                 <FormControl><RadioGroupItem value="Physical and Virtual" /></FormControl>
                                 <FormLabel className="font-normal">Both</FormLabel>
-                            </FormItem>
+                            </FormGroup>
                         </RadioGroup>
                     </FormControl>
                     <FormMessage />
@@ -712,93 +713,102 @@ export default function FellowshipPage() {
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
     return (
-        <div className="space-y-8 pb-32 w-full max-w-3xl mx-auto">
-            {/* Responsive Single-Row Interaction Box */}
-            <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm">
-                <CardContent className="p-3 sm:p-4">
-                  <div className="flex flex-row items-center gap-2 sm:gap-3">
-                    <Button 
-                        variant="outline" 
-                        className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0 border-dashed"
-                        onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
-                        disabled={loading}
-                    >
-                    <span className="truncate">
-                        {loading ? "Preparing..." : "Start a new fellowship group?"}
-                    </span>
-                    </Button>
-                    <div className="flex items-center gap-2 shrink-0">
-                        <Button 
-                            variant="secondary" 
-                            size="icon" 
-                            className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-lg"
-                            onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
-                            disabled={loading}
-                            title="New Fellowship"
-                        >
-                            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
-                        </Button>
-                        <Button 
-                            variant="outline" 
-                            size="icon" 
-                            className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-md bg-background"
-                            onClick={() => { setCreateType('Association'); setIsCreateOpen(true); }}
-                            disabled={loading}
-                            title="New Association"
-                        >
-                            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Group className="h-4 w-4" />}
-                        </Button>
-                    </div>
-                </div>
-                </CardContent>
-            </Card>
+        <div className="w-full max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div className="lg:col-span-8 space-y-8 pb-32">
+                    {/* Responsive Single-Row Interaction Box */}
+                    <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden">
+                        <CardContent className="p-3 sm:p-6">
+                        <div className="flex flex-row items-center gap-2 sm:gap-4 w-full">
+                            <Button 
+                                variant="outline" 
+                                className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
+                                onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
+                                disabled={loading}
+                            >
+                            <span className="truncate">
+                                {loading ? "Preparing..." : "Start a new fellowship group?"}
+                            </span>
+                            </Button>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <Button 
+                                    variant="secondary" 
+                                    size="icon" 
+                                    className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg"
+                                    onClick={() => { setCreateType('Fellowship'); setIsCreateOpen(true); }}
+                                    disabled={loading}
+                                    title="New Fellowship"
+                                >
+                                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
+                                </Button>
+                                <Button 
+                                    variant="outline" 
+                                    size="icon" 
+                                    className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-md bg-background"
+                                    onClick={() => { setCreateType('Association'); setIsCreateOpen(true); }}
+                                    disabled={loading}
+                                    title="New Association"
+                                >
+                                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Group className="h-4 w-4" />}
+                                </Button>
+                            </div>
+                        </div>
+                        </CardContent>
+                    </Card>
 
-            <div className="flex flex-col gap-6">
-                <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-0">
-                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-                        <TabsList className="grid w-full grid-cols-2 h-11 bg-muted/40 p-1 rounded-xl">
-                            <TabsTrigger value="Fellowship" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Fellowships</TabsTrigger>
-                            <TabsTrigger value="Association" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Associations</TabsTrigger>
-                        </TabsList>
-                    </Tabs>
-                    <Tabs value={membershipFilter} onValueChange={setMembershipFilter} className="w-full sm:w-auto">
-                        <TabsList className="grid w-full grid-cols-3 h-11 bg-muted/40 p-1 rounded-xl">
-                            <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">All</TabsTrigger>
-                            <TabsTrigger value="owned" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Mine</TabsTrigger>
-                            <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-lg">Joined</TabsTrigger>
-                        </TabsList>
-                    </Tabs>
-                </div>
+                    <div className="flex flex-col gap-6">
+                        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-0">
+                            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
+                                <TabsList className="grid w-full grid-cols-2 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl">
+                                    <TabsTrigger value="Fellowship" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Fellowships</TabsTrigger>
+                                    <TabsTrigger value="Association" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Associations</TabsTrigger>
+                                </TabsList>
+                            </Tabs>
+                            <Tabs value={membershipFilter} onValueChange={setMembershipFilter} className="w-full sm:w-auto">
+                                <TabsList className="grid w-full grid-cols-3 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl">
+                                    <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">All</TabsTrigger>
+                                    <TabsTrigger value="owned" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Mine</TabsTrigger>
+                                    <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Joined</TabsTrigger>
+                                </TabsList>
+                            </Tabs>
+                        </div>
 
-                {loading ? (
-                    <div className="flex flex-col gap-6 w-full">
-                        {[...Array(3)].map((_, i) => (
-                            <Card key={i} className="rounded-2xl shadow-none h-40">
-                                <CardContent className="h-full animate-pulse bg-muted rounded-2xl" />
-                            </Card>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex flex-col gap-4 w-full">
-                        {filteredFellowships.map((f) => (
-                            <FellowshipCard 
-                              key={f.id} 
-                              fellowship={f} 
-                              userProfile={userProfile ?? null} 
-                              onManage={() => setFellowshipToManage(f)} 
-                              onDelete={() => setFellowshipToDelete(f)} 
-                              onClick={() => handleCardClick(f.id)} 
-                            />
-                        ))}
-                        {filteredFellowships.length === 0 && (
-                            <div className="col-span-full text-center py-24 px-8 flex flex-col items-center">
-                                <Users className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                                <h3 className="text-xl font-bold font-headline uppercase tracking-tight">No {activeTab.toLowerCase()}s Found</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto">Try a different filter or start a new group in your area.</p>
+                        {loading ? (
+                            <div className="flex flex-col gap-6 w-full">
+                                {[...Array(3)].map((_, i) => (
+                                    <Card key={i} className="rounded-2xl shadow-none h-40">
+                                        <CardContent className="h-full animate-pulse bg-muted rounded-2xl" />
+                                    </Card>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-6 w-full">
+                                {filteredFellowships.map((f) => (
+                                    <FellowshipCard 
+                                    key={f.id} 
+                                    fellowship={f} 
+                                    userProfile={userProfile ?? null} 
+                                    onManage={() => setFellowshipToManage(f)} 
+                                    onDelete={() => setFellowshipToDelete(f)} 
+                                    onClick={() => handleCardClick(f.id)} 
+                                    />
+                                ))}
+                                {filteredFellowships.length === 0 && (
+                                    <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
+                                        <Users className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
+                                        <h3 className="text-xl font-bold font-headline uppercase tracking-tight">No {activeTab.toLowerCase()}s Found</h3>
+                                        <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto">Try a different filter or start a new group in your area.</p>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
-                )}
+                </div>
+
+                {/* Desktop Sidebar Column */}
+                <div className="lg:col-span-4">
+                    <FeedSidebar />
+                </div>
             </div>
 
             {mounted && isMobile ? (
