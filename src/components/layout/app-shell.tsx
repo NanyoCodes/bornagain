@@ -572,7 +572,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
               <DropdownMenuContent className="w-64 rounded-2xl shadow-xl" align="end">
                 <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-bold leading-none">{user.displayName || 'User'}</p>
+                    <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
@@ -623,7 +623,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
                     <Link href="/guide" className="cursor-pointer">
-                    <BookOpen className="mr-2 h-4 w-4" />
+                    < BookOpen className="mr-2 h-4 w-4" />
                     <span>App Guide</span>
                     </Link>
                 </DropdownMenuItem>
@@ -976,7 +976,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           {!isTakeoverPage && <AppHeader unreadChatCount={unreadChatNotifications?.length || 0} unreadNotifCount={unreadOtherNotifications?.length || 0} isPublicRoute={isPublicRoute} onOpenCart={() => setIsCartOpen(true)} onOpenMenu={() => setIsMenuOpen(true)} />}
           <div className="flex-1 relative min-h-0">
           <main ref={scrollContainerRef} className={cn("absolute inset-0", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
-              <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-3xl p-4 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
+              <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-7xl p-4 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
                   <PageTransition>{children}</PageTransition>
               </div>
           </main>

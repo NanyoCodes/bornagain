@@ -99,9 +99,9 @@ function RecentSoulsList() {
       {souls.map((soul) => { 
         const wonAt = safeToDate(soul.wonAt); 
         return (
-          <Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors">
+          <Link href="/dashboard/souls-won" key={soul.id} className="flex items-center gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors" prefetch={true}>
             <Avatar className="h-10 w-10 border">
-              <AvatarFallback className="font-bold bg-primary/5 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+              <AvatarFallback className="font-black bg-primary/5 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="font-semibold leading-none truncate">{soul.firstName} {soul.lastName}</p>
@@ -507,7 +507,7 @@ export function ProgressPageContent() {
   if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-8 pb-12 w-full max-w-7xl mx-auto">
         <header className="text-center space-y-4 px-4">
             {welcomeMessage ? (
                 <>
