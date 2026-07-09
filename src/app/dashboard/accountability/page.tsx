@@ -28,7 +28,8 @@ import {
     Zap,
     Users,
     PlusCircle,
-    ArrowRight
+    ArrowRight,
+    Sparkles
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -148,7 +149,7 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                 </CardContent>
                 <CardFooter className="p-5 pt-0">
                     <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full">
-                        <p className="text-[8px] font-bold text-muted-foreground leading-relaxed italic uppercase tracking-widest">
+                        <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic uppercase tracking-widest">
                             "Bearing one another's burdens"
                         </p>
                     </div>
@@ -493,7 +494,7 @@ export default function AccountabilityPage() {
                 <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
                     <AlertDialogHeader>
                         <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">End Alliance?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="grid gap-4 py-6">
                         <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Reason for Removal</Label>
