@@ -28,7 +28,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { PlusCircle, Download, Loader2, Trash2, HeartHandshake, Sparkles, Info } from "lucide-react";
-import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
+import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, addDoc, deleteField, where } from "firebase/firestore";
@@ -50,6 +50,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import { RelationshipCircleTracker } from "./relationship-circle-tracker";
 import { Separator } from "../ui/separator";
+import { FeedSidebar } from "@/components/layout/feed-sidebar";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -353,114 +354,142 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
+  const requestsQueryRes = useMemo(() => {
+    if (!user || !firestore) return null;
+    return query(
+      collection(firestore, 'accountabilityRequests'),
+      where('participantIds', 'array-contains', user.uid),
+      where('status', '==', 'pending')
+    );
+  }, [user, firestore]);
+  const { data: accountabilityRequestsRes } = useCollection<AccountabilityRequest>(requestsQueryRes);
+
+  const pendingRequestIdsRes = useMemo(() => {
+    if (!accountabilityRequestsRes) return new Set<string>();
+    return new Set(
+        accountabilityRequestsRes
+            .flatMap(r => r.participantIds)
+            .filter(id => id !== user?.uid)
+    );
+  }, [accountabilityRequestsRes, user?.uid]);
+
   return (
     <>
       <div 
-        className="space-y-8 pb-32 w-full max-w-6xl mx-auto" 
+        className="w-full max-w-7xl mx-auto" 
         inert={isAnyModalOpen ? true : undefined}
       >
-        {/* Interaction Box - Expanded Width */}
-        <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex flex-row items-center gap-2 sm:gap-3">
-              <Button 
-                  variant="outline" 
-                  className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0 border-dashed"
-                  onClick={() => setIsLogDialogOpen(true)}
-                  disabled={loading}
-              >
-                  <span className="truncate">
-                      {loading ? "Preparing harvest list..." : "Who did you minister to today?"}
-                  </span>
-              </Button>
-              <div className="flex items-center gap-2 shrink-0">
-                <Button 
-                  variant="secondary" 
-                  size="icon" 
-                  className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-lg"
-                  onClick={() => setIsLogDialogOpen(true)}
-                  disabled={loading}
-                  title="Log Soul"
-                >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      size="icon" 
-                      className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-md bg-background"
-                      disabled={loading}
-                      title="Export Harvest"
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="rounded-xl">
-                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')}>CSV (Excel)</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')}>PDF Document</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Mission Dashboard Description */}
-        <div className="px-4 sm:px-0 space-y-4">
-            <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
-                    <HeartHandshake className="h-5 w-5 text-primary" />
-                </div>
-                <div className="min-w-0">
-                    <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">Harvest Mobilization</h2>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Record • Nurture • Establish</p>
-                </div>
-            </div>
-            <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
-                <CardContent className="p-6 space-y-4">
-                    <div className="flex items-start gap-4">
-                        <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center shrink-0 shadow-sm">
-                            <Sparkles className="h-4 w-4 text-primary" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+            <div className="lg:col-span-8 space-y-8 pb-32">
+                {/* Interaction Box */}
+                <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0">
+                    <CardContent className="p-3 sm:p-4">
+                        <div className="flex flex-row items-center gap-2 sm:gap-3">
+                            <Button 
+                                variant="outline" 
+                                className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0 border-dashed"
+                                onClick={() => setIsLogDialogOpen(true)}
+                                disabled={loading}
+                            >
+                                <span className="truncate">
+                                    {loading ? "Preparing harvest list..." : "Who did you minister to today?"}
+                                </span>
+                            </Button>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <Button 
+                                    variant="secondary" 
+                                    size="icon" 
+                                    className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-lg"
+                                    onClick={() => setIsLogDialogOpen(true)}
+                                    disabled={loading}
+                                    title="Log Soul"
+                                >
+                                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
+                                </Button>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button 
+                                            variant="outline" 
+                                            size="icon" 
+                                            className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-md bg-background"
+                                            disabled={loading}
+                                            title="Export Harvest"
+                                        >
+                                            <Download className="h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="rounded-xl">
+                                        <DropdownMenuItem onSelect={() => handleExportHarvest('csv')}>CSV (Excel)</DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')}>PDF Document</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
                         </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed font-medium text-balance italic">
-                            "The harvest is plentiful, but the laborers are few." Use this dashboard to organize your personal and collective evangelism efforts. Every soul registered here represents a life to be nurtured and established in the Kingdom.
-                        </p>
-                    </div>
-                    <Separator className="opacity-50" />
-                    <div className="flex items-start gap-4">
-                        <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center shrink-0 shadow-sm">
-                            <Info className="h-4 w-4 text-primary" />
+                    </CardContent>
+                </Card>
+
+                {/* Mission Dashboard Description */}
+                <div className="px-4 sm:px-0 space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
+                            <HeartHandshake className="h-5 w-5 text-primary" />
                         </div>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed font-medium text-balance">
-                            <span className="text-foreground font-black uppercase text-[10px] tracking-wider block mb-0.5">Strategy for Victory</span>
-                            Assign souls to your local Fellowship or Association to share the responsibility of follow-up and discipleship with other believers.
-                        </p>
+                        <div className="min-w-0">
+                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">Harvest Mobilization</h2>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Record • Nurture • Establish</p>
+                        </div>
                     </div>
-                </CardContent>
-            </Card>
-        </div>
+                    <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
+                        <CardContent className="p-6 space-y-4">
+                            <div className="flex items-start gap-4">
+                                <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center shrink-0 shadow-sm">
+                                    <Sparkles className="h-4 w-4 text-primary" />
+                                </div>
+                                <p className="text-sm text-muted-foreground leading-relaxed font-medium text-justify italic">
+                                    "The harvest is plentiful, but the laborers are few." Use this dashboard to organize your personal and collective evangelism efforts. Every soul registered here represents a life to be nurtured and established in the Kingdom.
+                                </p>
+                            </div>
+                            <Separator className="opacity-50" />
+                            <div className="flex items-start gap-4">
+                                <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center shrink-0 shadow-sm">
+                                    <Info className="h-4 w-4 text-primary" />
+                                </div>
+                                <p className="text-[11px] text-muted-foreground leading-relaxed font-medium text-balance">
+                                    <span className="text-foreground font-black uppercase text-[10px] tracking-wider block mb-0.5">Strategy for Victory</span>
+                                    Assign souls to your local Fellowship or Association to share the responsibility of follow-up and discipleship with other believers.
+                                </p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
-        {/* Relationship Circle Tracker - Expanded Desktop Width */}
-        <RelationshipCircleTracker 
-            souls={souls || []}
-            campaigns={campaigns}
-            fellowships={activeFellowships}
-            className="-mx-4 sm:mx-0 rounded-none sm:rounded-3xl"
-        />
+                {/* Relationship Circle Tracker */}
+                <RelationshipCircleTracker 
+                    souls={souls || []}
+                    campaigns={campaigns}
+                    fellowships={activeFellowships}
+                    className="-mx-4 sm:mx-0 rounded-none sm:rounded-3xl"
+                />
 
-        {/* Table Content - Expanded Desktop Width */}
-        <div className="-mx-4 sm:mx-0">
-          <SoulsWonTable 
-            souls={filteredSouls || []} 
-            loading={loading}
-            onFollowUp={handleOpenFollowUp}
-            onViewHistory={handleOpenHistory}
-            onExportSingle={handleExportSingleSoul}
-            onOpenAssignDialog={handleOpenAssign}
-            onEdit={handleOpenEdit}
-            onDelete={handleOpenDelete}
-          />
+                {/* Table Content */}
+                <div className="-mx-4 sm:mx-0">
+                    <SoulsWonTable 
+                        souls={filteredSouls || []} 
+                        loading={loading}
+                        onFollowUp={handleOpenFollowUp}
+                        onViewHistory={handleOpenHistory}
+                        onExportSingle={handleExportSingleSoul}
+                        onOpenAssignDialog={handleOpenAssign}
+                        onEdit={handleOpenEdit}
+                        onDelete={handleOpenDelete}
+                    />
+                </div>
+            </div>
+
+            {/* Desktop Sidebar Column */}
+            <div className="lg:col-span-4">
+                <FeedSidebar />
+            </div>
         </div>
       </div>
 
@@ -493,90 +522,96 @@ export default function SoulsWonPage() {
           onAssignGroup={handleAssignGroup} 
       />
       
-      {mounted && isMobile ? (
-        <Sheet open={!!editSoulId} onOpenChange={(open) => { if(!open) setEditSoulId(null); }}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-              <SheetHeader className="text-left">
-                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Soul Record</SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-1">Update information for {soulToEdit?.firstName}.</SheetDescription>
-              </SheetHeader>
-            </div>
-            <ScrollArea className="flex-grow">
-              <div className="p-8">
-                 {soulToEdit && (
-                  <EditSoulForm 
-                      soul={soulToEdit} 
-                      onSoulUpdated={() => { setEditSoulId(null); }} 
-                      fellowships={activeFellowships || []}
-                      campaigns={campaigns || []}
-                  />
-                )}
-              </div>
-            </ScrollArea>
-          </SheetContent>
-        </Sheet>
-      ) : (
-        <Dialog open={!!editSoulId} onOpenChange={(open) => { if(!open) setEditSoulId(null); }}>
-            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-                <div className="p-8 border-b bg-muted/10">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Edit Soul Details</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1">Update information for {soulToEdit?.firstName}.</DialogDescription>
-                    </DialogHeader>
-                </div>
-                <ScrollArea className="max-h-[70vh]">
+      {mounted && (
+        <>
+            {isMobile ? (
+                <>
+                <Sheet open={!!editSoulId} onOpenChange={(open) => { if(!open) setEditSoulId(null); }}>
+                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                    <SheetHeader className="text-left">
+                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Soul Record</SheetTitle>
+                        <SheetDescription className="text-sm font-medium mt-1">Update information for {soulToEdit?.firstName}.</SheetDescription>
+                    </SheetHeader>
+                    </div>
+                    <ScrollArea className="flex-grow">
                     <div className="p-8">
                         {soulToEdit && (
-                          <EditSoulForm 
-                              soul={soulToEdit} 
-                              onSoulUpdated={() => { setEditSoulId(null); }} 
-                              fellowships={activeFellowships || []}
-                              campaigns={campaigns || []}
-                          />
+                        <EditSoulForm 
+                            soul={soulToEdit} 
+                            onSoulUpdated={() => { setEditSoulId(null); }} 
+                            fellowships={activeFellowships || []}
+                            campaigns={campaigns || []}
+                        />
                         )}
                     </div>
-                </ScrollArea>
-            </DialogContent>
-        </Dialog>
-      )}
+                    </ScrollArea>
+                </SheetContent>
+                </Sheet>
 
-      {mounted && isMobile ? (
-        <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                <SheetHeader className="text-left">
-                    <SheetTitle className="font-black font-headline text-2xl uppercase tracking-tight">Log a New Soul</SheetTitle>
-                    <SheetDescription className="text-sm font-medium mt-1">Record the details of the person you've ministered to.</SheetDescription>
-                </SheetHeader>
-            </div>
-            <div className="flex-grow overflow-y-auto p-8">
-                <LogSoulForm onSoulLogged={() => {
-                  setIsLogDialogOpen(false);
-                }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
-            </div>
-          </SheetContent>
-        </Sheet>
-      ) : (
-        <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-          <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-            <div className="p-8 border-b bg-muted/10">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold uppercase tracking-tight">Log a New Soul</DialogTitle>
-                    <DialogDescription className="text-sm font-medium mt-1">
-                        Record the details of the person you've ministered to.
-                    </DialogDescription>
-                </DialogHeader>
-            </div>
-            <ScrollArea className="max-h-[70vh]">
-                <div className="p-8">
-                    <LogSoulForm onSoulLogged={() => {
+                <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left">
+                            <SheetTitle className="font-black font-headline text-2xl uppercase tracking-tight">Log a New Soul</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Record the details of the person you've ministered to.</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <div className="flex-grow overflow-y-auto p-8">
+                        <LogSoulForm onSoulLogged={() => {
                         setIsLogDialogOpen(false);
-                    }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
-                </div>
-            </ScrollArea>
-          </DialogContent>
-        </Dialog>
+                        }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+                    </div>
+                </SheetContent>
+                </Sheet>
+                </>
+            ) : (
+                <>
+                <Dialog open={!!editSoulId} onOpenChange={(open) => { if(!open) setEditSoulId(null); }}>
+                    <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+                        <div className="p-8 border-b bg-muted/10">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Edit Soul Details</DialogTitle>
+                                <DialogDescription className="text-sm font-medium mt-1">Update information for {soulToEdit?.firstName}.</DialogDescription>
+                            </DialogHeader>
+                        </div>
+                        <ScrollArea className="max-h-[70vh]">
+                            <div className="p-8">
+                                {soulToEdit && (
+                                <EditSoulForm 
+                                    soul={soulToEdit} 
+                                    onSoulUpdated={() => { setEditSoulId(null); }} 
+                                    fellowships={activeFellowships || []}
+                                    campaigns={campaigns || []}
+                                />
+                                )}
+                            </div>
+                        </ScrollArea>
+                    </DialogContent>
+                </Dialog>
+
+                <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+                    <div className="p-8 border-b bg-muted/10">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-bold uppercase tracking-tight">Log a New Soul</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1">
+                                Record the details of the person you've ministered to.
+                            </DialogDescription>
+                        </DialogHeader>
+                    </div>
+                    <ScrollArea className="max-h-[70vh]">
+                        <div className="p-8">
+                            <LogSoulForm onSoulLogged={() => {
+                                setIsLogDialogOpen(false);
+                            }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+                        </div>
+                    </ScrollArea>
+                </DialogContent>
+                </Dialog>
+                </>
+            )}
+        </>
       )}
 
       <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => { if(!open) setDeleteSoulId(null); }}>
