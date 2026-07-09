@@ -19,7 +19,8 @@ import {
     TrendingUp,
     Sparkles,
     Users,
-    Gift
+    Gift,
+    CheckCircle2
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, where, orderBy, limit } from 'firebase/firestore';
@@ -53,16 +54,17 @@ export function FeedSidebar({ className }: { className?: string }) {
     const completedToday = useMemo(() => {
         if (!userProfile?.dailyDiscipline?.lastUpdated) return [];
         const lastUpdated = safeToDate(userProfile.dailyDiscipline.lastUpdated);
-        if (lastUpdated && isSameMonth(lastUpdated, new Date())) {
+        const now = new Date();
+        if (lastUpdated && lastUpdated.getDate() === now.getDate() && lastUpdated.getMonth() === now.getMonth() && lastUpdated.getFullYear() === now.getFullYear()) {
             return userProfile.dailyDiscipline.completed || [];
         }
         return [];
     }, [userProfile]);
 
     return (
-        <div className={cn("hidden lg:flex flex-col gap-6 sticky top-24 h-fit", className)}>
+        <div className={cn("hidden lg:flex flex-col gap-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar pb-10", className)}>
             {/* Kingdom Progress Widget */}
-            <Card className="rounded-3xl border-none shadow-lg bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-black/10">
+            <Card className="rounded-3xl border-none shadow-lg bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-black/10 shrink-0">
                 <CardHeader className="p-6 pb-2">
                     <div className="flex items-center justify-between mb-2">
                         <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
@@ -80,14 +82,14 @@ export function FeedSidebar({ className }: { className?: string }) {
                         </div>
                         <Progress value={progress} className="h-2 bg-white/20" indicatorClassName="bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                     </div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80">
-                        Every life logged contributes to the global harvest map.
+                    <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance">
+                        Every life logged contributes to the global harvest map and city impact stats.
                     </p>
                 </CardContent>
             </Card>
 
             {/* Daily Rituals Widget */}
-            <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden">
+            <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
                 <CardHeader className="p-5 pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
                         <Zap className="h-4 w-4 text-primary" /> Daily Disciplines
@@ -99,10 +101,10 @@ export function FeedSidebar({ className }: { className?: string }) {
                         { id: 'read_bible', label: 'Word Study', icon: BookOpen, color: 'text-blue-500' },
                         { id: 'take_notes', label: 'Journaling', icon: Edit, color: 'text-primary' },
                     ].map(item => (
-                        <div key={item.id} className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-transparent hover:border-primary/10 transition-all">
+                        <div key={item.id} className="flex items-center justify-between p-2.5 rounded-xl bg-muted/20 border border-transparent hover:border-primary/10 transition-all">
                             <div className="flex items-center gap-3">
                                 <item.icon className={cn("h-4 w-4", item.color)} />
-                                <span className="text-xs font-bold uppercase tracking-tight">{item.label}</span>
+                                <span className="text-[11px] font-bold uppercase tracking-tight">{item.label}</span>
                             </div>
                             {completedToday.includes(item.id) ? (
                                 <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -118,7 +120,7 @@ export function FeedSidebar({ className }: { className?: string }) {
             </Card>
 
             {/* Quick Sectors Widget */}
-            <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden">
+            <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
                 <CardHeader className="p-5 pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Sectors</CardTitle>
                 </CardHeader>
