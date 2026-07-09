@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -394,7 +395,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
                             <FormItem className="flex items-center space-x-2 space-y-0">
                                 <FormControl><RadioGroupItem value="Physical and Virtual" /></FormControl>
                                 <FormLabel className="font-normal">Both</FormLabel>
-                            </FormGroup>
+                            </FormItem>
                         </RadioGroup>
                     </FormControl>
                     <FormMessage />
@@ -713,7 +714,7 @@ export default function FellowshipPage() {
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
     return (
-        <div className="w-full max-w-6xl mx-auto">
+        <div className="w-full max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 <div className="lg:col-span-8 space-y-8 pb-32">
                     {/* Responsive Single-Row Interaction Box */}
