@@ -17,7 +17,8 @@ import {
     ArrowRight,
     TrendingUp,
     Sparkles,
-    Users
+    Users,
+    Gift
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, where, orderBy, limit } from 'firebase/firestore';
@@ -52,7 +53,6 @@ export function FeedSidebar({ className }: { className?: string }) {
         if (!userProfile?.dailyDiscipline?.lastUpdated) return [];
         const lastUpdated = safeToDate(userProfile.dailyDiscipline.lastUpdated);
         if (lastUpdated && isSameMonth(lastUpdated, new Date())) {
-            // isToday check is better but requires date-fns isToday
             return userProfile.dailyDiscipline.completed || [];
         }
         return [];
@@ -67,7 +67,7 @@ export function FeedSidebar({ className }: { className?: string }) {
                         <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
                             <Target className="h-5 w-5 text-white" />
                         </div>
-                        <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">July Progress</Badge>
+                        <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">{format(new Date(), 'MMMM')} Progress</Badge>
                     </div>
                     <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">Harvest Goal</CardTitle>
                 </CardHeader>
@@ -122,12 +122,12 @@ export function FeedSidebar({ className }: { className?: string }) {
                     <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Sectors</CardTitle>
                 </CardHeader>
                 <CardContent className="p-3 space-y-1">
-                    <Button asChild variant="ghost" className="w-full justify-start h-12 gap-4 rounded-2xl hover:bg-primary/5 hover:text-primary group">
+                    <Link href="/dashboard/victory-hub" className="flex items-center gap-4 p-3 rounded-2xl hover:bg-muted group">
                         <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                             <ShieldCheck className="h-4 w-4 text-primary" />
                         </div>
                         <span className="font-black uppercase tracking-widest text-[10px]">Victory Hub</span>
-                    </Button>
+                    </Link>
                     <Link href="/dashboard/marketplace" className="flex items-center gap-4 p-3 rounded-2xl hover:bg-muted group">
                         <div className="h-8 w-8 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                             <Store className="h-4 w-4 text-blue-500" />

@@ -378,7 +378,7 @@ export default function CampaignsPage() {
 
   return (
     <div 
-        className="w-full max-w-6xl mx-auto"
+        className="w-full max-w-7xl mx-auto"
         inert={isAnyModalOpen ? true : undefined}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">

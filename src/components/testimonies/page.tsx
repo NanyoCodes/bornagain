@@ -303,7 +303,7 @@ export default function TestimoniesPage() {
 
   return (
     <div 
-      className="space-y-6 md:space-y-10 w-full max-w-6xl mx-auto pt-4"
+      className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
       {...(isAnyModalOpen ? { inert: true } : {})}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
