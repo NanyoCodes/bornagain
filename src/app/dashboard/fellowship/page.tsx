@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -806,9 +805,9 @@ export default function FellowshipPage() {
                     </div>
                 </div>
 
-                {/* Desktop Sidebar Column */}
+                {/* Specialized Fellowship Sidebar */}
                 <div className="lg:col-span-4">
-                    <FeedSidebar />
+                    <FeedSidebar mode="fellowships" />
                 </div>
             </div>
 

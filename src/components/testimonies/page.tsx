@@ -411,9 +411,9 @@ export default function TestimoniesPage() {
             </Tabs>
         </div>
 
-        {/* Desktop Sidebar Column */}
+        {/* Specialized Testimony Sidebar */}
         <div className="lg:col-span-4">
-            <FeedSidebar />
+            <FeedSidebar mode="testimonies" />
         </div>
       </div>
       
