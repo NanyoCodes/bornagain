@@ -111,7 +111,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                             <Progress value={progress} className="h-2 bg-white/20" indicatorClassName="bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                         </div>
                         <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance">
-                            Every shared testimony and logged soul builds the Kingdom map.
+                            Every life logged contributes to the global harvest map and city impact stats.
                         </p>
                     </CardContent>
                 </Card>
@@ -147,8 +147,8 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 </Card>
             )}
 
-            {/* Daily Rituals - Shown in Testimony & Harvest modes */}
-            {(mode === 'testimonies' || mode === 'harvest' || mode === 'general') && (
+            {/* Daily Rituals - Shown in Harvest/Campaign/General modes */}
+            {(mode === 'harvest' || mode === 'campaigns' || mode === 'general') && (
                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
                     <CardHeader className="p-5 pb-2">
                         <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
@@ -174,6 +174,11 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                             </div>
                         ))}
                     </CardContent>
+                    <CardFooter className="p-4 pt-0">
+                        <Button asChild variant="ghost" className="w-full text-[9px] font-black uppercase tracking-widest text-primary h-8 hover:bg-primary/5">
+                            <Link href="/growth">View All Growth <ArrowRight className="ml-1.5 h-3 w-3" /></Link>
+                        </Button>
+                    </CardFooter>
                 </Card>
             )}
 
@@ -192,26 +197,6 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                                 &ldquo;{randomSeed.text}&rdquo;
                             </p>
                             <p className="text-[9px] font-black text-primary text-right mt-3 uppercase tracking-widest">— {randomSeed.ref}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Community Vision - Exclusive to Fellowships */}
-            {mode === 'fellowships' && (
-                <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
-                    <CardHeader className="p-5 pb-2">
-                        <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
-                            <Users className="h-4 w-4 text-primary" /> Kingdom Unity
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 pt-4">
-                        <div className="p-5 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/20 text-center">
-                            <p className="text-xs font-bold text-muted-foreground leading-relaxed uppercase tracking-tighter">
-                                "The body is not one member, but many."
-                            </p>
-                            <Separator className="my-3 opacity-40" />
-                            <p className="text-[10px] text-muted-foreground font-medium italic">Join a group to share the weight of follow-up.</p>
                         </div>
                     </CardContent>
                 </Card>

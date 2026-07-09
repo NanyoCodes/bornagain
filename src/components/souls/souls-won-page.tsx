@@ -354,25 +354,6 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
-  const requestsQueryRes = useMemo(() => {
-    if (!user || !firestore) return null;
-    return query(
-      collection(firestore, 'accountabilityRequests'),
-      where('participantIds', 'array-contains', user.uid),
-      where('status', '==', 'pending')
-    );
-  }, [user, firestore]);
-  const { data: accountabilityRequestsRes } = useCollection<AccountabilityRequest>(requestsQueryRes);
-
-  const pendingRequestIdsRes = useMemo(() => {
-    if (!accountabilityRequestsRes) return new Set<string>();
-    return new Set(
-        accountabilityRequestsRes
-            .flatMap(r => r.participantIds)
-            .filter(id => id !== user?.uid)
-    );
-  }, [accountabilityRequestsRes, user?.uid]);
-
   return (
     <>
       <div 
@@ -488,7 +469,7 @@ export default function SoulsWonPage() {
 
             {/* Desktop Sidebar Column */}
             <div className="lg:col-span-4">
-                <FeedSidebar />
+                <FeedSidebar mode="harvest" />
             </div>
         </div>
       </div>

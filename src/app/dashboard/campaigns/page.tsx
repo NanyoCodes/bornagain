@@ -472,7 +472,7 @@ export default function CampaignsPage() {
 
         {/* Desktop Sidebar Column */}
         <div className="lg:col-span-4">
-            <FeedSidebar />
+            <FeedSidebar mode="campaigns" />
         </div>
       </div>
       
