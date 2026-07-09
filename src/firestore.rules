@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Souls Won Dashboard Expansion & Sidebar Sync - 2025-06-28T10:00:00Z
+    // Deployment trigger: Accountability Hub Optimization & Sidebar Sync - 2025-06-28T16:45:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

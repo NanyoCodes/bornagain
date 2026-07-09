@@ -5,11 +5,31 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc, collection, addDoc, serverTimestamp, query, getDocs, where, writeBatch, arrayRemove, getDoc } from 'firebase/firestore';
-import type { UserProfile } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { AccountabilityRequest, UserProfile } from '@/lib/types';
+import { useCollection } from '@/firebase/firestore/use-collection';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Loader2, HeartHandshake, MessagesSquare, MoreVertical, UserX, User, CheckCircle2, XCircle, BellRing, BookOpen, Edit } from 'lucide-react';
+import { 
+    Loader2, 
+    HeartHandshake, 
+    MessagesSquare, 
+    MoreVertical, 
+    UserX, 
+    User, 
+    CheckCircle2, 
+    XCircle, 
+    BellRing, 
+    BookOpen, 
+    Edit,
+    ArrowLeft,
+    Quote,
+    ShieldCheck,
+    Zap,
+    Users,
+    PlusCircle,
+    ArrowRight
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -47,10 +67,99 @@ import { useSearch } from '@/context/search-context';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+
+const accountabilityVerses = [
+    { text: "Iron sharpens iron, and one man sharpens another.", ref: "Proverbs 27:17" },
+    { text: "Two are better than one, because they have a good reward for their toil.", ref: "Ecclesiastes 4:9" },
+    { text: "Therefore encourage one another and build one another up.", ref: "1 Thessalonians 5:11" },
+    { text: "Bear one another's burdens, and so fulfill the law of Christ.", ref: "Galatians 6:2" },
+];
+
+function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partnerCount?: number, pendingCount?: number }) {
+    const verse = useMemo(() => accountabilityVerses[Math.floor(Math.random() * accountabilityVerses.length)], []);
+
+    return (
+        <div className="hidden lg:flex flex-col gap-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar pb-10">
+            {/* Alliance Summary Widget */}
+            <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0">
+                <CardHeader className="p-6 pb-2">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
+                            <HeartHandshake className="h-5 w-5 text-white" />
+                        </div>
+                        <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">Active Alliance</Badge>
+                    </div>
+                    <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">Alliance Hub</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6 pt-2 space-y-4">
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10">
+                            <p className="text-2xl font-black">{partnerCount}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70">Partners</p>
+                        </div>
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10">
+                            <p className="text-2xl font-black">{pendingCount}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70">Requests</p>
+                        </div>
+                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance">
+                        Strategic spiritual support through mutual observation and prayer.
+                    </p>
+                </CardContent>
+            </Card>
+
+            {/* Biblical Foundation Widget */}
+            <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
+                <CardHeader className="p-5 pb-2">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
+                        <BookOpen className="h-4 w-4 text-primary" /> Iron Sharpens Iron
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-5 pt-4">
+                    <div className="p-5 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/20 relative group">
+                        <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
+                        <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance">
+                            &ldquo;{verse.text}&rdquo;
+                        </p>
+                        <p className="text-[9px] font-black text-primary text-right mt-3 uppercase tracking-widest">— {verse.ref}</p>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Partner Ethics Widget */}
+            <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
+                <CardHeader className="p-5 pb-2">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Protocol</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 space-y-2">
+                    {[
+                        { icon: ShieldCheck, label: "Strict Confidentiality", color: "text-blue-500" },
+                        { icon: Zap, label: "Regular Nudges", color: "text-amber-500" },
+                        { icon: Sparkles, label: "Prayer Agreement", color: "text-primary" },
+                        { icon: Users, label: "Truth with Love", color: "text-indigo-600" },
+                    ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/10 border border-transparent">
+                            <item.icon className={cn("h-4 w-4", item.color)} />
+                            <span className="text-[10px] font-bold uppercase tracking-tight">{item.label}</span>
+                        </div>
+                    ))}
+                </CardContent>
+                <CardFooter className="p-5 pt-0">
+                    <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full">
+                        <p className="text-[8px] font-bold text-muted-foreground leading-relaxed italic uppercase tracking-widest">
+                            "Bearing one another's burdens"
+                        </p>
+                    </div>
+                </CardFooter>
+            </Card>
+        </div>
+    );
+}
 
 function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date: Date }) {
     const firestore = useFirestore();
-
     const dateStr = useMemo(() => format(date, 'yyyy-MM-dd'), [date]);
     
     const disciplineDocRef = useMemo(() => {
@@ -59,10 +168,7 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     }, [firestore, partnerId, dateStr]);
 
     const { data: partnerDiscipline, loading } = useDoc<{ completed?: string[] }>(disciplineDocRef);
-
-    const completedOnDate = useMemo(() => {
-        return partnerDiscipline?.completed || [];
-    }, [partnerDiscipline]);
+    const completedOnDate = useMemo(() => partnerDiscipline?.completed || [], [partnerDiscipline]);
 
     const disciplines = [
         { id: 'pray', label: 'Pray' },
@@ -120,7 +226,6 @@ function PartnerCard({
     const firestore = useFirestore();
     const [dateStr, setDateStr] = useState(format(new Date(), 'yyyy-MM-dd'));
     
-    // Live profile lookup to ensure photo is always current
     const partnerDocRef = useMemo(() => partner.userId ? doc(firestore, 'users', partner.userId) : null, [firestore, partner.userId]);
     const { data: partnerProfile } = useDoc<UserProfile>(partnerDocRef);
     const livePhotoURL = partnerProfile?.photoURL || partner.photoURL;
@@ -131,31 +236,22 @@ function PartnerCard({
     }, [dateStr]);
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b shadow-sm overflow-hidden bg-card/50 backdrop-blur-sm">
+        <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-sm overflow-hidden bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all border-l-4 border-l-primary/10">
             <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6 gap-4">
                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     <Dialog>
                       <DialogTrigger asChild disabled={!livePhotoURL}>
-                        <Avatar className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-sm shrink-0", livePhotoURL && "cursor-pointer active:scale-95 transition-transform")}>
+                        <Avatar className={cn("h-11 w-11 sm:h-14 sm:w-14 border shadow-sm shrink-0", livePhotoURL && "cursor-pointer active:scale-95 transition-transform")}>
                             <AvatarImage src={livePhotoURL} className="object-cover" />
-                            <AvatarFallback className="font-bold text-lg bg-primary/10 text-primary">{partner.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className="font-black text-lg bg-primary/10 text-primary">{partner.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                       </DialogTrigger>
                       {livePhotoURL && (
                           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
-                              <DialogHeader className="sr-only">
-                                  <DialogTitle>Profile photo of {partner.firstName} {partner.lastName}</DialogTitle>
-                                  <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
-                              </DialogHeader>
+                              <DialogHeader className="sr-only"><DialogTitle>Profile photo</DialogTitle></DialogHeader>
                               <div className="relative h-full w-full flex items-center justify-center p-4">
                                 <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
-                                    <Image 
-                                        src={livePhotoURL} 
-                                        alt={`${partner.firstName} ${partner.lastName}`} 
-                                        fill 
-                                        className="object-contain shadow-2xl ring-4 ring-white/10" 
-                                        unoptimized 
-                                    />
+                                    <Image src={livePhotoURL} alt="partner" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                               </div>
                           </DialogContent>
@@ -163,8 +259,8 @@ function PartnerCard({
                     </Dialog>
                     <div className="min-w-0">
                         <Link href={`/dashboard/profile/${partner.userId}`} className="group inline-flex flex-col">
-                            <h2 className="text-sm sm:text-base font-black truncate group-hover:underline leading-none">{partner.firstName} {partner.lastName}</h2>
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 opacity-60">Partner</span>
+                            <h2 className="text-sm sm:text-base font-black truncate group-hover:underline leading-none uppercase tracking-tight">{partner.firstName} {partner.lastName}</h2>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60">Spiritual Partner</span>
                         </Link>
                     </div>
                 </div>
@@ -172,58 +268,39 @@ function PartnerCard({
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-9 w-9 rounded-full"
-                                    onClick={() => onNudge(partner)}
-                                >
-                                    <BellRing className="h-4 w-4" />
-                                    <span className="sr-only">Nudge Partner</span>
+                                <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background" onClick={() => onNudge(partner)}>
+                                    <BellRing className="h-4 w-4 sm:h-5 w-5" />
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Nudge {partner.firstName}</p>
-                            </TooltipContent>
+                            <TooltipContent><p className="text-[10px] font-bold uppercase">Nudge {partner.firstName}</p></TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-9 w-9 rounded-full"
-                                    onClick={() => onChat(partner)}
-                                >
-                                    <MessagesSquare className="h-4 w-4" />
-                                    <span className="sr-only">Chat</span>
+                                <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background" onClick={() => onChat(partner)}>
+                                    <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />
                                 </Button>
                             </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Chat with {partner.firstName}</p>
-                            </TooltipContent>
+                            <TooltipContent><p className="text-[10px] font-bold uppercase">Chat with {partner.firstName}</p></TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+                            <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full">
                                 <MoreVertical className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                        <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                             <DropdownMenuItem onSelect={() => router.push(`/dashboard/profile/${partner.userId}`)} className="rounded-lg">
-                              <User className="mr-2 h-4 w-4" /> View Profile
+                              <User className="mr-2 h-4 w-4" /> View Identity
                             </DropdownMenuItem>
                             <DropdownMenuItem onSelect={() => router.push('/dashboard/bible')} className="rounded-lg">
-                              <BookOpen className="mr-2 h-4 w-4" /> Read Bible
+                              <BookOpen className="mr-2 h-4 w-4" /> Word Study
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                className="text-destructive focus:text-destructive rounded-lg"
-                                onSelect={() => onRemove(partner)}
-                            >
-                                <UserX className="mr-2 h-4 w-4" /> Remove Partner
+                            <DropdownMenuItem className="text-destructive focus:text-destructive rounded-lg" onSelect={() => onRemove(partner)}>
+                                <UserX className="mr-2 h-4 w-4" /> End Alliance
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -243,16 +320,12 @@ function PartnerCard({
                             className="w-[140px] h-8 text-[10px] sm:text-xs font-bold uppercase tracking-tighter bg-muted/20 border-none rounded-lg"
                         />
                     </div>
-                    <PartnerDisciplineStatus 
-                        partnerId={partner.userId} 
-                        date={selectedDate}
-                    />
+                    <PartnerDisciplineStatus partnerId={partner.userId} date={selectedDate} />
                 </div>
             </CardContent>
         </Card>
     );
 }
-
 
 export default function AccountabilityPage() {
   const { user, loading: userLoading } = useUser();
@@ -260,11 +333,9 @@ export default function AccountabilityPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isChatLoading, setIsChatLoading] = useState<string | null>(null);
-  const [isNudging, setIsNudging] = useState<string | null>(null);
-  
-  const [isRemoving, setIsRemoving] = useState<string | null>(null);
   const [removalTarget, setRemovalTarget] = useState<UserProfile['accountabilityPartners'][0] | null>(null);
   const [removalReason, setRemovalReason] = useState('');
+  const [isRemoving, setIsRemoving] = useState<string | null>(null);
 
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
@@ -277,309 +348,167 @@ export default function AccountabilityPage() {
     };
   }, [setIsSearchVisible, setSearchPlaceholder, setSearchTerm]);
 
-  const userDocRef = useMemo(() => {
-    if (!user?.uid) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [user?.uid, firestore]);
-
+  const userDocRef = useMemo(() => (user?.uid ? doc(firestore, 'users', user.uid) : null), [user?.uid, firestore]);
   const { data: userProfile, loading: loadingProfile } = useDoc<UserProfile>(userDocRef);
+
+  const requestsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, 'accountabilityRequests'), where('participantIds', 'array-contains', user.uid));
+  }, [user?.uid, firestore]);
+  const { data: allRequests } = useCollection<AccountabilityRequest>(requestsQuery);
+
+  const pendingRequestsCount = useMemo(() => allRequests?.filter(r => r.status === 'pending').length || 0, [allRequests]);
 
   const partners = userProfile?.accountabilityPartners || [];
 
   const filteredPartners = useMemo(() => {
-    // 1. Deduplicate by userId to prevent rendering errors
     const uniqueMap = new Map();
     partners.forEach(p => {
         if (p.userId) {
-          // If we have multiple entries, keep the most complete one (has photoURL)
           if (!uniqueMap.has(p.userId) || (!uniqueMap.get(p.userId).photoURL && p.photoURL)) {
             uniqueMap.set(p.userId, p);
           }
         }
     });
     const uniquePartners = Array.from(uniqueMap.values());
-
-    // 2. Apply search filter
-    if (!searchTerm) {
-      return uniquePartners;
-    }
+    if (!searchTerm) return uniquePartners;
     const lowercasedTerm = searchTerm.toLowerCase();
-    return uniquePartners.filter(partner => 
-      `${partner.firstName} ${partner.lastName}`.toLowerCase().includes(lowercasedTerm)
-    );
+    return uniquePartners.filter(partner => `${partner.firstName} ${partner.lastName}`.toLowerCase().includes(lowercasedTerm));
   }, [partners, searchTerm]);
 
   const handleNudgePartner = async (partner: { userId: string, firstName: string, lastName: string }) => {
     if (!user || !firestore || !userProfile) return;
-
-    setIsNudging(partner.userId);
     try {
-        const notificationsCollectionRef = collection(firestore, 'users', partner.userId, 'notifications');
-        const notificationData = {
+        await addDoc(collection(firestore, 'users', partner.userId, 'notifications'), {
             userId: partner.userId,
-            type: 'accountability_nudge' as const,
-            title: 'A friendly nudge!',
-            message: `${userProfile.firstName} ${userProfile.lastName} is encouraging you to complete your daily disciplines.`,
+            type: 'accountability_nudge',
+            title: 'Kingdom Nudge!',
+            message: `${userProfile.firstName} is encouraging you to complete your daily disciplines.`,
             link: '/dashboard',
             isRead: false,
             createdAt: serverTimestamp(),
-        };
-
-        await addDoc(notificationsCollectionRef, notificationData);
-
-        toast({
-            title: 'Nudge Sent!',
-            description: `You've sent an encouragement to ${partner.firstName}.`,
         });
-
+        toast({ title: 'Nudge Sent!', description: `You've sent encouragement to ${partner.firstName}.` });
     } catch (error) {
-        const permissionError = new FirestorePermissionError({
-            path: `users/${partner.userId}/notifications`,
-            operation: 'create',
-            requestResourceData: { action: 'nudge partner', from: user.uid }
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-    } finally {
-        setIsNudging(null);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `users/${partner.userId}/notifications`, operation: 'create' }, user));
     }
   };
 
   const handleInitiateChat = async (partner: { userId: string, firstName: string, lastName: string, photoURL?: string }) => {
     if (!user || !firestore || !userProfile) return;
     setIsChatLoading(partner.userId);
-
     try {
         const participantIds = [user.uid, partner.userId].sort();
         const chatsRef = collection(firestore, 'chats');
-        
-        const q = query(
-            chatsRef,
-            where('participantIds', '==', participantIds),
-            where('isGroupChat', '==', false)
-        );
-
+        const q = query(chatsRef, where('participantIds', '==', participantIds), where('isGroupChat', '==', false));
         const querySnapshot = await getDocs(q);
         let existingChat = querySnapshot.docs.find(doc => !doc.data().campaignId);
-        
-        let chatId: string;
-
-        if (existingChat) {
-            chatId = existingChat.id;
-        } else {
-            const newChatData = {
-                participantIds,
-                participantInfo: {
-                    [user.uid]: {
-                        firstName: userProfile.firstName || '',
-                        lastName: userProfile.lastName || '',
-                        photoURL: userProfile.photoURL || '',
-                    },
-                    [partner.userId]: {
-                        firstName: partner.firstName,
-                        lastName: partner.lastName,
-                        photoURL: partner.photoURL || '', 
-                    },
-                },
-                lastUpdatedAt: serverTimestamp(),
-                isGroupChat: false,
-                hasMessages: false,
-            };
-            const chatDocRef = await addDoc(chatsRef, newChatData);
-            chatId = chatDocRef.id;
-        }
+        let chatId = existingChat ? existingChat.id : (await addDoc(chatsRef, { participantIds, participantInfo: { [user.uid]: { firstName: userProfile.firstName || '', lastName: userProfile.lastName || '', photoURL: userProfile.photoURL || '' }, [partner.userId]: { firstName: partner.firstName, lastName: partner.lastName, photoURL: partner.photoURL || '' } }, lastUpdatedAt: serverTimestamp(), isGroupChat: false, hasMessages: false })).id;
         router.push(`/dashboard/chats/${chatId}`);
-
     } catch (error) {
-        const permissionError = new FirestorePermissionError({
-          path: `chats`,
-          operation: 'create',
-          requestResourceData: { action: 'initiate partner chat', userId: user.uid }
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-    } finally {
-        setIsChatLoading(null);
-    }
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `chats`, operation: 'create' }, user));
+    } finally { setIsChatLoading(null); }
   };
 
   const handleRemovePartner = async () => {
-    if (!user || !firestore || !userProfile?.accountabilityPartners || !removalTarget) {
-        return;
-    }
-    if (!removalReason.trim()) {
-        toast({
-            variant: 'destructive',
-            title: 'Reason Required',
-            description: 'Please provide a reason for removing your partner.',
-        });
-        return;
-    }
+    if (!user || !firestore || !userProfile?.accountabilityPartners || !removalTarget || !removalReason.trim()) return;
     setIsRemoving(removalTarget.userId);
-    
     const partnerId = removalTarget.userId;
-
     try {
         const batch = writeBatch(firestore);
-
         const requestId = [user.uid, partnerId].sort().join('_');
         const requestRef = doc(firestore, 'accountabilityRequests', requestId);
-        
         const partnerUserRef = doc(firestore, 'users', partnerId);
         const partnerDoc = await getDoc(partnerUserRef);
 
         if (partnerDoc.exists()) {
-             const partnerProfile = partnerDoc.data() as UserProfile;
-            const myEntryInPartnersList = partnerProfile.accountabilityPartners?.find(p => p.userId === user.uid);
-            if (myEntryInPartnersList) {
-                batch.update(partnerUserRef, {
-                    accountabilityPartners: arrayRemove(myEntryInPartnersList),
-                    partnerIds: arrayRemove(user.uid),
-                });
-            }
+             const pData = partnerDoc.data() as UserProfile;
+            const myEntry = pData.accountabilityPartners?.find(p => p.userId === user.uid);
+            if (myEntry) batch.update(partnerUserRef, { accountabilityPartners: arrayRemove(myEntry), partnerIds: arrayRemove(user.uid) });
         }
 
-        const myPartnerObject = userProfile.accountabilityPartners.find(p => p.userId === partnerId);
-        if (myPartnerObject) {
-          const currentUserRef = doc(firestore, 'users', user.uid);
-          batch.update(currentUserRef, {
-              accountabilityPartners: arrayRemove(myPartnerObject),
-              partnerIds: arrayRemove(partnerId),
-          });
-        }
+        const myPartnerObj = userProfile.accountabilityPartners.find(p => p.userId === partnerId);
+        if (myPartnerObj) batch.update(doc(firestore, 'users', user.uid), { accountabilityPartners: arrayRemove(myPartnerObj), partnerIds: arrayRemove(partnerId) });
         
-        try {
-            const requestDoc = await getDoc(requestRef);
-            if (requestDoc.exists()) {
-                batch.delete(requestRef);
-            }
-        } catch (e) {
-            console.warn("Could not find accountability request to delete, continuing.", e);
-        }
-        
-        const notificationsCollectionRef = collection(firestore, 'users', partnerId, 'notifications');
-        const notificationData = {
-            userId: partnerId,
-            type: 'accountability_partner_removed' as const,
-            title: 'Accountability Partnership Ended',
-            message: `${userProfile.firstName} ${userProfile.lastName} has ended your accountability partnership. Reason: ${removalReason}`,
-            link: '/dashboard/accountability',
-            isRead: false,
-            createdAt: serverTimestamp(),
-        }
-        batch.set(doc(notificationsCollectionRef), notificationData);
+        batch.delete(requestRef);
+        batch.set(doc(collection(firestore, 'users', partnerId, 'notifications')), { userId: partnerId, type: 'accountability_partner_removed', title: 'Alliance Ended', message: `${userProfile.firstName} has ended your accountability partnership. Reason: ${removalReason}`, link: '/dashboard/accountability', isRead: false, createdAt: serverTimestamp() });
 
         await batch.commit();
-
-        toast({ title: 'Partner Removed', description: 'Your accountability partnership has been ended.' });
+        toast({ title: 'Partner Removed' });
         setRemovalTarget(null);
     } catch (error) {
-        const permissionError = new FirestorePermissionError({
-            path: `BATCH_WRITE:REMOVE_PARTNER:${user.uid}`,
-            operation: 'write',
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-    } finally {
-        setIsRemoving(null);
-        setRemovalReason('');
-    }
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `BATCH:REMOVE_PARTNER`, operation: 'write' }, user));
+    } finally { setIsRemoving(null); setRemovalReason(''); }
   };
 
-  const isLoading = userLoading || loadingProfile;
-
-  if (isLoading) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center py-20">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse">Establishing Connection...</p>
-      </div>
-    );
-  }
-  
-  if (partners.length === 0) {
-    return (
-      <div className="space-y-8 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32 px-4 sm:px-0">
-        <div className="flex flex-col items-center justify-center text-center p-10 sm:p-16 bg-primary/5 rounded-[2.5rem] border-2 border-dashed border-primary/20">
-            <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
-                <HeartHandshake className="h-10 w-10 text-primary opacity-40" />
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">Find a Partner</h2>
-            <p className="mt-3 max-w-sm text-sm text-muted-foreground font-medium leading-relaxed">
-            "Two are better than one... for if they fall, the one will lift up his fellow." — Ecclesiastes 4:9-10
-            </p>
-        </div>
-        <div>
-            {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
-        </div>
-      </div>
-    );
-  }
+  if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20"><Loader2 className="h-12 w-12 animate-spin text-primary" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse">Syncing Alliance...</p></div>;
   
   return (
-    <div className="space-y-10 max-w-3xl mx-auto -mx-4 sm:mx-auto pb-32">
-      <div className="px-4 sm:px-0 space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase">My Partners</h1>
-        <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60">Spiritual Accountability</p>
-      </div>
-
-      <div className="space-y-4">
-          {filteredPartners.map(partner => (
-              <PartnerCard 
-                  key={partner.userId}
-                  partner={partner}
-                  onNudge={handleNudgePartner}
-                  onChat={handleInitiateChat}
-                  onRemove={setRemovalTarget}
-              />
-          ))}
-          {partners.length > 0 && filteredPartners.length === 0 && (
-              <div className="text-center py-20 text-muted-foreground bg-muted/10 border-y sm:border-2 border-dashed rounded-none sm:rounded-[2.5rem]">
-                  <p className="font-bold">No partners found matching "{searchTerm}".</p>
-              </div>
-          )}
-      </div>
-
-      <div className="px-4 sm:px-0 pt-4">
-        {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
-      </div>
-
-      {removalTarget && (
-        <AlertDialog
-            open={!!removalTarget}
-            onOpenChange={(isOpen) => {
-                if (!isOpen) {
-                    setRemovalTarget(null);
-                    setRemovalReason('');
-                }
-            }}
-        >
-            <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8">
-                <AlertDialogHeader>
-                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">End Partnership?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium">
-                        You're about to end your accountability partnership with {removalTarget.firstName}. This will remove both of you from each other's active tracking lists.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <div className="grid gap-4 py-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Reason for Removal</Label>
-                        <Textarea
-                            id="removal-reason"
-                            value={removalReason}
-                            onChange={(e) => setRemovalReason(e.target.value)}
-                            placeholder="e.g., Seasonal change, moved church..."
-                            className="text-base rounded-2xl min-h-[100px] bg-muted/20"
-                        />
+    <div className="w-full max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+            <div className="lg:col-span-8 space-y-10 pb-32">
+                <header className="px-4 sm:px-0 space-y-1">
+                    <div className="flex items-center gap-4">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
+                            <ArrowLeft className="h-6 w-6" />
+                        </Button>
+                        <div className="space-y-1">
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">MY PARTNERS</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
+                                <HeartHandshake className="h-4 w-4 text-primary" /> Spiritual Accountability
+                            </p>
+                        </div>
                     </div>
+                </header>
+
+                <div className="space-y-4">
+                    {filteredPartners.map(partner => (
+                        <PartnerCard key={partner.userId} partner={partner} onNudge={handleNudgePartner} onChat={handleInitiateChat} onRemove={setRemovalTarget} />
+                    ))}
+                    {partners.length === 0 && (
+                        <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2.5rem] border-2 border-dashed border-muted">
+                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6">
+                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40" />
+                            </div>
+                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60">No Active Alliance</h2>
+                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto">
+                            "Two are better than one... for if they fall, the one will lift up his fellow." — Eccl 4:9-10
+                            </p>
+                        </div>
+                    )}
                 </div>
-                <AlertDialogFooter className="gap-3">
-                    <AlertDialogCancel disabled={isRemoving === removalTarget.userId} className="rounded-xl h-11">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === removalTarget.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
-                        {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                        Confirm Removal
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-      )}
+
+                <div className="px-4 sm:px-0">
+                    {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
+                </div>
+            </div>
+
+            <div className="lg:col-span-4">
+                <AccountabilitySidebar partnerCount={partners.length} pendingCount={pendingRequestsCount} />
+            </div>
+        </div>
+
+        {removalTarget && (
+            <AlertDialog open={!!removalTarget} onOpenChange={(open) => { if (!open) { setRemovalTarget(null); setRemovalReason(''); } }}>
+                <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">End Alliance?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="grid gap-4 py-6">
+                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Reason for Removal</Label>
+                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner" />
+                    </div>
+                    <AlertDialogFooter className="gap-3">
+                        <AlertDialogCancel disabled={isRemoving === removalTarget.userId} className="rounded-xl h-11">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === removalTarget.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
+                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserX className="mr-2 h-4 w-4" />}
+                            Confirm Removal
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        )}
     </div>
   );
 }
