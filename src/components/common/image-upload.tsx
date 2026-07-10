@@ -14,7 +14,7 @@ import Image from 'next/image';
 
 /**
  * @fileOverview A high-fidelity image upload component with built-in cropping and optimization.
- * Handles resizing, JPEG compression, and structured storage in the testify-v1 folder.
+ * Handles resizing, JPEG compression, and structured storage under the user's UID.
  */
 
 function getCroppedImg(
@@ -139,8 +139,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     if (!storage) throw new Error("Firebase Storage is currently unavailable.");
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
-    // Structures images under testify-v1/users/{userId}/{folder}/{filename} for better organization and security
-    const fileRef = ref(storage, `testify-v1/users/${user.uid}/${storagePath}/${Date.now()}_${fileName}`);
+    // UID ENFORCEMENT: All uploads are strictly structured under users/{userId}/{folder}/{filename}
+    const fileRef = ref(storage, `users/${user.uid}/${storagePath}/${Date.now()}_${fileName}`);
     
     try {
         await uploadBytes(fileRef, file);
@@ -149,10 +149,10 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         console.error("Firebase Storage Upload Error:", err);
         
         if (err.code === 'storage/unauthorized') {
-            throw new Error("Access Denied: Your Storage Security Rules do not allow this upload. Please check storage.rules.");
+            throw new Error("Access Denied: Your identity could not be verified for this folder. Path: " + fileRef.fullPath);
         }
         if (err.message?.includes('CORS') || err.code === 'storage/retry-limit-exceeded' || err.message?.includes('cross-origin')) {
-            throw new Error("CORS Configuration Error: The browser blocked the upload. Please refer to docs/storage-cors-guide.md to apply the required CORS policy.");
+            throw new Error("CORS Configuration Error: The browser blocked the upload. Please refer to docs/storage-cors-guide.md.");
         }
         
         throw new Error(err.message || "A network error occurred while reaching the storage bucket.");

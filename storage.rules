@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Universal Ministry Asset Support - 2025-07-20T09:00:00Z
+    // Deployment trigger: UID path enforcement for all Kingdom assets - 2025-07-25T12:00:00Z
     
     /**
      * Shared Helper Functions
@@ -41,24 +41,18 @@ service firebase.storage {
      * These rules enforce ownership and content validation for all user uploads.
      */
     
-    // Primary Versioned Path
-    match /testify-v1/users/{userId}/{allPaths=**} {
-      allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
-      allow delete: if isOwner(userId);
-    }
-
-    // Standard User Path
+    // Primary Standard User Path (Preferred)
     match /users/{userId}/{allPaths=**} {
       allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
       allow delete: if isOwner(userId);
     }
 
-    // Pattern for various folder structures (branding, center assets, etc.)
-    match /{folder}/{userId}/{allPaths=**} {
+    // Versioned User Path (Legacy support)
+    match /testify-v1/users/{userId}/{allPaths=**} {
       allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
       allow delete: if isOwner(userId);
     }
-    
+
     // Direct User Folder Pattern
     match /{userId}/{allPaths=**} {
       allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
