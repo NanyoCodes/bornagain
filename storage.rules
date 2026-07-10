@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Professional Kingdom Storage Authorization - 2025-07-10T10:00:00Z
+    // Deployment trigger: Recursive user-path authorization fix - 2025-07-10T11:00:00Z
     
     /**
      * Shared Helper Functions
@@ -13,10 +13,6 @@ service firebase.storage {
     
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
-    }
-
-    function isImage() {
-      return request.resource.contentType.matches('image/.*');
     }
 
     function isSmallFile() {
@@ -34,11 +30,11 @@ service firebase.storage {
     /**
      * Primary Kingdom Asset Path (v1)
      * Secure, validated uploads organized by User ID.
-     * Path structure: testify-v1/users/{userId}/{folder}/{filename}
+     * Path structure: testify-v1/users/{userId}/{allPaths=**}
+     * This covers all subfolders like profile-pictures, vendor-branding, etc.
      */
-    match /testify-v1/users/{userId}/{folder}/{filename} {
-      allow create, update: if isOwner(userId) && isImage() && isSmallFile();
-      allow delete: if isOwner(userId);
+    match /testify-v1/users/{userId}/{allPaths=**} {
+      allow write: if isOwner(userId) && isSmallFile();
     }
 
     /**
