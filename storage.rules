@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: UID-based folder restoration & ownership sync - 2025-07-28T12:00:00Z
+    // Deployment trigger: Recursive path authorization & mime-type validation - 2025-07-28T16:00:00Z
     
     /**
      * Shared Helper Functions
@@ -16,12 +16,12 @@ service firebase.storage {
     }
 
     function isValidSize() {
-      // 50MB limit to allow for video testimonies and high-quality audio
+      // 50MB limit to allow for high-fidelity media resources
       return request.resource.size < 50 * 1024 * 1024;
     }
 
     function isAllowedType() {
-      // Validation occurs during create/update where request.resource exists
+      // Secure type checking for Kingdom assets
       return request.resource.contentType.matches('image/.*') || 
              request.resource.contentType.matches('video/.*') ||
              request.resource.contentType.matches('audio/.*') ||
@@ -40,16 +40,16 @@ service firebase.storage {
     /**
      * Secure Kingdom Asset Paths
      * These rules enforce ownership and content validation for all user uploads.
-     * Path structure: {folder}/{userId}/{filename}
+     * Universal matching for /{folder}/{userId}/filename
      */
-    
-    // Support restored structure: {folder}/{userId}/filename
     match /{folder}/{userId}/{allPaths=**} {
       allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
       allow delete: if isOwner(userId);
     }
     
-    // Legacy/Alternative structure support: users/{userId}/...
+    /**
+     * User-centric legacy paths support
+     */
     match /users/{userId}/{allPaths=**} {
       allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
       allow delete: if isOwner(userId);

@@ -140,8 +140,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
     
-    // RESTORED PATH STRUCTURE: {folder}/{userId}/{filename}
-    // This allows the Storage Rules to accurately verify ownership while keeping folders organized.
+    // STRUCTURE: {folder}/{userId}/{filename}
     const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
     
     const metadata = {

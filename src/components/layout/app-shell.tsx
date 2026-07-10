@@ -41,7 +41,8 @@ import {
   CalendarDays,
   Menu,
   Edit,
-  ChevronRight
+  ChevronRight,
+  Globe
 } from "lucide-react";
 
 import {
@@ -57,16 +58,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { cn, safeToDate } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, writeBatch, addDoc, arrayUnion } from "firebase/firestore";
+import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, writeBatch, addDoc } from "firebase/firestore";
 import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -78,7 +79,7 @@ import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-// Shared Constants
+// Shared Constants for Scoping
 const NOTIFICATION_TYPES = [
   'campaign_join', 
   'new_chat_message', 
@@ -114,6 +115,18 @@ const navItems = [
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
+
+function getCurrencySymbol(code?: string) {
+    const opts = [
+        { value: 'NGN', symbol: '₦' },
+        { value: 'USD', symbol: '$' },
+        { value: 'EUR', symbol: '€' },
+        { value: 'GBP', symbol: '£' },
+        { value: 'GHS', symbol: '₵' },
+        { value: 'KES', symbol: 'KSh' },
+    ];
+    return opts.find(opt => opt.value === code)?.symbol || '₦';
+}
 
 function PendingProvisionReminder() {
     const { user } = useUser();
@@ -342,15 +355,6 @@ function PendingProvisionReminder() {
                     <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100" onClick={() => {
                          if(user?.uid) {
                              const key = `testify_pending_provisions_${user.uid}`;
-                             const stored = localStorage.getItem(key);
-                             if (stored) {
-                                 try {
-                                     const items = JSON.parse(stored);
-                                     if (Array.isArray(items)) {
-                                         items.forEach(i => removeOne(i.soulId, i.actionId));
-                                     }
-                                 } catch (e) {}
-                             }
                              localStorage.removeItem(key);
                              setProvisions([]);
                              window.dispatchEvent(new Event('testify_pending_action_update'));
@@ -366,8 +370,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
   const { user, loading: authLoading } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
-  const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
@@ -620,7 +622,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => { auth && signOut(auth); router.push("/login"); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg mx-1">
+                <DropdownMenuItem onClick={() => { router.push("/login"); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg mx-1">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
                 </DropdownMenuItem>
@@ -644,66 +646,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
   );
 }
 
-function BottomNavBar() {
-    const pathname = usePathname();
-    const filteredNavItems = useMemo(() => navItems.filter(item => item.href !== "/dashboard/events"), []);
-
-    return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4rem] h-auto items-stretch justify-around px-1 py-1">
-          {filteredNavItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                prefetch={true}
-                className="relative flex flex-1 flex-col items-center justify-center min-w-0 gap-0.5"
-                aria-label={item.label}
-              >
-                <motion.div
-                  className="relative flex items-center justify-center p-1 rounded-xl"
-                  whileTap={{ scale: 0.85 }}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="nav-active-pill"
-                      className="absolute inset-0 bg-primary/10 rounded-xl"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <motion.div
-                    animate={{ 
-                      scale: isActive ? 1.1 : 1,
-                      color: isActive ? "var(--primary)" : "var(--muted-foreground)"
-                    }}
-                    transition={{ duration: 0.2 }}
-                    className={cn(
-                      "relative z-10",
-                      isActive ? "text-primary" : "text-muted-foreground"
-                    )}
-                  >
-                    <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
-                  </motion.div>
-                </motion.div>
-                <span className={cn(
-                  "text-[8px] font-black uppercase tracking-tighter transition-all leading-none mt-0.5",
-                  isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-60"
-                )}>
-                  {item.label}
-                </span>
-              </Link>
-            )
-          })}
-        </div>
-      </nav>
-    );
-}
-
 function ShellInner({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useUser();
   const { userProfile, loading: profileLoading } = useUserProfile();
   const firestore = useFirestore();
+  const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -857,6 +804,14 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const handleLogout = async () => {
+    setIsMenuOpen(false);
+    if (auth) {
+        await signOut(auth);
+        router.push("/login");
+    }
+  };
+
   const unreadChatNotifsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
@@ -1002,7 +957,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                       <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
                       <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><BookMarked className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">App Guide</span></Link>
                       <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><BookOpen className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Resources</span></Link>
-                      <Separator className="my-6 opacity-50" /><button onClick={() => { setIsMenuOpen(false); auth && signOut(auth); router.push("/login"); }} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive"><LogOut className="h-6 w-6" /><span className="font-black uppercase tracking-widest text-sm">Logout</span></button>
+                      <Separator className="my-6 opacity-50" /><button onClick={handleLogout} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive"><LogOut className="h-6 w-6" /><span className="font-black uppercase tracking-widest text-sm">Logout</span></button>
                   </div>
               </ScrollArea>
               <div className="p-8 border-t bg-muted/5 flex-shrink-0"><p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">Testify Global • Mobilizing the Body</p></div>
@@ -1046,18 +1001,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       {user && <PendingProvisionReminder />}
     </div>
   );
-}
-
-function getCurrencySymbol(code?: string) {
-    const opts = [
-        { value: 'NGN', symbol: '₦' },
-        { value: 'USD', symbol: '$' },
-        { value: 'EUR', symbol: '€' },
-        { value: 'GBP', symbol: '£' },
-        { value: 'GHS', symbol: '₵' },
-        { value: 'KES', symbol: 'KSh' },
-    ];
-    return opts.find(opt => opt.value === code)?.symbol || '₦';
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
