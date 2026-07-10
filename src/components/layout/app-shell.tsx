@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -58,7 +59,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -79,7 +80,6 @@ import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-// Shared Constants for Scoping
 const NOTIFICATION_TYPES = [
   'campaign_join', 
   'new_chat_message', 
@@ -116,6 +116,14 @@ const navItems = [
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
 
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+  );
+}
+
 function getCurrencySymbol(code?: string) {
     const opts = [
         { value: 'NGN', symbol: '₦' },
@@ -128,6 +136,334 @@ function getCurrencySymbol(code?: string) {
     return opts.find(opt => opt.value === code)?.symbol || '₦';
 }
 
+function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCart, onOpenMenu }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, onOpenCart: () => void, onOpenMenu: () => void }) {
+  const { user, loading: authLoading } = useUser();
+  const { userProfile } = useUserProfile();
+  const pathname = usePathname();
+  const router = useRouter();
+  const logo = PlaceHolderImages.find((img) => img.id === "logo");
+  const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+
+  const updateCartCount = useCallback(() => {
+    if (typeof window === 'undefined' || !user?.uid) {
+        setCartCount(0);
+        return;
+    }
+    const key = `testify_marketplace_cart_${user.uid}`;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+        try {
+            const cart = JSON.parse(stored);
+            const count = Object.values(cart).reduce((acc: number, c: any) => acc + (c.quantity || 0), 0);
+            setCartCount(count);
+        } catch (e) { setCartCount(0); }
+    } else {
+        setCartCount(0);
+    }
+  }, [user?.uid]);
+
+  useEffect(() => {
+    updateCartCount();
+    window.addEventListener('testify_marketplace_cart_update', updateCartCount);
+    window.addEventListener('storage', updateCartCount);
+    return () => {
+        window.removeEventListener('testify_marketplace_cart_update', updateCartCount);
+        window.removeEventListener('storage', updateCartCount);
+    };
+  }, [updateCartCount]);
+
+  const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
+
+  if (showMobileSearch) {
+    return (
+      <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
+        <div className="flex w-full items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-10 w-10 rounded-full hover:bg-muted/50 transition-colors">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <form className="w-full" onSubmit={(e) => e.preventDefault()}>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+              <Input
+                type="search"
+                placeholder={searchPlaceholder}
+                className="w-full pl-10 h-11 rounded-2xl bg-muted/20 border-none shadow-inner text-base"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                autoFocus
+              />
+            </div>
+          </form>
+        </div>
+      </header>
+    );
+  }
+
+  const showGuestButtons = isPublicRoute && !authLoading && !user;
+
+  return (
+    <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
+      <div className="flex items-center shrink-0">
+        <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          {logo && (
+            <Avatar className="h-10 w-10 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
+              <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
+              <AvatarFallback>T</AvatarFallback>
+            </Avatar>
+          )}
+          <span className="sr-only">Testify</span>
+        </Link>
+      </div>
+
+      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 xl:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
+        <div className="flex items-center gap-1.5 lg:gap-3 h-full">
+          {navItems.map((item) => {
+            const isActive = pathname.startsWith(item.href);
+            return (
+              <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "transition-all hover:bg-muted/50 px-2 lg:px-4 h-[90%] rounded-2xl whitespace-nowrap flex flex-col items-center justify-center group relative",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )}
+              >
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
+                  <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
+                  <span className={cn(
+                    "text-[8px] font-black uppercase tracking-tighter transition-all leading-none mt-0.5",
+                    isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-60"
+                  )}>
+                    {item.label}
+                  </span>
+                </motion.div>
+                {isActive && (
+                    <motion.div
+                      layoutId="header-nav-active-bar"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+        
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
+        {isSearchVisible && (
+          <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-5 w-5 md:h-6 md:w-6" />
+            <span className="sr-only">Search</span>
+          </Button>
+        )}
+        
+        {user ? (
+          <>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full"
+                    onClick={onOpenCart}
+                >
+                  <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
+                  {cartCount > 0 && (
+                    <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
+                      {cartCount}
+                    </div>
+                  )}
+                </Button>
+            </motion.div>
+            <Link href="/chats">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
+                      <MessagesSquare className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
+                      {unreadChatCount > 0 && (
+                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
+                          {unreadChatCount}
+                        </div>
+                      )}
+                    </Button>
+                </motion.div>
+            </Link>
+            <Link href="/notifications">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
+                      <Bell className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
+                      {unreadNotifCount > 0 && (
+                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
+                          {unreadNotifCount}
+                        </div>
+                      )}
+                    </Button>
+                </motion.div>
+            </Link>
+
+            <Button 
+                variant="ghost" 
+                size="icon" 
+                className="xl:hidden h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95 group" 
+                onClick={onOpenMenu}
+            >
+                <Menu className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
+                <span className="sr-only">Toggle Menu</span>
+            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className="hidden xl:inline-flex">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0">
+                  <Avatar className="h-9 w-9 md:h-11 md:w-11 border shadow-sm">
+                    <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
+                    <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                  </Avatar>
+                  {isProfileIncomplete && (
+                    <span className="absolute top-0 right-0 flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background"></span>
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-64 rounded-2xl shadow-xl" align="end">
+                <DropdownMenuLabel className="font-normal p-4">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Recovery Hub</DropdownMenuLabel>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/dashboard/victory-hub">
+                    <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
+                    <span>Victory Hub</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Provision Hub</DropdownMenuLabel>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/dashboard/marketplace">
+                    <Store className="mr-2 h-4 w-4" />
+                    <span>Meals Center</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/dashboard/marketplace/gifts">
+                    <Gift className="mr-2 h-4 w-4" />
+                    <span>Kindness Center</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/dashboard/marketplace/orders">
+                    <Package className="mr-2 h-4 w-4" />
+                    <span>Order Tracker</span>
+                  </Link>
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                    <Link href="/guide" className="cursor-pointer">
+                    < BookOpen className="mr-2 h-4 w-4" />
+                    <span>App Guide</span>
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                    <Link href="/resources" className="cursor-pointer">
+                    <BookMarked className="mr-2 h-4 w-4" />
+                    <span>Spiritual Resources</span>
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => { signOut(getAuth()).then(() => router.push("/login")); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg mx-1">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        ) : showGuestButtons ? (
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-9 px-4 rounded-full font-bold">
+              <Link href="/login">Sign In</Link>
+            </Button>
+            <Button asChild size="sm" className="h-9 px-5 rounded-full font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-lg shadow-primary/20">
+              <Link href="/">Get Started</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="h-10 w-10 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
+        )}
+      </div>
+    </header>
+  );
+}
+
+function BottomNavBar() {
+    const pathname = usePathname();
+    return (
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
+        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
+          {navItems.map((item) => {
+            const isActive = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                prefetch={true}
+                className="relative flex flex-1 flex-col items-center justify-center min-w-0"
+                aria-label={item.label}
+              >
+                <motion.div
+                  className="relative flex items-center justify-center p-1.5 rounded-xl"
+                  whileTap={{ scale: 0.85 }}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId="nav-active-pill"
+                      className="absolute inset-0 bg-primary/10 rounded-xl"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <motion.div
+                    animate={{ 
+                      scale: isActive ? 1.1 : 1,
+                      color: isActive ? "var(--primary)" : "var(--muted-foreground)"
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className={cn(
+                      "relative z-10",
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    )}
+                  >
+                    <item.icon className={cn("h-5.5 w-5.5", !isActive && item.color)} />
+                  </motion.div>
+                </motion.div>
+              </Link>
+            )
+          })}
+        </div>
+      </nav>
+    );
+}
+
 function PendingProvisionReminder() {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -135,6 +471,8 @@ function PendingProvisionReminder() {
     const [showList, setShowList] = useState(false);
     const pathname = usePathname();
     const isMobile = useIsMobile();
+    const { toast } = useToast();
+    const router = useRouter();
 
     const checkPendingActions = useCallback(() => {
         if (typeof window === 'undefined' || !user?.uid) {
@@ -366,297 +704,13 @@ function PendingProvisionReminder() {
     );
 }
 
-function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCart, onOpenMenu }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, onOpenCart: () => void, onOpenMenu: () => void }) {
-  const { user, loading: authLoading } = useUser();
-  const { userProfile } = useUserProfile();
-  const pathname = usePathname();
-  const router = useRouter();
-  const logo = PlaceHolderImages.find((img) => img.id === "logo");
-  const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
-  const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-
-  const updateCartCount = useCallback(() => {
-    if (typeof window === 'undefined' || !user?.uid) {
-        setCartCount(0);
-        return;
-    }
-    const key = `testify_marketplace_cart_${user.uid}`;
-    const stored = localStorage.getItem(key);
-    if (stored) {
-        try {
-            const cart = JSON.parse(stored);
-            const count = Object.values(cart).reduce((acc: number, c: any) => acc + (c.quantity || 0), 0);
-            setCartCount(count);
-        } catch (e) { setCartCount(0); }
-    } else {
-        setCartCount(0);
-    }
-  }, [user?.uid]);
-
-  useEffect(() => {
-    updateCartCount();
-    window.addEventListener('testify_marketplace_cart_update', updateCartCount);
-    window.addEventListener('storage', updateCartCount);
-    return () => {
-        window.removeEventListener('testify_marketplace_cart_update', updateCartCount);
-        window.removeEventListener('storage', updateCartCount);
-    };
-  }, [updateCartCount]);
-
-  const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
-
-  if (showMobileSearch) {
-    return (
-      <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
-        <div className="flex w-full items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-10 w-10 rounded-full hover:bg-muted/50 transition-colors">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <form className="w-full" onSubmit={(e) => e.preventDefault()}>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-              <Input
-                type="search"
-                placeholder={searchPlaceholder}
-                className="w-full pl-10 h-11 rounded-2xl bg-muted/20 border-none shadow-inner text-base"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                autoFocus
-              />
-            </div>
-          </form>
-        </div>
-      </header>
-    );
-  }
-
-  const showGuestButtons = isPublicRoute && !authLoading && !user;
-
-  return (
-    <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
-      <div className="flex items-center shrink-0">
-        <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          {logo && (
-            <Avatar className="h-10 w-10 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
-              <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
-              <AvatarFallback className="font-bold">T</AvatarFallback>
-            </Avatar>
-          )}
-          <span className="sr-only">Testify</span>
-        </Link>
-      </div>
-
-      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 xl:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
-        <div className="flex items-center gap-1.5 lg:gap-3 h-full">
-          {navItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
-            return (
-              <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "transition-all hover:bg-muted/50 px-2 lg:px-4 h-[90%] rounded-2xl whitespace-nowrap flex flex-col items-center justify-center group relative",
-                    isActive ? "text-primary" : "text-muted-foreground"
-                  )}
-              >
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
-                  <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
-                  <span className={cn(
-                    "text-[8px] font-black uppercase tracking-tighter transition-all leading-none mt-0.5",
-                    isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-60"
-                  )}>
-                    {item.label}
-                  </span>
-                </motion.div>
-                {isActive && (
-                    <motion.div
-                      layoutId="header-nav-active-bar"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                )}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-        
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
-        {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-5 w-5 md:h-6 md:w-6" />
-            <span className="sr-only">Search</span>
-          </Button>
-        )}
-        
-        {user ? (
-          <>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full"
-                    onClick={onOpenCart}
-                >
-                  <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
-                  {cartCount > 0 && (
-                    <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
-                      {cartCount}
-                    </div>
-                  )}
-                </Button>
-            </motion.div>
-            <Link href="/chats">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
-                      <MessagesSquare className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
-                      {unreadChatCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
-                          {unreadChatCount}
-                        </div>
-                      )}
-                    </Button>
-                </motion.div>
-            </Link>
-            <Link href="/notifications">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
-                      <Bell className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
-                      {unreadNotifCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
-                          {unreadNotifCount}
-                        </div>
-                      )}
-                    </Button>
-                </motion.div>
-            </Link>
-
-            <Button 
-                variant="ghost" 
-                size="icon" 
-                className="xl:hidden h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95 group" 
-                onClick={onOpenMenu}
-            >
-                <Menu className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
-                <span className="sr-only">Toggle Menu</span>
-            </Button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild className="hidden xl:inline-flex">
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0">
-                  <Avatar className="h-9 w-9 md:h-11 md:w-11 border shadow-sm">
-                    <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
-                    <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
-                  </Avatar>
-                  {isProfileIncomplete && (
-                    <span className="absolute top-0 right-0 flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background"></span>
-                    </span>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 rounded-2xl shadow-xl" align="end">
-                <DropdownMenuLabel className="font-normal p-4">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                  <Link href="/profile">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                  <Link href="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Recovery Hub</DropdownMenuLabel>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                  <Link href="/dashboard/victory-hub">
-                    <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
-                    <span>Victory Hub</span>
-                  </Link>
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Provision Hub</DropdownMenuLabel>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                  <Link href="/dashboard/marketplace">
-                    <Store className="mr-2 h-4 w-4" />
-                    <span>Meals Center</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                  <Link href="/dashboard/marketplace/gifts">
-                    <Gift className="mr-2 h-4 w-4" />
-                    <span>Kindness Center</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                  <Link href="/dashboard/marketplace/orders">
-                    <Package className="mr-2 h-4 w-4" />
-                    <span>Order Tracker</span>
-                  </Link>
-                </DropdownMenuItem>
-                
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                    <Link href="/guide" className="cursor-pointer">
-                    < BookOpen className="mr-2 h-4 w-4" />
-                    <span>App Guide</span>
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                    <Link href="/resources" className="cursor-pointer">
-                    <BookMarked className="mr-2 h-4 w-4" />
-                    <span>Spiritual Resources</span>
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => { router.push("/login"); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg mx-1">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Logout</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </>
-        ) : showGuestButtons ? (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-9 px-4 rounded-full font-bold">
-              <Link href="/login">Sign In</Link>
-            </Button>
-            <Button asChild size="sm" className="h-9 px-5 rounded-full font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-lg shadow-primary/20">
-              <Link href="/">Get Started</Link>
-            </Button>
-          </div>
-        ) : (
-          <div className="h-10 w-10 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
-        )}
-      </div>
-    </header>
-  );
-}
-
 function ShellInner({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useUser();
   const { userProfile, loading: profileLoading } = useUserProfile();
   const firestore = useFirestore();
-  const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const soulName = searchParams?.get('soulName') || null;
   const isMobile = useIsMobile();
-  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -668,9 +722,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cart, setCart] = useState<{ [mealId: string]: { item: any, quantity: number } }>({});
-  const [giftInstructions, setGiftInstructions] = useState('');
-  const [manualRecipientName, setManualRecipientName] = useState('');
-  const [isProcessingOrder, setIsProcessingOrder] = useState(false);
 
   const updateCart = useCallback(() => {
     if (typeof window === 'undefined' || !user?.uid) {
@@ -697,132 +748,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         window.removeEventListener('storage', updateCart);
     };
   }, [updateCart]);
-
-  const handleUpdateQuantity = (itemId: string, delta: number) => {
-    if (!user?.uid) return;
-    const key = `testify_marketplace_cart_${user.uid}`;
-    const next = { ...cart };
-    if (!next[itemId]) return;
-    const newQty = next[itemId].quantity + delta;
-    if (newQty <= 0) {
-        delete next[itemId];
-    } else {
-        next[itemId].quantity = newQty;
-    }
-    localStorage.setItem(key, JSON.stringify(next));
-    window.dispatchEvent(new Event('testify_marketplace_cart_update'));
-  };
-
-  const handleRemoveFromCart = (itemId: string) => {
-    if (!user?.uid) return;
-    const key = `testify_marketplace_cart_${user.uid}`;
-    const next = { ...cart };
-    delete next[itemId];
-    localStorage.setItem(key, JSON.stringify(next));
-    window.dispatchEvent(new Event('testify_marketplace_cart_update'));
-  };
-
-  const cartItems = useMemo(() => Object.values(cart), [cart]);
-  const cartByVendor = useMemo(() => {
-    const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number; subtotal: number; currency: string } } = {};
-    cartItems.forEach(c => {
-        const vId = c.item.vendorId;
-        if (!groups[vId]) {
-            groups[vId] = { vendorId: vId, vendorName: c.item.vendorName || 'Kingdom Provider', vendorOwnerId: c.item.vendorOwnerId || '', paymentDetails: c.item.vendorPaymentDetails || '', currency: c.item.currency || 'NGN', items: [], deliveryFee: 0, subtotal: 0 };
-        }
-        groups[vId].items.push(c);
-        groups[vId].subtotal += (c.item.price * c.quantity);
-        groups[vId].deliveryFee = Math.max(groups[vId].deliveryFee, c.item.deliveryFee || 0);
-    });
-    return Object.values(groups);
-  }, [cartItems]);
-
-  const handleGlobalCheckout = async () => {
-    if (!user || !firestore || !userProfile || cartItems.length === 0) return;
-    if (!giftInstructions.trim()) {
-        toast({ variant: 'destructive', title: 'Instructions Required', description: 'Please specify delivery instructions.' });
-        return;
-    }
-    setIsProcessingOrder(true);
-    const batch = writeBatch(firestore);
-    const giftsRef = collection(firestore, 'mealGifts');
-    const senderName = `${userProfile.firstName} ${userProfile.lastName}`;
-    
-    cartItems.forEach(cartItem => {
-        for(let i = 0; i < cartItem.quantity; i++) {
-            const giftRef = doc(giftsRef);
-            batch.set(giftRef, {
-                senderId: user.uid,
-                senderName,
-                recipientSoulId: null,
-                recipientName: manualRecipientName || soulName || 'Self',
-                vendorId: cartItem.item.vendorId,
-                vendorName: cartItem.item.vendorName || 'Kingdom Store',
-                vendorOwnerId: cartItem.item.vendorOwnerId, 
-                vendorPhotoURL: cartItem.item.vendorPhotoURL || null,
-                vendorType: cartItem.item.vendorType || 'meal',
-                mealId: cartItem.item.id,
-                mealName: cartItem.item.name,
-                price: cartItem.item.price,
-                deliveryFee: cartItem.item.deliveryFee || 0,
-                currency: cartItem.item.currency || 'NGN',
-                status: 'ordered' as MealGiftStatus,
-                instructions: giftInstructions,
-                createdAt: serverTimestamp(),
-            });
-        }
-    });
-
-    cartByVendor.forEach(v => {
-        const vendorNotificationRef = doc(collection(firestore, `users/${v.vendorOwnerId}/notifications`));
-        const vendorItems = v.items.map(c => `${c.item.name} (x${c.quantity})`).join(', ');
-        batch.set(vendorNotificationRef, {
-            userId: v.vendorOwnerId,
-            type: 'new_order',
-            title: 'New Offering Package!',
-            message: `${senderName} has sent ${vendorItems}. Check your orders to coordinate.`,
-            link: `/dashboard/marketplace/orders`,
-            isRead: false,
-            createdAt: serverTimestamp(),
-        });
-    });
-
-    try {
-        await batch.commit();
-        if (user?.uid) {
-            localStorage.removeItem(`testify_marketplace_cart_${user.uid}`);
-            setCart({});
-            window.dispatchEvent(new Event('testify_marketplace_cart_update'));
-        }
-        toast({ title: 'Offerings Confirmed!', description: 'Acts of kindness dispatched.' });
-        setIsCartOpen(false);
-        router.push('/dashboard/marketplace/orders');
-    } catch (e) {
-        toast({ variant: 'destructive', title: 'Checkout Failed' });
-    } finally {
-        setIsProcessingOrder(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    setIsMenuOpen(false);
-    if (auth) {
-        await signOut(auth);
-        router.push("/login");
-    }
-  };
-
-  const unreadChatNotifsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
-  }, [user?.uid, firestore]);
-  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
-
-  const unreadOtherNotifsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', NOTIFICATION_TYPES), where('isRead', '==', false));
-  }, [user?.uid, firestore]);
-  const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
 
   useEffect(() => { 
     setMounted(true); 
@@ -892,6 +817,18 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     }
   }, [profileLoading, userProfile]);
 
+  const unreadChatNotifsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
+  }, [user?.uid, firestore]);
+  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
+
+  const unreadOtherNotifsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', NOTIFICATION_TYPES), where('isRead', '==', false));
+  }, [user?.uid, firestore]);
+  const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
+
   if (authLoading || (profileLoading && !userProfile && !isPublicRoute) || (!user && !isPublicRoute)) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
@@ -920,85 +857,133 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         </motion.div>
 
         {user && showBottomNav && <BottomNavBar />}
+        
         {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
         
         {user && mounted && isMobile ? (
           <Sheet open={!!isProfileIncomplete}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl"><div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]"><SheetHeader className="text-left"><SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle><SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription></SheetHeader></div><div className="flex-grow overflow-y-auto p-6">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div></SheetContent>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+              <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
+                <SheetHeader className="text-left">
+                  <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
+                  <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+                </SheetHeader>
+              </div>
+              <div className="flex-grow overflow-y-auto p-6">
+                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+              </div>
+            </SheetContent>
           </Sheet>
         ) : user ? (
-        <Dialog open={!!isProfileIncomplete}><DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0"><div className="p-6 border-b bg-muted/10"><DialogHeader><DialogTitle>Complete Your Profile</DialogTitle><DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription></DialogHeader></div><div className="p-6 max-h-[70vh] overflow-y-auto">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div></DialogContent></Dialog>
-      ) : null}
-
-      <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-          <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
-              <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                  <div className="flex items-center gap-3 mb-4">
-                      <Avatar className="h-12 w-12 border-2 border-primary/20"><AvatarImage src={user?.photoURL ?? undefined} className="object-cover" /><AvatarFallback className="font-black bg-primary/10 text-primary">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback></Avatar>
-                      <div className="min-w-0"><p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{user?.displayName || 'User'}</p><p className="text-[10px] text-muted-foreground truncate font-medium">{user?.email}</p></div>
-                  </div>
-                  <SheetHeader className="text-left flex-shrink-0"><SheetTitle className="text-xl font-black font-headline uppercase tracking-tight">Kingdom Hub</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest text-primary">Mission Navigation</SheetDescription></SheetHeader>
+          <Dialog open={!!isProfileIncomplete}>
+            <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
+              <div className="p-6 border-b bg-muted/10">
+                <DialogHeader>
+                    <DialogTitle>Complete Your Profile</DialogTitle>
+                    <DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                </DialogHeader>
               </div>
-              <ScrollArea className="flex-grow">
-                  <div className="p-6 space-y-2">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Identity</p>
-                      <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><User className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Profile</span></Link>
-                      <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Settings className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Settings</span></Link>
-                      <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
-                      {navItems.map((item) => (<Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", item.color)} /><span className="font-black uppercase tracking-widest text-sm">{item.label}</span></Link>))}
-                      <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Recovery & Provision</p>
-                      <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><ShieldCheck className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Victory Hub</span></Link>
-                      <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Store className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Meals Center</span></Link>
-                      <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Gift className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Kindness Center</span></Link>
-                      <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Package className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Order Tracker</span></Link>
-                      <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Study Tools</p>
-                      <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><BookOpen className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Bible Reader</span></Link>
-                      <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><Edit className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Journal</span></Link>
-                      <Separator className="my-6 opacity-50" /><p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
-                      <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><BookMarked className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">App Guide</span></Link>
-                      <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group"><BookOpen className="h-6 w-6 text-primary" /><span className="font-black uppercase tracking-widest text-sm">Resources</span></Link>
-                      <Separator className="my-6 opacity-50" /><button onClick={handleLogout} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive"><LogOut className="h-6 w-6" /><span className="font-black uppercase tracking-widest text-sm">Logout</span></button>
-                  </div>
-              </ScrollArea>
-              <div className="p-8 border-t bg-muted/5 flex-shrink-0"><p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">Testify Global • Mobilizing the Body</p></div>
-          </SheetContent>
-      </Sheet>
+              <div className="p-6 max-h-[70vh] overflow-y-auto">
+                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+              </div>
+            </DialogContent>
+          </Dialog>
+        ) : null}
 
-      <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-          <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0 rounded-none sm:rounded-l-[2.5rem]">
-              <div className="p-8 border-b flex-shrink-0 bg-muted/10"><div className="flex items-center gap-2 mb-2"><ShoppingCart className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span></div><SheetHeader className="text-left flex-shrink-0"><SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Review selection for {soulName || manualRecipientName || 'Self'}. One delivery fee per supplier.</SheetDescription></SheetHeader></div>
-              <ScrollArea className="flex-grow min-h-0 overscroll-contain">
-                  <div className="p-8 space-y-10">{cartItems.length > 0 ? (
-                      <div className="space-y-10">
-                          <div className="space-y-8">{cartByVendor.map(group => (<div key={group.vendorId} className="space-y-3"><div className="flex items-center justify-between px-1"><div className="flex items-center gap-2"><Store className="h-3.5 w-3.5 text-primary" /><h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[150px]">{group.vendorName}</h4></div><Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge></div><div className="space-y-2">{group.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group"><div className="flex items-center gap-3 min-w-0 flex-1"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div><div className="min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => handleRemoveFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button></div></div>))}</div></div>))}</div>
-                          <div className="space-y-6"><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label><Input placeholder="Enter recipient (e.g., Self or a Brother's name)" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label><Textarea placeholder="Specify contact details and physical address for delivery..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" /></div></div>
-                          <div className="space-y-4"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label><div className="space-y-3">{cartByVendor.map(v => (<div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity"><Store className="h-10 w-10 text-primary" /></div><div className="flex justify-between items-start mb-2"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button></div>))}</div></div>
-                          <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner"><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Selection subtotal</span><span className="text-foreground shrink-0 font-black">Multi-Currency Package</span></div><Separator className="opacity-50" /><div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4"><span className="shrink-0">Action Required</span><span className="shrink-0 text-2xl tracking-tighter">Review Vendors Below</span></div></div>
-                      </div>
-                  ) : (
-                      <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center">
-                          <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
-                              <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10" />
-                          </div>
-                          <h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3>
-                          <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance">
-                              Add items to place an order.
-                          </p>
-                          <div className="flex flex-col sm:flex-row gap-3 mt-10 w-full px-4">
-                              <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-6 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
-                                  <Link href="/dashboard/marketplace">MEALS CENTER</Link>
-                              </Button>
-                              <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-6 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
-                                  <Link href="/dashboard/marketplace/gifts">KINDNESS CENTER</Link>
-                              </Button>
-                          </div>
-                      </div>
-                  )}<div className="h-24" /></div>
-              </ScrollArea>
-              {cartItems.length > 0 && (<SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm shadow-[0_-10px_20px_rgba(0,0,0,0.05)]"><Button onClick={handleGlobalCheckout} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim() || cartItems.length === 0} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">{isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}DISPATCH OFFERINGS</Button></SheetFooter>)}
-          </SheetContent>
-      </Sheet>
-      {user && <PendingProvisionReminder />}
+        <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Avatar className="h-12 w-12 border-2 border-primary/20">
+                          <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
+                          <AvatarFallback className="font-black bg-primary/10 text-primary">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{user?.displayName || 'User'}</p>
+                          <p className="text-[10px] text-muted-foreground truncate font-medium">{user?.email}</p>
+                        </div>
+                    </div>
+                    <SheetHeader className="text-left flex-shrink-0">
+                      <SheetTitle className="text-xl font-black font-headline uppercase tracking-tight">Kingdom Hub</SheetTitle>
+                      <SheetDescription className="text-[10px] font-bold uppercase tracking-widest text-primary">Mission Navigation</SheetDescription>
+                    </SheetHeader>
+                </div>
+                <ScrollArea className="flex-grow">
+                    <div className="p-6 space-y-2">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Identity</p>
+                        <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <User className="h-6 w-6 text-primary" />
+                          <span className="font-black uppercase tracking-widest text-sm">Profile</span>
+                        </Link>
+                        <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <Settings className="h-6 w-6 text-primary" />
+                          <span className="font-black uppercase tracking-widest text-sm">Settings</span>
+                        </Link>
+                        
+                        <Separator className="my-6 opacity-50" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
+                        {navItems.map((item) => (
+                          <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                            <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", item.color)} />
+                            <span className="font-black uppercase tracking-widest text-sm">{item.label}</span>
+                          </Link>
+                        ))}
+
+                        <Separator className="my-6 opacity-50" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Recovery & Provision</p>
+                        <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <ShieldCheck className="h-6 w-6 text-primary" />
+                          <span className="font-black uppercase tracking-widest text-sm">Victory Hub</span>
+                        </Link>
+                        <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <Store className="h-6 w-6 text-primary" />
+                          <span className="font-black uppercase tracking-widest text-sm">Meals Center</span>
+                        </Link>
+                        <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <Gift className="h-6 w-6 text-primary" />
+                          <span className="font-black uppercase tracking-widest text-sm">Kindness Center</span>
+                        </Link>
+                        <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <Package className="h-6 w-6 text-primary" />
+                          <span className="font-black uppercase tracking-widest text-sm">Order Tracker</span>
+                        </Link>
+
+                        <Separator className="my-6 opacity-50" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Study Tools</p>
+                        <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <BookOpen className="h-6 w-6 text-primary" />
+                          <span className="font-black uppercase tracking-widest text-sm">Bible Reader</span>
+                        </Link>
+                        <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <Edit className="h-6 w-6 text-primary" />
+                          <span className="font-black uppercase tracking-widest text-sm">Journal</span>
+                        </Link>
+
+                        <Separator className="my-6 opacity-50" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
+                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <BookMarked className="h-6 w-6 text-primary" />
+                          <span className="font-black uppercase tracking-widest text-sm">App Guide</span>
+                        </Link>
+                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <BookOpen className="h-6 w-6 text-primary" />
+                          <span className="font-black uppercase tracking-widest text-sm">Resources</span>
+                        </Link>
+
+                        <Separator className="my-6 opacity-50" />
+                        <button onClick={() => { signOut(getAuth()).then(() => router.push("/login")); setIsMenuOpen(false); }} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive">
+                          <LogOut className="h-6 w-6" />
+                          <span className="font-black uppercase tracking-widest text-sm">Logout</span>
+                        </button>
+                    </div>
+                </ScrollArea>
+                <div className="p-8 border-t bg-muted/5 flex-shrink-0">
+                    <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">Testify Global • Mobilizing the Body</p>
+                </div>
+            </SheetContent>
+        </Sheet>
+        
+        {user && <PendingProvisionReminder />}
     </div>
   );
 }

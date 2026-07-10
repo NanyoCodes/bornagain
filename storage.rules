@@ -1,12 +1,10 @@
+
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Recursive path authorization & mime-type validation - 2025-07-28T16:00:00Z
+    // Deployment trigger: UID-based path authorization refinement - 2025-07-28T18:00:00Z
     
-    /**
-     * Shared Helper Functions
-     */
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -16,41 +14,22 @@ service firebase.storage {
     }
 
     function isValidSize() {
-      // 50MB limit to allow for high-fidelity media resources
       return request.resource.size < 50 * 1024 * 1024;
     }
 
     function isAllowedType() {
-      // Secure type checking for Kingdom assets
       return request.resource.contentType.matches('image/.*') || 
              request.resource.contentType.matches('video/.*') ||
              request.resource.contentType.matches('audio/.*') ||
              request.resource.contentType == 'application/pdf';
     }
 
-    /**
-     * Global Read Access
-     * Shared ministry assets, testimonies, and marketplace items are publicly readable 
-     * to encourage the global body of Christ.
-     */
     match /{allPaths=**} {
       allow read: if true;
     }
 
-    /**
-     * Secure Kingdom Asset Paths
-     * These rules enforce ownership and content validation for all user uploads.
-     * Universal matching for /{folder}/{userId}/filename
-     */
+    // Matches {folder}/{userId}/{filename} structure exactly
     match /{folder}/{userId}/{allPaths=**} {
-      allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
-      allow delete: if isOwner(userId);
-    }
-    
-    /**
-     * User-centric legacy paths support
-     */
-    match /users/{userId}/{allPaths=**} {
       allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
       allow delete: if isOwner(userId);
     }

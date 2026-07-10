@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -135,8 +136,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   };
 
   const handleUpload = async (file: File | Blob): Promise<string> => {
-    if (!user) throw new Error("Authentication required. Please sign in to upload photos.");
-    if (!storage) throw new Error("Firebase Storage is currently unavailable.");
+    if (!user) throw new Error("Authentication required.");
+    if (!storage) throw new Error("Storage not available.");
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
     
@@ -151,16 +152,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         await uploadBytes(fileRef, file, metadata);
         return getDownloadURL(fileRef);
     } catch (err: any) {
-        console.error("Firebase Storage Upload Error:", err);
-        
-        if (err.code === 'storage/unauthorized') {
-            throw new Error("Access Denied: Your identity could not be verified for this Kingdom folder. Path: " + fileRef.fullPath);
-        }
-        if (err.message?.includes('CORS') || err.code === 'storage/retry-limit-exceeded' || err.message?.includes('cross-origin')) {
-            throw new Error("CORS Configuration Error: The browser blocked the upload. Please refer to docs/storage-cors-guide.md.");
-        }
-        
-        throw new Error(err.message || "A network error occurred while reaching the storage bucket.");
+        console.error("Upload error:", err);
+        throw new Error(err.message || "Failed to upload photo.");
     }
   };
 
@@ -253,8 +246,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
           <div className="p-8 border-b bg-muted/10">
             <DialogHeader>
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Refine Your Identity</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1">Adjust the frame to set your Kingdom profile appearance.</DialogDescription>
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Refine Frame</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1">Adjust the crop to set your Kingdom asset appearance.</DialogDescription>
             </DialogHeader>
           </div>
           <div className="p-8 overflow-hidden flex justify-center bg-black/5 min-h-[300px]">
