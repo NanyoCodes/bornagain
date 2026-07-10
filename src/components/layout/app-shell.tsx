@@ -1032,7 +1032,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                           </div>
                           <h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3>
                           <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance">
-                              Add items to start building an offering package.
+                              Add items to place an order.
                           </p>
                           <div className="flex flex-col sm:flex-row gap-3 mt-10 w-full px-4">
                               <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-6 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
