@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Recursive user-path authorization fix - 2025-07-10T11:00:00Z
+    // Deployment trigger: Universal Ministry Asset Support - 2025-07-20T09:00:00Z
     
     /**
      * Shared Helper Functions
@@ -15,38 +15,54 @@ service firebase.storage {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    function isSmallFile() {
-      return request.resource.size < 10 * 1024 * 1024; // 10MB limit
+    function isValidSize() {
+      // 50MB limit to allow for video testimonies and high-quality audio
+      return request.resource.size < 50 * 1024 * 1024;
+    }
+
+    function isAllowedType() {
+      return request.resource.contentType.matches('image/.*') || 
+             request.resource.contentType.matches('video/.*') ||
+             request.resource.contentType.matches('audio/.*') ||
+             request.resource.contentType == 'application/pdf';
     }
 
     /**
      * Global Read Access
-     * Shared ministry assets, profile photos, and marketplace items are publicly readable.
+     * Shared ministry assets, testimonies, and marketplace items are publicly readable 
+     * to encourage the global body of Christ.
      */
     match /{allPaths=**} {
       allow read: if true;
     }
 
     /**
-     * Primary Kingdom Asset Path (v1)
-     * Secure, validated uploads organized by User ID.
-     * Path structure: testify-v1/users/{userId}/{allPaths=**}
-     * This covers all subfolders like profile-pictures, vendor-branding, etc.
+     * Secure Kingdom Asset Paths
+     * These rules enforce ownership and content validation for all user uploads.
      */
+    
+    // Primary Versioned Path
     match /testify-v1/users/{userId}/{allPaths=**} {
-      allow write: if isOwner(userId) && isSmallFile();
+      allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
+      allow delete: if isOwner(userId);
     }
 
-    /**
-     * Legacy & Migration Paths
-     * Preserving access for older records while enforcing size limits.
-     */
+    // Standard User Path
+    match /users/{userId}/{allPaths=**} {
+      allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
+      allow delete: if isOwner(userId);
+    }
+
+    // Pattern for various folder structures (branding, center assets, etc.)
     match /{folder}/{userId}/{allPaths=**} {
-      allow write: if isOwner(userId) && isSmallFile();
+      allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
+      allow delete: if isOwner(userId);
     }
     
+    // Direct User Folder Pattern
     match /{userId}/{allPaths=**} {
-      allow write: if isOwner(userId) && isSmallFile();
+      allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
+      allow delete: if isOwner(userId);
     }
   }
 }
