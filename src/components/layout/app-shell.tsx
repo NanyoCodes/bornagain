@@ -444,7 +444,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
         </Link>
       </div>
 
-      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 md:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
+      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 xl:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
         <div className="flex items-center gap-1.5 lg:gap-3 h-full">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
@@ -529,21 +529,18 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                 </motion.div>
             </Link>
 
-            <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0 lg:hidden" onClick={onOpenMenu}>
-                <Avatar className="h-9 w-9 md:h-11 md:w-11 border shadow-sm">
-                    <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
-                    <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
-                </Avatar>
-                {isProfileIncomplete && (
-                    <span className="absolute top-0 right-0 flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background"></span>
-                    </span>
-                )}
+            <Button 
+                variant="ghost" 
+                size="icon" 
+                className="xl:hidden h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95 group" 
+                onClick={onOpenMenu}
+            >
+                <Menu className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
+                <span className="sr-only">Toggle Menu</span>
             </Button>
 
             <DropdownMenu>
-              <DropdownMenuTrigger asChild className="hidden lg:inline-flex">
+              <DropdownMenuTrigger asChild className="hidden xl:inline-flex">
                 <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0">
                   <Avatar className="h-9 w-9 md:h-11 md:w-11 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
@@ -864,6 +861,18 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const unreadChatNotifsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
+  }, [user?.uid, firestore]);
+  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
+
+  const unreadOtherNotifsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', NOTIFICATION_TYPES), where('isRead', '==', false));
+  }, [user?.uid, firestore]);
+  const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
+
   useEffect(() => { 
     setMounted(true); 
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
@@ -913,18 +922,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const isTakeoverPage = useMemo(() => {
     return pathname.startsWith('/chats') || pathname.startsWith('/dashboard/chats') || pathname.startsWith('/notes') || pathname.startsWith('/dashboard/notes') || pathname.startsWith('/bible') || pathname.startsWith('/dashboard/bible') || pathname.startsWith('/notifications') || pathname.startsWith('/dashboard/notifications');
   }, [pathname]);
-
-  const unreadChatNotifsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
-  }, [user?.uid, firestore]);
-  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
-
-  const unreadOtherNotifsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', NOTIFICATION_TYPES), where('isRead', '==', false));
-  }, [user?.uid, firestore]);
-  const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
 
   useEffect(() => {
     if (!authLoading && !user && !isPublicRoute) router.push('/login');
@@ -983,7 +980,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <Dialog open={!!isProfileIncomplete}><DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0"><div className="p-6 border-b bg-muted/10"><DialogHeader><DialogTitle>Complete Your Profile</DialogTitle><DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription></DialogHeader></div><div className="p-6 max-h-[70vh] overflow-y-auto">{userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}</div></DialogContent></Dialog>
       ) : null}
 
-      {/* Global Navigation Drawer */}
       <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
           <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
               <div className="p-8 border-b flex-shrink-0 bg-muted/10">
@@ -1018,7 +1014,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           </SheetContent>
       </Sheet>
 
-      {/* Global Cart Sheet */}
       <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
           <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0 rounded-none sm:rounded-l-[2.5rem]">
               <div className="p-8 border-b flex-shrink-0 bg-muted/10"><div className="flex items-center gap-2 mb-2"><ShoppingCart className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span></div><SheetHeader className="text-left flex-shrink-0"><SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Review selection for {soulName || manualRecipientName || 'Self'}. One delivery fee per supplier.</SheetDescription></SheetHeader></div>
@@ -1028,7 +1023,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                           <div className="space-y-8">{cartByVendor.map(group => (<div key={group.vendorId} className="space-y-3"><div className="flex items-center justify-between px-1"><div className="flex items-center gap-2"><Store className="h-3.5 w-3.5 text-primary" /><h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[150px]">{group.vendorName}</h4></div><Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">₦{group.deliveryFee.toLocaleString()} Delivery</Badge></div><div className="space-y-2">{group.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group"><div className="flex items-center gap-3 min-w-0 flex-1"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div><div className="min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => handleRemoveFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button></div></div>))}</div></div>))}</div>
                           <div className="space-y-6"><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label><Input placeholder="Enter recipient (e.g., Self or a Brother's name)" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label><Textarea placeholder="Specify contact details and physical address for delivery..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" /></div></div>
                           <div className="space-y-4"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label><div className="space-y-3">{cartByVendor.map(v => (<div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity"><Store className="h-10 w-10 text-primary" /></div><div className="flex justify-between items-start mb-2"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">₦{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button></div>))}</div></div>
-                          <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner"><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Selection subtotal</span><span className="text-foreground shrink-0 font-black">₦{cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0).toLocaleString()}</span></div><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Delivery Total</span><span className="text-foreground shrink-0 font-black">₦{cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0).toLocaleString()}</span></div><Separator className="opacity-50" /><div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4"><span className="shrink-0">Total Package Amount</span><span className="shrink-0 text-2xl tracking-tighter">₦{cartTotal.toLocaleString()}</span></div></div>
+                          <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner"><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Selection subtotal</span><span className="text-foreground shrink-0 font-black">₦{cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0).toLocaleString()}</span></div><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Delivery Total</span><span className="text-foreground shrink-0 font-black">₦{cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0).toLocaleString()}</span></div><Separator className="opacity-50" /><div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4"><span className="shrink-0">Action Required</span><span className="shrink-0 text-2xl tracking-tighter">Review Vendors Below</span></div></div>
                       </div>
                   ) : (
                       <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center">
