@@ -932,12 +932,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   }, [user?.uid, firestore]);
   const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
 
-  const unreadOtherNotifsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', NOTIFICATION_TYPES), where('isRead', '==', false));
-  }, [user?.uid, firestore]);
-  const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
-
   useEffect(() => {
     if (!authLoading && !user && !isPublicRoute) router.push('/login');
   }, [authLoading, user, router, isPublicRoute]);
@@ -1050,11 +1044,11 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                           <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto leading-relaxed text-balance">
                               Add items to start building an offering package.
                           </p>
-                          <div className="flex flex-col sm:flex-row gap-3 mt-10">
-                              <Button variant="outline" asChild className="rounded-2xl h-12 px-6 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
+                          <div className="flex flex-col sm:flex-row gap-3 mt-10 w-full px-4">
+                              <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-6 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
                                   <Link href="/dashboard/marketplace">MEALS CENTER</Link>
                               </Button>
-                              <Button variant="outline" asChild className="rounded-2xl h-12 px-6 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
+                              <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-6 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
                                   <Link href="/dashboard/marketplace/gifts">KINDNESS CENTER</Link>
                               </Button>
                           </div>

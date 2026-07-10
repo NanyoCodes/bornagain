@@ -230,11 +230,11 @@ export default function GuidePage() {
         <div className="max-w-md mx-auto space-y-6 relative z-10">
             <h3 className="font-black text-3xl font-headline tracking-tight uppercase">Ready to mobilize?</h3>
             <p className="text-sm text-muted-foreground font-medium">Connect more believers to the harvest network by sharing this platform.</p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button asChild variant="outline" className="rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
+            <div className="flex flex-col sm:flex-row justify-center gap-4 w-full px-4">
+                <Button asChild variant="outline" className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
                     <Link href="/dashboard/marketplace">MEALS CENTER</Link>
                 </Button>
-                <Button asChild variant="outline" className="rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
+                <Button asChild variant="outline" className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
                     <Link href="/dashboard/marketplace/gifts">KINDNESS CENTER</Link>
                 </Button>
             </div>
