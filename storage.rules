@@ -1,4 +1,3 @@
-
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
@@ -28,7 +27,8 @@ service firebase.storage {
       allow read: if true;
     }
 
-    // Matches {folder}/{userId}/{filename} structure exactly
+    // Matches {folder}/{userId}/{allPaths=**} structure
+    // This allows for sub-folders like vendor-branding/UID/filename.jpg
     match /{folder}/{userId}/{allPaths=**} {
       allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
       allow delete: if isOwner(userId);
