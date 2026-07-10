@@ -139,17 +139,23 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     if (!storage) throw new Error("Firebase Storage is currently unavailable.");
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
-    // UID ENFORCEMENT: All uploads are strictly structured under users/{userId}/{folder}/{filename}
-    const fileRef = ref(storage, `users/${user.uid}/${storagePath}/${Date.now()}_${fileName}`);
     
+    // RESTORED PATH STRUCTURE: {folder}/{userId}/{filename}
+    // This allows the Storage Rules to accurately verify ownership while keeping folders organized.
+    const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
+    
+    const metadata = {
+      contentType: file.type || 'image/jpeg'
+    };
+
     try {
-        await uploadBytes(fileRef, file);
+        await uploadBytes(fileRef, file, metadata);
         return getDownloadURL(fileRef);
     } catch (err: any) {
         console.error("Firebase Storage Upload Error:", err);
         
         if (err.code === 'storage/unauthorized') {
-            throw new Error("Access Denied: Your identity could not be verified for this folder. Path: " + fileRef.fullPath);
+            throw new Error("Access Denied: Your identity could not be verified for this Kingdom folder. Path: " + fileRef.fullPath);
         }
         if (err.message?.includes('CORS') || err.code === 'storage/retry-limit-exceeded' || err.message?.includes('cross-origin')) {
             throw new Error("CORS Configuration Error: The browser blocked the upload. Please refer to docs/storage-cors-guide.md.");
@@ -169,7 +175,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
       
       onUploadComplete(downloadURL);
       setPreviewUrl(downloadURL);
-      toast({ title: 'Success', description: 'Photo uploaded and optimized.' });
+      toast({ title: 'Success', description: 'Photo updated and optimized.' });
       
       setIsCropModalOpen(false);
       setImgSrc('');
@@ -218,15 +224,15 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
           </div>
         ) : (
           <div className="flex flex-col sm:flex-row gap-2">
-            <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm border-primary/20 hover:bg-primary/5 transition-all">
+            <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm border-primary/20 hover:bg-primary/5 transition-all uppercase tracking-widest text-[10px]">
                 <Camera className="mr-2 h-4 w-4 text-primary"/>
-                set photo
+                Set Photo
             </Button>
             {previewUrl && (
               <Button 
                 type="button" 
                 variant="ghost" 
-                className="h-10 px-6 rounded-full font-bold text-destructive hover:text-destructive hover:bg-destructive/10" 
+                className="h-10 px-6 rounded-full font-bold text-destructive hover:text-destructive hover:bg-destructive/10 uppercase tracking-widest text-[10px]" 
                 onClick={handleRemoveImage}
               >
                 <Trash2 className="mr-2 h-4 w-4" />

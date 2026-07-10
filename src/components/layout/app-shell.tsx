@@ -63,7 +63,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, writeBatch, addDoc, arrayUnion } from "firebase/firestore";
-import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus, VendorProfile } from "@/lib/types";
+import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter, SheetTrigger } from "@/components/ui/sheet";
@@ -78,6 +78,7 @@ import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+// Shared Constants
 const NOTIFICATION_TYPES = [
   'campaign_join', 
   'new_chat_message', 
@@ -776,11 +777,11 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   const cartItems = useMemo(() => Object.values(cart), [cart]);
   const cartByVendor = useMemo(() => {
-    const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number; subtotal: number } } = {};
+    const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number; subtotal: number; currency: string } } = {};
     cartItems.forEach(c => {
         const vId = c.item.vendorId;
         if (!groups[vId]) {
-            groups[vId] = { vendorId: vId, vendorName: c.item.vendorName || 'Kingdom Provider', vendorOwnerId: c.item.vendorOwnerId || '', paymentDetails: c.item.vendorPaymentDetails || '', items: [], deliveryFee: 0, subtotal: 0 };
+            groups[vId] = { vendorId: vId, vendorName: c.item.vendorName || 'Kingdom Provider', vendorOwnerId: c.item.vendorOwnerId || '', paymentDetails: c.item.vendorPaymentDetails || '', currency: c.item.currency || 'NGN', items: [], deliveryFee: 0, subtotal: 0 };
         }
         groups[vId].items.push(c);
         groups[vId].subtotal += (c.item.price * c.quantity);
@@ -788,12 +789,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     });
     return Object.values(groups);
   }, [cartItems]);
-
-  const cartTotal = useMemo(() => {
-    const subtotal = cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0);
-    const shipping = cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0);
-    return subtotal + shipping;
-  }, [cartItems, cartByVendor]);
 
   const handleGlobalCheckout = async () => {
     if (!user || !firestore || !userProfile || cartItems.length === 0) return;
@@ -823,6 +818,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                 mealName: cartItem.item.name,
                 price: cartItem.item.price,
                 deliveryFee: cartItem.item.deliveryFee || 0,
+                currency: cartItem.item.currency || 'NGN',
                 status: 'ordered' as MealGiftStatus,
                 instructions: giftInstructions,
                 createdAt: serverTimestamp(),
@@ -955,8 +951,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const showBottomNav = !isTakeoverPage;
 
   return (
-    <SearchProvider>
-      <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+    <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
         <AnimatePresence>{showSplash && <SplashScreen onDismiss={handleDismissSplash} />}</AnimatePresence>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0">
             {!isTakeoverPage && <AppHeader unreadChatCount={unreadChatNotifications?.length || 0} unreadNotifCount={unreadOtherNotifications?.length || 0} isPublicRoute={isPublicRoute} onOpenCart={() => setIsCartOpen(true)} onOpenMenu={() => setIsMenuOpen(true)} />}
@@ -1020,10 +1015,10 @@ function ShellInner({ children }: { children: React.ReactNode }) {
               <ScrollArea className="flex-grow min-h-0 overscroll-contain">
                   <div className="p-8 space-y-10">{cartItems.length > 0 ? (
                       <div className="space-y-10">
-                          <div className="space-y-8">{cartByVendor.map(group => (<div key={group.vendorId} className="space-y-3"><div className="flex items-center justify-between px-1"><div className="flex items-center gap-2"><Store className="h-3.5 w-3.5 text-primary" /><h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[150px]">{group.vendorName}</h4></div><Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">₦{group.deliveryFee.toLocaleString()} Delivery</Badge></div><div className="space-y-2">{group.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group"><div className="flex items-center gap-3 min-w-0 flex-1"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div><div className="min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase">₦{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => handleRemoveFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button></div></div>))}</div></div>))}</div>
+                          <div className="space-y-8">{cartByVendor.map(group => (<div key={group.vendorId} className="space-y-3"><div className="flex items-center justify-between px-1"><div className="flex items-center gap-2"><Store className="h-3.5 w-3.5 text-primary" /><h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[150px]">{group.vendorName}</h4></div><Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge></div><div className="space-y-2">{group.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group"><div className="flex items-center gap-3 min-w-0 flex-1"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div><div className="min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => handleRemoveFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button></div></div>))}</div></div>))}</div>
                           <div className="space-y-6"><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label><Input placeholder="Enter recipient (e.g., Self or a Brother's name)" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label><Textarea placeholder="Specify contact details and physical address for delivery..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" /></div></div>
-                          <div className="space-y-4"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label><div className="space-y-3">{cartByVendor.map(v => (<div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity"><Store className="h-10 w-10 text-primary" /></div><div className="flex justify-between items-start mb-2"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">₦{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button></div>))}</div></div>
-                          <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner"><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Selection subtotal</span><span className="text-foreground shrink-0 font-black">₦{cartItems.reduce((acc, c) => acc + (c.item.price * c.quantity), 0).toLocaleString()}</span></div><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Delivery Total</span><span className="text-foreground shrink-0 font-black">₦{cartByVendor.reduce((acc, v) => acc + v.deliveryFee, 0).toLocaleString()}</span></div><Separator className="opacity-50" /><div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4"><span className="shrink-0">Action Required</span><span className="shrink-0 text-2xl tracking-tighter">Review Vendors Below</span></div></div>
+                          <div className="space-y-4"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label><div className="space-y-3">{cartByVendor.map(v => (<div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-[0.06] transition-opacity"><Store className="h-10 w-10 text-primary" /></div><div className="flex justify-between items-start mb-2"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button></div>))}</div></div>
+                          <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner"><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Selection subtotal</span><span className="text-foreground shrink-0 font-black">Multi-Currency Package</span></div><Separator className="opacity-50" /><div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4"><span className="shrink-0">Action Required</span><span className="shrink-0 text-2xl tracking-tighter">Review Vendors Below</span></div></div>
                       </div>
                   ) : (
                       <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center">
@@ -1045,13 +1040,24 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                       </div>
                   )}<div className="h-24" /></div>
               </ScrollArea>
-              {cartItems.length > 0 && (<SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm shadow-[0_-10px_20px_rgba(0,0,0,0.05)]"><Button onClick={handleGlobalCheckout} disabled={isProcessingOrder || !giftInstructions.trim() || cartItems.length === 0} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">{isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}DISPATCH OFFERINGS</Button></SheetFooter>)}
+              {cartItems.length > 0 && (<SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm shadow-[0_-10px_20px_rgba(0,0,0,0.05)]"><Button onClick={handleGlobalCheckout} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim() || cartItems.length === 0} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">{isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}DISPATCH OFFERINGS</Button></SheetFooter>)}
           </SheetContent>
       </Sheet>
       {user && <PendingProvisionReminder />}
     </div>
-    </SearchProvider>
   );
+}
+
+function getCurrencySymbol(code?: string) {
+    const opts = [
+        { value: 'NGN', symbol: '₦' },
+        { value: 'USD', symbol: '$' },
+        { value: 'EUR', symbol: '€' },
+        { value: 'GBP', symbol: '£' },
+        { value: 'GHS', symbol: '₵' },
+        { value: 'KES', symbol: 'KSh' },
+    ];
+    return opts.find(opt => opt.value === code)?.symbol || '₦';
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
