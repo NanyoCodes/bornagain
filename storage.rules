@@ -2,35 +2,55 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Refined Kingdom Asset Authorization - 2025-06-27T12:00:00Z
+    // Deployment trigger: Professional Kingdom Storage Authorization - 2025-07-10T10:00:00Z
     
     /**
+     * Shared Helper Functions
+     */
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isSmallFile() {
+      return request.resource.size < 10 * 1024 * 1024; // 10MB limit
+    }
+
+    /**
      * Global Read Access
-     * All shared ministry assets, testimonies, and marketplace photos are publicly readable.
+     * Shared ministry assets, profile photos, and marketplace items are publicly readable.
      */
     match /{allPaths=**} {
       allow read: if true;
     }
 
     /**
-     * Authenticated User Authorizations
-     * Structure: testify-v1/users/{userId}/{folder}/{filename}
+     * Primary Kingdom Asset Path (v1)
+     * Secure, validated uploads organized by User ID.
+     * Path structure: testify-v1/users/{userId}/{folder}/{filename}
      */
-    
-    match /testify-v1/users/{userId}/{allPaths=**} {
-      allow create, update, delete: if request.auth != null && request.auth.uid == userId;
+    match /testify-v1/users/{userId}/{folder}/{filename} {
+      allow create, update: if isOwner(userId) && isImage() && isSmallFile();
+      allow delete: if isOwner(userId);
     }
 
     /**
      * Legacy & Migration Paths
-     * Maintain support for existing folders while moving new uploads to testify-v1.
+     * Preserving access for older records while enforcing size limits.
      */
     match /{folder}/{userId}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow write: if isOwner(userId) && isSmallFile();
     }
     
     match /{userId}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow write: if isOwner(userId) && isSmallFile();
     }
   }
 }
