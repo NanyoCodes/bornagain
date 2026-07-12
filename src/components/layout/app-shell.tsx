@@ -418,10 +418,12 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
 function BottomNavBar() {
     const pathname = usePathname();
+    const filteredItems = navItems.filter(item => item.href !== "/dashboard/events");
+    
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
         <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
-          {navItems.map((item) => {
+          {filteredItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
               <Link
@@ -432,7 +434,7 @@ function BottomNavBar() {
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex items-center justify-center p-1.5 rounded-xl"
+                  className="relative flex flex-col items-center justify-center p-1 rounded-xl w-full"
                   whileTap={{ scale: 0.85 }}
                 >
                   {isActive && (
@@ -449,11 +451,17 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10",
+                      "relative z-10 flex flex-col items-center gap-0.5",
                       isActive ? "text-primary" : "text-muted-foreground"
                     )}
                   >
-                    <item.icon className={cn("h-5.5 w-5.5", !isActive && item.color)} />
+                    <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
+                    <span className={cn(
+                        "text-[8px] font-black uppercase tracking-tighter transition-all leading-none mt-0.5 text-center px-0.5",
+                        isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-60"
+                    )}>
+                        {item.label}
+                    </span>
                   </motion.div>
                 </motion.div>
               </Link>
