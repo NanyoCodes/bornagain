@@ -1136,9 +1136,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                                 {group.items.map(c => (
                                                     <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
-                                                                {c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}
-                                                            </div>
+                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div>
                                                             <div className="min-w-0 flex-1">
                                                                 <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
                                                                 <p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
