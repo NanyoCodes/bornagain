@@ -14,7 +14,7 @@ import Image from 'next/image';
 
 /**
  * @fileOverview A high-fidelity image upload component with built-in cropping and optimization.
- * Handles resizing, JPEG compression, and structured storage under the user's UID.
+ * Handles resizing, JPEG compression, and structured storage under the user's UID for security.
  */
 
 function getCroppedImg(
@@ -141,6 +141,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
     
     // STRUCTURE: {folder}/{userId}/{filename}
+    // Correct UID-based pathing is mandatory for security rule authorization.
     const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
     
     const metadata = {

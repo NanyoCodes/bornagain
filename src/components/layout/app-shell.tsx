@@ -422,7 +422,7 @@ function BottomNavBar() {
     
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
+        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-3 py-1">
           {filteredItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -434,7 +434,7 @@ function BottomNavBar() {
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex flex-col items-center justify-center p-1 rounded-xl w-full"
+                  className="relative flex flex-col items-center justify-center p-1.5 rounded-xl w-full"
                   whileTap={{ scale: 0.85 }}
                 >
                   {isActive && (
