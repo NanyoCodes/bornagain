@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: UID-based path authorization refinement - 2025-07-28T18:00:00Z
+    // Deployment trigger: Root Folder UID Alignment & Path Consistency - 2025-07-28T20:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -28,7 +29,7 @@ service firebase.storage {
     }
 
     // Matches {folder}/{userId}/{allPaths=**} structure
-    // This allows for sub-folders like vendor-branding/UID/filename.jpg
+    // This allows for sub-folders like profile-pictures/UID/filename.jpg or vendor-branding/UID/item.png
     match /{folder}/{userId}/{allPaths=**} {
       allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
       allow delete: if isOwner(userId);

@@ -64,7 +64,7 @@ import { signOut, getAuth } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, writeBatch, addDoc } from "firebase/firestore";
-import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus } from "@/lib/types";
+import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus, Meal } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
@@ -114,6 +114,27 @@ const navItems = [
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
+
+const currencyOptions = [
+    { value: 'NGN', label: 'Naira (₦)', symbol: '₦' },
+    { value: 'USD', label: 'US Dollar ($)', symbol: '$' },
+    { value: 'EUR', label: 'Euro (€)', symbol: '€' },
+    { value: 'GBP', label: 'British Pound (£)', symbol: '£' },
+    { value: 'GHS', label: 'Ghanaian Cedi (₵)', symbol: '₵' },
+    { value: 'KES', label: 'Kenyan Shilling (KSh)', symbol: 'KSh' },
+];
+
+const getCurrencySymbol = (code?: string) => {
+    return currencyOptions.find(opt => opt.value === code)?.symbol || '₦';
+};
+
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+  );
+}
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCart, onOpenMenu }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, onOpenCart: () => void, onOpenMenu: () => void }) {
   const { user, loading: authLoading } = useUser();
@@ -689,6 +710,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -699,7 +721,10 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cart, setCart] = useState<{ [mealId: string]: { item: any, quantity: number } }>({});
+  const [cart, setCart] = useState<{ [itemId: string]: { item: Meal & { vendorName?: string; vendorOwnerId?: string; vendorPaymentDetails?: string; vendorPhotoURL?: string; vendorType?: 'meal' | 'gift' }; quantity: number } }>({});
+  const [giftInstructions, setGiftInstructions] = useState('');
+  const [manualRecipientName, setManualRecipientName] = useState('');
+  const [isProcessingOrder, setIsProcessingOrder] = useState(false);
 
   const updateCart = useCallback(() => {
     if (typeof window === 'undefined' || !user?.uid) {
@@ -726,6 +751,118 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         window.removeEventListener('storage', updateCart);
     };
   }, [updateCart]);
+
+  const cartItems = useMemo(() => Object.values(cart), [cart]);
+  const cartByVendor = useMemo(() => {
+      const groups: { [vId: string]: { vendorId: string; vendorName: string; vendorOwnerId: string; paymentDetails: string; items: typeof cartItems; deliveryFee: number; subtotal: number; currency: string } } = {};
+      cartItems.forEach(c => {
+          const vId = c.item.vendorId;
+          if (!groups[vId]) {
+              groups[vId] = {
+                  vendorId: vId,
+                  vendorName: c.item.vendorName || 'Kingdom Provider',
+                  vendorOwnerId: c.item.vendorOwnerId || '',
+                  paymentDetails: c.item.vendorPaymentDetails || '',
+                  currency: c.item.currency || 'NGN',
+                  items: [],
+                  deliveryFee: 0,
+                  subtotal: 0
+              };
+          }
+          groups[vId].items.push(c);
+          groups[vId].subtotal += (c.item.price * c.quantity);
+          groups[vId].deliveryFee = Math.max(groups[vId].deliveryFee, c.item.deliveryFee || 0);
+      });
+      return Object.values(groups);
+  }, [cartItems]);
+
+  const updateQuantity = (itemId: string, delta: number) => {
+    if (!user?.uid) return;
+    const key = `testify_marketplace_cart_${user.uid}`;
+    setCart(prev => {
+        const existing = prev[itemId];
+        if (!existing) return prev;
+        const newQty = existing.quantity + delta;
+        let next;
+        if (newQty <= 0) {
+            const { [itemId]: _, ...rest } = prev;
+            next = rest;
+        } else {
+            next = { ...prev, [itemId]: { ...existing, quantity: newQty } };
+        }
+        localStorage.setItem(key, JSON.stringify(next));
+        window.dispatchEvent(new Event('testify_marketplace_cart_update'));
+        return next;
+    });
+  };
+
+  const removeFromCart = (itemId: string) => {
+    if (!user?.uid) return;
+    const key = `testify_marketplace_cart_${user.uid}`;
+    setCart(prev => {
+        const { [itemId]: _, ...rest } = prev;
+        localStorage.setItem(key, JSON.stringify(rest));
+        window.dispatchEvent(new Event('testify_marketplace_cart_update'));
+        return rest;
+    });
+  };
+
+  const handleGiftItems = async () => {
+    if (!user || !firestore || !userProfile || cartItems.length === 0) return;
+
+    if (!manualRecipientName.trim()) {
+        toast({ variant: 'destructive', title: 'Recipient Required', description: 'Please specify who receives this offering.' });
+        return;
+    }
+
+    if (!giftInstructions.trim()) {
+        toast({ variant: 'destructive', title: 'Instructions Required', description: 'Please provide delivery or gifting instructions.' });
+        return;
+    }
+
+    setIsProcessingOrder(true);
+    const batch = writeBatch(firestore);
+    const giftsRef = collection(firestore, 'mealGifts');
+    const senderName = `${userProfile.firstName} ${userProfile.lastName}`;
+
+    cartItems.forEach(cartItem => {
+        for(let i = 0; i < cartItem.quantity; i++) {
+            const giftRef = doc(giftsRef);
+            batch.set(giftRef, {
+                senderId: user.uid,
+                senderName,
+                recipientName: manualRecipientName,
+                vendorId: cartItem.item.vendorId,
+                vendorName: cartItem.item.vendorName || 'Kingdom Store',
+                vendorOwnerId: cartItem.item.vendorOwnerId, 
+                vendorPhotoURL: cartItem.item.vendorPhotoURL || null,
+                vendorType: cartItem.item.vendorType || 'meal',
+                mealId: cartItem.item.id,
+                mealName: cartItem.item.name,
+                price: cartItem.item.price,
+                deliveryFee: cartItem.item.deliveryFee || 0,
+                currency: cartItem.item.currency || 'NGN',
+                status: 'ordered' as MealGiftStatus,
+                instructions: giftInstructions,
+                createdAt: serverTimestamp(),
+            });
+        }
+    });
+
+    try {
+        await batch.commit();
+        const cartKey = `testify_marketplace_cart_${user.uid}`;
+        localStorage.removeItem(cartKey);
+        setCart({});
+        window.dispatchEvent(new Event('testify_marketplace_cart_update'));
+        toast({ title: 'Offering Confirmed!', description: `Package for ${manualRecipientName} recorded.` });
+        setIsCartOpen(false);
+    } catch (e) {
+        toast({ variant: 'destructive', title: 'Action Failed' });
+    } finally {
+        setIsProcessingOrder(false);
+    }
+  };
 
   useEffect(() => { 
     setMounted(true); 
@@ -958,6 +1095,111 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                 <div className="p-8 border-t bg-muted/5 flex-shrink-0">
                     <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">Testify Global • Mobilizing the Body</p>
                 </div>
+            </SheetContent>
+        </Sheet>
+
+        <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                    <div className="flex items-center gap-2 mb-2">
+                        <ShoppingCart className="h-4 w-4 text-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span>
+                    </div>
+                    <SheetHeader className="text-left flex-shrink-0">
+                      <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle>
+                      <SheetDescription className="text-sm font-medium mt-1">Review your selections for the harvest.</SheetDescription>
+                    </SheetHeader>
+                </div>
+                <ScrollArea className="flex-grow min-h-0 overscroll-contain">
+                    <div className="p-8 space-y-10">
+                        {cartItems.length > 0 ? (
+                            <div className="space-y-10">
+                                <div className="space-y-6">
+                                    {cartByVendor.map(group => (
+                                        <div key={group.vendorId} className="space-y-3">
+                                            <div className="flex items-center justify-between px-1">
+                                                <div className="flex items-center gap-2">
+                                                    <Store className="h-3.5 w-3.5 text-primary" />
+                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[150px]">{group.vendorName}</h4>
+                                                </div>
+                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
+                                            </div>
+                                            <div className="space-y-2">
+                                                {group.items.map(c => (
+                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
+                                                                {c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}
+                                                            </div>
+                                                            <div className="min-w-0 flex-1">
+                                                                <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
+                                                                <p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 ml-2">
+                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm">
+                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
+                                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span>
+                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                                                            </div>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label>
+                                        <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label>
+                                        <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label>
+                                    <div className="space-y-3">
+                                        {cartByVendor.map(v => (
+                                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden">
+                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity"><Store className="h-10 w-10 text-primary" /></div>
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p>
+                                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
+                                                </div>
+                                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p>
+                                                <Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center">
+                                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4" />
+                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3>
+                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance">Add items to place an order.</p>
+                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
+                                    <Link href="/dashboard/marketplace">GIVE PROVISION</Link>
+                                </Button>
+                            </div>
+                        )}
+                        <div className="h-24" />
+                    </div>
+                </ScrollArea>
+                {cartItems.length > 0 && (
+                    <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
+                        <Button onClick={handleGiftItems} disabled={isProcessingOrder || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
+                            {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            DISPATCH OFFERINGS
+                        </Button>
+                    </SheetFooter>
+                )}
             </SheetContent>
         </Sheet>
         
