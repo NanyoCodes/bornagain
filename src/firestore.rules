@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Accountability Hub Optimization & Sidebar Sync - 2025-06-28T16:45:00Z
+    // Deployment trigger: Live Figure Sync & Scoped Accountability Count - 2025-07-02T11:30:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

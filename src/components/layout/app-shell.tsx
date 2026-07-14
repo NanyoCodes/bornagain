@@ -939,7 +939,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
         <div className="relative mb-8"><Loader2 className="h-12 w-12 animate-spin text-primary" /><div className="absolute inset-0 flex items-center justify-center"><div className="h-2 w-2 rounded-full bg-primary animate-pulse" /></div></div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">{loadingMessage || "GOD FIRST"}</p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">Kingdom Network Active</p>
+        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">Kingdom Network Active</p>
       </div>
     );
   }

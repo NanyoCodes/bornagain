@@ -359,6 +359,7 @@ export default function AccountabilityPage() {
   const { data: allRequests } = useCollection<AccountabilityRequest>(requestsQuery);
 
   const pendingRequestsCount = useMemo(() => allRequests?.filter(r => r.status === 'pending').length || 0, [allRequests]);
+  const activePartnersCount = useMemo(() => allRequests?.filter(r => r.status === 'accepted').length || 0, [allRequests]);
 
   const partners = userProfile?.accountabilityPartners || [];
 
@@ -404,7 +405,36 @@ export default function AccountabilityPage() {
         const q = query(chatsRef, where('participantIds', '==', participantIds), where('isGroupChat', '==', false));
         const querySnapshot = await getDocs(q);
         let existingChat = querySnapshot.docs.find(doc => !doc.data().campaignId);
-        let chatId = existingChat ? existingChat.id : (await addDoc(chatsRef, { participantIds, participantInfo: { [user.uid]: { firstName: userProfile.firstName || '', lastName: userProfile.lastName || '', photoURL: userProfile.photoURL || '' }, [partner.userId]: { firstName: partner.firstName, lastName: partner.lastName, photoURL: partner.photoURL || '' } }, lastUpdatedAt: serverTimestamp(), isGroupChat: false, hasMessages: false })).id;
+        let chatId: string;
+
+        if (existingChat) {
+            chatId = existingChat.id;
+        } else {
+            const partnerUserRef = doc(firestore, 'users', partner.userId);
+            const partnerDoc = await getDoc(partnerUserRef);
+            const pProfile = partnerDoc.data() as UserProfile;
+            
+            const chatPayload = {
+                participantIds,
+                participantInfo: {
+                    [user.uid]: {
+                        firstName: userProfile.firstName || '',
+                        lastName: userProfile.lastName || '',
+                        photoURL: userProfile.photoURL || '',
+                    },
+                    [partner.userId]: {
+                        firstName: partner.firstName,
+                        lastName: partner.lastName,
+                        photoURL: pProfile?.photoURL || partner.photoURL || '',
+                    }
+                },
+                lastUpdatedAt: serverTimestamp(),
+                isGroupChat: false,
+                hasMessages: false
+            };
+            const chatDocRef = await addDoc(chatsRef, chatPayload);
+            chatId = chatDocRef.id;
+        }
         router.push(`/dashboard/chats/${chatId}`);
     } catch (error) {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `chats`, operation: 'create' }, user));
@@ -485,7 +515,7 @@ export default function AccountabilityPage() {
             </div>
 
             <div className="lg:col-span-4">
-                <AccountabilitySidebar partnerCount={partners.length} pendingCount={pendingRequestsCount} />
+                <AccountabilitySidebar partnerCount={activePartnersCount} pendingCount={pendingRequestsCount} />
             </div>
         </div>
 
