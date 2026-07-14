@@ -64,7 +64,7 @@ import { signOut, getAuth } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, writeBatch, addDoc } from "firebase/firestore";
-import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus, Meal } from "@/lib/types";
+import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus, Meal, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
@@ -409,7 +409,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
 function BottomNavBar() {
     const pathname = usePathname();
-    // Exclude Events Hub from bottom nav to reduce clutter
     const filteredItems = navItems.filter(item => item.href !== "/dashboard/events");
     
     return (
@@ -809,22 +808,18 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   const handleGiftItems = async () => {
     if (!user || !firestore || !userProfile || cartItems.length === 0) return;
-
     if (!manualRecipientName.trim()) {
         toast({ variant: 'destructive', title: 'Recipient Required', description: 'Please specify who receives this offering.' });
         return;
     }
-
     if (!giftInstructions.trim()) {
         toast({ variant: 'destructive', title: 'Instructions Required', description: 'Please provide delivery or gifting instructions.' });
         return;
     }
-
     setIsProcessingOrder(true);
     const batch = writeBatch(firestore);
     const giftsRef = collection(firestore, 'mealGifts');
     const senderName = `${userProfile.firstName} ${userProfile.lastName}`;
-
     cartItems.forEach(cartItem => {
         for(let i = 0; i < cartItem.quantity; i++) {
             const giftRef = doc(giftsRef);
@@ -848,7 +843,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
             });
         }
     });
-
     try {
         await batch.commit();
         const cartKey = `testify_marketplace_cart_${user.uid}`;
@@ -1148,7 +1142,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                         </div>
                                     ))}
                                 </div>
-                                
                                 <div className="space-y-6">
                                     <div className="space-y-2">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label>
@@ -1159,7 +1152,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                         <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" />
                                     </div>
                                 </div>
-
                                 <div className="space-y-4">
                                     <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label>
                                     <div className="space-y-3">

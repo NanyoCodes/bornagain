@@ -74,18 +74,34 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
         return [];
     }, [userProfile]);
 
-    // LIVE FIGURES: Query joined groups and campaigns for the "My Communities" widget
-    const joinedGroupsQuery = useMemo(() => {
+    // LIVE FIGURES: Query active groups and missions
+    const activeGroupsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
-        return query(collection(firestore, `users/${user.uid}/fellowships`));
+        return query(
+            collection(firestore, 'fellowships'), 
+            where('memberIds', 'array-contains', user.uid),
+            where('status', '==', 'active')
+        );
     }, [user?.uid, firestore]);
-    const { data: joinedGroupRefs } = useCollection<any>(joinedGroupsQuery);
+    const { data: activeGroups } = useCollection<any>(activeGroupsQuery);
 
     const joinedCampaignsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
         return query(collection(firestore, `users/${user.uid}/joinedCampaigns`));
     }, [user?.uid, firestore]);
     const { data: joinedCampaignRefs } = useCollection<any>(joinedCampaignsQuery);
+
+    const allActiveCampaignsQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'campaigns'), where('status', '==', 'active'));
+    }, [firestore]);
+    const { data: activeCampaigns } = useCollection<any>(allActiveCampaignsQuery);
+
+    const liveMissionsCount = useMemo(() => {
+        if (!activeCampaigns || !joinedCampaignRefs || !user?.uid) return 0;
+        const joinedIds = new Set(joinedCampaignRefs.map((r: any) => r.id));
+        return activeCampaigns.filter((c: any) => joinedIds.has(c.id) || c.organizerId === user.uid).length;
+    }, [activeCampaigns, joinedCampaignRefs, user?.uid]);
 
     const randomSeed = useMemo(() => faithSeeds[Math.floor(Math.random() * faithSeeds.length)], []);
 
@@ -119,7 +135,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 </Card>
             )}
 
-            {/* Specialized Fellowship Widget - With LIVE FIGURES */}
+            {/* Specialized Fellowship Widget - With LIVE FIGURES (Excluding Deleted) */}
             {mode === 'fellowships' && (
                 <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0">
                     <CardHeader className="p-6 pb-2">
@@ -134,11 +150,11 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                     <CardContent className="p-6 pt-2 space-y-4">
                         <div className="grid grid-cols-2 gap-3">
                             <div className="bg-white/10 rounded-2xl p-3 border border-white/10 text-center">
-                                <p className="text-2xl font-black">{joinedGroupRefs?.length || 0}</p>
+                                <p className="text-2xl font-black">{activeGroups?.length || 0}</p>
                                 <p className="text-[9px] font-bold uppercase opacity-60">Joined</p>
                             </div>
                             <div className="bg-white/10 rounded-2xl p-3 border border-white/10 text-center">
-                                <p className="text-2xl font-black">{joinedCampaignRefs?.length || 0}</p>
+                                <p className="text-2xl font-black">{liveMissionsCount}</p>
                                 <p className="text-[9px] font-bold uppercase opacity-60">Missions</p>
                             </div>
                         </div>
