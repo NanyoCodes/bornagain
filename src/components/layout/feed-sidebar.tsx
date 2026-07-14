@@ -45,6 +45,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
     const { userProfile } = useUserProfile();
     const firestore = useFirestore();
 
+    // Live query for souls to calculate monthly progress
     const soulsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
         return query(collection(firestore, `users/${user.uid}/souls`));
@@ -73,6 +74,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
         return [];
     }, [userProfile]);
 
+    // LIVE FIGURES: Query joined groups and campaigns for the "My Communities" widget
     const joinedGroupsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
         return query(collection(firestore, `users/${user.uid}/fellowships`));
@@ -90,7 +92,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
     return (
         <div className={cn("hidden lg:flex flex-col gap-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar pb-10", className)}>
             
-            {/* Goal Widget - Shown in most modes */}
+            {/* Goal Widget - Primary Mission Tracker */}
             {mode !== 'fellowships' && (
                 <Card className="rounded-3xl border-none shadow-lg bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-black/10 shrink-0">
                     <CardHeader className="p-6 pb-2">
@@ -117,7 +119,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 </Card>
             )}
 
-            {/* Specialized Fellowship Widget */}
+            {/* Specialized Fellowship Widget - With LIVE FIGURES */}
             {mode === 'fellowships' && (
                 <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0">
                     <CardHeader className="p-6 pb-2">
@@ -147,7 +149,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 </Card>
             )}
 
-            {/* Daily Rituals - Shown in Harvest/Campaign/General modes */}
+            {/* Daily Rituals Tracker */}
             {(mode === 'harvest' || mode === 'campaigns' || mode === 'general') && (
                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
                     <CardHeader className="p-5 pb-2">
@@ -182,7 +184,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 </Card>
             )}
 
-            {/* Faith Seed - Exclusive to Testimonies */}
+            {/* Faith Seed - Spiritual Inspiration */}
             {mode === 'testimonies' && (
                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
                     <CardHeader className="p-5 pb-2">
@@ -202,7 +204,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 </Card>
             )}
 
-            {/* Quick Sectors Widget */}
+            {/* Quick Kingdom Sectors Navigation */}
             <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
                 <CardHeader className="p-5 pb-2">
                     <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Sectors</CardTitle>

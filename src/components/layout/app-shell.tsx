@@ -110,7 +110,6 @@ const navItems = [
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
-  { href: "/dashboard/events", label: "Events Hub", icon: CalendarDays, color: "text-primary" },
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
@@ -410,6 +409,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
 function BottomNavBar() {
     const pathname = usePathname();
+    // Exclude Events Hub from bottom nav to reduce clutter
     const filteredItems = navItems.filter(item => item.href !== "/dashboard/events");
     
     return (
