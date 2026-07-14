@@ -155,7 +155,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                             </div>
                             <div className="bg-white/10 rounded-2xl p-3 border border-white/10 text-center">
                                 <p className="text-2xl font-black">{liveMissionsCount}</p>
-                                <p className="text-[9px] font-bold uppercase opacity-60">Missions</p>
+                                <p className="text-[9px] font-bold uppercase opacity-60">Active Missions</p>
                             </div>
                         </div>
                         <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance">

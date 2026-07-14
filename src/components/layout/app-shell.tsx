@@ -778,32 +778,28 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const updateQuantity = (itemId: string, delta: number) => {
     if (!user?.uid) return;
     const key = `testify_marketplace_cart_${user.uid}`;
-    setCart(prev => {
-        const existing = prev[itemId];
-        if (!existing) return prev;
-        const newQty = existing.quantity + delta;
-        let next;
-        if (newQty <= 0) {
-            const { [itemId]: _, ...rest } = prev;
-            next = rest;
-        } else {
-            next = { ...prev, [itemId]: { ...existing, quantity: newQty } };
-        }
-        localStorage.setItem(key, JSON.stringify(next));
-        window.dispatchEvent(new Event('testify_marketplace_cart_update'));
-        return next;
-    });
+    const existing = cart[itemId];
+    if (!existing) return;
+    const newQty = existing.quantity + delta;
+    let next;
+    if (newQty <= 0) {
+        const { [itemId]: _, ...rest } = cart;
+        next = rest;
+    } else {
+        next = { ...cart, [itemId]: { ...existing, quantity: newQty } };
+    }
+    localStorage.setItem(key, JSON.stringify(next));
+    setCart(next);
+    window.dispatchEvent(new Event('testify_marketplace_cart_update'));
   };
 
   const removeFromCart = (itemId: string) => {
     if (!user?.uid) return;
     const key = `testify_marketplace_cart_${user.uid}`;
-    setCart(prev => {
-        const { [itemId]: _, ...rest } = prev;
-        localStorage.setItem(key, JSON.stringify(rest));
-        window.dispatchEvent(new Event('testify_marketplace_cart_update'));
-        return rest;
-    });
+    const { [itemId]: _, ...rest } = cart;
+    localStorage.setItem(key, JSON.stringify(rest));
+    setCart(rest);
+    window.dispatchEvent(new Event('testify_marketplace_cart_update'));
   };
 
   const handleGiftItems = async () => {
