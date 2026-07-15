@@ -931,18 +931,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </form>
     );
 
-    if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
-    
-    if (!vendor) return <div className="text-center p-12"><p>Storefront not found.</p></div>;
-
-    const isGiftVendor = vendor.vendorType === 'gift';
-    const centerLabel = isGiftVendor ? 'Kindness Center' : 'Meals Center';
-    const itemLabel = isGiftVendor ? 'Product' : 'Meal';
-    const addLabel = isGiftVendor ? 'Add New Product' : 'Add New Meal';
-    const descriptionPlaceholder = isGiftVendor ? 'Describe the product details...' : 'Describe the ingredients and preparation...';
-    const categoryPlaceholder = isGiftVendor ? 'e.g., Books, Devotionals' : 'e.g., Main Dish, Sides';
-    const currencySymbol = getCurrencySymbol(vendor.currency);
-    const storagePath = isGiftVendor ? 'kindness-center' : 'meals-center';
+    const isOwner = user?.uid === vendor.userId;
 
     const itemForm = (initialItem?: Meal | null, isEdit = false) => (
         <form onSubmit={isEdit ? handleUpdateItem : handleAddMeal}>
@@ -988,8 +977,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             </div>
         </form>
     );
-
-    const isOwner = user?.uid === vendor.userId;
 
     return (
         <div className="w-full">

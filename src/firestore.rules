@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Live Figure Sync & Scoped Accountability Count - 2025-07-02T11:30:00Z
+    // Deployment trigger: Full Logic Restoration & Tactical Nav Stability - 2025-07-04T15:45:00Z
     
     function isOwner(userId) {
       return request.auth != null && request.auth.uid == userId;

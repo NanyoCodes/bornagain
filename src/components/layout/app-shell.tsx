@@ -1066,11 +1066,11 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
                         <Separator className="my-6 opacity-50" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
-                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="h-10 w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <BookMarked className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">App Guide</span>
                         </Link>
-                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="h-10 w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <BookOpen className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Resources</span>
                         </Link>
