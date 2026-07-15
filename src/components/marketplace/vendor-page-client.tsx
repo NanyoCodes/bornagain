@@ -847,7 +847,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 
-    const isOwner = user?.uid === vendor.userId;
+    const isOwner = user?.uid && vendor?.userId ? user.uid === vendor.userId : false;
     const isGiftVendor = vendor.vendorType === 'gift';
     const centerLabel = isGiftVendor ? 'Kindness Center' : 'Meals Center';
     const currencySymbol = getCurrencySymbol(vendor.currency);
@@ -1204,7 +1204,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                 <div className="space-y-3 p-6 bg-muted/20 rounded-[2rem] border shadow-inner"><div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-4"><span className="shrink-0">Selection subtotal</span><span className="text-foreground shrink-0 font-black">Multi-Currency Package</span></div><Separator className="opacity-50" /><div className="flex justify-between items-center text-sm font-black uppercase tracking-widest text-primary gap-4"><span className="shrink-0">Action Required</span><span className="shrink-0 text-xl tracking-tighter">Review Vendors Below</span></div></div>
                             </div>
                         ) : (
-                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance">Add items to place an order.</p><Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}><Link href="/dashboard/marketplace">GIVE PROVISION</Link></Button></div>
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance">Add items to place an order.</p><Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
+                                    <Link href="/dashboard/marketplace">GIVE PROVISION</Link>
+                                </Button></div>
                         )}<div className="h-24" /></div>
                     </ScrollArea>
                     {cartItems.length > 0 && (<SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">{isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}DISPATCH OFFERINGS</Button></SheetFooter>)}
@@ -1262,7 +1264,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Storefront</SheetTitle>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Storefront</DialogTitle>
                                     <DialogDescription className="text-sm font-medium mt-1">Refine your business details and mission.</DialogDescription>
                                 </DialogHeader>
                             </div>
