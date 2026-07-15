@@ -8,8 +8,7 @@ import {
     Home, 
     Sparkles, 
     ArrowRight,
-    Target,
-    UserCircle
+    Target
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,7 +23,6 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import type { Soul, Campaign, Fellowship, SoulRelationship } from '@/lib/types';
 import { LogSoulForm } from './log-soul-form';
-import { Separator } from '../ui/separator';
 
 function CategorySoulList({ souls }: { souls: Soul[] }) {
   if (!souls || souls.length === 0) {
@@ -263,27 +261,6 @@ export function RelationshipCircleTracker({
                         >
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Outreach</p>
                             <p className="text-xl font-black text-foreground">{stats.outreach.count}</p>
-                        </div>
-                    </div>
-
-                    <div className="p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted-foreground/10 space-y-4">
-                        <p className="text-[10px] text-muted-foreground font-medium leading-relaxed text-balance text-center italic">
-                            Tracking your impact across natural spheres of influence. Each circle represents a unique field of labor—from your household to the global mission field.
-                        </p>
-                        <Separator className="opacity-40" />
-                        <div className="grid grid-cols-3 gap-2 text-[8px] font-black uppercase tracking-widest text-center opacity-70">
-                            <div className="space-y-1">
-                                <UserCircle className="h-3 w-3 mx-auto text-primary" />
-                                <span>Household</span>
-                            </div>
-                            <div className="space-y-1">
-                                <Users className="h-3 w-3 mx-auto text-primary" />
-                                <span>Peers</span>
-                            </div>
-                            <div className="space-y-1">
-                                <Target className="h-3 w-3 mx-auto text-primary" />
-                                <span>Mission</span>
-                            </div>
                         </div>
                     </div>
 
