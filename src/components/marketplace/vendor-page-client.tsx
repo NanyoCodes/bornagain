@@ -845,6 +845,18 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <div className="p-6 sm:p-8 space-y-6">
                     <div className="space-y-4">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Storefront Branding</Label>
+                        <div className="flex items-center gap-4 mb-2 px-1">
+                             <Avatar className="h-16 w-16 border shadow-sm shrink-0">
+                                <AvatarImage src={vendorPhotoURL} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary">
+                                    {vendor.businessName?.charAt(0) || 'K'}
+                                </AvatarFallback>
+                             </Avatar>
+                             <div className="min-w-0">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-primary">Current Branding</p>
+                                <p className="text-[9px] text-muted-foreground italic truncate">Visible in marketplace</p>
+                             </div>
+                        </div>
                         <ImageUpload 
                             initialImageUrl={vendorPhotoURL} 
                             onUploadComplete={setVendorPhotoURL} 

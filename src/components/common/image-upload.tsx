@@ -7,7 +7,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Camera, X, Loader2, Crop as CropIcon, Trash2, AlertCircle } from 'lucide-react';
+import { Camera, X, Loader2, Crop as CropIcon, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -89,7 +89,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
   
-  // Sync with prop if it changes externally, but don't overwrite local preview after upload
+  // Sync with prop if it changes externally
   useEffect(() => {
     if (initialImageUrl !== undefined) {
       setPreviewUrl(initialImageUrl || null);
@@ -132,6 +132,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   };
 
   const handleUpload = async (file: File | Blob): Promise<string> => {
+    // 1. Direct Auth Check
     const auth = getAuth();
     const currentUser = auth.currentUser;
 
@@ -139,6 +140,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         throw new Error("Kingdom session not ready. Please refresh.");
     }
 
+    // 2. Identity Verification & Logging
     if (currentUser.uid !== user.uid) {
         console.error("UID Mismatch in Upload Flow:", {
             authUid: currentUser.uid,
@@ -150,7 +152,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
 
     if (!storage) throw new Error("Storage service unavailable.");
 
-    // Mandatory fresh token
+    // 3. Force Fresh Token to avoid authorization timeout
     await currentUser.getIdToken(true);
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
@@ -164,8 +166,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         await uploadBytes(fileRef, file, metadata);
         return getDownloadURL(fileRef);
     } catch (err: any) {
-        console.error("Upload error:", err);
-        throw new Error(err.message || "Failed to upload photo.");
+        console.error("Storage upload failure:", err);
+        throw new Error(err.message || "Failed to upload photo to Kingdom cloud.");
     }
   };
 
@@ -177,7 +179,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
       const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
       const downloadURL = await handleUpload(croppedImageBlob);
       
-      // Update local state first for immediate UI feedback
       setPreviewUrl(downloadURL);
       onUploadComplete(downloadURL);
       

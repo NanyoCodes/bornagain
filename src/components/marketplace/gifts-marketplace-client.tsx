@@ -92,18 +92,6 @@ export default function GiftsMarketplaceClient() {
         return country ? State.getStatesOfCountry(country.isoCode) : [];
     }, [selectedCountry, countriesList]);
 
-    const isAnyModalOpen = isRegisterOpen;
-
-    useEffect(() => {
-        if (!isAnyModalOpen && typeof document !== 'undefined') {
-            const timer = setTimeout(() => {
-                document.body.style.pointerEvents = 'auto';
-                document.body.removeAttribute('aria-hidden');
-            }, 300);
-            return () => clearTimeout(timer);
-        }
-    }, [isAnyModalOpen]);
-
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -300,10 +288,7 @@ export default function GiftsMarketplaceClient() {
     );
 
     return (
-        <div 
-            className="space-y-10 max-w-4xl mx-auto pb-32"
-            inert={isAnyModalOpen ? true : undefined}
-        >
+        <div className="space-y-10 max-w-4xl mx-auto pb-32">
             <header className="px-4 sm:px-0 space-y-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="flex items-center gap-4">
@@ -325,7 +310,7 @@ export default function GiftsMarketplaceClient() {
                             </Button>
                         ) : (
                             <Button onClick={() => setIsRegisterOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20">
-                                <PlusCircle className="mr-2 h-4 w-4" /> Become a Vendor
+                                <PlusCircle className="mr-2 h-4 w-4" /> Become a Provider
                             </Button>
                         )}
                     </div>
