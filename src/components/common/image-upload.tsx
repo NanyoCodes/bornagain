@@ -89,9 +89,11 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
   
-  // Sync with prop if it changes from outside
+  // Sync with prop if it changes externally, but don't overwrite local preview after upload
   useEffect(() => {
-    setPreviewUrl(initialImageUrl || null);
+    if (initialImageUrl !== undefined) {
+      setPreviewUrl(initialImageUrl || null);
+    }
   }, [initialImageUrl]);
   
   const handleFileSelect = () => {
@@ -175,8 +177,10 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
       const croppedImageBlob = await getCroppedImg(imgRef.current, completedCrop);
       const downloadURL = await handleUpload(croppedImageBlob);
       
-      onUploadComplete(downloadURL);
+      // Update local state first for immediate UI feedback
       setPreviewUrl(downloadURL);
+      onUploadComplete(downloadURL);
+      
       toast({ title: 'Success', description: 'Photo updated and optimized.' });
       
       setIsCropModalOpen(false);

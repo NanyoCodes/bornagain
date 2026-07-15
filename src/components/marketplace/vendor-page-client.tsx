@@ -1112,7 +1112,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                                 {itemSymbol}{meal.price.toLocaleString()}
                                             </Badge>
                                             {meal.deliveryFee ? (
-                                                <Badge variant="secondary" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm">
+                                                <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm">
                                                     + {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL
                                                 </Badge>
                                             ) : null}
