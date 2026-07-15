@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn, safeToDate } from "@/lib/utils";
-import { actionItems, statusOptions } from "@/lib/follow-up-data";
+import { actionItems, statusOptions, prayerTemplates } from "@/lib/follow-up-data";
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
 import { 
   Church, 
@@ -114,6 +114,8 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = React.useState(false);
   const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = React.useState(false);
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = React.useState(false);
+  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = React.useState(false);
+  const [customPrayerText, setCustomPrayerText] = React.useState('');
   const [clickedActionId, setClickedActionId] = React.useState<string | null>(null);
 
   const currentUserRef = React.useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
@@ -222,7 +224,9 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
           }
       }
 
-      if (actionId === 'text_message' || actionId === 'prayed_together') {
+      if (actionId === 'prayed_together') {
+          setIsPrayerCustomizationOpen(true);
+      } else if (actionId === 'text_message') {
           setIsCommChannelDialogOpen(true);
       } else if (actionId === 'introduced_friend') {
           setIsShareTargetDialogOpen(true);
@@ -236,14 +240,19 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
       }
   };
 
+  const handlePrayerCustomizationConfirm = (text: string) => {
+      setCustomPrayerText(text);
+      setIsPrayerCustomizationOpen(false);
+      requestAnimationFrame(() => {
+          setIsCommChannelDialogOpen(true);
+      });
+  };
+
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
       if (!soul?.phone || !clickedActionId) return;
       const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
       
-      let message = `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
-      if (clickedActionId === 'prayed_together') {
-          message = `Hi ${soul.firstName}, I just spent a moment praying for you. May God's grace and peace be with you today!`;
-      }
+      let message = customPrayerText || `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
       
       const messageText = encodeURIComponent(message);
       
@@ -256,6 +265,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
       const current = form.getValues('actions') || [];
       form.setValue('actions', [...current, clickedActionId]);
       setIsCommChannelDialogOpen(false);
+      setCustomPrayerText('');
   };
 
   const handleHelpNeedConfirm = (note: string) => {
@@ -439,21 +449,6 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                                     )}>
                                                         {item.label}
                                                     </span>
-                                                    {isSelected && (item.id === 'shared_meal' || item.id === 'gave_gift') && (
-                                                        <span 
-                                                            role="button"
-                                                            tabIndex={0}
-                                                            className="text-[8px] font-black uppercase text-primary underline animate-in fade-in slide-in-from-bottom-1 cursor-pointer"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                const path = item.id === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-                                                                router.push(`${path}?soulId=${soul?.id}&soulName=${encodeURIComponent(soul?.firstName || '')}&actionId=${item.id}`);
-                                                                onOpenChange(false);
-                                                            }}
-                                                        >
-                                                            GO TO HUB
-                                                        </span>
-                                                    )}
                                                 </div>
                                             </Button>
                                         </motion.div>
@@ -503,7 +498,53 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     </Form>
   );
 
-  if (!mounted) return null;
+  const PrayerCustomizationDialog = (
+    <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
+        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+            <div className="p-8 border-b bg-muted/10">
+                <DialogHeader>
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
+                    <DialogDescription className="text-sm font-medium">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+                </DialogHeader>
+            </div>
+            <div className="p-8 space-y-6">
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Prayer Focus</label>
+                    <div className="flex flex-wrap gap-2">
+                        {prayerTemplates.map(t => (
+                            <Button 
+                                key={t.id} 
+                                variant="outline" 
+                                size="sm" 
+                                className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary"
+                                onClick={() => soul && setCustomPrayerText(t.text.replace('{name}', soul.firstName))}
+                            >
+                                {t.label}
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Your Prayer</Label>
+                    <Textarea 
+                        value={customPrayerText}
+                        onChange={e => setCustomPrayerText(e.target.value)}
+                        className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6"
+                    />
+                </div>
+
+                <Button 
+                    onClick={() => handlePrayerCustomizationConfirm(customPrayerText)} 
+                    disabled={!customPrayerText.trim()} 
+                    className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
+                >
+                    CONTINUE TO CHANNEL
+                </Button>
+            </div>
+        </DialogContent>
+    </Dialog>
+  );
 
   const CommDialog = (
     <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
@@ -541,11 +582,11 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
               <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
               <Textarea 
                   placeholder="e.g. Provided food items, helped with bill..." 
-                  onChange={e => setHelpNeedNote(e.target.value)}
+                  onChange={e => setCustomPrayerText(e.target.value)} // Reusing customPrayerText temporarily for simple local state
                   className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
               />
           </div>
-          <Button onClick={() => handleHelpNeedConfirm(helpNeedNote)} className="w-full h-12 rounded-xl font-bold">Confirm Service</Button>
+          <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold">Confirm Service</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -636,6 +677,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                     SAVE INTERACTION
                 </Button>
               </div>
+              {PrayerCustomizationDialog}
               {CommDialog}
               {NeedDialog}
               {ShareTargetDialogEl}
@@ -676,6 +718,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
           )}
         </DialogContent>
       </Dialog>
+      {PrayerCustomizationDialog}
       {CommDialog}
       {NeedDialog}
       {ShareTargetDialogEl}

@@ -39,7 +39,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { actionItems } from '@/lib/follow-up-data';
+import { actionItems, prayerTemplates } from '@/lib/follow-up-data';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -123,7 +123,7 @@ function SoulSelectionDialog({
                                         disabled={isLoading}
                                     >
                                         <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
-                                            <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                            <AvatarFallback className="font-bold bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         <div className="text-left min-w-0 flex-1">
                                             <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
@@ -147,6 +147,103 @@ function SoulSelectionDialog({
                         </div>
                     </ScrollArea>
                 </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function PrayerCustomizationDialog({
+    isOpen,
+    onOpenChange,
+    soul,
+    onConfirm
+}: {
+    isOpen: boolean;
+    onOpenChange: (open: boolean) => void;
+    soul: Soul | null;
+    onConfirm: (text: string) => void;
+}) {
+    const isMobile = useIsMobile();
+    const [customText, setCustomText] = useState('');
+
+    useEffect(() => {
+        if (isOpen && soul) {
+            const firstTemplate = prayerTemplates[0].text.replace('{name}', soul.firstName);
+            setCustomText(firstTemplate);
+        }
+    }, [isOpen, soul]);
+
+    const handleSelectTemplate = (template: string) => {
+        if (!soul) return;
+        setCustomText(template.replace('{name}', soul.firstName));
+    };
+
+    const content = (
+        <div className="p-6 sm:p-8 space-y-6">
+            <div className="space-y-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Prayer Focus</label>
+                <div className="flex flex-wrap gap-2">
+                    {prayerTemplates.map(t => (
+                        <Button 
+                            key={t.id} 
+                            variant="outline" 
+                            size="sm" 
+                            className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary"
+                            onClick={() => handleSelectTemplate(t.text)}
+                        >
+                            {t.label}
+                        </Button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Your Prayer</Label>
+                <Textarea 
+                    value={customText}
+                    onChange={e => setCustomText(e.target.value)}
+                    className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6"
+                />
+            </div>
+
+            <Button 
+                onClick={() => onConfirm(customText)} 
+                disabled={!customText.trim()} 
+                className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
+            >
+                CONTINUE TO CHANNEL
+            </Button>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Sheet open={isOpen} onOpenChange={onOpenChange}>
+                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Prepare Prayer</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Customize the word of faith for {soul?.firstName}.</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <ScrollArea className="flex-grow">
+                        {content}
+                    </ScrollArea>
+                </SheetContent>
+            </Sheet>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+                <div className="p-8 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
+                    </DialogHeader>
+                </div>
+                {content}
             </DialogContent>
         </Dialog>
     );
@@ -333,6 +430,9 @@ export function RelationshipTrackerCard() {
   const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
   const [commTargetSoul, setCommTargetSoul] = useState<Soul | null>(null);
 
+  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
+  const [customPrayerText, setCustomPrayerText] = useState('');
+
   const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
   const [sharingSoul, setSharingSoul] = useState<Soul | null>(null);
@@ -363,7 +463,9 @@ export function RelationshipTrackerCard() {
             if (Array.isArray(parsed)) {
                 setPendingActions(parsed.map((p: any) => p.actionId));
             }
-        } catch (e) {}
+        } catch (e) {
+            setPendingActions([]);
+        }
     } else {
         setPendingActions([]);
     }
@@ -507,13 +609,19 @@ export function RelationshipTrackerCard() {
 
     setIsSoulDialogOpen(false);
 
+    if (selectedActionId === 'prayed_together') {
+        setCommTargetSoul(soul);
+        setIsPrayerCustomizationOpen(true);
+        return;
+    }
+
     if (selectedActionId === 'helped_with_need') {
         setHelpNeedTargetSoul(soul);
         setIsHelpNeedDialogOpen(true);
         return;
     }
 
-    if (selectedActionId === 'text_message' || selectedActionId === 'prayed_together') {
+    if (selectedActionId === 'text_message') {
         setCommTargetSoul(soul);
         setIsCommChannelDialogOpen(true);
         return;
@@ -528,6 +636,14 @@ export function RelationshipTrackerCard() {
     setTogglingId(selectedActionId);
     await performLogging(soul, selectedActionId);
     setTogglingId(null);
+  };
+
+  const handlePrayerCustomizationConfirm = (text: string) => {
+      setCustomPrayerText(text);
+      setIsPrayerCustomizationOpen(false);
+      requestAnimationFrame(() => {
+          setIsCommChannelDialogOpen(true);
+      });
   };
 
   const handleHelpNeedConfirm = async (note: string) => {
@@ -545,14 +661,11 @@ export function RelationshipTrackerCard() {
       const soul = commTargetSoul;
       const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
       
-      let message = `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
-      if (selectedActionId === 'prayed_together') {
-          message = `Hi ${soul.firstName}, I just spent a moment praying for you. May God's grace and peace be with you today!`;
-      }
+      let message = customPrayerText || `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
       
       const messageText = encodeURIComponent(message);
       
-      performLogging(soul, selectedActionId!).then(() => {
+      performLogging(soul, selectedActionId!, customPrayerText ? `Custom Prayer Sent: ${customPrayerText.substring(0, 100)}...` : undefined).then(() => {
           if (channel === 'whatsapp') {
               window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
           } else {
@@ -562,6 +675,7 @@ export function RelationshipTrackerCard() {
       
       setIsCommChannelDialogOpen(false);
       setCommTargetSoul(null);
+      setCustomPrayerText('');
   };
 
   const handleShareSoul = (soul: Soul) => {
@@ -814,6 +928,13 @@ export function RelationshipTrackerCard() {
           actionId={selectedActionId}
           actionLabel={activeActionLabel}
           isLoading={togglingId !== null}
+      />
+
+      <PrayerCustomizationDialog
+        isOpen={isPrayerCustomizationOpen}
+        onOpenChange={setIsPrayerCustomizationOpen}
+        soul={commTargetSoul}
+        onConfirm={handlePrayerCustomizationConfirm}
       />
 
       <CommChannelDialog
