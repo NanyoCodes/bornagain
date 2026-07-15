@@ -139,24 +139,28 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     const auth = getAuth();
     const currentUser = auth.currentUser;
 
-    if (!currentUser || (user && currentUser.uid !== user.uid)) {
-        console.error("Kingdom Session mismatch or not ready:", {
-            hookUid: user?.uid,
-            authUid: currentUser?.uid,
-            path: storagePath
-        });
-        throw new Error("Kingdom session not ready. Please refresh and try again.");
+    // MANDATORY: Identity and state check to prevent storage/unauthorized
+    if (!currentUser || !user?.uid) {
+        throw new Error("Kingdom session not ready. Please refresh.");
     }
 
-    if (!storage) throw new Error("Storage service not available.");
+    if (currentUser.uid !== user.uid) {
+        console.error("UID Mismatch in Upload Flow:", {
+            authUid: currentUser.uid,
+            hookUid: user.uid,
+            path: storagePath
+        });
+        throw new Error("Identity verification failed. Please try again.");
+    }
 
-    // Force fresh token to resolve storage/unauthorized timing issues in Provision Hub
+    if (!storage) throw new Error("Storage service unavailable.");
+
+    // MANDATORY: Force fresh token to ensure Storage SDK uses latest authenticated state
     await currentUser.getIdToken(true);
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
     
     // STRUCTURE: {folder}/{userId}/{filename}
-    // Correct UID-based pathing is mandatory for security rule authorization.
     const fileRef = ref(storage, `${storagePath}/${currentUser.uid}/${Date.now()}_${fileName}`);
     
     const metadata = {
@@ -167,8 +171,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         await uploadBytes(fileRef, file, metadata);
         return getDownloadURL(fileRef);
     } catch (err: any) {
-        console.error("Kingdom upload error:", err);
-        throw new Error(err.message || "Failed to upload photo to the Kingdom network.");
+        console.error("Upload error:", err);
+        throw new Error(err.message || "Failed to upload photo.");
     }
   };
 
