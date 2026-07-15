@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 function getCroppedImg(
   image: HTMLImageElement,
@@ -91,10 +92,10 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   
   // Sync with prop if it changes externally
   useEffect(() => {
-    if (initialImageUrl !== undefined) {
+    if (initialImageUrl !== undefined && initialImageUrl !== previewUrl) {
       setPreviewUrl(initialImageUrl || null);
     }
-  }, [initialImageUrl]);
+  }, [initialImageUrl, previewUrl]);
   
   const handleFileSelect = () => {
     fileInputRef.current?.click();
@@ -132,15 +133,15 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   };
 
   const handleUpload = async (file: File | Blob): Promise<string> => {
-    // 1. Direct Auth Check
+    // 1. Direct Auth Check via getAuth() to avoid timing issues with hooks
     const auth = getAuth();
     const currentUser = auth.currentUser;
 
     if (!currentUser || !user?.uid) {
-        throw new Error("Kingdom session not ready. Please refresh.");
+        throw new Error("Kingdom session not ready. Please try again.");
     }
 
-    // 2. Identity Verification & Logging
+    // 2. Identity Verification & Diagnostic Logging
     if (currentUser.uid !== user.uid) {
         console.error("UID Mismatch in Upload Flow:", {
             authUid: currentUser.uid,
@@ -152,10 +153,15 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
 
     if (!storage) throw new Error("Storage service unavailable.");
 
-    // 3. Force Fresh Token to avoid authorization timeout
-    await currentUser.getIdToken(true);
+    // 3. Force Fresh Token to resolve storage/unauthorized errors
+    try {
+        await currentUser.getIdToken(true);
+    } catch (tokenErr) {
+        console.error("Failed to refresh auth token:", tokenErr);
+    }
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
+    // All Kingdom assets are stored in UID-isolated directories: folder/userId/filename
     const fileRef = ref(storage, `${storagePath}/${currentUser.uid}/${Date.now()}_${fileName}`);
     
     const metadata = {
@@ -166,8 +172,12 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         await uploadBytes(fileRef, file, metadata);
         return getDownloadURL(fileRef);
     } catch (err: any) {
-        console.error("Storage upload failure:", err);
-        throw new Error(err.message || "Failed to upload photo to Kingdom cloud.");
+        console.error("Firebase Storage Upload Failure:", {
+            code: err.code,
+            message: err.message,
+            path: fileRef.fullPath
+        });
+        throw new Error(err.message || "Unauthorized access to Kingdom storage.");
     }
   };
 
@@ -214,7 +224,10 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
               <AvatarFallback className="bg-muted"><Camera className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/30" /></AvatarFallback>
             </Avatar>
           ) : (
-            <div className="relative w-full max-w-xs aspect-video rounded-2xl border-2 border-dashed bg-muted/20 flex items-center justify-center overflow-hidden shadow-md">
+            <div 
+              className="relative w-full max-w-xs rounded-2xl border-2 border-dashed bg-muted/20 flex items-center justify-center overflow-hidden shadow-md"
+              style={{ aspectRatio: cropAspect || 1.777 }}
+            >
               {previewUrl ? (
                 <Image src={previewUrl} alt="Preview" fill className="object-contain" unoptimized />
               ) : (

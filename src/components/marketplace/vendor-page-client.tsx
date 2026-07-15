@@ -955,6 +955,21 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <div className="p-6 sm:p-8 space-y-6">
                     <div className="space-y-4">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{itemLabel} Photo</Label>
+                    <div className="flex items-center gap-4 mb-2 px-1">
+                             <div className="h-16 w-16 rounded-xl border-2 border-primary/20 shadow-sm bg-muted overflow-hidden shrink-0 relative">
+                                {itemPhotoURL ? (
+                                    <Image src={itemPhotoURL} alt="item" fill className="object-cover" unoptimized />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                        {isGiftVendor ? <Gift className="h-6 w-6 text-primary/40" /> : <Utensils className="h-6 w-6 text-primary/40" />}
+                                    </div>
+                                )}
+                             </div>
+                             <div className="min-w-0">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-primary">Current Preview</p>
+                                <p className="text-[9px] text-muted-foreground italic truncate">Optimized for display</p>
+                             </div>
+                        </div>
                     <ImageUpload 
                         initialImageUrl={itemPhotoURL} 
                         onUploadComplete={setItemPhotoURL} 
