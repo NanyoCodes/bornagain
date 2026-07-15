@@ -166,16 +166,31 @@ function PrayerCustomizationDialog({
     const isMobile = useIsMobile();
     const [customText, setCustomText] = useState('');
 
+    const resolveTemplate = useCallback((template: string, soul: Soul) => {
+        const gender = soul.gender?.toLowerCase() || 'other';
+        const pronouns = {
+            subject: gender === 'female' ? 'she' : 'he',
+            object: gender === 'female' ? 'her' : 'him',
+            possessive: gender === 'female' ? 'her' : 'his'
+        };
+        
+        return template
+            .replace(/{name}/g, soul.firstName)
+            .replace(/{subject}/g, pronouns.subject)
+            .replace(/{object}/g, pronouns.object)
+            .replace(/{possessive}/g, pronouns.possessive);
+    }, []);
+
     useEffect(() => {
         if (isOpen && soul) {
-            const firstTemplate = prayerTemplates[0].text.replace('{name}', soul.firstName);
-            setCustomText(firstTemplate);
+            const resolved = resolveTemplate(prayerTemplates[0].text, soul);
+            setCustomText(resolved);
         }
-    }, [isOpen, soul]);
+    }, [isOpen, soul, resolveTemplate]);
 
     const handleSelectTemplate = (template: string) => {
         if (!soul) return;
-        setCustomText(template.replace('{name}', soul.firstName));
+        setCustomText(resolveTemplate(template, soul));
     };
 
     const content = (
@@ -349,7 +364,7 @@ function HelpNeedNoteDialog({
   const content = (
       <div className="p-6 sm:p-8 space-y-6">
           <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Details of Support</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
               <Textarea 
                   placeholder="e.g., Provided groceries, assisted with transportation..." 
                   value={note}

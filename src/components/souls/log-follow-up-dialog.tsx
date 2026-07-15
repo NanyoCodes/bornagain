@@ -122,6 +122,21 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   const { data: fetchedProfile } = useDoc<UserProfile>(currentUserRef);
   const userProfile = providedProfile || fetchedProfile;
 
+  const resolveTemplate = React.useCallback((template: string, targetSoul: Soul) => {
+      const gender = targetSoul.gender?.toLowerCase() || 'other';
+      const pronouns = {
+          subject: gender === 'female' ? 'she' : 'he',
+          object: gender === 'female' ? 'her' : 'him',
+          possessive: gender === 'female' ? 'her' : 'his'
+      };
+      
+      return template
+          .replace(/{name}/g, targetSoul.firstName)
+          .replace(/{subject}/g, pronouns.subject)
+          .replace(/{object}/g, pronouns.object)
+          .replace(/{possessive}/g, pronouns.possessive);
+  }, []);
+
   React.useEffect(() => {
     setMounted(true);
   }, []);
@@ -225,6 +240,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
       }
 
       if (actionId === 'prayed_together') {
+          setCustomPrayerText(resolveTemplate(prayerTemplates[0].text, soul));
           setIsPrayerCustomizationOpen(true);
       } else if (actionId === 'text_message') {
           setIsCommChannelDialogOpen(true);
@@ -517,7 +533,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                 variant="outline" 
                                 size="sm" 
                                 className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary"
-                                onClick={() => soul && setCustomPrayerText(t.text.replace('{name}', soul.firstName))}
+                                onClick={() => soul && setCustomPrayerText(resolveTemplate(t.text, soul))}
                             >
                                 {t.label}
                             </Button>
