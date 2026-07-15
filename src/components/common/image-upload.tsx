@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import ReactCrop, { centerCrop, makeAspectCrop, type Crop, type PixelCrop } from 'react-image-crop';
 import { useStorage, useUser } from '@/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Camera, X, Loader2, Crop as CropIcon, Trash2, AlertCircle } from 'lucide-react';
@@ -135,14 +136,28 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   };
 
   const handleUpload = async (file: File | Blob): Promise<string> => {
-    if (!user) throw new Error("Authentication required.");
-    if (!storage) throw new Error("Storage not available.");
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (!currentUser || (user && currentUser.uid !== user.uid)) {
+        console.error("Kingdom Session mismatch or not ready:", {
+            hookUid: user?.uid,
+            authUid: currentUser?.uid,
+            path: storagePath
+        });
+        throw new Error("Kingdom session not ready. Please refresh and try again.");
+    }
+
+    if (!storage) throw new Error("Storage service not available.");
+
+    // Force fresh token to resolve storage/unauthorized timing issues in Provision Hub
+    await currentUser.getIdToken(true);
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
     
     // STRUCTURE: {folder}/{userId}/{filename}
     // Correct UID-based pathing is mandatory for security rule authorization.
-    const fileRef = ref(storage, `${storagePath}/${user.uid}/${Date.now()}_${fileName}`);
+    const fileRef = ref(storage, `${storagePath}/${currentUser.uid}/${Date.now()}_${fileName}`);
     
     const metadata = {
       contentType: file.type || 'image/jpeg'
@@ -152,8 +167,8 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         await uploadBytes(fileRef, file, metadata);
         return getDownloadURL(fileRef);
     } catch (err: any) {
-        console.error("Upload error:", err);
-        throw new Error(err.message || "Failed to upload photo.");
+        console.error("Kingdom upload error:", err);
+        throw new Error(err.message || "Failed to upload photo to the Kingdom network.");
     }
   };
 
