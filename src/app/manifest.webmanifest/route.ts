@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 /**
  * @fileOverview Dynamically generates the Web App Manifest.
  * Ensures the PWA icon is always synchronized with the current app logo.
- * Implements maskable icon support for high-fidelity OS integration.
+ * Implements both 'any' and 'maskable' icon support for high-fidelity OS integration on Android and iOS.
  */
 
 export async function GET() {
@@ -22,13 +22,25 @@ export async function GET() {
         src: testifyLogoUrl,
         sizes: '192x192',
         type: 'image/png',
-        purpose: 'any maskable'
+        purpose: 'any'
+      },
+      {
+        src: testifyLogoUrl,
+        sizes: '192x192',
+        type: 'image/png',
+        purpose: 'maskable'
       },
       {
         src: testifyLogoUrl,
         sizes: '512x512',
         type: 'image/png',
-        purpose: 'any maskable'
+        purpose: 'any'
+      },
+      {
+        src: testifyLogoUrl,
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable'
       },
     ],
   };

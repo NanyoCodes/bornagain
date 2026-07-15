@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Smartphone, CheckCircle2, Info, Share, PlusSquare } from 'lucide-react';
+import { Download, Smartphone, CheckCircle2, Info, Share, PlusSquare, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -118,7 +118,7 @@ export function PwaInstallCard() {
           <div className="space-y-8">
             <div className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted-foreground/10">
                 <div className="relative shrink-0">
-                    <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-2 border-background shadow-xl">
+                    <Avatar className="h-16 w-16 sm:h-20 sm:w-20 border-2 border-background shadow-xl ring-4 ring-primary/10">
                         <AvatarImage src={logo?.imageUrl} alt="Testify Logo" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary">T</AvatarFallback>
                     </Avatar>
@@ -128,11 +128,11 @@ export function PwaInstallCard() {
                 </div>
                 <div className="space-y-2 text-center sm:text-left">
                     <div className="flex items-center justify-center sm:justify-start gap-2 text-primary font-black text-[10px] uppercase tracking-[0.3em]">
-                        <Info className="h-4 w-4" />
+                        <Sparkles className="h-4 w-4" />
                         Kingdom Identity
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed font-medium text-balance">
-                        Add Testify to your home screen to access the harvest field instantly with your unique spiritual identity.
+                        Add Testify to your home screen to access the harvest field instantly with your unique spiritual identity and current app logo.
                     </p>
                 </div>
             </div>
@@ -176,7 +176,7 @@ export function PwaInstallCard() {
                     {!deferredPrompt && (
                         <div className="p-5 bg-muted/20 rounded-2xl border border-dashed text-center">
                             <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest leading-relaxed text-balance">
-                                Use <span className="text-foreground">Google Chrome</span> on Android to enable one-tap installation.
+                                Use <span className="text-foreground">Google Chrome</span> on Android to enable one-tap installation with the app logo.
                             </p>
                         </div>
                     )}
@@ -184,7 +184,7 @@ export function PwaInstallCard() {
             )}
             
             <p className="text-[9px] text-center text-muted-foreground font-black uppercase tracking-[0.4em] opacity-30">
-                PWA Version 1.2.0 • Mobilizing the Body
+                PWA Version 1.2.1 • Mobilizing the Body
             </p>
           </div>
         )}

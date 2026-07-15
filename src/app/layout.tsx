@@ -39,6 +39,11 @@ export const metadata: Metadata = {
     'Faith Journal',
     'Spiritual Accountability',
   ],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Testify',
+  },
   authors: [{ name: 'Testify Global Team' }],
   creator: 'Testify Global',
   publisher: 'Testify Global',
