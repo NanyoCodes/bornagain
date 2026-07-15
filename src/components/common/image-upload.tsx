@@ -13,11 +13,6 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import Image from 'next/image';
 
-/**
- * @fileOverview A high-fidelity image upload component with built-in cropping and optimization.
- * Handles resizing, JPEG compression, and structured storage under the user's UID for security.
- */
-
 function getCroppedImg(
   image: HTMLImageElement,
   crop: PixelCrop,
@@ -94,11 +89,10 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
   
+  // Sync with prop if it changes from outside
   useEffect(() => {
-    if (!isLoading) {
-      setPreviewUrl(initialImageUrl || null);
-    }
-  }, [initialImageUrl, isLoading]);
+    setPreviewUrl(initialImageUrl || null);
+  }, [initialImageUrl]);
   
   const handleFileSelect = () => {
     fileInputRef.current?.click();
@@ -139,7 +133,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     const auth = getAuth();
     const currentUser = auth.currentUser;
 
-    // MANDATORY: Identity and state check to prevent storage/unauthorized
     if (!currentUser || !user?.uid) {
         throw new Error("Kingdom session not ready. Please refresh.");
     }
@@ -155,12 +148,10 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
 
     if (!storage) throw new Error("Storage service unavailable.");
 
-    // MANDATORY: Force fresh token to ensure Storage SDK uses latest authenticated state
+    // Mandatory fresh token
     await currentUser.getIdToken(true);
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
-    
-    // STRUCTURE: {folder}/{userId}/{filename}
     const fileRef = ref(storage, `${storagePath}/${currentUser.uid}/${Date.now()}_${fileName}`);
     
     const metadata = {

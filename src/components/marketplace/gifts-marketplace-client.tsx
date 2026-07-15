@@ -19,7 +19,8 @@ import {
     CreditCard,
     Gift,
     Package,
-    ArrowLeft
+    ArrowLeft,
+    Globe
 } from 'lucide-react';
 import { 
     Dialog, 
