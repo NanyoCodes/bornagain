@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -90,7 +91,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
   
-  // Sync with prop if it changes externally
   useEffect(() => {
     if (initialImageUrl !== undefined && initialImageUrl !== previewUrl) {
       setPreviewUrl(initialImageUrl || null);
@@ -133,7 +133,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   };
 
   const handleUpload = async (file: File | Blob): Promise<string> => {
-    // 1. Direct Auth Check via getAuth() to avoid timing issues with hooks
     const auth = getAuth();
     const currentUser = auth.currentUser;
 
@@ -141,7 +140,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         throw new Error("Kingdom session not ready. Please try again.");
     }
 
-    // 2. Identity Verification & Diagnostic Logging
     if (currentUser.uid !== user.uid) {
         console.error("UID Mismatch in Upload Flow:", {
             authUid: currentUser.uid,
@@ -153,7 +151,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
 
     if (!storage) throw new Error("Storage service unavailable.");
 
-    // 3. Force Fresh Token to resolve storage/unauthorized errors
     try {
         await currentUser.getIdToken(true);
     } catch (tokenErr) {
@@ -161,7 +158,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     }
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
-    // All Kingdom assets are stored in UID-isolated directories: folder/userId/filename
     const fileRef = ref(storage, `${storagePath}/${currentUser.uid}/${Date.now()}_${fileName}`);
     
     const metadata = {
@@ -172,11 +168,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         await uploadBytes(fileRef, file, metadata);
         return getDownloadURL(fileRef);
     } catch (err: any) {
-        console.error("Firebase Storage Upload Failure:", {
-            code: err.code,
-            message: err.message,
-            path: fileRef.fullPath
-        });
+        console.error("Firebase Storage Upload Failure:", err);
         throw new Error(err.message || "Unauthorized access to Kingdom storage.");
     }
   };
@@ -261,7 +253,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
             )}
           </div>
         )}
-        <Input 
+        <input 
           type="file" 
           ref={fileInputRef}
           onChange={handleFileChange}

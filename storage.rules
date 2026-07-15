@@ -3,7 +3,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Fresh Token Verification & UID Authorization - 2025-07-04T19:45:00Z
+    // Deployment trigger: Fixed syntax error in isAllowedType - 2025-07-04T20:15:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -20,7 +20,7 @@ service firebase.storage {
     function isAllowedType() {
       return request.resource.contentType.matches('image/.*') || 
              request.resource.contentType.matches('video/.*') ||
-             request.resource.contentType /.*') ||
+             request.resource.contentType.matches('audio/.*') ||
              request.resource.contentType == 'application/pdf';
     }
 
@@ -34,7 +34,6 @@ service firebase.storage {
 
     // Secure UID-based directory structure for all Kingdom assets
     // Validates: {folder}/{userId}/{filename}
-    // recursive wildcard ensures all nested files in user's folder are covered
     match /{folder}/{userId}/{allPaths=**} {
       allow create, update: if isOwner(userId) && isAllowedFolder(folder) && isValidSize() && isAllowedType();
       allow delete: if isOwner(userId);
