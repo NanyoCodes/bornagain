@@ -546,7 +546,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     const handleAddMeal = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!user || !firestore || !isOwner) return;
+        if (!user || !firestore || !vendor || !isOwner) return;
         
         const formData = new FormData(e.currentTarget);
         const name = formData.get('name') as string;
@@ -723,7 +723,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     };
 
     const handleGiftItems = async () => {
-        if (!user || !firestore || !userProfile || cartItems.length === 0) return;
+        if (!user || !firestore || !userProfile || !vendor || cartItems.length === 0) return;
 
         const finalRecipientName = soulName || manualRecipientName;
         if (!finalRecipientName.trim()) {

@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Recursive UID Pathing for Multi-Center Asset Control - 2025-07-04T15:45:00Z
+    // Deployment trigger: Hardened UID Pathing & Tactical Asset Validation - 2025-07-04T18:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -23,6 +23,10 @@ service firebase.storage {
              request.resource.contentType == 'application/pdf';
     }
 
+    function isAllowedFolder(folder) {
+      return folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies'];
+    }
+
     match /{allPaths=**} {
       allow read: if true;
     }
@@ -30,7 +34,7 @@ service firebase.storage {
     // Secure UID-based directory structure for all Kingdom assets
     // Validates: {folder}/{userId}/{filename}
     match /{folder}/{userId}/{allPaths=**} {
-      allow create, update: if isOwner(userId) && isValidSize() && isAllowedType();
+      allow create, update: if isOwner(userId) && isAllowedFolder(folder) && isValidSize() && isAllowedType();
       allow delete: if isOwner(userId);
     }
   }

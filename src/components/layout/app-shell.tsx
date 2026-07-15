@@ -79,6 +79,7 @@ import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+// SHARED CONSTANTS
 const NOTIFICATION_TYPES = [
   'campaign_join', 
   'new_chat_message', 
@@ -127,6 +128,7 @@ const getCurrencySymbol = (code?: string) => {
     return currencyOptions.find(opt => opt.value === code)?.symbol || '₦';
 };
 
+// SUB-COMPONENTS
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCart, onOpenMenu }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, onOpenCart: () => void, onOpenMenu: () => void }) {
   const { user, loading: authLoading } = useUser();
   const { userProfile } = useUserProfile();
