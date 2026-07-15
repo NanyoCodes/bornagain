@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -30,6 +31,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -60,6 +62,7 @@ import { actionItems } from "@/lib/follow-up-data";
 import { Label } from "../ui/label";
 import Link from "next/link";
 import { useUser } from "@/firebase";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -144,9 +147,12 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                 <CollapsibleTrigger className="group w-full p-4 text-left hover:bg-muted/30 transition-colors">
                      <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <div className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 border rounded-full bg-primary/10 flex items-center justify-center shadow-inner">
-                                <Heart className="h-5 w-5 text-primary fill-current" />
-                            </div>
+                            <Avatar className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 border shadow-inner">
+                                <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+                                    {soul.firstName?.charAt(0) || 'S'}
+                                </AvatarFallback>
+                            </Avatar>
                             <div className="min-w-0">
                                 <p className="font-bold truncate text-sm sm:text-base leading-tight capitalize tracking-tight">
                                   {soul.firstName || 'Unknown'} {soul.lastName || ''}
@@ -328,9 +334,12 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
         <TableRow className="hover:bg-muted/30 transition-colors">
             <TableCell className="font-medium p-4">
                 <div className="flex items-center gap-4">
-                    <div className="hidden lg:flex h-10 w-10 border rounded-full bg-primary/5 items-center justify-center shrink-0 shadow-inner">
-                        <Heart className="h-5 w-5 text-primary fill-current" />
-                    </div>
+                    <Avatar className="h-10 w-10 border shadow-inner shrink-0">
+                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+                            {soul.firstName?.charAt(0) || 'S'}
+                        </AvatarFallback>
+                    </Avatar>
                     <div className="min-w-0">
                         <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight">{soul.firstName} {soul.lastName}</div>
                         {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
@@ -372,7 +381,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="h-8 w-8 rounded-full"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
-                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Soul Control</DropdownMenuLabel>
+                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Soul Control</DropdownMenuLabel>
                         <DropdownMenuItem onClick={() => triggerAction(onEdit)}>
                             <Edit className="mr-2 h-4 w-4" /> Edit Details
                         </DropdownMenuItem>
@@ -414,17 +423,15 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 
   if (loading || !mounted) {
     return (
-        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none bg-card/50 backdrop-blur-sm">
-            <CardHeader><Skeleton className="h-8 w-48" /><Skeleton className="h-4 w-full max-w-sm" /></CardHeader>
-            <CardContent className="space-y-4">
-                {[...Array(5)].map((_, i) => (
-                    <div key={i} className="flex items-center space-x-4 p-4 border-b last:border-0">
-                        <div className="space-y-2 flex-1"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-1/2" /></div>
-                        <Skeleton className="h-9 w-24 rounded-xl" />
-                    </div>
-                ))}
-            </CardContent>
-        </Card>
+        <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex items-center space-x-4 p-4 border-b last:border-0 bg-card/50 backdrop-blur-sm rounded-xl">
+                    <Skeleton className="h-12 w-12 rounded-full" />
+                    <div className="space-y-2 flex-1"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-1/2" /></div>
+                    <Skeleton className="h-9 w-24 rounded-xl" />
+                </div>
+            ))}
+        </div>
     )
   }
   

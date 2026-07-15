@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,10 +29,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { LocationWonInput } from "./location-won-input";
 import { Label } from "@/components/ui/label";
 import { Country } from 'country-state-city';
+import { ImageUpload } from "../common/image-upload";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
   lastName: z.string().min(2, "Last name must be at least 2 characters."),
+  photoURL: z.string().optional(),
   gender: z.string().optional(),
   nationality: z.string().optional(),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
@@ -85,6 +88,7 @@ export function LogSoulForm({
     defaultValues: {
       firstName: "",
       lastName: "",
+      photoURL: "",
       gender: "",
       nationality: "",
       email: "",
@@ -136,6 +140,7 @@ export function LogSoulForm({
       userId: user.uid,
       firstName: values.firstName,
       lastName: values.lastName,
+      photoURL: values.photoURL || null,
       gender: values.gender || null,
       nationality: values.nationality || null,
       relationship: values.relationship,
@@ -219,6 +224,25 @@ export function LogSoulForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+            control={form.control}
+            name="photoURL"
+            render={({ field }) => (
+                <FormItem className="flex flex-col items-center py-4">
+                    <FormControl>
+                        <ImageUpload
+                            initialImageUrl={field.value}
+                            onUploadComplete={(url) => field.onChange(url)}
+                            storagePath="souls"
+                            cropAspect={1}
+                            circularCrop={true}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
             control={form.control}

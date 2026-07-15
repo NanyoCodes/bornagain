@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
@@ -19,12 +20,12 @@ service firebase.storage {
     function isAllowedType() {
       return request.resource.contentType.matches('image/.*') || 
              request.resource.contentType.matches('video/.*') ||
-             request.resource.contentType.matches('audio/.*') ||
+             request.resource.contentType /.*') ||
              request.resource.contentType == 'application/pdf';
     }
 
     function isAllowedFolder(folder) {
-      return folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies'];
+      return folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies', 'souls'];
     }
 
     match /{allPaths=**} {
