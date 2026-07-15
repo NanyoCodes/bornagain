@@ -178,7 +178,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange, currencySymbol }: {
                                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">RECIPIENT: {order.recipientName}</p>
                                 <h4 className="font-bold text-sm truncate uppercase tracking-tight">{order.mealName}</h4>
                             </div>
-                            <Badge variant="outline" className="h-6 flex items-center gap-1.5 uppercase font-bold text-[9px] tracking-tighter">
+                            <Badge variant="outline" className={cn("h-6 flex items-center gap-1.5 uppercase font-bold text-[9px] tracking-tighter", order.status === 'delivered' ? 'text-green-500 border-green-500/20' : 'text-primary border-primary/20')}>
                                 {getStatusIcon(order.status)}
                                 {order.status}
                             </Badge>
@@ -833,7 +833,31 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         toast({ title: 'Copied!', description: 'Payment details copied to clipboard.' });
     };
 
-    const editProfileForm = vendor && (
+    if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
+    if (!vendor) return (
+        <div className="flex flex-col items-center justify-center py-24 text-center px-8">
+            <div className="h-16 w-16 bg-muted/20 rounded-full flex items-center justify-center mb-6">
+                <Store className="h-8 w-8 text-muted-foreground opacity-20" />
+            </div>
+            <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Storefront Not Found</h2>
+            <p className="mt-2 text-sm text-muted-foreground max-w-sm">This business might have been removed or the ID is incorrect.</p>
+            <Button variant="outline" className="mt-8 rounded-xl h-11 px-8 font-bold" onClick={() => router.back()}>
+                <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
+            </Button>
+        </div>
+    );
+
+    const isOwner = user?.uid === vendor.userId;
+    const isGiftVendor = vendor.vendorType === 'gift';
+    const centerLabel = isGiftVendor ? 'Kindness Center' : 'Meals Center';
+    const currencySymbol = getCurrencySymbol(vendor.currency);
+    const storagePath = isGiftVendor ? 'kindness-center' : 'meals-center';
+    const itemLabel = isGiftVendor ? 'Product' : 'Meal';
+    const addLabel = isGiftVendor ? 'ADD NEW PRODUCT' : 'ADD NEW MEAL';
+    const categoryPlaceholder = isGiftVendor ? 'e.g. Bibles' : 'e.g. Breakfast';
+    const descriptionPlaceholder = isGiftVendor ? 'Product details...' : 'Meal ingredients and portions...';
+
+    const editProfileForm = (
         <form onSubmit={handleUpdateProfile} className="flex flex-col h-full">
             <ScrollArea className="flex-grow">
                 <div className="p-6 sm:p-8 space-y-6">
@@ -930,8 +954,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             </div>
         </form>
     );
-
-    const isOwner = user?.uid === vendor.userId;
 
     const itemForm = (initialItem?: Meal | null, isEdit = false) => (
         <form onSubmit={isEdit ? handleUpdateItem : handleAddMeal}>
@@ -1240,7 +1262,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Storefront</DialogTitle>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Storefront</SheetTitle>
                                     <DialogDescription className="text-sm font-medium mt-1">Refine your business details and mission.</DialogDescription>
                                 </DialogHeader>
                             </div>

@@ -470,7 +470,6 @@ function PendingProvisionReminder() {
     const [showList, setShowList] = useState(false);
     const pathname = usePathname();
     const isMobile = useIsMobile();
-    const router = useRouter();
 
     const checkPendingActions = useCallback(() => {
         if (typeof window === 'undefined' || !user?.uid) {
@@ -951,7 +950,15 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
         <AnimatePresence>{showSplash && <SplashScreen onDismiss={handleDismissSplash} />}</AnimatePresence>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0">
-            {!isTakeoverPage && <AppHeader unreadChatCount={unreadChatNotifications?.length || 0} unreadNotifCount={unreadOtherNotifications?.length || 0} isPublicRoute={isPublicRoute} onOpenCart={() => setIsCartOpen(true)} onOpenMenu={() => setIsMenuOpen(true)} />}
+            {!isTakeoverPage && (
+                <AppHeader 
+                    unreadChatCount={unreadChatNotifications?.length || 0} 
+                    unreadNotifCount={unreadOtherNotifications?.length || 0} 
+                    isPublicRoute={isPublicRoute} 
+                    onOpenCart={() => setIsCartOpen(true)} 
+                    onOpenMenu={() => setIsMenuOpen(true)} 
+                />
+            )}
             <div className="flex-1 relative min-h-0">
             <main ref={scrollContainerRef} className={cn("absolute inset-0", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
                 <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-7xl p-4 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
@@ -1066,11 +1073,11 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
                         <Separator className="my-6 opacity-50" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
-                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="h-10 w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <BookMarked className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">App Guide</span>
                         </Link>
-                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="h-10 w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <BookOpen className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Resources</span>
                         </Link>
