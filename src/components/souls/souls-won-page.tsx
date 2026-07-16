@@ -66,6 +66,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
 import Image from "next/image";
+import { format } from "date-fns";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
