@@ -513,15 +513,6 @@ export function RelationshipTrackerCard() {
       setIsSoulDialogOpen(true);
   };
 
-  const handleHelpNeedConfirm = async (note: string) => {
-    if (!helpNeedTargetSoul) return;
-    setTogglingId('helped_with_need');
-    await performLogging(helpNeedTargetSoul, 'helped_with_need', note);
-    setIsHelpNeedDialogOpen(false);
-    setHelpNeedTargetSoul(null);
-    setTogglingId(null);
-  };
-
   const performLogging = async (soul: Soul, actionId: string, customNote?: string) => {
       if (!user || !firestore) return;
 
@@ -620,6 +611,15 @@ export function RelationshipTrackerCard() {
       }
   };
 
+  const handleHelpNeedConfirm = async (note: string) => {
+    if (!helpNeedTargetSoul) return;
+    setTogglingId('helped_with_need');
+    await performLogging(helpNeedTargetSoul, 'helped_with_need', note);
+    setIsHelpNeedDialogOpen(false);
+    setHelpNeedTargetSoul(null);
+    setTogglingId(null);
+  };
+
   const handleSoulSelected = async (soul: Soul) => {
     if (!user || !firestore || !selectedActionId) return;
     
@@ -674,25 +674,22 @@ export function RelationshipTrackerCard() {
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
-      if (!commTargetSoul || !commTargetSoul.phone) return;
-      
-      const soul = commTargetSoul;
+      if (!soul?.phone || !clickedActionId) return;
       const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
       
       let message = customPrayerText || `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
       
       const messageText = encodeURIComponent(message);
       
-      performLogging(soul, selectedActionId!, customPrayerText ? `Custom Prayer Sent: ${customPrayerText.substring(0, 100)}...` : undefined).then(() => {
-          if (channel === 'whatsapp') {
-              window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
-          } else {
-              window.location.href = `sms:${soul.phone}?body=${messageText}`;
-          }
-      });
+      if (channel === 'whatsapp') {
+          window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
+      } else {
+          window.location.href = `sms:${soul.phone}?body=${messageText}`;
+      }
       
+      const current = form.getValues('actions') || [];
+      form.setValue('actions', [...current, clickedActionId]);
       setIsCommChannelDialogOpen(false);
-      setCommTargetSoul(null);
       setCustomPrayerText('');
   };
 
@@ -705,23 +702,22 @@ export function RelationshipTrackerCard() {
   };
 
   const handleShareToWhatsApp = () => {
-      if (!sharingSoul) return;
-      const wonAt = safeToDate(sharingSoul.wonAt);
-      const details = `Here is a soul I'm following up with on Testify:\nName: ${sharingSoul.firstName} ${sharingSoul.lastName}\nStatus: ${sharingSoul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nLet's keep them in our prayers.`;
+      if (!soul) return;
+      const wonAt = safeToDate(soul.wonAt);
+      const details = `Here is a soul I'm following up with on Testify:\nName: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nLet's keep them in our prayers.`;
       
-      performLogging(sharingSoul, 'introduced_friend').then(() => {
-          window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
-      });
+      window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
 
+      const current = form.getValues('actions') || [];
+      form.setValue('actions', [...current, 'introduced_friend']);
       setIsShareTargetDialogOpen(false);
-      setSharingSoul(null);
   };
 
   const handleShareToPartner = async (partner: UserProfile['accountabilityPartners'][0]) => {
-      if (!user || !firestore || !sharingSoul || !userProfile) return;
+      if (!user || !firestore || !soul || !userProfile) return;
 
-      const wonAt = safeToDate(sharingSoul.wonAt);
-      const text = `SHARING SOUL DATA:\nName: ${sharingSoul.firstName} ${sharingSoul.lastName}\nStatus: ${sharingSoul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nRelationship: ${sharingSoul.relationship || 'Outreach'}\nLet's keep them in our prayers and coordinate follow-up.`;
+      const wonAt = safeToDate(soul.wonAt);
+      const text = `SHARING SOUL DATA:\nName: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nRelationship: ${soul.relationship || 'Outreach'}\nLet's keep them in our prayers and coordinate follow-up.`;
 
       try {
           const participantIds = [user.uid, partner.userId].sort();
@@ -759,7 +755,8 @@ export function RelationshipTrackerCard() {
           
           toast({ title: 'Shared with Partner!', description: `Details sent to ${partner.firstName}.` });
           
-          performLogging(sharingSoul, 'introduced_friend');
+          const current = form.getValues('actions') || [];
+          form.setValue('actions', [...current, 'introduced_friend']);
 
           setIsPartnerSelectionDialogOpen(false);
           setIsShareTargetDialogOpen(false);
@@ -843,7 +840,7 @@ export function RelationshipTrackerCard() {
                                 type="button"
                                 variant="outline"
                                 className={cn(
-                                    "relative flex flex-col items-center justify-center gap-2 p-3 h-full w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden",
+                                    "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden",
                                     isCompleted 
                                         ? "bg-primary/[0.03] border-primary/40 shadow-inner ring-1 ring-primary/10" 
                                         : isPending 

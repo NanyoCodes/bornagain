@@ -9,7 +9,6 @@ import {
   Loader2, 
   Trash2, 
   HeartHandshake, 
-  Sparkles, 
   ImageIcon,
   BarChart3,
   Target,
@@ -28,7 +27,6 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogDescription,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -310,7 +308,7 @@ export default function SoulsWonPage() {
   }, [souls, searchTerm]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto" inert={isAnyModalOpen ? true : undefined}>
+    <div className="w-full max-w-7xl mx-auto" {...(isAnyModalOpen ? { ["inert" as any]: "true" } : {})}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
             <div className="lg:col-span-8 space-y-8 pb-32">
                 <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0">
