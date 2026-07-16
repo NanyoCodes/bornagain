@@ -249,6 +249,7 @@ export default function SoulsWonPage() {
     const headers = [
       "First Name", 
       "Last Name", 
+      "Nickname",
       "Gender", 
       "Age", 
       "Email", 
@@ -271,6 +272,7 @@ export default function SoulsWonPage() {
       return [
         soul.firstName, 
         soul.lastName, 
+        soul.nickname || '',
         soul.gender || '',
         soul.age?.toString() || '',
         soul.email || '', 
@@ -347,6 +349,7 @@ export default function SoulsWonPage() {
     const basicInfo = [
       ["First Name", soul.firstName],
       ["Last Name", soul.lastName],
+      ["Nickname", soul.nickname || 'N/A'],
       ["Gender", soul.gender || 'N/A'],
       ["Age", soul.age?.toString() || 'N/A'],
       ["Email", soul.email || 'N/A'],
@@ -603,6 +606,7 @@ export default function SoulsWonPage() {
     const term = searchTerm.toLowerCase();
     return souls.filter(soul => 
       `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
+      (soul.nickname && soul.nickname.toLowerCase().includes(term)) ||
       (soul.phone && soul.phone.toLowerCase().includes(term))
     );
   }, [souls, searchTerm]);
@@ -703,7 +707,9 @@ export default function SoulsWonPage() {
                                                     />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                                                     <div className="absolute bottom-3 left-3 right-3 text-white">
-                                                        <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight">{s.firstName}</p>
+                                                        <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight">
+                                                            {s.nickname || s.firstName}
+                                                        </p>
                                                         <Badge className={cn(
                                                             "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1",
                                                             s.status === 'New' ? "bg-amber-500" : 
@@ -901,7 +907,7 @@ export default function SoulsWonPage() {
                               <Avatar className="h-10 w-10 border shadow-sm shrink-0">
                                   <AvatarFallback className="font-bold bg-primary/10 text-primary uppercase">{soul.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <div className="flex-1 min-w-0">
+                              <div className="flex-1 min-w-0 text-left">
                                   <p className="font-black text-sm uppercase tracking-tight truncate">{soul.firstName} {soul.lastName}</p>
                                   <div className="flex items-center gap-2 mt-1">
                                     <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase tracking-widest">{soul.status}</Badge>
@@ -989,8 +995,8 @@ export default function SoulsWonPage() {
                     <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                         <div className="p-8 border-b bg-muted/10">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Edit Soul Details</DialogTitle>
-                                <DialogDescription className="text-sm font-medium mt-1">Update information for {soulToEdit?.firstName}.</DialogDescription>
+                                <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Edit Soul Details</DialogTitle>
+                                <DialogDescription className="text-sm font-medium mt-1 text-left">Update information for {soulToEdit?.firstName}.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="max-h-[70vh]">
@@ -1012,8 +1018,8 @@ export default function SoulsWonPage() {
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                     <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold uppercase tracking-tight">Log a New Soul</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">
+                            <DialogTitle className="text-2xl font-bold uppercase tracking-tight text-left">Log a New Soul</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left">
                                 Record the details of the person you've ministered to.
                             </DialogDescription>
                         </DialogHeader>

@@ -293,6 +293,7 @@ export type Soul = {
   userId: string;
   firstName: string;
   lastName: string;
+  nickname?: string;
   photoURL?: string | null;
   email?: string;
   phone?: string;
