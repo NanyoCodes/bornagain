@@ -110,6 +110,9 @@ export default function SoulsWonPage() {
   const [deleteSoulId, setDeleteSoulId] = useState<string | null>(null);
   const [assessmentSoulId, setAssessmentSoulId] = useState<string | null>(null);
 
+  // New: Age filtering state
+  const [ageFilter, setAgeFilter] = useState<string | null>(null);
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGalleryPaused, setIsGalleryPaused] = useState(false);
 
@@ -419,13 +422,32 @@ export default function SoulsWonPage() {
 
   const filteredSouls = useMemo(() => {
     if (!souls) return [];
-    if (!searchTerm) return souls;
-    const term = searchTerm.toLowerCase();
-    return souls.filter(soul => 
-      `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
-      (soul.phone && soul.phone.toLowerCase().includes(term))
-    );
-  }, [souls, searchTerm]);
+    
+    let result = souls;
+
+    // Apply age group filter if active
+    if (ageFilter) {
+        result = result.filter(soul => {
+            const age = soul.age;
+            if (age === null || age === undefined) return ageFilter === 'unknown';
+            if (age <= 12) return ageFilter === 'Children (0-12)';
+            if (age <= 19) return ageFilter === 'Teens (13-19)';
+            if (age <= 35) return ageFilter === 'Young Adults (20-35)';
+            if (age <= 55) return ageFilter === 'Adults (36-55)';
+            return ageFilter === 'Seniors (56+)';
+        });
+    }
+
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(soul => 
+        `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
+        (soul.phone && soul.phone.toLowerCase().includes(term))
+      );
+    }
+    
+    return result;
+  }, [souls, searchTerm, ageFilter]);
 
   return (
     <>
@@ -570,11 +592,23 @@ export default function SoulsWonPage() {
                                 ].map(group => {
                                     const percent = totalSouls > 0 ? (group.count / totalSouls) * 100 : 0;
                                     const Icon = group.icon;
+                                    const isActive = ageFilter === group.label;
+
                                     return (
-                                        <div key={group.label} className="space-y-3 p-4 rounded-2xl bg-background shadow-sm border group hover:border-primary/20 transition-all">
+                                        <div 
+                                            key={group.label} 
+                                            className={cn(
+                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden",
+                                                isActive ? "border-primary ring-2 ring-primary/20 shadow-md scale-[1.02]" : "hover:border-primary/20"
+                                            )}
+                                            onClick={() => setAgeFilter(isActive ? null : group.label)}
+                                        >
                                             <div className="flex items-center justify-between">
-                                                <div className="h-8 w-8 rounded-xl bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                                                    <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                                                <div className={cn(
+                                                    "h-8 w-8 rounded-xl flex items-center justify-center transition-colors",
+                                                    isActive ? "bg-primary text-white" : "bg-muted/50 group-hover:bg-primary/10"
+                                                )}>
+                                                    <Icon className={cn("h-4 w-4", isActive ? "text-white" : "text-muted-foreground group-hover:text-primary")} />
                                                 </div>
                                                 <span className="font-black text-lg text-primary tracking-tighter">{group.count}</span>
                                             </div>
@@ -585,13 +619,27 @@ export default function SoulsWonPage() {
                                                 </div>
                                                 <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} />
                                             </div>
+                                            
+                                            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                                                <span className="text-[8px] font-black uppercase tracking-widest text-primary bg-background/90 px-3 py-1.5 rounded-full shadow-lg border">
+                                                    {isActive ? 'CLEAR FILTER' : 'CLICK TO VIEW SOULS IN THIS GROUP'}
+                                                </span>
+                                            </div>
                                         </div>
                                     );
                                 })}
                             </div>
                             {ageGroups.unknown > 0 && (
                                 <div className="flex justify-end pt-2">
-                                    <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest bg-background/50 border-dashed">
+                                    <Badge 
+                                        variant="outline" 
+                                        className={cn(
+                                            "text-[8px] font-black uppercase tracking-widest bg-background/50 border-dashed cursor-pointer transition-all active:scale-95",
+                                            ageFilter === 'unknown' ? "bg-primary text-white border-none scale-105 shadow-md" : "hover:bg-primary/5 hover:border-primary/40"
+                                        )}
+                                        onClick={() => setAgeFilter(ageFilter === 'unknown' ? null : 'unknown')}
+                                    >
+                                        {ageFilter === 'unknown' && <X className="h-2 w-2 mr-1" />}
                                         {ageGroups.unknown} Records Pending Demographics
                                     </Badge>
                                 </div>
@@ -610,6 +658,16 @@ export default function SoulsWonPage() {
 
                 {/* Table Content */}
                 <div className="-mx-4 sm:mx-0">
+                    <div className="flex items-center justify-between mb-4 px-4 sm:px-0">
+                        <div className="flex items-center gap-2">
+                            {ageFilter && (
+                                <Badge variant="secondary" className="h-8 px-4 gap-2 rounded-full font-black uppercase tracking-widest text-[9px] bg-primary/10 text-primary border-primary/20 animate-in fade-in zoom-in">
+                                    Filtered: {ageFilter === 'unknown' ? 'Missing Demographics' : ageFilter}
+                                    <button onClick={() => setAgeFilter(null)} className="hover:opacity-70"><X className="h-3 w-3" /></button>
+                                </Badge>
+                            )}
+                        </div>
+                    </div>
                     <SoulsWonTable 
                         souls={filteredSouls || []} 
                         loading={loading}
