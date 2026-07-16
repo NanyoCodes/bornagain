@@ -255,36 +255,47 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             )}
           />
 
-          <div className="space-y-4">
-            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+          <FormField control={form.control} name="content" render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Story</FormLabel>
+                <FormControl>
+                  <Textarea placeholder="Share what the Lord has done..." className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="space-y-3">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
                <Camera className="h-3.5 w-3.5" /> Media Proof (Optional)
             </Label>
             
             {!mediaPreview ? (
               <div 
                 className={cn(
-                  "border-2 border-dashed rounded-[2rem] p-8 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group",
+                  "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group",
                   isUploadingMedia ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
                 )}
                 onClick={() => fileInputRef.current?.click()}
               >
                 {isUploadingMedia ? (
                   <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
                     <p className="text-[10px] font-black uppercase tracking-widest text-primary">Optimizing...</p>
                   </div>
                 ) : (
                   <>
-                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <FileUp className="h-6 w-6 text-primary" />
+                    <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                      <FileUp className="h-4 w-4 text-primary" />
                     </div>
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Select Image or Video</p>
-                    <p className="text-[9px] text-muted-foreground/60 mt-1 uppercase tracking-tighter">Files {'>'} 5MB are auto-resized for global viewing</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Select Image or Video</p>
+                    <p className="text-[9px] text-muted-foreground/60 mt-0.5 uppercase tracking-tighter">Files {'>'} 5MB are auto-resized</p>
                   </>
                 )}
               </div>
             ) : (
-              <div className="relative rounded-[2rem] overflow-hidden border-2 bg-muted aspect-video shadow-inner">
+              <div className="relative rounded-2xl overflow-hidden border-2 bg-muted aspect-video shadow-inner">
                 {mediaPreview.type === 'image' ? (
                   <Image src={mediaPreview.url} alt="Testimony Media" fill className="object-contain" unoptimized />
                 ) : (
@@ -300,24 +311,13 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                   <X className="h-4 w-4" />
                 </Button>
                 <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-1.5">
-                   <Sparkles className="h-3 w-3 text-primary animate-pulse" />
-                   <span className="text-[9px] font-black text-white uppercase tracking-widest">Optimized for Feed</span>
+                   <Sparkles className="h-3.5 w-3.5 text-primary animate-pulse" />
+                   <span className="text-[9px] font-black text-white uppercase tracking-widest">Optimized</span>
                 </div>
               </div>
             )}
             <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*" onChange={handleFileSelect} />
           </div>
-
-          <FormField control={form.control} name="content" render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">Your Story</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="Share what the Lord has done..." className="min-h-[180px] rounded-[2rem] p-6 text-base leading-relaxed bg-muted/10 border-2 border-dashed" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
