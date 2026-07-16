@@ -15,7 +15,7 @@ import type { SoulRelationship } from '@/lib/types';
 
 /**
  * @fileOverview Provides a standardized CSV template for missionaries and handles bulk uploads.
- * Ensures that uploaded lists only add to the existing souls list without overwriting.
+ * The template now includes guidance for fields that require specific options (dropdowns).
  */
 export function SoulsImportTemplateCard() {
   const { toast } = useToast();
@@ -40,8 +40,25 @@ export function SoulsImportTemplateCard() {
       "Location State",
       "Location Country",
       "Date Won (YYYY-MM-DD)",
-      "Source (Personal or Campaign)",
+      "Source",
       "Source Details"
+    ];
+
+    const guidanceRow = [
+      "(Required)",
+      "(Required)",
+      "Options: Male, Female, Other",
+      "e.g. Nigerian",
+      "e.g. user@email.com",
+      "e.g. +234...",
+      "Primary Church",
+      "Options: Family, Friend, Colleague, Neighbor, Stranger, Other",
+      "City Name",
+      "State Name",
+      "Country Name",
+      "Format: YYYY-MM-DD",
+      "Options: Personal, Campaign",
+      "e.g. Mission Title"
     ];
 
     const exampleRow = [
@@ -61,7 +78,12 @@ export function SoulsImportTemplateCard() {
       ""
     ];
 
-    const csvContent = BOM + [headers.join(","), exampleRow.join(",")].join("\n");
+    const csvContent = BOM + [
+        headers.join(","), 
+        guidanceRow.join(","), 
+        exampleRow.join(",")
+    ].join("\n");
+    
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -74,7 +96,7 @@ export function SoulsImportTemplateCard() {
     
     toast({
       title: "Template Downloaded",
-      description: "Use this file to organize your records for Kingdom entry.",
+      description: "Guidance included for Relationship and Source fields.",
     });
   };
 
@@ -90,8 +112,14 @@ export function SoulsImportTemplateCard() {
       complete: async (results) => {
         const rows = results.data as any[];
         
-        if (rows.length === 0) {
-          toast({ variant: 'destructive', title: 'Empty File', description: 'No records found in the uploaded list.' });
+        // Filter out the guidance row if it exists
+        const dataRows = rows.filter(row => {
+            const firstName = (row["First Name"] || row["firstName"] || "").toString();
+            return firstName && !firstName.includes("(Required)");
+        });
+
+        if (dataRows.length === 0) {
+          toast({ variant: 'destructive', title: 'Invalid File', description: 'No valid records found after the guidance row.' });
           setIsUploading(false);
           return;
         }
@@ -109,14 +137,12 @@ export function SoulsImportTemplateCard() {
 
         let successCount = 0;
 
-        rows.forEach((row) => {
-          // Map CSV headers to internal fields
+        dataRows.forEach((row) => {
           const firstName = row["First Name"] || row["firstName"];
           const lastName = row["Last Name"] || row["lastName"];
           
           if (!firstName || !lastName) return;
 
-          // Crucially: Creating NEW document references to ensure we ONLY ADD to the existing list.
           const newSoulId = doc(userSoulsRef).id;
           const userSoulDocRef = doc(userSoulsRef, newSoulId);
           const globalSoulDocRef = doc(globalSoulsRef, newSoulId);
@@ -128,6 +154,10 @@ export function SoulsImportTemplateCard() {
             if (!isNaN(parsedDate.getTime())) wonAt = parsedDate;
           }
 
+          // Normalize values for fields with specific options
+          const source = (row["Source"] || "Personal").toString().includes("Campaign") ? "Campaign" : "Personal";
+          const relationship = (row["Relationship"] || "Other") as SoulRelationship;
+
           const soulData = {
             userId: user.uid,
             firstName,
@@ -138,7 +168,7 @@ export function SoulsImportTemplateCard() {
             email: row["Email"] || null,
             phone: row["Phone"] || null,
             church: row["Church"] || null,
-            relationship: (row["Relationship"] || "Other") as SoulRelationship,
+            relationship: relationship,
             locationWon: {
               city: row["Location City"] || null,
               state: row["Location State"] || null,
@@ -149,7 +179,7 @@ export function SoulsImportTemplateCard() {
             wonAt: Timestamp.fromDate(wonAt),
             status: "New",
             followUpLog: [],
-            source: (row["Source (Personal or Campaign)"] || "Personal") as 'Personal' | 'Campaign',
+            source: source,
             sourceDetails: row["Source Details"] || null,
             userLocation: processedUserLocation,
             createdAt: serverTimestamp(),
@@ -162,7 +192,7 @@ export function SoulsImportTemplateCard() {
         });
 
         if (successCount === 0) {
-          toast({ variant: 'destructive', title: 'Import Failed', description: 'Could not identify valid soul records in the file.' });
+          toast({ variant: 'destructive', title: 'Import Failed', description: 'Could not identify valid soul records.' });
           setIsUploading(false);
           return;
         }
@@ -171,7 +201,7 @@ export function SoulsImportTemplateCard() {
           await batch.commit();
           toast({
             title: "Harvest Synchronized",
-            description: `Successfully added ${successCount} new souls to your existing list.`,
+            description: `Successfully added ${successCount} new souls.`,
           });
           if (fileInputRef.current) fileInputRef.current.value = '';
         } catch (error: any) {
@@ -203,13 +233,13 @@ export function SoulsImportTemplateCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="p-4 bg-muted/20 rounded-2xl border-2 border-dashed flex items-start gap-4">
+        <div className="p-4 bg-muted/20 rounded-2xl border-2 border-dashed flex items-start gap-4 shadow-inner">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <Info className="h-5 w-5 text-primary" />
             </div>
             <div className="space-y-1.5">
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                    This hub allows you to maintain your records offline and sync them with the Kingdom cloud. Uploading a file <span className="text-foreground font-black uppercase text-[10px]">only adds new records</span>—it will not delete or overwrite your existing harvest list.
+                    This hub allows you to maintain your records offline. Our template now includes <span className="text-foreground font-black uppercase text-[10px]">Option Guides</span> for fields like Relationship and Source to ensure your data is mission-ready.
                 </p>
             </div>
         </div>
@@ -243,7 +273,7 @@ export function SoulsImportTemplateCard() {
         {isUploading && (
             <div className="flex items-center gap-3 justify-center py-2 animate-pulse">
                 <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Adding records to your existing harvest</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Synchronizing your spreadsheet data</p>
                 <div className="h-1.5 w-1.5 rounded-full bg-primary" />
             </div>
         )}
