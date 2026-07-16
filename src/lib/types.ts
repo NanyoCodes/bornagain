@@ -1,4 +1,3 @@
-
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -300,6 +299,8 @@ export type Soul = {
   church?: string;
   gender?: string;
   nationality?: string;
+  dateOfBirth?: Timestamp | null;
+  age?: number | null;
   relationship?: SoulRelationship;
   source: 'Campaign' | 'Personal';
   sourceDetails?: string;

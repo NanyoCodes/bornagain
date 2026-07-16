@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
-import { format } from "date-fns";
+import { format, differenceInYears } from "date-fns";
 import { useFirestore, useUser } from "@/firebase";
 import { doc, serverTimestamp, writeBatch } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -36,6 +36,8 @@ const formSchema = z.object({
   photoURL: z.string().optional(),
   gender: z.string().optional(),
   nationality: z.string().optional(),
+  dateOfBirth: z.date().optional().nullable(),
+  age: z.number().optional().nullable(),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
@@ -75,6 +77,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       photoURL: soul.photoURL || "",
       gender: soul.gender || "",
       nationality: soul.nationality || "",
+      dateOfBirth: safeToDate(soul.dateOfBirth) || null,
+      age: soul.age || null,
       email: soul.email || "",
       phone: soul.phone || "",
       church: soul.church || "",
@@ -101,6 +105,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             photoURL: soul.photoURL || "",
             gender: soul.gender || "",
             nationality: soul.nationality || "",
+            dateOfBirth: safeToDate(soul.dateOfBirth) || null,
+            age: soul.age || null,
             email: soul.email || "",
             phone: soul.phone || "",
             church: soul.church || "",
@@ -119,12 +125,20 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
   }, [soul, reset]);
   
   const sourceValue = useWatch({ control, name: "source" });
+  const dobValue = useWatch({ control, name: "dateOfBirth" });
 
   useEffect(() => {
     if (sourceValue !== 'Campaign') {
         setValue('sourceDetails', '');
     }
   }, [sourceValue, setValue]);
+
+  useEffect(() => {
+    if (dobValue) {
+        const calculatedAge = differenceInYears(new Date(), dobValue);
+        setValue('age', calculatedAge, { shouldDirty: true });
+    }
+  }, [dobValue, setValue]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore) {
@@ -145,6 +159,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       photoURL: values.photoURL || null,
       gender: values.gender || null,
       nationality: values.nationality || null,
+      dateOfBirth: values.dateOfBirth || null,
+      age: values.age || null,
       relationship: values.relationship || null,
       source: values.source as 'Personal' | 'Campaign',
       wonAt: values.wonAt,
@@ -300,6 +316,55 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                       <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="dateOfBirth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date of Birth</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="date"
+                      value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                            const [year, month, day] = e.target.value.split('-').map(Number);
+                            field.onChange(new Date(year, month - 1, day));
+                        } else {
+                            field.onChange(null);
+                        }
+                      }}
+                      className="text-base"
+                      max={format(new Date(), "yyyy-MM-dd")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="age"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Age</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="e.g. 25" 
+                      {...field} 
+                      value={field.value ?? ""} 
+                      onChange={e => field.onChange(e.target.value === '' ? null : parseInt(e.target.value, 10))}
+                      className="text-base"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

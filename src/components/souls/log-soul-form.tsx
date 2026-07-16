@@ -19,12 +19,13 @@ import { useState, useMemo, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import type { Campaign, Soul, UserProfile, Fellowship, SoulRelationship } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
-import { format } from "date-fns";
+import { format, differenceInYears } from "date-fns";
 import { useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, serverTimestamp, doc, writeBatch, increment } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { safeToDate } from "@/lib/utils";
 import { LocationWonInput } from "./location-won-input";
 import { Label } from "@/components/ui/label";
 import { Country } from 'country-state-city';
@@ -36,6 +37,8 @@ const formSchema = z.object({
   photoURL: z.string().optional(),
   gender: z.string().optional(),
   nationality: z.string().optional(),
+  dateOfBirth: z.date().optional().nullable(),
+  age: z.number().optional().nullable(),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
@@ -90,6 +93,8 @@ export function LogSoulForm({
       photoURL: "",
       gender: "",
       nationality: "",
+      dateOfBirth: null,
+      age: null,
       email: "",
       phone: "",
       church: "",
@@ -109,12 +114,20 @@ export function LogSoulForm({
   const { control, setValue } = form;
 
   const sourceValue = useWatch({ control, name: "source" });
+  const dobValue = useWatch({ control, name: "dateOfBirth" });
 
   useEffect(() => {
     if (sourceValue !== 'Campaign') {
         setValue('sourceDetails', '');
     }
   }, [sourceValue, setValue]);
+
+  useEffect(() => {
+    if (dobValue) {
+        const calculatedAge = differenceInYears(new Date(), dobValue);
+        setValue('age', calculatedAge, { shouldDirty: true });
+    }
+  }, [dobValue, setValue]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -145,6 +158,8 @@ export function LogSoulForm({
       photoURL: values.photoURL || null,
       gender: values.gender || null,
       nationality: values.nationality || null,
+      dateOfBirth: values.dateOfBirth || null,
+      age: values.age || null,
       relationship: values.relationship,
       source: values.source as 'Campaign' | 'Personal',
       wonAt: values.wonAt,
@@ -323,6 +338,55 @@ export function LogSoulForm({
             />
         </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="dateOfBirth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date of Birth</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="date"
+                      value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                            const [year, month, day] = e.target.value.split('-').map(Number);
+                            field.onChange(new Date(year, month - 1, day));
+                        } else {
+                            field.onChange(null);
+                        }
+                      }}
+                      className="text-base"
+                      max={format(new Date(), "yyyy-MM-dd")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="age"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Age</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="e.g. 25" 
+                      {...field} 
+                      value={field.value ?? ""} 
+                      onChange={e => field.onChange(e.target.value === '' ? null : parseInt(e.target.value, 10))}
+                      className="text-base"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+        </div>
+
          <FormField
           control={form.control}
           name="wonAt"
@@ -354,7 +418,7 @@ export function LogSoulForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Source</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value || ""} disabled={!!defaultCampaign}>
+              <Select onValueChange={field.onChange} value={field.value || ""}>
                 <FormControl>
                   <SelectTrigger className="text-base">
                     <SelectValue placeholder="Select the source" />
@@ -376,7 +440,7 @@ export function LogSoulForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Campaign Name</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value || ""} disabled={!!defaultCampaign}>
+                  <Select onValueChange={field.onChange} value={field.value || ""}>
                     <FormControl>
                       <SelectTrigger className="text-base">
                         <SelectValue placeholder={!campaigns ? "Loading campaigns..." : "Select from your campaigns"} />
