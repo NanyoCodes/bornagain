@@ -230,6 +230,14 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     </ScrollArea>
   );
 
+  const fullPrayerContent = (
+    <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
+      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed p-2 text-left italic">
+        {testimony.answeredPrayerContent}
+      </div>
+    </ScrollArea>
+  );
+
   return (
     <>
       <Card id={testimony.id} className={cn(
@@ -403,7 +411,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         <SheetContent side="bottom" className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-amber-500/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-amber-600">Answered Prayer</SheetTitle><SheetDescription className="text-sm font-medium">The specific request that God has fulfilled.</SheetDescription></SheetHeader></div>
                             <ScrollArea className="flex-grow px-8 py-10">
-                                <p className="text-base text-muted-foreground leading-relaxed italic text-left">&ldquo;{testimony.answeredPrayerContent}&rdquo;</p>
+                                {fullPrayerContent}
                             </ScrollArea>
                         </SheetContent>
                     </Sheet>
@@ -425,7 +433,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                                 </DialogHeader>
                             </div>
                             <div className="p-8">
-                                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed italic text-left">&ldquo;{testimony.answeredPrayerContent}&rdquo;</p>
+                                {fullPrayerContent}
                             </div>
                         </DialogContent>
                     </Dialog>

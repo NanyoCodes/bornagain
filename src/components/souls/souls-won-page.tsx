@@ -28,6 +28,7 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogDescription,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -64,7 +65,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn, safeToDate, haversineDistance } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
