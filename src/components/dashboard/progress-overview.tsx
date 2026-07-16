@@ -32,8 +32,8 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
     const [currentDate, setCurrentDate] = useState(new Date());
 
     useEffect(() => {
-      // Set date on client to avoid hydration mismatch.
-      setCurrentDate(new Date());
+      const timer = setInterval(() => setCurrentDate(new Date()), 60000);
+      return () => clearInterval(timer);
     }, []);
 
     // Sync state when prop changes
@@ -47,8 +47,8 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
       if (!souls) return 0;
       return souls.filter((soul) => {
         const wonDate = safeToDate(soul.wonAt);
-        if (!wonDate) return false;
-        return isSameMonth(wonDate, currentDate);
+        if (!wonAt) return false;
+        return isSameMonth(wonAt, currentDate);
       }).length;
     }, [souls, currentDate]);
     
@@ -202,7 +202,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                               type="number"
                               value={newGoal}
                               onChange={(e) => setNewGoal(Number(e.target.value))}
-                              className="col-span-3"
+                              className="col-span-3 text-foreground"
                               disabled={isSavingGoal}
                             />
                           </div>
@@ -216,16 +216,16 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                     </DialogContent>
                     </Dialog>
                 </div>
-                <CardDescription className="text-primary-foreground/80">
-                  Your goal for {format(currentDate, 'MMMM yyyy')}
+                <CardDescription className="text-primary-foreground/80 font-medium">
+                  Your mission goal for {format(currentDate, 'MMMM yyyy')}
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <div className="flex justify-between items-baseline">
                     <div className="text-2xl font-bold">{soulsThisMonth}</div>
-                    <div className="text-sm text-primary-foreground/80">
-                      / {monthlyGoal} souls
+                    <div className="text-sm text-primary-foreground/80 font-black uppercase tracking-widest">
+                      /{monthlyGoal} SOULS
                     </div>
                   </div>
                   <Progress
@@ -242,16 +242,14 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                         <div className="text-4xl font-bold flex items-center justify-center gap-2">
                            {testimonyStreak} <Flame className="h-8 w-8" />
                         </div>
-                        <p className="text-sm opacity-80 font-medium">Testimony Streak</p>
-                        <p className="text-xs opacity-70 mt-1 max-w-[150px] leading-snug">Sharing your gratitude unlocks joy and invites God's blessings.</p>
+                        <p className="text-sm opacity-80 font-medium uppercase tracking-tight">Testimony Streak</p>
                     </div>
                     <div className="h-16 w-px bg-primary-foreground/30"></div>
                      <div className="flex flex-col items-center gap-1">
                         <div className="text-4xl font-bold flex items-center justify-center gap-2">
                            {loadingDiscipline ? <div className="animate-pulse rounded-md h-8 w-10 bg-white/20" /> : disciplineStreak} <Zap className="h-8 w-8" />
                         </div>
-                        <p className="text-sm opacity-80">Discipline Streak</p>
-                        <p className="text-xs opacity-70 mt-1 max-w-[150px] leading-snug">Consistency in faith builds lasting strength.</p>
+                        <p className="text-sm opacity-80 uppercase tracking-tight">Discipline Streak</p>
                     </div>
                 </div>
             </CardContent>

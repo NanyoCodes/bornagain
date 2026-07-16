@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,15 +22,15 @@ import {
     CheckCircle2,
     Quote,
     Group,
-    Package
+    Package,
+    Globe
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, where, orderBy, limit } from 'firebase/firestore';
 import { isSameMonth, format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import Link from 'next/link';
-
-type SidebarMode = 'testimonies' | 'campaigns' | 'fellowships' | 'harvest' | 'general';
+import type { Soul, Campaign, Fellowship } from '@/lib/types';
 
 const faithSeeds = [
     { text: "Your testimony is a weapon that overcomes the enemy.", ref: "Rev 12:11" },
@@ -44,22 +44,28 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
     const { user } = useUser();
     const { userProfile } = useUserProfile();
     const firestore = useFirestore();
+    const [now, setNow] = useState(new Date());
+
+    // Update internal clock every minute to ensure accurate month boundaries
+    useEffect(() => {
+        const timer = setInterval(() => setNow(new Date()), 60000);
+        return () => clearInterval(timer);
+    }, []);
 
     // Live query for souls to calculate monthly progress
     const soulsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
         return query(collection(firestore, `users/${user.uid}/souls`));
     }, [user?.uid, firestore]);
-    const { data: souls } = useCollection<any>(soulsQuery);
+    const { data: souls } = useCollection<Soul>(soulsQuery);
 
     const soulsThisMonth = useMemo(() => {
         if (!souls) return 0;
-        const now = new Date();
-        return souls.filter((s: any) => {
+        return souls.filter((s: Soul) => {
             const wonAt = safeToDate(s.wonAt);
             return wonAt && isSameMonth(wonAt, now);
         }).length;
-    }, [souls]);
+    }, [souls, now]);
 
     const monthlyGoal = userProfile?.monthlySoulsGoal || 10;
     const progress = Math.min((soulsThisMonth / monthlyGoal) * 100, 100);
@@ -67,12 +73,11 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
     const completedToday = useMemo(() => {
         if (!userProfile?.dailyDiscipline?.lastUpdated) return [];
         const lastUpdated = safeToDate(userProfile.dailyDiscipline.lastUpdated);
-        const now = new Date();
         if (lastUpdated && lastUpdated.getDate() === now.getDate() && lastUpdated.getMonth() === now.getMonth() && lastUpdated.getFullYear() === now.getFullYear()) {
             return userProfile.dailyDiscipline.completed || [];
         }
         return [];
-    }, [userProfile]);
+    }, [userProfile, now]);
 
     // LIVE FIGURES: Query active groups and missions
     const activeGroupsQuery = useMemo(() => {
@@ -83,7 +88,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
             where('status', '==', 'active')
         );
     }, [user?.uid, firestore]);
-    const { data: activeGroups } = useCollection<any>(activeGroupsQuery);
+    const { data: activeGroups } = useCollection<Fellowship>(activeGroupsQuery);
 
     const joinedCampaignsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
@@ -95,12 +100,12 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
         if (!firestore) return null;
         return query(collection(firestore, 'campaigns'), where('status', '==', 'active'));
     }, [firestore]);
-    const { data: activeCampaigns } = useCollection<any>(allActiveCampaignsQuery);
+    const { data: activeCampaigns } = useCollection<Campaign>(allActiveCampaignsQuery);
 
     const liveMissionsCount = useMemo(() => {
         if (!activeCampaigns || !joinedCampaignRefs || !user?.uid) return 0;
         const joinedIds = new Set(joinedCampaignRefs.map((r: any) => r.id));
-        return activeCampaigns.filter((c: any) => joinedIds.has(c.id) || c.organizerId === user.uid).length;
+        return activeCampaigns.filter((c: Campaign) => joinedIds.has(c.id) || c.organizerId === user.uid).length;
     }, [activeCampaigns, joinedCampaignRefs, user?.uid]);
 
     const randomSeed = useMemo(() => faithSeeds[Math.floor(Math.random() * faithSeeds.length)], []);
@@ -116,7 +121,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                             <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
                                 <Target className="h-5 w-5 text-white" />
                             </div>
-                            <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">{format(new Date(), 'MMMM')} Progress</Badge>
+                            <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">{format(now, 'MMMM')} Progress</Badge>
                         </div>
                         <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">Harvest Goal</CardTitle>
                     </CardHeader>
@@ -124,7 +129,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                         <div className="space-y-1">
                             <div className="flex justify-between items-baseline">
                                 <span className="text-3xl font-black">{soulsThisMonth}</span>
-                                <span className="text-xs font-bold opacity-70">/ {monthlyGoal} SOULS</span>
+                                <span className="text-xs font-bold opacity-70">/{monthlyGoal} SOULS</span>
                             </div>
                             <Progress value={progress} className="h-2 bg-white/20" indicatorClassName="bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                         </div>
@@ -135,7 +140,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 </Card>
             )}
 
-            {/* Specialized Fellowship Widget - With LIVE FIGURES (Excluding Deleted) */}
+            {/* Specialized Fellowship Widget */}
             {mode === 'fellowships' && (
                 <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0">
                     <CardHeader className="p-6 pb-2">
@@ -256,3 +261,5 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
         </div>
     );
 }
+
+type SidebarMode = 'testimonies' | 'campaigns' | 'fellowships' | 'harvest' | 'general';
