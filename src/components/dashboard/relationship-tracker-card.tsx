@@ -513,6 +513,15 @@ export function RelationshipTrackerCard() {
       setIsSoulDialogOpen(true);
   };
 
+  const handleHelpNeedConfirm = async (note: string) => {
+    if (!helpNeedTargetSoul) return;
+    setTogglingId('helped_with_need');
+    await performLogging(helpNeedTargetSoul, 'helped_with_need', note);
+    setIsHelpNeedDialogOpen(false);
+    setHelpNeedTargetSoul(null);
+    setTogglingId(null);
+  };
+
   const performLogging = async (soul: Soul, actionId: string, customNote?: string) => {
       if (!user || !firestore) return;
 
@@ -687,15 +696,6 @@ export function RelationshipTrackerCard() {
       setCustomPrayerText('');
   };
 
-  const handleHelpNeedConfirm = async (note: string) => {
-    if (!helpNeedTargetSoul) return;
-    setTogglingId('helped_with_need');
-    await performLogging(helpNeedTargetSoul, 'helped_with_need', note);
-    setIsHelpNeedDialogOpen(false);
-    setHelpNeedTargetSoul(null);
-    setTogglingId(null);
-  };
-
   const handleShareSoul = (soul: Soul) => {
       setSharingSoul(soul);
       setIsSoulDialogOpen(false);
@@ -763,8 +763,6 @@ export function RelationshipTrackerCard() {
 
           setIsPartnerSelectionDialogOpen(false);
           setIsShareTargetDialogOpen(false);
-          setSharingSoul(null);
-
           router.push(`/dashboard/chats/${chatId}`);
       } catch (e) {
           toast({ variant: 'destructive', title: 'Share Failed' });

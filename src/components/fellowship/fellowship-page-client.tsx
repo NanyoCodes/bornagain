@@ -692,7 +692,7 @@ export default function FellowshipPageClient() {
                         <span className="sr-only">Back</span>
                     </Button>
                     <div className="min-w-0 flex-1 text-left">
-                        <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline tracking-tight truncate leading-tight uppercase text-balance break-words [overflow-wrap:anywhere]">{fellowship.name}</h1>
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight truncate leading-tight uppercase text-balance break-words [overflow-wrap:anywhere]">{fellowship.name}</h1>
                         <div className="flex items-center gap-2 mt-0.5">
                             <Badge variant="secondary" className="uppercase font-bold tracking-[0.2em] text-[8px] sm:text-[10px] px-2 h-5 shrink-0">{fellowship.groupType || 'Fellowship'}</Badge>
                             <span className="text-[9px] sm:xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 truncate">Global Community</span>
