@@ -180,7 +180,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 {participants?.map(p => (
                                     <Link key={p.id} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-all">
                                         <Avatar className="h-9 w-9 border shadow-sm"><AvatarImage src={p.photoURL} /><AvatarFallback className="font-bold text-xs">{p.firstName?.charAt(0)}</AvatarFallback></Avatar>
-                                        <div className="min-w-0 flex-1"><p className="font-bold text-sm truncate uppercase tracking-tight">{p.firstName} {p.lastName}</p></div>
+                                        <div className="min-w-0 flex-1"><p className="font-bold text-sm truncate uppercase tracking-tight text-left">{p.firstName} {p.lastName}</p></div>
                                     </Link>
                                 ))}
                             </div>

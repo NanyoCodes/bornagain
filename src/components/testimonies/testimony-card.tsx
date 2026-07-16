@@ -403,13 +403,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <>
                     <Sheet open={showFullText} onOpenChange={setShowFullText}>
                         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b shrink-0 bg-muted/20"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Full Story</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
+                            <div className="p-8 border-b shrink-0 bg-muted/20"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline">Kingdom Testimony</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
                             <div className="flex-grow min-h-0 pt-8 px-6">{fullTextContent}</div>
                         </SheetContent>
                     </Sheet>
                     <Sheet open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <SheetContent side="bottom" className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b shrink-0 bg-amber-500/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-amber-600">Answered Prayer</SheetTitle><SheetDescription className="text-sm font-medium">The specific request that God has fulfilled.</SheetDescription></SheetHeader></div>
+                            <div className="p-8 border-b shrink-0 bg-amber-500/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline uppercase text-amber-600">Answered Prayer</SheetTitle><SheetDescription className="text-sm font-medium">The specific request that God has fulfilled.</SheetDescription></SheetHeader></div>
                             <ScrollArea className="flex-grow px-8 py-10">
                                 {fullPrayerContent}
                             </ScrollArea>

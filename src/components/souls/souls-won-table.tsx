@@ -279,7 +279,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                                     <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-black">Record Control</DropdownMenuLabel>
                                     <DropdownMenuItem onSelect={() => triggerAction(onEdit)} className="rounded-lg">
-                                        <Edit className="mr-2 h-4 w-4" /> Edit Details
+                                        <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Details
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => triggerAction(onAssess)} className="rounded-lg">
                                         <ClipboardList className="mr-2 h-4 w-4 text-primary" /> Assess Needs
@@ -447,7 +447,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                             </DialogContent>
                         )}
                     </Dialog>
-                    <div className="min-w-0">
+                    <div className="min-w-0 text-left">
                         <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight">{soul.firstName} {soul.lastName}</div>
                         {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
                     </div>
@@ -469,15 +469,15 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                             {soul.associationName}
                         </div>
                     ) : null}
-                    {!soul.fellowshipId && !soul.associationId && <span className="text-muted-foreground text-[9px] font-black uppercase tracking-widest opacity-30 italic">Unplaced</span>}
+                    {!soul.fellowshipId && !soul.associationId && <span className="text-muted-foreground text-[9px] font-black uppercase tracking-widest opacity-30 italic text-left">Unplaced</span>}
                 </div>
             </TableCell>
             <TableCell className="hidden sm:table-cell p-4 text-left">
                 {latestFollowUpDate ? (
                     <div className="text-[10px] space-y-1">
-                        <div className="text-muted-foreground font-black uppercase tracking-widest">{format(latestFollowUpDate, "MMM d, yyyy")}</div>
+                        <div className="text-muted-foreground font-black uppercase tracking-widest text-left">{format(latestFollowUpDate, "MMM d, yyyy")}</div>
                     </div>
-                ) : <span className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-20">—</span>}
+                ) : <span className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-20 text-left">—</span>}
             </TableCell>
             <TableCell className="hidden md:table-cell p-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-left">{format(wonAt, "MMM d, yyyy")}</TableCell>
             <TableCell className="hidden xl:table-cell p-4 text-left">
@@ -565,7 +565,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40" />
                     </div>
                     <h3 className="text-xl font-black font-headline uppercase tracking-tight">Your Harvest Field</h3>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-[280px] leading-relaxed font-medium italic opacity-60">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
+                    <p className="text-sm text-muted-foreground mt-2 max-w-[280px] leading-relaxed font-medium italic opacity-60 text-balance">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
                 </div>
             </CardContent>
         </Card>
