@@ -4,7 +4,7 @@
 import React, { useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, FileSpreadsheet, Info, Upload, Loader2, CheckCircle2 } from 'lucide-react';
+import { Download, FileSpreadsheet, Info, Upload, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useUserProfile } from '@/firebase';
 import { collection, doc, writeBatch, serverTimestamp, Timestamp } from 'firebase/firestore';
@@ -15,6 +15,7 @@ import type { SoulRelationship } from '@/lib/types';
 
 /**
  * @fileOverview Provides a standardized CSV template for missionaries and handles bulk uploads.
+ * Ensures that uploaded lists only add to the existing souls list without overwriting.
  */
 export function SoulsImportTemplateCard() {
   const { toast } = useToast();
@@ -115,6 +116,7 @@ export function SoulsImportTemplateCard() {
           
           if (!firstName || !lastName) return;
 
+          // Crucially: Creating NEW document references to ensure we ONLY ADD to the existing list.
           const newSoulId = doc(userSoulsRef).id;
           const userSoulDocRef = doc(userSoulsRef, newSoulId);
           const globalSoulDocRef = doc(globalSoulsRef, newSoulId);
@@ -169,7 +171,7 @@ export function SoulsImportTemplateCard() {
           await batch.commit();
           toast({
             title: "Harvest Synchronized",
-            description: `Successfully added ${successCount} believers to your souls list.`,
+            description: `Successfully added ${successCount} new souls to your existing list.`,
           });
           if (fileInputRef.current) fileInputRef.current.value = '';
         } catch (error: any) {
@@ -197,7 +199,7 @@ export function SoulsImportTemplateCard() {
           <FileSpreadsheet className="h-5 w-5 text-primary" /> Harvest Management
         </CardTitle>
         <CardDescription>
-          Organize your souls list using our template and upload it to synchronize your records.
+          Organize your souls list using our template and upload it to synchronize your records. Uploading a list will add new entries to your current collection.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -207,7 +209,7 @@ export function SoulsImportTemplateCard() {
             </div>
             <div className="space-y-1.5">
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                    This hub allows you to maintain your records offline and sync them with the Kingdom cloud. Proper formatting of <span className="text-foreground font-black uppercase text-[10px]">Relationship</span> and <span className="text-foreground font-black uppercase text-[10px]">Date</span> fields ensures your follow-up metrics remain accurate.
+                    This hub allows you to maintain your records offline and sync them with the Kingdom cloud. Uploading a file <span className="text-foreground font-black uppercase text-[10px]">only adds new records</span>—it will not delete or overwrite your existing harvest list.
                 </p>
             </div>
         </div>
@@ -241,7 +243,7 @@ export function SoulsImportTemplateCard() {
         {isUploading && (
             <div className="flex items-center gap-3 justify-center py-2 animate-pulse">
                 <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Kingdom record update in progress</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Adding records to your existing harvest</p>
                 <div className="h-1.5 w-1.5 rounded-full bg-primary" />
             </div>
         )}
