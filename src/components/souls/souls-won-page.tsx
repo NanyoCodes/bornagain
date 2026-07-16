@@ -39,12 +39,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { 
-  Carousel, 
-  CarouselContent, 
-  CarouselItem 
-} from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
+import { motion, AnimatePresence } from "framer-motion";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
@@ -70,7 +65,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 
 // Performance: Dynamically import heavy components
@@ -104,8 +98,7 @@ export default function SoulsWonPage() {
   const [deleteSoulId, setDeleteSoulId] = useState<string | null>(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const autoplayPlugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: true }));
+  const [isGalleryPaused, setIsGalleryPaused] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -138,6 +131,12 @@ export default function SoulsWonPage() {
   const soulsWithPhotos = useMemo(() => {
       return souls?.filter(s => s.photoURL) || [];
   }, [souls]);
+
+  const duplicatedSouls = useMemo(() => {
+      if (soulsWithPhotos.length === 0) return [];
+      // We triple the list to ensure a smooth transition for infinite scroll
+      return [...soulsWithPhotos, ...soulsWithPhotos, ...soulsWithPhotos];
+  }, [soulsWithPhotos]);
 
   // Derive live soul objects from IDs
   const soulForFollowUp = useMemo(() => souls?.find(s => s.id === followUpSoulId) || null, [souls, followUpSoulId]);
@@ -434,23 +433,34 @@ export default function SoulsWonPage() {
                     </CardContent>
                 </Card>
 
-                {/* Soul Slideshow */}
+                {/* Soul Slideshow - Continuous Motion Left */}
                 {soulsWithPhotos.length > 0 && (
                     <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700">
                         <div className="flex items-center gap-2 mb-4 px-1">
                             <ImageIcon className="h-4 w-4 text-primary" />
                             <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Gallery of Victory</h3>
                         </div>
-                        <Carousel 
-                            plugins={[autoplayPlugin.current]} 
-                            className="w-full"
-                            opts={{ align: "start", loop: true }}
+                        <div 
+                            className="overflow-hidden relative w-full"
+                            onMouseEnter={() => setIsGalleryPaused(true)}
+                            onMouseLeave={() => setIsGalleryPaused(false)}
                         >
-                            <CarouselContent className="-ml-4">
-                                {soulsWithPhotos.map((s) => (
-                                    <CarouselItem key={s.id} className="pl-4 basis-[140px] sm:basis-[180px]">
+                            <motion.div 
+                                className="flex gap-4 w-max"
+                                animate={{ x: isGalleryPaused ? undefined : ["0%", "-33.3333333%"] }}
+                                transition={{
+                                    x: {
+                                        duration: 30, // Adjust speed for smooth sliding
+                                        repeat: Infinity,
+                                        ease: "linear",
+                                        repeatType: "loop"
+                                    }
+                                }}
+                            >
+                                {duplicatedSouls.map((s, idx) => (
+                                    <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0">
                                         <Dialog>
-                                            <DialogTrigger asChild>
+                                            <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
                                                 <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-95 transition-all">
                                                     <Image 
                                                         src={s.photoURL!} 
@@ -481,10 +491,10 @@ export default function SoulsWonPage() {
                                                 </div>
                                             </DialogContent>
                                         </Dialog>
-                                    </CarouselItem>
+                                    </div>
                                 ))}
-                            </CarouselContent>
-                        </Carousel>
+                            </motion.div>
+                        </div>
                     </div>
                 )}
 
