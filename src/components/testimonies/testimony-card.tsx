@@ -29,6 +29,8 @@ import {
   UserPlus,
   Hourglass,
   PartyPopper,
+  Image as ImageIcon,
+  PlayCircle
 } from "lucide-react";
 import { useUser, useFirestore, useCollection, useDoc } from "@/firebase";
 import { useState, useMemo } from "react";
@@ -202,8 +204,21 @@ export const TestimonyCard = React.memo(function TestimonyCard({
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="space-y-6 pb-6">
-        <div className="text-base sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify px-2 capitalize">
+      <div className="space-y-8 pb-8 px-2">
+        {testimony.mediaUrl && (
+          <div className="rounded-[2.5rem] overflow-hidden border-2 shadow-xl bg-black aspect-video relative group/full">
+            {testimony.mediaType === 'image' ? (
+                <Image src={testimony.mediaUrl} alt="Miracle proof" fill className="object-contain" unoptimized />
+            ) : (
+                <video src={testimony.mediaUrl} className="w-full h-full object-contain" controls autoPlay />
+            )}
+            <div className="absolute top-6 left-6 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
+               <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+               <span className="text-[10px] font-black text-white uppercase tracking-widest">Miracle Record</span>
+            </div>
+          </div>
+        )}
+        <div className="text-base sm:text-xl text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify capitalize font-medium">
             {testimony.content}
         </div>
       </div>
@@ -285,8 +300,32 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         </CardHeader>
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
+          {testimony.mediaUrl && (
+              <div 
+                className="relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted cursor-pointer aspect-video group/media"
+                onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}
+              >
+                 {testimony.mediaType === 'image' ? (
+                     <Image src={testimony.mediaUrl} alt="Miracle Record" fill className="object-cover transition-transform group-hover/media:scale-105" unoptimized />
+                 ) : (
+                     <div className="w-full h-full flex items-center justify-center relative bg-zinc-950">
+                        <video src={testimony.mediaUrl} className="w-full h-full object-cover opacity-60" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <PlayCircle className="h-12 w-12 text-white/80" />
+                        </div>
+                     </div>
+                 )}
+                 <div className="absolute top-3 right-3">
+                    <Badge className="bg-black/40 backdrop-blur-md border-none h-6 px-2 text-[8px] font-black uppercase tracking-widest text-white">
+                        {testimony.mediaType === 'image' ? <ImageIcon className="h-3 w-3 mr-1" /> : <PlayCircle className="h-3 w-3 mr-1" />}
+                        Evidence
+                    </Badge>
+                 </div>
+              </div>
+          )}
+
           <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify">
-            <p ref={contentRef} className="line-clamp-6 leading-relaxed capitalize">{testimony.content}</p>
+            <p ref={contentRef} className={cn("leading-relaxed capitalize", testimony.mediaUrl ? "line-clamp-3" : "line-clamp-6")}>{testimony.content}</p>
             {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
           </div>
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
@@ -337,7 +376,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                     <Sheet open={showFullText} onOpenChange={setShowFullText}>
                         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-muted/20"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Full Story</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
-                            <div className="flex-grow min-h-0 p-8 overflow-y-auto">{fullTextContent}</div>
+                            <div className="flex-grow min-h-0 pt-8 px-6">{fullTextContent}</div>
                         </SheetContent>
                     </Sheet>
                     <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
@@ -346,7 +385,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 </>
             ) : (
                 <>
-                    <Dialog open={showFullText} onOpenChange={setShowFullText}>
+                    <Dialog open={showFullText} onOpenChange={showFullText => { setShowFullText(showFullText); if(!showFullText) setIsCommentsOpen(false); }}>
                         <DialogContent className="sm:max-w-3xl rounded-3xl overflow-hidden p-0"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest capitalize">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8">{fullTextContent}</div></DialogContent>
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
