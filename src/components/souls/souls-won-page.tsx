@@ -71,10 +71,9 @@ import { cn, safeToDate, haversineDistance } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { EditSoulForm } from "@/components/souls/edit-soul-form";
+import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useRouter } from "next/navigation";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
 import Image from "next/image";
 import { format } from "date-fns";
@@ -93,7 +92,6 @@ const LogFollowUpDialog = dynamic(() => import('@/components/souls/log-follow-up
 const ViewHistoryDialog = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
 const AssignFellowshipDialog = dynamic(() => import('@/components/souls/assign-fellowship-dialog').then(m => m.AssignFellowshipDialog), { ssr: false });
 const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
-const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 
 export default function SoulsWonPage() {
   const router = useRouter();
@@ -877,13 +875,13 @@ export default function SoulsWonPage() {
       {/* Demographic Discovery Sheet */}
       <Sheet open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
           <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-              <div className="p-8 border-b bg-muted/10 shrink-0">
+              <div className="p-5 sm:p-8 border-b bg-muted/10 shrink-0">
                   <SheetHeader className="text-left flex-shrink-0">
                       <div className="flex items-center gap-3 mb-2">
                         <Target className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Demographic Discovery</span>
                       </div>
-                      <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">
+                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
                         {selectedAgeGroup === 'unknown' ? 'Uncategorized Records' : `${selectedAgeGroup} Group`}
                       </SheetTitle>
                       <SheetDescription className="text-sm font-medium mt-1">
@@ -892,7 +890,7 @@ export default function SoulsWonPage() {
                   </SheetHeader>
               </div>
               <ScrollArea className="flex-grow min-h-0">
-                  <div className="p-6 space-y-3">
+                  <div className="p-4 sm:p-6 space-y-3">
                       {souls?.filter(soul => {
                           const age = soul.age;
                           if (selectedAgeGroup === 'unknown') return age === null || age === undefined;
@@ -903,7 +901,7 @@ export default function SoulsWonPage() {
                           if (selectedAgeGroup === 'Seniors (56+)') return age !== null && age !== undefined && age >= 56;
                           return false;
                       }).map(soul => (
-                          <div key={soul.id} className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/5 group hover:bg-muted/10 transition-all">
+                          <div key={soul.id} className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border bg-muted/5 group hover:bg-muted/10 transition-all">
                               <Avatar className="h-10 w-10 border shadow-sm shrink-0">
                                   <AvatarFallback className="font-bold bg-primary/10 text-primary uppercase">{soul.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
@@ -940,8 +938,8 @@ export default function SoulsWonPage() {
                       )}
                   </div>
               </ScrollArea>
-              <div className="p-8 border-t bg-muted/5 flex justify-end shrink-0">
-                <Button variant="outline" onClick={() => setSelectedAgeGroup(null)} className="rounded-xl font-bold h-12 px-10">Close Discovery</Button>
+              <div className="p-5 sm:p-8 border-t bg-muted/5 flex justify-end shrink-0">
+                <Button variant="outline" onClick={() => setSelectedAgeGroup(null)} className="rounded-xl font-bold h-12 px-10 w-full sm:w-auto">Close Discovery</Button>
               </div>
           </SheetContent>
       </Sheet>
