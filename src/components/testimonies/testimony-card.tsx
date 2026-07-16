@@ -29,7 +29,8 @@ import {
   Hourglass,
   PartyPopper,
   ImageIcon,
-  PlayCircle
+  PlayCircle,
+  X
 } from "lucide-react";
 import { useUser, useDoc, useCollection, useFirestore } from "@/firebase";
 import { useState, useMemo } from "react";
@@ -150,12 +151,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     };
   }, [testimony.content, testimony.answeredPrayerContent]);
 
-  const triggerAction = (action: () => void) => {
-    requestAnimationFrame(() => {
-      action();
-    });
-  };
-
   const handleShare = async (e?: React.MouseEvent) => {
     if (e) { e.preventDefault(); e.stopPropagation(); }
     const shareUrl = `${window.location.origin}/testimonies#${testimony.id}`;
@@ -246,7 +241,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         testimony.answeredPrayerId && "border-l-4 border-l-amber-500"
       )}>
         <CardHeader className="flex flex-row items-start justify-between gap-3 p-4 sm:p-6">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
             {testimony.isAnonymous ? (
                 <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
                     <AvatarFallback className="bg-primary/10 text-primary font-bold"><Users className="h-5 w-5" /></AvatarFallback>
@@ -279,7 +274,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 )}
               </Dialog>
             )}
-            <div className="min-w-0 flex-1 text-left">
+            <div className="min-w-0 flex-1">
                <div className="flex items-center gap-2 flex-wrap">
                     <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
                         <CardTitle className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize">{authorFullName}</CardTitle>
@@ -312,7 +307,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             {isAuthor && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={(e) => e.stopPropagation()}><MoreVertical className="h-4 w-4" /><span className="sr-only">Options</span></Button></DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 rounded-xl"><DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Manage Story</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onSelect={() => triggerAction(onEdit)} className="rounded-lg"><Edit className="mr-2 h-4 w-4 text-primary" /><span>Edit Testimony</span></DropdownMenuItem><DropdownMenuItem onSelect={() => triggerAction(onDelete)} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg"><Trash2 className="mr-2 h-4 w-4" /><span>Delete Permanently</span></DropdownMenuItem></DropdownMenuContent>
+                <DropdownMenuContent align="end" className="w-48 rounded-xl"><DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Manage Story</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onSelect={() => onEdit()} className="rounded-lg"><Edit className="mr-2 h-4 w-4 text-primary" /><span>Edit Testimony</span></DropdownMenuItem><DropdownMenuItem onSelect={() => onDelete()} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg"><Trash2 className="mr-2 h-4 w-4" /><span>Delete Permanently</span></DropdownMenuItem></DropdownMenuContent>
               </DropdownMenu>
             )}
           </div>

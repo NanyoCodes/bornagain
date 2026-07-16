@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment } from '@/lib/types';
+import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment, Chat } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion, getDoc } from 'firebase/firestore';
 import { 
     Loader2, 

@@ -564,7 +564,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                     <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20">
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40" />
                     </div>
-                    <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Your Harvest Field</h3>
+                    <h3 className="text-xl font-black font-headline uppercase tracking-tight">Your Harvest Field</h3>
                     <p className="text-sm text-muted-foreground mt-2 max-w-[280px] leading-relaxed font-medium italic opacity-60 text-balance text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
                 </div>
             </CardContent>

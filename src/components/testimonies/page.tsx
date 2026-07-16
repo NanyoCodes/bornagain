@@ -111,25 +111,6 @@ export default function TestimoniesPage() {
   const isAnyModalOpen = !!(isTestimonyDialogOpen || isPrayerDialogOpen || itemToDelete || testimonyToEdit || prayerToEdit);
 
   useEffect(() => {
-    if (!isAnyModalOpen && typeof document !== 'undefined') {
-      const timer = setTimeout(() => {
-        document.body.style.pointerEvents = 'auto';
-        document.body.removeAttribute('aria-hidden');
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnyModalOpen]);
-
-  const closeDeleteDialog = useCallback(() => {
-    setItemToDelete(null);
-  }, []);
-
-  const closeEditDialog = useCallback(() => {
-    setTestimonyToEdit(null);
-    setPrayerToEdit(null);
-  }, []);
-
-  useEffect(() => {
     setMounted(true);
     setIsSearchVisible(true);
     return () => {
@@ -265,7 +246,7 @@ export default function TestimoniesPage() {
                 if (testimonyToDelete.answeredPrayerId) {
                     const prayerRef = doc(firestore, 'prayerRequests', testimonyToDelete.answeredPrayerId);
                     const prayerSnap = await transaction.get(prayerRef);
-                    // Only attempt update if the prayer request still exists
+                    // Check existence within transaction for robustness
                     if (prayerSnap.exists()) {
                         transaction.update(prayerRef, {
                             status: 'pending',
@@ -281,14 +262,13 @@ export default function TestimoniesPage() {
 
         toast({
             title: `${type === 'testimony' ? 'Testimony' : 'Prayer Request'} Deleted`,
-            description: `The item has been successfully removed.`,
         });
         
-        closeDeleteDialog();
+        setItemToDelete(null);
     } catch (error: any) {
         if (error.message === "This testimony has already been deleted.") {
             toast({ variant: 'destructive', title: 'Already Deleted', description: error.message });
-            closeDeleteDialog();
+            setItemToDelete(null);
             return;
         }
         const permissionError = new FirestorePermissionError({
@@ -307,7 +287,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen ? true : undefined}
+      inert={isAnyModalOpen}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         {/* Main Feed Column */}
@@ -376,8 +356,8 @@ export default function TestimoniesPage() {
                         {!loading && filteredTestimonies?.length === 0 && (
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
                             <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                            <h3 className="text-2xl font-black font-headline tracking-tight uppercase">Your Altar of Praise</h3>
-                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
+                            <h3 className="text-2xl font-black font-headline tracking-tight uppercase text-left">Your Altar of Praise</h3>
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-left">
                             Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
                             </p>
                         </div>
@@ -403,8 +383,8 @@ export default function TestimoniesPage() {
                         {!loading && filteredPrayerRequests?.length === 0 && (
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
                             <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                            <h3 className="text-2xl font-black font-headline tracking-tight uppercase">United in Faith</h3>
-                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
+                            <h3 className="text-2xl font-black font-headline tracking-tight uppercase text-left">United in Faith</h3>
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-left">
                             No one should walk through a trial alone. Share your request with the global community.
                             </p>
                         </div>
@@ -421,12 +401,12 @@ export default function TestimoniesPage() {
       </div>
       
       {/* Delete Confirmation */}
-      <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && closeDeleteDialog()}>
+      <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
           <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
           <AlertDialogHeader>
-              <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight">Remove from Feed?</AlertDialogTitle>
-              <AlertDialogDescription className="text-sm font-medium">
-              This will permanently delete this {itemToDelete?.type}. This action cannot be undone and the story of God's work will be removed from the global stream.
+              <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight text-left">Remove from Feed?</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm font-medium text-left">
+              This will permanently delete this {itemToDelete?.type}. This action cannot be undone.
               </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3 mt-6">
@@ -444,7 +424,7 @@ export default function TestimoniesPage() {
         <>
           {isMobile ? (
             <>
-              <Sheet open={!!testimonyToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
+              <Sheet open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <SheetHeader className="text-left">
@@ -454,13 +434,13 @@ export default function TestimoniesPage() {
                   </div>
                   <ScrollArea className="flex-grow">
                     <div className="p-8">
-                      {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={closeEditDialog} />}
+                      {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}
                     </div>
                   </ScrollArea>
                 </SheetContent>
               </Sheet>
 
-              <Sheet open={!!prayerToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
+              <Sheet open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <SheetHeader className="text-left">
@@ -470,7 +450,7 @@ export default function TestimoniesPage() {
                   </div>
                   <ScrollArea className="flex-grow">
                     <div className="p-8">
-                      {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={closeEditDialog} />}
+                      {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}
                     </div>
                   </ScrollArea>
                 </SheetContent>
@@ -510,7 +490,7 @@ export default function TestimoniesPage() {
             </>
           ) : (
             <>
-              <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
+              <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
@@ -520,13 +500,13 @@ export default function TestimoniesPage() {
                   </div>
                   <ScrollArea className="max-h-[70vh]">
                     <div className="p-6">
-                        {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={closeEditDialog} />}
+                        {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}
                     </div>
                   </ScrollArea>
                 </DialogContent>
               </Dialog>
 
-              <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && closeEditDialog()}>
+              <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
@@ -536,7 +516,7 @@ export default function TestimoniesPage() {
                   </div>
                   <ScrollArea className="max-h-[70vh]">
                     <div className="p-6">
-                        {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={closeEditDialog} />}
+                        {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}
                     </div>
                   </ScrollArea>
                 </DialogContent>

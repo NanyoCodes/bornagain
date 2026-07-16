@@ -20,7 +20,12 @@ import {
   ArrowLeft,
   Newspaper,
   Globe,
-  Sparkles
+  Sparkles,
+  Search,
+  CheckCircle2,
+  X,
+  ArrowRight,
+  HelpCircle
 } from "lucide-react";
 import { 
   Dialog, 
@@ -58,13 +63,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
+import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn, safeToDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -79,8 +83,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { format } from "date-fns";
 
-// Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
   loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,
   ssr: false
@@ -92,6 +97,45 @@ const AssignFellowshipDialog = dynamic(() => import('@/components/souls/assign-f
 const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
 const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 const SoulAssessmentDialog = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
+
+function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
+  if (!souls || souls.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-sm text-muted-foreground italic">No souls found in this age group.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2 pb-4">
+      {souls.map((soul) => {
+        const wonAt = safeToDate(soul.wonAt);
+        return (
+          <Link 
+            href={`/dashboard/souls-won#${soul.id}`} 
+            key={soul.id} 
+            className="flex items-center gap-4 p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group"
+          >
+            <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
+              <AvatarFallback className="font-black bg-primary/5 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
+              </div>
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+                Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function SoulsWonPage() {
   const router = useRouter();
@@ -128,16 +172,6 @@ export default function SoulsWonPage() {
 
   const isAnyModalOpen = !!(followUpSoulId || historySoulId || assignSoulId || editSoulId || deleteSoulId || isLogDialogOpen || assessmentSoulId || selectedAgeGroup);
 
-  useEffect(() => {
-    if (!isAnyModalOpen && typeof document !== 'undefined') {
-      const timer = setTimeout(() => {
-        document.body.style.pointerEvents = 'auto';
-        document.body.removeAttribute('aria-hidden');
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnyModalOpen]);
-
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
@@ -155,12 +189,12 @@ export default function SoulsWonPage() {
 
   const ageGroups = useMemo(() => {
     const stats = {
-      children: 0,
-      teens: 0,
-      youngAdults: 0,
-      adults: 0,
-      seniors: 0,
-      unknown: 0
+      children: { count: 0, list: [] as Soul[] },
+      teens: { count: 0, list: [] as Soul[] },
+      youngAdults: { count: 0, list: [] as Soul[] },
+      adults: { count: 0, list: [] as Soul[] },
+      seniors: { count: 0, list: [] as Soul[] },
+      unknown: { count: 0, list: [] as Soul[] }
     };
 
     if (!souls) return stats;
@@ -168,22 +202,40 @@ export default function SoulsWonPage() {
     souls.forEach(soul => {
       const age = soul.age;
       if (age === null || age === undefined) {
-        stats.unknown++;
+        stats.unknown.count++;
+        stats.unknown.list.push(soul);
       } else if (age <= 12) {
-        stats.children++;
+        stats.children.count++;
+        stats.children.list.push(soul);
       } else if (age <= 19) {
-        stats.teens++;
+        stats.teens.count++;
+        stats.teens.list.push(soul);
       } else if (age <= 33) {
-        stats.youngAdults++;
+        stats.youngAdults.count++;
+        stats.youngAdults.list.push(soul);
       } else if (age <= 55) {
-        stats.adults++;
+        stats.adults.count++;
+        stats.adults.list.push(soul);
       } else {
-        stats.seniors++;
+        stats.seniors.count++;
+        stats.seniors.list.push(soul);
       }
     });
 
     return stats;
   }, [souls]);
+
+  const activeAgeGroupSouls = useMemo(() => {
+    if (!selectedAgeGroup) return [];
+    const groupKey = selectedAgeGroup.toLowerCase().split(' ')[0];
+    if (groupKey.startsWith('children')) return ageGroups.children.list;
+    if (groupKey.startsWith('teens')) return ageGroups.teens.list;
+    if (groupKey.startsWith('young')) return ageGroups.youngAdults.list;
+    if (groupKey.startsWith('adults')) return ageGroups.adults.list;
+    if (groupKey.startsWith('seniors')) return ageGroups.seniors.list;
+    if (groupKey.startsWith('age')) return ageGroups.unknown.list;
+    return [];
+  }, [selectedAgeGroup, ageGroups]);
 
   const totalSoulsCount = useMemo(() => souls?.length || 0, [souls]);
 
@@ -446,11 +498,12 @@ export default function SoulsWonPage() {
                         <CardContent className="p-6 sm:p-8 space-y-6">
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[
-                                    { label: 'Children (0-12)', count: ageGroups.children, color: 'bg-blue-500', icon: Sparkles },
-                                    { label: 'Teens (13-19)', count: ageGroups.teens, color: 'bg-green-500', icon: Zap },
-                                    { label: 'Young Adults (20-33)', count: ageGroups.youngAdults, color: 'bg-primary', icon: Flame },
-                                    { label: 'Adults (34-55)', count: ageGroups.adults, color: 'bg-indigo-500', icon: Target },
-                                    { label: 'Seniors (56+)', count: ageGroups.seniors, color: 'bg-purple-500', icon: Award },
+                                    { label: 'Children (0-12)', count: ageGroups.children.count, color: 'bg-blue-500', icon: Sparkles },
+                                    { label: 'Teens (13-19)', count: ageGroups.teens.count, color: 'bg-green-500', icon: Zap },
+                                    { label: 'Young Adults (20-33)', count: ageGroups.youngAdults.count, color: 'bg-primary', icon: Flame },
+                                    { label: 'Adults (34-55)', count: ageGroups.adults.count, color: 'bg-indigo-500', icon: Target },
+                                    { label: 'Seniors (56+)', count: ageGroups.seniors.count, color: 'bg-purple-500', icon: Award },
+                                    { label: 'Age Not Set', count: ageGroups.unknown.count, color: 'bg-slate-400', icon: HelpCircle },
                                 ].map(group => {
                                     const percent = totalSoulsCount > 0 ? (group.count / totalSoulsCount) * 100 : 0;
                                     const Icon = group.icon;
@@ -514,6 +567,51 @@ export default function SoulsWonPage() {
             </div>
         </div>
 
+        {/* Age Group Detailed View */}
+        {mounted && (
+            isMobile ? (
+                <Sheet open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
+                    <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                            <div className="flex items-center gap-2 mb-2">
+                                <BarChart3 className="h-4 w-4 text-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Harvest Demographic</span>
+                            </div>
+                            <SheetHeader className="text-left">
+                                <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight">{selectedAgeGroup} Directory</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
+                            </SheetHeader>
+                        </div>
+                        <ScrollArea className="flex-grow">
+                            <div className="p-8">
+                                <AgeGroupSoulList souls={activeAgeGroupSouls} />
+                            </div>
+                        </ScrollArea>
+                    </SheetContent>
+                </Sheet>
+            ) : (
+                <Dialog open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
+                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                        <div className="p-8 border-b bg-muted/10">
+                            <div className="flex items-center gap-2 mb-2">
+                                <BarChart3 className="h-4 w-4 text-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Demographic View</span>
+                            </div>
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedAgeGroup} Directory</DialogTitle>
+                                <DialogDescription className="text-sm font-medium">Viewing all souls within this age group.</DialogDescription>
+                            </DialogHeader>
+                        </div>
+                        <ScrollArea className="max-h-[60vh]">
+                            <div className="p-8">
+                                <AgeGroupSoulList souls={activeAgeGroupSouls} />
+                            </div>
+                        </ScrollArea>
+                    </DialogContent>
+                </Dialog>
+            )
+        )}
+
         <LogFollowUpDialog 
             soul={soulForFollowUp} 
             isOpen={!!followUpSoulId} 
@@ -533,7 +631,7 @@ export default function SoulsWonPage() {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Confirm Removal
