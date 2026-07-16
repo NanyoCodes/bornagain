@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
@@ -234,6 +235,7 @@ export default function SoulsWonPage() {
     const headers = [
       "First Name", 
       "Last Name", 
+      "Photo URL",
       "Gender", 
       "Age", 
       "Email", 
@@ -263,6 +265,7 @@ export default function SoulsWonPage() {
       return [
         soul.firstName, 
         soul.lastName, 
+        soul.photoURL || '',
         soul.gender || '',
         soul.age?.toString() || '',
         soul.email || '', 
@@ -349,18 +352,38 @@ export default function SoulsWonPage() {
 
     if (formatType === 'pdf') {
       const doc = new jsPDF();
+      let startY = 20;
+
+      // Add Photo if available
+      if (soul.photoURL) {
+          try {
+              const imgData = await fetch(soul.photoURL).then(res => res.blob()).then(blob => new Promise<string>((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onloadend = () => resolve(reader.result as string);
+                  reader.onerror = reject;
+                  reader.readAsDataURL(blob);
+              }));
+              doc.addImage(imgData as string, 'JPEG', 14, 15, 30, 30);
+              startY = 50;
+          } catch (e) {
+              console.warn("Failed to load photo for PDF export", e);
+          }
+      }
+
       doc.setFontSize(18);
-      doc.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, 14, 20);
+      doc.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, soul.photoURL ? 50 : 14, 25);
+      
       autoTable(doc, {
         body: rows,
-        startY: 30,
+        startY: Math.max(startY, 35),
         theme: 'striped',
         headStyles: { fillColor: [249, 116, 22] }
       });
       doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
     } else {
       const headers = ["Field", "Value"];
-      const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const rowsWithPhoto = [["Photo URL", soul.photoURL || 'N/A'], ...rows];
+      const csvContent = headers.join(",") + "\n" + rowsWithPhoto.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
