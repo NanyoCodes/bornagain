@@ -918,7 +918,7 @@ export default function FellowshipPageClient() {
                   <AlertDialogHeader>
                     <AlertDialogTitle className="text-2xl font-black font-headline text-left">Unassign Convert?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium text-left">Remove {soulToUnassign?.firstName} from this shared list?</AlertDialogDescription>
-                  </AccordionHeader>
+                  </AlertDialogHeader>
                   <AlertDialogFooter className="gap-3 mt-6">
                     <AlertDialogCancel className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleRemoveSoul} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">

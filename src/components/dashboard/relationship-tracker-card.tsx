@@ -536,7 +536,7 @@ export function RelationshipTrackerCard() {
           <Sheet open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
               <SheetContent side="bottom" className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                   <div className="p-8 border-b shrink-0 bg-muted/10">
-                      <SheetHeader className="text-left">
+                      <SheetHeader className="text-left flex-shrink-0">
                           <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Kindness</SheetTitle>
                           <SheetDescription className="text-sm font-medium mt-1">How did you help {helpNeedTargetSoul?.firstName} today?</SheetDescription>
                       </SheetHeader>

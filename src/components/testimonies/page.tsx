@@ -285,7 +285,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen ? "" : undefined}
+      inert={isAnyModalOpen ? true : undefined}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
@@ -379,7 +379,7 @@ export default function TestimoniesPage() {
                         {!loading && filteredPrayerRequests?.length === 0 && (
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
                             <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                            <h3 className="text-2xl font-black font-headline tracking-tight uppercase text-left">United in Faith</h3>
+                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight uppercase text-left">United in Faith</h3>
                             <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-left">
                             No one should walk through a trial alone. Share your request with the global community.
                             </p>
