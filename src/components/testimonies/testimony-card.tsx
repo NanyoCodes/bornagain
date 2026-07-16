@@ -79,7 +79,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const [isProcessingReaction, setIsProcessingReaction] = useState<string | null>(null);
   const [isRequestingPartner, setIsRequestingPartner] = useState(false);
   const contentRef = React.useRef<HTMLParagraphElement>(null);
-  const prayerRef = React.useRef<HTMLParagraphElement>(null);
+  const prayerRef = React.useRef<HTMLDivElement>(null);
   const [isTruncated, setIsTruncated] = React.useState(false);
   const [isPrayerTruncated, setIsPrayerTruncated] = React.useState(false);
   const [showFullText, setShowFullText] = React.useState(false);
@@ -247,32 +247,38 @@ export const TestimonyCard = React.memo(function TestimonyCard({
       )}>
         <CardHeader className="flex flex-row items-start justify-between gap-3 p-4 sm:p-6">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <Dialog>
-              <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <div className="relative cursor-pointer hover:opacity-90 transition-opacity active:scale-95 shrink-0">
-                    <Avatar className="h-11 w-11 sm:h-14 sm:w-14 border shadow-sm">
-                        <AvatarImage src={authorAvatarUrl} className="object-cover" />
-                        <AvatarFallback className="bg-primary/10 text-primary font-bold">{initials || 'U'}</AvatarFallback>
-                    </Avatar>
-                </div>
-              </DialogTrigger>
-              {authorAvatarUrl && (
-                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
-                    <DialogHeader className="sr-only"><DialogTitle>Profile photo of {authorFullName}</DialogTitle></DialogHeader>
-                    <div className="relative h-full w-full flex items-center justify-center p-4">
-                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
-                            <Image 
-                                src={authorAvatarUrl} 
-                                alt={authorFullName} 
-                                fill 
-                                className="object-contain shadow-2xl ring-4 ring-white/10" 
-                                unoptimized 
-                            />
-                        </div>
-                    </div>
-                </DialogContent>
-              )}
-            </Dialog>
+            {testimony.isAnonymous ? (
+                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
+                    <AvatarFallback className="bg-primary/10 text-primary font-bold"><Users className="h-5 w-5" /></AvatarFallback>
+                </Avatar>
+            ) : (
+              <Dialog>
+                <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
+                  <div className="relative cursor-pointer hover:opacity-90 transition-opacity active:scale-95 shrink-0">
+                      <Avatar className="h-11 w-11 sm:h-14 sm:w-14 border shadow-sm">
+                          <AvatarImage src={authorAvatarUrl} className="object-cover" />
+                          <AvatarFallback className="bg-primary/10 text-primary font-bold">{initials || 'U'}</AvatarFallback>
+                      </Avatar>
+                  </div>
+                </DialogTrigger>
+                {authorAvatarUrl && (
+                  <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                      <DialogHeader className="sr-only"><DialogTitle>Profile photo of {authorFullName}</DialogTitle></DialogHeader>
+                      <div className="relative h-full w-full flex items-center justify-center p-4">
+                          <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                              <Image 
+                                  src={authorAvatarUrl} 
+                                  alt={authorFullName} 
+                                  fill 
+                                  className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                  unoptimized 
+                              />
+                          </div>
+                      </div>
+                  </DialogContent>
+                )}
+              </Dialog>
+            )}
             <div className="min-w-0 flex-1 text-left">
                <div className="flex items-center gap-2 flex-wrap">
                     <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">

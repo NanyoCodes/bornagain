@@ -809,22 +809,12 @@ export default function FellowshipPageClient() {
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-sm border-none bg-muted/20"><CardHeader className="p-6 sm:p-10 text-left"><CardTitle className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">About this Group</CardTitle></CardHeader><CardContent className="px-6 sm:px-10 pb-8 sm:pb-12"><p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words [overflow-wrap:anywhere] text-left">{fellowship.description}</p></CardContent></Card>
 
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none sm:shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden"><CardHeader className="p-6 sm:p-10 border-b bg-muted/5"><CardTitle className="flex items-center justify-between text-base sm:text-lg font-black uppercase tracking-[0.1em] text-left"><span className="flex items-center gap-2.5"><Users className="h-5 w-5 text-primary" />Directory</span><Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{(members?.length || 0) + (isOrganizer ? (assignedSouls?.length || 0) : 0)}</Badge></CardTitle></CardHeader><CardContent className="p-0">{(isMember || isOrganizer) ? <Tabs defaultValue="believers" className="w-full text-left"><TabsList className="flex w-full bg-muted/10 h-14 p-0 rounded-none border-b overflow-x-auto no-scrollbar"><TabsTrigger value="believers" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate px-4">Believers ({members?.length || 0})</TabsTrigger>
-                        {isOrganizer && (
+                        {isOrganizer ? (
                             <TabsTrigger value="souls" className="flex-1 text-xs sm:text-sm font-bold h-full rounded-none data-[state=active]:bg-background data-[state=active]:shadow-none border-r last:border-r-0 truncate px-4">Converts ({assignedSouls?.length || 0})</TabsTrigger>
-                        )}
-                        {!isOrganizer && isMember && (
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <div className="flex-1 text-[10px] sm:text-xs font-bold h-full rounded-none border-r last:border-r-0 flex items-center justify-center opacity-40 cursor-not-allowed bg-muted/5 px-4 text-center">
-                                            <span>Converts Hub (Private)</span>
-                                        </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
-                                        <p className="text-[10px] font-bold uppercase">Only the Organizer can access convert details in this group.</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
+                        ) : (
+                            <div className="flex-1 text-[10px] sm:text-xs font-bold h-full rounded-none border-r last:border-r-0 flex items-center justify-center opacity-40 cursor-not-allowed bg-muted/5 px-4 text-center">
+                                <span>Converts (Restricted)</span>
+                            </div>
                         )}
                     </TabsList><TabsContent value="believers" className="mt-0 p-4 sm:p-10"><div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{members?.map(member => (
                         <div key={member.id} className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/5 transition-all hover:bg-muted/10 group min-w-0">
@@ -899,7 +889,7 @@ export default function FellowshipPageClient() {
             )}
 
             <AlertDialog open={!!memberToRemove} onOpenChange={(open) => !open && setMemberToRemove(null)}>
-                <AlertDialogContent className="rounded-3xl p-8"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black font-headline">Remove Member?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left">Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel disabled={isProcessingRemoval} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Removal</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+                <AlertDialogContent className="rounded-3xl p-8"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black font-headline">Remove Member?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left">Are you sure you want to remove {memberToRemove?.firstName} from this community?</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteMember} disabled={isProcessingRemoval} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">{isProcessingRemoval && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Removal</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog open={!!soulToUnassign} onOpenChange={(open) => !open && setSoulToUnassign(null)}>
