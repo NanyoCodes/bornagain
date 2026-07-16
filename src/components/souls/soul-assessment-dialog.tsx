@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -31,6 +30,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { 
   Loader2, 
   Sparkles, 
@@ -273,7 +273,7 @@ export function SoulAssessmentDialog({ soul, isOpen, onOpenChange }: SoulAssessm
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
           <div className="p-8 border-b shrink-0 bg-muted/10">
-            <SheetHeader className="text-left">
+            <SheetHeader className="text-left flex-shrink-0">
               <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</SheetTitle>
               <SheetDescription className="text-sm font-medium mt-1">{description}</SheetDescription>
             </SheetHeader>
