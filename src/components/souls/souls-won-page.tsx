@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
@@ -25,7 +24,8 @@ import {
   Hourglass,
   ArrowLeft,
   ArrowRight,
-  Newspaper
+  Newspaper,
+  Globe
 } from "lucide-react";
 import { 
   Dialog, 
@@ -33,6 +33,7 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogDescription,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -64,7 +65,9 @@ import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
-import { cn, safeToDate } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { safeToDate, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -78,7 +81,6 @@ import { format } from "date-fns";
 import { SoulAssessmentDialog } from "./soul-assessment-dialog";
 import { Progress } from "@/components/ui/progress";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -206,14 +208,9 @@ export default function SoulsWonPage() {
   
   const fellowshipsQuery = useMemo(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'fellowships'), orderBy('name', 'asc'));
+    return query(collection(firestore, 'fellowships'), where('status', '==', 'active'));
   }, [firestore]);
-  const { data: allFellowshipsData } = useCollection<Fellowship>(fellowshipsQuery);
-
-  const activeFellowships = useMemo(() => {
-    if (!allFellowshipsData) return [];
-    return allFellowshipsData.filter(f => f.status === 'active');
-  }, [allFellowshipsData]);
+  const { data: activeFellowships } = useCollection<Fellowship>(fellowshipsQuery);
 
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
@@ -605,6 +602,7 @@ export default function SoulsWonPage() {
                 </div>
             </div>
 
+            {/* Desktop Sidebar Column */}
             <div className="lg:col-span-4">
                 <FeedSidebar mode="harvest" />
             </div>
@@ -821,7 +819,7 @@ export default function SoulsWonPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3 mt-6">
-            <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12">Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Confirm Delete
