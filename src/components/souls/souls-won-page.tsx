@@ -67,7 +67,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { safeToDate, cn } from "@/lib/utils";
+import { cn, safeToDate, haversineDistance } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -776,11 +776,6 @@ export default function SoulsWonPage() {
                                                 </div>
                                                 <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} />
                                             </div>
-                                            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none text-center p-4">
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-primary bg-background/90 px-3 py-1.5 rounded-full shadow-lg border">
-                                                    OPEN POP-UP PAGE WHEN CLICKED
-                                                </span>
-                                            </div>
                                         </div>
                                     );
                                 })}
@@ -1036,7 +1031,7 @@ export default function SoulsWonPage() {
         <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight">Delete Record?</AlertDialogTitle>
-            <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+            <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
               Are you sure you want to permanently remove {soulToDelete?.firstName} {soulToDelete?.lastName} from your records? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
