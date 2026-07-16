@@ -438,7 +438,7 @@ export default function SoulsWonPage() {
                     <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700">
                         <div className="flex items-center gap-2 mb-4 px-1">
                             <ImageIcon className="h-4 w-4 text-primary" />
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Gallery of Victory</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">GALLERY OF MY SOULS</h3>
                         </div>
                         <div 
                             className="overflow-hidden relative w-full"
