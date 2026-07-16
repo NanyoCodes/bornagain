@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import dynamic from 'next/dynamic';
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { 
   PlusCircle, 
@@ -60,7 +61,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
-import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import { useCollection, useFirestore, useUser } from "@/firebase";
+import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, addDoc, deleteField, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -709,7 +711,7 @@ export default function SoulsWonPage() {
                                                             {s.nickname || s.firstName}
                                                         </p>
                                                         <Badge className={cn(
-                                                            "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1",
+                                                            "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1 shadow-sm",
                                                             s.status === 'New' ? "bg-amber-500" : 
                                                             s.status === 'Contacted' ? "bg-blue-500" : 
                                                             "bg-green-500"
@@ -1056,3 +1058,4 @@ export default function SoulsWonPage() {
     </>
   );
 }
+
