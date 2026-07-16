@@ -33,9 +33,9 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -225,6 +225,18 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                     <div className="pt-2 space-y-2 border-t border-dashed mt-2">
                                         <p className="text-[10px] font-black uppercase text-primary tracking-widest">Assessed Needs</p>
                                         <div className="grid grid-cols-1 gap-1.5">
+                                            {soul.needsAssessment.generalImpression && (
+                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                    <Sparkles className="h-3 w-3 text-amber-500 shrink-0 mt-0.5" />
+                                                    <span><span className="font-bold">Spiritual State:</span> {soul.needsAssessment.generalImpression}</span>
+                                                </p>
+                                            )}
+                                            {soul.needsAssessment.followUpPlan && (
+                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                    <Target className="h-3 w-3 text-primary shrink-0 mt-0.5" />
+                                                    <span><span className="font-bold">Follow-up Strategy:</span> {soul.needsAssessment.followUpPlan}</span>
+                                                </p>
+                                            )}
                                             {soul.needsAssessment.emotionalNeeds && (
                                                 <p className="text-[11px] leading-tight flex items-start gap-2">
                                                     <Heart className="h-3 w-3 text-red-500 shrink-0 mt-0.5" />
@@ -454,19 +466,19 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
             <TableCell className="p-4"><Badge className={cn("w-[110px] justify-center text-[10px] uppercase font-black tracking-widest leading-none h-6", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
             <TableCell className="hidden lg:table-cell p-4">
                 <div className="space-y-1.5">
-                    {soul.fellowshipName ? (
+                    {soul.fellowshipId && soul.fellowshipName ? (
                         <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary leading-none">
                             <HeartHandshake className="h-3 w-3 shrink-0" />
                             {soul.fellowshipName}
                         </div>
                     ) : null}
-                    {soul.associationName ? (
+                    {soul.associationId && soul.associationName ? (
                         <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-blue-500 leading-none">
                             <Group className="h-3 w-3 shrink-0" />
                             {soul.associationName}
                         </div>
                     ) : null}
-                    {!soul.fellowshipName && !soul.associationName && <span className="text-muted-foreground text-[9px] font-black uppercase tracking-widest opacity-30 italic">Unplaced</span>}
+                    {!soul.fellowshipId && !soul.associationId && <span className="text-muted-foreground text-[9px] font-black uppercase tracking-widest opacity-30 italic">Unplaced</span>}
                 </div>
             </TableCell>
             <TableCell className="hidden sm:table-cell p-4">
