@@ -64,7 +64,7 @@ import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { cn, safeToDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -79,6 +79,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -397,7 +398,7 @@ export default function SoulsWonPage() {
                                                         unoptimized 
                                                     />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                                                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                                                    <div className="absolute bottom-3 left-3 right-3 text-white text-left">
                                                         <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight">
                                                             {s.nickname || s.firstName}
                                                         </p>
@@ -470,7 +471,7 @@ export default function SoulsWonPage() {
                                                 </div>
                                                 <span className="font-black text-lg text-primary tracking-tighter">{group.count}</span>
                                             </div>
-                                            <div className="space-y-1.5">
+                                            <div className="space-y-1.5 text-left">
                                                 <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                                                     <span>{group.label}</span>
                                                     <span>{Math.round(percent)}%</span>
@@ -525,7 +526,7 @@ export default function SoulsWonPage() {
         <SoulAssessmentDialog soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
                 <AlertDialogHeader>
                     <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">Delete Record?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium leading-relaxed">
