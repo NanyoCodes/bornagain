@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
@@ -62,9 +63,7 @@ import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn, safeToDate, haversineDistance } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -78,6 +77,7 @@ import { format } from "date-fns";
 import { SoulAssessmentDialog } from "./soul-assessment-dialog";
 import { Progress } from "@/components/ui/progress";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -110,8 +110,8 @@ export default function SoulsWonPage() {
   const [deleteSoulId, setDeleteSoulId] = useState<string | null>(null);
   const [assessmentSoulId, setAssessmentSoulId] = useState<string | null>(null);
 
-  // New: Age filtering state
-  const [ageFilter, setAgeFilter] = useState<string | null>(null);
+  // Demographic Detail State
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState<string | null>(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGalleryPaused, setIsGalleryPaused] = useState(false);
@@ -126,7 +126,7 @@ export default function SoulsWonPage() {
     };
   }, [setIsSearchVisible, setSearchTerm, setSearchPlaceholder]);
 
-  const isAnyModalOpen = !!(followUpSoulId || historySoulId || assignSoulId || editSoulId || deleteSoulId || isLogDialogOpen || assessmentSoulId);
+  const isAnyModalOpen = !!(followUpSoulId || historySoulId || assignSoulId || editSoulId || deleteSoulId || isLogDialogOpen || assessmentSoulId || selectedAgeGroup);
 
   useEffect(() => {
     if (!isAnyModalOpen && typeof document !== 'undefined') {
@@ -150,7 +150,6 @@ export default function SoulsWonPage() {
 
   const duplicatedSouls = useMemo(() => {
       if (soulsWithPhotos.length === 0) return [];
-      // We triple the list to ensure a smooth transition for infinite scroll
       return [...soulsWithPhotos, ...soulsWithPhotos, ...soulsWithPhotos];
   }, [soulsWithPhotos]);
 
@@ -186,7 +185,7 @@ export default function SoulsWonPage() {
     return stats;
   }, [souls]);
 
-  const totalSouls = useMemo(() => souls?.length || 0, [souls]);
+  const totalSoulsCount = useMemo(() => souls?.length || 0, [souls]);
 
   // Derive live soul objects from IDs
   const soulForFollowUp = useMemo(() => souls?.find(s => s.id === followUpSoulId) || null, [souls, followUpSoulId]);
@@ -422,32 +421,14 @@ export default function SoulsWonPage() {
 
   const filteredSouls = useMemo(() => {
     if (!souls) return [];
+    if (!searchTerm) return souls;
     
-    let result = souls;
-
-    // Apply age group filter if active
-    if (ageFilter) {
-        result = result.filter(soul => {
-            const age = soul.age;
-            if (age === null || age === undefined) return ageFilter === 'unknown';
-            if (age <= 12) return ageFilter === 'Children (0-12)';
-            if (age <= 19) return ageFilter === 'Teens (13-19)';
-            if (age <= 35) return ageFilter === 'Young Adults (20-35)';
-            if (age <= 55) return ageFilter === 'Adults (36-55)';
-            return ageFilter === 'Seniors (56+)';
-        });
-    }
-
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(soul => 
-        `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
-        (soul.phone && soul.phone.toLowerCase().includes(term))
-      );
-    }
-    
-    return result;
-  }, [souls, searchTerm, ageFilter]);
+    const term = searchTerm.toLowerCase();
+    return souls.filter(soul => 
+      `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
+      (soul.phone && soul.phone.toLowerCase().includes(term))
+    );
+  }, [souls, searchTerm]);
 
   return (
     <>
@@ -590,25 +571,18 @@ export default function SoulsWonPage() {
                                     { label: 'Adults (36-55)', count: ageGroups.adults, color: 'bg-indigo-500', icon: Target },
                                     { label: 'Seniors (56+)', count: ageGroups.seniors, color: 'bg-purple-500', icon: Award },
                                 ].map(group => {
-                                    const percent = totalSouls > 0 ? (group.count / totalSouls) * 100 : 0;
+                                    const percent = totalSoulsCount > 0 ? (group.count / totalSoulsCount) * 100 : 0;
                                     const Icon = group.icon;
-                                    const isActive = ageFilter === group.label;
 
                                     return (
                                         <div 
                                             key={group.label} 
-                                            className={cn(
-                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden",
-                                                isActive ? "border-primary ring-2 ring-primary/20 shadow-md scale-[1.02]" : "hover:border-primary/20"
-                                            )}
-                                            onClick={() => setAgeFilter(isActive ? null : group.label)}
+                                            className="space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden hover:border-primary/20"
+                                            onClick={() => setSelectedAgeGroup(group.label)}
                                         >
                                             <div className="flex items-center justify-between">
-                                                <div className={cn(
-                                                    "h-8 w-8 rounded-xl flex items-center justify-center transition-colors",
-                                                    isActive ? "bg-primary text-white" : "bg-muted/50 group-hover:bg-primary/10"
-                                                )}>
-                                                    <Icon className={cn("h-4 w-4", isActive ? "text-white" : "text-muted-foreground group-hover:text-primary")} />
+                                                <div className="h-8 w-8 rounded-xl bg-muted/50 flex items-center justify-center transition-colors group-hover:bg-primary/10">
+                                                    <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
                                                 </div>
                                                 <span className="font-black text-lg text-primary tracking-tighter">{group.count}</span>
                                             </div>
@@ -622,7 +596,7 @@ export default function SoulsWonPage() {
                                             
                                             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                                                 <span className="text-[8px] font-black uppercase tracking-widest text-primary bg-background/90 px-3 py-1.5 rounded-full shadow-lg border">
-                                                    {isActive ? 'CLEAR FILTER' : 'CLICK TO VIEW SOULS IN THIS GROUP'}
+                                                    OPEN POP-UP PAGE
                                                 </span>
                                             </div>
                                         </div>
@@ -633,13 +607,9 @@ export default function SoulsWonPage() {
                                 <div className="flex justify-end pt-2">
                                     <Badge 
                                         variant="outline" 
-                                        className={cn(
-                                            "text-[8px] font-black uppercase tracking-widest bg-background/50 border-dashed cursor-pointer transition-all active:scale-95",
-                                            ageFilter === 'unknown' ? "bg-primary text-white border-none scale-105 shadow-md" : "hover:bg-primary/5 hover:border-primary/40"
-                                        )}
-                                        onClick={() => setAgeFilter(ageFilter === 'unknown' ? null : 'unknown')}
+                                        className="text-[8px] font-black uppercase tracking-widest bg-background/50 border-dashed cursor-pointer transition-all hover:bg-primary/5 active:scale-95"
+                                        onClick={() => setSelectedAgeGroup('unknown')}
                                     >
-                                        {ageFilter === 'unknown' && <X className="h-2 w-2 mr-1" />}
                                         {ageGroups.unknown} Records Pending Demographics
                                     </Badge>
                                 </div>
@@ -715,6 +685,78 @@ export default function SoulsWonPage() {
               if (!isOpen) setAssessmentSoulId(null);
           }}
       />
+      
+      {/* Demographic Discovery Pop-up */}
+      <Dialog open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
+          <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+              <div className="p-8 border-b bg-muted/10">
+                  <DialogHeader>
+                      <div className="flex items-center gap-3 mb-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Demographic Discovery</span>
+                      </div>
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">
+                        {selectedAgeGroup === 'unknown' ? 'Uncategorized Records' : `${selectedAgeGroup} Group`}
+                      </DialogTitle>
+                      <DialogDescription className="text-sm font-medium mt-1">
+                        Viewing harvest results for this specific age segment.
+                      </DialogDescription>
+                  </DialogHeader>
+              </div>
+              <ScrollArea className="max-h-[60vh]">
+                  <div className="p-6 space-y-3">
+                      {souls?.filter(soul => {
+                          const age = soul.age;
+                          if (selectedAgeGroup === 'unknown') return age === null || age === undefined;
+                          if (selectedAgeGroup === 'Children (0-12)') return age !== null && age !== undefined && age <= 12;
+                          if (selectedAgeGroup === 'Teens (13-19)') return age !== null && age !== undefined && age >= 13 && age <= 19;
+                          if (selectedAgeGroup === 'Young Adults (20-35)') return age !== null && age !== undefined && age >= 20 && age <= 35;
+                          if (selectedAgeGroup === 'Adults (36-55)') return age !== null && age !== undefined && age >= 36 && age <= 55;
+                          if (selectedAgeGroup === 'Seniors (56+)') return age !== null && age !== undefined && age >= 56;
+                          return false;
+                      }).map(soul => (
+                          <div key={soul.id} className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/5 group hover:bg-muted/10 transition-all">
+                              <Avatar className="h-10 w-10 border shadow-sm shrink-0">
+                                  <AvatarFallback className="font-bold bg-primary/10 text-primary uppercase">{soul.firstName?.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                  <p className="font-black text-sm uppercase tracking-tight truncate">{soul.firstName} {soul.lastName}</p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase tracking-widest">{soul.status}</Badge>
+                                    {soul.age && <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-tighter">Age: {soul.age}</span>}
+                                  </div>
+                              </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="rounded-xl h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-sm shrink-0" 
+                                onClick={() => { setSelectedAgeGroup(null); setFollowUpSoulId(soul.id); }}
+                              >
+                                Follow-up
+                              </Button>
+                          </div>
+                      ))}
+                      {souls?.filter(soul => {
+                          const age = soul.age;
+                          if (selectedAgeGroup === 'unknown') return age === null || age === undefined;
+                          if (selectedAgeGroup === 'Children (0-12)') return age !== null && age !== undefined && age <= 12;
+                          if (selectedAgeGroup === 'Teens (13-19)') return age !== null && age !== undefined && age >= 13 && age <= 19;
+                          if (selectedAgeGroup === 'Young Adults (20-35)') return age !== null && age !== undefined && age >= 20 && age <= 35;
+                          if (selectedAgeGroup === 'Adults (36-55)') return age !== null && age !== undefined && age >= 36 && age <= 55;
+                          if (selectedAgeGroup === 'Seniors (56+)') return age !== null && age !== undefined && age >= 56;
+                          return false;
+                      }).length === 0 && (
+                          <div className="py-12 text-center">
+                              <p className="text-xs text-muted-foreground italic">No souls found in this bracket.</p>
+                          </div>
+                      )}
+                  </div>
+              </ScrollArea>
+              <div className="p-6 border-t bg-muted/5 flex justify-end">
+                <Button variant="outline" onClick={() => setSelectedAgeGroup(null)} className="rounded-xl font-bold h-11 px-8">Close Discovery</Button>
+              </div>
+          </DialogContent>
+      </Dialog>
       
       {mounted && (
         <>
