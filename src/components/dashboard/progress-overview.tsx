@@ -216,7 +216,7 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                     </DialogContent>
                     </Dialog>
                 </div>
-                <CardDescription className="text-primary-foreground/80 font-medium">
+                <CardDescription className="text-primary-foreground/80 font-medium text-left">
                   Your mission goal for {format(currentDate, 'MMMM yyyy')}
                 </CardDescription>
             </CardHeader>

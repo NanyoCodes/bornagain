@@ -107,7 +107,7 @@ function SoulSelectionDialog({
                         <Input 
                             placeholder="Search by name..." 
                             value={search} 
-                            onChange={e => setSearch(e.target.value)}
+                            onChange={e => setSearchTerm(e.target.value)}
                             className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
@@ -416,19 +416,6 @@ function HelpNeedNoteDialog({
   );
 }
 
-const iconMap: Record<string, any> = {
-    'prayed_together': Sparkles,
-    'studied_bible': BookOpen,
-    'shared_meal': Utensils,
-    'visited_home': Home,
-    'introduced_friend': Users,
-    'gave_gift': Gift,
-    'phone_call': Phone,
-    'text_message': MessageSquare,
-    'helped_with_need': Heart,
-    'invited_to_event': Calendar,
-};
-
 export function RelationshipTrackerCard() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
@@ -687,6 +674,15 @@ export function RelationshipTrackerCard() {
       setCustomPrayerText('');
   };
 
+  const handleHelpNeedConfirm = async (note: string) => {
+    if (!helpNeedTargetSoul) return;
+    setTogglingId('helped_with_need');
+    await performLogging(helpNeedTargetSoul, 'helped_with_need', note);
+    setIsHelpNeedDialogOpen(false);
+    setHelpNeedTargetSoul(null);
+    setTogglingId(null);
+  };
+
   const handleShareSoul = (soul: Soul) => {
       setSharingSoul(soul);
       setIsSoulDialogOpen(false);
@@ -805,11 +801,11 @@ export function RelationshipTrackerCard() {
         <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 min-h-[5.5rem]">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
               <div className="space-y-1">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
                       <Sparkles className="h-5 w-5 text-primary" />
                       KINGDOM SOULS FOLLOW-UP
                   </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end shrink-0">
                 {currentDate ? (

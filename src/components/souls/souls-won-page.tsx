@@ -437,7 +437,7 @@ export default function SoulsWonPage() {
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
                             <BarChart3 className="h-5 w-5 text-primary" />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 text-left">
                             <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">AGE ANALYSIS</h2>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Demographic Discovery</p>
                         </div>

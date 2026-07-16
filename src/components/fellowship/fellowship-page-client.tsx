@@ -33,7 +33,7 @@ import {
     X,
     Target
 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -691,8 +691,8 @@ export default function FellowshipPageClient() {
                         <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6"/>
                         <span className="sr-only">Back</span>
                     </Button>
-                    <div className="min-w-0 flex-1">
-                        <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline tracking-tight truncate leading-tight uppercase text-balance break-words [overflow-wrap:anywhere] text-left">{fellowship.name}</h1>
+                    <div className="min-w-0 flex-1 text-left">
+                        <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline tracking-tight truncate leading-tight uppercase text-balance break-words [overflow-wrap:anywhere]">{fellowship.name}</h1>
                         <div className="flex items-center gap-2 mt-0.5">
                             <Badge variant="secondary" className="uppercase font-bold tracking-[0.2em] text-[8px] sm:text-[10px] px-2 h-5 shrink-0">{fellowship.groupType || 'Fellowship'}</Badge>
                             <span className="text-[9px] sm:xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 truncate">Global Community</span>
@@ -843,7 +843,7 @@ export default function FellowshipPageClient() {
                         </Tabs> : <div className="p-16 sm:p-24 text-center bg-muted/30 flex flex-col items-center"><div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/20 rounded-full flex items-center justify-center mb-8"><Users className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20" /></div><p className="text-xs sm:text-base text-muted-foreground italic px-12 leading-relaxed font-medium max-w-md mx-auto text-balance text-left">Join this community to access the shared directory and spiritual history.</p></div>}</CardContent></Card>
                     
                     <div ref={commentsAreaRef} className="pt-8">
-                        <div className="flex items-center gap-3 mb-6 px-1">
+                        <div className="flex items-center gap-3 mb-6 px-1 text-left">
                             <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
                                 <MessageSquare className="h-5 w-5 text-primary" />
                             </div>
