@@ -474,7 +474,7 @@ export function RelationshipTrackerCard() {
                                 </TooltipTrigger>
                                 <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
                                     <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
-                                    <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">{action.label}</p>
+                                    <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left">{action.label}</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -518,8 +518,8 @@ export function RelationshipTrackerCard() {
         <Dialog open={isSoulDialogOpen} onOpenChange={setIsSoulDialogOpen}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                 <DialogHeader className="p-8 border-b bg-muted/10">
-                    <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Who did you {activeActionLabel.toLowerCase()}?</DialogTitle>
-                    <DialogDescription className="text-sm font-medium">Select a convert to link this action to their record.</DialogDescription>
+                    <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {activeActionLabel.toLowerCase()}?</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
                 </DialogHeader>
                 <div className="p-6">
                     <SoulSelectionList 
@@ -569,8 +569,8 @@ export function RelationshipTrackerCard() {
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
             <div className="p-8 border-b bg-muted/10">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Kindness</DialogTitle>
-                <DialogDescription className="text-sm font-medium">How did you help {helpNeedTargetSoul?.firstName} today?</DialogDescription>
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Kindness</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-left">How did you help {helpNeedTargetSoul?.firstName} today?</DialogDescription>
               </DialogHeader>
             </div>
             <div className="p-8 space-y-6">

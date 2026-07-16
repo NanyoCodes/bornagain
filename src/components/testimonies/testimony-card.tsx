@@ -288,7 +288,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                                         {isRequestingPartner ? <Loader2 className="h-3 w-3 animate-spin" /> : hasPendingRequest ? <Hourglass className="h-3 w-3" /> : <UserPlus className="h-3 w-3" />}
                                     </Button>
                                 </TooltipTrigger>
-                                <TooltipContent><p>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p></TooltipContent>
+                                <TooltipContent><p className={cn("text-[10px] uppercase font-black tracking-widest")}>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p></TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     )}

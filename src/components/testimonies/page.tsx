@@ -237,7 +237,7 @@ export default function TestimoniesPage() {
             await runTransaction(firestore, async (transaction) => {
                 const testimonyDoc = await transaction.get(docRef);
                 if (!testimonyDoc.exists()) {
-                    throw new Error("This testimony has already been deleted.");
+                    return; // Already deleted
                 }
 
                 transaction.delete(docRef);
@@ -264,11 +264,6 @@ export default function TestimoniesPage() {
         
         setItemToDelete(null);
     } catch (error: any) {
-        if (error.message === "This testimony has already been deleted.") {
-            toast({ variant: 'destructive', title: 'Already Deleted', description: error.message });
-            setItemToDelete(null);
-            return;
-        }
         const permissionError = new FirestorePermissionError({
           path: docRef.path,
           operation: 'delete',
@@ -285,7 +280,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen ? true : undefined}
+      inert={isAnyModalOpen}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
@@ -487,8 +482,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline">Edit Testimony</DialogTitle>
-                        <DialogDescription className="text-sm">Make changes to your testimony here.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline text-left">Edit Testimony</DialogTitle>
+                        <DialogDescription className="text-sm text-left">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
@@ -503,8 +498,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline">Edit Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm">Update the details of your request.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline text-left">Edit Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
@@ -519,8 +514,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
-                        <DialogDescription className="text-sm">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
+                        <DialogDescription className="text-sm text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
@@ -535,8 +530,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline">Share Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm">Share your request with the Body of Christ.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline text-left">Share Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
