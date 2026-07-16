@@ -175,7 +175,7 @@ export default function SoulsWonPage() {
         stats.children++;
       } else if (age <= 19) {
         stats.teens++;
-      } else if (age <= 35) {
+      } else if (age <= 33) {
         stats.youngAdults++;
       } else if (age <= 55) {
         stats.adults++;
@@ -758,8 +758,8 @@ export default function SoulsWonPage() {
                                 {[
                                     { label: 'Children (0-12)', count: ageGroups.children, color: 'bg-blue-500', icon: Sparkles },
                                     { label: 'Teens (13-19)', count: ageGroups.teens, color: 'bg-green-500', icon: Zap },
-                                    { label: 'Young Adults (20-35)', count: ageGroups.youngAdults, color: 'bg-primary', icon: Flame },
-                                    { label: 'Adults (36-55)', count: ageGroups.adults, color: 'bg-indigo-500', icon: Target },
+                                    { label: 'Young Adults (20-33)', count: ageGroups.youngAdults, color: 'bg-primary', icon: Flame },
+                                    { label: 'Adults (34-55)', count: ageGroups.adults, color: 'bg-indigo-500', icon: Target },
                                     { label: 'Seniors (56+)', count: ageGroups.seniors, color: 'bg-purple-500', icon: Award },
                                 ].map(group => {
                                     const percent = totalSoulsCount > 0 ? (group.count / totalSoulsCount) * 100 : 0;
@@ -898,8 +898,8 @@ export default function SoulsWonPage() {
                           if (selectedAgeGroup === 'unknown') return age === null || age === undefined;
                           if (selectedAgeGroup === 'Children (0-12)') return age !== null && age !== undefined && age <= 12;
                           if (selectedAgeGroup === 'Teens (13-19)') return age !== null && age !== undefined && age >= 13 && age <= 19;
-                          if (selectedAgeGroup === 'Young Adults (20-35)') return age !== null && age !== undefined && age >= 20 && age <= 35;
-                          if (selectedAgeGroup === 'Adults (36-55)') return age !== null && age !== undefined && age >= 36 && age <= 55;
+                          if (selectedAgeGroup === 'Young Adults (20-33)') return age !== null && age !== undefined && age >= 20 && age <= 33;
+                          if (selectedAgeGroup === 'Adults (34-55)') return age !== null && age !== undefined && age >= 34 && age <= 55;
                           if (selectedAgeGroup === 'Seniors (56+)') return age !== null && age !== undefined && age >= 56;
                           return false;
                       }).map(soul => (
@@ -929,8 +929,8 @@ export default function SoulsWonPage() {
                           if (selectedAgeGroup === 'unknown') return age === null || age === undefined;
                           if (selectedAgeGroup === 'Children (0-12)') return age !== null && age !== undefined && age <= 12;
                           if (selectedAgeGroup === 'Teens (13-19)') return age !== null && age !== undefined && age >= 13 && age <= 19;
-                          if (selectedAgeGroup === 'Young Adults (20-35)') return age !== null && age !== undefined && age >= 20 && age <= 35;
-                          if (selectedAgeGroup === 'Adults (36-55)') return age !== null && age !== undefined && age >= 36 && age <= 55;
+                          if (selectedAgeGroup === 'Young Adults (20-33)') return age !== null && age !== undefined && age >= 20 && age <= 33;
+                          if (selectedAgeGroup === 'Adults (34-55)') return age !== null && age !== undefined && age >= 34 && age <= 55;
                           if (selectedAgeGroup === 'Seniors (56+)') return age !== null && age !== undefined && age >= 56;
                           return false;
                       }).length === 0 && (
