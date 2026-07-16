@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { 
   Dialog, 
   DialogContent, 
-  DialogDescription, 
   DialogHeader, 
   DialogTitle, 
+  DialogDescription,
+  DialogTrigger
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -27,7 +28,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { PlusCircle, Download, Loader2, Trash2, HeartHandshake, Sparkles, Info } from "lucide-react";
+import { 
+  Carousel, 
+  CarouselContent, 
+  CarouselItem 
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import { PlusCircle, Download, Loader2, Trash2, HeartHandshake, Sparkles, Info, Users, Image as ImageIcon } from "lucide-react";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
@@ -51,6 +58,8 @@ import { useRouter } from "next/navigation";
 import { RelationshipCircleTracker } from "./relationship-circle-tracker";
 import { Separator } from "../ui/separator";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -84,6 +93,8 @@ export default function SoulsWonPage() {
 
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const autoplayPlugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: true }));
+
   useEffect(() => {
     setMounted(true);
     setIsSearchVisible(true);
@@ -111,6 +122,10 @@ export default function SoulsWonPage() {
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+
+  const soulsWithPhotos = useMemo(() => {
+      return souls?.filter(s => s.photoURL) || [];
+  }, [souls]);
 
   // Derive live soul objects from IDs
   const soulForFollowUp = useMemo(() => souls?.find(s => s.id === followUpSoulId) || null, [souls, followUpSoulId]);
@@ -210,7 +225,6 @@ export default function SoulsWonPage() {
     batch.delete(soulRef);
     batch.delete(globalSoulRef);
     
-    // Non-blocking mutation to ensure immediate UI responsiveness
     batch.commit().catch(async (serverError) => {
         if (serverError.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
@@ -276,7 +290,6 @@ export default function SoulsWonPage() {
         }
     }
 
-    // Non-blocking updates
     updateDoc(soulRef, updateData).catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
             path: soulRef.path,
@@ -409,7 +422,61 @@ export default function SoulsWonPage() {
                     </CardContent>
                 </Card>
 
-                {/* Mission Dashboard Description */}
+                {/* Soul Slideshow */}
+                {soulsWithPhotos.length > 0 && (
+                    <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700">
+                        <div className="flex items-center gap-2 mb-4 px-1">
+                            <ImageIcon className="h-4 w-4 text-primary" />
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Gallery of Victory</h3>
+                        </div>
+                        <Carousel 
+                            plugins={[autoplayPlugin.current]} 
+                            className="w-full"
+                            opts={{ align: "start", loop: true }}
+                        >
+                            <CarouselContent className="-ml-4">
+                                {soulsWithPhotos.map((s) => (
+                                    <CarouselItem key={s.id} className="pl-4 basis-[140px] sm:basis-[180px]">
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-95 transition-all">
+                                                    <Image 
+                                                        src={s.photoURL!} 
+                                                        alt={s.firstName} 
+                                                        fill 
+                                                        className="object-cover transition-transform group-hover:scale-110 duration-500" 
+                                                        unoptimized 
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                                                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                                                        <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight">{s.firstName}</p>
+                                                        <Badge className="bg-primary text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1">{s.status}</Badge>
+                                                    </div>
+                                                </div>
+                                            </DialogTrigger>
+                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                                                <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
+                                                <div className="relative h-full w-full flex items-center justify-center p-4">
+                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                                                        <Image 
+                                                            src={s.photoURL!} 
+                                                            alt={s.firstName} 
+                                                            fill 
+                                                            className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                                            unoptimized 
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </DialogContent>
+                                        </Dialog>
+                                    </CarouselItem>
+                                ))}
+                            </CarouselContent>
+                        </Carousel>
+                    </div>
+                )}
+
+                {/* Mission Dashboard Header & Description */}
                 <div className="px-4 sm:px-0 space-y-4">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
