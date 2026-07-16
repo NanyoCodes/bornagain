@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
@@ -11,7 +10,6 @@ import { CreatePrayerRequestForm } from "@/components/prayer/CreatePrayerRequest
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -105,7 +103,7 @@ export default function TestimoniesPage() {
 
   const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony', data: Testimony } | { type: 'prayer', data: PrayerRequest } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [testimonyToEdit, setTestimonyToEdit] = setTestimonyToEdit<Testimony | null>(null);
+  const [testimonyToEdit, setTestimonyToEdit] = useState<Testimony | null>(null);
   const [prayerToEdit, setPrayerToEdit] = useState<PrayerRequest | null>(null);
   const [prayerToAnswer, setPrayerToAnswer] = useState<PrayerRequest | null>(null);
 
@@ -247,7 +245,6 @@ export default function TestimoniesPage() {
                 if (testimonyToDelete.answeredPrayerId) {
                     const prayerRef = doc(firestore, 'prayerRequests', testimonyToDelete.answeredPrayerId);
                     const prayerSnap = await transaction.get(prayerRef);
-                    // Check existence within transaction for robustness
                     if (prayerSnap.exists()) {
                         transaction.update(prayerRef, {
                             status: 'pending',
@@ -288,12 +285,10 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen}
+      inert={isAnyModalOpen ? "" : undefined}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-        {/* Main Feed Column */}
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
-            {/* Interaction Box */}
             <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden">
                 <CardContent className="p-3 sm:p-6">
                 <div className="flex flex-row items-center gap-2 sm:gap-4 w-full">
@@ -357,7 +352,7 @@ export default function TestimoniesPage() {
                         {!loading && filteredTestimonies?.length === 0 && (
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
                             <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                            <h3 className="text-2xl font-black font-headline tracking-tight uppercase text-left">Your Altar of Praise</h3>
+                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight uppercase text-left">Your Altar of Praise</h3>
                             <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-left">
                             Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
                             </p>
@@ -395,13 +390,11 @@ export default function TestimoniesPage() {
             </Tabs>
         </div>
 
-        {/* Specialized Testimony Sidebar */}
         <div className="lg:col-span-4">
             <FeedSidebar mode="testimonies" />
         </div>
       </div>
       
-      {/* Delete Confirmation */}
       <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
           <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
           <AlertDialogHeader>
@@ -420,7 +413,6 @@ export default function TestimoniesPage() {
           </AlertDialogContent>
       </AlertDialog>
 
-      {/* Form Dialogs/Sheets */}
       {mounted && (
         <>
           {isMobile ? (

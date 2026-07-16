@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -220,6 +219,15 @@ export function RelationshipTrackerCard() {
       setIsSoulDialogOpen(true);
   };
 
+  const handleHelpNeedConfirm = async (note: string) => {
+    if (!helpNeedTargetSoul) return;
+    setTogglingId('helped_with_need');
+    await performLogging(helpNeedTargetSoul, 'helped_with_need', note);
+    setIsHelpNeedDialogOpen(false);
+    setHelpNeedTargetSoul(null);
+    setTogglingId(null);
+  };
+
   const performLogging = async (soul: Soul, actionId: string, customNote?: string) => {
       if (!user || !firestore) return;
 
@@ -315,15 +323,6 @@ export function RelationshipTrackerCard() {
           }, user);
           errorEmitter.emit('permission-error', permissionError);
       }
-  };
-
-  const handleHelpNeedConfirm = async (note: string) => {
-    if (!helpNeedTargetSoul) return;
-    setTogglingId('helped_with_need');
-    await performLogging(helpNeedTargetSoul, 'helped_with_need', note);
-    setIsHelpNeedDialogOpen(false);
-    setHelpNeedTargetSoul(null);
-    setTogglingId(null);
   };
 
   const handleSoulSelected = async (soul: Soul) => {
@@ -497,7 +496,6 @@ export function RelationshipTrackerCard() {
         </CardFooter>
       </Card>
 
-      {/* Responsive Soul Selection Dialog */}
       {isMobile ? (
         <Sheet open={isSoulDialogOpen} onOpenChange={setIsSoulDialogOpen}>
             <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
@@ -534,7 +532,6 @@ export function RelationshipTrackerCard() {
         </Dialog>
       )}
 
-      {/* Responsive Help Need Note Dialog */}
       {isMobile ? (
           <Sheet open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
               <SheetContent side="bottom" className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">

@@ -50,7 +50,8 @@ import {
     LinkIcon,
     Library,
     PlusCircle,
-    ExternalLink
+    ExternalLink,
+    Target
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -196,7 +197,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-xl max-h-[85vh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col">
+            <DialogContent className="sm:max-w-xl max-h-[85vh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col text-left">
                 <div className="p-8 border-b bg-muted/10 shrink-0">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Victory over {categoryTitle}</DialogTitle>
@@ -336,7 +337,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         } catch (error) {
             toast({ variant: 'destructive', title: 'Action Failed' });
         } finally {
-            setIsSubmittingResource(false);
+            setIsSubmitting(false);
         }
     };
 
@@ -396,7 +397,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 text-left">
                     <div className="flex items-center gap-2 mb-1">
                         <Users className="h-3.5 w-3.5 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Victory Circle</span>
@@ -407,13 +408,13 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
             <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-xl overflow-hidden bg-primary text-primary-foreground">
                 <CardContent className="p-8 sm:p-10 space-y-6">
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-4 text-left">
                         <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
                             <ShieldCheck className="h-6 w-6 text-white" />
                         </div>
                         <div className="space-y-1">
                             <h2 className="text-xl font-black uppercase tracking-tight leading-tight">Shared Transparency</h2>
-                            <p className="text-sm font-medium text-white/80 leading-relaxed text-balance text-left">
+                            <p className="text-sm font-medium text-white/80 leading-relaxed text-balance">
                                 Bringing struggles into the Light of the Body reveals the path to victory. Share your story or strategy below.
                             </p>
                         </div>
@@ -449,7 +450,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
             {/* Armor of the Word - Dropdown Version */}
             <section className="space-y-4 px-4 sm:px-0">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 text-left">
                     <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
                         <BookOpen className="h-5 w-5 text-primary" />
                     </div>
@@ -484,13 +485,13 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 <p className="text-xs font-black uppercase tracking-[0.2em] text-primary text-right mt-4">— {activeScripture.verse}</p>
                             </div>
                             <div className="p-5 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20">
-                                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 mb-2">
+                                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 mb-2 text-left">
                                     <HandHeart className="h-3 w-3" /> Victory Prayer
                                 </div>
                                 <p className="text-sm font-medium leading-relaxed text-foreground/70 italic text-left">
                                     &ldquo;{activeScripture.prayer}&rdquo;
                                 </p>
-                                <div className="pt-4">
+                                <div className="pt-4 flex justify-start">
                                     <Button 
                                         onClick={() => handleAmen(parseInt(selectedVerseIdx, 10))}
                                         variant="outline" 
@@ -513,7 +514,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             {/* Kingdom Provisions - Resources Box */}
             <section className="space-y-6 px-4 sm:px-0">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 text-left">
                         <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner">
                             <Library className="h-5 w-5 text-indigo-600" />
                         </div>
@@ -556,7 +557,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
                                                     <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <MoreVertical className="h-3.5 w-3.5" />
+                                                        <MoreHorizontal className="h-3.5 w-3.5" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="rounded-xl">
@@ -583,7 +584,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             </section>
 
             <div className="space-y-6 px-4 sm:px-0">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner">
                             <MessageSquare className="h-5 w-5 text-muted-foreground" />
@@ -613,7 +614,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             return (
                                 <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5">
                                     <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between">
-                                        <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-3 text-left">
                                             <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner">
                                                 <Users className="h-5 w-5 text-muted-foreground/40" />
                                             </div>
@@ -635,7 +636,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end" className="rounded-xl">
                                                         <DropdownMenuItem onClick={() => { setEditingPostId(post.id); setEditingText(post.text); }} className="rounded-lg">
-                                                            <Edit className="mr-2 h-4 w-4" /> Edit Story
+                                                            <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Story
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator />
                                                         <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg">
@@ -706,9 +707,13 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
             {/* Drop Provision Dialog */}
             <Dialog open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
-                <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+                <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                     <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
+                            <div className="flex items-center gap-2.5 mb-1.5">
+                                <Target className="h-4 w-4 text-primary" />
+                                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Supply Drop</span>
+                            </div>
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">
                                 {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                             </DialogTitle>

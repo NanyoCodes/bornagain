@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -188,8 +187,8 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
-                            <DialogTitle>Set Goal for {format(currentDate, 'MMMM')}</DialogTitle>
-                            <DialogDescription>
+                            <DialogTitle className="text-left">Set Goal for {format(currentDate, 'MMMM')}</DialogTitle>
+                            <DialogDescription className="text-left">
                                 Set your personal goal for souls won for the current month.
                             </DialogDescription>
                         </DialogHeader>
@@ -243,14 +242,14 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
                         <div className="text-4xl font-bold flex items-center justify-center gap-2">
                            {testimonyStreak} <Flame className="h-8 w-8" />
                         </div>
-                        <p className="text-sm opacity-80 font-medium uppercase tracking-tight">Testimony Streak</p>
+                        <p className="text-sm opacity-80 font-medium uppercase tracking-tight text-left">Testimony Streak</p>
                     </div>
                     <div className="h-16 w-px bg-primary-foreground/30"></div>
                      <div className="flex flex-col items-center gap-1">
                         <div className="text-4xl font-bold flex items-center justify-center gap-2">
                            {loadingDiscipline ? <div className="animate-pulse rounded-md h-8 w-10 bg-white/20" /> : disciplineStreak} <Zap className="h-8 w-8" />
                         </div>
-                        <p className="text-sm opacity-80 uppercase tracking-tight">Discipline Streak</p>
+                        <p className="text-sm opacity-80 uppercase tracking-tight text-left">Discipline Streak</p>
                     </div>
                 </div>
             </CardContent>
