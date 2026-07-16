@@ -65,7 +65,7 @@ import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn, safeToDate, haversineDistance } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -96,10 +96,10 @@ const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').the
 const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 
 export default function SoulsWonPage() {
+  const router = useRouter();
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const router = useRouter();
   const isMobile = useIsMobile();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
@@ -494,8 +494,8 @@ export default function SoulsWonPage() {
       doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
     } else {
       // CSV Export
-      const headers = ["Field", "Value"];
       const exportRows = [
+        ["Field", "Value"],
         ["Photo URL", soul.photoURL || 'N/A'],
         ...basicInfo,
         ...missionInfo,
@@ -704,7 +704,12 @@ export default function SoulsWonPage() {
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                                                     <div className="absolute bottom-3 left-3 right-3 text-white">
                                                         <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight">{s.firstName}</p>
-                                                        <Badge className="bg-primary text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1">{s.status}</Badge>
+                                                        <Badge className={cn(
+                                                            "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1",
+                                                            s.status === 'New' ? "bg-amber-500" : 
+                                                            s.status === 'Contacted' ? "bg-blue-500" : 
+                                                            "bg-green-500"
+                                                        )}>{s.status}</Badge>
                                                     </div>
                                                 </div>
                                             </DialogTrigger>
