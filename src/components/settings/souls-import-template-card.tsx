@@ -16,7 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 /**
  * @fileOverview Provides a standardized CSV template and bulk upload handler.
- * REDO: Improved UI guidance for dropdown options and robust row parsing.
+ * UPDATED: Includes hints directly in the CSV cells to guide users on valid options.
  */
 export function SoulsImportTemplateCard() {
   const { toast } = useToast();
@@ -45,6 +45,23 @@ export function SoulsImportTemplateCard() {
       "Source Details"
     ];
 
+    const hintsRow = [
+      "HINT: Required",
+      "HINT: Required",
+      "HINT: Male / Female",
+      "HINT: e.g. Nigerian",
+      "HINT: Valid email",
+      "HINT: +234...",
+      "HINT: Home church",
+      "HINT: Family / Friend / Colleague / Neighbor / Stranger / Other",
+      "HINT: City name",
+      "HINT: State name",
+      "HINT: Country name",
+      "HINT: 2024-12-31",
+      "HINT: Personal / Campaign",
+      "HINT: Campaign Title"
+    ];
+
     const exampleRow = [
       "John",
       "Doe",
@@ -62,7 +79,7 @@ export function SoulsImportTemplateCard() {
       ""
     ];
 
-    const csvContent = BOM + [headers.join(","), exampleRow.join(",")].join("\n");
+    const csvContent = BOM + [headers.join(","), hintsRow.join(","), exampleRow.join(",")].join("\n");
     
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -92,12 +109,15 @@ export function SoulsImportTemplateCard() {
         
         const dataRows = rows.filter(row => {
             const firstName = (row["First Name"] || row["firstName"] || "").toString().trim();
-            // Basic validation: must have a name and not be the example row
-            return firstName && firstName !== "John" && firstName.length > 1;
+            // Validation: Skip header hints and the example row
+            return firstName && 
+                   !firstName.toLowerCase().startsWith("hint:") && 
+                   firstName !== "John" && 
+                   firstName.length > 1;
         });
 
         if (dataRows.length === 0) {
-          toast({ variant: 'destructive', title: 'Invalid File', description: 'No valid records found after the header.' });
+          toast({ variant: 'destructive', title: 'Invalid File', description: 'No valid records found. Please ensure you didn\'t delete the header.' });
           setIsUploading(false);
           return;
         }
@@ -132,7 +152,6 @@ export function SoulsImportTemplateCard() {
             if (!isNaN(parsedDate.getTime())) wonAt = parsedDate;
           }
 
-          // Normalization logic for "Dropdown" fields
           const rawSource = (row["Source"] || "").toString().trim().toLowerCase();
           const source = rawSource.includes("campaign") ? "Campaign" : "Personal";
           
@@ -178,7 +197,7 @@ export function SoulsImportTemplateCard() {
         });
 
         if (successCount === 0) {
-          toast({ variant: 'destructive', title: 'Import Failed', description: 'Could not identify valid soul records.' });
+          toast({ variant: 'destructive', title: 'Import Failed', description: 'No valid records to process.' });
           setIsUploading(false);
           return;
         }
@@ -187,7 +206,7 @@ export function SoulsImportTemplateCard() {
           await batch.commit();
           toast({
             title: "Harvest Updated",
-            description: `Added ${successCount} new records to your list.`,
+            description: `Successfully added ${successCount} souls to your existing list.`,
           });
           if (fileInputRef.current) fileInputRef.current.value = '';
         } catch (error: any) {
@@ -200,7 +219,7 @@ export function SoulsImportTemplateCard() {
         }
       },
       error: (error) => {
-        toast({ variant: 'destructive', title: 'Parsing Error', description: 'Check your file format and try again.' });
+        toast({ variant: 'destructive', title: 'Upload Failed', description: 'The CSV file could not be parsed.' });
         setIsUploading(false);
       }
     });
@@ -217,7 +236,6 @@ export function SoulsImportTemplateCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="px-6 sm:p-8 pt-0 space-y-8">
-        {/* Dropdown Options Guide */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-muted/20 p-5 rounded-2xl border-2 border-dashed border-primary/10 shadow-inner">
             <div className="space-y-3">
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary">
@@ -228,7 +246,7 @@ export function SoulsImportTemplateCard() {
                         <Badge key={opt} variant="secondary" className="text-[8px] h-4 px-1.5 font-bold uppercase tracking-tight bg-background border leading-none">{opt}</Badge>
                     ))}
                 </div>
-                <p className="text-[9px] text-muted-foreground italic">Use these exact words for best results.</p>
+                <p className="text-[9px] text-muted-foreground italic">Use these exact terms in the Relationship column.</p>
             </div>
             <div className="space-y-3">
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary">
@@ -239,14 +257,14 @@ export function SoulsImportTemplateCard() {
                         <Badge key={opt} variant="secondary" className="text-[8px] h-4 px-1.5 font-bold uppercase tracking-tight bg-background border leading-none">{opt}</Badge>
                     ))}
                 </div>
-                <p className="text-[9px] text-muted-foreground italic">If Campaign, provide title in Source Details.</p>
+                <p className="text-[9px] text-muted-foreground italic">Template includes HINTS row to guide you.</p>
             </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Button onClick={handleDownloadTemplate} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm transition-all active:scale-95">
                 <Download className="mr-2 h-4 w-4" />
-                GET TEMPLATE
+                GET GUIDED TEMPLATE
             </Button>
             
             <div className="relative">
@@ -272,7 +290,7 @@ export function SoulsImportTemplateCard() {
         <div className="flex items-start gap-4 p-4 bg-muted/10 rounded-2xl border-none">
             <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed font-medium">
-                Uploading a list will <span className="text-foreground font-bold">append</span> new souls to your current harvest record. Duplicate protection is handled by generating unique Kingdom IDs for every imported soul.
+                The template includes a <span className="text-foreground font-bold">Hints Row</span>. You can leave it in or delete it—the system is smart enough to skip it automatically during the append process.
             </p>
         </div>
       </CardContent>
