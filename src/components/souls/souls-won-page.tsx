@@ -555,7 +555,7 @@ export default function SoulsWonPage() {
                         </div>
                         <div className="min-w-0">
                             <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">Harvest Statistics</h2>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Demographic Impact Analysis</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">SOULS- AGE ANALYSIS</p>
                         </div>
                     </div>
                     <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
