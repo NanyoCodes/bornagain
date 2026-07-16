@@ -1,20 +1,31 @@
+
 'use client';
 
+import React, { useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, FileSpreadsheet, Info } from 'lucide-react';
+import { Download, FileSpreadsheet, Info, Upload, Loader2, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useUser, useFirestore, useUserProfile } from '@/firebase';
+import { collection, doc, writeBatch, serverTimestamp, Timestamp } from 'firebase/firestore';
+import Papa from 'papaparse';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+import type { SoulRelationship } from '@/lib/types';
 
 /**
- * @fileOverview Provides a standardized CSV template for missionaries to organize their harvest records.
+ * @fileOverview Provides a standardized CSV template for missionaries and handles bulk uploads.
  */
 export function SoulsImportTemplateCard() {
   const { toast } = useToast();
+  const { user } = useUser();
+  const { userProfile } = useUserProfile();
+  const firestore = useFirestore();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleDownloadTemplate = () => {
-    // UTF-8 BOM for Excel compatibility with special characters
     const BOM = '\uFEFF';
-    
     const headers = [
       "First Name",
       "Last Name",
@@ -66,6 +77,119 @@ export function SoulsImportTemplateCard() {
     });
   };
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user || !firestore || !userProfile) return;
+
+    setIsUploading(true);
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        const rows = results.data as any[];
+        
+        if (rows.length === 0) {
+          toast({ variant: 'destructive', title: 'Empty File', description: 'No records found in the uploaded list.' });
+          setIsUploading(false);
+          return;
+        }
+
+        const batch = writeBatch(firestore);
+        const userSoulsRef = collection(firestore, `users/${user.uid}/souls`);
+        const globalSoulsRef = collection(firestore, 'souls');
+        
+        const processedUserLocation = userProfile.location ? {
+            city: userProfile.location.city || "",
+            country: userProfile.location.country || "",
+            city_lowercase: (userProfile.location.city || "").toLowerCase(),
+            country_lowercase: (userProfile.location.country || "").toLowerCase(),
+        } : null;
+
+        let successCount = 0;
+
+        rows.forEach((row) => {
+          // Map CSV headers to internal fields
+          const firstName = row["First Name"] || row["firstName"];
+          const lastName = row["Last Name"] || row["lastName"];
+          
+          if (!firstName || !lastName) return;
+
+          const newSoulId = doc(userSoulsRef).id;
+          const userSoulDocRef = doc(userSoulsRef, newSoulId);
+          const globalSoulDocRef = doc(globalSoulsRef, newSoulId);
+
+          let wonAt = new Date();
+          const dateStr = row["Date Won (YYYY-MM-DD)"] || row["wonAt"];
+          if (dateStr) {
+            const parsedDate = new Date(dateStr);
+            if (!isNaN(parsedDate.getTime())) wonAt = parsedDate;
+          }
+
+          const soulData = {
+            userId: user.uid,
+            firstName,
+            lastName,
+            photoURL: null,
+            gender: row["Gender"] || null,
+            nationality: row["Nationality"] || null,
+            email: row["Email"] || null,
+            phone: row["Phone"] || null,
+            church: row["Church"] || null,
+            relationship: (row["Relationship"] || "Other") as SoulRelationship,
+            locationWon: {
+              city: row["Location City"] || null,
+              state: row["Location State"] || null,
+              country: row["Location Country"] || null,
+              latitude: null,
+              longitude: null
+            },
+            wonAt: Timestamp.fromDate(wonAt),
+            status: "New",
+            followUpLog: [],
+            source: (row["Source (Personal or Campaign)"] || "Personal") as 'Personal' | 'Campaign',
+            sourceDetails: row["Source Details"] || null,
+            userLocation: processedUserLocation,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          };
+
+          batch.set(userSoulDocRef, soulData);
+          batch.set(globalSoulDocRef, soulData);
+          successCount++;
+        });
+
+        if (successCount === 0) {
+          toast({ variant: 'destructive', title: 'Import Failed', description: 'Could not identify valid soul records in the file.' });
+          setIsUploading(false);
+          return;
+        }
+
+        try {
+          await batch.commit();
+          toast({
+            title: "Harvest Synchronized",
+            description: `Successfully added ${successCount} believers to your souls list.`,
+          });
+          if (fileInputRef.current) fileInputRef.current.value = '';
+        } catch (error: any) {
+          const permissionError = new FirestorePermissionError({
+            path: `users/${user.uid}/souls`,
+            operation: 'write',
+          }, user);
+          errorEmitter.emit('permission-error', permissionError);
+        } finally {
+          setIsUploading(false);
+        }
+      },
+      error: (error) => {
+        console.error("CSV Parsing Error:", error);
+        toast({ variant: 'destructive', title: 'File Error', description: 'Could not read the CSV file correctly.' });
+        setIsUploading(false);
+      }
+    });
+  };
+
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
       <CardHeader>
@@ -73,22 +197,54 @@ export function SoulsImportTemplateCard() {
           <FileSpreadsheet className="h-5 w-5 text-primary" /> Harvest Management
         </CardTitle>
         <CardDescription>
-          Prepare your souls list using our standardized spreadsheet template.
+          Organize your souls list using our template and upload it to synchronize your records.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <div className="p-4 bg-muted/20 rounded-2xl border-2 border-dashed flex items-start gap-4">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <Info className="h-5 w-5 text-primary" />
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                This template helps you organize convert data before logging it. Proper formatting of <span className="text-foreground font-black">Relationship</span> and <span className="text-foreground font-black">Location</span> fields ensures your follow-up metrics remain accurate.
-            </p>
+            <div className="space-y-1.5">
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium">
+                    This hub allows you to maintain your records offline and sync them with the Kingdom cloud. Proper formatting of <span className="text-foreground font-black uppercase text-[10px]">Relationship</span> and <span className="text-foreground font-black uppercase text-[10px]">Date</span> fields ensures your follow-up metrics remain accurate.
+                </p>
+            </div>
         </div>
-        <Button onClick={handleDownloadTemplate} className="w-full sm:w-auto h-12 px-8 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-primary/20">
-          <Download className="mr-2 h-4 w-4" />
-          DOWNLOAD IMPORT TEMPLATE
-        </Button>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Button onClick={handleDownloadTemplate} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5">
+                <Download className="mr-2 h-4 w-4" />
+                GET TEMPLATE
+            </Button>
+            
+            <div className="relative">
+                <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept=".csv" 
+                    onChange={handleFileUpload}
+                    disabled={isUploading}
+                />
+                <Button 
+                    onClick={() => fileInputRef.current?.click()} 
+                    disabled={isUploading}
+                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20"
+                >
+                    {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                    {isUploading ? 'SYNCHRONIZING...' : 'UPLOAD COMPLETED LIST'}
+                </Button>
+            </div>
+        </div>
+
+        {isUploading && (
+            <div className="flex items-center gap-3 justify-center py-2 animate-pulse">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-primary">Kingdom record update in progress</p>
+                <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+            </div>
+        )}
       </CardContent>
     </Card>
   );
