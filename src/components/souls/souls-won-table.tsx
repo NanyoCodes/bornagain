@@ -347,7 +347,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
 
                                {latestFollowUp && latestFollowUpDate ? (
                                     <div className="text-xs">
-                                        <p className="font-black uppercase tracking-tighter text-primary/70 mb-2">LAST LOG: {format(latestFollowUpDate, "MMM d, yyyy")}</p>
+                                        <p className="font-black uppercase tracking-tighter text-primary/70 mb-2 text-left">LAST LOG: {format(latestFollowUpDate, "MMM d, yyyy")}</p>
                                         <div className="flex flex-wrap gap-1.5 mb-2">
                                             {latestFollowUp.actions?.map(actionId => {
                                                 const action = actionItems.find(a => a.id === actionId);
@@ -359,13 +359,13 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                             })}
                                         </div>
                                         {latestFollowUp.note && (
-                                            <p className="text-muted-foreground line-clamp-3 italic leading-relaxed text-balance">
+                                            <p className="text-muted-foreground line-clamp-3 italic leading-relaxed text-balance text-left">
                                                 &ldquo;{latestFollowUp.note}&rdquo;
                                             </p>
                                         )}
                                     </div>
                                 ) : (
-                                    <p className="text-xs text-muted-foreground italic py-2 opacity-60">No follow-up interactions recorded yet. Begin their journey today!</p>
+                                    <p className="text-xs text-muted-foreground italic py-2 opacity-60 text-left">No follow-up interactions recorded yet. Begin their journey today!</p>
                                 )}
                                 <div className="grid grid-cols-2 gap-2 pt-1">
                                     <Button size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md" onClick={() => triggerAction(onFollowUp)}>FOLLOW-UP</Button>
@@ -490,7 +490,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                     <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Soul Control</DropdownMenuLabel>
                         <DropdownMenuItem onSelect={() => triggerAction(onEdit)}>
-                            <Edit className="mr-2 h-4 w-4" /> Edit Details
+                            <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Details
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => triggerAction(onAssess)}>
                             <ClipboardList className="mr-2 h-4 w-4 text-primary" /> Assess Needs

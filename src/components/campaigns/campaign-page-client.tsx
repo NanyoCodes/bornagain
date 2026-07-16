@@ -169,8 +169,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </div>
 
                     <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden mx-4 sm:mx-0">
-                        <CardHeader className="p-8 border-b bg-muted/5">
-                            <CardTitle className="flex items-center justify-between text-lg font-black uppercase tracking-tight text-left">
+                        <CardHeader className="p-8 border-b bg-muted/5 text-left">
+                            <CardTitle className="flex items-center justify-between text-lg font-black uppercase tracking-tight">
                                 <span className="flex items-center gap-2"><Users className="h-5 w-5 text-primary" /> Participants</span>
                                 <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{participants?.length || 0}</Badge>
                             </CardTitle>
@@ -218,11 +218,11 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </Card>
 
                     <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10">
-                        <CardHeader className="pb-3"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Organizer</CardTitle></CardHeader>
+                        <CardHeader className="pb-3 text-left"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Organizer</CardTitle></CardHeader>
                         <CardContent>
                             <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-all text-left">
                                 <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-xl"><AvatarFallback className="font-black">{campaign.organizerFirstName?.charAt(0)}</AvatarFallback></Avatar>
-                                <div className="min-w-0 flex-1"><span className="font-black text-base group-hover:text-primary transition-colors block truncate uppercase">{campaign.organizerFirstName} {campaign.organizerLastName}</span><span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Mission Leader</span></div>
+                                <div className="min-w-0 flex-1 text-left"><span className="font-black text-base group-hover:text-primary transition-colors block truncate uppercase">{campaign.organizerFirstName} {campaign.organizerLastName}</span><span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Mission Leader</span></div>
                             </Link>
                         </CardContent>
                     </Card>
