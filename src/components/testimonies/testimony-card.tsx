@@ -300,6 +300,11 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         </CardHeader>
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
+          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify">
+            <p ref={contentRef} className={cn("leading-relaxed capitalize", testimony.mediaUrl ? "line-clamp-3" : "line-clamp-6")}>{testimony.content}</p>
+            {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
+          </div>
+
           {testimony.mediaUrl && (
               <div 
                 className="relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted cursor-pointer aspect-video group/media"
@@ -324,10 +329,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({
               </div>
           )}
 
-          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify">
-            <p ref={contentRef} className={cn("leading-relaxed capitalize", testimony.mediaUrl ? "line-clamp-3" : "line-clamp-6")}>{testimony.content}</p>
-            {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
-          </div>
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
             <Card className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner">
                 <CardHeader className="p-4">
