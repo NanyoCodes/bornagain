@@ -115,8 +115,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm">
                     <ArrowLeft className="h-5 w-5"/>
                 </Button>
-                <div className="min-w-0 flex-1">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight truncate uppercase text-left">{campaign.title}</h1>
+                <div className="min-w-0 flex-1 text-left">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight truncate uppercase">{campaign.title}</h1>
                     <div className="flex items-center gap-2 mt-1">
                         <Badge variant={status === 'Ongoing' ? 'default' : 'outline'} className="uppercase font-bold tracking-widest text-[10px]">
                             {status}
@@ -170,7 +170,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
                     <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden mx-4 sm:mx-0">
                         <CardHeader className="p-8 border-b bg-muted/5">
-                            <CardTitle className="flex items-center justify-between text-lg font-black uppercase tracking-tight">
+                            <CardTitle className="flex items-center justify-between text-lg font-black uppercase tracking-tight text-left">
                                 <span className="flex items-center gap-2"><Users className="h-5 w-5 text-primary" /> Participants</span>
                                 <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{participants?.length || 0}</Badge>
                             </CardTitle>
@@ -187,7 +187,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         </CardContent>
                     </Card>
 
-                    <div className="space-y-6 px-4 sm:px-0">
+                    <div className="space-y-6 px-4 sm:px-0 text-left">
                         <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-2"><Newspaper className="h-5 w-5 text-primary" /> Campaign Testimonies</h3>
                         <div className="flex flex-col gap-4">
                             {testimonies?.map(t => <TestimonyCard key={t.id} testimony={t} onDelete={() => {}} onEdit={() => {}} currentUserProfile={userProfile} />)}
@@ -195,9 +195,9 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </div>
                 </div>
 
-                <div className="space-y-8 flex flex-col px-4 sm:px-0">
+                <div className="space-y-8 flex flex-col px-4 sm:px-0 text-left">
                     <Card className="rounded-[2rem] sm:rounded-3xl shadow-xl border-none bg-primary text-primary-foreground">
-                        <CardHeader className="pb-4 text-left"><CardTitle className="text-base font-black uppercase tracking-[0.2em] opacity-80">Mission Hub</CardTitle></CardHeader>
+                        <CardHeader className="pb-4"><CardTitle className="text-base font-black uppercase tracking-[0.2em] opacity-80">Mission Hub</CardTitle></CardHeader>
                         <CardContent className="flex flex-col gap-3">
                             {isJoined && status === 'Ongoing' && (
                                 <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20" onClick={() => setIsLogSoulOpen(true)}>
@@ -218,7 +218,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </Card>
 
                     <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10">
-                        <CardHeader className="pb-3 text-left"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Organizer</CardTitle></CardHeader>
+                        <CardHeader className="pb-3"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Organizer</CardTitle></CardHeader>
                         <CardContent>
                             <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-all text-left">
                                 <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-xl"><AvatarFallback className="font-black">{campaign.organizerFirstName?.charAt(0)}</AvatarFallback></Avatar>

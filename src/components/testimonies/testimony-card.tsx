@@ -343,8 +343,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({
           )}
 
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
-            <Card className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden">
-                <CardHeader className="p-4">
+            <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden">
+                <div className="p-4">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1 text-left">Answer to Prayer Request:</div>
                     <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground text-left">
                         <div className="line-clamp-2">
@@ -361,8 +361,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                             Read Full Request
                         </Button>
                     )}
-                </CardHeader>
-            </Card>
+                </div>
+            </div>
            )}
 
            {totalReactions > 0 && (

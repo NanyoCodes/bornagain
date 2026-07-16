@@ -107,7 +107,7 @@ function SoulSelectionDialog({
                         <Input 
                             placeholder="Search by name..." 
                             value={search} 
-                            onChange={e => setSearch(e.target.value)}
+                            onChange={e => setSearchTerm(e.target.value)}
                             className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
@@ -436,7 +436,7 @@ export function RelationshipTrackerCard() {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
-  const [completedToday, setCompletedToday] = setCompletedToday<string[]>([]);
+  const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [pendingActions, setPendingActions] = useState<string[]>([]);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
@@ -664,15 +664,6 @@ export function RelationshipTrackerCard() {
       });
   };
 
-  const handleHelpNeedConfirm = async (note: string) => {
-      if (!helpNeedTargetSoul || !selectedActionId) return;
-      setTogglingId(selectedActionId);
-      setIsHelpNeedDialogOpen(false);
-      await performLogging(helpNeedTargetSoul, selectedActionId, note);
-      setTogglingId(null);
-      setHelpNeedTargetSoul(null);
-  };
-
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
       if (!commTargetSoul || !commTargetSoul.phone) return;
       
@@ -775,8 +766,10 @@ export function RelationshipTrackerCard() {
     const partners = userProfile?.accountabilityPartners || [];
     const uniqueMap = new Map();
     partners.forEach(p => {
-        if (p.userId && !uniqueMap.has(p.userId)) {
+        if (p.userId) {
+          if (!uniqueMap.has(p.userId) || (!uniqueMap.get(p.userId).photoURL && p.photoURL)) {
             uniqueMap.set(p.userId, p);
+          }
         }
     });
     return Array.from(uniqueMap.values());
