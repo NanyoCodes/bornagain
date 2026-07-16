@@ -81,6 +81,7 @@ import { format } from "date-fns";
 import { SoulAssessmentDialog } from "./soul-assessment-dialog";
 import { Progress } from "@/components/ui/progress";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -518,8 +519,8 @@ export default function SoulsWonPage() {
                             <BarChart3 className="h-5 w-5 text-primary" />
                         </div>
                         <div className="min-w-0">
-                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">Harvest Statistics</h2>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">SOULS- AGE ANALYSIS</p>
+                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">SOULS- AGE ANALYSIS</h2>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Demographic Reach</p>
                         </div>
                     </div>
                     <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
@@ -538,7 +539,10 @@ export default function SoulsWonPage() {
                                     return (
                                         <div 
                                             key={group.label} 
-                                            className="space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden hover:border-primary/20"
+                                            className={cn(
+                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden",
+                                                "hover:border-primary/20"
+                                            )}
                                             onClick={() => setSelectedAgeGroup(group.label)}
                                         >
                                             <div className="flex items-center justify-between">
