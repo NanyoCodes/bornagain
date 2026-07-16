@@ -278,6 +278,17 @@ export type FollowUpLogItem = {
 
 export type SoulRelationship = 'Family' | 'Friend' | 'Colleague' | 'Neighbor' | 'Stranger' | 'Other';
 
+export type SoulNeedsAssessment = {
+  generalImpression?: string;
+  followUpPlan?: string;
+  emotionalNeeds?: string;
+  physicalNeeds?: string;
+  financialNeeds?: string;
+  socialNeeds?: string;
+  otherNeeds?: string;
+  updatedAt?: Timestamp;
+};
+
 export type Soul = {
   id: string;
   userId: string;
@@ -317,6 +328,7 @@ export type Soul = {
   fellowshipName?: string;
   associationId?: string;
   associationName?: string;
+  needsAssessment?: SoulNeedsAssessment;
 };
 
 export type ChatParticipantInfo = {

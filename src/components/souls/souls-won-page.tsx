@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
@@ -12,7 +13,7 @@ import {
   Sparkles, 
   Info, 
   Users, 
-  Image as ImageIcon 
+  ImageIcon 
 } from "lucide-react";
 import { 
   Dialog, 
@@ -67,6 +68,7 @@ import { useRouter } from "next/navigation";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
 import Image from "next/image";
 import { format } from "date-fns";
+import { SoulAssessmentDialog } from "./soul-assessment-dialog";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -97,6 +99,7 @@ export default function SoulsWonPage() {
   const [assignSoulId, setAssignSoulId] = useState<string | null>(null);
   const [editSoulId, setEditSoulId] = useState<string | null>(null);
   const [deleteSoulId, setDeleteSoulId] = useState<string | null>(null);
+  const [assessmentSoulId, setAssessmentSoulId] = useState<string | null>(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGalleryPaused, setIsGalleryPaused] = useState(false);
@@ -111,7 +114,7 @@ export default function SoulsWonPage() {
     };
   }, [setIsSearchVisible, setSearchTerm, setSearchPlaceholder]);
 
-  const isAnyModalOpen = !!(followUpSoulId || historySoulId || assignSoulId || editSoulId || deleteSoulId || isLogDialogOpen);
+  const isAnyModalOpen = !!(followUpSoulId || historySoulId || assignSoulId || editSoulId || deleteSoulId || isLogDialogOpen || assessmentSoulId);
 
   useEffect(() => {
     if (!isAnyModalOpen && typeof document !== 'undefined') {
@@ -145,6 +148,7 @@ export default function SoulsWonPage() {
   const soulToAssign = useMemo(() => souls?.find(s => s.id === assignSoulId) || null, [souls, assignSoulId]);
   const soulToEdit = useMemo(() => souls?.find(s => s.id === editSoulId) || null, [souls, editSoulId]);
   const soulToDelete = useMemo(() => souls?.find(s => s.id === deleteSoulId) || null, [souls, deleteSoulId]);
+  const soulToAssess = useMemo(() => souls?.find(s => s.id === assessmentSoulId) || null, [souls, assessmentSoulId]);
 
   const campaignsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -178,6 +182,7 @@ export default function SoulsWonPage() {
   const handleOpenAssign = useCallback((soul: Soul) => setAssignSoulId(soul.id), []);
   const handleOpenEdit = useCallback((soul: Soul) => setEditSoulId(soul.id), []);
   const handleOpenDelete = useCallback((soul: Soul) => setDeleteSoulId(soul.id), []);
+  const handleOpenAssessment = useCallback((soul: Soul) => setAssessmentSoulId(soul.id), []);
 
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
     if (!souls || souls.length === 0) return;
@@ -543,6 +548,7 @@ export default function SoulsWonPage() {
                         onOpenAssignDialog={handleOpenAssign}
                         onEdit={handleOpenEdit}
                         onDelete={handleOpenDelete}
+                        onAssess={handleOpenAssessment}
                     />
                 </div>
             </div>
@@ -581,6 +587,14 @@ export default function SoulsWonPage() {
               if (!isOpen) setAssignSoulId(null);
           }} 
           onAssignGroup={handleAssignGroup} 
+      />
+
+      <SoulAssessmentDialog
+          soul={soulToAssess}
+          isOpen={!!assessmentSoulId}
+          onOpenChange={(isOpen) => {
+              if (!isOpen) setAssessmentSoulId(null);
+          }}
       />
       
       {mounted && (

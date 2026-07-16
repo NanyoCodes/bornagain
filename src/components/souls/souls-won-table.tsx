@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -20,7 +21,8 @@ import {
   ArrowRight,
   Gift,
   Utensils,
-  Hourglass
+  Hourglass,
+  ClipboardList
 } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -86,7 +88,7 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     }
 }
 
-const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete }: { 
+const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: { 
   soul: Soul; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
@@ -94,6 +96,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
   onOpenAssignDialog: (soul: Soul) => void;
   onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
+  onAssess: (soul: Soul) => void;
 }) => {
     const { user } = useUser();
     const [pendingProvisions, setPendingProvisions] = React.useState<{ soulId: string; actionId: string }[]>([]);
@@ -227,6 +230,9 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                     <DropdownMenuItem onClick={() => triggerAction(onEdit)} className="rounded-lg">
                                         <Edit className="mr-2 h-4 w-4" /> Edit Details
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => triggerAction(onAssess)} className="rounded-lg">
+                                        <ClipboardList className="mr-2 h-4 w-4 text-primary" /> Assess Needs
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => triggerAction(onFollowUp)} className="rounded-lg">
                                         <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
                                     </DropdownMenuItem>
@@ -336,7 +342,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
 });
 SoulCard.displayName = "SoulCard";
 
-const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete }: { 
+const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: { 
   soul: Soul; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
@@ -344,6 +350,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
   onOpenAssignDialog: (soul: Soul) => void;
   onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
+  onAssess: (soul: Soul) => void;
 }) => {
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
@@ -441,6 +448,9 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                         <DropdownMenuItem onClick={() => triggerAction(onEdit)}>
                             <Edit className="mr-2 h-4 w-4" /> Edit Details
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => triggerAction(onAssess)}>
+                            <ClipboardList className="mr-2 h-4 w-4 text-primary" /> Assess Needs
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => triggerAction(onFollowUp)}>
                             <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
                         </DropdownMenuItem>
@@ -472,7 +482,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
 });
 SoulTableRow.displayName = "SoulTableRow";
 
-export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete }: {
+export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: {
   souls: Soul[];
   loading: boolean;
   onFollowUp: (soul: Soul) => void;
@@ -481,6 +491,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   onOpenAssignDialog: (soul: Soul) => void;
   onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
+  onAssess: (soul: Soul) => void;
 }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
@@ -521,7 +532,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
       return (
         <div className="space-y-px">
             {souls.map((soul) => (
-                <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} />
+                <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} onAssess={onAssess} />
             ))}
         </div>
       )
@@ -552,7 +563,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
           </TableHeader>
           <TableBody>
             {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} />
+              <SoulTableRow key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} onAssess={onAssess} />
             ))}
           </TableBody>
         </Table>
