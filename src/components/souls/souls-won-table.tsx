@@ -22,7 +22,10 @@ import {
   Gift,
   Utensils,
   Hourglass,
-  ClipboardList
+  ClipboardList,
+  Zap,
+  ShieldCheck,
+  Info
 } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -217,6 +220,44 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 {locationWonString && <div className="flex items-start gap-2.5 leading-snug"><MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> <span className="line-clamp-2">{locationWonString}</span></div>}
                                 {soul.fellowshipName && <div className="flex items-center gap-2.5 font-black text-[10px] text-primary uppercase tracking-widest"><HeartHandshake className="h-3.5 w-3.5" /> FELLOWSHIP: {soul.fellowshipName}</div>}
                                 {soul.associationName && <div className="flex items-center gap-2.5 font-black text-[10px] text-blue-500 uppercase tracking-widest"><Group className="h-3.5 w-3.5" /> ASSOCIATION: {soul.associationName}</div>}
+                                
+                                {soul.needsAssessment && (
+                                    <div className="pt-2 space-y-2 border-t border-dashed mt-2">
+                                        <p className="text-[10px] font-black uppercase text-primary tracking-widest">Assessed Needs</p>
+                                        <div className="grid grid-cols-1 gap-1.5">
+                                            {soul.needsAssessment.emotionalNeeds && (
+                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                    <Heart className="h-3 w-3 text-red-500 shrink-0 mt-0.5" />
+                                                    <span><span className="font-bold">Emotional:</span> {soul.needsAssessment.emotionalNeeds}</span>
+                                                </p>
+                                            )}
+                                            {soul.needsAssessment.physicalNeeds && (
+                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                    <Zap className="h-3 w-3 text-amber-500 shrink-0 mt-0.5" />
+                                                    <span><span className="font-bold">Physical:</span> {soul.needsAssessment.physicalNeeds}</span>
+                                                </p>
+                                            )}
+                                            {soul.needsAssessment.financialNeeds && (
+                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                    <ShieldCheck className="h-3 w-3 text-blue-500 shrink-0 mt-0.5" />
+                                                    <span><span className="font-bold">Financial:</span> {soul.needsAssessment.financialNeeds}</span>
+                                                </p>
+                                            )}
+                                            {soul.needsAssessment.socialNeeds && (
+                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                    <Users className="h-3 w-3 text-indigo-500 shrink-0 mt-0.5" />
+                                                    <span><span className="font-bold">Social:</span> {soul.needsAssessment.socialNeeds}</span>
+                                                </p>
+                                            )}
+                                            {soul.needsAssessment.otherNeeds && (
+                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                    <Info className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
+                                                    <span><span className="font-bold">Other:</span> {soul.needsAssessment.otherNeeds}</span>
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
