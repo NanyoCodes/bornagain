@@ -25,7 +25,8 @@ import {
   ClipboardList,
   Zap,
   ShieldCheck,
-  Info
+  Info,
+  Target
 } from "lucide-react";
 import type { Soul, FollowUpStatus } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -75,6 +76,9 @@ import { Label } from "../ui/label";
 import Link from "next/link";
 import { useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useDoc } from "@/firebase/firestore/use-doc";
+import type { UserProfile } from "@/lib/types";
+import { useFirestore } from "@/firebase";
 import Image from "next/image";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
@@ -102,6 +106,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
   onAssess: (soul: Soul) => void;
 }) => {
     const { user } = useUser();
+    const firestore = useFirestore();
     const [pendingProvisions, setPendingProvisions] = React.useState<{ soulId: string; actionId: string }[]>([]);
 
     const checkPending = React.useCallback(() => {
