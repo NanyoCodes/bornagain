@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
@@ -235,7 +234,6 @@ export default function SoulsWonPage() {
     const headers = [
       "First Name", 
       "Last Name", 
-      "Photo URL",
       "Gender", 
       "Age", 
       "Email", 
@@ -248,24 +246,16 @@ export default function SoulsWonPage() {
       "Association", 
       "Status", 
       "Date Won", 
-      "Location Won", 
-      "Spiritual State", 
-      "Follow-up Strategy", 
-      "Emotional Needs", 
-      "Physical Needs", 
-      "Financial Needs", 
-      "Social Needs"
+      "Location Won"
     ];
 
     const body = souls.map(soul => {
       const wonAtDate = safeToDate(soul.wonAt);
       const locWon = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
-      const assessment = soul.needsAssessment || {};
       
       return [
         soul.firstName, 
         soul.lastName, 
-        soul.photoURL || '',
         soul.gender || '',
         soul.age?.toString() || '',
         soul.email || '', 
@@ -278,27 +268,26 @@ export default function SoulsWonPage() {
         soul.associationName || '',
         soul.status,
         wonAtDate ? format(wonAtDate, 'yyyy-MM-dd') : '',
-        locWon,
-        assessment.generalImpression || '',
-        assessment.followUpPlan || '',
-        assessment.emotionalNeeds || '',
-        assessment.physicalNeeds || '',
-        assessment.financialNeeds || '',
-        assessment.socialNeeds || ''
+        locWon
       ];
     });
 
     if (formatType === 'pdf') {
         const docObj = new jsPDF({ orientation: 'landscape' });
-        docObj.text("Souls Won Report", 14, 15);
+        const primaryColor = [249, 116, 22]; // #f97416
+        
+        docObj.setFontSize(22);
+        docObj.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        docObj.text("TESTIFY GLOBAL - HARVEST REPORT", 14, 15);
+        
         autoTable(docObj, { 
           head: [headers], 
           body: body, 
           startY: 20,
           styles: { fontSize: 7 },
-          headStyles: { fillColor: [249, 116, 22] }
+          headStyles: { fillColor: primaryColor }
         });
-        docObj.save(`souls-won-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+        docObj.save(`harvest-report-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
     } else {
         const csvRows = [headers.join(",")];
         body.forEach(row => {
@@ -325,65 +314,178 @@ export default function SoulsWonPage() {
     const assessment = soul.needsAssessment || {};
     const locWon = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : 'N/A';
     
-    const rows = [
+    const basicInfo = [
       ["First Name", soul.firstName],
       ["Last Name", soul.lastName],
       ["Gender", soul.gender || 'N/A'],
       ["Age", soul.age?.toString() || 'N/A'],
       ["Email", soul.email || 'N/A'],
       ["Phone", soul.phone || 'N/A'],
+      ["Nationality", soul.nationality || 'N/A'],
       ["Home Church", soul.church || 'N/A'],
-      ["Relationship", soul.relationship || 'N/A'],
+    ];
+
+    const missionInfo = [
+      ["Status", soul.status],
       ["Source", soul.source],
       ["Source Details", soul.sourceDetails || 'N/A'],
-      ["Fellowship", soul.fellowshipName || 'N/A'],
-      ["Association", soul.associationName || 'N/A'],
-      ["Status", soul.status],
-      ["Won At", dateStr],
       ["Location Won", locWon],
+      ["Fellowship", soul.fellowshipName || 'Unplaced'],
+      ["Association", soul.associationName || 'Unplaced'],
+      ["Won At", dateStr],
+    ];
+
+    const assessmentInfo = [
       ["Spiritual State", assessment.generalImpression || 'N/A'],
       ["Follow-up Strategy", assessment.followUpPlan || 'N/A'],
       ["Emotional Needs", assessment.emotionalNeeds || 'N/A'],
       ["Physical Needs", assessment.physicalNeeds || 'N/A'],
       ["Financial Needs", assessment.financialNeeds || 'N/A'],
       ["Social Needs", assessment.socialNeeds || 'N/A'],
-      ["Other Needs", assessment.otherNeeds || 'N/A'],
     ];
 
     if (formatType === 'pdf') {
       const doc = new jsPDF();
-      let startY = 20;
+      const primaryColor = [249, 116, 22]; // #f97416
+      
+      const getBase64 = async (url: string): Promise<string | null> => {
+        try {
+          const res = await fetch(url);
+          const blob = await res.blob();
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(blob);
+          });
+        } catch (e) {
+          return null;
+        }
+      };
 
-      // Add Photo if available
-      if (soul.photoURL) {
-          try {
-              const imgData = await fetch(soul.photoURL).then(res => res.blob()).then(blob => new Promise<string>((resolve, reject) => {
-                  const reader = new FileReader();
-                  reader.onloadend = () => resolve(reader.result as string);
-                  reader.onerror = reject;
-                  reader.readAsDataURL(blob);
-              }));
-              doc.addImage(imgData as string, 'JPEG', 14, 15, 30, 30);
-              startY = 50;
-          } catch (e) {
-              console.warn("Failed to load photo for PDF export", e);
-          }
+      // 1. Add Logo
+      const logoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
+      const logoBase64 = await getBase64(logoUrl);
+      if (logoBase64) {
+        doc.addImage(logoBase64, 'PNG', 14, 10, 15, 15);
       }
 
-      doc.setFontSize(18);
-      doc.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, soul.photoURL ? 50 : 14, 25);
-      
+      // 2. Header
+      doc.setFontSize(22);
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.setFont('helvetica', 'bold');
+      doc.text("TESTIFY GLOBAL", 32, 18);
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text("KINGDOM HARVEST RECORD", 32, 23);
+
+      doc.setDrawColor(240);
+      doc.line(14, 28, 196, 28);
+
+      let currentY = 35;
+
+      // 3. Profile Photo & Name
+      if (soul.photoURL) {
+          const photoBase64 = await getBase64(soul.photoURL);
+          if (photoBase64) {
+              doc.addImage(photoBase64, 'JPEG', 14, currentY, 35, 35);
+              doc.setFontSize(18);
+              doc.setTextColor(0);
+              doc.text(`${soul.firstName} ${soul.lastName}`, 55, currentY + 12);
+              doc.setFontSize(10);
+              doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+              doc.text(soul.status.toUpperCase(), 55, currentY + 18);
+              currentY += 45;
+          } else {
+            doc.setFontSize(18);
+            doc.setTextColor(0);
+            doc.text(`${soul.firstName} ${soul.lastName}`, 14, currentY + 5);
+            currentY += 15;
+          }
+      } else {
+          doc.setFontSize(18);
+          doc.setTextColor(0);
+          doc.text(`${soul.firstName} ${soul.lastName}`, 14, currentY + 5);
+          currentY += 15;
+      }
+
+      // 4. Tables
       autoTable(doc, {
-        body: rows,
-        startY: Math.max(startY, 35),
+        head: [['Field', 'Identity & Mission Details']],
+        body: [...basicInfo, ...missionInfo],
+        startY: currentY,
         theme: 'striped',
-        headStyles: { fillColor: [249, 116, 22] }
+        headStyles: { fillColor: primaryColor, fontSize: 10 },
+        styles: { fontSize: 9 },
+        columnStyles: { 0: { fontStyle: 'bold', width: 40 } }
       });
+
+      currentY = (doc as any).lastAutoTable.finalY + 10;
+
+      autoTable(doc, {
+        head: [['Assessment Area', 'Tactical Insights']],
+        body: assessmentInfo,
+        startY: currentY,
+        theme: 'grid',
+        headStyles: { fillColor: [51, 65, 85], fontSize: 10 },
+        styles: { fontSize: 9 },
+        columnStyles: { 0: { fontStyle: 'bold', width: 40 } }
+      });
+
+      currentY = (doc as any).lastAutoTable.finalY + 15;
+
+      // 5. Follow-up History
+      doc.setFontSize(14);
+      doc.setTextColor(0);
+      doc.text("FOLLOW-UP INTERACTION HISTORY", 14, currentY);
+      currentY += 5;
+
+      const historyData = (soul.followUpLog || [])
+        .sort((a, b) => (safeToDate(b.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0))
+        .map(log => {
+            const d = safeToDate(log.date);
+            return [
+                d ? format(d, 'yyyy-MM-dd HH:mm') : 'N/A',
+                log.actions?.join(', ') || 'N/A',
+                log.note || '',
+                log.memberName || 'N/A'
+            ];
+        });
+
+      autoTable(doc, {
+        head: [['Date', 'Actions', 'Interaction Note', 'Member']],
+        body: historyData.length > 0 ? historyData : [['No history recorded yet.', '-', '-', '-']],
+        startY: currentY,
+        theme: 'striped',
+        headStyles: { fillColor: [100, 116, 139], fontSize: 9 },
+        styles: { fontSize: 8 },
+        columnStyles: { 0: { width: 30 }, 1: { width: 35 }, 3: { width: 30 } }
+      });
+
       doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
     } else {
+      // CSV Export
       const headers = ["Field", "Value"];
-      const rowsWithPhoto = [["Photo URL", soul.photoURL || 'N/A'], ...rows];
-      const csvContent = headers.join(",") + "\n" + rowsWithPhoto.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const exportRows = [
+        ["Photo URL", soul.photoURL || 'N/A'],
+        ...basicInfo,
+        ...missionInfo,
+        ...assessmentInfo,
+        ["", ""],
+        ["FOLLOW-UP HISTORY", ""],
+        ["Date", "Actions", "Note", "Member"]
+      ];
+
+      (soul.followUpLog || []).forEach(log => {
+        const d = safeToDate(log.date);
+        exportRows.push([
+            d ? format(d, 'yyyy-MM-dd HH:mm') : 'N/A',
+            log.actions?.join(', ') || 'N/A',
+            log.note || '',
+            log.memberName || 'N/A'
+        ]);
+      });
+
+      const csvContent = exportRows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -641,8 +743,8 @@ export default function SoulsWonPage() {
                                                 </div>
                                                 <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} />
                                             </div>
-                                            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-primary bg-background/90 px-3 py-1.5 rounded-full shadow-lg border text-center">
+                                            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none text-center p-4">
+                                                <span className="text-[8px] font-black uppercase tracking-widest text-primary bg-background/90 px-3 py-1.5 rounded-full shadow-lg border">
                                                     OPEN POP-UP PAGE WHEN CLICKED
                                                 </span>
                                             </div>
