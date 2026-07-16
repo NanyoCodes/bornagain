@@ -877,14 +877,33 @@ export default function FellowshipPageClient() {
                 )
             )}
 
-            <ViewHistoryDialog soul={activeSoul} isOpen={isSoulDetailsOpen} onOpenChange={setIsSoulDetailsOpen} />
-            <LogFollowUpDialog soul={activeSoul} isOpen={isLogFollowUpOpen} onOpenChange={setIsLogFollowUpOpen} onFollowUpLogged={() => setIsLogFollowUpOpen(false)} userProfile={userProfile} />
+            <ViewHistoryDialog soul={activeSoul} isOpen={!!historySoulId} onOpenChange={(isOpen) => !isOpen && setHistorySoulId(null)} />
+            <LogFollowUpDialog soul={activeSoul} isOpen={!!followUpSoulId} onOpenChange={(isOpen) => !isOpen && setFollowUpSoulId(null)} onFollowUpLogged={() => setFollowUpSoulId(null)} userProfile={userProfile} />
             
             {isLogSoulOpen && (
                 isMobile ? (
-                    <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}><SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]"><div className="p-8 border-b flex-shrink-0 bg-muted/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline">Log Group Convert</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Record a new life won directly to this community.</SheetDescription></SheetHeader></div><ScrollArea className="flex-grow"><div className="p-8"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} /></div></ScrollArea></SheetContent></Sheet>
+                    <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                                <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline">Log Group Convert</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Record a new life won directly to this community.</SheetDescription></SheetHeader>
+                            </div>
+                            <ScrollArea className="flex-grow p-8">
+                                <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} />
+                            </ScrollArea>
+                        </SheetContent>
+                    </Sheet>
                 ) : (
-                    <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}><DialogContent className="sm:max-w-lg"><DialogHeader><DialogTitle>Log Convert to {fellowship.name}</DialogTitle><DialogDescription>Record a new life won. This convert will be automatically assigned to this group.</DialogDescription></DialogHeader><div className="max-h-[70vh] overflow-y-auto pr-2"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} /></div></DialogContent></Dialog>
+                    <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+                        <DialogContent className="sm:max-w-lg">
+                            <DialogHeader>
+                                <DialogTitle>Log Convert to {fellowship.name}</DialogTitle>
+                                <DialogDescription>Record a new life won. This convert will be automatically assigned to this group.</DialogDescription>
+                            </DialogHeader>
+                            <div className="max-h-[70vh] overflow-y-auto pr-2">
+                                <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} />
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                 )
             )}
 

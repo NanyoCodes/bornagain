@@ -233,7 +233,7 @@ export default function SoulsWonPage() {
     link.setAttribute("href", url);
     link.setAttribute("download", `harvest-${format(new Date(), 'yyyy-MM-dd')}.csv`);
     link.click();
-    toast({ title: "Exported", description: "Harvest list exported as CSV." });
+    toast({ title: "Exported", description: "Harvest list exported." });
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
@@ -438,8 +438,8 @@ export default function SoulsWonPage() {
                             <BarChart3 className="h-5 w-5 text-primary" />
                         </div>
                         <div className="min-w-0 text-left">
-                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">AGE ANALYSIS</h2>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Demographic Discovery</p>
+                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">DEMOGRAPHICS</h2>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Age Analysis</p>
                         </div>
                     </div>
                     <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
@@ -533,7 +533,7 @@ export default function SoulsWonPage() {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12">Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Confirm Removal

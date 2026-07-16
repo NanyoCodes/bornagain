@@ -232,7 +232,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                     <div className="p-8 border-b bg-muted/10"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight">Log Harvest</DialogTitle></DialogHeader></div>
-                    <ScrollArea className="max-h-[70vh] p-8"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultCampaign={campaign} /></ScrollArea>
+                    <ScrollArea className="max-h-[70vh] p-8"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultCampaign={campaign} /></ScrollArea>
                 </DialogContent>
             </Dialog>
 

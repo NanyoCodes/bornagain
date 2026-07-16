@@ -151,7 +151,6 @@ export function LogSoulForm({
         country_lowercase: (userProfile.location.country || "").toLowerCase(),
     } : null;
 
-    // PHONE SANITIZATION: Strictly numeric storage
     const sanitizedPhone = values.phone ? values.phone.replace(/[^\d+]/g, '') : null;
 
     const soulData: { [key: string]: any } = {
@@ -178,7 +177,6 @@ export function LogSoulForm({
       phone: sanitizedPhone,
       church: values.church || null,
       sourceDetails: values.sourceDetails || null,
-      // Auto-assignment from props
       fellowshipId: defaultFellowship?.id || null,
       fellowshipName: defaultFellowship?.name || null,
       associationId: defaultAssociation?.id || null,

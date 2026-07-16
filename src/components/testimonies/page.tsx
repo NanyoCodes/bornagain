@@ -108,7 +108,6 @@ export default function TestimoniesPage() {
   const [prayerToEdit, setPrayerToEdit] = useState<PrayerRequest | null>(null);
   const [prayerToAnswer, setPrayerToAnswer] = useState<PrayerRequest | null>(null);
 
-  // Interactivity Safety Valve
   const isAnyModalOpen = !!(isTestimonyDialogOpen || isPrayerDialogOpen || itemToDelete || testimonyToEdit || prayerToEdit);
 
   useEffect(() => {
@@ -141,9 +140,9 @@ export default function TestimoniesPage() {
 
   useEffect(() => {
     if (activeTab === 'testimonies') {
-      setSearchPlaceholder("Search testimonies by content, author...");
+      setSearchPlaceholder("Search testimonies...");
     } else {
-      setSearchPlaceholder("Search prayer requests by content, category...");
+      setSearchPlaceholder("Search prayer requests...");
     }
   }, [activeTab, setSearchPlaceholder]);
   
@@ -266,6 +265,7 @@ export default function TestimoniesPage() {
                 if (testimonyToDelete.answeredPrayerId) {
                     const prayerRef = doc(firestore, 'prayerRequests', testimonyToDelete.answeredPrayerId);
                     const prayerSnap = await transaction.get(prayerRef);
+                    // Only attempt update if the prayer request still exists
                     if (prayerSnap.exists()) {
                         transaction.update(prayerRef, {
                             status: 'pending',
@@ -307,7 +307,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      {...(isAnyModalOpen ? { ["inert" as any]: "true" } : {})}
+      inert={isAnyModalOpen ? true : undefined}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         {/* Main Feed Column */}

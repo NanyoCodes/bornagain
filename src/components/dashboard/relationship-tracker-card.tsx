@@ -92,7 +92,7 @@ function SoulSelectionList({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
