@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PrayerRequest, UserProfile } from "@/lib/types";
 import { format } from "date-fns";
-import { HandHeart, Users, Trash2, Loader2, User, Award, Newspaper, Edit, ChevronDown } from "lucide-react";
+import { HandHeart, Users, Trash2, Loader2, User, Award, Newspaper, Edit, ChevronDown, X } from "lucide-react";
 import { useUser, useFirestore, useDoc } from "@/firebase";
 import { useState, useMemo, memo, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -36,10 +36,33 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
     const photoURL = profile?.photoURL;
     
     return (
-        <Avatar className={className}>
-            <AvatarImage src={photoURL} className="object-cover" />
-            <AvatarFallback className="bg-primary/10 text-primary font-bold">{fallbackInitials || 'U'}</AvatarFallback>
-        </Avatar>
+        <Dialog>
+            <DialogTrigger asChild disabled={!photoURL}>
+                <Avatar className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
+                    <AvatarImage src={photoURL} className="object-cover" />
+                    <AvatarFallback className="bg-primary/10 text-primary font-bold">{fallbackInitials || 'U'}</AvatarFallback>
+                </Avatar>
+            </DialogTrigger>
+            {photoURL && (
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                    <DialogHeader className="sr-only">
+                        <DialogTitle>Profile Photo</DialogTitle>
+                        <DialogDescription>Full screen view of author's photo.</DialogDescription>
+                    </DialogHeader>
+                    <div className="relative h-full w-full flex items-center justify-center p-4">
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                            <Image 
+                                src={photoURL} 
+                                alt="Author" 
+                                fill 
+                                className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                unoptimized 
+                            />
+                        </div>
+                    </div>
+                </DialogContent>
+            )}
+        </Dialog>
     );
 }
 
@@ -133,38 +156,17 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
       <Card className="flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-xl border-x-0 sm:border-x border-t-4 border-t-amber-500/20 border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm">
         <CardHeader className="flex flex-row items-start justify-between gap-4 p-4 sm:p-6">
             <div className="flex items-center gap-3 min-w-0 flex-1">
-                <Dialog>
-                  <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={prayerRequest.isAnonymous || !prayerRequest.authorId}>
-                      <div className="relative cursor-pointer hover:opacity-90 transition-opacity active:scale-95">
-                        {prayerRequest.isAnonymous ? (
-                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
-                                <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
-                            </Avatar>
-                        ) : (
-                            <LiveAuthorAvatar 
-                                userId={prayerRequest.authorId!} 
-                                fallbackInitials={initials} 
-                                className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm"
-                            />
-                        )}
-                      </div>
-                  </DialogTrigger>
-                  {!prayerRequest.isAnonymous && prayerRequest.authorId && (
-                      <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center" onClick={(e) => {e.stopPropagation()}}>
-                          <DialogHeader className="sr-only">
-                            <DialogTitle>Profile photo of {authorName}</DialogTitle>
-                            <DialogDescription>Full screen view of the user's profile photo.</DialogDescription>
-                          </DialogHeader>
-                          <div className="relative h-full w-full flex items-center justify-center p-4">
-                            <LiveAuthorAvatar 
-                                userId={prayerRequest.authorId} 
-                                fallbackInitials={initials} 
-                                className="h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] rounded-2xl sm:rounded-[3rem] shadow-2xl ring-4 ring-white/10"
-                            />
-                          </div>
-                      </DialogContent>
-                  )}
-                </Dialog>
+                {prayerRequest.isAnonymous ? (
+                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
+                        <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                    </Avatar>
+                ) : (
+                    <LiveAuthorAvatar 
+                        userId={prayerRequest.authorId!} 
+                        fallbackInitials={initials} 
+                        className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm"
+                    />
+                )}
                 <div className="min-w-0 flex-1">
                      <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={cn(!isClickable && 'pointer-events-none')}>
                         <CardTitle className={cn("text-base sm:text-lg font-bold", isClickable && "hover:underline")}>{authorName}</CardTitle>

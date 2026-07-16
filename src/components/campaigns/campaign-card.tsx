@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format, parse, isSameDay, differenceInDays } from "date-fns";
-import { CalendarDays, MapPin, Users, Share2, Edit, MoreHorizontal, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info } from "lucide-react";
+import { CalendarDays, MapPin, Users, Share2, Edit, MoreHorizontal, Loader2, MessagesSquare, UserCheck, PlayCircle, Newspaper, UserPlus, ChevronDown, BarChart3, Target, Info, X } from "lucide-react";
 import type { Campaign, CampaignParticipant, UserProfile } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,6 +41,7 @@ import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 
 /**
  * Ensures the profile photo displayed in the directory is always the most recent version.
@@ -52,10 +53,33 @@ function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, classNam
     const currentPhotoUrl = profile?.photoURL || fallbackUrl;
     
     return (
-        <Avatar className={className}>
-            <AvatarImage src={currentPhotoUrl} className="object-cover" />
-            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
-        </Avatar>
+        <Dialog>
+            <DialogTrigger asChild disabled={!currentPhotoUrl}>
+                <Avatar className={cn(className, currentPhotoUrl && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
+                    <AvatarImage src={currentPhotoUrl} className="object-cover" />
+                    <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
+                </Avatar>
+            </DialogTrigger>
+            {currentPhotoUrl && (
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                    <DialogHeader className="sr-only">
+                        <DialogTitle>Profile Photo</DialogTitle>
+                        <DialogDescription>Full screen view of participant's photo.</DialogDescription>
+                    </DialogHeader>
+                    <div className="relative h-full w-full flex items-center justify-center p-4">
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                            <Image 
+                                src={currentPhotoUrl} 
+                                alt="Participant" 
+                                fill 
+                                className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                unoptimized 
+                            />
+                        </div>
+                    </div>
+                </DialogContent>
+            )}
+        </Dialog>
     );
 }
 
@@ -97,15 +121,17 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
             {organizer && (
                 <div className="space-y-3">
                     <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Organizer</h3>
-                    <Link 
-                        href={organizer.userId === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${organizer.userId}`}
-                        className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed hover:bg-muted/40 transition-colors group"
-                        onClick={stopPropagation}
-                    >
+                    <div className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed hover:bg-muted/40 transition-colors group relative">
                         <LiveParticipantAvatar userId={organizer.userId} fallbackUrl={organizer.photoURL} fallbackInitials={organizer.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm group-hover:scale-105 transition-transform" />
-                        <span className='font-bold text-sm sm:text-base group-hover:underline uppercase tracking-tight'>{organizer.firstName} {organizer.lastName}</span>
+                        <Link 
+                            href={organizer.userId === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${organizer.userId}`}
+                            className='font-bold text-sm sm:text-base hover:underline uppercase tracking-tight'
+                            onClick={stopPropagation}
+                        >
+                            {organizer.firstName} {organizer.lastName}
+                        </Link>
                         {organizer.userId === user?.uid && <span className="text-[10px] text-muted-foreground ml-auto opacity-60">You</span>}
-                    </Link>
+                    </div>
                 </div>
             )}
             {otherParticipants && otherParticipants.length > 0 && (
@@ -114,15 +140,17 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                 <div className="space-y-3">
                   {otherParticipants.map(p => (
                     <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm">
-                      <Link 
-                        href={p.userId === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${p.userId}`}
-                        className="flex items-center gap-3 group"
-                        onClick={stopPropagation}
-                      >
+                      <div className="flex items-center gap-3 group relative">
                         <LiveParticipantAvatar userId={p.userId} fallbackUrl={p.photoURL} fallbackInitials={p.firstName?.charAt(0)} className="h-9 w-9 text-xs border group-hover:scale-105 transition-transform" />
-                        <span className='font-bold text-sm group-hover:underline uppercase tracking-tight'>{p.firstName} {p.lastName}</span>
+                        <Link 
+                            href={p.userId === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${p.userId}`}
+                            className='font-bold text-sm hover:underline uppercase tracking-tight'
+                            onClick={stopPropagation}
+                        >
+                            {p.firstName} {p.lastName}
+                        </Link>
                         {p.userId === user?.uid && <span className="text-[10px] text-muted-foreground ml-auto opacity-60">You</span>}
-                      </Link>
+                      </div>
                       {p.joinReason && (
                         <blockquote className="border-l-4 border-primary/20 pl-4 text-xs italic text-muted-foreground bg-primary/[0.02] py-2 rounded-r-xl">
                             &ldquo;{p.joinReason}&rdquo;

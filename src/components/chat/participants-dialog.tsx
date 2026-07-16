@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import Image from 'next/image';
 
 /**
  * Ensures the profile photo displayed in the directory is always the most recent version.
@@ -22,10 +23,33 @@ function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, classNam
     const currentPhotoUrl = profile?.photoURL || fallbackUrl;
     
     return (
-        <Avatar className={className}>
-            <AvatarImage src={currentPhotoUrl} className="object-cover" />
-            <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
-        </Avatar>
+        <Dialog>
+            <DialogTrigger asChild disabled={!currentPhotoUrl}>
+                <Avatar className={cn(className, currentPhotoUrl && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
+                    <AvatarImage src={currentPhotoUrl} className="object-cover" />
+                    <AvatarFallback className="font-bold bg-primary/10 text-primary">{fallbackInitials}</AvatarFallback>
+                </Avatar>
+            </DialogTrigger>
+            {currentPhotoUrl && (
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                    <DialogHeader className="sr-only">
+                        <DialogTitle>Profile Photo</DialogTitle>
+                        <DialogDescription>Full screen view of participant's photo.</DialogDescription>
+                    </DialogHeader>
+                    <div className="relative h-full w-full flex items-center justify-center p-4">
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                            <Image 
+                                src={currentPhotoUrl} 
+                                alt="Participant" 
+                                fill 
+                                className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                unoptimized 
+                            />
+                        </div>
+                    </div>
+                </DialogContent>
+            )}
+        </Dialog>
     );
 }
 
@@ -49,22 +73,24 @@ export function ChatParticipantsDialog({ chat, children }: { chat: Chat; childre
       <div className="space-y-3 pb-6">
         {participants.map(([id, p]) => (
           <div key={id} className="flex items-center gap-3 rounded-xl border p-3 bg-muted/5">
-            <Link 
-                href={id === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${id}`} 
-                className="flex items-center gap-3 flex-1 min-w-0 group"
-                onClick={(e) => e.stopPropagation()}
-            >
+            <div className="flex items-center gap-3 flex-1 min-w-0 group relative">
                 <LiveParticipantAvatar 
                     userId={id} 
                     fallbackUrl={p.photoURL} 
                     fallbackInitials={p.firstName?.charAt(0) || 'U'}
-                    className="shrink-0 hover:opacity-80 transition-opacity shadow-sm border"
+                    className="shrink-0 shadow-sm border"
                 />
                 <div className="min-w-0 flex-1">
-                    <p className="font-bold truncate text-sm sm:text-base group-hover:underline leading-tight uppercase tracking-tight">{p.firstName} {p.lastName}</p>
+                    <Link 
+                        href={id === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${id}`} 
+                        className="font-bold truncate text-sm sm:text-base hover:underline leading-tight uppercase tracking-tight block"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {p.firstName} {p.lastName}
+                    </Link>
                     {p.email && <p className="text-[10px] sm:text-xs text-muted-foreground truncate font-medium">{p.email}</p>}
                 </div>
-            </Link>
+            </div>
           </div>
         ))}
       </div>

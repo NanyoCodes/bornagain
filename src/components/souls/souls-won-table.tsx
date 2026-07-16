@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -46,6 +45,14 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Table,
   TableBody,
   TableCell,
@@ -63,6 +70,7 @@ import { Label } from "../ui/label";
 import Link from "next/link";
 import { useUser } from "@/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -144,15 +152,38 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
     return (
         <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300">
             <Collapsible>
-                <CollapsibleTrigger className="group w-full p-4 text-left hover:bg-muted/30 transition-colors">
-                     <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <Avatar className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 border shadow-inner">
-                                <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
-                                    {soul.firstName?.charAt(0) || 'S'}
-                                </AvatarFallback>
-                            </Avatar>
+                <div className="flex items-center justify-between p-4 gap-4">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <Dialog>
+                            <DialogTrigger asChild disabled={!soul.photoURL}>
+                                <Avatar className={cn("h-10 w-10 sm:h-11 sm:w-11 shrink-0 border shadow-inner transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                                    <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+                                        {soul.firstName?.charAt(0) || 'S'}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </DialogTrigger>
+                            {soul.photoURL && (
+                                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                                    <DialogHeader className="sr-only">
+                                        <DialogTitle>Photo of {soul.firstName}</DialogTitle>
+                                        <DialogDescription>Full screen view of the convert's photo.</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="relative h-full w-full flex items-center justify-center p-4">
+                                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                                            <Image 
+                                                src={soul.photoURL} 
+                                                alt={soul.firstName} 
+                                                fill 
+                                                className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                                unoptimized 
+                                            />
+                                        </div>
+                                    </div>
+                                </DialogContent>
+                            )}
+                        </Dialog>
+                        <CollapsibleTrigger className="min-w-0 text-left flex-1 outline-none">
                             <div className="min-w-0">
                                 <p className="font-bold truncate text-sm sm:text-base leading-tight capitalize tracking-tight">
                                   {soul.firstName || 'Unknown'} {soul.lastName || ''}
@@ -164,10 +195,12 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                     {myPending.length > 0 && <Badge className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary text-white animate-pulse border-none">Pending Gift</Badge>}
                                 </div>
                             </div>
-                        </div>
-                        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180 shrink-0" />
+                        </CollapsibleTrigger>
                     </div>
-                </CollapsibleTrigger>
+                    <CollapsibleTrigger asChild>
+                        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180 shrink-0 cursor-pointer" />
+                    </CollapsibleTrigger>
+                </div>
                 <CollapsibleContent className="px-4 pb-4">
                     <div className="border-t pt-4 space-y-5">
                         <div className="flex justify-between items-start gap-4">
@@ -334,12 +367,35 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
         <TableRow className="hover:bg-muted/30 transition-colors">
             <TableCell className="font-medium p-4">
                 <div className="flex items-center gap-4">
-                    <Avatar className="h-10 w-10 border shadow-inner shrink-0">
-                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
-                            {soul.firstName?.charAt(0) || 'S'}
-                        </AvatarFallback>
-                    </Avatar>
+                    <Dialog>
+                        <DialogTrigger asChild disabled={!soul.photoURL}>
+                            <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                                <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+                                    {soul.firstName?.charAt(0) || 'S'}
+                                </AvatarFallback>
+                            </Avatar>
+                        </DialogTrigger>
+                        {soul.photoURL && (
+                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                                <DialogHeader className="sr-only">
+                                    <DialogTitle>Photo of {soul.firstName}</DialogTitle>
+                                    <DialogDescription>Full screen view of the convert's photo.</DialogDescription>
+                                </DialogHeader>
+                                <div className="relative h-full w-full flex items-center justify-center p-4">
+                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                                        <Image 
+                                            src={soul.photoURL} 
+                                            alt={soul.firstName} 
+                                            fill 
+                                            className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                            unoptimized 
+                                        />
+                                    </div>
+                                </div>
+                            </DialogContent>
+                        )}
+                    </Dialog>
                     <div className="min-w-0">
                         <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight">{soul.firstName} {soul.lastName}</div>
                         {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
@@ -394,6 +450,16 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                         <DropdownMenuItem onClick={() => triggerAction(onOpenAssignDialog)}>
                             <Users className="mr-2 h-4 w-4" /> Assign Community
                         </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuSub>
+                            <DropdownMenuSubTrigger className="rounded-lg"><Download className="mr-2 h-4 w-4" /> Export Report</DropdownMenuSubTrigger>
+                            <DropdownMenuPortal>
+                                <DropdownMenuSubContent className="rounded-xl">
+                                    <DropdownMenuItem onClick={() => onExportSingle(soul, 'csv')} className="rounded-lg">CSV (Excel)</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => onExportSingle(soul, 'pdf')} className="rounded-lg">PDF Document</DropdownMenuItem>
+                                </DropdownMenuSubContent>
+                            </DropdownMenuPortal>
+                        </DropdownMenuSub>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onClick={() => triggerAction(onDelete)}>
                             <Trash2 className="mr-2 h-4 w-4" /> Delete Record
