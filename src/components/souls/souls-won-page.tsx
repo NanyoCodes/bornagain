@@ -64,7 +64,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { safeToDate, haversineDistance } from "@/lib/utils";
+import { cn, safeToDate, haversineDistance } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -658,16 +658,6 @@ export default function SoulsWonPage() {
 
                 {/* Table Content */}
                 <div className="-mx-4 sm:mx-0">
-                    <div className="flex items-center justify-between mb-4 px-4 sm:px-0">
-                        <div className="flex items-center gap-2">
-                            {ageFilter && (
-                                <Badge variant="secondary" className="h-8 px-4 gap-2 rounded-full font-black uppercase tracking-widest text-[9px] bg-primary/10 text-primary border-primary/20 animate-in fade-in zoom-in">
-                                    Filtered: {ageFilter === 'unknown' ? 'Missing Demographics' : ageFilter}
-                                    <button onClick={() => setAgeFilter(null)} className="hover:opacity-70"><X className="h-3 w-3" /></button>
-                                </Badge>
-                            )}
-                        </div>
-                    </div>
                     <SoulsWonTable 
                         souls={filteredSouls || []} 
                         loading={loading}
