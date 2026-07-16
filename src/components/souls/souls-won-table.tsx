@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -285,19 +284,19 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                                     <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-black">Record Control</DropdownMenuLabel>
-                                    <DropdownMenuItem onClick={() => triggerAction(onEdit)} className="rounded-lg">
+                                    <DropdownMenuItem onSelect={() => triggerAction(onEdit)} className="rounded-lg">
                                         <Edit className="mr-2 h-4 w-4" /> Edit Details
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => triggerAction(onAssess)} className="rounded-lg">
+                                    <DropdownMenuItem onSelect={() => triggerAction(onAssess)} className="rounded-lg">
                                         <ClipboardList className="mr-2 h-4 w-4 text-primary" /> Assess Needs
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => triggerAction(onFollowUp)} className="rounded-lg">
+                                    <DropdownMenuItem onSelect={() => triggerAction(onFollowUp)} className="rounded-lg">
                                         <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => triggerAction(onViewHistory)} className="rounded-lg">
+                                    <DropdownMenuItem onSelect={() => triggerAction(onViewHistory)} className="rounded-lg">
                                         <History className="mr-2 h-4 w-4" /> Interaction History
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => triggerAction(onOpenAssignDialog)} className="rounded-lg">
+                                    <DropdownMenuItem onSelect={() => triggerAction(onOpenAssignDialog)} className="rounded-lg">
                                         <Users className="mr-2 h-4 w-4" /> Assign Community
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
@@ -305,13 +304,13 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                         <DropdownMenuSubTrigger className="rounded-lg"><Download className="mr-2 h-4 w-4" /> Export Report</DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
                                             <DropdownMenuSubContent className="rounded-xl">
-                                                <DropdownMenuItem onClick={() => onExportSingle(soul, 'csv')} className="rounded-lg">CSV (Excel)</DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => onExportSingle(soul, 'pdf')} className="rounded-lg">PDF Document</DropdownMenuItem>
+                                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')} className="rounded-lg">CSV (Excel)</DropdownMenuItem>
+                                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')} className="rounded-lg">PDF Document</DropdownMenuItem>
                                             </DropdownMenuSubContent>
                                         </DropdownMenuPortal>
                                     </DropdownMenuSub>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onClick={() => triggerAction(onDelete)}>
+                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onSelect={() => triggerAction(onDelete)}>
                                         <Trash2 className="mr-2 h-4 w-4" /> Delete Permanently
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -503,19 +502,19 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                     <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="h-8 w-8 rounded-full"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Soul Control</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => triggerAction(onEdit)}>
+                        <DropdownMenuItem onSelect={() => triggerAction(onEdit)}>
                             <Edit className="mr-2 h-4 w-4" /> Edit Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => triggerAction(onAssess)}>
+                        <DropdownMenuItem onSelect={() => triggerAction(onAssess)}>
                             <ClipboardList className="mr-2 h-4 w-4 text-primary" /> Assess Needs
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => triggerAction(onFollowUp)}>
+                        <DropdownMenuItem onSelect={() => triggerAction(onFollowUp)}>
                             <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => triggerAction(onViewHistory)}>
+                        <DropdownMenuItem onSelect={() => triggerAction(onViewHistory)}>
                             <History className="mr-2 h-4 w-4" /> Interaction History
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => triggerAction(onOpenAssignDialog)}>
+                        <DropdownMenuItem onSelect={() => triggerAction(onOpenAssignDialog)}>
                             <Users className="mr-2 h-4 w-4" /> Assign Community
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -523,13 +522,13 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                             <DropdownMenuSubTrigger className="rounded-lg"><Download className="mr-2 h-4 w-4" /> Export Report</DropdownMenuSubTrigger>
                             <DropdownMenuPortal>
                                 <DropdownMenuSubContent className="rounded-xl">
-                                    <DropdownMenuItem onClick={() => onExportSingle(soul, 'csv')} className="rounded-lg">CSV (Excel)</DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onExportSingle(soul, 'pdf')} className="rounded-lg">PDF Document</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')} className="rounded-lg">CSV (Excel)</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')} className="rounded-lg">PDF Document</DropdownMenuItem>
                                 </DropdownMenuSubContent>
                             </DropdownMenuPortal>
                         </DropdownMenuSub>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onClick={() => triggerAction(onDelete)}>
+                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onSelect={() => triggerAction(onDelete)}>
                             <Trash2 className="mr-2 h-4 w-4" /> Delete Record
                         </DropdownMenuItem>
                     </DropdownMenuContent>

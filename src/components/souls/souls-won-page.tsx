@@ -231,17 +231,59 @@ export default function SoulsWonPage() {
     const { jsPDF } = await import('jspdf');
     const { default: autoTable } = await import('jspdf-autotable');
 
-    const headers = ["First Name", "Last Name", "Email", "Phone", "Church", "Source", "Status", "Date Won"];
-    const body = souls.map(soul => [
-      soul.firstName, 
-      soul.lastName, 
-      soul.email || '', 
-      soul.phone || '', 
-      soul.church || '', 
-      soul.source, 
-      soul.status,
-      soul.wonAt ? format(safeToDate(soul.wonAt)!, 'yyyy-MM-dd') : ''
-    ]);
+    const headers = [
+      "First Name", 
+      "Last Name", 
+      "Gender", 
+      "Age", 
+      "Email", 
+      "Phone", 
+      "Home Church", 
+      "Relationship",
+      "Source", 
+      "Source Details",
+      "Fellowship", 
+      "Association", 
+      "Status", 
+      "Date Won", 
+      "Location Won", 
+      "Spiritual State", 
+      "Follow-up Strategy", 
+      "Emotional Needs", 
+      "Physical Needs", 
+      "Financial Needs", 
+      "Social Needs"
+    ];
+
+    const body = souls.map(soul => {
+      const wonAtDate = safeToDate(soul.wonAt);
+      const locWon = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
+      const assessment = soul.needsAssessment || {};
+      
+      return [
+        soul.firstName, 
+        soul.lastName, 
+        soul.gender || '',
+        soul.age?.toString() || '',
+        soul.email || '', 
+        soul.phone || '', 
+        soul.church || '', 
+        soul.relationship || '',
+        soul.source, 
+        soul.sourceDetails || '',
+        soul.fellowshipName || '',
+        soul.associationName || '',
+        soul.status,
+        wonAtDate ? format(wonAtDate, 'yyyy-MM-dd') : '',
+        locWon,
+        assessment.generalImpression || '',
+        assessment.followUpPlan || '',
+        assessment.emotionalNeeds || '',
+        assessment.physicalNeeds || '',
+        assessment.financialNeeds || '',
+        assessment.socialNeeds || ''
+      ];
+    });
 
     if (formatType === 'pdf') {
         const docObj = new jsPDF({ orientation: 'landscape' });
@@ -250,10 +292,10 @@ export default function SoulsWonPage() {
           head: [headers], 
           body: body, 
           startY: 20,
-          styles: { fontSize: 8 },
+          styles: { fontSize: 7 },
           headStyles: { fillColor: [249, 116, 22] }
         });
-        docObj.save(`souls-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+        docObj.save(`souls-won-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
     } else {
         const csvRows = [headers.join(",")];
         body.forEach(row => {
@@ -277,21 +319,40 @@ export default function SoulsWonPage() {
 
     const wonAtDate = safeToDate(soul.wonAt);
     const dateStr = wonAtDate ? format(wonAtDate, 'PPP') : 'N/A';
+    const assessment = soul.needsAssessment || {};
+    const locWon = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : 'N/A';
+    
+    const rows = [
+      ["First Name", soul.firstName],
+      ["Last Name", soul.lastName],
+      ["Gender", soul.gender || 'N/A'],
+      ["Age", soul.age?.toString() || 'N/A'],
+      ["Email", soul.email || 'N/A'],
+      ["Phone", soul.phone || 'N/A'],
+      ["Home Church", soul.church || 'N/A'],
+      ["Relationship", soul.relationship || 'N/A'],
+      ["Source", soul.source],
+      ["Source Details", soul.sourceDetails || 'N/A'],
+      ["Fellowship", soul.fellowshipName || 'N/A'],
+      ["Association", soul.associationName || 'N/A'],
+      ["Status", soul.status],
+      ["Won At", dateStr],
+      ["Location Won", locWon],
+      ["Spiritual State", assessment.generalImpression || 'N/A'],
+      ["Follow-up Strategy", assessment.followUpPlan || 'N/A'],
+      ["Emotional Needs", assessment.emotionalNeeds || 'N/A'],
+      ["Physical Needs", assessment.physicalNeeds || 'N/A'],
+      ["Financial Needs", assessment.financialNeeds || 'N/A'],
+      ["Social Needs", assessment.socialNeeds || 'N/A'],
+      ["Other Needs", assessment.otherNeeds || 'N/A'],
+    ];
 
     if (formatType === 'pdf') {
       const doc = new jsPDF();
       doc.setFontSize(18);
       doc.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, 14, 20);
       autoTable(doc, {
-        body: [
-          ["First Name", soul.firstName],
-          ["Last Name", soul.lastName],
-          ["Email", soul.email || 'N/A'],
-          ["Phone", soul.phone || 'N/A'],
-          ["Source", soul.source],
-          ["Status", soul.status],
-          ["Won At", dateStr],
-        ],
+        body: rows,
         startY: 30,
         theme: 'striped',
         headStyles: { fillColor: [249, 116, 22] }
@@ -299,7 +360,6 @@ export default function SoulsWonPage() {
       doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
     } else {
       const headers = ["Field", "Value"];
-      const rows = [["First Name", soul.firstName], ["Last Name", soul.lastName], ["Email", soul.email || ''], ["Phone", soul.phone || ''], ["Status", soul.status], ["Won At", dateStr]];
       const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
@@ -520,7 +580,7 @@ export default function SoulsWonPage() {
                         </div>
                         <div className="min-w-0">
                             <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">SOULS- AGE ANALYSIS</h2>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Demographic Reach</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Demographic Discovery</p>
                         </div>
                     </div>
                     <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
@@ -559,8 +619,8 @@ export default function SoulsWonPage() {
                                                 <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} />
                                             </div>
                                             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-primary bg-background/90 px-3 py-1.5 rounded-full shadow-lg border">
-                                                    CLICK TO VIEW SOULS IN THIS GROUP
+                                                <span className="text-[8px] font-black uppercase tracking-widest text-primary bg-background/90 px-3 py-1.5 rounded-full shadow-lg border text-center">
+                                                    OPEN POP-UP PAGE WHEN CLICKED
                                                 </span>
                                             </div>
                                         </div>
