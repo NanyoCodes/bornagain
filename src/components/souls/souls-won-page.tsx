@@ -14,7 +14,14 @@ import {
   Users, 
   ImageIcon,
   BarChart3,
-  Target
+  Target,
+  Zap,
+  Flame,
+  Award,
+  ChevronDown,
+  X,
+  UserPlus,
+  Hourglass
 } from "lucide-react";
 import { 
   Dialog, 
@@ -41,8 +48,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
-import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
@@ -58,12 +70,6 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
@@ -71,6 +77,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { SoulAssessmentDialog } from "./soul-assessment-dialog";
 import { Progress } from "@/components/ui/progress";
+import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
