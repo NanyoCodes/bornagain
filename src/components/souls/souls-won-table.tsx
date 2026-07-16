@@ -230,46 +230,40 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                         <p className="text-[10px] font-black uppercase text-primary tracking-widest">Assessed Needs</p>
                                         <div className="grid grid-cols-1 gap-1.5">
                                             {soul.needsAssessment.generalImpression && (
-                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                <div className="text-[11px] leading-tight flex items-start gap-2">
                                                     <Sparkles className="h-3 w-3 text-amber-500 shrink-0 mt-0.5" />
                                                     <span><span className="font-bold">Spiritual State:</span> {soul.needsAssessment.generalImpression}</span>
-                                                </p>
+                                                </div>
                                             )}
                                             {soul.needsAssessment.followUpPlan && (
-                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                <div className="text-[11px] leading-tight flex items-start gap-2">
                                                     <Target className="h-3 w-3 text-primary shrink-0 mt-0.5" />
                                                     <span><span className="font-bold">Follow-up Strategy:</span> {soul.needsAssessment.followUpPlan}</span>
-                                                </p>
+                                                </div>
                                             )}
                                             {soul.needsAssessment.emotionalNeeds && (
-                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                <div className="text-[11px] leading-tight flex items-start gap-2">
                                                     <Heart className="h-3 w-3 text-red-500 shrink-0 mt-0.5" />
                                                     <span><span className="font-bold">Emotional:</span> {soul.needsAssessment.emotionalNeeds}</span>
-                                                </p>
+                                                </div>
                                             )}
                                             {soul.needsAssessment.physicalNeeds && (
-                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                <div className="text-[11px] leading-tight flex items-start gap-2">
                                                     <Zap className="h-3 w-3 text-amber-500 shrink-0 mt-0.5" />
                                                     <span><span className="font-bold">Physical:</span> {soul.needsAssessment.physicalNeeds}</span>
-                                                </p>
+                                                </div>
                                             )}
                                             {soul.needsAssessment.financialNeeds && (
-                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                <div className="text-[11px] leading-tight flex items-start gap-2">
                                                     <ShieldCheck className="h-3 w-3 text-blue-500 shrink-0 mt-0.5" />
                                                     <span><span className="font-bold">Financial:</span> {soul.needsAssessment.financialNeeds}</span>
-                                                </p>
+                                                </div>
                                             )}
                                             {soul.needsAssessment.socialNeeds && (
-                                                <p className="text-[11px] leading-tight flex items-start gap-2">
+                                                <div className="text-[11px] leading-tight flex items-start gap-2">
                                                     <Users className="h-3 w-3 text-indigo-500 shrink-0 mt-0.5" />
                                                     <span><span className="font-bold">Social:</span> {soul.needsAssessment.socialNeeds}</span>
-                                                </p>
-                                            )}
-                                            {soul.needsAssessment.otherNeeds && (
-                                                <p className="text-[11px] leading-tight flex items-start gap-2">
-                                                    <Info className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
-                                                    <span><span className="font-bold">Other:</span> {soul.needsAssessment.otherNeeds}</span>
-                                                </p>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
@@ -323,7 +317,6 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                             </div>
                             
                             <div className="space-y-4 text-left">
-                               {/* Pending Gifting Reminders */}
                                {myPending.length > 0 && (
                                    <div className="space-y-2">
                                        {myPending.map(p => {
@@ -364,15 +357,9 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                                     </Badge>
                                                 ) : null;
                                             })}
-                                            {latestFollowUp.note?.includes('₦') && (
-                                                <Badge variant="outline" className="text-[8px] px-1.5 h-4 font-black uppercase tracking-tight bg-green-500/10 text-green-600 border-green-500/20 leading-none">FULFILLED</Badge>
-                                            )}
                                         </div>
                                         {latestFollowUp.note && (
-                                            <p className={cn(
-                                                "italic leading-relaxed text-balance",
-                                                latestFollowUp.note.includes('₦') ? "text-foreground font-medium not-italic" : "text-muted-foreground line-clamp-3"
-                                            )}>
+                                            <p className="text-muted-foreground line-clamp-3 italic leading-relaxed text-balance">
                                                 &ldquo;{latestFollowUp.note}&rdquo;
                                             </p>
                                         )}
@@ -429,7 +416,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
 
     return (
         <TableRow className="hover:bg-muted/30 transition-colors">
-            <TableCell className="font-medium p-4">
+            <TableCell className="font-medium p-4 text-left">
                 <div className="flex items-center gap-4">
                     <Dialog>
                         <DialogTrigger asChild disabled={!soul.photoURL}>
@@ -460,7 +447,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                             </DialogContent>
                         )}
                     </Dialog>
-                    <div className="min-w-0 text-left">
+                    <div className="min-w-0">
                         <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight">{soul.firstName} {soul.lastName}</div>
                         {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
                     </div>

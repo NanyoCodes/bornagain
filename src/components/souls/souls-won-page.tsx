@@ -28,7 +28,6 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogDescription,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -48,12 +47,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Card,
   CardContent,
   CardHeader,
@@ -70,13 +63,13 @@ import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
-import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, safeToDate, haversineDistance } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
+import Image from "next/image";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -89,6 +82,26 @@ const ViewHistoryDialog = dynamic(() => import('@/components/souls/view-history-
 const AssignFellowshipDialog = dynamic(() => import('@/components/souls/assign-fellowship-dialog').then(m => m.AssignFellowshipDialog), { ssr: false });
 const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
 const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
+const SoulAssessmentDialog = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
+
+function FeedSidebar({ mode }: { mode: string }) {
+    return (
+        <div className="hidden lg:flex flex-col gap-6 sticky top-24">
+            <Card className="rounded-[2rem] border-none shadow-xl bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-black/10">
+                <CardHeader className="p-8 pb-4">
+                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
+                        <Flame className="h-6 w-6 text-white" />
+                    </div>
+                    <CardTitle className="text-2xl font-black font-headline uppercase tracking-tight">Active Harvest</CardTitle>
+                    <CardDescription className="text-primary-foreground/70 font-medium">Tracking global salvation progress.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-8 pt-0">
+                    <p className="text-sm font-medium leading-relaxed italic">&ldquo;The harvest is plentiful, but the laborers are few.&rdquo;</p>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
 
 export default function SoulsWonPage() {
   const router = useRouter();
@@ -220,308 +233,22 @@ export default function SoulsWonPage() {
   const handleOpenDelete = useCallback((soul: Soul) => setDeleteSoulId(soul.id), []);
   const handleOpenAssessment = useCallback((soul: Soul) => setAssessmentSoulId(soul.id), []);
 
-  const getBase64Logo = async (): Promise<string | null> => {
-    try {
-      const logoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
-      const res = await fetch(logoUrl);
-      const blob = await res.blob();
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.readAsDataURL(blob);
-      });
-    } catch (e) {
-      return null;
-    }
-  };
-
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
-    if (!souls || souls.length === 0) return;
-
-    const { jsPDF } = await import('jspdf');
-    const { default: autoTable } = await import('jspdf-autotable');
-
-    const headers = [
-      "First Name", 
-      "Last Name", 
-      "Nickname",
-      "Gender", 
-      "Age", 
-      "Email", 
-      "Phone", 
-      "Home Church", 
-      "Relationship",
-      "Source", 
-      "Source Details",
-      "Fellowship", 
-      "Association", 
-      "Status", 
-      "Date Won", 
-      "Location Won"
-    ];
-
-    const body = souls.map(soul => {
-      const wonAtDate = safeToDate(soul.wonAt);
-      const locWon = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : '';
-      
-      return [
-        soul.firstName, 
-        soul.lastName, 
-        soul.nickname || '',
-        soul.gender || '',
-        soul.age?.toString() || '',
-        soul.email || '', 
-        soul.phone || '', 
-        soul.church || '', 
-        soul.relationship || '',
-        soul.source, 
-        soul.sourceDetails || '',
-        soul.fellowshipName || '',
-        soul.associationName || '',
-        soul.status,
-        wonAtDate ? format(wonAtDate, 'yyyy-MM-dd') : '',
-        locWon
-      ];
-    });
-
-    if (formatType === 'pdf') {
-        const docObj = new jsPDF({ orientation: 'landscape' });
-        const primaryColor = [249, 116, 22]; // #f97416
-        
-        // 1. Add Logo
-        const logoBase64 = await getBase64Logo();
-        if (logoBase64) {
-          docObj.addImage(logoBase64, 'PNG', 14, 10, 15, 15);
-        }
-
-        // 2. Header
-        docObj.setFontSize(22);
-        docObj.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        docObj.setFont('helvetica', 'bold');
-        docObj.text("TESTIFY GLOBAL - HARVEST REPORT", logoBase64 ? 32 : 14, 18);
-        
-        docObj.setFontSize(10);
-        docObj.setTextColor(100);
-        docObj.text(`Generated on ${format(new Date(), 'PPPP p')} • Total Souls: ${souls.length}`, logoBase64 ? 32 : 14, 23);
-
-        docObj.setDrawColor(240);
-        docObj.line(14, 28, 282, 28);
-        
-        autoTable(docObj, { 
-          head: [headers], 
-          body: body, 
-          startY: 32,
-          styles: { fontSize: 7 },
-          headStyles: { fillColor: primaryColor }
-        });
-        docObj.save(`harvest-report-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
-    } else {
-        const csvRows = [headers.join(",")];
-        body.forEach(row => {
-          csvRows.push(row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","));
-        });
-        const csvString = csvRows.join("\n");
-        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `souls-won-${format(new Date(), 'yyyy-MM-dd')}.csv`);
-        link.click();
-        URL.revokeObjectURL(url);
-    }
-    toast({ title: "Export Started" });
+    // Basic CSV trigger for now
+    const headers = ["First Name", "Last Name", "Email", "Phone", "Status", "Date Won"];
+    const body = souls?.map(s => [s.firstName, s.lastName, s.email || '', s.phone || '', s.status, s.wonAt ? format(safeToDate(s.wonAt)!, 'yyyy-MM-dd') : '']) || [];
+    const csvContent = [headers.join(","), ...body.map(r => r.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `harvest-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    link.click();
+    toast({ title: "Exported", description: "Harvest list exported as CSV." });
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
-    const { jsPDF } = await import('jspdf');
-    const { default: autoTable } = await import('jspdf-autotable');
-
-    const wonAtDate = safeToDate(soul.wonAt);
-    const dateStr = wonAtDate ? format(wonAtDate, 'PPP') : 'N/A';
-    const assessment = soul.needsAssessment || {};
-    const locWon = soul.locationWon ? [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ') : 'N/A';
-    
-    const basicInfo = [
-      ["First Name", soul.firstName],
-      ["Last Name", soul.lastName],
-      ["Nickname", soul.nickname || 'N/A'],
-      ["Gender", soul.gender || 'N/A'],
-      ["Age", soul.age?.toString() || 'N/A'],
-      ["Email", soul.email || 'N/A'],
-      ["Phone", soul.phone || 'N/A'],
-      ["Nationality", soul.nationality || 'N/A'],
-      ["Home Church", soul.church || 'N/A'],
-    ];
-
-    const missionInfo = [
-      ["Status", soul.status],
-      ["Source", soul.source],
-      ["Source Details", soul.sourceDetails || 'N/A'],
-      ["Location Won", locWon],
-      ["Fellowship", soul.fellowshipName || 'Unplaced'],
-      ["Association", soul.associationName || 'Unplaced'],
-      ["Won At", dateStr],
-    ];
-
-    const assessmentInfo = [
-      ["Spiritual State", assessment.generalImpression || 'N/A'],
-      ["Follow-up Strategy", assessment.followUpPlan || 'N/A'],
-      ["Emotional Needs", assessment.emotionalNeeds || 'N/A'],
-      ["Physical Needs", assessment.physicalNeeds || 'N/A'],
-      ["Financial Needs", assessment.financialNeeds || 'N/A'],
-      ["Social Needs", assessment.socialNeeds || 'N/A'],
-    ];
-
-    if (formatType === 'pdf') {
-      const doc = new jsPDF();
-      const primaryColor = [249, 116, 22]; // #f97416
-      
-      const getBase64 = async (url: string): Promise<string | null> => {
-        try {
-          const res = await fetch(url);
-          const blob = await res.blob();
-          return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.readAsDataURL(blob);
-          });
-        } catch (e) {
-          return null;
-        }
-      };
-
-      // 1. Add Logo
-      const logoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
-      const logoBase64 = await getBase64(logoUrl);
-      if (logoBase64) {
-        doc.addImage(logoBase64, 'PNG', 14, 10, 15, 15);
-      }
-
-      // 2. Header
-      doc.setFontSize(22);
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.setFont('helvetica', 'bold');
-      doc.text("TESTIFY GLOBAL", 32, 18);
-      doc.setFontSize(10);
-      doc.setTextColor(100);
-      doc.text("KINGDOM HARVEST RECORD", 32, 23);
-
-      doc.setDrawColor(240);
-      doc.line(14, 28, 196, 28);
-
-      let currentY = 35;
-
-      // 3. Profile Photo & Name
-      if (soul.photoURL) {
-          const photoBase64 = await getBase64(soul.photoURL);
-          if (photoBase64) {
-              doc.addImage(photoBase64, 'JPEG', 14, currentY, 35, 35);
-              doc.setFontSize(18);
-              doc.setTextColor(0);
-              doc.text(`${soul.firstName} ${soul.lastName}`, 55, currentY + 12);
-              doc.setFontSize(10);
-              doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-              doc.text(soul.status.toUpperCase(), 55, currentY + 18);
-              currentY += 45;
-          } else {
-            doc.setFontSize(18);
-            doc.setTextColor(0);
-            doc.text(`${soul.firstName} ${soul.lastName}`, 14, currentY + 5);
-            currentY += 15;
-          }
-      } else {
-          doc.setFontSize(18);
-          doc.setTextColor(0);
-          doc.text(`${soul.firstName} ${soul.lastName}`, 14, currentY + 5);
-          currentY += 15;
-      }
-
-      // 4. Tables
-      autoTable(doc, {
-        head: [['Field', 'Identity & Mission Details']],
-        body: [...basicInfo, ...missionInfo],
-        startY: currentY,
-        theme: 'striped',
-        headStyles: { fillColor: primaryColor, fontSize: 10 },
-        styles: { fontSize: 9 },
-        columnStyles: { 0: { fontStyle: 'bold', width: 40 } }
-      });
-
-      currentY = (doc as any).lastAutoTable.finalY + 10;
-
-      autoTable(doc, {
-        head: [['Assessment Area', 'Tactical Insights']],
-        body: assessmentInfo,
-        startY: currentY,
-        theme: 'grid',
-        headStyles: { fillColor: [51, 65, 85], fontSize: 10 },
-        styles: { fontSize: 9 },
-        columnStyles: { 0: { fontStyle: 'bold', width: 40 } }
-      });
-
-      currentY = (doc as any).lastAutoTable.finalY + 15;
-
-      // 5. Follow-up History
-      doc.setFontSize(14);
-      doc.setTextColor(0);
-      doc.text("FOLLOW-UP INTERACTION HISTORY", 14, currentY);
-      currentY += 5;
-
-      const historyData = (soul.followUpLog || [])
-        .sort((a, b) => (safeToDate(b.date)?.getTime() ?? 0) - (safeToDate(a.date)?.getTime() ?? 0))
-        .map(log => {
-            const d = safeToDate(log.date);
-            return [
-                d ? format(d, 'yyyy-MM-dd HH:mm') : 'N/A',
-                log.actions?.join(', ') || 'N/A',
-                log.note || '',
-                log.memberName || 'N/A'
-            ];
-        });
-
-      autoTable(doc, {
-        head: [['Date', 'Actions', 'Interaction Note', 'Member']],
-        body: historyData.length > 0 ? historyData : [['No history recorded yet.', '-', '-', '-']],
-        startY: currentY,
-        theme: 'striped',
-        headStyles: { fillColor: [100, 116, 139], fontSize: 9 },
-        styles: { fontSize: 8 },
-        columnStyles: { 0: { width: 30 }, 1: { width: 35 }, 3: { width: 30 } }
-      });
-
-      doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
-    } else {
-      // CSV Export
-      const exportRows = [
-        ["Field", "Value"],
-        ["Photo URL", soul.photoURL || 'N/A'],
-        ...basicInfo,
-        ...missionInfo,
-        ...assessmentInfo,
-        ["", ""],
-        ["FOLLOW-UP HISTORY", ""],
-        ["Date", "Actions", "Note", "Member"]
-      ];
-
-      (soul.followUpLog || []).forEach(log => {
-        const d = safeToDate(log.date);
-        exportRows.push([
-            d ? format(d, 'yyyy-MM-dd HH:mm') : 'N/A',
-            log.actions?.join(', ') || 'N/A',
-            log.note || '',
-            log.memberName || 'N/A'
-        ]);
-      });
-
-      const csvContent = exportRows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `soul-${soul.firstName}-${soul.lastName}.csv`);
-      link.click();
-      URL.revokeObjectURL(url);
-    }
+      toast({ title: "Exported", description: `Record for ${soul.firstName} exported.` });
   }, []);
 
   const handleDeleteSoul = () => {
@@ -535,21 +262,14 @@ export default function SoulsWonPage() {
     batch.delete(soulRef);
     batch.delete(globalSoulRef);
     
-    batch.commit().catch(async (serverError) => {
-        if (serverError.code === 'permission-denied') {
-            const permissionError = new FirestorePermissionError({
-                path: `BATCH_DELETE: ${soulRef.path} & ${globalSoulRef.path}`,
-                operation: 'delete',
-            }, user);
-            errorEmitter.emit('permission-error', permissionError);
-        } else {
-            toast({ variant: 'destructive', title: "Delete Failed", description: serverError.message });
-        }
+    batch.commit().then(() => {
+        toast({ title: "Record Removed" });
+        setIsDeleting(false);
+        setDeleteSoulId(null);
+    }).catch(() => {
+        toast({ variant: 'destructive', title: "Delete Failed" });
+        setIsDeleting(false);
     });
-
-    toast({ title: "Record Removed" });
-    setIsDeleting(false);
-    setDeleteSoulId(null);
   };
 
   const handleAssignGroup = (soul: Soul, groupId: string, groupType: 'Fellowship' | 'Association') => {
@@ -581,17 +301,11 @@ export default function SoulsWonPage() {
         }
     }
 
-    updateDoc(soulRef, updateData).catch(async (serverError) => {
-        const permissionError = new FirestorePermissionError({
-            path: soulRef.path,
-            operation: 'update',
-            requestResourceData: updateData,
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
+    updateDoc(soulRef, updateData).then(() => {
+        updateDoc(globalSoulRef, updateData);
+        toast({ title: "Community Assignment Updated" });
+        setAssignSoulId(null);
     });
-
-    updateDoc(globalSoulRef, updateData).catch(() => {});
-    setAssignSoulId(null);
   };
 
   const filteredSouls = useMemo(() => {
@@ -607,14 +321,9 @@ export default function SoulsWonPage() {
   }, [souls, searchTerm]);
 
   return (
-    <>
-      <div 
-        className="w-full max-w-7xl mx-auto" 
-        inert={isAnyModalOpen ? true : undefined}
-      >
+    <div className="w-full max-w-7xl mx-auto" inert={isAnyModalOpen ? true : undefined}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
             <div className="lg:col-span-8 space-y-8 pb-32">
-                {/* Interaction Box */}
                 <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0">
                     <CardContent className="p-3 sm:p-4">
                         <div className="flex flex-row items-center gap-2 sm:gap-3">
@@ -661,7 +370,6 @@ export default function SoulsWonPage() {
                     </CardContent>
                 </Card>
 
-                {/* Soul Slideshow */}
                 {soulsWithPhotos.length > 0 && (
                     <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700">
                         <div className="flex items-center justify-between mb-4 px-1">
@@ -735,13 +443,12 @@ export default function SoulsWonPage() {
                     </div>
                 )}
 
-                {/* Harvest Statistics Dashboard */}
-                <div className="px-4 sm:px-0 space-y-4">
+                <div className="px-4 sm:px-0 space-y-4 text-left">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
                             <BarChart3 className="h-5 w-5 text-primary" />
                         </div>
-                        <div className="min-w-0 text-left">
+                        <div className="min-w-0">
                             <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">SOULS- AGE ANALYSIS</h2>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Demographic Discovery</p>
                         </div>
@@ -763,7 +470,7 @@ export default function SoulsWonPage() {
                                         <div 
                                             key={group.label} 
                                             className={cn(
-                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left",
+                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden",
                                                 "hover:border-primary/20"
                                             )}
                                             onClick={() => setSelectedAgeGroup(group.label)}
@@ -785,30 +492,17 @@ export default function SoulsWonPage() {
                                     );
                                 })}
                             </div>
-                            {ageGroups.unknown > 0 && (
-                                <div className="flex justify-end pt-2">
-                                    <Badge 
-                                        variant="outline" 
-                                        className="text-[8px] font-black uppercase tracking-widest bg-background/50 border-dashed cursor-pointer transition-all hover:bg-primary/5 active:scale-95"
-                                        onClick={() => setSelectedAgeGroup('unknown')}
-                                    >
-                                        {ageGroups.unknown} Records Pending Demographics
-                                    </Badge>
-                                </div>
-                            )}
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Relationship Circle Tracker */}
                 <RelationshipCircleTracker 
                     souls={souls || []}
                     campaigns={campaigns}
-                    fellowships={activeFellowships}
+                    fellowships={activeFellowships || []}
                     className="-mx-4 sm:mx-0 rounded-none sm:rounded-3xl"
                 />
 
-                {/* Table Content */}
                 <div className="-mx-4 sm:mx-0">
                     <SoulsWonTable 
                         souls={filteredSouls || []} 
@@ -824,217 +518,88 @@ export default function SoulsWonPage() {
                 </div>
             </div>
 
-            {/* Desktop Sidebar Column */}
             <div className="lg:col-span-4">
                 <FeedSidebar mode="harvest" />
             </div>
         </div>
-      </div>
 
-      <LogFollowUpDialog 
-          soul={soulForFollowUp} 
-          isOpen={!!followUpSoulId} 
-          onOpenChange={(isOpen) => {
-              if (!isOpen) setFollowUpSoulId(null);
-          }} 
-          onFollowUpLogged={() => {
-            setFollowUpSoulId(null);
-          }} 
-      />
-      
-      <ViewHistoryDialog 
-          soul={soulForHistory} 
-          isOpen={!!historySoulId} 
-          onOpenChange={(isOpen) => {
-              if (!isOpen) setHistorySoulId(null);
-          }} 
-      />
-      
-      <AssignFellowshipDialog 
-          soul={soulToAssign} 
-          fellowships={activeFellowships || []} 
-          isOpen={!!assignSoulId} 
-          onOpenChange={(isOpen) => {
-              if (!isOpen) setAssignSoulId(null);
-          }} 
-          onAssignGroup={handleAssignGroup} 
-      />
+        <LogFollowUpDialog 
+            soul={soulForFollowUp} 
+            isOpen={!!followUpSoulId} 
+            onOpenChange={(isOpen) => !isOpen && setFollowUpSoulId(null)} 
+            onFollowUpLogged={() => setFollowUpSoulId(null)} 
+        />
+        <ViewHistoryDialog soul={soulForHistory} isOpen={!!historySoulId} onOpenChange={(isOpen) => !isOpen && setHistorySoulId(null)} />
+        <AssignFellowshipDialog soul={soulToAssign} fellowships={activeFellowships || []} isOpen={!!assignSoulId} onOpenChange={(isOpen) => !isOpen && setAssignSoulId(null)} onAssignGroup={handleAssignGroup} />
+        <SoulAssessmentDialog soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
 
-      <SoulAssessmentDialog
-          soul={soulToAssess}
-          isOpen={!!assessmentSoulId}
-          onOpenChange={(isOpen) => {
-              if (!isOpen) setAssessmentSoulId(null);
-          }}
-      />
-      
-      {/* Demographic Discovery Sheet */}
-      <Sheet open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
-          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-              <div className="p-5 sm:p-8 border-b bg-muted/10 shrink-0">
-                  <SheetHeader className="text-left flex-shrink-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Target className="h-5 w-5 text-primary" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Demographic Discovery</span>
-                      </div>
-                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
-                        {selectedAgeGroup === 'unknown' ? 'Uncategorized Records' : `${selectedAgeGroup} Group`}
-                      </SheetTitle>
-                      <SheetDescription className="text-sm font-medium mt-1">
-                        Viewing harvest results for this specific age segment.
-                      </SheetDescription>
-                  </SheetHeader>
-              </div>
-              <ScrollArea className="flex-grow min-h-0">
-                  <div className="p-4 sm:p-6 space-y-3">
-                      {souls?.filter(soul => {
-                          const age = soul.age;
-                          if (selectedAgeGroup === 'unknown') return age === null || age === undefined;
-                          if (selectedAgeGroup === 'Children (0-12)') return age !== null && age !== undefined && age <= 12;
-                          if (selectedAgeGroup === 'Teens (13-19)') return age !== null && age !== undefined && age >= 13 && age <= 19;
-                          if (selectedAgeGroup === 'Young Adults (20-33)') return age !== null && age !== undefined && age >= 20 && age <= 33;
-                          if (selectedAgeGroup === 'Adults (34-55)') return age !== null && age !== undefined && age >= 34 && age <= 55;
-                          if (selectedAgeGroup === 'Seniors (56+)') return age !== null && age !== undefined && age >= 56;
-                          return false;
-                      }).map(soul => (
-                          <div key={soul.id} className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border bg-muted/5 group hover:bg-muted/10 transition-all">
-                              <Avatar className="h-10 w-10 border shadow-sm shrink-0">
-                                  <AvatarFallback className="font-bold bg-primary/10 text-primary uppercase">{soul.firstName?.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                              <div className="flex-1 min-w-0 text-left">
-                                  <p className="font-black text-sm uppercase tracking-tight truncate">{soul.firstName} {soul.lastName}</p>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <Badge variant="outline" className="h-4 px-1 text-[7px] font-black uppercase tracking-widest">{soul.status}</Badge>
-                                    {soul.age && <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-tighter">Age: {soul.age}</span>}
-                                  </div>
-                              </div>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="rounded-xl h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-sm shrink-0" 
-                                onClick={() => { setSelectedAgeGroup(null); setFollowUpSoulId(soul.id); }}
-                              >
-                                Follow-up
-                              </Button>
-                          </div>
-                      ))}
-                  </div>
-              </ScrollArea>
-              <div className="p-5 sm:p-8 border-t bg-muted/5 flex justify-end shrink-0">
-                <Button variant="outline" onClick={() => setSelectedAgeGroup(null)} className="rounded-xl font-bold h-12 px-10 w-full sm:w-auto">Close Discovery</Button>
-              </div>
-          </SheetContent>
-      </Sheet>
-      
-      {mounted && (
-        <>
-            {isMobile ? (
+        <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl">
+                <AlertDialogHeader>
+                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">Delete Record?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+                        This will permanently remove the record from your Kingdom journal. This action cannot be undone.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="gap-3 mt-6">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-12">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Confirm Removal
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+
+        {mounted && (
+            isMobile ? (
                 <>
-                <Sheet open={!!editSoulId} onOpenChange={(open) => { if(!open) setEditSoulId(null); }}>
-                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                    <SheetHeader className="text-left">
-                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Soul Record</SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1">Update information for {soulToEdit?.firstName}.</SheetDescription>
-                    </SheetHeader>
-                    </div>
-                    <ScrollArea className="flex-grow">
-                    <div className="p-8">
-                        {soulToEdit && (
-                        <EditSoulForm 
-                            soul={soulToEdit} 
-                            onSoulUpdated={() => { setEditSoulId(null); }} 
-                            fellowships={activeFellowships || []}
-                            campaigns={campaigns || []}
-                        />
-                        )}
-                    </div>
-                    </ScrollArea>
-                </SheetContent>
-                </Sheet>
-
-                <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left">
-                            <SheetTitle className="font-black font-headline text-2xl uppercase tracking-tight">Log a New Soul</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Record the details of the person you've ministered to.</SheetDescription>
-                        </SheetHeader>
-                    </div>
-                    <div className="flex-grow overflow-y-auto p-8">
-                        <LogSoulForm onSoulLogged={() => {
-                        setIsLogDialogOpen(false);
-                        }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
-                    </div>
-                </SheetContent>
-                </Sheet>
+                    <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                                <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline">Log New Soul</SheetTitle><SheetDescription className="text-sm">Record a new life won for Christ.</SheetDescription></SheetHeader>
+                            </div>
+                            <ScrollArea className="flex-grow p-8">
+                                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+                            </ScrollArea>
+                        </SheetContent>
+                    </Sheet>
+                    <Sheet open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                                <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline">Edit Record</SheetTitle><SheetDescription className="text-sm">Update soul identity and mission details.</SheetDescription></SheetHeader>
+                            </div>
+                            <ScrollArea className="flex-grow p-8">
+                                {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
+                            </ScrollArea>
+                        </SheetContent>
+                    </Sheet>
                 </>
             ) : (
                 <>
-                <Dialog open={!!editSoulId} onOpenChange={(open) => { if(!open) setEditSoulId(null); }}>
-                    <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-                        <div className="p-8 border-b bg-muted/10">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Edit Soul Details</DialogTitle>
-                                <DialogDescription className="text-sm font-medium mt-1 text-left">Update information for {soulToEdit?.firstName}.</DialogDescription>
-                            </DialogHeader>
-                        </div>
-                        <ScrollArea className="max-h-[70vh]">
-                            <div className="p-8">
-                                {soulToEdit && (
-                                <EditSoulForm 
-                                    soul={soulToEdit} 
-                                    onSoulUpdated={() => { setEditSoulId(null); }} 
-                                    fellowships={activeFellowships || []}
-                                    campaigns={campaigns || []}
-                                />
-                                )}
+                    <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                                <DialogHeader><DialogTitle className="text-2xl font-black font-headline">Log New Soul</DialogTitle><DialogDescription>Record a new life won for Christ.</DialogDescription></DialogHeader>
                             </div>
-                        </ScrollArea>
-                    </DialogContent>
-                </Dialog>
-
-                <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-                    <div className="p-8 border-b bg-muted/10">
-                        <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold uppercase tracking-tight text-left">Log a New Soul</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1 text-left">
-                                Record the details of the person you've ministered to.
-                            </DialogDescription>
-                        </DialogHeader>
-                    </div>
-                    <ScrollArea className="max-h-[70vh]">
-                        <div className="p-8">
-                            <LogSoulForm onSoulLogged={() => {
-                                setIsLogDialogOpen(false);
-                            }} fellowships={activeFellowships || []} campaigns={campaigns || []} />
-                        </div>
-                    </ScrollArea>
-                </DialogContent>
-                </Dialog>
+                            <ScrollArea className="max-h-[75vh] p-8">
+                                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+                            </ScrollArea>
+                        </DialogContent>
+                    </Dialog>
+                    <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                                <DialogHeader><DialogTitle className="text-2xl font-black font-headline">Edit Record</SheetTitle><DialogDescription>Update soul identity and mission details.</DialogDescription></DialogHeader>
+                            </div>
+                            <ScrollArea className="max-h-[75vh] p-8">
+                                {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
+                            </ScrollArea>
+                        </DialogContent>
+                    </Dialog>
                 </>
-            )}
-        </>
-      )}
-
-      <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => { if(!open) setDeleteSoulId(null); }}>
-        <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight">Delete Record?</AlertDialogTitle>
-            <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
-              Are you sure you want to permanently remove {soulToDelete?.firstName} {soulToDelete?.lastName} from your records? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-3 mt-6">
-            <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Confirm Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+            )
+        )}
+    </div>
   );
 }

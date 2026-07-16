@@ -338,9 +338,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             <Card className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden">
                 <CardHeader className="p-4">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1 text-left">Answer to Prayer Request:</div>
-                    <CardDescription className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-left">
+                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-left">
                         <p ref={prayerRef}>{testimony.answeredPrayerContent}</p>
-                    </CardDescription>
+                    </div>
                     {isPrayerTruncated && (
                         <Button 
                             variant="link" 
