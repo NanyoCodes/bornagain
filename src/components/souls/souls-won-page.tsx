@@ -421,23 +421,13 @@ export default function SoulsWonPage() {
                         </div>
                     </div>
                     <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
-                        <CardContent className="p-6 space-y-4">
+                        <CardContent className="p-6">
                             <div className="flex items-start gap-4">
                                 <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center shrink-0 shadow-sm">
                                     <Sparkles className="h-4 w-4 text-primary" />
                                 </div>
-                                <p className="text-sm text-muted-foreground leading-relaxed font-medium text-justify italic">
-                                    "The harvest is plentiful, but the laborers are few." Use this dashboard to organize your personal and collective evangelism efforts. Every soul registered here represents a life to be nurtured and established in the Kingdom.
-                                </p>
-                            </div>
-                            <Separator className="opacity-50" />
-                            <div className="flex items-start gap-4">
-                                <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center shrink-0 shadow-sm">
-                                    <Info className="h-4 w-4 text-primary" />
-                                </div>
-                                <p className="text-[11px] text-muted-foreground leading-relaxed font-medium text-balance">
-                                    <span className="text-foreground font-black uppercase text-[10px] tracking-wider block mb-0.5">Strategy for Victory</span>
-                                    Assign souls to your local Fellowship or Association to share the responsibility of follow-up and discipleship with other believers.
+                                <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+                                    Organize your evangelism efforts and assign souls to local groups to share the responsibility of discipleship.
                                 </p>
                             </div>
                         </CardContent>
