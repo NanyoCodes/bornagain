@@ -4,6 +4,17 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import dynamic from 'next/dynamic';
 import { Button } from "@/components/ui/button";
 import { 
+  PlusCircle, 
+  Download, 
+  Loader2, 
+  Trash2, 
+  HeartHandshake, 
+  Sparkles, 
+  Info, 
+  Users, 
+  Image as ImageIcon 
+} from "lucide-react";
+import { 
   Dialog, 
   DialogContent, 
   DialogHeader, 
@@ -34,7 +45,7 @@ import {
   CarouselItem 
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { PlusCircle, Download, Loader2, Trash2, HeartHandshake, Sparkles, Info, Users, Image as ImageIcon } from "lucide-react";
+import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
