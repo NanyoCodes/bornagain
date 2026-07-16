@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Permission logic for testimony-prayer revert - 2025-07-05T10:00:00Z
+    // Deployment trigger: Author status revert logic - 2025-07-10T11:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -199,8 +199,7 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
       allow update: if isAuthenticated() && ( 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
-        (resource.data.authorId == request.auth.uid && request.resource.data.status in ['pending', 'answered']) ||
-        (request.auth.uid == get(/databases/$(database)/documents/testimonies/$(resource.data.answeredTestimonyId)).data.authorId && request.resource.data.status == 'pending')
+        (resource.data.authorId == request.auth.uid && request.resource.data.status in ['pending', 'answered'])
       );
     }
 

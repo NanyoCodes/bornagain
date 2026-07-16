@@ -92,7 +92,7 @@ function SoulSelectionList({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearchTerm(e.target.value)}
+                    onChange={e => setSearch(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
@@ -124,7 +124,7 @@ function SoulSelectionList({
                             <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
                                 <Users className="h-6 w-6 text-muted-foreground opacity-20" />
                             </div>
-                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-balance">
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-balance text-center">
                                 {search ? "No matches found" : "Log your first soul to begin tracking"}
                             </p>
                         </div>
@@ -490,8 +490,8 @@ export function RelationshipTrackerCard() {
             <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                 <div className="p-4 sm:p-8 border-b shrink-0 bg-muted/10">
                     <SheetHeader className="text-left">
-                        <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Who did you {activeActionLabel.toLowerCase()}?</SheetTitle>
-                        <SheetDescription className="text-sm font-medium">Select a convert to link this action to their record.</SheetDescription>
+                        <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Who did you {activeActionLabel.toLowerCase()}?</SheetTitle>
+                        <SheetDescription className="text-sm font-medium text-center">Select a convert to link this action to their record.</SheetDescription>
                     </SheetHeader>
                 </div>
                 <div className="flex-grow min-h-0 p-4 sm:p-6">

@@ -298,9 +298,8 @@ export default function FellowshipPageClient() {
     const [mounted, setMounted] = useState(false);
 
     const [selectedSoulId, setSelectedSoulId] = useState<string | null>(null);
-    const [isSoulDetailsOpen, setIsSoulDetailsOpen] = useState(false);
-    const [isLogFollowUpOpen, setIsLogFollowUpOpen] = useState(false);
-    const [isChatLoading, setIsChatLoading] = useState(false);
+    const [historySoulId, setHistorySoulId] = useState<string | null>(null);
+    const [followUpSoulId, setFollowUpSoulId] = useState<string | null>(null);
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
     
     const [viewDate, setViewDate] = useState(new Date());
@@ -308,6 +307,7 @@ export default function FellowshipPageClient() {
     const [isSavingDevotional, setIsSavingDevotional] = useState(false);
     const [isScheduleViewOpen, setIsScheduleViewOpen] = useState(false);
     const [isProcessingReaction, setIsProcessingReaction] = useState<string | null>(null);
+    const [isChatLoading, setIsChatLoading] = useState(false);
     
     const [memberToRemove, setMemberToRemove] = useState<FellowshipMember | null>(null);
     const [soulToUnassign, setSoulToUnassign] = useState<Soul | null>(null);
@@ -381,9 +381,10 @@ export default function FellowshipPageClient() {
     const { data: assignedSouls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
     const activeSoul = useMemo(() => {
-        if (!selectedSoulId || !assignedSouls) return null;
-        return assignedSouls.find(s => s.id === selectedSoulId) || null;
-    }, [selectedSoulId, assignedSouls]);
+        const id = historySoulId || followUpSoulId;
+        if (!id || !assignedSouls) return null;
+        return assignedSouls.find(s => s.id === id) || null;
+    }, [historySoulId, followUpSoulId, assignedSouls]);
 
     const form = useForm<z.infer<typeof devotionalSchema>>({
         resolver: zodResolver(devotionalSchema),
@@ -627,6 +628,12 @@ export default function FellowshipPageClient() {
         commentsAreaRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const activeFellowshipsQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'fellowships'), where('status', '==', 'active'));
+    }, [firestore]);
+    const { data: activeFellowships } = useCollection<Fellowship>(activeFellowshipsQuery);
+
     const loading = fellowshipLoading || profileLoading || soulsLoading || loadingMembers || devoLoading;
 
     if (loading) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
@@ -766,7 +773,7 @@ export default function FellowshipPageClient() {
                                 {isOrganizer && <Button variant="outline" size="icon" className="h-10 w-10 sm:h-14 sm:w-14 rounded-[1.25rem] bg-white/10 border-white/20 hover:bg-white/20 text-white shadow-xl" onClick={() => { if (activeDevotional) handleEditDevotional(activeDevotional); else form.reset({ title: '', scripture: '', text: '', prayer: '', scheduledDate: viewDateStr }); setIsDevotionalDialogOpen(true); }}><Edit className="h-5 w-5 sm:h-6 sm:w-6" /></Button>}
                             </div>
                         </CardHeader>
-                        <CardContent className="px-6 sm:px-10 pt-0 pb-8 sm:pb-12 space-y-8">
+                        <CardContent className="px-6 sm:p-10 pt-0 pb-8 sm:pb-12 space-y-8">
                             {devoLoading ? <div className="py-20 flex flex-col items-center gap-4"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20" /><p className="text-[10px] font-black uppercase tracking-widest opacity-20">Accessing Records...</p></div> : activeDevotional ? (
                                 <div className="space-y-8">
                                     <div className="bg-black/60 rounded-[2rem] p-6 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden">
@@ -828,7 +835,7 @@ export default function FellowshipPageClient() {
                             {isOrganizer && member.userId !== user?.uid && <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive opacity-40 hover:opacity-100 hover:bg-destructive/10 rounded-full" onClick={() => setMemberToRemove(member)}><UserMinus className="h-4 w-4" /></Button>}
                         </div>))}</div></TabsContent>
                         {isOrganizer && (
-                            <TabsContent value="souls" className="mt-0 p-4 sm:p-10"><div className="flex items-center justify-between mb-6 px-1"><div className="flex items-center gap-2"><Heart className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-0.2em text-muted-foreground">Assigned Converts</span></div><Button onClick={() => setIsLogSoulOpen(true)} size="sm" className="h-8 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-md transition-transform active:scale-95"><UserPlus className="mr-1.5 h-3.5 w-3.5" />Log Soul</Button></div><div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{assignedSouls && assignedSouls.length > 0 ? assignedSouls.map(soul => (<div key={soul.id} className="flex items-center gap-4 p-4 rounded-2xl border bg-primary/5 transition-all hover:bg-muted/10 group min-w-0"><div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20"><Heart className="h-5 w-5 text-primary fill-current" /></div><div className="flex-1 min-w-0"><button onClick={() => { setSelectedSoulId(soul.id); setIsSoulDetailsOpen(true); }} className="font-black truncate text-sm sm:text-base leading-tight break-words [overflow-wrap:anywhere] uppercase tracking-tight hover:text-primary transition-colors text-left w-full">{soul.firstName} {soul.lastName}</button><div className="flex items-center gap-2 mt-1"><Badge className="h-4 text-[8px] sm:text-[9px] font-black uppercase tracking-widest" variant="secondary">{soul.status}</Badge><button onClick={() => { setSelectedSoulId(soul.id); setIsLogFollowUpOpen(true); }} className="text-[8px] font-black uppercase text-primary/60 hover:text-primary transition-colors hover:underline tracking-tighter">Log Follow-up</button></div></div><Button variant="outline" size="sm" className="h-8 sm:h-9 text-[10px] sm:text-[11px] font-black uppercase tracking-widest px-4 rounded-xl shadow-sm" onClick={() => { setSelectedSoulId(soul.id); setIsSoulDetailsOpen(true); }}>Details</Button></div>)) : <div className="col-span-full py-12 text-center flex flex-col items-center"><Heart className="h-10 w-10 text-muted-foreground opacity-10 mb-4" /><p className="text-xs text-muted-foreground italic max-w-xs mx-auto text-left">No converts have been assigned to this group yet.</p><Button variant="outline" size="sm" className="mt-4 h-8 rounded-xl font-bold text-[10px] uppercase" onClick={() => setIsLogSoulOpen(true)}>Log First Soul</Button></div>}</div></TabsContent>
+                            <TabsContent value="souls" className="mt-0 p-4 sm:p-10"><div className="flex items-center justify-between mb-6 px-1"><div className="flex items-center gap-2"><Heart className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-0.2em text-muted-foreground">Assigned Converts</span></div><Button onClick={() => setIsLogSoulOpen(true)} size="sm" className="h-8 px-4 rounded-xl font-black uppercase tracking-widest text-[9px] shadow-md transition-transform active:scale-95"><UserPlus className="mr-1.5 h-3.5 w-3.5" />Log Soul</Button></div><div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{assignedSouls && assignedSouls.length > 0 ? assignedSouls.map(soul => (<div key={soul.id} className="flex items-center gap-4 p-4 rounded-2xl border bg-primary/5 transition-all hover:bg-muted/10 group min-w-0"><div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20"><Heart className="h-5 w-5 text-primary fill-current" /></div><div className="flex-1 min-w-0"><button onClick={() => { setHistorySoulId(soul.id); }} className="font-black truncate text-sm sm:text-base leading-tight break-words [overflow-wrap:anywhere] uppercase tracking-tight hover:text-primary transition-colors text-left w-full">{soul.firstName} {soul.lastName}</button><div className="flex items-center gap-2 mt-1"><Badge className="h-4 text-[8px] sm:text-[9px] font-black uppercase tracking-widest" variant="secondary">{soul.status}</Badge><button onClick={() => { setFollowUpSoulId(soul.id); }} className="text-[8px] font-black uppercase text-primary/60 hover:text-primary transition-colors hover:underline tracking-tighter">Log Follow-up</button></div></div><Button variant="outline" size="sm" className="h-8 sm:h-9 text-[10px] sm:text-[11px] font-black uppercase tracking-widest px-4 rounded-xl shadow-sm" onClick={() => { setHistorySoulId(soul.id); }}>Details</Button></div>)) : <div className="col-span-full py-12 text-center flex flex-col items-center"><Heart className="h-10 w-10 text-muted-foreground opacity-10 mb-4" /><p className="text-xs text-muted-foreground italic max-w-xs mx-auto text-left">No converts have been assigned to this group yet.</p><Button variant="outline" size="sm" className="mt-4 h-8 rounded-xl font-bold text-[10px] uppercase" onClick={() => setIsLogSoulOpen(true)}>Log First Soul</Button></div>}</div></TabsContent>
                         )}
                         </Tabs> : <div className="p-16 sm:p-24 text-center bg-muted/30 flex flex-col items-center"><div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/20 rounded-full flex items-center justify-center mb-8"><Users className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20" /></div><p className="text-xs sm:text-base text-muted-foreground italic px-12 leading-relaxed font-medium max-w-md mx-auto text-balance text-left">Join this community to access the shared directory and spiritual history.</p></div>}</CardContent></Card>
                     
