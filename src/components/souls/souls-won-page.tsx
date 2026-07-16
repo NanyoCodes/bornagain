@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
@@ -13,7 +12,9 @@ import {
   Sparkles, 
   Info, 
   Users, 
-  ImageIcon 
+  ImageIcon,
+  BarChart3,
+  Target
 } from "lucide-react";
 import { 
   Dialog, 
@@ -55,7 +56,7 @@ import { safeToDate, haversineDistance } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -69,6 +70,7 @@ import { FeedSidebar } from "@/components/layout/feed-sidebar";
 import Image from "next/image";
 import { format } from "date-fns";
 import { SoulAssessmentDialog } from "./soul-assessment-dialog";
+import { Progress } from "@/components/ui/progress";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -141,6 +143,40 @@ export default function SoulsWonPage() {
       // We triple the list to ensure a smooth transition for infinite scroll
       return [...soulsWithPhotos, ...soulsWithPhotos, ...soulsWithPhotos];
   }, [soulsWithPhotos]);
+
+  const ageGroups = useMemo(() => {
+    const stats = {
+      children: 0,
+      teens: 0,
+      youngAdults: 0,
+      adults: 0,
+      seniors: 0,
+      unknown: 0
+    };
+
+    if (!souls) return stats;
+
+    souls.forEach(soul => {
+      const age = soul.age;
+      if (age === null || age === undefined) {
+        stats.unknown++;
+      } else if (age <= 12) {
+        stats.children++;
+      } else if (age <= 19) {
+        stats.teens++;
+      } else if (age <= 35) {
+        stats.youngAdults++;
+      } else if (age <= 55) {
+        stats.adults++;
+      } else {
+        stats.seniors++;
+      }
+    });
+
+    return stats;
+  }, [souls]);
+
+  const totalSouls = useMemo(() => souls?.length || 0, [souls]);
 
   // Derive live soul objects from IDs
   const soulForFollowUp = useMemo(() => souls?.find(s => s.id === followUpSoulId) || null, [souls, followUpSoulId]);
@@ -504,27 +540,55 @@ export default function SoulsWonPage() {
                     </div>
                 )}
 
-                {/* Mission Dashboard Header & Description */}
+                {/* Harvest Statistics Dashboard */}
                 <div className="px-4 sm:px-0 space-y-4">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
-                            <HeartHandshake className="h-5 w-5 text-primary" />
+                            <BarChart3 className="h-5 w-5 text-primary" />
                         </div>
                         <div className="min-w-0">
-                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">Harvest Mobilization</h2>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Record • Nurture • Establish</p>
+                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">Harvest Statistics</h2>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Demographic Impact Analysis</p>
                         </div>
                     </div>
                     <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
-                        <CardContent className="p-6">
-                            <div className="flex items-start gap-4">
-                                <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center shrink-0 shadow-sm">
-                                    <Sparkles className="h-4 w-4 text-primary" />
-                                </div>
-                                <p className="text-sm text-muted-foreground leading-relaxed font-medium">
-                                    Organize your evangelism efforts and assign souls to local groups to share the responsibility of discipleship.
-                                </p>
+                        <CardContent className="p-6 sm:p-8 space-y-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {[
+                                    { label: 'Children (0-12)', count: ageGroups.children, color: 'bg-blue-500', icon: Sparkles },
+                                    { label: 'Teens (13-19)', count: ageGroups.teens, color: 'bg-green-500', icon: Zap },
+                                    { label: 'Young Adults (20-35)', count: ageGroups.youngAdults, color: 'bg-primary', icon: Flame },
+                                    { label: 'Adults (36-55)', count: ageGroups.adults, color: 'bg-indigo-500', icon: Target },
+                                    { label: 'Seniors (56+)', count: ageGroups.seniors, color: 'bg-purple-500', icon: Award },
+                                ].map(group => {
+                                    const percent = totalSouls > 0 ? (group.count / totalSouls) * 100 : 0;
+                                    const Icon = group.icon;
+                                    return (
+                                        <div key={group.label} className="space-y-3 p-4 rounded-2xl bg-background shadow-sm border group hover:border-primary/20 transition-all">
+                                            <div className="flex items-center justify-between">
+                                                <div className="h-8 w-8 rounded-xl bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                                                    <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                                                </div>
+                                                <span className="font-black text-lg text-primary tracking-tighter">{group.count}</span>
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                                                    <span>{group.label}</span>
+                                                    <span>{Math.round(percent)}%</span>
+                                                </div>
+                                                <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} />
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
+                            {ageGroups.unknown > 0 && (
+                                <div className="flex justify-end pt-2">
+                                    <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest bg-background/50 border-dashed">
+                                        {ageGroups.unknown} Records Pending Demographics
+                                    </Badge>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
