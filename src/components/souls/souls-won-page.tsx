@@ -22,7 +22,10 @@ import {
   ChevronDown,
   X,
   UserPlus,
-  Hourglass
+  Hourglass,
+  ArrowLeft,
+  ArrowRight,
+  Newspaper
 } from "lucide-react";
 import { 
   Dialog, 
@@ -30,7 +33,6 @@ import {
   DialogHeader, 
   DialogTitle, 
   DialogDescription,
-  DialogTrigger
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -57,8 +59,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
-import { useCollection, useFirestore, useUser } from "@/firebase";
-import { useDoc } from "@/firebase/firestore/use-doc";
+import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, addDoc, deleteField, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -102,7 +103,6 @@ export default function SoulsWonPage() {
   const [mounted, setMounted] = useState(false);
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   
-  // Triggers for specific records using IDs for live synchronization
   const [followUpSoulId, setFollowUpSoulId] = useState<string | null>(null);
   const [historySoulId, setHistorySoulId] = useState<string | null>(null);
   const [assignSoulId, setAssignSoulId] = useState<string | null>(null);
@@ -110,7 +110,6 @@ export default function SoulsWonPage() {
   const [deleteSoulId, setDeleteSoulId] = useState<string | null>(null);
   const [assessmentSoulId, setAssessmentSoulId] = useState<string | null>(null);
 
-  // Demographic Detail State
   const [selectedAgeGroup, setSelectedAgeGroup] = useState<string | null>(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
@@ -187,7 +186,6 @@ export default function SoulsWonPage() {
 
   const totalSoulsCount = useMemo(() => souls?.length || 0, [souls]);
 
-  // Derive live soul objects from IDs
   const soulForFollowUp = useMemo(() => souls?.find(s => s.id === followUpSoulId) || null, [souls, followUpSoulId]);
   const soulForHistory = useMemo(() => souls?.find(s => s.id === historySoulId) || null, [souls, historySoulId]);
   const soulToAssign = useMemo(() => souls?.find(s => s.id === assignSoulId) || null, [souls, assignSoulId]);
@@ -275,6 +273,45 @@ export default function SoulsWonPage() {
     toast({ title: "Export Started" });
   };
 
+  const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
+    const { jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
+    const wonAtDate = safeToDate(soul.wonAt);
+    const dateStr = wonAtDate ? format(wonAtDate, 'PPP') : 'N/A';
+
+    if (formatType === 'pdf') {
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, 14, 20);
+      autoTable(doc, {
+        body: [
+          ["First Name", soul.firstName],
+          ["Last Name", soul.lastName],
+          ["Email", soul.email || 'N/A'],
+          ["Phone", soul.phone || 'N/A'],
+          ["Source", soul.source],
+          ["Status", soul.status],
+          ["Won At", dateStr],
+        ],
+        startY: 30,
+        theme: 'striped',
+        headStyles: { fillColor: [249, 116, 22] }
+      });
+      doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
+    } else {
+      const headers = ["Field", "Value"];
+      const rows = [["First Name", soul.firstName], ["Last Name", soul.lastName], ["Email", soul.email || ''], ["Phone", soul.phone || ''], ["Status", soul.status], ["Won At", dateStr]];
+      const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `soul-${soul.firstName}-${soul.lastName}.csv`);
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+  }, []);
 
   const handleDeleteSoul = () => {
     if (!soulToDelete || !user || !firestore) return;
@@ -316,25 +353,6 @@ export default function SoulsWonPage() {
     };
 
     if (groupId === 'none') {
-        const oldGroupId = groupType === 'Association' ? soul.associationId : soul.fellowshipId;
-        const oldGroupName = groupType === 'Association' ? soul.associationName : soul.fellowshipName;
-        
-        if (oldGroupId && oldGroupName) {
-            const oldGroup = activeFellowships?.find(f => f.id === oldGroupId);
-            if (oldGroup && oldGroup.organizerId !== user.uid) {
-                const notificationRef = collection(firestore, `users/${oldGroup.organizerId}/notifications`);
-                addDoc(notificationRef, {
-                    userId: oldGroup.organizerId,
-                    type: 'soul_unassigned_from_fellowship',
-                    title: `Convert unassigned from ${oldGroupName}`,
-                    message: `${soul.firstName} ${soul.lastName} was unassigned from your group.`,
-                    link: `/dashboard/fellowship/${oldGroupId}`,
-                    isRead: false,
-                    createdAt: serverTimestamp(),
-                }).catch(() => {});
-            }
-        }
-
         if (groupType === 'Association') {
             updateData.associationId = deleteField();
             updateData.associationName = deleteField();
@@ -362,62 +380,8 @@ export default function SoulsWonPage() {
     });
 
     updateDoc(globalSoulRef, updateData).catch(() => {});
-
-    if (groupId !== 'none' && selectedGroup && selectedGroup.organizerId !== user.uid) {
-        const notificationRef = collection(firestore, `users/${selectedGroup.organizerId}/notifications`);
-        addDoc(notificationRef, {
-            userId: selectedGroup.organizerId,
-            type: 'new_soul_in_fellowship',
-            title: `New Convert assigned to ${selectedGroup.name}`,
-            message: `${soul.firstName} ${soul.lastName} was assigned to your group for discipleship.`,
-            link: `/dashboard/fellowship/${selectedGroup.id}`,
-            isRead: false,
-            createdAt: serverTimestamp(),
-        }).catch(() => {});
-    }
-    
     setAssignSoulId(null);
   };
-
-  const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
-    const { jsPDF } = await import('jspdf');
-    const { default: autoTable } = await import('jspdf-autotable');
-
-    const wonAtDate = safeToDate(soul.wonAt);
-    const dateStr = wonAtDate ? format(wonAtDate, 'PPP') : 'N/A';
-
-    if (formatType === 'pdf') {
-      const doc = new jsPDF();
-      doc.setFontSize(18);
-      doc.text(`Soul Record: ${soul.firstName} ${soul.lastName}`, 14, 20);
-      autoTable(doc, {
-        body: [
-          ["First Name", soul.firstName],
-          ["Last Name", soul.lastName],
-          ["Email", soul.email || 'N/A'],
-          ["Phone", soul.phone || 'N/A'],
-          ["Source", soul.source],
-          ["Status", soul.status],
-          ["Won At", dateStr],
-        ],
-        startY: 30,
-        theme: 'striped',
-        headStyles: { fillColor: [249, 116, 22] }
-      });
-      doc.save(`soul-${soul.firstName}-${soul.lastName}.pdf`);
-    } else {
-      const headers = ["Field", "Value"];
-      const rows = [["First Name", soul.firstName], ["Last Name", soul.lastName], ["Email", soul.email || ''], ["Phone", soul.phone || ''], ["Status", soul.status], ["Won At", dateStr]];
-      const csvContent = headers.join(",") + "\n" + rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `soul-${soul.firstName}-${soul.lastName}.csv`);
-      link.click();
-      URL.revokeObjectURL(url);
-    }
-  }, []);
 
   const filteredSouls = useMemo(() => {
     if (!souls) return [];
@@ -485,7 +449,7 @@ export default function SoulsWonPage() {
                     </CardContent>
                 </Card>
 
-                {/* Soul Slideshow - Continuous Motion Left */}
+                {/* Soul Slideshow */}
                 {soulsWithPhotos.length > 0 && (
                     <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700">
                         <div className="flex items-center gap-2 mb-4 px-1">
@@ -502,7 +466,7 @@ export default function SoulsWonPage() {
                                 animate={{ x: isGalleryPaused ? undefined : ["0%", "-33.3333333%"] }}
                                 transition={{
                                     x: {
-                                        duration: 30, // Adjust speed for smooth sliding
+                                        duration: 30, 
                                         repeat: Infinity,
                                         ease: "linear",
                                         repeatType: "loop"
@@ -593,10 +557,9 @@ export default function SoulsWonPage() {
                                                 </div>
                                                 <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} />
                                             </div>
-                                            
                                             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                                                 <span className="text-[8px] font-black uppercase tracking-widest text-primary bg-background/90 px-3 py-1.5 rounded-full shadow-lg border">
-                                                    OPEN POP-UP PAGE
+                                                    CLICK TO VIEW SOULS IN THIS GROUP
                                                 </span>
                                             </div>
                                         </div>
@@ -642,7 +605,6 @@ export default function SoulsWonPage() {
                 </div>
             </div>
 
-            {/* Desktop Sidebar Column */}
             <div className="lg:col-span-4">
                 <FeedSidebar mode="harvest" />
             </div>
@@ -686,24 +648,24 @@ export default function SoulsWonPage() {
           }}
       />
       
-      {/* Demographic Discovery Pop-up */}
-      <Dialog open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
-          <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
-              <div className="p-8 border-b bg-muted/10">
-                  <DialogHeader>
+      {/* Demographic Discovery Sheet */}
+      <Sheet open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+              <div className="p-8 border-b bg-muted/10 shrink-0">
+                  <SheetHeader className="text-left flex-shrink-0">
                       <div className="flex items-center gap-3 mb-2">
                         <Target className="h-5 w-5 text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Demographic Discovery</span>
                       </div>
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">
+                      <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">
                         {selectedAgeGroup === 'unknown' ? 'Uncategorized Records' : `${selectedAgeGroup} Group`}
-                      </DialogTitle>
-                      <DialogDescription className="text-sm font-medium mt-1">
+                      </SheetTitle>
+                      <SheetDescription className="text-sm font-medium mt-1">
                         Viewing harvest results for this specific age segment.
-                      </DialogDescription>
-                  </DialogHeader>
+                      </SheetDescription>
+                  </SheetHeader>
               </div>
-              <ScrollArea className="max-h-[60vh]">
+              <ScrollArea className="flex-grow min-h-0">
                   <div className="p-6 space-y-3">
                       {souls?.filter(soul => {
                           const age = soul.age;
@@ -752,11 +714,11 @@ export default function SoulsWonPage() {
                       )}
                   </div>
               </ScrollArea>
-              <div className="p-6 border-t bg-muted/5 flex justify-end">
-                <Button variant="outline" onClick={() => setSelectedAgeGroup(null)} className="rounded-xl font-bold h-11 px-8">Close Discovery</Button>
+              <div className="p-8 border-t bg-muted/5 flex justify-end shrink-0">
+                <Button variant="outline" onClick={() => setSelectedAgeGroup(null)} className="rounded-xl font-bold h-12 px-10">Close Discovery</Button>
               </div>
-          </DialogContent>
-      </Dialog>
+          </SheetContent>
+      </Sheet>
       
       {mounted && (
         <>
