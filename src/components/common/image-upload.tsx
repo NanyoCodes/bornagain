@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -255,7 +254,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         )}
         <input 
           type="file" 
-          ref={fileInputRef}
+          ref={fileInputRef} 
           onChange={handleFileChange}
           className="hidden" 
           accept="image/png, image/jpeg, image/webp"

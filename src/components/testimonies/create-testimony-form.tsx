@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -263,7 +262,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
               <div 
                 className={cn(
                   "border-2 border-dashed rounded-[2rem] p-8 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group",
-                  isUploadingMedia ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
+                  isUploadingMedia ? "opacity-50 pointer-none" : "hover:bg-muted/20"
                 )}
                 onClick={() => fileInputRef.current?.click()}
               >
@@ -278,7 +277,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       <FileUp className="h-6 w-6 text-primary" />
                     </div>
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Select Image or Video</p>
-                    <p className="text-[9px] text-muted-foreground/60 mt-1 uppercase tracking-tighter">Files > 5MB are auto-resized for global viewing</p>
+                    <p className="text-[9px] text-muted-foreground/60 mt-1 uppercase tracking-tighter">Files &gt; 5MB are auto-resized for global viewing</p>
                   </>
                 )}
               </div>
