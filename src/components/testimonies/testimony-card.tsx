@@ -31,7 +31,7 @@ import {
   ImageIcon,
   PlayCircle
 } from "lucide-react";
-import { useUser, useFirestore, useCollection, useDoc } from "@/firebase";
+import { useUser, useDoc, useCollection, useFirestore } from "@/firebase";
 import { useState, useMemo } from "react";
 import {
   DropdownMenu,
@@ -348,7 +348,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                     <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1 text-left">Answer to Prayer Request:</div>
                     <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground text-left">
                         <div className="line-clamp-2">
-                           <p ref={prayerRef}>{testimony.answeredPrayerContent}</p>
+                           <div ref={prayerRef}>{testimony.answeredPrayerContent}</div>
                         </div>
                     </div>
                     {isPrayerTruncated && (

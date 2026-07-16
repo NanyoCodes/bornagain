@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
-import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment, Chat } from '@/lib/types';
+import type { Fellowship, UserProfile, FellowshipMember, Soul, DailyDevotional, TestimonyComment } from '@/lib/types';
 import { doc, collection, query, orderBy, where, writeBatch, serverTimestamp, updateDoc, arrayRemove, increment, deleteField, setDoc, limit, arrayUnion, getDoc } from 'firebase/firestore';
 import { 
     Loader2, 
@@ -649,7 +649,7 @@ export default function FellowshipPageClient() {
     const ScheduleList = (
         <div className="space-y-4">
             {loadingSchedule ? (
-                <div className="py-12 flex justify-center"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
+                <div className="py-12 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
             ) : scheduledDevotionals && scheduledDevotionals.length > 0 ? (
                 <div className="grid gap-3">
                     {scheduledDevotionals.map(devo => {
@@ -725,7 +725,7 @@ export default function FellowshipPageClient() {
                                             fellowship.hasGroupChat ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90" : "opacity-60 cursor-not-allowed bg-muted border-muted-foreground/20"
                                         )}
                                     >
-                                        {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 sm:w-5" />}
+                                        {isChatLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessagesSquare className="h-4 w-4 sm:h-5 w-5" />}
                                         {!fellowship.hasGroupChat && isOrganizer && members && members.length >= 2 && <span className="absolute -top-1 -right-1 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span></span>}
                                         {!fellowship.hasGroupChat && !isOrganizer && <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-muted border-2 border-background flex items-center justify-center shadow-sm"><X className="h-2 w-2 text-muted-foreground" /></span>}
                                     </Button>
@@ -767,7 +767,7 @@ export default function FellowshipPageClient() {
                             </div>
                         </CardHeader>
                         <CardContent className="px-6 sm:px-10 pt-0 pb-8 sm:pb-12 space-y-8">
-                            {devoLoading ? <div className="py-20 flex flex-col items-center gap-4"><Loader2 className="h-10 w-10 animate-spin opacity-20" /><p className="text-[10px] font-black uppercase tracking-widest opacity-20">Accessing Records...</p></div> : activeDevotional ? (
+                            {devoLoading ? <div className="py-20 flex flex-col items-center gap-4"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20" /><p className="text-[10px] font-black uppercase tracking-widest opacity-20">Accessing Records...</p></div> : activeDevotional ? (
                                 <div className="space-y-8">
                                     <div className="bg-black/60 rounded-[2rem] p-6 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden">
                                         <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl" />

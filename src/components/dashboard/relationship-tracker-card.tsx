@@ -92,7 +92,7 @@ function SoulSelectionList({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
@@ -149,7 +149,6 @@ export function RelationshipTrackerCard() {
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
   const [helpNeedTargetSoul, setHelpNeedTargetSoul] = useState<Soul | null>(null);
   const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
-
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
   const { userProfile, loading: profileLoading } = useUserProfile();
@@ -206,6 +205,15 @@ export function RelationshipTrackerCard() {
   const handleActionClick = (id: string) => {
       setSelectedActionId(id);
       setIsSoulDialogOpen(true);
+  };
+
+  const handleHelpNeedConfirm = async (note: string) => {
+    if (!helpNeedTargetSoul) return;
+    setTogglingId('helped_with_need');
+    await performLogging(helpNeedTargetSoul, 'helped_with_need', note);
+    setIsHelpNeedDialogOpen(false);
+    setHelpNeedTargetSoul(null);
+    setTogglingId(null);
   };
 
   const performLogging = async (soul: Soul, actionId: string, customNote?: string) => {
@@ -303,15 +311,6 @@ export function RelationshipTrackerCard() {
           }, user);
           errorEmitter.emit('permission-error', permissionError);
       }
-  };
-
-  const handleHelpNeedConfirm = async (note: string) => {
-    if (!helpNeedTargetSoul) return;
-    setTogglingId('helped_with_need');
-    await performLogging(helpNeedTargetSoul, 'helped_with_need', note);
-    setIsHelpNeedDialogOpen(false);
-    setHelpNeedTargetSoul(null);
-    setTogglingId(null);
   };
 
   const handleSoulSelected = async (soul: Soul) => {
@@ -569,7 +568,7 @@ export function RelationshipTrackerCard() {
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
                     <Textarea 
                         placeholder="e.g., Provided groceries, assisted with transportation..." 
-                        className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base"
+                        className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
                         id="help-note-desktop"
                     />
                 </div>

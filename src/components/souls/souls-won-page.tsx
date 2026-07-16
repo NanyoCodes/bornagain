@@ -19,7 +19,8 @@ import {
   Hourglass,
   ArrowLeft,
   Newspaper,
-  Globe
+  Globe,
+  Sparkles
 } from "lucide-react";
 import { 
   Dialog, 
