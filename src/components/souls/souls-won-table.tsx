@@ -592,25 +592,27 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
         <CardDescription className="text-base font-medium text-left">Keep track of the spiritual development and community integration of every convert.</CardDescription>
       </CardHeader>
       <CardContent className="p-0">
-        <Table>
-          <TableHeader className="bg-muted/10">
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
-              <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Contact</TableHead>
-              <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
-              <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Placements</TableHead>
-              <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Latest Log</TableHead>
-              <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Date Won</TableHead>
-              <TableHead className="hidden xl:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Source</TableHead>
-              <TableHead className="p-4 text-right"><span className="sr-only">Actions</span></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {souls.map((soul) => (
-              <SoulTableRow key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} onAssess={onAssess} />
-            ))}
-          </TableBody>
-        </Table>
+        <div className="overflow-x-auto">
+            <Table>
+            <TableHeader className="bg-muted/10">
+                <TableRow className="hover:bg-transparent">
+                <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
+                <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Contact</TableHead>
+                <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
+                <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Placements</TableHead>
+                <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Latest Log</TableHead>
+                <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Date Won</TableHead>
+                <TableHead className="hidden xl:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Source</TableHead>
+                <TableHead className="p-4 text-right"><span className="sr-only">Actions</span></TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {souls.map((soul) => (
+                <SoulTableRow key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} onAssess={onAssess} />
+                ))}
+            </TableBody>
+            </Table>
+        </div>
       </CardContent>
     </Card>
   );

@@ -7,7 +7,6 @@ import type { Campaign, UserProfile, CampaignParticipant, Testimony } from '@/li
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -22,23 +21,21 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { doc, updateDoc, serverTimestamp, collection, query, where, orderBy } from 'firebase/firestore';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft, MapPin, CalendarDays, Share2, Edit, UserCheck, PlayCircle, Users, Heart, Newspaper, BarChart3 } from 'lucide-react';
+import { Loader2, ArrowLeft, MapPin, CalendarDays, Edit, UserCheck, PlayCircle, Users, Newspaper, Quote } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { format, isSameDay, parse } from 'date-fns';
+import { format } from 'date-fns';
 import { ManageCampaignForm } from './manage-campaign-form';
 import { LogSoulForm } from "@/components/souls/log-soul-form";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import Link from 'next/link';
-import { safeToDate, haversineDistance } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { safeToDate } from '@/lib/utils';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { JoinCampaignDialog } from './join-campaign-dialog';
 import { ScrollArea } from '../ui/scroll-area';
 
 export default function CampaignPageClient({ campaignId }: { campaignId: string }) {
@@ -46,13 +43,11 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     const firestore = useFirestore();
     const { user } = useUser();
     const { toast } = useToast();
-    const isMobile = useIsMobile();
     const [mounted, setMounted] = useState(false);
 
     const [isManageOpen, setIsManageOpen] = useState(false);
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
     const [isTestimonyOpen, setIsTestimonyOpen] = useState(false);
-    const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
     const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -96,6 +91,21 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         return start > now ? "Upcoming" : "Ongoing";
     }, [campaign]);
 
+    const handleDeleteCampaign = async () => {
+        if (!campaignToDelete || !user || !firestore) return;
+        setIsDeleting(true);
+        const campaignRef = doc(firestore, 'campaigns', campaignToDelete.id);
+        const deleteData = { status: 'deleted', deletedAt: serverTimestamp() };
+        try {
+            await updateDoc(campaignRef, deleteData);
+            toast({ title: 'Campaign Deleted' });
+            setCampaignToDelete(null);
+            router.push('/dashboard/campaigns');
+        } catch (error) {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: campaignRef.path, operation: 'update' }, user));
+        } finally { setIsDeleting(false); }
+    };
+
     if (loading || !mounted) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
     if (campaignError || !campaign || campaign.status === 'deleted') return <div className="text-center p-12"><h2 className="text-xl font-bold">Campaign Not Found</h2><Button asChild variant="outline" className="mt-4"><Link href="/dashboard/campaigns">Return to Campaigns</Link></Button></div>;
 
@@ -127,7 +137,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             {campaign.scripture && (
                                 <div className="mt-8 p-6 bg-primary/5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative">
                                     <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5" />
-                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-left">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-left text-balance">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
                                     <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest">— {campaign.scripture}</p>
                                 </div>
                             )}
@@ -220,21 +230,21 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             </div>
 
             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden">
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                     <div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Log Harvest</DialogTitle></DialogHeader></div>
                     <ScrollArea className="max-h-[70vh] p-8"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={[]} campaigns={[]} defaultCampaign={campaign} /></ScrollArea>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={isTestimonyOpen} onOpenChange={setIsTestimonyOpen}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden">
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                     <div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Share Victory</DialogTitle></DialogHeader></div>
                     <ScrollArea className="max-h-[70vh] p-8">{userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={() => setIsTestimonyOpen(false)} campaign={campaign} />}</ScrollArea>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-                <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden">
+                <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                     <div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Manage Mission</DialogTitle></DialogHeader></div>
                     <ScrollArea className="max-h-[80vh] p-8"><ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { setCampaignToDelete(campaign); setIsManageOpen(false); }} /></ScrollArea>
                 </DialogContent>
@@ -242,7 +252,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
             {campaignToDelete && (
                 <AlertDialog open={!!campaignToDelete} onOpenChange={open => !open && setCampaignToDelete(null)}>
-                    <AlertDialogContent className="rounded-[2rem] p-8"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black uppercase">Delete Campaign?</AlertDialogTitle><AlertDialogDescription>This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel className="rounded-xl h-12">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+                    <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black uppercase">Delete Campaign?</AlertDialogTitle><AlertDialogDescription>This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel className="rounded-xl h-12">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
                 </AlertDialog>
             )}
         </div>

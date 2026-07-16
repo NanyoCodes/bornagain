@@ -70,6 +70,14 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
 import Image from "next/image";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { FeedSidebar } from "@/components/layout/feed-sidebar";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -83,25 +91,6 @@ const AssignFellowshipDialog = dynamic(() => import('@/components/souls/assign-f
 const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
 const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 const SoulAssessmentDialog = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
-
-function FeedSidebar({ mode }: { mode: string }) {
-    return (
-        <div className="hidden lg:flex flex-col gap-6 sticky top-24">
-            <Card className="rounded-[2rem] border-none shadow-xl bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-black/10">
-                <CardHeader className="p-8 pb-4">
-                    <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
-                        <Flame className="h-6 w-6 text-white" />
-                    </div>
-                    <CardTitle className="text-2xl font-black font-headline uppercase tracking-tight">Active Harvest</CardTitle>
-                    <CardDescription className="text-primary-foreground/70 font-medium">Tracking global salvation progress.</CardDescription>
-                </CardHeader>
-                <CardContent className="p-8 pt-0">
-                    <p className="text-sm font-medium leading-relaxed italic">&ldquo;The harvest is plentiful, but the laborers are few.&rdquo;</p>
-                </CardContent>
-            </Card>
-        </div>
-    );
-}
 
 export default function SoulsWonPage() {
   const router = useRouter();
@@ -234,7 +223,6 @@ export default function SoulsWonPage() {
   const handleOpenAssessment = useCallback((soul: Soul) => setAssessmentSoulId(soul.id), []);
 
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
-    // Basic CSV trigger for now
     const headers = ["First Name", "Last Name", "Email", "Phone", "Status", "Date Won"];
     const body = souls?.map(s => [s.firstName, s.lastName, s.email || '', s.phone || '', s.status, s.wonAt ? format(safeToDate(s.wonAt)!, 'yyyy-MM-dd') : '']) || [];
     const csvContent = [headers.join(","), ...body.map(r => r.join(","))].join("\n");
@@ -249,7 +237,7 @@ export default function SoulsWonPage() {
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
       toast({ title: "Exported", description: `Record for ${soul.firstName} exported.` });
-  }, []);
+  }, [toast]);
 
   const handleDeleteSoul = () => {
     if (!soulToDelete || !user || !firestore) return;
@@ -449,7 +437,7 @@ export default function SoulsWonPage() {
                             <BarChart3 className="h-5 w-5 text-primary" />
                         </div>
                         <div className="min-w-0">
-                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">SOULS- AGE ANALYSIS</h2>
+                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">AGE ANALYSIS</h2>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Demographic Discovery</p>
                         </div>
                     </div>
@@ -496,12 +484,14 @@ export default function SoulsWonPage() {
                     </Card>
                 </div>
 
-                <RelationshipCircleTracker 
-                    souls={souls || []}
-                    campaigns={campaigns}
-                    fellowships={activeFellowships || []}
-                    className="-mx-4 sm:mx-0 rounded-none sm:rounded-3xl"
-                />
+                <div className="px-4 sm:px-0">
+                    <RelationshipCircleTracker 
+                        souls={souls || []}
+                        campaigns={campaigns}
+                        fellowships={activeFellowships || []}
+                        className="rounded-3xl"
+                    />
+                </div>
 
                 <div className="-mx-4 sm:mx-0">
                     <SoulsWonTable 
@@ -542,8 +532,8 @@ export default function SoulsWonPage() {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-12">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Confirm Removal
                     </AlertDialogAction>
@@ -590,7 +580,7 @@ export default function SoulsWonPage() {
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <DialogHeader><DialogTitle className="text-2xl font-black font-headline">Edit Record</SheetTitle><DialogDescription>Update soul identity and mission details.</DialogDescription></DialogHeader>
+                                <DialogHeader><DialogTitle className="text-2xl font-black font-headline">Edit Record</DialogTitle><DialogDescription>Update soul identity and mission details.</DialogDescription></DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
