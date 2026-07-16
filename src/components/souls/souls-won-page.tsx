@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import dynamic from 'next/dynamic';
 import { useRouter } from "next/navigation";
 import { 
@@ -53,6 +53,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
@@ -61,21 +71,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn, safeToDate, haversineDistance } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { EditSoulForm } from "@/components/souls/edit-soul-form";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { FeedSidebar } from "@/components/layout/feed-sidebar";
-import Image from "next/image";
-import { SoulAssessmentDialog } from "./soul-assessment-dialog";
-import { Progress } from "@/components/ui/progress";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -87,6 +88,7 @@ const LogFollowUpDialog = dynamic(() => import('@/components/souls/log-follow-up
 const ViewHistoryDialog = dynamic(() => import('@/components/souls/view-history-dialog').then(m => m.ViewHistoryDialog), { ssr: false });
 const AssignFellowshipDialog = dynamic(() => import('@/components/souls/assign-fellowship-dialog').then(m => m.AssignFellowshipDialog), { ssr: false });
 const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').then(m => m.LogSoulForm), { ssr: false });
+const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 
 export default function SoulsWonPage() {
   const router = useRouter();
@@ -739,7 +741,7 @@ export default function SoulsWonPage() {
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
                             <BarChart3 className="h-5 w-5 text-primary" />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 text-left">
                             <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">SOULS- AGE ANALYSIS</h2>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Demographic Discovery</p>
                         </div>
@@ -761,7 +763,7 @@ export default function SoulsWonPage() {
                                         <div 
                                             key={group.label} 
                                             className={cn(
-                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden",
+                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left",
                                                 "hover:border-primary/20"
                                             )}
                                             onClick={() => setSelectedAgeGroup(group.label)}

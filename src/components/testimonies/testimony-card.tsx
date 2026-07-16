@@ -79,8 +79,11 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const [isProcessingReaction, setIsProcessingReaction] = useState<string | null>(null);
   const [isRequestingPartner, setIsRequestingPartner] = useState(false);
   const contentRef = React.useRef<HTMLParagraphElement>(null);
+  const prayerRef = React.useRef<HTMLParagraphElement>(null);
   const [isTruncated, setIsTruncated] = React.useState(false);
+  const [isPrayerTruncated, setIsPrayerTruncated] = React.useState(false);
   const [showFullText, setShowFullText] = React.useState(false);
+  const [showFullPrayer, setShowFullPrayer] = React.useState(false);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
   // Live Author Profile Sync
@@ -135,14 +138,17 @@ export const TestimonyCard = React.memo(function TestimonyCard({
       if (contentRef.current) {
         setIsTruncated(contentRef.current.scrollHeight > contentRef.current.clientHeight);
       }
+      if (prayerRef.current) {
+        setIsPrayerTruncated(prayerRef.current.scrollHeight > prayerRef.current.clientHeight);
+      }
     };
-    const timeoutId = setTimeout(checkTruncation, 100);
+    const timeoutId = setTimeout(checkTruncation, 150);
     window.addEventListener('resize', checkTruncation);
     return () => {
       clearTimeout(timeoutId);
       window.removeEventListener('resize', checkTruncation);
     };
-  }, [testimony.content]);
+  }, [testimony.content, testimony.answeredPrayerContent]);
 
   const triggerAction = (action: () => void) => {
     requestAnimationFrame(() => {
@@ -259,7 +265,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 </DialogContent>
               )}
             </Dialog>
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 text-left">
                <div className="flex items-center gap-2 flex-wrap">
                     <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
                         <CardTitle className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize">{authorFullName}</CardTitle>
@@ -329,10 +335,22 @@ export const TestimonyCard = React.memo(function TestimonyCard({
           )}
 
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
-            <Card className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner">
+            <Card className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden">
                 <CardHeader className="p-4">
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">Answer to Prayer Request:</div>
-                    <CardDescription className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-left">{testimony.answeredPrayerContent}</CardDescription>
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1 text-left">Answer to Prayer Request:</div>
+                    <CardDescription className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-left">
+                        <p ref={prayerRef}>{testimony.answeredPrayerContent}</p>
+                    </CardDescription>
+                    {isPrayerTruncated && (
+                        <Button 
+                            variant="link" 
+                            size="sm" 
+                            className="p-0 h-auto self-start text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 mt-2 hover:no-underline"
+                            onClick={(e) => { e.stopPropagation(); setShowFullPrayer(true); }}
+                        >
+                            Read Full Request
+                        </Button>
+                    )}
                 </CardHeader>
             </Card>
            )}
@@ -345,7 +363,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20 shadow-sm"><Sparkles className="h-2.5 w-2.5 text-white fill-current" /></div>}
                         {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10 shadow-sm"><PartyPopper className="h-2.5 w-2.5 text-white" /></div>}
                     </div>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">{totalReactions}</span>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">{(supporters.length + inspiredBy.length + connectedBy.length)}</span>
                 </div>
                 {testimony.campaignTitle && <span className="text-[9px] font-black uppercase text-muted-foreground/60 truncate italic bg-muted/50 px-2 py-0.5 rounded-full border max-w-[150px]">RE: {testimony.campaignTitle}</span>}
              </div>
@@ -379,6 +397,14 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                             <div className="flex-grow min-h-0 pt-8 px-6">{fullTextContent}</div>
                         </SheetContent>
                     </Sheet>
+                    <Sheet open={showFullPrayer} onOpenChange={setShowFullPrayer}>
+                        <SheetContent side="bottom" className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b shrink-0 bg-amber-500/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-amber-600">Answered Prayer</SheetTitle><SheetDescription className="text-sm font-medium">The specific request that God has fulfilled.</SheetDescription></SheetHeader></div>
+                            <ScrollArea className="flex-grow px-8 py-10">
+                                <p className="text-base text-muted-foreground leading-relaxed italic text-left">&ldquo;{testimony.answeredPrayerContent}&rdquo;</p>
+                            </ScrollArea>
+                        </SheetContent>
+                    </Sheet>
                     <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
                         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]"><div className="p-8 border-b shrink-0 bg-muted/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Responses</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize">GATHERED JOY FOR {authorFullName}</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0"><CommentSection testimonyId={testimony.id} /></div></SheetContent>
                     </Sheet>
@@ -386,10 +412,23 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={showFullText => { setShowFullText(showFullText); if(!showFullText) setIsCommentsOpen(false); }}>
-                        <DialogContent className="sm:max-w-3xl rounded-3xl overflow-hidden p-0"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest capitalize">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8">{fullTextContent}</div></DialogContent>
+                        <DialogContent className="sm:max-w-3xl rounded-3xl overflow-hidden p-0"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase text-left">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest capitalize text-left">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8">{fullTextContent}</div></DialogContent>
+                    </Dialog>
+                    <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
+                        <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+                             <div className="p-8 border-b bg-amber-500/10">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-amber-600 text-left">Answered Prayer Request</DialogTitle>
+                                    <DialogDescription className="text-left">The original request shared with the body.</DialogDescription>
+                                </DialogHeader>
+                            </div>
+                            <div className="p-8">
+                                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed italic text-left">&ldquo;{testimony.answeredPrayerContent}&rdquo;</p>
+                            </div>
+                        </DialogContent>
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl"><div className="p-8 border-b shrink-0 bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Gathered Responses</DialogTitle><DialogDescription className="text-[10px] font-bold uppercase tracking-widest capitalize">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription></DialogHeader></div><div className="flex-1 min-h-0"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl"><div className="p-8 border-b shrink-0 bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Gathered Responses</DialogTitle><DialogDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription></DialogHeader></div><div className="flex-1 min-h-0"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
                     </Dialog>
                 </>
             )}

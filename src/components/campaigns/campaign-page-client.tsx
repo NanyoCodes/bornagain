@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
 import type { Campaign, UserProfile, CampaignParticipant, Testimony } from '@/lib/types';
 import {
@@ -24,7 +24,7 @@ import {
 import { doc, updateDoc, serverTimestamp, collection, query, where, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft, MapPin, CalendarDays, Share2, Edit, UserCheck, PlayCircle, Users, Heart, Newspaper, Info, BarChart3 } from 'lucide-react';
+import { Loader2, ArrowLeft, MapPin, CalendarDays, Share2, Edit, UserCheck, PlayCircle, Users, Heart, Newspaper, BarChart3 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -40,7 +40,6 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { JoinCampaignDialog } from './join-campaign-dialog';
 import { ScrollArea } from '../ui/scroll-area';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function CampaignPageClient({ campaignId }: { campaignId: string }) {
     const router = useRouter();
@@ -111,8 +110,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         if (!rawTestimonies) return [];
         return [...rawTestimonies].sort((a, b) => {
             const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-            const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
-            return dateB - timeA;
+            const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
+            return timeB - timeA;
         });
     }, [rawTestimonies]);
 
@@ -123,7 +122,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         const end = safeToDate(campaign?.endDate);
         if (start && end) {
             if (isSameDay(start, end)) return format(start, "PPP");
-            return `${format(start, "PPP")} - ${format(end, "PPP")}`;
+            return `${format(start, "MMM d")} - ${format(end, "MMM d, yyyy")}`;
         }
         return "Date not set";
     }, [campaign]);
@@ -434,10 +433,6 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <div className="flex items-baseline justify-between">
                                 <span className="text-4xl font-black text-primary">{campaign.soulsLogged || 0}</span>
                                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Souls Won</span>
-                            </div>
-                            <div className="p-3 bg-muted/30 rounded-xl border border-dashed flex items-start gap-3 text-left">
-                                <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                <p className="text-[10px] leading-relaxed text-muted-foreground font-medium uppercase tracking-tighter">Every soul logged contributes to the global harvest map and city impact stats.</p>
                             </div>
                         </CardContent>
                     </Card>
