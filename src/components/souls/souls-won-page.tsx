@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import dynamic from 'next/dynamic';
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { 
   PlusCircle, 
   Download, 
@@ -83,6 +82,9 @@ import { SoulAssessmentDialog } from "./soul-assessment-dialog";
 import { Progress } from "@/components/ui/progress";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 // Performance: Dynamically import heavy components
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -924,20 +926,6 @@ export default function SoulsWonPage() {
                               </Button>
                           </div>
                       ))}
-                      {souls?.filter(soul => {
-                          const age = soul.age;
-                          if (selectedAgeGroup === 'unknown') return age === null || age === undefined;
-                          if (selectedAgeGroup === 'Children (0-12)') return age !== null && age !== undefined && age <= 12;
-                          if (selectedAgeGroup === 'Teens (13-19)') return age !== null && age !== undefined && age >= 13 && age <= 19;
-                          if (selectedAgeGroup === 'Young Adults (20-33)') return age !== null && age !== undefined && age >= 20 && age <= 33;
-                          if (selectedAgeGroup === 'Adults (34-55)') return age !== null && age !== undefined && age >= 34 && age <= 55;
-                          if (selectedAgeGroup === 'Seniors (56+)') return age !== null && age !== undefined && age >= 56;
-                          return false;
-                      }).length === 0 && (
-                          <div className="py-12 text-center">
-                              <p className="text-xs text-muted-foreground italic">No souls found in this bracket.</p>
-                          </div>
-                      )}
                   </div>
               </ScrollArea>
               <div className="p-5 sm:p-8 border-t bg-muted/5 flex justify-end shrink-0">
@@ -1058,4 +1046,3 @@ export default function SoulsWonPage() {
     </>
   );
 }
-
