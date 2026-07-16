@@ -225,6 +225,21 @@ export default function SoulsWonPage() {
   const handleOpenDelete = useCallback((soul: Soul) => setDeleteSoulId(soul.id), []);
   const handleOpenAssessment = useCallback((soul: Soul) => setAssessmentSoulId(soul.id), []);
 
+  const getBase64Logo = async (): Promise<string | null> => {
+    try {
+      const logoUrl = 'https://i.ibb.co/j9JTYdc6/new-testify-logo.png?v=3';
+      const res = await fetch(logoUrl);
+      const blob = await res.blob();
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(blob);
+      });
+    } catch (e) {
+      return null;
+    }
+  };
+
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
     if (!souls || souls.length === 0) return;
 
@@ -276,14 +291,29 @@ export default function SoulsWonPage() {
         const docObj = new jsPDF({ orientation: 'landscape' });
         const primaryColor = [249, 116, 22]; // #f97416
         
+        // 1. Add Logo
+        const logoBase64 = await getBase64Logo();
+        if (logoBase64) {
+          docObj.addImage(logoBase64, 'PNG', 14, 10, 15, 15);
+        }
+
+        // 2. Header
         docObj.setFontSize(22);
         docObj.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        docObj.text("TESTIFY GLOBAL - HARVEST REPORT", 14, 15);
+        docObj.setFont('helvetica', 'bold');
+        docObj.text("TESTIFY GLOBAL - HARVEST REPORT", logoBase64 ? 32 : 14, 18);
+        
+        docObj.setFontSize(10);
+        docObj.setTextColor(100);
+        docObj.text(`Generated on ${format(new Date(), 'PPPP p')} • Total Souls: ${souls.length}`, logoBase64 ? 32 : 14, 23);
+
+        docObj.setDrawColor(240);
+        docObj.line(14, 28, 282, 28);
         
         autoTable(docObj, { 
           head: [headers], 
           body: body, 
-          startY: 20,
+          startY: 32,
           styles: { fontSize: 7 },
           headStyles: { fillColor: primaryColor }
         });
@@ -591,7 +621,7 @@ export default function SoulsWonPage() {
                         <div className="flex flex-row items-center gap-2 sm:gap-3">
                             <Button 
                                 variant="outline" 
-                                className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm min-w-0 border-dashed"
+                                className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
                                 onClick={() => setIsLogDialogOpen(true)}
                                 disabled={loading}
                             >
