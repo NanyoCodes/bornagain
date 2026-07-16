@@ -60,6 +60,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { SoulsImportTemplateCard } from './souls-import-template-card';
 
 const notificationFormSchema = z.object({
   newCampaignsInArea: z.boolean().default(false),
@@ -397,6 +398,7 @@ export function SettingsPageContent() {
             <ProfileSettingsCard />
             <VisualEnvironmentCard userProfile={userProfile} userId={user.uid} />
             <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
+            <SoulsImportTemplateCard />
             <PwaInstallCard />
             <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
             <PasswordSettingsCard />
