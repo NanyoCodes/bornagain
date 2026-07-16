@@ -98,7 +98,7 @@ function FullDevotionalDialog({
         <div className="space-y-8" onClick={stopPropagation}>
             <div className="bg-primary/5 rounded-[2rem] p-8 sm:p-12 border-2 border-dashed border-primary/20 relative shadow-inner overflow-hidden">
                 <Quote className="absolute top-6 right-8 h-12 w-12 opacity-10 rotate-12" />
-                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-justify text-balance relative z-10 break-words [overflow-wrap:anywhere]">{devotional.text}</p>
+                <p className="text-xl sm:text-2xl font-serif italic leading-relaxed text-left text-balance relative z-10 break-words [overflow-wrap:anywhere]">{devotional.text}</p>
                 <p className="text-xs sm:text-sm font-black uppercase text-primary/80 text-right mt-10 tracking-widest border-t border-primary/10 pt-4 relative z-10 break-words [overflow-wrap:anywhere]">— {devotional.scripture}</p>
             </div>
             
@@ -110,7 +110,7 @@ function FullDevotionalDialog({
                         </div>
                         <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground">PRAYER FOR TODAY</span>
                     </div>
-                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance break-words [overflow-wrap:anywhere]">
+                    <p className="text-lg sm:text-xl font-medium leading-relaxed italic text-muted-foreground text-balance break-words [overflow-wrap:anywhere] text-left">
                         &ldquo;{devotional.prayer}&rdquo;
                     </p>
                 </div>
@@ -519,7 +519,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
             </CardHeader>
             
             <CardContent className="px-4 sm:px-6 pb-4 space-y-4 pt-4">
-                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium break-words [overflow-wrap:anywhere]">{fellowship.description}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium break-words [overflow-wrap:anywhere] text-left">{fellowship.description}</p>
                 
                 {todayDevotional && (
                     <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 relative group/devo overflow-hidden shadow-inner">
@@ -536,14 +536,14 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                         <div className="space-y-1">
                             <p 
                                 ref={devotionalTextRef}
-                                className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium leading-relaxed break-words [overflow-wrap:anywhere]"
+                                className="text-[10px] sm:text-xs text-muted-foreground italic line-clamp-2 font-medium leading-relaxed break-words [overflow-wrap:anywhere] text-left"
                             >
                                 &ldquo;{todayDevotional.text}&rdquo;
                             </p>
                             {todayDevotional.prayer && (
                                 <div className="mt-2 pl-3 border-l-2 border-primary/20">
                                     <p className="text-[9px] font-black uppercase text-primary/60 mb-0.5">Prayer focus</p>
-                                    <p className="text-[10px] text-muted-foreground italic line-clamp-1 leading-tight break-words [overflow-wrap:anywhere]">
+                                    <p className="text-[10px] text-muted-foreground italic line-clamp-1 leading-tight break-words [overflow-wrap:anywhere] text-left">
                                         &ldquo;{todayDevotional.prayer}&rdquo;
                                     </p>
                                 </div>
@@ -596,12 +596,12 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                 <div className="text-[11px] sm:text-xs space-y-2 p-4 bg-muted/30 rounded-2xl border border-dashed">
                     <div className="flex items-start gap-2.5">
                         <span className="font-black text-[9px] sm:text-[10px] text-muted-foreground shrink-0 uppercase tracking-widest pt-0.5">Schedule</span>
-                        <span className="text-foreground font-bold leading-tight break-words [overflow-wrap:anywhere]">{fellowship.schedule}</span>
+                        <span className="text-foreground font-bold leading-tight break-words [overflow-wrap:anywhere] text-left">{fellowship.schedule}</span>
                     </div>
                     {fellowship.location && (
                         <div className="flex items-start gap-2.5 pt-1 border-t border-muted-foreground/10 mt-1">
                             <span className="font-black text-[9px] sm:text-[10px] text-muted-foreground shrink-0 uppercase tracking-widest pt-0.5">Area</span>
-                            <span className="text-foreground font-bold line-clamp-1 leading-tight flex items-center gap-1.5 break-words [overflow-wrap:anywhere]"><MapPin className="h-3 text-primary" /> {fellowship.location}</span>
+                            <span className="text-foreground font-bold line-clamp-1 leading-tight flex items-center gap-1.5 break-words [overflow-wrap:anywhere] text-left"><MapPin className="h-3 text-primary" /> {fellowship.location}</span>
                         </div>
                     )}
                 </div>

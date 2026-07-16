@@ -236,14 +236,14 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <CardTitle className="text-lg font-bold uppercase tracking-widest text-muted-foreground">About this Mission</CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 sm:px-8 pb-8">
-                            <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words [overflow-wrap:anywhere]">
+                            <p className="text-sm sm:text-base text-foreground leading-relaxed whitespace-pre-wrap font-medium text-balance break-words [overflow-wrap:anywhere] text-left">
                                 {campaign.description}
                             </p>
                             {campaign.scripture && (
                                 <div className="mt-8 p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative">
                                     <span className="absolute -top-3 left-6 bg-background px-3 text-[10px] font-black text-primary uppercase tracking-[0.2em]">Inspiration</span>
-                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-justify text-balance break-words [overflow-wrap:anywhere]">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
-                                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest">— {campaign.scripture}</p>
+                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-left text-balance break-words [overflow-wrap:anywhere]">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest break-words [overflow-wrap:anywhere]">— {campaign.scripture}</p>
                                 </div>
                             )}
                         </CardContent>
@@ -258,7 +258,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm font-bold text-foreground text-balance break-words">{campaign.location}</p>
+                                <p className="text-sm font-bold text-foreground text-balance break-words text-left">{campaign.location}</p>
                                 <p className="text-[10px] text-muted-foreground mt-1 font-medium uppercase tracking-tighter">Physical Meeting Point</p>
                             </CardContent>
                         </Card>
@@ -273,77 +273,77 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 <p className="text-sm font-bold text-foreground">{dateString}</p>
                                 <p className="text-xs text-muted-foreground font-medium uppercase">{timeString}</p>
                             </CardContent>
-                        </Card>
 
-                        <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
-                            <CardHeader className="p-6">
-                                <CardTitle className="flex items-center justify-between text-lg font-bold uppercase tracking-widest">
-                                    <span className="flex items-center gap-2">
-                                        <Users className="h-5 w-5 text-primary" />
-                                        Participants Directory
-                                    </span>
-                                    <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{participants?.length || 0}</Badge>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="px-6 pb-6">
-                                {!isJoined ? (
-                                    <div className="text-center py-10 bg-muted/20 rounded-2xl border-2 border-dashed">
-                                        <p className="text-sm text-muted-foreground px-8 leading-relaxed italic">Join this campaign to connect with fellow laborers in the field.</p>
-                                    </div>
+                            <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden">
+                                <CardHeader className="p-6">
+                                    <CardTitle className="flex items-center justify-between text-lg font-bold uppercase tracking-widest">
+                                        <span className="flex items-center gap-2">
+                                            <Users className="h-5 w-5 text-primary" />
+                                            Participants Directory
+                                        </span>
+                                        <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{participants?.length || 0}</Badge>
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="px-6 pb-6">
+                                    {!isJoined ? (
+                                        <div className="text-center py-10 bg-muted/20 rounded-2xl border-2 border-dashed">
+                                            <p className="text-sm text-muted-foreground px-8 leading-relaxed italic">Join this campaign to connect with fellow laborers in the field.</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            {participantsLoading ? (
+                                                <div className="flex justify-center py-8"><Loader2 className="animate-spin h-6 w-6 opacity-20" /></div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                    {participants?.map(p => (
+                                                        <Link key={p.id} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-colors">
+                                                            <Avatar className="h-8 w-8 border shadow-sm">
+                                                                <AvatarImage src={p.photoURL} />
+                                                                <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">{p.firstName?.charAt(0)}</AvatarFallback>
+                                                            </Avatar>
+                                                            <div className="min-w-0">
+                                                                <p className="font-bold truncate leading-tight text-xs sm:text-sm">{p.firstName} {p.lastName}</p>
+                                                                {p.userId === campaign.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-widest block mt-0.5">Organizer</span>}
+                                                            </div>
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+
+                            <div className="space-y-6">
+                                <div className="flex items-center justify-between px-4 sm:px-0">
+                                    <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                                        <Newspaper className="h-5 w-5 text-primary" />
+                                        Campaign Testimonies
+                                    </h3>
+                                </div>
+                                {testimoniesLoading ? (
+                                    <div className="flex justify-center py-8"><Loader2 className="animate-spin h-6 w-6 opacity-20" /></div>
                                 ) : (
-                                    <div className="space-y-4">
-                                        {participantsLoading ? (
-                                            <div className="flex justify-center py-8"><Loader2 className="animate-spin h-6 w-6 opacity-20" /></div>
+                                    <div className="flex flex-col gap-0 w-full max-w-2xl mx-auto -mx-4 sm:mx-auto">
+                                        {testimonies && testimonies.length > 0 ? (
+                                            testimonies.map(t => (
+                                                <TestimonyCard 
+                                                    key={t.id} 
+                                                    testimony={t} 
+                                                    onDelete={() => {}} 
+                                                    onEdit={() => {}} 
+                                                    currentUserProfile={userProfile}
+                                                />
+                                            ))
                                         ) : (
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                {participants?.map(p => (
-                                                    <Link key={p.id} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-colors">
-                                                        <Avatar className="h-8 w-8 border shadow-sm">
-                                                            <AvatarImage src={p.photoURL} />
-                                                            <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">{p.firstName?.charAt(0)}</AvatarFallback>
-                                                        </Avatar>
-                                                        <div className="min-w-0">
-                                                            <p className="font-bold truncate leading-tight text-xs sm:text-sm">{p.firstName} {p.lastName}</p>
-                                                            {p.userId === campaign.organizerId && <span className="text-[8px] font-black uppercase text-primary tracking-widest block mt-0.5">Organizer</span>}
-                                                        </div>
-                                                    </Link>
-                                                ))}
+                                            <div className="col-span-full text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed mx-4 sm:mx-0">
+                                                <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4" />
+                                                <p className="text-sm text-muted-foreground font-medium px-8 italic">No testimonies shared yet. Be the first to record God's work here!</p>
                                             </div>
                                         )}
                                     </div>
                                 )}
-                            </CardContent>
-                        </Card>
-
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between px-4 sm:px-0">
-                                <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-2">
-                                    <Newspaper className="h-5 w-5 text-primary" />
-                                    Campaign Testimonies
-                                </h3>
                             </div>
-                            {testimoniesLoading ? (
-                                <div className="flex justify-center py-8"><Loader2 className="animate-spin h-6 w-6 opacity-20" /></div>
-                            ) : (
-                                <div className="flex flex-col gap-0 w-full max-w-2xl mx-auto -mx-4 sm:mx-auto">
-                                    {testimonies && testimonies.length > 0 ? (
-                                        testimonies.map(t => (
-                                            <TestimonyCard 
-                                                key={t.id} 
-                                                testimony={t} 
-                                                onDelete={() => {}} 
-                                                onEdit={() => {}} 
-                                                currentUserProfile={userProfile}
-                                            />
-                                        ))
-                                    ) : (
-                                        <div className="col-span-full text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed mx-4 sm:mx-0">
-                                            <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4" />
-                                            <p className="text-sm text-muted-foreground font-medium px-8 italic">No testimonies shared yet. Be the first to record God's work here!</p>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>

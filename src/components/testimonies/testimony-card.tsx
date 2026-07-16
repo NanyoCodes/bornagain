@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -29,7 +28,7 @@ import {
   UserPlus,
   Hourglass,
   PartyPopper,
-  Image as ImageIcon,
+  ImageIcon,
   PlayCircle
 } from "lucide-react";
 import { useUser, useFirestore, useCollection, useDoc } from "@/firebase";
@@ -218,7 +217,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             </div>
           </div>
         )}
-        <div className="text-base sm:text-xl text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify capitalize font-medium">
+        <div className="text-base sm:text-xl text-muted-foreground whitespace-pre-wrap leading-relaxed text-left capitalize font-medium">
             {testimony.content}
         </div>
       </div>
@@ -300,7 +299,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         </CardHeader>
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
-          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-justify">
+          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-left">
             <p ref={contentRef} className={cn("leading-relaxed capitalize", testimony.mediaUrl ? "line-clamp-3" : "line-clamp-6")}>{testimony.content}</p>
             {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
           </div>
@@ -333,7 +332,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             <Card className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner">
                 <CardHeader className="p-4">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">Answer to Prayer Request:</div>
-                    <CardDescription className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-justify">{testimony.answeredPrayerContent}</CardDescription>
+                    <CardDescription className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground line-clamp-2 leading-relaxed text-left">{testimony.answeredPrayerContent}</CardDescription>
                 </CardHeader>
             </Card>
            )}

@@ -19,6 +19,10 @@ import {
   Quote,
   Loader2,
   Instagram,
+  Award,
+  ShieldCheck,
+  Zap,
+  HeartHandshake
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -129,12 +133,12 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-3 sm:px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[9px] sm:text-[10px] whitespace-nowrap">
                   GLORIFYING GOD
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
+                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left">
                   Testify the<br className="hidden sm:block" />
                   Greatness of GOD.<br className="hidden sm:block" />
                   <span className="text-primary">Join the Harvest.</span>
                 </h1>
-                <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-white/80 font-medium max-w-xl leading-relaxed italic text-pretty">
+                <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-white/80 font-medium max-w-xl leading-relaxed italic text-pretty text-left">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
                 </p>
               </motion.div>
@@ -169,6 +173,113 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Mission & Vision Section (Integrated from About Page) */}
+        <section className="py-16 sm:py-24 relative overflow-hidden bg-background">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="space-y-8"
+              >
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                      <Globe className="h-5 w-5 text-primary" />
+                    </div>
+                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight">Our Mission</h2>
+                  </div>
+                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium text-pretty text-left">
+                    Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD so that the kingdom of GOD will be built on Earth.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                    </div>
+                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight">Our Vision</h2>
+                  </div>
+                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium text-pretty text-left">
+                    Testify exists to help believers overcome sin, grow in Christ, and become living testimonies through the transforming power of God's Word and the Holy Spirit. We believe lasting discipline is born not merely from stronger willpower, but from deeper revelation of who God is and who we are in Christ.
+                  </p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="space-y-6"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                    <Award className="h-5 w-5 text-primary" />
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight">Founder's Story</h2>
+                </div>
+                <Card className="rounded-[2.5rem] border-l-8 border-l-primary bg-muted/20 border-none shadow-sm relative overflow-hidden">
+                   <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none">
+                      <Quote className="h-24 w-24 text-primary" />
+                   </div>
+                   <CardContent className="p-8 sm:p-10">
+                      <p className="italic text-muted-foreground text-base sm:text-lg leading-relaxed font-medium text-left">
+                        "I believe that technology is a divine gift for this final harvest. Seeing the need for accountability and collective encouragement in evangelism, I was led to create a space where every soul won is celebrated and every miracle is recorded for God's glory. God is great, and His power in Jesus Christ is moving through the earth like never before. Testify is a testimony in itself of God's provision for His people."
+                      </p>
+                      <p className="mt-6 text-sm font-black uppercase tracking-widest text-primary">— Nanyo Theophilus</p>
+                   </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+               <motion.div 
+                 initial={{ opacity: 0, y: 20 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 className="space-y-3"
+               >
+                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                   <ShieldCheck className="h-4 w-4 text-primary" /> Moderation
+                 </h3>
+                 <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
+                   Faith-aligned content only. All posts are screened to ensure a respectful, edifying environment for the Body of Christ.
+                 </p>
+               </motion.div>
+               <motion.div 
+                 initial={{ opacity: 0, y: 20 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ delay: 0.1 }}
+                 className="space-y-3"
+               >
+                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                   <Zap className="h-4 w-4 text-primary" /> Integrity
+                 </h3>
+                 <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
+                   We prioritize community verification and accountability to ensure shared miracle stories are genuine and God-glorifying.
+                 </p>
+               </motion.div>
+               <motion.div 
+                 initial={{ opacity: 0, y: 20 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ delay: 0.2 }}
+                 className="space-y-3"
+               >
+                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                   <HeartHandshake className="h-4 w-4 text-primary" /> Partnerships
+                 </h3>
+                 <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
+                   Working with local churches and missionary groups to provide reporting tools for outreach teams globally.
+                 </p>
+               </motion.div>
+            </div>
+          </div>
+        </section>
+
         {/* Feature Grid */}
         <section className="py-16 sm:py-24 bg-muted/30 relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -189,7 +300,7 @@ export default function LandingPage() {
                     <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="px-6 sm:px-8 pb-8">
-                    <p className="text-muted-foreground leading-relaxed font-medium text-sm sm:text-base">
+                    <p className="text-muted-foreground leading-relaxed font-medium text-sm sm:text-base text-left">
                       {feature.description}
                     </p>
                   </CardContent>
@@ -211,7 +322,7 @@ export default function LandingPage() {
                 <div className="space-y-4">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3 py-1">The Digital Altar</Badge>
                   <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight sm:leading-none uppercase tracking-tighter text-balance">See God <br className="hidden sm:block" />In Action</h2>
-                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 font-medium">
+                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 font-medium text-left">
                     Miracles aren't just for the Bible. Read real-time stories from believers around the world seeing the power of Jesus Christ today.
                   </p>
                 </div>
@@ -236,7 +347,7 @@ export default function LandingPage() {
                       <CardContent className="p-5 sm:p-6 flex gap-4">
                         <Quote className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-20 shrink-0 mt-1" />
                         <div className="min-w-0">
-                          <p className="text-sm sm:text-base italic text-muted-foreground line-clamp-2 leading-relaxed mb-4">
+                          <p className="text-sm sm:text-base italic text-muted-foreground line-clamp-2 leading-relaxed mb-4 text-left">
                             "{t.content}"
                           </p>
                           <div className="flex items-center gap-3">
@@ -274,7 +385,7 @@ export default function LandingPage() {
                 The Harvest is Plentiful.<br className="hidden sm:block" />
                 Ready to Labor?
               </h2>
-              <p className="text-base sm:text-lg md:text-xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty">
+              <p className="text-base sm:text-lg md:text-xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-left">
                 Join thousands of believers who are using technology to fulfill the mission of Jesus Christ. 
                 Record miracles, reach cities, and track the greatness of God.
               </p>
@@ -303,7 +414,7 @@ export default function LandingPage() {
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty">
+              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty text-left">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
               <div className="flex gap-4">
@@ -321,7 +432,7 @@ export default function LandingPage() {
               <ul className="space-y-3">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Glory Feed</Link></li>
                 <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Mission Hub</Link></li>
-                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Harvest Growth</Link></li>
+                <li><Link href="/progress" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Harvest Progress</Link></li>
                 <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Directory</Link></li>
               </ul>
             </div>

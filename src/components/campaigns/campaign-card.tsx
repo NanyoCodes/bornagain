@@ -265,7 +265,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
             {campaign.scripture && (
                 <div className="p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20 relative">
                     <span className="absolute -top-3 left-6 bg-background px-3 text-[10px] font-black text-primary uppercase tracking-[0.2em]">Inspirational Word</span>
-                    <p className="italic text-base text-primary font-serif leading-relaxed text-justify text-balance break-words [overflow-wrap:anywhere]">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                    <p className="italic text-base text-primary font-serif leading-relaxed text-left text-balance break-words [overflow-wrap:anywhere]">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
                     <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest break-words [overflow-wrap:anywhere]">— {campaign.scripture}</p>
                 </div>
             )}
@@ -652,7 +652,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         <CardContent className="p-4 sm:p-6 pt-0 flex-grow space-y-4">
             
             <div className="space-y-1">
-                <p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium break-words [overflow-wrap:anywhere] text-justify">{campaign.description}</p>
+                <p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium break-words [overflow-wrap:anywhere] text-left">{campaign.description}</p>
                 {isDescriptionTruncated && (
                     <FullDescriptionDialog campaign={campaign}>
                         <Button variant="link" className="p-0 h-auto text-sm font-bold text-primary">Read More</Button>
@@ -665,7 +665,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                     <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                     <div className="min-w-0 flex-1">
                         <p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Location</p>
-                        <p className="font-bold text-foreground break-words [overflow-wrap:anywhere] leading-snug line-clamp-3 text-balance">{campaign.location}</p>
+                        <p className="font-bold text-foreground break-words [overflow-wrap:anywhere] leading-snug line-clamp-3 text-left">{campaign.location}</p>
                     </div>
                 </div>
                 <div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto">

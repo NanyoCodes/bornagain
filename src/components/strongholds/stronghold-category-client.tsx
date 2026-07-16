@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -146,7 +145,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                         </p>
                     </div>
                 </div>
-                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2">
+                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2 text-left">
                     <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
                     <p className="text-sm text-muted-foreground leading-relaxed italic font-medium">
                         &ldquo;{post.text}&rdquo;
@@ -414,7 +413,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         </div>
                         <div className="space-y-1">
                             <h2 className="text-xl font-black uppercase tracking-tight leading-tight">Shared Transparency</h2>
-                            <p className="text-sm font-medium text-white/80 leading-relaxed text-balance">
+                            <p className="text-sm font-medium text-white/80 leading-relaxed text-balance text-left">
                                 Bringing struggles into the Light of the Body reveals the path to victory. Share your story or strategy below.
                             </p>
                         </div>
@@ -477,9 +476,9 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     </CardHeader>
                     <CardContent className="p-4 sm:p-8 pt-4">
                         <div className="space-y-6">
-                            <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group">
+                            <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group text-left">
                                 <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
-                                <p className="text-base sm:text-lg text-muted-foreground italic leading-relaxed text-justify text-balance">
+                                <p className="text-base sm:text-lg text-muted-foreground italic leading-relaxed text-balance">
                                     &ldquo;{activeScripture.text}&rdquo;
                                 </p>
                                 <p className="text-xs font-black uppercase tracking-[0.2em] text-primary text-right mt-4">— {activeScripture.verse}</p>
@@ -488,7 +487,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 mb-2">
                                     <HandHeart className="h-3 w-3" /> Victory Prayer
                                 </div>
-                                <p className="text-sm font-medium leading-relaxed text-foreground/70 italic">
+                                <p className="text-sm font-medium leading-relaxed text-foreground/70 italic text-left">
                                     &ldquo;{activeScripture.prayer}&rdquo;
                                 </p>
                                 <div className="pt-4">
@@ -540,7 +539,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
                                         {getResourceIcon(res.type)}
                                     </div>
-                                    <div className="min-w-0 flex-1">
+                                    <div className="min-w-0 flex-1 text-left">
                                         <div className="flex items-center gap-2 mb-0.5">
                                             <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50">{res.type}</Badge>
                                             <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest truncate opacity-60">By {res.authorName}</span>
@@ -562,7 +561,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="rounded-xl">
                                                     <DropdownMenuItem onClick={() => { setResourceToEdit(res); setIsAddResourceOpen(true); }} className="rounded-lg">
-                                                        <Edit className="mr-2 h-4 w-4" /> Edit
+                                                        <Edit className="mr-2 h-4 w-4 text-primary" /> Edit
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuItem onClick={() => handleDeleteResource(res.id)} className="text-destructive focus:text-destructive rounded-lg">
@@ -669,7 +668,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                         ) : (
                                             <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
                                                 <button className="w-full text-left outline-none group/post">
-                                                    <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99]">
+                                                    <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left">
                                                         <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
                                                         <p className="text-base text-muted-foreground leading-relaxed italic font-medium">
                                                             &ldquo;{post.text}&rdquo;
