@@ -47,8 +47,8 @@ export function ProgressOverview({ souls, userProfile, testimonies }: { souls: S
       if (!souls) return 0;
       return souls.filter((soul) => {
         const wonDate = safeToDate(soul.wonAt);
-        if (!wonAt) return false;
-        return isSameMonth(wonAt, currentDate);
+        if (!wonDate) return false;
+        return isSameMonth(wonDate, currentDate);
       }).length;
     }, [souls, currentDate]);
     

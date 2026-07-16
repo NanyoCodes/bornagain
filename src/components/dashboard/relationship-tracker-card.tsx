@@ -107,7 +107,7 @@ function SoulSelectionDialog({
                         <Input 
                             placeholder="Search by name..." 
                             value={search} 
-                            onChange={e => setSearchTerm(e.target.value)}
+                            onChange={e => setSearch(e.target.value)}
                             className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
@@ -166,7 +166,7 @@ function PrayerCustomizationDialog({
     const isMobile = useIsMobile();
     const [customText, setCustomText] = useState('');
 
-    const resolveTemplate = useCallback((template: string, soul: Soul) => {
+    const resolveTemplate = React.useCallback((template: string, soul: Soul) => {
         const gender = soul.gender?.toLowerCase() || 'other';
         const pronouns = {
             subject: gender === 'female' ? 'she' : 'he',

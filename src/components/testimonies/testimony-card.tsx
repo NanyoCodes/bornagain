@@ -79,7 +79,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const [isProcessingReaction, setIsProcessingReaction] = useState<string | null>(null);
   const [isRequestingPartner, setIsRequestingPartner] = useState(false);
   const contentRef = React.useRef<HTMLParagraphElement>(null);
-  const prayerRef = React.useRef<HTMLParagraphElement>(null);
+  const prayerRef = React.useRef<HTMLDivElement>(null);
   const [isTruncated, setIsTruncated] = React.useState(false);
   const [isPrayerTruncated, setIsPrayerTruncated] = React.useState(false);
   const [showFullText, setShowFullText] = React.useState(false);
@@ -347,8 +347,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <div className="p-4">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1 text-left">Answer to Prayer Request:</div>
                     <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground text-left">
-                        <div className="line-clamp-2">
-                           <p ref={prayerRef} className="inline">{testimony.answeredPrayerContent}</p>
+                        <div className="line-clamp-2" ref={prayerRef}>
+                           {testimony.answeredPrayerContent}
                         </div>
                     </div>
                     {isPrayerTruncated && (
