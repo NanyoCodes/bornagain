@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
@@ -895,7 +896,7 @@ export default function FellowshipPageClient() {
                                 <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline">Log Group Convert</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Record a new life won directly to this community.</SheetDescription></SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8">
-                                <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} />
+                                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} />
                             </ScrollArea>
                         </SheetContent>
                     </Sheet>

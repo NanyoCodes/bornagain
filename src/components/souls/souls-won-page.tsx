@@ -1,8 +1,10 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import dynamic from 'next/dynamic';
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { 
   PlusCircle, 
   Download, 
@@ -118,7 +120,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
             className="flex items-center gap-4 p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group"
           >
             <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
-              <AvatarFallback className="font-black bg-primary/5 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+              <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
@@ -512,7 +514,7 @@ export default function SoulsWonPage() {
                                         <div 
                                             key={group.label} 
                                             className={cn(
-                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden",
+                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left",
                                                 "hover:border-primary/20"
                                             )}
                                             onClick={() => setSelectedAgeGroup(group.label)}
@@ -523,7 +525,7 @@ export default function SoulsWonPage() {
                                                 </div>
                                                 <span className="font-black text-lg text-primary tracking-tighter">{group.count}</span>
                                             </div>
-                                            <div className="space-y-1.5 text-left">
+                                            <div className="space-y-1.5">
                                                 <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                                                     <span>{group.label}</span>
                                                     <span>{Math.round(percent)}%</span>
@@ -573,7 +575,7 @@ export default function SoulsWonPage() {
                 <Sheet open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <div className="flex items-center gap-2 mb-2">
+                            <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Harvest Demographic</span>
                             </div>
@@ -593,11 +595,11 @@ export default function SoulsWonPage() {
                 <Dialog open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                         <div className="p-8 border-b bg-muted/10">
-                            <div className="flex items-center gap-2 mb-2">
+                            <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Demographic View</span>
                             </div>
-                            <DialogHeader>
+                            <DialogHeader className="text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedAgeGroup} Directory</DialogTitle>
                                 <DialogDescription className="text-sm font-medium">Viewing all souls within this age group.</DialogDescription>
                             </DialogHeader>
@@ -669,7 +671,7 @@ export default function SoulsWonPage() {
                     <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <DialogHeader><DialogTitle className="text-2xl font-black font-headline">Log New Soul</DialogTitle><DialogDescription>Record a new life won for Christ.</DialogDescription></DialogHeader>
+                                <DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline">Log New Soul</DialogTitle><DialogDescription>Record a new life won for Christ.</DialogDescription></DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8">
                                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
@@ -679,7 +681,7 @@ export default function SoulsWonPage() {
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <DialogHeader><DialogTitle className="text-2xl font-black font-headline">Edit Record</DialogTitle><DialogDescription>Update soul identity and mission details.</DialogDescription></DialogHeader>
+                                <DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline">Edit Record</DialogTitle><DialogDescription>Update soul identity and mission details.</DialogDescription></DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
@@ -104,7 +105,7 @@ export default function TestimoniesPage() {
 
   const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony', data: Testimony } | { type: 'prayer', data: PrayerRequest } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [testimonyToEdit, setTestimonyToEdit] = useState<Testimony | null>(null);
+  const [testimonyToEdit, setTestimonyToEdit] = setTestimonyToEdit<Testimony | null>(null);
   const [prayerToEdit, setPrayerToEdit] = useState<PrayerRequest | null>(null);
   const [prayerToAnswer, setPrayerToAnswer] = useState<PrayerRequest | null>(null);
 

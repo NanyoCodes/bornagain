@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -443,7 +444,7 @@ export function RelationshipTrackerCard() {
                                     {isToggling ? (
                                         <Loader2 className="h-4 w-4 animate-spin text-primary" />
                                     ) : (
-                                        <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : isPending ? "text-amber-600 animate-pulse" : "text-primary/60")} />
+                                        <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                     )}
                                 </div>
                                 
