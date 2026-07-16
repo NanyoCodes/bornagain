@@ -158,7 +158,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     if (isOpen && soul) {
       form.reset({
         note: '',
-        status: soul.status || 'New',
+        status: soul.status === 'New' ? 'Contacted' : (soul.status || 'New'),
         attendingChurch: soul.attendingChurch || false,
         inBibleStudy: soul.inBibleStudy || false,
         attendingPrayer: soul.attendingPrayer || false,

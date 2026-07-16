@@ -436,7 +436,7 @@ export function RelationshipTrackerCard() {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
-  const [completedToday, setCompletedToday] = useState<string[]>([]);
+  const [completedToday, setCompletedToday] = setCompletedToday<string[]>([]);
   const [pendingActions, setPendingActions] = useState<string[]>([]);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
@@ -560,14 +560,17 @@ export function RelationshipTrackerCard() {
       const soulUserRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
       const globalSoulRef = doc(firestore, 'souls', soul.id);
       
-      batch.update(soulUserRef, {
+      const updateData: any = {
           followUpLog: arrayUnion(logEntry),
           lastUpdatedAt: serverTimestamp(),
-      });
-      batch.update(globalSoulRef, {
-          followUpLog: arrayUnion(logEntry),
-          lastUpdatedAt: serverTimestamp(),
-      });
+      };
+
+      if (soul.status === 'New') {
+          updateData.status = 'Contacted';
+      }
+
+      batch.update(soulUserRef, updateData);
+      batch.update(globalSoulRef, updateData);
 
       try {
           await batch.commit();
