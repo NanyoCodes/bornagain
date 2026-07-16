@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -136,6 +135,9 @@ export function LogSoulForm({
         country_lowercase: (userProfile.location.country || "").toLowerCase(),
     } : null;
 
+    // PHONE SANITIZATION: Strictly numeric storage
+    const sanitizedPhone = values.phone ? values.phone.replace(/[^\d+]/g, '') : null;
+
     const soulData: { [key: string]: any } = {
       userId: user.uid,
       firstName: values.firstName,
@@ -154,7 +156,7 @@ export function LogSoulForm({
       inServiceDepartment: false,
       userLocation: processedUserLocation || null,
       email: values.email || null,
-      phone: values.phone || null,
+      phone: sanitizedPhone,
       church: values.church || null,
       sourceDetails: values.sourceDetails || null,
       // Auto-assignment from props

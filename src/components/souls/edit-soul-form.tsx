@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -137,6 +136,9 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
+    // PHONE SANITIZATION: Strictly numeric storage
+    const sanitizedPhone = values.phone ? values.phone.replace(/[^\d+]/g, '') : null;
+
     const soulUpdateData: { [key: string]: any } = {
       firstName: values.firstName,
       lastName: values.lastName,
@@ -148,7 +150,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       wonAt: values.wonAt,
       updatedAt: serverTimestamp(),
       email: values.email || null,
-      phone: values.phone || null,
+      phone: sanitizedPhone,
       church: values.church || null,
       sourceDetails: values.sourceDetails || null,
     };
@@ -236,9 +238,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 <FormControl>
                     <Input placeholder="John" {...field} value={field.value ?? ""} className="text-base"/>
                 </FormControl>
-                <FormItem>
-                  <FormMessage />
-                </FormItem>
+                <FormMessage />
                 </FormItem>
             )}
             />
@@ -251,9 +251,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 <FormControl>
                     <Input placeholder="Doe" {...field} value={field.value ?? ""} className="text-base"/>
                 </FormControl>
-                <FormItem>
-                  <FormMessage />
-                </FormItem>
+                <FormMessage />
                 </FormItem>
             )}
             />
@@ -458,8 +456,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
         </Accordion>
 
         <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Changes
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Save Changes'}
         </Button>
       </form>
     </Form>

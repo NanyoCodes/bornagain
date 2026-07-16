@@ -17,6 +17,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 /**
  * @fileOverview Provides a standardized CSV template and bulk upload handler.
  * UPDATED: Includes hints directly in the CSV cells to guide users on valid options.
+ * UPDATED: Enforces strict numeric sanitization for phone numbers during import.
  */
 export function SoulsImportTemplateCard() {
   const { toast } = useToast();
@@ -51,7 +52,7 @@ export function SoulsImportTemplateCard() {
       "HINT: Male / Female",
       "HINT: e.g. Nigerian",
       "HINT: Valid email",
-      "HINT: +234...",
+      "HINT: Numbers only (e.g. +2348000000000)",
       "HINT: Home church",
       "HINT: Family / Friend / Colleague / Neighbor / Stranger / Other",
       "HINT: City name",
@@ -163,6 +164,10 @@ export function SoulsImportTemplateCard() {
           else if (rawRel.includes("neighbor")) relationship = "Neighbor";
           else if (rawRel.includes("stranger") || rawRel.includes("outreach")) relationship = "Stranger";
 
+          // PHONE SANITIZATION: Ensure it's treated as a clean numeric string
+          const rawPhone = (row["Phone"] || row["phone"] || "").toString().trim();
+          const sanitizedPhone = rawPhone.replace(/[^\d+]/g, '');
+
           const soulData = {
             userId: user.uid,
             firstName,
@@ -171,7 +176,7 @@ export function SoulsImportTemplateCard() {
             gender: (row["Gender"] || "").toString().trim() || null,
             nationality: (row["Nationality"] || "").toString().trim() || null,
             email: (row["Email"] || "").toString().trim() || null,
-            phone: (row["Phone"] || "").toString().trim() || null,
+            phone: sanitizedPhone || null,
             church: (row["Church"] || "").toString().trim() || null,
             relationship: relationship,
             locationWon: {
@@ -290,7 +295,7 @@ export function SoulsImportTemplateCard() {
         <div className="flex items-start gap-4 p-4 bg-muted/10 rounded-2xl border-none">
             <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p className="text-[10px] sm:text-xs text-muted-foreground leading-relaxed font-medium">
-                The template includes a <span className="text-foreground font-bold">Hints Row</span>. You can leave it in or delete it—the system is smart enough to skip it automatically during the append process.
+                The template includes a <span className="text-foreground font-black">Hints Row</span>. You can leave it in or delete it—the system is smart enough to skip it automatically during the append process.
             </p>
         </div>
       </CardContent>
