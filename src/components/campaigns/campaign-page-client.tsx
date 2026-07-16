@@ -71,7 +71,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     useEffect(() => { setMounted(true); }, []);
 
-    const campaignDocRef = useMemo(() => (firestore ? doc(firestore, 'campaigns', campaignId) : null), [firestore, campaignId]);
+    const campaignDocRef = useMemo(() => (firestore && campaignId) ? doc(firestore, 'campaigns', campaignId) : null, [firestore, campaignId]);
     const { data: campaign, loading: campaignLoading, error: campaignError } = useDoc<Campaign>(campaignDocRef);
 
     const userDocRef = useMemo(() => (user && firestore ? doc(firestore, 'users', user.uid) : null), [user, firestore]);
@@ -111,8 +111,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         if (!rawTestimonies) return [];
         return [...rawTestimonies].sort((a, b) => {
             const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-            const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
-            return timeB - timeA;
+            const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
+            return dateB - timeA;
         });
     }, [rawTestimonies]);
 
@@ -340,7 +340,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 ) : (
                                     <div className="col-span-full text-center py-20 bg-muted/20 rounded-[2.5rem] border-2 border-dashed mx-4 sm:mx-0">
                                         <Newspaper className="h-12 w-12 text-muted-foreground/10 mx-auto mb-4" />
-                                        <p className="text-sm text-muted-foreground font-medium px-8 italic">No testimonies shared yet. Be the first to record God's work here!</p>
+                                        <p className="text-sm text-muted-foreground font-medium px-8 italic text-left">No testimonies shared yet. Be the first to record God's work here!</p>
                                     </div>
                                 )}
                             </div>
@@ -409,8 +409,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                             <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Organizer</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-colors">
-                                <Avatar className="h-12 w-12 border-2 border-primary/20">
+                            <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-colors text-left">
+                                <Avatar className="h-12 w-12 border-2 border-primary/20 shrink-0">
                                     <AvatarFallback className="font-black text-lg">{campaign.organizerFirstName?.charAt(0)}{campaign.organizerLastName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0 flex-1">
@@ -435,7 +435,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 <span className="text-4xl font-black text-primary">{campaign.soulsLogged || 0}</span>
                                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Souls Won</span>
                             </div>
-                            <div className="p-3 bg-muted/30 rounded-xl border border-dashed flex items-start gap-3">
+                            <div className="p-3 bg-muted/30 rounded-xl border border-dashed flex items-start gap-3 text-left">
                                 <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                                 <p className="text-[10px] leading-relaxed text-muted-foreground font-medium uppercase tracking-tighter">Every soul logged contributes to the global harvest map and city impact stats.</p>
                             </div>
@@ -448,8 +448,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                     <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Log Harvest</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">Record a soul won during "{campaign.title}".</DialogDescription>
+                            <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Log Harvest</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left">Record a soul won during "{campaign.title}".</DialogDescription>
                         </DialogHeader>
                     </div>
                     <ScrollArea className="max-h-[70vh]">
@@ -464,8 +464,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                     <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold font-headline text-balance uppercase tracking-tight">Share Victory</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">What miracles occurred during "{campaign.title}"?</DialogDescription>
+                            <DialogTitle className="text-2xl font-bold font-headline text-balance uppercase tracking-tight text-left">Share Victory</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left">What miracles occurred during "{campaign.title}"?</DialogDescription>
                         </DialogHeader>
                     </div>
                     <ScrollArea className="max-h-[70vh]">
@@ -480,8 +480,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                     <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-bold font-headline text-balance uppercase tracking-tight">Manage Mission</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">Update the details of your active campaign.</DialogDescription>
+                            <DialogTitle className="text-2xl font-bold font-headline text-balance uppercase tracking-tight text-left">Manage Mission</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left">Update the details of your active campaign.</DialogDescription>
                         </DialogHeader>
                     </div>
                     <ScrollArea className="max-h-[75vh]">
@@ -514,8 +514,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                 <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => { if (!open) setCampaignToDelete(null); router.refresh(); }}>
                     <AlertDialogContent className="rounded-3xl p-8 border-none shadow-2xl">
                         <AlertDialogHeader>
-                            <AlertDialogTitle className="text-2xl font-bold font-headline text-balance uppercase tracking-tight">Delete Campaign?</AlertDialogTitle>
-                            <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+                            <AlertDialogTitle className="text-2xl font-bold font-headline text-balance uppercase tracking-tight text-left">Delete Campaign?</AlertDialogTitle>
+                            <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
                                 This will permanently remove "{campaignToDelete.title}" from the platform. This action cannot be undone.
                             </AlertDialogDescription>
                         </AlertDialogHeader>

@@ -214,13 +214,13 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                 <CollapsibleContent className="px-4 pb-4">
                     <div className="border-t pt-4 space-y-5">
                         <div className="flex justify-between items-start gap-4">
-                            <div className="text-xs sm:text-sm text-muted-foreground space-y-3 flex-1 min-w-0 font-medium">
+                            <div className="text-xs sm:text-sm text-muted-foreground space-y-3 flex-1 min-w-0 font-medium text-left">
                                 <div className="flex items-center gap-2">
                                     <Badge variant="secondary" className="h-4 px-1.5 rounded uppercase tracking-widest text-[8px] font-black opacity-80">Ref: {soul.source}</Badge>
                                     {soul.sourceDetails && <span className="truncate text-[10px] opacity-60 font-bold uppercase tracking-tight">• {soul.sourceDetails}</span>}
                                 </div>
                                 {soul.phone && <div className="truncate flex items-center gap-2.5 font-bold"><Phone className="h-3.5 w-3.5 text-primary"/>{soul.phone}</div>}
-                                {soul.church && <div className="flex items-center gap-2.5 leading-snug"><Church className="h-3.5 w-3.5 text-primary shrink-0" /> {soul.church}</div>}
+                                {soul.church && <div className="flex items-start gap-2.5 leading-snug"><Church className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> {soul.church}</div>}
                                 {locationWonString && <div className="flex items-start gap-2.5 leading-snug"><MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> <span className="line-clamp-2">{locationWonString}</span></div>}
                                 {soul.fellowshipName && <div className="flex items-center gap-2.5 font-black text-[10px] text-primary uppercase tracking-widest"><HeartHandshake className="h-3.5 w-3.5" /> FELLOWSHIP: {soul.fellowshipName}</div>}
                                 {soul.associationName && <div className="flex items-center gap-2.5 font-black text-[10px] text-blue-500 uppercase tracking-widest"><Group className="h-3.5 w-3.5" /> ASSOCIATION: {soul.associationName}</div>}
@@ -322,7 +322,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 <Label className="text-[9px] uppercase tracking-[0.2em] font-black text-muted-foreground/60">Harvest Follow-up</Label>
                             </div>
                             
-                            <div className="space-y-4">
+                            <div className="space-y-4 text-left">
                                {/* Pending Gifting Reminders */}
                                {myPending.length > 0 && (
                                    <div className="space-y-2">
@@ -460,15 +460,15 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                             </DialogContent>
                         )}
                     </Dialog>
-                    <div className="min-w-0">
+                    <div className="min-w-0 text-left">
                         <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight">{soul.firstName} {soul.lastName}</div>
                         {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
                     </div>
                 </div>
             </TableCell>
-            <TableCell className="hidden md:table-cell p-4">{soul.phone && <div className="text-xs font-bold text-muted-foreground">{soul.phone}</div>}</TableCell>
-            <TableCell className="p-4"><Badge className={cn("w-[110px] justify-center text-[10px] uppercase font-black tracking-widest leading-none h-6", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
-            <TableCell className="hidden lg:table-cell p-4">
+            <TableCell className="hidden md:table-cell p-4 text-left">{soul.phone && <div className="text-xs font-bold text-muted-foreground">{soul.phone}</div>}</TableCell>
+            <TableCell className="p-4 text-left"><Badge className={cn("w-[110px] justify-center text-[10px] uppercase font-black tracking-widest leading-none h-6", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
+            <TableCell className="hidden lg:table-cell p-4 text-left">
                 <div className="space-y-1.5">
                     {soul.fellowshipId && soul.fellowshipName ? (
                         <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary leading-none">
@@ -485,15 +485,15 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                     {!soul.fellowshipId && !soul.associationId && <span className="text-muted-foreground text-[9px] font-black uppercase tracking-widest opacity-30 italic">Unplaced</span>}
                 </div>
             </TableCell>
-            <TableCell className="hidden sm:table-cell p-4">
+            <TableCell className="hidden sm:table-cell p-4 text-left">
                 {latestFollowUpDate ? (
                     <div className="text-[10px] space-y-1">
                         <div className="text-muted-foreground font-black uppercase tracking-widest">{format(latestFollowUpDate, "MMM d, yyyy")}</div>
                     </div>
                 ) : <span className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-20">—</span>}
             </TableCell>
-            <TableCell className="hidden md:table-cell p-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{format(wonAt, "MMM d, yyyy")}</TableCell>
-            <TableCell className="hidden xl:table-cell p-4">
+            <TableCell className="hidden md:table-cell p-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-left">{format(wonAt, "MMM d, yyyy")}</TableCell>
+            <TableCell className="hidden xl:table-cell p-4 text-left">
                 <div className="text-[10px] font-black uppercase tracking-widest text-foreground/80">{soul.source}</div>
                 {soul.sourceDetails && <div className="text-[9px] font-bold text-muted-foreground/60 uppercase truncate max-w-[120px]">{soul.sourceDetails}</div>}
             </TableCell>
@@ -598,23 +598,23 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   return (
     <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden">
       <CardHeader className="p-8 border-b bg-muted/5">
-        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase">
+        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
             <Heart className="h-6 w-6 text-primary fill-current" />
             Harvest Dashboard
         </CardTitle>
-        <CardDescription className="text-base font-medium">Keep track of the spiritual development and community integration of every convert.</CardDescription>
+        <CardDescription className="text-base font-medium text-left">Keep track of the spiritual development and community integration of every convert.</CardDescription>
       </CardHeader>
       <CardContent className="p-0">
         <Table>
           <TableHeader className="bg-muted/10">
             <TableRow className="hover:bg-transparent">
-              <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Soul Identity</TableHead>
-              <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contact</TableHead>
-              <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</TableHead>
-              <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Placements</TableHead>
-              <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Latest Log</TableHead>
-              <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Date Won</TableHead>
-              <TableHead className="hidden xl:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Source</TableHead>
+              <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
+              <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Contact</TableHead>
+              <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
+              <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Placements</TableHead>
+              <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Latest Log</TableHead>
+              <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Date Won</TableHead>
+              <TableHead className="hidden xl:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Source</TableHead>
               <TableHead className="p-4 text-right"><span className="sr-only">Actions</span></TableHead>
             </TableRow>
           </TableHeader>

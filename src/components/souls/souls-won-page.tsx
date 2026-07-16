@@ -10,20 +10,15 @@ import {
   Trash2, 
   HeartHandshake, 
   Sparkles, 
-  Info, 
-  Users, 
   ImageIcon,
   BarChart3,
   Target,
   Zap,
   Flame,
   Award,
-  ChevronDown,
-  X,
   UserPlus,
   Hourglass,
   ArrowLeft,
-  ArrowRight,
   Newspaper,
   Globe
 } from "lucide-react";
@@ -60,28 +55,24 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
-import { useCollection, useFirestore, useUser } from "@/firebase";
-import { useDoc } from "@/firebase/firestore/use-doc";
-import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, addDoc, deleteField, where } from "firebase/firestore";
+import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn, safeToDate, haversineDistance } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { EditSoulForm } from "@/components/souls/edit-soul-form";
-import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
 import Image from "next/image";
-import { format } from "date-fns";
 import { SoulAssessmentDialog } from "./soul-assessment-dialog";
 import { Progress } from "@/components/ui/progress";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -676,7 +667,6 @@ export default function SoulsWonPage() {
                                 <ImageIcon className="h-4 w-4 text-primary" />
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">GALLERY OF MY SOULS</h3>
                             </div>
-                            <span className="text-[9px] font-black text-primary uppercase tracking-[0.1em] animate-pulse">you can swipe too</span>
                         </div>
                         <div 
                             className="overflow-hidden relative w-full"
