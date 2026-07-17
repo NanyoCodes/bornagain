@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useDoc, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -759,7 +759,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         <DialogHeader>
                             <div className="flex items-center gap-2.5 mb-1.5">
                                 <Target className="h-4 w-4 text-primary" />
-                                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Supply Drop</span>
+                                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Supply Drop</span>
                             </div>
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">
                                 {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
