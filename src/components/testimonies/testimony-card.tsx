@@ -79,7 +79,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
 
   const [isProcessingReaction, setIsProcessingReaction] = useState<string | null>(null);
   const [isRequestingPartner, setIsRequestingPartner] = useState(false);
-  const contentRef = React.useRef<HTMLParagraphElement>(null);
+  const contentRef = React.useRef<HTMLDivElement>(null);
   const prayerRef = React.useRef<HTMLDivElement>(null);
   const [isTruncated, setIsTruncated] = React.useState(false);
   const [isPrayerTruncated, setIsPrayerTruncated] = React.useState(false);
@@ -314,9 +314,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         </CardHeader>
         
         <CardContent className="flex-grow pt-0 px-4 sm:px-6 space-y-4">
-          <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed text-left">
+          <div className="text-sm sm:text-base text-muted-foreground leading-relaxed text-left">
             <div className={cn("leading-relaxed capitalize", testimony.mediaUrl ? "line-clamp-3" : "line-clamp-6")}>
-                <p ref={contentRef}>{testimony.content}</p>
+                <div ref={contentRef}>{testimony.content}</div>
             </div>
             {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
           </div>

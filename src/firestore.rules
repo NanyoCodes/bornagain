@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Revert prayer status when testimony is deleted - 2025-07-15T10:00:00Z
+    // Deployment trigger: Allow testimony authors to revert prayer status - 2025-07-20T11:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -196,11 +196,13 @@ service cloud.firestore {
     match /prayerRequests/{requestId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+      allow delete: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
       allow update: if isAuthenticated() && ( 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
         (resource.data.authorId == request.auth.uid && request.resource.data.status in ['pending', 'answered']) ||
-        (exists(/databases/$(database)/documents/testimonies/$(request.resource.data.get('answeredTestimonyId', 'null'))) && get(/databases/$(database)/documents/testimonies/$(request.resource.data.answeredTestimonyId)).data.authorId == request.auth.uid)
+        (resource.data.get('answeredTestimonyId', '') != '' && 
+         exists(/databases/$(database)/documents/testimonies/$(resource.data.answeredTestimonyId)) && 
+         get(/databases/$(database)/documents/testimonies/$(resource.data.answeredTestimonyId)).data.authorId == request.auth.uid)
       );
     }
 
