@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -308,6 +309,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         
         const formData = new FormData(e.currentTarget);
         const title = formData.get('title') as string;
+        const description = formData.get('description') as string;
         const url = formData.get('url') as string;
         const type = formData.get('type') as any;
 
@@ -317,6 +319,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         
         const resourceData: any = {
             title,
+            description,
             url,
             type,
             updatedAt: serverTimestamp(),
@@ -454,7 +457,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 <div className="space-y-6">
                                     <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group text-left">
                                         <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
-                                        <p className="text-base sm:text-lg text-muted-foreground italic leading-relaxed text-balance">
+                                        <p className="text-base text-muted-foreground italic leading-relaxed text-balance">
                                             &ldquo;{activeScripture.text}&rdquo;
                                         </p>
                                         <p className="text-xs font-black uppercase tracking-[0.2em] text-primary text-right mt-4">— {activeScripture.verse}</p>
@@ -512,22 +515,32 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     const isResAuthor = user?.uid === res.authorId;
                                     return (
                                     <Card key={res.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all group">
-                                        <CardContent className="p-4 flex items-center gap-4 relative">
-                                            <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
-                                                {getResourceIcon(res.type)}
-                                            </div>
-                                            <div className="min-w-0 flex-1 text-left">
-                                                <div className="flex items-center gap-2 mb-0.5">
-                                                    <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50">{res.type}</Badge>
-                                                    <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest truncate opacity-60">By {res.authorName}</span>
+                                        <CardContent className="p-4 flex flex-col gap-4 relative">
+                                            <div className="flex items-center gap-4">
+                                                <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
+                                                    {getResourceIcon(res.type)}
                                                 </div>
-                                                <h4 className="font-black text-xs uppercase tracking-tight truncate leading-tight mb-2">{res.title}</h4>
-                                                <Button asChild variant="ghost" size="sm" className="h-7 p-0 hover:bg-transparent hover:text-primary transition-colors text-[9px] font-black uppercase tracking-widest">
-                                                    <a href={res.url} target="_blank" rel="noopener noreferrer">
-                                                        GO TO RESOURCE <ExternalLink className="ml-1.5 h-3 w-3" />
-                                                    </a>
-                                                </Button>
+                                                <div className="min-w-0 flex-1 text-left">
+                                                    <div className="flex items-center gap-2 mb-0.5">
+                                                        <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50">{res.type}</Badge>
+                                                        <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest truncate opacity-60">By {res.authorName}</span>
+                                                    </div>
+                                                    <h4 className="font-black text-xs uppercase tracking-tight truncate leading-tight mb-2">{res.title}</h4>
+                                                </div>
                                             </div>
+                                            
+                                            {res.description && (
+                                                <p className="text-xs text-muted-foreground leading-relaxed italic px-1 text-left">
+                                                    &ldquo;{res.description}&rdquo;
+                                                </p>
+                                            )}
+
+                                            <Button asChild variant="ghost" size="sm" className="h-7 p-0 hover:bg-transparent hover:text-primary transition-colors text-[9px] font-black uppercase tracking-widest self-start">
+                                                <a href={res.url} target="_blank" rel="noopener noreferrer">
+                                                    GO TO RESOURCE <ExternalLink className="ml-1.5 h-3 w-3" />
+                                                </a>
+                                            </Button>
+
                                             {isResAuthor && (
                                                 <div className="absolute top-2 right-2">
                                                     <DropdownMenu>
@@ -762,6 +775,10 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</Label>
                                 <Input name="title" defaultValue={resourceToEdit?.title} placeholder="e.g. Breaking Chains Sermon" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label>
+                                <Textarea name="description" defaultValue={resourceToEdit?.description} placeholder="e.g. A powerful message on identity..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL / Link</Label>

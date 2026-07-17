@@ -248,6 +248,7 @@
       "type": "object",
       "properties": {
         "title": { "type": "string" },
+        "description": { "type": "string" },
         "url": { "type": "string", "format": "uri" },
         "type": { "type": "string", "enum": ["Video", "Article", "Book", "Sermon", "Other"] },
         "authorId": { "type": "string" },

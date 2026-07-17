@@ -1,3 +1,4 @@
+
 import type { Timestamp } from "firebase/firestore";
 
 export type ReadingHistoryItem = {
@@ -126,6 +127,7 @@ export type UserProfile = {
 export type CircleResource = {
   id: string;
   title: string;
+  description?: string;
   url: string;
   type: 'Video' | 'Article' | 'Book' | 'Sermon' | 'Other';
   authorId: string;
