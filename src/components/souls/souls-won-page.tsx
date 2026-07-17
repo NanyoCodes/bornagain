@@ -141,7 +141,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
 
 export default function SoulsWonPage() {
   const router = useRouter();
-  const { user, loading: userLoading } = useUser();
+  const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -691,4 +691,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-
