@@ -678,7 +678,7 @@ export default function SoulsWonPage() {
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle><DialogDescription className="text-left">Update soul identity and mission details.</DialogDescription></DialogHeader>
+                                <DialogHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Edit Record</SheetTitle><DialogDescription className="text-left">Update soul identity and mission details.</DialogDescription></DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8 text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
