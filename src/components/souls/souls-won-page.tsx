@@ -119,10 +119,10 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
             key={soul.id} 
             className="flex items-center gap-4 p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group text-left"
           >
-            <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
-              <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+            <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors text-left">
+              <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 text-left">
               <div className="flex items-center gap-2 text-left">
                 <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                 <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
@@ -131,7 +131,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
                 Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
               </p>
             </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 text-left" />
           </Link>
         );
       })}
@@ -365,40 +365,40 @@ export default function SoulsWonPage() {
     <div className="w-full max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
             <div className="lg:col-span-8 space-y-8 pb-32">
-                <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0">
-                    <CardContent className="p-3 sm:p-4">
-                        <div className="flex flex-row items-center gap-2 sm:gap-3">
+                <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0 text-left">
+                    <CardContent className="p-3 sm:p-4 text-left">
+                        <div className="flex flex-row items-center gap-2 sm:gap-3 text-left">
                             <Button 
                                 variant="outline" 
                                 className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
                                 onClick={() => setIsLogDialogOpen(true)}
                                 disabled={loading}
                             >
-                                <span className="truncate">
+                                <span className="truncate text-left">
                                     {loading ? "Preparing harvest list..." : "Who did you minister to today?"}
                                 </span>
                             </Button>
-                            <div className="flex items-center gap-2 shrink-0">
+                            <div className="flex items-center gap-2 shrink-0 text-left">
                                 <Button 
                                     variant="secondary" 
                                     size="icon" 
-                                    className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-lg"
+                                    className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-lg text-left"
                                     onClick={() => setIsLogDialogOpen(true)}
                                     disabled={loading}
                                     title="Log Soul"
                                 >
-                                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
+                                    {loading ? <Loader2 className="h-4 w-4 animate-spin text-left" /> : <PlusCircle className="h-4 w-4 text-left" />}
                                 </Button>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button 
                                             variant="outline" 
                                             size="icon" 
-                                            className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-md bg-background"
+                                            className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-md bg-background text-left"
                                             disabled={loading}
                                             title="Export Harvest"
                                         >
-                                            <Download className="h-4 w-4" />
+                                            <Download className="h-4 w-4 text-left" />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="rounded-xl">
@@ -412,20 +412,20 @@ export default function SoulsWonPage() {
                 </Card>
 
                 {soulsWithPhotos.length > 0 && (
-                    <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700">
+                    <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700 text-left">
                         <div className="flex items-center justify-between mb-4 px-1 text-left">
                             <div className="flex items-center gap-2 text-left">
-                                <ImageIcon className="h-4 w-4 text-primary" />
+                                <ImageIcon className="h-4 w-4 text-primary text-left" />
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left">GALLERY OF MY SOULS</h3>
                             </div>
                         </div>
                         <div 
-                            className="overflow-hidden relative w-full"
+                            className="overflow-hidden relative w-full text-left"
                             onMouseEnter={() => setIsGalleryPaused(true)}
                             onMouseLeave={() => setIsGalleryPaused(false)}
                         >
                             <motion.div 
-                                className="flex gap-4 w-max"
+                                className="flex gap-4 w-max text-left"
                                 animate={{ x: isGalleryPaused ? undefined : ["0%", "-33.3333333%"] }}
                                 transition={{
                                     x: {
@@ -437,7 +437,7 @@ export default function SoulsWonPage() {
                                 }}
                             >
                                 {duplicatedSouls.map((s, idx) => (
-                                    <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0">
+                                    <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0 text-left">
                                         <Dialog>
                                             <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
                                                 <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-95 transition-all text-left">
@@ -445,16 +445,16 @@ export default function SoulsWonPage() {
                                                         src={s.photoURL!} 
                                                         alt={s.firstName} 
                                                         fill 
-                                                        className="object-cover transition-transform group-hover:scale-110 duration-500" 
+                                                        className="object-cover transition-transform group-hover:scale-110 duration-500 text-left" 
                                                         unoptimized 
                                                     />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
                                                     <div className="absolute bottom-3 left-3 right-3 text-white text-left">
                                                         <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight text-left">
                                                             {s.nickname || s.firstName}
                                                         </p>
                                                         <Badge className={cn(
-                                                            "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1 shadow-sm",
+                                                            "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1 shadow-sm text-left",
                                                             s.status === 'New' ? "bg-amber-500" : 
                                                             s.status === 'Contacted' ? "bg-blue-500" : 
                                                             "bg-green-500"
@@ -463,14 +463,14 @@ export default function SoulsWonPage() {
                                                 </div>
                                             </DialogTrigger>
                                             <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
-                                                <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
+                                                <DialogHeader className="sr-only text-left"><DialogTitle className="text-left">Soul Photo</DialogTitle></DialogHeader>
                                                 <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
-                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
                                                         <Image 
                                                             src={s.photoURL!} 
                                                             alt={s.firstName} 
                                                             fill 
-                                                            className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                                            className="object-contain shadow-2xl ring-4 ring-white/10 text-left" 
                                                             unoptimized 
                                                         />
                                                     </div>
@@ -484,17 +484,17 @@ export default function SoulsWonPage() {
                     </div>
                 )}
 
-                <div className="px-4 sm:px-0 space-y-4">
+                <div className="px-4 sm:px-0 space-y-4 text-left">
                     <div className="flex items-center gap-3 text-left">
-                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
-                            <BarChart3 className="h-5 w-5 text-primary" />
+                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
+                            <BarChart3 className="h-5 w-5 text-primary text-left" />
                         </div>
                         <div className="min-w-0 text-left">
                             <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">DEMOGRAPHICS</h2>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Age Analysis</p>
                         </div>
                     </div>
-                    <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
+                    <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
                         <CardContent className="p-6 sm:p-8 space-y-6 text-left">
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                                 {[
@@ -518,17 +518,17 @@ export default function SoulsWonPage() {
                                             onClick={() => setSelectedAgeGroup(group.label)}
                                         >
                                             <div className="flex items-center justify-between text-left">
-                                                <div className="h-8 w-8 rounded-xl bg-muted/50 flex items-center justify-center transition-colors group-hover:bg-primary/10">
-                                                    <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                                                <div className="h-8 w-8 rounded-xl bg-muted/50 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left">
+                                                    <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left" />
                                                 </div>
                                                 <span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span>
                                             </div>
                                             <div className="space-y-1.5 text-left">
                                                 <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">
-                                                    <span>{group.label}</span>
-                                                    <span>{Math.round(percent)}%</span>
+                                                    <span className="text-left">{group.label}</span>
+                                                    <span className="text-left">{Math.round(percent)}%</span>
                                                 </div>
-                                                <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} />
+                                                <Progress value={percent} className="h-1.5 bg-muted text-left" indicatorClassName={group.color} />
                                             </div>
                                         </div>
                                     );
@@ -547,7 +547,7 @@ export default function SoulsWonPage() {
                     />
                 </div>
 
-                <div className="-mx-4 sm:mx-0">
+                <div className="-mx-4 sm:mx-0 text-left">
                     <SoulsWonTable 
                         souls={filteredSouls || []} 
                         loading={loading}
@@ -562,7 +562,7 @@ export default function SoulsWonPage() {
                 </div>
             </div>
 
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-4 text-left">
                 <FeedSidebar mode="harvest" />
             </div>
         </div>
@@ -573,8 +573,8 @@ export default function SoulsWonPage() {
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
-                                <BarChart3 className="h-4 w-4 text-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Harvest Demographic</span>
+                                <BarChart3 className="h-4 w-4 text-primary text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
                             </div>
                             <SheetHeader className="text-left">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedAgeGroup} Directory</SheetTitle>
@@ -593,7 +593,7 @@ export default function SoulsWonPage() {
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
-                                <BarChart3 className="h-4 w-4 text-primary" />
+                                <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left">
@@ -691,3 +691,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+

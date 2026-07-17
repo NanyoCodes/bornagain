@@ -95,8 +95,8 @@ function SoulSelectionList({
     }, [souls, search]);
 
     return (
-        <div className="space-y-6">
-            <div className="relative">
+        <div className="space-y-6 text-left">
+            <div className="relative text-left">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                 <Input 
                     placeholder="Search by name..." 
@@ -106,34 +106,34 @@ function SoulSelectionList({
                 />
             </div>
             <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left">
-                <div className="p-2 space-y-1.5">
+                <div className="p-2 space-y-1.5 text-left">
                     {filteredSouls.length > 0 ? (
                         filteredSouls.map(soul => (
                             <Button 
                                 key={soul.id} 
                                 variant="ghost" 
-                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group"
+                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group text-left"
                                 onClick={() => onSelect(soul)}
                                 disabled={isLoading}
                             >
-                                <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
+                                <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left">
                                     <AvatarFallback className="font-bold bg-primary/5 text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="text-left min-w-0 flex-1">
                                     <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                                     <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p>
                                 </div>
-                                <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <PlusCircle className="h-4 w-4" />
+                                <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-left">
+                                    <PlusCircle className="h-4 w-4 text-left" />
                                 </div>
                             </Button>
                         ))
                     ) : (
-                        <div className="text-center py-16 px-8 space-y-3">
-                            <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
-                                <Users className="h-6 w-6 text-muted-foreground opacity-20" />
+                        <div className="text-center py-16 px-8 space-y-3 text-left">
+                            <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left">
+                                <Users className="h-6 w-6 text-muted-foreground opacity-20 text-left" />
                             </div>
-                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-balance text-center">
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-balance text-left text-center">
                                 {search ? "No matches found" : "Log your first soul to begin tracking"}
                             </p>
                         </div>
@@ -349,14 +349,14 @@ export function RelationshipTrackerCard() {
 
   if (userLoading || profileLoading || soulsLoading) {
     return (
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
         <CardHeader className="p-4 sm:p-6 text-left">
-          <Skeleton className="h-5 w-32 mb-2" />
-          <Skeleton className="h-3 w-48" />
+          <Skeleton className="h-5 w-32 mb-2 text-left" />
+          <Skeleton className="h-3 w-48 text-left" />
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6 text-left">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-2xl" />
+            <Skeleton key={i} className="h-20 w-full rounded-2xl text-left" />
           ))}
         </CardContent>
       </Card>
@@ -365,23 +365,23 @@ export function RelationshipTrackerCard() {
 
   return (
     <>
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card">
-        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity">
-          <Users className="h-32 w-32 text-primary rotate-12" />
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card text-left">
+        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity text-left">
+          <Users className="h-32 w-32 text-primary rotate-12 text-left" />
         </div>
 
         <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 min-h-[5.5rem] text-left">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
               <div className="space-y-1 text-left">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
-                      <Sparkles className="h-5 w-5 text-primary" />
+                      <Sparkles className="h-5 w-5 text-primary text-left" />
                       KINGDOM SOULS FOLLOW-UP
                   </CardTitle>
                   <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
               </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end shrink-0">
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end shrink-0 text-left">
                 {currentDate && (
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
                     {format(currentDate, 'PPPP')}
                   </div>
                 )}
@@ -399,7 +399,7 @@ export function RelationshipTrackerCard() {
                     const isToggling = togglingId === action.id;
                     
                     const buttonEl = (
-                        <motion.div layout whileTap={{ scale: 0.95 }} whileHover={isMobile ? {} : { y: -2 }} className="w-full h-24">
+                        <motion.div layout whileTap={{ scale: 0.95 }} whileHover={isMobile ? {} : { y: -2 }} className="w-full h-24 text-left">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -421,9 +421,9 @@ export function RelationshipTrackerCard() {
                                             initial={{ scale: 0, opacity: 0 }}
                                             animate={{ scale: 1, opacity: 1 }}
                                             exit={{ scale: 0, opacity: 0 }}
-                                            className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20"
+                                            className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20 text-left"
                                         >
-                                            <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current" />
+                                            <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current text-left" />
                                         </motion.div>
                                     )}
                                     {isPending && !isCompleted && !isToggling && (
@@ -431,21 +431,21 @@ export function RelationshipTrackerCard() {
                                             key="pending-icon"
                                             initial={{ scale: 0, opacity: 0 }}
                                             animate={{ scale: 1, opacity: 1 }}
-                                            className="absolute top-2 right-2 bg-amber-500 rounded-full p-0.5 shadow-lg z-20"
+                                            className="absolute top-2 right-2 bg-amber-500 rounded-full p-0.5 shadow-lg z-20 text-left"
                                         >
-                                            <Hourglass className="h-3 w-3 text-white" />
+                                            <Hourglass className="h-3 w-3 text-white text-left" />
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
 
                                 <div className={cn(
-                                    "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500 relative shrink-0",
+                                    "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500 relative shrink-0 text-left",
                                     isCompleted ? "bg-primary/20 scale-110 shadow-lg" : isPending ? "bg-amber-500/20" : "bg-muted/30"
                                 )}>
                                     {isToggling ? (
-                                        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                                        <Loader2 className="h-4 w-4 animate-spin text-primary text-left" />
                                     ) : (
-                                        <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
+                                        <Icon className={cn("h-4 w-4 transition-all text-left", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                     )}
                                 </div>
                                 
@@ -456,9 +456,9 @@ export function RelationshipTrackerCard() {
                                     )}>
                                         {action.label}
                                     </span>
-                                    <div className="h-2.5 flex items-center justify-center">
+                                    <div className="h-2.5 flex items-center justify-center text-left">
                                         {isPending && !isCompleted && !isToggling && (
-                                            <span className="text-[8px] font-black uppercase text-amber-600/60 leading-none">Pending Hub</span>
+                                            <span className="text-[8px] font-black uppercase text-amber-600/60 leading-none text-left">Pending Hub</span>
                                         )}
                                     </div>
                                 </div>
@@ -466,7 +466,7 @@ export function RelationshipTrackerCard() {
                         </motion.div>
                     );
 
-                    if (isMobile) return <div key={action.id}>{buttonEl}</div>;
+                    if (isMobile) return <div key={action.id} className="text-left">{buttonEl}</div>;
 
                     return (
                         <TooltipProvider key={action.id}>
@@ -474,7 +474,7 @@ export function RelationshipTrackerCard() {
                                 <TooltipTrigger asChild>
                                     {buttonEl}
                                 </TooltipTrigger>
-                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
+                                <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left" side="bottom">
                                     <p className="text-[10px] font-bold uppercase text-primary text-left">Kingdom Action</p>
                                     <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left">{action.label}</p>
                                 </TooltipContent>
@@ -488,11 +488,11 @@ export function RelationshipTrackerCard() {
         <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
               <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm text-left">
                   <Link href="/dashboard/souls-won">
-                      <UserPlus className="mr-2 h-4 w-4" />
+                      <UserPlus className="mr-2 h-4 w-4 text-left" />
                       MANAGE SOULS WON
                   </Link>
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40">
+              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 text-left">
                   Unity • Growth • Love
               </p>
         </CardFooter>
@@ -500,7 +500,7 @@ export function RelationshipTrackerCard() {
 
       {isMobile ? (
         <Sheet open={isSoulDialogOpen} onOpenChange={setIsSoulDialogOpen}>
-            <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+            <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-4 sm:p-8 border-b shrink-0 bg-muted/10 text-left">
                     <SheetHeader className="text-left">
                         <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {activeActionLabel.toLowerCase()}?</SheetTitle>
@@ -519,10 +519,12 @@ export function RelationshipTrackerCard() {
       ) : (
         <Dialog open={isSoulDialogOpen} onOpenChange={setIsSoulDialogOpen}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                <DialogHeader className="p-8 border-b bg-muted/10 text-left">
-                    <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {activeActionLabel.toLowerCase()}?</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
-                </DialogHeader>
+                <div className="p-8 border-b bg-muted/10 text-left">
+                    <DialogHeader className="p-0 text-left">
+                        <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {activeActionLabel.toLowerCase()}?</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
+                    </DialogHeader>
+                </div>
                 <div className="p-6 text-left">
                     <SoulSelectionList 
                         souls={souls} 
