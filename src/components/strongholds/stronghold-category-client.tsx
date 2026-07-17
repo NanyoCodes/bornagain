@@ -418,6 +418,47 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
     const activeScripture = scriptures[parseInt(selectedVerseIdx, 10)] || scriptures[0];
 
+    const supplyForm = (
+        <form onSubmit={handleCreateOrUpdateResource}>
+            <div className="p-8 space-y-6 text-left">
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Type of Supply</Label>
+                    <Select name="type" defaultValue={resourceToEdit?.type || "Video"}>
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                            <SelectValue placeholder="Resource Type" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-none shadow-2xl">
+                            <SelectItem value="Video" className="rounded-lg">Video / YouTube</SelectItem>
+                            <SelectItem value="Article" className="rounded-lg">Article / Link</SelectItem>
+                            <SelectItem value="Sermon" className="rounded-lg">Sermon / Audio</SelectItem>
+                            <SelectItem value="Book" className="rounded-lg">Book Title / PDF</SelectItem>
+                            <SelectItem value="Other" className="rounded-lg">Other</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</Label>
+                    <Input name="title" defaultValue={resourceToEdit?.title} placeholder="e.g. Breaking Chains Sermon" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
+                </div>
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label>
+                    <Textarea name="description" defaultValue={resourceToEdit?.description} placeholder="e.g. A powerful message on identity..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />
+                </div>
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL / Link</Label>
+                    <Input name="url" defaultValue={resourceToEdit?.url} placeholder="https://..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
+                </div>
+            </div>
+            <div className="p-8 bg-muted/5 border-t flex gap-3">
+                <Button type="button" variant="outline" onClick={() => { setIsAddResourceOpen(false); setResourceToEdit(null); }} className="flex-1 h-12 rounded-xl font-bold">Cancel</Button>
+                <Button type="submit" disabled={isSubmittingResource} className="flex-1 h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
+                    {isSubmittingResource && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {resourceToEdit ? 'SAVE CHANGES' : 'SHARE SUPPLY'}
+                </Button>
+            </div>
+        </form>
+    );
+
     return (
         <div className="space-y-8 max-w-6xl mx-auto pb-32 w-full">
             <header className="px-4 sm:px-0 space-y-6 pt-4">
@@ -493,7 +534,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 <div className="space-y-6">
                                     <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group text-left">
                                         <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
-                                        <p className="text-base sm:text-xl text-muted-foreground italic leading-relaxed text-balance">
+                                        <p className="text-base sm:text-xl text-muted-foreground italic font-medium leading-relaxed text-balance">
                                             &ldquo;{activeScripture.text}&rdquo;
                                         </p>
                                         <p className="text-xs font-black uppercase tracking-[0.2em] text-primary text-right mt-4">— {activeScripture.verse}</p>
@@ -771,61 +812,42 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 </TabsContent>
             </Tabs>
 
-            {/* Drop Provision Dialog */}
-            <Dialog open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
-                <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                    <div className="p-8 border-b bg-muted/10">
-                        <DialogHeader className="text-left">
-                            <div className="flex items-center gap-2.5 mb-1.5 text-left">
-                                <Target className="h-4 w-4 text-primary" />
-                                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Supply Drop</span>
+            {/* Drop Provision Content (Responsive Dialog/Sheet) */}
+            {mounted && (
+                isMobile ? (
+                    <Sheet open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                                <SheetHeader className="text-left flex-shrink-0">
+                                    <div className="flex items-center gap-2.5 mb-1.5 text-left">
+                                        <Target className="h-4 w-4 text-primary" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Supply Drop</span>
+                                    </div>
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">
+                                        {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
+                                    </SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</SheetDescription>
+                                </SheetHeader>
                             </div>
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">
-                                {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
-                            </DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</DialogDescription>
-                        </DialogHeader>
-                    </div>
-                    <form onSubmit={handleCreateOrUpdateResource}>
-                        <div className="p-8 space-y-6 text-left">
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Type of Supply</Label>
-                                <Select name="type" defaultValue={resourceToEdit?.type || "Video"}>
-                                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
-                                        <SelectValue placeholder="Resource Type" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-none shadow-2xl">
-                                        <SelectItem value="Video" className="rounded-lg">Video / YouTube</SelectItem>
-                                        <SelectItem value="Article" className="rounded-lg">Article / Link</SelectItem>
-                                        <SelectItem value="Sermon" className="rounded-lg">Sermon / Audio</SelectItem>
-                                        <SelectItem value="Book" className="rounded-lg">Book Title / PDF</SelectItem>
-                                        <SelectItem value="Other" className="rounded-lg">Other</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                            {supplyForm}
+                        </SheetContent>
+                    </Sheet>
+                ) : (
+                    <Dialog open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
+                        <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[85vh]">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">
+                                        {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
+                                    </DialogTitle>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</DialogDescription>
+                                </DialogHeader>
                             </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</Label>
-                                <Input name="title" defaultValue={resourceToEdit?.title} placeholder="e.g. Breaking Chains Sermon" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label>
-                                <Textarea name="description" defaultValue={resourceToEdit?.description} placeholder="e.g. A powerful message on identity..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL / Link</Label>
-                                <Input name="url" defaultValue={resourceToEdit?.url} placeholder="https://..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
-                            </div>
-                        </div>
-                        <div className="p-8 bg-muted/5 border-t flex gap-3">
-                            <Button type="button" variant="outline" onClick={() => { setIsAddResourceOpen(false); setResourceToEdit(null); }} className="flex-1 h-12 rounded-xl font-bold">Cancel</Button>
-                            <Button type="submit" disabled={isSubmittingResource} className="flex-1 h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
-                                {isSubmittingResource && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {resourceToEdit ? 'SAVE CHANGES' : 'SHARE SUPPLY'}
-                            </Button>
-                        </div>
-                    </form>
-                </DialogContent>
-            </Dialog>
+                            {supplyForm}
+                        </DialogContent>
+                    </Dialog>
+                )
+            )}
             
             <footer className="text-center pt-12 border-t mt-12 px-8">
                 <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance">
@@ -835,4 +857,3 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         </div>
     );
 }
-
