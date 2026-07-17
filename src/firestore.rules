@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Permission refinement for testimony-prayer detachment - 2025-07-26T14:45:00Z
+    // Deployment trigger: Replicate prayer request deletion mechanism for testimony delete - 2025-07-26T16:15:00Z
     
     function isAuthenticated() {
       return request.auth != null;

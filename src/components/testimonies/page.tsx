@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Newspaper, HandHeart, Loader2, Trash2, Edit } from "lucide-react";
+import { Newspaper, HandHeart, Loader2, Trash2, Edit, Sparkles } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import { PrayerRequestCard } from "@/components/prayer/PrayerRequestCard";
@@ -266,15 +266,17 @@ export default function TestimoniesPage() {
     try {
         if (type === 'testimony') {
             await runTransaction(firestore, async (transaction) => {
+                // ALL DATA FETCHING HAPPENS AT THE BEGINNING
                 const testimonySnap = await transaction.get(docRef);
                 if (!testimonySnap.exists()) return;
-
                 const testimonyData = testimonySnap.data() as Testimony;
+
                 let prayerSnap = null;
                 if (testimonyData.answeredPrayerId) {
                     prayerSnap = await transaction.get(doc(firestore, 'prayerRequests', testimonyData.answeredPrayerId));
                 }
 
+                // ALL DELETIONS OR UPDATES HAPPEN AT THE END
                 transaction.delete(docRef);
 
                 if (prayerSnap && prayerSnap.exists()) {
@@ -320,7 +322,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen}
+      inert={isAnyModalOpen ? true : undefined}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
