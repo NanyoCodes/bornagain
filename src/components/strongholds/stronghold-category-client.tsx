@@ -120,6 +120,12 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "1 John 4:4", text: "The one who is in you is greater than the one who is in the world.", prayer: "Greater is He that is in me than any problem in the world. I am victorious! Amen." },
     { verse: "Isaiah 41:10", text: "So do not fear, for I am with you; do not be dismayed, for I am your God.", prayer: "I cast out fear today. You are my God, and You are holding my hand. Amen." },
     { verse: "1 Corinthians 15:57", text: "But thanks be to God, who gives us the victory through our Lord Jesus Christ.", prayer: "Thank You, Father, for the victory already won. I stand in triumph through Christ. Amen." },
+    { verse: "1 John 5:4", text: "For everyone born of God overcomes the world.", prayer: "My faith is the victory that has overcome the world. I am a child of God. Amen." },
+    { verse: "Luke 10:19", text: "I have given you authority... to overcome all the power of the enemy.", prayer: "I walk in the authority of Jesus today, stepping over every obstacle of the enemy. Amen." },
+    { verse: "Romans 5:20", text: "Where sin abounded, grace abounded much more.", prayer: "I am flooded with Your grace, Lord. It is greater than any struggle I face. Amen." },
+    { verse: "Isaiah 54:17", text: "No weapon forged against you will prevail.", prayer: "I stand under Your protection, Father. No scheme of the enemy can prosper against me. Amen." },
+    { verse: "Exodus 14:14", text: "The Lord will fight for you; you need only to be still.", prayer: "I choose to be still and trust in Your mighty hand, Lord. The victory is Yours. Amen." },
+    { verse: "Psalm 18:2", text: "The Lord is my rock, my fortress and my deliverer.", prayer: "You are my safety and my strength. I hide myself in You, my God. Amen." },
     { verse: "Psalm 34:17", text: "The righteous cry out, and the Lord hears them; he delivers them from all their troubles.", prayer: "I cry out to You, Lord, and I trust in Your deliverance. You are my rescuer. Amen." },
     { verse: "2 Corinthians 12:9", text: "My grace is sufficient for you, for my power is made perfect in weakness.", prayer: "I boast in my weakness so that Your power may rest on me. Your grace is all I need. Amen." },
     { verse: "Deuteronomy 31:6", text: "Be strong and courageous. Do not be afraid or terrified... for the Lord your God goes with you.", prayer: "I take courage today. I am never alone, for the Lord is my constant companion. Amen." }
@@ -810,5 +816,3 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         </div>
     );
 }
-
-```
