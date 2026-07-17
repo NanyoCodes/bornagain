@@ -89,7 +89,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
   // Live Author Profile Sync
-  const authorProfileRef = useMemo(() => testimony.authorId ? doc(firestore, 'users', testimony.authorId) : null, [firestore, testimony.authorId]);
+  const authorProfileRef = useMemo(() => testimony.authorId ? doc(firestore, 'users', String(testimony.authorId)) : null, [firestore, testimony.authorId]);
   const { data: authorProfile } = useDoc<UserProfile>(authorProfileRef);
 
   const isAuthor = user?.uid === testimony.authorId;

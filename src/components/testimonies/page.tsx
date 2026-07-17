@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Newspaper, HandHeart, Loader2, Trash2 } from "lucide-react";
+import { Newspaper, HandHeart, Loader2, Trash2, Edit } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import { PrayerRequestCard } from "@/components/prayer/PrayerRequestCard";
@@ -130,9 +130,9 @@ export default function TestimoniesPage() {
 
       testimonies.forEach(t => {
         const rawId = t.authorId;
-        // If authorId is not a string, or if it's an object with id/uid
-        if (typeof rawId !== 'string') {
-          const stringId = (rawId as any)?.id || (rawId as any)?.uid || (rawId as any)?.path?.split('/').pop();
+        // Check if authorId is an object or reference (common in legacy data)
+        if (typeof rawId !== 'string' && rawId) {
+          const stringId = (rawId as any).id || (rawId as any).uid || (rawId as any).path?.split('/').pop();
           if (stringId === user.uid) {
             batch.update(doc(firestore, 'testimonies', t.id), { authorId: String(stringId) });
             migrationCount++;
@@ -297,16 +297,15 @@ export default function TestimoniesPage() {
             title: `${type === 'testimony' ? 'Testimony' : 'Prayer Request'} Deleted`,
         });
         
-        setItemToDelete(null);
     } catch (error: any) {
         console.error("Deletion failed:", error);
-        setItemToDelete(null); // Clear item to avoid getting UI stuck
         const permissionError = new FirestorePermissionError({
           path: docRef.path,
           operation: 'delete',
         }, user);
         errorEmitter.emit('permission-error', permissionError);
     } finally {
+        setItemToDelete(null); // Ensure UI state is cleared to avoid freeze
         setIsDeleting(false);
     }
   };
@@ -317,7 +316,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen || undefined}
+      inert={isAnyModalOpen ? true : undefined}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">

@@ -170,7 +170,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     
     try {
       const testimonyData: any = {
-          // Explicitly store authorId as a string UID
+          // Store authorId as plain string UID for consistent security rule validation
           authorId: String(user.uid),
           authorFirstName: userProfile.firstName,
           authorLastName: userProfile.lastName,
@@ -330,4 +330,3 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
-
