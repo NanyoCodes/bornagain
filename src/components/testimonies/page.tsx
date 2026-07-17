@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Newspaper, HandHeart, Loader2 } from "lucide-react";
+import { Newspaper, HandHeart, Loader2, Trash2 } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import { PrayerRequestCard } from "@/components/prayer/PrayerRequestCard";
@@ -317,7 +317,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen ? "" : undefined}
+      inert={isAnyModalOpen ? true : undefined}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
@@ -385,7 +385,7 @@ export default function TestimoniesPage() {
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
                             <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
                             <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Your Altar of Praise</h3>
-                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance">
                             Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
                             </p>
                         </div>
@@ -412,7 +412,7 @@ export default function TestimoniesPage() {
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
                             <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
                             <h3 className="text-2xl font-black font-headline uppercase tracking-tight">United in Faith</h3>
-                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance">
                             No one should walk through a trial alone. Share your request with the global community.
                             </p>
                         </div>
@@ -436,7 +436,7 @@ export default function TestimoniesPage() {
               </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3 mt-6">
-              <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12">Cancel</AlertDialogCancel>
+              <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Confirm Deletion
@@ -453,8 +453,8 @@ export default function TestimoniesPage() {
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <SheetHeader className="text-left">
-                      <SheetTitle className="text-2xl font-black font-headline">Edit Testimony</SheetTitle>
-                      <SheetDescription className="text-sm">Update your shared story for the community.</SheetDescription>
+                      <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Testimony</SheetTitle>
+                      <SheetDescription className="text-sm font-medium mt-1">Update your shared story for the community.</SheetDescription>
                     </SheetHeader>
                   </div>
                   <ScrollArea className="flex-grow">
@@ -469,8 +469,8 @@ export default function TestimoniesPage() {
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <SheetHeader className="text-left">
-                      <SheetTitle className="text-2xl font-black font-headline">Edit Prayer Request</SheetTitle>
-                      <SheetDescription className="text-sm">Update your request for the Body of Christ.</SheetDescription>
+                      <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Prayer Request</SheetTitle>
+                      <SheetDescription className="text-sm font-medium mt-1">Update your request for the Body of Christ.</SheetDescription>
                     </SheetHeader>
                   </div>
                   <ScrollArea className="flex-grow">
@@ -485,8 +485,8 @@ export default function TestimoniesPage() {
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <SheetHeader className="text-left">
-                      <SheetTitle className="text-2xl font-black font-headline">{prayerToAnswer ? 'Record Miracle' : 'Share Testimony'}</SheetTitle>
-                      <SheetDescription className="text-sm font-medium">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others with what God has done."}</SheetDescription>
+                      <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{prayerToAnswer ? 'Record Miracle' : 'Share Testimony'}</SheetTitle>
+                      <SheetDescription className="text-sm font-medium mt-1">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others with what God has done."}</SheetDescription>
                     </SheetHeader>
                   </div>
                   <ScrollArea className="flex-grow">
@@ -501,8 +501,8 @@ export default function TestimoniesPage() {
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                     <SheetHeader className="text-left">
-                      <SheetTitle className="text-2xl font-black font-headline">Request Prayer</SheetTitle>
-                      <SheetDescription className="text-sm">Share your need with the global community.</SheetDescription>
+                      <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Request Prayer</SheetTitle>
+                      <SheetDescription className="text-sm font-medium mt-1">Share your need with the global community.</SheetDescription>
                     </SheetHeader>
                   </div>
                   <ScrollArea className="flex-grow">
@@ -519,8 +519,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-6 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline text-left">Edit Testimony</DialogTitle>
-                        <DialogDescription className="text-sm text-left">Make changes to your testimony here.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
@@ -535,8 +535,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-6 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline text-left">Edit Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm text-left">Update the details of your request.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
@@ -551,8 +551,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-6 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
-                        <DialogDescription className="text-sm text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
@@ -567,8 +567,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-6 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline text-left">Share Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm text-left">Share your request with the Body of Christ.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
@@ -585,4 +585,3 @@ export default function TestimoniesPage() {
     </div>
   );
 }
-
