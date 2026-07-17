@@ -347,8 +347,8 @@ export default function TestimoniesPage() {
                         {!loading && filteredTestimonies?.length === 0 && (
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
                             <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Your Altar of Praise</h3>
-                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-left">
+                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Your Altar of Praise</h3>
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
                             Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
                             </p>
                         </div>
@@ -374,8 +374,8 @@ export default function TestimoniesPage() {
                         {!loading && filteredPrayerRequests?.length === 0 && (
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
                             <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">United in Faith</h3>
-                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-left">
+                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight">United in Faith</h3>
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
                             No one should walk through a trial alone. Share your request with the global community.
                             </p>
                         </div>
@@ -393,8 +393,8 @@ export default function TestimoniesPage() {
       <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
           <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
           <AlertDialogHeader>
-              <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight text-left">Remove from Feed?</AlertDialogTitle>
-              <AlertDialogDescription className="text-sm font-medium text-left">
+              <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight">Remove from Feed?</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm font-medium">
               This will permanently delete this {itemToDelete?.type}. This action cannot be undone.
               </AlertDialogDescription>
           </AlertDialogHeader>
@@ -482,8 +482,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline text-left">Edit Testimony</DialogTitle>
-                        <DialogDescription className="text-sm text-left">Make changes to your testimony here.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline">Edit Testimony</DialogTitle>
+                        <DialogDescription className="text-sm">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
@@ -498,8 +498,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline text-left">Edit Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm text-left">Update the details of your request.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline">Edit Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm">Update the details of your request.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
@@ -514,8 +514,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
-                        <DialogDescription className="text-sm text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
+                        <DialogDescription className="text-sm">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
@@ -530,8 +530,8 @@ export default function TestimoniesPage() {
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                   <div className="p-6 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline text-left">Share Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm text-left">Share your request with the Body of Christ.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline">Share Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">

@@ -103,7 +103,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic text-left">No souls found in this age group.</p>
+        <p className="text-sm text-muted-foreground italic">No souls found in this age group.</p>
       </div>
     );
   }
@@ -121,7 +121,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
             <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
               <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0 text-left">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
                 <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
@@ -226,13 +226,13 @@ export default function SoulsWonPage() {
 
   const activeAgeGroupSouls = useMemo(() => {
     if (!selectedAgeGroup) return [];
-    const groupKey = selectedAgeGroup.toLowerCase().split(' ')[0];
-    if (groupKey.startsWith('children')) return ageGroups.children.list;
-    if (groupKey.startsWith('teens')) return ageGroups.teens.list;
-    if (groupKey.startsWith('young')) return ageGroups.youngAdults.list;
-    if (groupKey.startsWith('adults')) return ageGroups.adults.list;
-    if (groupKey.startsWith('seniors')) return ageGroups.seniors.list;
-    if (groupKey.startsWith('age')) return ageGroups.unknown.list;
+    const groupKey = selectedAgeGroup.toLowerCase();
+    if (groupKey.includes('children')) return ageGroups.children.list;
+    if (groupKey.includes('teens')) return ageGroups.teens.list;
+    if (groupKey.includes('young adults')) return ageGroups.youngAdults.list;
+    if (groupKey.includes('adults')) return ageGroups.adults.list;
+    if (groupKey.includes('seniors')) return ageGroups.seniors.list;
+    if (groupKey.includes('age not set')) return ageGroups.unknown.list;
     return [];
   }, [selectedAgeGroup, ageGroups]);
 

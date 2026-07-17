@@ -200,8 +200,8 @@ service cloud.firestore {
       allow update: if isAuthenticated() && ( 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
         (resource.data.authorId == request.auth.uid && request.resource.data.status in ['pending', 'answered']) ||
-        (resource.data.get('answeredTestimonyId', '') != '' && 
-         get(/databases/$(database)/documents/testimonies/$(resource.data.answeredTestimonyId)).data.authorId == request.auth.uid)
+        (data.get('answeredTestimonyId', '') != '' && 
+         get(/databases/$(database)/documents/testimonies/$(data.answeredTestimonyId)).data.authorId == request.auth.uid)
       );
     }
 
