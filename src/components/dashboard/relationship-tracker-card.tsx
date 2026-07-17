@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -93,7 +92,7 @@ function SoulSelectionList({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
@@ -137,7 +136,7 @@ function SoulSelectionList({
 }
 
 export function RelationshipTrackerCard() {
-  const { user, loading: userLoading } = useUser();
+  const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
@@ -339,7 +338,7 @@ export function RelationshipTrackerCard() {
     actionItems.find(a => a.id === selectedActionId)?.label || "Connect with", 
   [selectedActionId]);
 
-  if (userLoading || profileLoading || soulsLoading) {
+  if (authLoading || profileLoading || soulsLoading) {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
         <CardHeader className="p-4 sm:p-6 text-left">

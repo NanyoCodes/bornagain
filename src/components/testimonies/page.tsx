@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -60,7 +59,7 @@ export default function TestimoniesPage() {
   const [highlightedTestimonyId, setHighlightedTestimonyId] = React.useState<string | null>(null);
 
   const firestore = useFirestore();
-  const { user, loading: userLoading } = useUser();
+  const { user, loading: authLoading } = useUser();
   const { toast } = useToast();
   
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
@@ -101,7 +100,7 @@ export default function TestimoniesPage() {
 
   const { data: prayerRequests, loading: loadingPrayers } = useCollection<PrayerRequest>(prayerRequestsQuery);
 
-  const loading = userLoading || profileLoading || loadingTestimonies || loadingPrayers;
+  const loading = authLoading || profileLoading || loadingTestimonies || loadingPrayers;
 
   const [itemToDelete, setItemToDelete] = useState<{ type: 'testimony', data: Testimony } | { type: 'prayer', data: PrayerRequest } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);

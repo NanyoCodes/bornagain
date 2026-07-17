@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -50,9 +49,9 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import {
   Card,
@@ -267,7 +266,7 @@ export default function SoulsWonPage() {
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
-  const loading = userLoading || soulsLoading || profileLoading;
+  const loading = authLoading || soulsLoading || profileLoading;
 
   const handleOpenFollowUp = useCallback((soul: Soul) => setFollowUpSoulId(soul.id), []);
   const handleOpenHistory = useCallback((soul: Soul) => setHistorySoulId(soul.id), []);
