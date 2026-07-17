@@ -757,30 +757,30 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                     <div className="p-8 border-b bg-muted/10">
                         <DialogHeader>
-                            <div className="flex items-center gap-2.5 mb-1.5">
+                            <div className="flex items-center gap-2.5 mb-1.5 text-left">
                                 <Target className="h-4 w-4 text-primary" />
                                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Supply Drop</span>
                             </div>
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">
                                 {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                             </DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">Share a resource that fueled your victory.</DialogDescription>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</DialogDescription>
                         </DialogHeader>
                     </div>
                     <form onSubmit={handleCreateOrUpdateResource}>
-                        <div className="p-8 space-y-6">
+                        <div className="p-8 space-y-6 text-left">
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Type of Supply</Label>
                                 <Select name="type" defaultValue={resourceToEdit?.type || "Video"}>
-                                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                         <SelectValue placeholder="Resource Type" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-2xl">
-                                        <SelectItem value="Video">Video / YouTube</SelectItem>
-                                        <SelectItem value="Article">Article / Link</SelectItem>
-                                        <SelectItem value="Sermon">Sermon / Audio</SelectItem>
-                                        <SelectItem value="Book">Book Title / PDF</SelectItem>
-                                        <SelectItem value="Other">Other</SelectItem>
+                                    <SelectContent className="rounded-2xl border-none shadow-2xl">
+                                        <SelectItem value="Video" className="rounded-lg">Video / YouTube</SelectItem>
+                                        <SelectItem value="Article" className="rounded-lg">Article / Link</SelectItem>
+                                        <SelectItem value="Sermon" className="rounded-lg">Sermon / Audio</SelectItem>
+                                        <SelectItem value="Book" className="rounded-lg">Book Title / PDF</SelectItem>
+                                        <SelectItem value="Other" className="rounded-lg">Other</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>

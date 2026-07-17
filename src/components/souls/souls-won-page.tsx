@@ -102,7 +102,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic">No souls found in this age group.</p>
+        <p className="text-sm text-muted-foreground italic text-left">No souls found in this age group.</p>
       </div>
     );
   }
@@ -680,3 +680,5 @@ export function SoulsWonPage() {
     </div>
   );
 }
+
+export default SoulsWonPage;
