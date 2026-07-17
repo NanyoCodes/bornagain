@@ -121,7 +121,6 @@ export default function TestimoniesPage() {
     };
   }, [setIsSearchVisible, setSearchTerm]);
 
-  // Data Migration: Ensure authorId is always a string for the current user
   useEffect(() => {
     if (!firestore || !user || !testimonies || testimonies.length === 0) return;
     
@@ -131,7 +130,6 @@ export default function TestimoniesPage() {
 
       testimonies.forEach(t => {
         const rawId = t.authorId;
-        // If authorId is not a string, or it's an object that needs unwrapping
         if (typeof rawId !== 'string' && rawId) {
           const stringId = (rawId as any).id || (rawId as any).uid || (rawId as any).path?.split('/').pop();
           if (stringId === user.uid) {
@@ -152,7 +150,7 @@ export default function TestimoniesPage() {
     };
 
     runMigration();
-  }, [firestore, user, !!testimonies]);
+  }, [firestore, user, testimonies]);
 
   useEffect(() => {
     if (activeTab === 'testimonies') {
@@ -267,18 +265,17 @@ export default function TestimoniesPage() {
     
     try {
         if (type === 'testimony') {
-            const testimony = data as Testimony;
             await runTransaction(firestore, async (transaction) => {
-                const testimonyDoc = await transaction.get(docRef);
+                const testimonySnap = await transaction.get(docRef);
+                if (!testimonySnap.exists()) return;
+
+                const testimonyData = testimonySnap.data() as Testimony;
                 let prayerSnap = null;
-                
-                if (testimony.answeredPrayerId) {
-                    prayerSnap = await transaction.get(doc(firestore, 'prayerRequests', testimony.answeredPrayerId));
+                if (testimonyData.answeredPrayerId) {
+                    prayerSnap = await transaction.get(doc(firestore, 'prayerRequests', testimonyData.answeredPrayerId));
                 }
 
-                if (testimonyDoc.exists()) {
-                    transaction.delete(docRef);
-                }
+                transaction.delete(docRef);
 
                 if (prayerSnap && prayerSnap.exists()) {
                     transaction.update(prayerSnap.ref, {
@@ -287,7 +284,6 @@ export default function TestimoniesPage() {
                     });
                 }
             });
-
         } else {
             await deleteDoc(docRef);
         }
@@ -324,7 +320,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen ? true : undefined}
+      inert={isAnyModalOpen}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
