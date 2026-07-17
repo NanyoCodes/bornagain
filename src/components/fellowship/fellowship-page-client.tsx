@@ -468,7 +468,7 @@ export default function FellowshipPageClient() {
         const hasReacted = (type === 'amen' && hasAmened) || (type === 'inspired' && hasInspired) || (type === 'celebrate' && hasCelebrated);
         setIsProcessingReaction(type);
         
-        const devoRef = doc(firestore, 'fellowships', fellowshipId, 'devotionals', viewDateStr);
+        const devoRef = doc(firestore, 'fellowships', fellowship.id, 'devotionals', viewDateStr);
         const field = type === 'amen' ? 'supporters' : type === 'inspired' ? 'inspiredBy' : 'connectedBy';
         const updatePayload = { [field]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid) };
         
