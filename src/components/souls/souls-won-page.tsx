@@ -109,24 +109,24 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
   }
 
   return (
-    <div className="space-y-2 pb-4">
+    <div className="space-y-2 pb-4 text-left">
       {souls.map((soul) => {
         const wonAt = safeToDate(soul.wonAt);
         return (
           <Link 
             href={`/dashboard/souls-won#${soul.id}`} 
             key={soul.id} 
-            className="flex items-center gap-4 p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group"
+            className="flex items-center gap-4 p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group text-left"
           >
             <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
               <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
                 <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
               </div>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
                 Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
               </p>
             </div>
@@ -537,7 +537,7 @@ export default function SoulsWonPage() {
                     </Card>
                 </div>
 
-                <div className="px-4 sm:px-0">
+                <div className="px-4 sm:px-0 text-left">
                     <RelationshipCircleTracker 
                         souls={souls || []}
                         campaigns={campaigns}
@@ -570,7 +570,7 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <Sheet open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Harvest Demographic</span>
@@ -622,7 +622,7 @@ export default function SoulsWonPage() {
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
             <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                <AlertDialogHeader>
+                <AlertDialogHeader className="text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
@@ -646,7 +646,7 @@ export default function SoulsWonPage() {
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Log New Soul</SheetTitle><SheetDescription className="text-sm text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8">
+                            <ScrollArea className="flex-grow p-8 text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
                             </ScrollArea>
                         </SheetContent>
