@@ -15,7 +15,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -121,6 +120,7 @@ export default function TestimoniesPage() {
     };
   }, [setIsSearchVisible, setSearchTerm]);
 
+  // Automated migration for legacy object-based authorId fields
   useEffect(() => {
     if (!firestore || !user || !testimonies || testimonies.length === 0) return;
     
@@ -265,13 +265,18 @@ export default function TestimoniesPage() {
     try {
         if (type === 'testimony') {
             await runTransaction(firestore, async (transaction) => {
+                // RESTRICTION: All transaction reads must happen before any writes
                 const testimonySnap = await transaction.get(docRef);
                 if (!testimonySnap.exists()) return;
                 
                 const testimonyData = testimonySnap.data() as Testimony;
+                
+                let prayerRef = null;
                 if (testimonyData.answeredPrayerId) {
-                    const prayerRef = doc(firestore, 'prayerRequests', testimonyData.answeredPrayerId);
+                    prayerRef = doc(firestore, 'prayerRequests', testimonyData.answeredPrayerId);
                     const prayerSnap = await transaction.get(prayerRef);
+                    
+                    // Only detach if the prayer request still exists
                     if (prayerSnap.exists()) {
                         transaction.update(prayerRef, {
                             status: 'pending',
@@ -279,6 +284,8 @@ export default function TestimoniesPage() {
                         });
                     }
                 }
+                
+                // Perform deletion after all reads are completed
                 transaction.delete(docRef);
             });
         } else {
@@ -585,4 +592,3 @@ export default function TestimoniesPage() {
     </div>
   );
 }
-
