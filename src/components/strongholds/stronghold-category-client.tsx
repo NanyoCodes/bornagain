@@ -36,6 +36,7 @@ import {
     Zap,
     Quote,
     MoreVertical,
+    MoreHorizontal,
     Edit,
     Trash2,
     X,
@@ -338,7 +339,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         } catch (error) {
             toast({ variant: 'destructive', title: 'Action Failed' });
         } finally {
-            setIsSubmitting(false);
+            setIsSubmittingResource(false);
         }
     };
 
@@ -512,7 +513,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     return (
                                     <Card key={res.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all group">
                                         <CardContent className="p-4 flex items-center gap-4 relative">
-                                            <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                                            <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
                                                 {getResourceIcon(res.type)}
                                             </div>
                                             <div className="min-w-0 flex-1 text-left">
