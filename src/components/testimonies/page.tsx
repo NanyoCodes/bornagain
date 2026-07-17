@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Newspaper, HandHeart, Loader2, Trash2, Edit } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
@@ -49,7 +50,6 @@ import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form"
 import { EditPrayerRequestForm } from "@/components/prayer/EditPrayerRequestForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
-import Link from "next/link";
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -121,6 +121,7 @@ export default function TestimoniesPage() {
     };
   }, [setIsSearchVisible, setSearchTerm]);
 
+  // Data Migration: Ensure authorId is always a string for the current user
   useEffect(() => {
     if (!firestore || !user || !testimonies || testimonies.length === 0) return;
     
@@ -130,6 +131,7 @@ export default function TestimoniesPage() {
 
       testimonies.forEach(t => {
         const rawId = t.authorId;
+        // If authorId is not a string, or it's an object that needs unwrapping
         if (typeof rawId !== 'string' && rawId) {
           const stringId = (rawId as any).id || (rawId as any).uid || (rawId as any).path?.split('/').pop();
           if (stringId === user.uid) {
@@ -308,9 +310,6 @@ export default function TestimoniesPage() {
         setIsDeleting(false);
     }
   };
-
-  const testimonyFormContent = userProfile ? <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={handleTestimonyCreated} prayerRequest={prayerToAnswer} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
-  const prayerFormContent = userProfile ? <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
 
   return (
     <div 

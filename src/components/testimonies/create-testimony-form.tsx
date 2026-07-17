@@ -308,7 +308,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                   <X className="h-4 w-4" />
                 </Button>
                 <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-1.5">
-                   <Sparkles className="h-3.5 w-3.5 text-primary animate-pulse" />
+                   <Sparkles className="h-3 w-3 text-primary animate-pulse" />
                    <span className="text-[9px] font-black text-white uppercase tracking-widest">Optimized</span>
                 </div>
               </div>
