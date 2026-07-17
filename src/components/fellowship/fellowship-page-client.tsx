@@ -586,7 +586,9 @@ export default function FellowshipPageClient() {
         
         batch.set(chatDocRef, {
             participantIds,
-            participantInfo,
+            participantInfo: {
+                ...participantInfo
+            },
             fellowshipId: fellowshipId,
             campaignTitle: fellowship.name,
             lastUpdatedAt: serverTimestamp(),
@@ -652,11 +654,11 @@ export default function FellowshipPageClient() {
                                     isSelected ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20" : "bg-card hover:bg-muted/30 hover:border-primary/10"
                                 )}
                             >
-                                <div className="flex justify-between items-center mb-1">
+                                <div className="flex justify-between items-center mb-1 text-left">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-primary/70">{format(parseISO(devo.scheduledDate), 'EEEE, MMM d')}</span>
                                     {isSameDay(parseISO(devo.scheduledDate), new Date()) && <Badge className="bg-white text-primary h-4 px-1.5 font-black uppercase text-[7px] tracking-widest animate-pulse border-none">Today</Badge>}
                                 </div>
-                                <p className="font-bold text-sm truncate pr-6">{devo.title}</p>
+                                <p className="font-bold text-sm truncate pr-6 text-left">{devo.title}</p>
                                 <p className="text-[9px] text-muted-foreground mt-1 uppercase font-bold tracking-tighter italic text-left">Ref: {devo.scripture}</p>
                                 <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                             </button>
@@ -929,7 +931,7 @@ export default function FellowshipPageClient() {
 
             <AlertDialog open={!!soulToUnassign} onOpenChange={(open) => !open && setSoulToUnassign(null)}>
                 <AlertDialogContent className="rounded-3xl p-8">
-                  <AlertDialogHeader>
+                  <AlertDialogHeader className="text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline text-left">Unassign Convert?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium text-left">Remove {soulToUnassign?.firstName} from this shared list?</AlertDialogDescription>
                   </AlertDialogHeader>

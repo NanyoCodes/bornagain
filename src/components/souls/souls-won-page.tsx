@@ -412,8 +412,8 @@ export default function SoulsWonPage() {
 
                 {soulsWithPhotos.length > 0 && (
                     <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700">
-                        <div className="flex items-center justify-between mb-4 px-1">
-                            <div className="flex items-center gap-2 text-left">
+                        <div className="flex items-center justify-between mb-4 px-1 text-left">
+                            <div className="flex items-center gap-2">
                                 <ImageIcon className="h-4 w-4 text-primary" />
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">GALLERY OF MY SOULS</h3>
                             </div>
@@ -463,7 +463,7 @@ export default function SoulsWonPage() {
                                             </DialogTrigger>
                                             <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
                                                 <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
-                                                <div className="relative h-full w-full flex items-center justify-center p-4">
+                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
                                                     <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                                                         <Image 
                                                             src={s.photoURL!} 
@@ -495,7 +495,7 @@ export default function SoulsWonPage() {
                     </div>
                     <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
                         <CardContent className="p-6 sm:p-8 space-y-6 text-left">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                                 {[
                                     { label: 'Children (0-12)', count: ageGroups.children.count, color: 'bg-blue-500', icon: Sparkles },
                                     { label: 'Teens (13-19)', count: ageGroups.teens.count, color: 'bg-green-500', icon: Zap },
@@ -581,7 +581,7 @@ export default function SoulsWonPage() {
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow">
-                            <div className="p-8">
+                            <div className="p-8 text-left">
                                 <AgeGroupSoulList souls={activeAgeGroupSouls} />
                             </div>
                         </ScrollArea>
@@ -589,7 +589,7 @@ export default function SoulsWonPage() {
                 </Sheet>
             ) : (
                 <Dialog open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
-                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary" />
@@ -600,7 +600,7 @@ export default function SoulsWonPage() {
                                 <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this age group.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="max-h-[60vh]">
+                        <ScrollArea className="max-h-[60vh] text-left">
                             <div className="p-8">
                                 <AgeGroupSoulList souls={activeAgeGroupSouls} />
                             </div>
@@ -643,7 +643,7 @@ export default function SoulsWonPage() {
                 <>
                     <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Log New Soul</SheetTitle><SheetDescription className="text-sm text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8">
@@ -653,10 +653,10 @@ export default function SoulsWonPage() {
                     </Sheet>
                     <Sheet open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8">
+                            <ScrollArea className="flex-grow p-8 text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </SheetContent>
@@ -665,21 +665,21 @@ export default function SoulsWonPage() {
             ) : (
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline text-left">Log New Soul</DialogTitle><DialogDescription className="text-left">Record a new life won for Christ.</DialogDescription></DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
                             </ScrollArea>
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
-                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle><DialogDescription className="text-left">Update soul identity and mission details.</DialogDescription></DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DialogContent>
