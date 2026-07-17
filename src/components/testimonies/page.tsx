@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Newspaper, HandHeart, Loader2, Trash2, Edit, Sparkles } from "lucide-react";
+import { Newspaper, HandHeart, Loader2, Trash2, Edit } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import { PrayerRequestCard } from "@/components/prayer/PrayerRequestCard";
@@ -28,9 +28,9 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Testimony, PrayerRequest, UserProfile, AccountabilityRequest } from "@/lib/types";
@@ -119,7 +119,6 @@ export default function TestimoniesPage() {
     };
   }, [setIsSearchVisible, setSearchTerm]);
 
-  // Automated migration for legacy object-based authorId fields
   useEffect(() => {
     if (!firestore || !user || !testimonies || testimonies.length === 0) return;
     
