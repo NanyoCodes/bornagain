@@ -20,7 +20,8 @@ import {
     CloudRain,
     Eye,
     Cloud,
-    Globe
+    Globe,
+    BookOpen
 } from 'lucide-react';
 import { 
     Card, 
@@ -41,7 +42,7 @@ const strongholdCategories = [
     { 
         name: 'Pride', 
         desc: 'Overcoming the ego to embrace humility in Christ.', 
-        mission: 'Trading self-glory for the Glory of the Most High.',
+        mission: 'Proverbs 16:18 - Pride goes before destruction, a haughty spirit before a fall.',
         icon: Award, 
         color: 'text-amber-500', 
         bg: 'bg-amber-500/10' 
@@ -49,7 +50,7 @@ const strongholdCategories = [
     { 
         name: 'Lust', 
         desc: 'Mastering desires through the purity of the Spirit.', 
-        mission: 'Cultivating a heart that seeks holy connections.',
+        mission: 'Matthew 5:28 - But I tell you that anyone who looks at a woman lustfully has already committed adultery with her in his heart.',
         icon: Heart, 
         color: 'text-red-500', 
         bg: 'bg-red-500/10' 
@@ -57,7 +58,7 @@ const strongholdCategories = [
     { 
         name: 'Fear', 
         desc: 'Conquering anxiety with the perfect love of God.', 
-        mission: 'Living in the peace that surpasses understanding.',
+        mission: '2 Timothy 1:7 - For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.',
         icon: ShieldAlert, 
         color: 'text-blue-600', 
         bg: 'bg-blue-600/10' 
@@ -65,7 +66,7 @@ const strongholdCategories = [
     { 
         name: 'Unforgiveness', 
         desc: 'Releasing bitterness to find heart freedom.', 
-        mission: 'Forgiving as we have been forgiven by Christ.',
+        mission: 'Matthew 6:14 - For if you forgive other people when they sin against you, your heavenly Father will also forgive you.',
         icon: HeartOff, 
         color: 'text-rose-500', 
         bg: 'bg-rose-500/10' 
@@ -73,7 +74,7 @@ const strongholdCategories = [
     { 
         name: 'Anger', 
         desc: 'Restoring peace where bitterness once ruled.', 
-        mission: 'Finding the calm of the Spirit in every storm.',
+        mission: 'James 1:19 - Everyone should be quick to listen, slow to speak and slow to become angry.',
         icon: Flame, 
         color: 'text-orange-500', 
         bg: 'bg-orange-500/10' 
@@ -81,7 +82,7 @@ const strongholdCategories = [
     { 
         name: 'Addiction', 
         desc: 'Breaking chains and finding freedom in God\'s presence.', 
-        mission: 'Escaping the cycle through divine strength.',
+        mission: '1 Corinthians 6:12 - Everything is permissible for me, but I will not be mastered by anything.',
         icon: Zap, 
         color: 'text-blue-500', 
         bg: 'bg-blue-500/10' 
@@ -89,7 +90,7 @@ const strongholdCategories = [
     { 
         name: 'Laziness', 
         desc: 'Activating purpose and Kingdom diligence.', 
-        mission: 'Serving the Lord with a fervent and alert spirit.',
+        mission: 'Colossians 3:23 - Whatever you do, work at it with all your heart, as working for the Lord.',
         icon: Activity, 
         color: 'text-emerald-500', 
         bg: 'bg-emerald-500/10' 
@@ -97,15 +98,15 @@ const strongholdCategories = [
     { 
         name: 'Grief', 
         desc: 'Walking through loss into the comfort of God.', 
-        mission: 'Trading mourning for the oil of joy.',
+        mission: 'Psalm 34:18 - The Lord is close to the brokenhearted and saves those who are crushed in spirit.',
         icon: CloudRain, 
         color: 'text-indigo-600', 
         bg: 'bg-indigo-600/10' 
     },
     { 
         name: 'Comparison', 
-        desc: 'Breaking free from the trap of measuring your life against others.', 
-        mission: 'Finding security in your unique Kingdom purpose.',
+        desc: 'Finding security in your unique Kingdom purpose.', 
+        mission: '2 Corinthians 10:12 - When they measure themselves by themselves and compare themselves with themselves, they are not wise.',
         icon: Eye, 
         color: 'text-violet-500', 
         bg: 'bg-violet-500/10' 
@@ -113,7 +114,7 @@ const strongholdCategories = [
     { 
         name: 'Unbelief', 
         desc: 'Solidifying faith against the waves of doubt.', 
-        mission: 'Standing firm on the promises of the Living God.',
+        mission: 'Mark 9:24 - I do believe; help me overcome my unbelief!',
         icon: Sparkles, 
         color: 'text-indigo-500', 
         bg: 'bg-indigo-500/10' 
@@ -121,7 +122,7 @@ const strongholdCategories = [
     { 
         name: 'Depression', 
         desc: 'Lifting the weight of heaviness through spiritual light.', 
-        mission: 'Claiming the promise of hope in the darkest night.',
+        mission: 'Psalm 42:11 - Why, my soul, are you downcast? ... Put your hope in God.',
         icon: Cloud, 
         color: 'text-slate-600', 
         bg: 'bg-slate-600/10' 
@@ -129,7 +130,7 @@ const strongholdCategories = [
     { 
         name: 'Greed', 
         desc: 'Finding contentment in God\'s sufficient provision.', 
-        mission: 'Living a life of generosity and trust.',
+        mission: 'Luke 12:15 - Watch out! Be on your guard against all kinds of greed.',
         icon: Target, 
         color: 'text-green-500', 
         bg: 'bg-green-500/10' 
@@ -137,7 +138,7 @@ const strongholdCategories = [
     { 
         name: 'Worldliness', 
         desc: 'Prioritizing the eternal over the temporary.', 
-        mission: 'Seeking first the Kingdom and His righteousness.',
+        mission: '1 John 2:15 - Do not love the world or anything in the world.',
         icon: Globe, 
         color: 'text-emerald-600', 
         bg: 'bg-emerald-600/10' 
@@ -145,7 +146,7 @@ const strongholdCategories = [
     { 
         name: 'Jealousy', 
         desc: 'Rejoicing in the blessings of our brethren.', 
-        mission: 'Unity and love without comparison.',
+        mission: 'Proverbs 14:30 - A heart at peace gives life to the body, but envy rots the bones.',
         icon: Users, 
         color: 'text-purple-500', 
         bg: 'bg-purple-500/10' 
@@ -153,7 +154,7 @@ const strongholdCategories = [
     { 
         name: 'Other', 
         desc: 'A sanctuary for any area requiring spiritual breakthrough.', 
-        mission: 'Bringing all things into the Light of the Body.',
+        mission: 'Philippians 4:13 - I can do all this through him who gives me strength.',
         icon: ShieldCheck, 
         color: 'text-primary', 
         bg: 'bg-primary/10' 
@@ -181,7 +182,7 @@ function CategoryCard({ category }: { category: typeof strongholdCategories[0] }
                 </CardDescription>
             </CardHeader>
             <CardContent className="px-8 pb-8 flex-grow">
-                <div className="relative pl-6 border-l-4 border-primary/20 py-1 italic text-xs text-muted-foreground font-medium">
+                <div className="relative pl-6 border-l-4 border-primary/20 py-1 italic text-xs text-muted-foreground font-medium text-left">
                     <Quote className="absolute top-0 right-0 h-8 w-8 opacity-5 pointer-events-none" />
                     &ldquo;{category.mission}&rdquo;
                 </div>
@@ -230,8 +231,8 @@ export default function VictoryHubPage() {
                         <Lock className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1">Choice-Based Sanctuary</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance">
+                        <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left">Choice-Based Sanctuary</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance text-left">
                             Participation in Victory Circles offers <span className="text-foreground font-bold underline decoration-primary/30">choice-based anonymity</span>. You can choose to appear as yourself or post anonymously to ensure you can bring your struggles into the Light without fear, receiving support from the global body of Christ.
                         </p>
                     </div>

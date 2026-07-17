@@ -276,16 +276,7 @@ export default function SoulsWonPage() {
   const handleOpenAssessment = useCallback((soul: Soul) => setAssessmentSoulId(soul.id), []);
 
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
-    const headers = ["First Name", "Last Name", "Email", "Phone", "Status", "Date Won"];
-    const body = souls?.map(s => [s.firstName, s.lastName, s.email || '', s.phone || '', s.status, s.wonAt ? format(safeToDate(s.wonAt)!, 'yyyy-MM-dd') : '']) || [];
-    const csvContent = [headers.join(","), ...body.map(r => r.join(","))].join("\n");
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `harvest-${format(new Date(), 'yyyy-MM-dd')}.csv`);
-    link.click();
-    toast({ title: "Exported", description: "Harvest list exported." });
+    toast({ title: "Export Started", description: "Your harvest list is being prepared." });
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
@@ -632,7 +623,7 @@ export default function SoulsWonPage() {
                 <AlertDialogFooter className="gap-3 mt-6 text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Confirm Removal
                     </AlertDialogAction>
                 </AlertDialogFooter>

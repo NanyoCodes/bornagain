@@ -268,7 +268,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                   )}
                 </Button>
             </motion.div>
-            <Link href="/chats">
+            <Link href="/chats" prefetch={true}>
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                     <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
                       <MessagesSquare className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
@@ -280,7 +280,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                     </Button>
                 </motion.div>
             </Link>
-            <Link href="/notifications">
+            <Link href="/notifications" prefetch={true}>
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                     <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
                       <Bell className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
@@ -589,11 +589,11 @@ function PendingProvisionReminder() {
                         <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform">
                             {isMultiple ? <PlusCircle className="h-6 w-6 text-white" /> : <Icon className="h-6 w-6 text-white" />}
                         </div>
-                        <div className="min-w-0 flex-1">
+                        <div className="min-w-0 flex-1 text-left">
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5">
                                 {isMultiple ? `${provisions.length} Acts of Kindness` : 'Finish Provision'}
                             </p>
-                            <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight">
+                            <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight text-left">
                                 {isMultiple 
                                     ? `Click to view pending gifts` 
                                     : `Complete ${displayItem.actionId === 'shared_meal' ? 'meal' : 'gift'} for ${displayItem.soulName}`
@@ -946,7 +946,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const showBottomNav = !isTakeoverPage;
 
   return (
-    <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+    <SearchProvider>
+      <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
         <AnimatePresence>{showSplash && <SplashScreen onDismiss={handleDismissSplash} />}</AnimatePresence>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0">
             {!isTakeoverPage && (
@@ -1009,7 +1010,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                           <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
                           <AvatarFallback className="font-black bg-primary/10 text-primary">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0">
+                        <div className="min-w-0 text-left">
                           <p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{user?.displayName || 'User'}</p>
                           <p className="text-[10px] text-muted-foreground truncate font-medium">{user?.email}</p>
                         </div>
@@ -1020,7 +1021,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow">
-                    <div className="p-6 space-y-2">
+                    <div className="p-6 space-y-2 text-left">
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Identity</p>
                         <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <User className="h-6 w-6 text-primary" />
@@ -1110,9 +1111,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                     <div className="p-6 sm:p-8 space-y-10 text-left">
                         {cartItems.length > 0 ? (
                             <div className="space-y-10">
-                                <div className="space-y-6">
+                                <div className="space-y-6 text-left">
                                     {cartByVendor.map(group => (
-                                        <div key={group.vendorId} className="space-y-3">
+                                        <div key={group.vendorId} className="space-y-3 text-left">
                                             <div className="flex items-center justify-between px-1">
                                                 <div className="flex items-center gap-2 max-w-[60%]">
                                                     <Store className="h-3.5 w-3.5 text-primary shrink-0" />
@@ -1120,14 +1121,14 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                                 </div>
                                                 <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 shrink-0">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
                                             </div>
-                                            <div className="space-y-2">
+                                            <div className="space-y-2 text-left">
                                                 {group.items.map(c => (
                                                     <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group gap-3">
-                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                                                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div>
-                                                            <div className="min-w-0 flex-1">
-                                                                <p className="font-black text-sm uppercase tracking-tight truncate leading-tight">{c.item.name}</p>
-                                                                <p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
+                                                            <div className="min-w-0 flex-1 text-left">
+                                                                <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">{c.item.name}</p>
+                                                                <p className="text-[10px] font-bold text-primary uppercase text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-2 shrink-0">
@@ -1144,27 +1145,27 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
+                                <div className="space-y-6 text-left">
+                                    <div className="space-y-2 text-left">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label>
                                         <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                                     </div>
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 text-left">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label>
                                         <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" />
                                     </div>
                                 </div>
-                                <div className="space-y-4">
+                                <div className="space-y-4 text-left">
                                     <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label>
-                                    <div className="space-y-3">
+                                    <div className="space-y-3 text-left">
                                         {cartByVendor.map(v => (
-                                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden">
+                                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left">
                                                 <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity"><Store className="h-10 w-10 text-primary" /></div>
                                                 <div className="flex justify-between items-start mb-2">
                                                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p>
                                                     <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
                                                 </div>
-                                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p>
+                                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left">{v.paymentDetails || 'Contact provider for details.'}</p>
                                                 <Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button>
                                             </div>
                                         ))}
@@ -1197,20 +1198,19 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         
         {user && <PendingProvisionReminder />}
     </div>
+  </SearchProvider>
   );
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <SearchProvider>
-      <Suspense fallback={
-          <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
-              <Loader2 className="h-12 w-12 animate-spin text-primary" />
-              <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Kingdom Network Active</p>
-          </div>
-      }>
-          <ShellInner>{children}</ShellInner>
-      </Suspense>
-    </SearchProvider>
+    <Suspense fallback={
+        <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Kingdom Network Active</p>
+        </div>
+    }>
+        <ShellInner>{children}</ShellInner>
+    </Suspense>
   );
 }
