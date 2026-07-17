@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc, updateDoc, where, getDocs } from 'firebase/firestore';
 import type { UserProfile, Soul } from '@/lib/types';
@@ -530,72 +530,6 @@ export function RelationshipTrackerCard() {
                     />
                 </div>
             </DialogContent>
-        </Dialog>
-      )}
-
-      {isMobile ? (
-          <Sheet open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-              <SheetContent side="bottom" className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                      <SheetHeader className="text-left flex-shrink-0 text-left">
-                          <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Kindness</SheetTitle>
-                          <SheetDescription className="text-sm font-medium mt-1 text-left">How did you help {helpNeedTargetSoul?.firstName} today?</SheetDescription>
-                      </SheetHeader>
-                  </div>
-                  <div className="p-6 space-y-6 text-left">
-                      <div className="space-y-2 text-left">
-                          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
-                          <Textarea 
-                              placeholder="e.g., Provided groceries, assisted with transportation..." 
-                              className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base"
-                              id="help-note-mobile"
-                          />
-                      </div>
-                      <Button 
-                          onClick={() => {
-                              const el = document.getElementById('help-note-mobile') as HTMLTextAreaElement;
-                              handleHelpNeedConfirm(el.value);
-                          }} 
-                          disabled={togglingId !== null} 
-                          className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
-                      >
-                          {togglingId === 'helped_with_need' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          Log Act of Kindness
-                      </Button>
-                  </div>
-              </SheetContent>
-          </Sheet>
-      ) : (
-        <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-            <div className="p-8 border-b bg-muted/10 text-left">
-              <DialogHeader className="text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Kindness</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-left">How did you help {helpNeedTargetSoul?.firstName} today?</DialogDescription>
-              </DialogHeader>
-            </div>
-            <div className="p-8 space-y-6 text-left">
-                <div className="space-y-2 text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
-                    <Textarea 
-                        placeholder="e.g., Provided groceries, assisted with transportation..." 
-                        className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
-                        id="help-note-desktop"
-                    />
-                </div>
-                <Button 
-                    onClick={() => {
-                        const el = document.getElementById('help-note-desktop') as HTMLTextAreaElement;
-                        handleHelpNeedConfirm(el.value);
-                    }} 
-                    disabled={togglingId !== null} 
-                    className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
-                >
-                    {togglingId === 'helped_with_need' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Log Act of Kindness
-                </Button>
-            </div>
-          </DialogContent>
         </Dialog>
       )}
     </>

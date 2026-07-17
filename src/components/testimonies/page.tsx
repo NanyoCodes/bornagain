@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Newspaper, HandHeart, Loader2 } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
@@ -280,7 +280,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen ? true : undefined}
+      {...(isAnyModalOpen ? { inert: true } : {})}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
@@ -347,7 +347,7 @@ export default function TestimoniesPage() {
                         {!loading && filteredTestimonies?.length === 0 && (
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
                             <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight uppercase text-left">Your Altar of Praise</h3>
+                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Your Altar of Praise</h3>
                             <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-left">
                             Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
                             </p>
@@ -374,7 +374,7 @@ export default function TestimoniesPage() {
                         {!loading && filteredPrayerRequests?.length === 0 && (
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
                             <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
-                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight uppercase text-left">United in Faith</h3>
+                            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">United in Faith</h3>
                             <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-left">
                             No one should walk through a trial alone. Share your request with the global community.
                             </p>
