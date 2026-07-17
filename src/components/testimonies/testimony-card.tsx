@@ -3,14 +3,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -276,7 +268,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 </Dialog>
                 )}
                 <div className="min-w-0 flex-1 text-left">
-                <div className="flex items-center gap-2 flex-wrap text-left">
+                    <div className="flex items-center gap-2 flex-wrap text-left">
                         <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
                             <h3 className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize leading-none">{authorFullName}</h3>
                         </Link>
@@ -293,16 +285,16 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                                 </Tooltip>
                             </TooltipProvider>
                         )}
-                </div>
-                <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left">
-                    <div className="truncate text-[10px] sm:text-xs opacity-70">{displayDate}</div>
-                    <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
-                    <div className="mt-1.5">
-                        <Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">
-                            {testimony.category}
-                        </Badge>
                     </div>
-                </div>
+                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left">
+                        <div className="truncate text-[10px] sm:text-xs opacity-70">{displayDate}</div>
+                        <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
+                        <div className="mt-1.5 flex gap-2">
+                            <Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">
+                                {testimony.category}
+                            </Badge>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="flex items-center gap-1.5">
@@ -401,7 +393,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 {isProcessingReaction === 'connect' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <PartyPopper className={cn("h-3 w-3 sm:h-4 sm:w-4", hasConnected && "fill-current")} />}<span>Celebrate</span>
             </Button>
             <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
-                <div className="relative"><MessageSquare className={cn("h-3 w-3 sm:h-4 sm:w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm">{commentCount}</span>}</div><span>Comment</span>
+                <div className="relative flex flex-col items-center justify-center h-full"><MessageSquare className={cn("h-3 w-3 sm:h-4 sm:w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm">{commentCount}</span>}</div><span>Comment</span>
             </Button>
         </div>
       </div>

@@ -269,7 +269,6 @@ export default function TestimoniesPage() {
         if (type === 'testimony') {
             const testimony = data as Testimony;
             await runTransaction(firestore, async (transaction) => {
-                // 1. Perform all data fetching first (GET calls)
                 const testimonyDoc = await transaction.get(docRef);
                 let prayerSnap = null;
                 
@@ -277,7 +276,6 @@ export default function TestimoniesPage() {
                     prayerSnap = await transaction.get(doc(firestore, 'prayerRequests', testimony.answeredPrayerId));
                 }
 
-                // 2. Perform all deletions and updates last
                 if (testimonyDoc.exists()) {
                     transaction.delete(docRef);
                 }
@@ -310,6 +308,18 @@ export default function TestimoniesPage() {
         setIsDeleting(false);
     }
   };
+
+  const testimonyFormContent = userProfile ? (
+    <CreateTestimonyForm 
+      onTestimonyCreated={handleTestimonyCreated} 
+      userProfile={userProfile} 
+      prayerRequest={prayerToAnswer}
+    />
+  ) : null;
+
+  const prayerFormContent = (
+    <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} />
+  );
 
   return (
     <div 
@@ -545,7 +555,7 @@ export default function TestimoniesPage() {
               </Dialog>
 
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-6 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
@@ -561,7 +571,7 @@ export default function TestimoniesPage() {
               </Dialog>
 
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-6 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
