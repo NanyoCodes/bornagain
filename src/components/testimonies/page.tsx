@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -317,13 +316,13 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen ? true : undefined}
+      inert={isAnyModalOpen}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
             <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
-                <CardContent className="p-3 sm:p-6">
-                <div className="flex flex-row items-center gap-2 sm:gap-4 w-full">
+                <CardContent className="p-3 sm:p-6 text-left">
+                <div className="flex flex-row items-center gap-2 sm:gap-4 w-full text-left">
                     <Button 
                     variant="outline" 
                     className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
@@ -422,7 +421,7 @@ export default function TestimoniesPage() {
             </Tabs>
         </div>
 
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-4 text-left">
             <FeedSidebar mode="testimonies" />
         </div>
       </div>

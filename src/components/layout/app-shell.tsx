@@ -111,7 +111,7 @@ const navItems = [
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
-  { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
+  { href: "/dashboard/victory-hub", label: "Victory", icon: ShieldCheck, color: "text-primary" },
 ];
 
 const currencyOptions = [
@@ -409,12 +409,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
 function BottomNavBar() {
     const pathname = usePathname();
-    const filteredItems = navItems.filter(item => item.href !== "/dashboard/events");
     
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
         <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-3 py-1">
-          {filteredItems.map((item) => {
+          {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
               <Link
@@ -580,7 +579,7 @@ function PendingProvisionReminder() {
                 )}
             >
                 <Card 
-                    className="rounded-[2rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden group cursor-pointer"
+                    className="rounded-[2rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col group cursor-pointer"
                     onClick={() => isMultiple && setShowList(true)}
                 >
                     <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none">
@@ -642,7 +641,7 @@ function PendingProvisionReminder() {
         >
             <Card className="rounded-[2.5rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col max-h-[60vh]">
                 <CardHeader className="p-6 pb-2 border-b bg-muted/5 flex flex-row items-center justify-between shrink-0">
-                    <div className="space-y-0.5">
+                    <div className="space-y-0.5 text-left">
                         <CardTitle className="text-lg font-black font-headline uppercase tracking-tight">Kindness Tasks</CardTitle>
                         <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-primary">Pending acts for the harvest</CardDescription>
                     </div>
@@ -660,7 +659,7 @@ function PendingProvisionReminder() {
                                     <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
                                         <Icon className="h-5 w-5 text-primary" />
                                     </div>
-                                    <div className="min-w-0 flex-1">
+                                    <div className="min-w-0 flex-1 text-left">
                                         <p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{p.soulName}</p>
                                         <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
                                             {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
@@ -1108,7 +1107,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 overscroll-contain">
-                    <div className="p-6 sm:p-8 space-y-10">
+                    <div className="p-6 sm:p-8 space-y-10 text-left">
                         {cartItems.length > 0 ? (
                             <div className="space-y-10">
                                 <div className="space-y-6">
