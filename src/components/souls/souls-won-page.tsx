@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -76,7 +75,7 @@ import { cn, safeToDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { RelationshipCircleTracker } from "@/components/dashboard/stronghold-tracker";
+import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -371,7 +370,7 @@ export default function SoulsWonPage() {
                         <div className="flex flex-row items-center gap-2 sm:gap-3 text-left">
                             <Button 
                                 variant="outline" 
-                                className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
+                                className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
                                 onClick={() => setIsLogDialogOpen(true)}
                                 disabled={loading}
                             >
@@ -383,7 +382,7 @@ export default function SoulsWonPage() {
                                 <Button 
                                     variant="secondary" 
                                     size="icon" 
-                                    className="h-10 sm:h-11 w-10 sm:w-11 rounded-full shadow-lg text-left"
+                                    className="h-10 sm:h-12 w-10 sm:w-11 rounded-full shadow-lg text-left"
                                     onClick={() => setIsLogDialogOpen(true)}
                                     disabled={loading}
                                     title="Log Soul"
