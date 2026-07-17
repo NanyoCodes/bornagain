@@ -104,7 +104,7 @@ function SoulSelectionList({
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
-            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
+            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left">
                 <div className="p-2 space-y-1.5">
                     {filteredSouls.length > 0 ? (
                         filteredSouls.map(soul => (
@@ -116,11 +116,11 @@ function SoulSelectionList({
                                 disabled={isLoading}
                             >
                                 <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
-                                    <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                    <AvatarFallback className="font-bold bg-primary/5 text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="text-left min-w-0 flex-1">
-                                    <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
-                                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
+                                    <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p>
                                 </div>
                                 <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <PlusCircle className="h-4 w-4" />
@@ -349,11 +349,11 @@ export function RelationshipTrackerCard() {
   if (userLoading || profileLoading || soulsLoading) {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
-        <CardHeader className="p-4 sm:p-6">
+        <CardHeader className="p-4 sm:p-6 text-left">
           <Skeleton className="h-5 w-32 mb-2" />
           <Skeleton className="h-3 w-48" />
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6">
+        <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6 text-left">
           {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="h-20 w-full rounded-2xl" />
           ))}
@@ -369,9 +369,9 @@ export function RelationshipTrackerCard() {
           <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 min-h-[5.5rem]">
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
-              <div className="space-y-1">
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 min-h-[5.5rem] text-left">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
+              <div className="space-y-1 text-left">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
                       <Sparkles className="h-5 w-5 text-primary" />
                       KINGDOM SOULS FOLLOW-UP
@@ -388,9 +388,9 @@ export function RelationshipTrackerCard() {
           </div>
         </CardHeader>
 
-        <CardContent className="px-4 sm:px-6 pb-2 relative z-10">
+        <CardContent className="px-4 sm:px-6 pb-2 relative z-10 text-left">
           <LayoutGroup>
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 text-left">
                 {actionItems.map(action => {
                     const isPending = pendingActions.includes(action.id);
                     const isCompleted = completedToday.includes(action.id);
@@ -450,7 +450,7 @@ export function RelationshipTrackerCard() {
                                 
                                 <div className="space-y-0.5 min-w-0 w-full text-center px-1">
                                     <span className={cn(
-                                        "text-[9px] font-black uppercase tracking-tight block truncate",
+                                        "text-[9px] font-black uppercase tracking-tight block truncate text-center",
                                         isCompleted ? "text-primary" : "text-foreground"
                                     )}>
                                         {action.label}
@@ -474,7 +474,7 @@ export function RelationshipTrackerCard() {
                                     {buttonEl}
                                 </TooltipTrigger>
                                 <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
-                                    <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
+                                    <p className="text-[10px] font-bold uppercase text-primary text-left">Kingdom Action</p>
                                     <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left">{action.label}</p>
                                 </TooltipContent>
                             </Tooltip>
@@ -484,8 +484,8 @@ export function RelationshipTrackerCard() {
             </div>
           </LayoutGroup>
         </CardContent>
-        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5">
-              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm">
+        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
+              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm text-left">
                   <Link href="/dashboard/souls-won">
                       <UserPlus className="mr-2 h-4 w-4" />
                       MANAGE SOULS WON
@@ -500,13 +500,13 @@ export function RelationshipTrackerCard() {
       {isMobile ? (
         <Sheet open={isSoulDialogOpen} onOpenChange={setIsSoulDialogOpen}>
             <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                <div className="p-4 sm:p-8 border-b shrink-0 bg-muted/10">
+                <div className="p-4 sm:p-8 border-b shrink-0 bg-muted/10 text-left">
                     <SheetHeader className="text-left">
-                        <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Who did you {activeActionLabel.toLowerCase()}?</SheetTitle>
-                        <SheetDescription className="text-sm font-medium text-center">Select a convert to link this action to their record.</SheetDescription>
+                        <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {activeActionLabel.toLowerCase()}?</SheetTitle>
+                        <SheetDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <div className="flex-grow min-h-0 p-4 sm:p-6">
+                <div className="flex-grow min-h-0 p-4 sm:p-6 text-left">
                     <SoulSelectionList 
                         souls={souls} 
                         onSelect={handleSoulSelected} 
@@ -517,12 +517,12 @@ export function RelationshipTrackerCard() {
         </Sheet>
       ) : (
         <Dialog open={isSoulDialogOpen} onOpenChange={setIsSoulDialogOpen}>
-            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
-                <DialogHeader className="p-8 border-b bg-muted/10">
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                <DialogHeader className="p-8 border-b bg-muted/10 text-left">
                     <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {activeActionLabel.toLowerCase()}?</DialogTitle>
                     <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
                 </DialogHeader>
-                <div className="p-6">
+                <div className="p-6 text-left">
                     <SoulSelectionList 
                         souls={souls} 
                         onSelect={handleSoulSelected} 
@@ -536,15 +536,15 @@ export function RelationshipTrackerCard() {
       {isMobile ? (
           <Sheet open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
               <SheetContent side="bottom" className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                  <div className="p-8 border-b shrink-0 bg-muted/10">
-                      <SheetHeader className="text-left flex-shrink-0">
-                          <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Kindness</SheetTitle>
-                          <SheetDescription className="text-sm font-medium mt-1">How did you help {helpNeedTargetSoul?.firstName} today?</SheetDescription>
+                  <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                      <SheetHeader className="text-left flex-shrink-0 text-left">
+                          <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Kindness</SheetTitle>
+                          <SheetDescription className="text-sm font-medium mt-1 text-left">How did you help {helpNeedTargetSoul?.firstName} today?</SheetDescription>
                       </SheetHeader>
                   </div>
-                  <div className="p-6 space-y-6">
-                      <div className="space-y-2">
-                          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
+                  <div className="p-6 space-y-6 text-left">
+                      <div className="space-y-2 text-left">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
                           <Textarea 
                               placeholder="e.g., Provided groceries, assisted with transportation..." 
                               className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-base"
@@ -567,16 +567,16 @@ export function RelationshipTrackerCard() {
           </Sheet>
       ) : (
         <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
-            <div className="p-8 border-b bg-muted/10">
-              <DialogHeader>
+          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+            <div className="p-8 border-b bg-muted/10 text-left">
+              <DialogHeader className="text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Kindness</DialogTitle>
                 <DialogDescription className="text-sm font-medium text-left">How did you help {helpNeedTargetSoul?.firstName} today?</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-8 space-y-6">
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
+            <div className="p-8 space-y-6 text-left">
+                <div className="space-y-2 text-left">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
                     <Textarea 
                         placeholder="e.g., Provided groceries, assisted with transportation..." 
                         className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"

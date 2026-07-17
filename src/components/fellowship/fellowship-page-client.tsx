@@ -238,7 +238,7 @@ function FullDevotionalDialog({
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                 {devotional.title}
                             </SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left">Word for {format(parseISO(devotional.scheduledDate), 'PPPP')}</SheetDescription>
                         </SheetHeader>
                     </div>
                     <ScrollArea className="flex-grow">
@@ -276,7 +276,7 @@ function FullDevotionalDialog({
                     </div>
                 </ScrollArea>
                 <div className="p-6 border-t bg-muted/5 flex justify-end gap-3">
-                    <Button variant="outline" onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="rounded-full px-8 font-bold">Close Word</Button>
+                    <Button variant="outline" onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="rounded-full px-8 font-bold text-left">Close Word</Button>
                 </div>
             </DialogContent>
         </Dialog>
@@ -627,7 +627,7 @@ export default function FellowshipPageClient() {
                 <div className="h-20 w-20 bg-muted/20 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Users className="h-10 w-10 text-muted-foreground/30" />
                 </div>
-                <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Fellowship Not Found</h2>
+                <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Fellowship Not Found</h2>
                 <p className="text-muted-foreground mt-2 max-w-xs mx-auto text-sm text-left">This community may have moved or been disbanded by the organizer.</p>
                 <Button asChild variant="outline" className="mt-8 h-11 rounded-full font-bold px-8 text-left">
                     <NextLink href="/dashboard/fellowship">Return to directory</NextLink>
@@ -721,7 +721,7 @@ export default function FellowshipPageClient() {
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
-                                    <p className="text-[10px] font-bold uppercase">
+                                    <p className="text-[10px] font-bold uppercase text-left">
                                         {fellowship.hasGroupChat 
                                             ? "Open Group Chat" 
                                             : isOrganizer 
@@ -757,7 +757,7 @@ export default function FellowshipPageClient() {
                             </div>
                         </CardHeader>
                         <CardContent className="px-6 sm:p-10 pt-0 pb-8 sm:pb-12 space-y-8">
-                            {devoLoading ? <div className="py-20 flex flex-col items-center gap-4"><Loader2 className="h-10 w-10 animate-spin opacity-20" /><p className="text-[10px] font-black uppercase tracking-widest opacity-20">Accessing Records...</p></div> : activeDevotional ? (
+                            {devoLoading ? <div className="py-20 flex flex-col items-center gap-4"><Loader2 className="h-10 w-10 animate-spin opacity-20" /><p className="text-[10px] font-black uppercase tracking-widest opacity-20 text-left">Accessing Records...</p></div> : activeDevotional ? (
                                 <div className="space-y-8">
                                     <div className="bg-black/60 rounded-[2rem] p-6 sm:p-12 border border-white/20 relative shadow-2xl group overflow-hidden">
                                         <div className="absolute -top-6 -right-6 h-24 w-24 bg-white/5 rounded-full blur-2xl" />

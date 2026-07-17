@@ -413,7 +413,7 @@ export default function SoulsWonPage() {
                 {soulsWithPhotos.length > 0 && (
                     <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700">
                         <div className="flex items-center justify-between mb-4 px-1">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 text-left">
                                 <ImageIcon className="h-4 w-4 text-primary" />
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">GALLERY OF MY SOULS</h3>
                             </div>
@@ -449,7 +449,7 @@ export default function SoulsWonPage() {
                                                     />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                                                     <div className="absolute bottom-3 left-3 right-3 text-white text-left">
-                                                        <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight">
+                                                        <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight text-left">
                                                             {s.nickname || s.firstName}
                                                         </p>
                                                         <Badge className={cn(
@@ -483,8 +483,8 @@ export default function SoulsWonPage() {
                     </div>
                 )}
 
-                <div className="px-4 sm:px-0 space-y-4 text-left">
-                    <div className="flex items-center gap-3">
+                <div className="px-4 sm:px-0 space-y-4">
+                    <div className="flex items-center gap-3 text-left">
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
                             <BarChart3 className="h-5 w-5 text-primary" />
                         </div>
@@ -596,8 +596,8 @@ export default function SoulsWonPage() {
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedAgeGroup} Directory</DialogTitle>
-                                <DialogDescription className="text-sm font-medium">Viewing all souls within this age group.</DialogDescription>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedAgeGroup} Directory</DialogTitle>
+                                <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this age group.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="max-h-[60vh]">
@@ -623,14 +623,14 @@ export default function SoulsWonPage() {
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
             <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
                 <AlertDialogHeader>
-                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">Delete Record?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Confirm Removal
                     </AlertDialogAction>
@@ -667,7 +667,7 @@ export default function SoulsWonPage() {
                     <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline">Log New Soul</DialogTitle><DialogDescription>Record a new life won for Christ.</DialogDescription></DialogHeader>
+                                <DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline">Log New Soul</DialogTitle><DialogDescription className="text-left">Record a new life won for Christ.</DialogDescription></DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8">
                                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
@@ -677,7 +677,7 @@ export default function SoulsWonPage() {
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline">Edit Record</DialogTitle><DialogDescription>Update soul identity and mission details.</DialogDescription></DialogHeader>
+                                <DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline">Edit Record</DialogTitle><DialogDescription className="text-left">Update soul identity and mission details.</DialogDescription></DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
