@@ -39,7 +39,6 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { actionItems, prayerTemplates } from '@/lib/follow-up-data';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Dialog,
@@ -162,7 +161,7 @@ export function RelationshipTrackerCard() {
   
   const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
   const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
-  const [customPrayerText, setCustomPrayerText] = useState('');
+  const [customPrayerText, setCustomPrayerText] = React.useState('');
 
   const { userProfile, loading: profileLoading } = useUserProfile();
 

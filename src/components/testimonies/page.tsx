@@ -120,7 +120,6 @@ export default function TestimoniesPage() {
     };
   }, [setIsSearchVisible, setSearchTerm]);
 
-  // One-time Data Migration: Ensure authorId is saved as string for the current user
   useEffect(() => {
     if (!firestore || !user || !testimonies || testimonies.length === 0) return;
     
@@ -130,7 +129,6 @@ export default function TestimoniesPage() {
 
       testimonies.forEach(t => {
         const rawId = t.authorId;
-        // Check if authorId is an object or reference (common in legacy data)
         if (typeof rawId !== 'string' && rawId) {
           const stringId = (rawId as any).id || (rawId as any).uid || (rawId as any).path?.split('/').pop();
           if (stringId === user.uid) {
@@ -262,30 +260,30 @@ export default function TestimoniesPage() {
     setIsDeleting(true);
     
     const { type, data } = itemToDelete;
-    const collectionName = type === 'testimony' ? 'testimonies' : 'prayerRequests';
-    const docRef = doc(firestore, collectionName, data.id);
+    const docRef = doc(firestore, type === 'testimony' ? 'testimonies' : 'prayerRequests', data.id);
     
     try {
         if (type === 'testimony') {
-            const testimonyToDelete = data as Testimony;
-            
+            const testimony = data as Testimony;
             await runTransaction(firestore, async (transaction) => {
+                // 1. Perform all data fetching first (GET calls)
                 const testimonyDoc = await transaction.get(docRef);
-                if (!testimonyDoc.exists()) {
-                    return; // Already deleted
+                let prayerSnap = null;
+                
+                if (testimony.answeredPrayerId) {
+                    prayerSnap = await transaction.get(doc(firestore, 'prayerRequests', testimony.answeredPrayerId));
                 }
 
-                transaction.delete(docRef);
-                
-                if (testimonyToDelete.answeredPrayerId) {
-                    const prayerRef = doc(firestore, 'prayerRequests', testimonyToDelete.answeredPrayerId);
-                    const prayerSnap = await transaction.get(prayerRef);
-                    if (prayerSnap.exists()) {
-                        transaction.update(prayerRef, {
-                            status: 'pending',
-                            answeredTestimonyId: deleteField()
-                        });
-                    }
+                // 2. Perform all deletions and updates last
+                if (testimonyDoc.exists()) {
+                    transaction.delete(docRef);
+                }
+
+                if (prayerSnap && prayerSnap.exists()) {
+                    transaction.update(prayerSnap.ref, {
+                        status: 'pending',
+                        answeredTestimonyId: deleteField()
+                    });
                 }
             });
 
@@ -305,7 +303,7 @@ export default function TestimoniesPage() {
         }, user);
         errorEmitter.emit('permission-error', permissionError);
     } finally {
-        setItemToDelete(null); // Ensure UI state is cleared to avoid freeze
+        setItemToDelete(null);
         setIsDeleting(false);
     }
   };

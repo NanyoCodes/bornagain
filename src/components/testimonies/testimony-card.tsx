@@ -88,7 +88,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const [showFullPrayer, setShowFullPrayer] = React.useState(false);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
-  // Live Author Profile Sync
   const authorProfileRef = useMemo(() => testimony.authorId ? doc(firestore, 'users', String(testimony.authorId)) : null, [firestore, testimony.authorId]);
   const { data: authorProfile } = useDoc<UserProfile>(authorProfileRef);
 
@@ -298,7 +297,11 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left">
                     <div className="truncate text-[10px] sm:text-xs opacity-70">{displayDate}</div>
                     <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
-                    <div className="mt-1.5"><Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">{testimony.category}</Badge></div>
+                    <div className="mt-1.5">
+                        <Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">
+                            {testimony.category}
+                        </Badge>
+                    </div>
                 </div>
                 </div>
             </div>

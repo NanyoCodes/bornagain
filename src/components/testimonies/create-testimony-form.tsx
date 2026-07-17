@@ -106,12 +106,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         let fileToUpload: File | Blob = file;
         const sizeInMb = file.size / (1024 * 1024);
 
-        // Resize/Compress if > 5MB (for images)
         if (isImage && sizeInMb > 5) {
           fileToUpload = await compressImage(file);
-        } else if (isVideo && sizeInMb > 5) {
-          // Soft limit for videos due to client-side complexity
-          toast({ title: 'Large File Detected', description: 'Video is over 5MB. Processing for Kingdom optimization...' });
         }
 
         const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
@@ -170,7 +166,6 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     
     try {
       const testimonyData: any = {
-          // Store authorId as plain string UID for consistent security rule validation
           authorId: String(user.uid),
           authorFirstName: userProfile.firstName,
           authorLastName: userProfile.lastName,
@@ -330,3 +325,4 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     </div>
   );
 }
+
