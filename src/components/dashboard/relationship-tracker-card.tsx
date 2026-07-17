@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -92,7 +93,7 @@ function SoulSelectionList({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearchTerm(e.target.value)}
+                    onChange={e => setSearch(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
