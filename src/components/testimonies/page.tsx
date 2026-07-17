@@ -36,7 +36,7 @@ import type { Testimony, PrayerRequest, UserProfile, AccountabilityRequest } fro
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where } from "firebase/firestore";
+import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where, getDocs, writeBatch } from "firebase/firestore";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { haversineDistance, safeToDate } from "@/lib/utils";
@@ -47,6 +47,7 @@ import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form"
 import { EditPrayerRequestForm } from "@/components/prayer/EditPrayerRequestForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
+import Link from "next/link";
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -117,6 +118,38 @@ export default function TestimoniesPage() {
       setSearchTerm("");
     };
   }, [setIsSearchVisible, setSearchTerm]);
+
+  // One-time Data Migration: Ensure authorId is saved as string
+  useEffect(() => {
+    if (!firestore || !user || !testimonies || testimonies.length === 0) return;
+    
+    const runMigration = async () => {
+      const batch = writeBatch(firestore);
+      let migrationCount = 0;
+
+      testimonies.forEach(t => {
+        // If authorId is an object (reference) instead of string, extract ID
+        if (t.authorId && typeof t.authorId !== 'string') {
+          const legacyId = (t.authorId as any).id || (t.authorId as any).uid;
+          if (legacyId) {
+            batch.update(doc(firestore, 'testimonies', t.id), { authorId: String(legacyId) });
+            migrationCount++;
+          }
+        }
+      });
+
+      if (migrationCount > 0) {
+        try {
+          await batch.commit();
+          console.log(`Kingdom Archive Synced: Migrated ${migrationCount} legacy testimonies.`);
+        } catch (e) {
+          console.error("Migration failed:", e);
+        }
+      }
+    };
+
+    runMigration();
+  }, [firestore, user, !!testimonies]);
 
   useEffect(() => {
     if (activeTab === 'testimonies') {
@@ -280,7 +313,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen ? true : undefined}
+      inert={isAnyModalOpen ? "" : undefined}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">

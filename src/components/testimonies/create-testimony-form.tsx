@@ -169,7 +169,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     
     try {
       const testimonyData: any = {
-          authorId: user.uid,
+          // Explicitly store authorId as a string UID
+          authorId: String(user.uid),
           authorFirstName: userProfile.firstName,
           authorLastName: userProfile.lastName,
           authorAvatarUrl: userProfile.photoURL || null,
@@ -290,7 +291,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
                       <FileUp className="h-4 w-4 text-primary" />
                     </div>
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Select Image or Video</p>
-                    <p className="text-[9px] text-muted-foreground/60 mt-0.5 uppercase tracking-tighter">Files {'>'} 5MB are auto-resized</p>
+                    <p className="text-[8px] text-muted-foreground/60 mt-0.5 uppercase tracking-tighter">Files {'>'} 5MB are auto-resized</p>
                   </>
                 )}
               </div>
