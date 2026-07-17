@@ -67,7 +67,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
 import { format } from "date-fns";
-import { safeToDate } from "@/lib/utils";
+import { safeToDate, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
@@ -302,18 +302,18 @@ export function SoulsWonPage() {
     });
   };
 
-  const handleAssignGroup = (soul: Soul, groupId: string, groupType: 'Fellowship' | 'Association') => {
+  const handleAssignGroup = (soul: Soul, fellowshipId: string, groupType: 'Fellowship' | 'Association') => {
     if (!user || !firestore) return;
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
-    const selectedGroup = activeFellowships?.find(f => f.id === groupId);
+    const selectedGroup = activeFellowships?.find(f => f.id === fellowshipId);
     
     const updateData: { [key: string]: any } = {
         updatedAt: serverTimestamp(),
     };
 
-    if (groupId === 'none') {
+    if (fellowshipId === 'none') {
         if (groupType === 'Association') {
             updateData.associationId = deleteField();
             updateData.associationName = deleteField();
@@ -353,7 +353,7 @@ export function SoulsWonPage() {
   return (
     <div className="w-full max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-            <div className="lg:col-span-8 space-y-8 pb-32">
+            <div className="lg:col-span-8 space-y-8 pb-32 text-left">
                 <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0 text-left">
                     <CardContent className="p-3 sm:p-4 text-left">
                         <div className="flex flex-row items-center gap-2 sm:gap-3 text-left">

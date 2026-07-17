@@ -451,7 +451,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         </div>
 
                         <Card className="rounded-[1.5rem] sm:rounded-[2rem] border-2 border-dashed bg-muted/5 overflow-hidden">
-                            <CardHeader className="p-4 sm:p-6 pb-2">
+                            <CardHeader className="p-4 sm:p-6 pb-2 text-left">
                                 <Select value={selectedVerseIdx} onValueChange={setSelectedVerseIdx}>
                                     <SelectTrigger className="h-12 rounded-xl bg-background shadow-md border-primary/20 text-primary font-black uppercase tracking-widest text-xs">
                                         <SelectValue placeholder="Choose Armor" />
