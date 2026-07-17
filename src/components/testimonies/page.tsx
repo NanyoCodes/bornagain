@@ -264,18 +264,14 @@ export default function TestimoniesPage() {
     try {
         if (type === 'testimony') {
             await runTransaction(firestore, async (transaction) => {
-                // RESTRICTION: All transaction reads must happen before any writes
                 const testimonySnap = await transaction.get(docRef);
                 if (!testimonySnap.exists()) return;
                 
                 const testimonyData = testimonySnap.data() as Testimony;
                 
-                let prayerRef = null;
                 if (testimonyData.answeredPrayerId) {
-                    prayerRef = doc(firestore, 'prayerRequests', testimonyData.answeredPrayerId);
+                    const prayerRef = doc(firestore, 'prayerRequests', testimonyData.answeredPrayerId);
                     const prayerSnap = await transaction.get(prayerRef);
-                    
-                    // Only detach if the prayer request still exists
                     if (prayerSnap.exists()) {
                         transaction.update(prayerRef, {
                             status: 'pending',
@@ -283,8 +279,6 @@ export default function TestimoniesPage() {
                         });
                     }
                 }
-                
-                // Perform deletion after all reads are completed
                 transaction.delete(docRef);
             });
         } else {

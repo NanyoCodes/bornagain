@@ -77,7 +77,7 @@ function SoulSelectionList({
     onSelect: (soul: Soul) => void;
     isLoading: boolean;
 }) {
-    const [search, setSearch] = useState('');
+    const [search, setSearchTerm] = useState('');
     const filteredSouls = useMemo(() => {
         if (!souls) return [];
         if (!search) return souls;
