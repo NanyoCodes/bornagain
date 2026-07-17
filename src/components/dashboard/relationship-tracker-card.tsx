@@ -111,7 +111,7 @@ function SoulSelectionList({
                                     <AvatarFallback className="font-bold bg-primary/5 text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="text-left min-w-0 flex-1">
-                                    <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                                    <p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                                     <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p>
                                 </div>
                                 <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-left">
