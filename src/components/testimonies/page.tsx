@@ -129,12 +129,12 @@ export default function TestimoniesPage() {
       let migrationCount = 0;
 
       testimonies.forEach(t => {
-        // If authorId is an object (legacy reference) instead of string, extract ID
-        if (t.authorId && typeof t.authorId !== 'string') {
-          const legacyId = (t.authorId as any).id || (t.authorId as any).uid;
-          // We only attempt to migrate the current user's documents due to security rules
-          if (legacyId === user.uid) {
-            batch.update(doc(firestore, 'testimonies', t.id), { authorId: String(legacyId) });
+        const rawId = t.authorId;
+        // If authorId is not a string, or if it's an object with id/uid
+        if (typeof rawId !== 'string') {
+          const stringId = (rawId as any)?.id || (rawId as any)?.uid || (rawId as any)?.path?.split('/').pop();
+          if (stringId === user.uid) {
+            batch.update(doc(firestore, 'testimonies', t.id), { authorId: String(stringId) });
             migrationCount++;
           }
         }
@@ -317,7 +317,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen ? true : undefined}
+      inert={isAnyModalOpen || undefined}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">

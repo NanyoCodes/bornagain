@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -160,7 +161,7 @@ export function RelationshipTrackerCard() {
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
   
   const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
-  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
+  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
   const [customPrayerText, setCustomPrayerText] = useState('');
 
   const { userProfile, loading: profileLoading } = useUserProfile();
