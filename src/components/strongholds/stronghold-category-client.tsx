@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -705,7 +706,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                             <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold">
                                                                 <X className="mr-1 h-3 w-3" /> Cancel
                                                             </Button>
-                                                            <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px]">
+                                                            <Button size="sm" onClick={handleUpdatePost} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px]">
                                                                 {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3" />}
                                                                 Save Changes
                                                             </Button>

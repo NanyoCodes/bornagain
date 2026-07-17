@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -22,7 +23,9 @@ import {
   Award,
   ShieldCheck,
   Zap,
-  HeartHandshake
+  HeartHandshake,
+  ShieldAlert,
+  Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -173,7 +176,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Mission & Vision Section (Integrated from About Page) */}
+        {/* Mission & Vision Section */}
         <section className="py-16 sm:py-24 relative overflow-hidden bg-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16">
@@ -184,11 +187,11 @@ export default function LandingPage() {
                 className="space-y-8"
               >
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 text-left">
                     <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
                       <Globe className="h-5 w-5 text-primary" />
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight">Our Mission</h2>
+                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left">Our Mission</h2>
                   </div>
                   <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium text-pretty text-left">
                     Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD so that the kingdom of GOD will be built on Earth.
@@ -196,11 +199,11 @@ export default function LandingPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 text-left">
                     <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
                       <Sparkles className="h-5 w-5 text-primary" />
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight">Our Vision</h2>
+                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left">Our Vision</h2>
                   </div>
                   <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium text-pretty text-left">
                     Testify exists to help believers overcome sin, grow in Christ, and become living testimonies through the transforming power of God's Word and the Holy Spirit. We believe lasting discipline is born not merely from stronger willpower, but from deeper revelation of who God is and who we are in Christ.
@@ -214,11 +217,11 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 className="space-y-6"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 text-left">
                   <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
                     <Award className="h-5 w-5 text-primary" />
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight">Founder's Story</h2>
+                  <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left">Founder's Story</h2>
                 </div>
                 <Card className="rounded-[2.5rem] border-l-8 border-l-primary bg-muted/20 border-none shadow-sm relative overflow-hidden">
                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none">
@@ -306,6 +309,64 @@ export default function LandingPage() {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Victory Hub Highlight Section */}
+        <section className="py-16 sm:py-24 relative overflow-hidden bg-zinc-950 text-white">
+          <div className="absolute inset-0 z-0 opacity-10">
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 via-transparent to-transparent" />
+          </div>
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 items-center">
+              <div className="order-2 lg:order-1">
+                <div className="grid grid-cols-2 gap-4">
+                  <Card className="rounded-[2rem] bg-white/5 border-white/10 p-6 space-y-4 hover:bg-white/10 transition-colors">
+                    <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <ShieldCheck className="h-5 w-5 text-primary" />
+                    </div>
+                    <h3 className="font-black uppercase tracking-tight text-sm">Transparency</h3>
+                    <p className="text-xs text-white/60 leading-relaxed text-left">Bringing struggles into the Light breaks the power of isolation.</p>
+                  </Card>
+                  <Card className="rounded-[2rem] bg-white/5 border-white/10 p-6 space-y-4 hover:bg-white/10 transition-colors">
+                    <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <Lock className="h-5 w-5 text-primary" />
+                    </div>
+                    <h3 className="font-black uppercase tracking-tight text-sm">Sanctuary</h3>
+                    <p className="text-xs text-white/60 leading-relaxed text-left">A safe space for anonymous transparency and communal support.</p>
+                  </Card>
+                  <Card className="rounded-[2rem] bg-white/5 border-white/10 p-6 space-y-4 hover:bg-white/10 transition-colors">
+                    <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <Zap className="h-5 w-5 text-primary" />
+                    </div>
+                    <h3 className="font-black uppercase tracking-tight text-sm">Armor</h3>
+                    <p className="text-xs text-white/60 leading-relaxed text-left">Access specific scriptural weapons for every spiritual stronghold.</p>
+                  </Card>
+                  <Card className="rounded-[2rem] bg-white/5 border-white/10 p-6 space-y-4 hover:bg-white/10 transition-colors">
+                    <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <Users className="h-5 w-5 text-primary" />
+                    </div>
+                    <h3 className="font-black uppercase tracking-tight text-sm">Community</h3>
+                    <p className="text-xs text-white/60 leading-relaxed text-left">Receive guidance and battle supplies from the global Body.</p>
+                  </Card>
+                </div>
+              </div>
+              
+              <div className="space-y-8 text-center lg:text-left order-1 lg:order-2">
+                <div className="space-y-4">
+                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3 py-1">THE RECOVERY WING</Badge>
+                  <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance">The Victory <br className="hidden sm:block" />Hub</h2>
+                  <p className="text-white/70 text-base sm:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 font-medium text-left">
+                    We don't just share successes. The Victory Hub is a sanctuary for brethren to bring struggles into the Light and find lasting spiritual solutions.
+                  </p>
+                </div>
+                
+                <Button asChild size="lg" className="rounded-2xl font-black uppercase tracking-widest h-12 px-8 shadow-xl shadow-primary/20 w-full sm:w-auto">
+                  <Link href="/signup">Claim Your Victory</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </section>
