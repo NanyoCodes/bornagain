@@ -1,9 +1,8 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useDoc, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -116,7 +115,14 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "Mark 9:24", text: "I do believe; help me overcome my unbelief!", prayer: "Lord, I choose to trust You. Where my faith is weak, strengthen it by Your Spirit. Amen." }
   ],
   other: [
-    { verse: "Philippians 4:13", text: "I can do all this through him who gives me strength.", prayer: "Whatever I face today, I have the victory through Your power, Jesus. Amen." }
+    { verse: "Philippians 4:13", text: "I can do all this through him who gives me strength.", prayer: "Whatever I face today, I have the victory through Your power, Jesus. Amen." },
+    { verse: "Romans 8:37", text: "No, in all these things we are more than conquerors through him who loved us.", prayer: "I am more than a conqueror! I walk in the victory of Your love today. Amen." },
+    { verse: "1 John 4:4", text: "The one who is in you is greater than the one who is in the world.", prayer: "Greater is He that is in me than any problem in the world. I am victorious! Amen." },
+    { verse: "Isaiah 41:10", text: "So do not fear, for I am with you; do not be dismayed, for I am your God.", prayer: "I cast out fear today. You are my God, and You are holding my hand. Amen." },
+    { verse: "1 Corinthians 15:57", text: "But thanks be to God, who gives us the victory through our Lord Jesus Christ.", prayer: "Thank You, Father, for the victory already won. I stand in triumph through Christ. Amen." },
+    { verse: "Psalm 34:17", text: "The righteous cry out, and the Lord hears them; he delivers them from all their troubles.", prayer: "I cry out to You, Lord, and I trust in Your deliverance. You are my rescuer. Amen." },
+    { verse: "2 Corinthians 12:9", text: "My grace is sufficient for you, for my power is made perfect in weakness.", prayer: "I boast in my weakness so that Your power may rest on me. Your grace is all I need. Amen." },
+    { verse: "Deuteronomy 31:6", text: "Be strong and courageous. Do not be afraid or terrified... for the Lord your God goes with you.", prayer: "I take courage today. I am never alone, for the Lord is my constant companion. Amen." }
   ]
 };
 
@@ -804,3 +810,5 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         </div>
     );
 }
+
+```
