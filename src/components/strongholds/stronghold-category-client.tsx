@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -786,7 +785,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</Label>
+                                <Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1">Title</Label>
                                 <Input name="title" defaultValue={resourceToEdit?.title} placeholder="e.g. Breaking Chains Sermon" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
                             </div>
                             <div className="space-y-2">

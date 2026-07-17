@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -460,7 +459,7 @@ export function SoulsWonPage() {
                                                             src={s.photoURL!} 
                                                             alt={s.firstName} 
                                                             fill 
-                                                            className="object-contain shadow-2xl ring-4 ring-white/10 text-left" 
+                                                            className="object-contain shadow-2xl ring-4 ring-white/10" 
                                                             unoptimized 
                                                         />
                                                     </div>
@@ -518,7 +517,7 @@ export function SoulsWonPage() {
                                                     <span className="text-left">{group.label}</span>
                                                     <span className="text-left">{Math.round(percent)}%</span>
                                                 </div>
-                                                <Progress value={percent} className="h-1.5 bg-muted text-left" indicatorClassName={group.color} />
+                                                <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} />
                                             </div>
                                         </div>
                                     );

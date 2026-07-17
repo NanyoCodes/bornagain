@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -327,28 +326,28 @@ export default function LandingPage() {
                     <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center">
                       <ShieldCheck className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="font-black uppercase tracking-tight text-sm">Transparency</h3>
+                    <h3 className="font-black uppercase tracking-tight text-sm text-white">Transparency</h3>
                     <p className="text-xs text-white/60 leading-relaxed text-left">Bringing struggles into the Light breaks the power of isolation.</p>
                   </Card>
                   <Card className="rounded-[2rem] bg-white/5 border-white/10 p-6 space-y-4 hover:bg-white/10 transition-colors">
                     <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center">
                       <Lock className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="font-black uppercase tracking-tight text-sm">Sanctuary</h3>
+                    <h3 className="font-black uppercase tracking-tight text-sm text-white">Sanctuary</h3>
                     <p className="text-xs text-white/60 leading-relaxed text-left">A safe space for anonymous transparency and communal support.</p>
                   </Card>
                   <Card className="rounded-[2rem] bg-white/5 border-white/10 p-6 space-y-4 hover:bg-white/10 transition-colors">
                     <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center">
                       <Zap className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="font-black uppercase tracking-tight text-sm">Armor</h3>
+                    <h3 className="font-black uppercase tracking-tight text-sm text-white">Armor</h3>
                     <p className="text-xs text-white/60 leading-relaxed text-left">Access specific scriptural weapons for every spiritual stronghold.</p>
                   </Card>
                   <Card className="rounded-[2rem] bg-white/5 border-white/10 p-6 space-y-4 hover:bg-white/10 transition-colors">
                     <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center">
                       <Users className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="font-black uppercase tracking-tight text-sm">Community</h3>
+                    <h3 className="font-black uppercase tracking-tight text-sm text-white">Community</h3>
                     <p className="text-xs text-white/60 leading-relaxed text-left">Receive guidance and battle supplies from the global Body.</p>
                   </Card>
                 </div>
