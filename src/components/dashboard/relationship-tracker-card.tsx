@@ -28,7 +28,8 @@ import {
   Hourglass,
   ArrowRight,
   Send,
-  X
+  X,
+  HeartHandshake
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';

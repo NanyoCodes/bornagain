@@ -56,6 +56,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
@@ -65,7 +66,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { safeToDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -137,7 +137,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
   );
 }
 
-export default function SoulsWonPage() {
+export function SoulsWonPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
