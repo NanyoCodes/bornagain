@@ -265,17 +265,17 @@ export default function TestimoniesPage() {
     try {
         if (type === 'testimony') {
             await runTransaction(firestore, async (transaction) => {
-                // ALL DATA FETCHING HAPPENS AT THE BEGINNING
+                // RESTRICTION: ALL FETCHING HAPPENS AT THE BEGINNING
                 const testimonySnap = await transaction.get(docRef);
                 if (!testimonySnap.exists()) return;
+                
                 const testimonyData = testimonySnap.data() as Testimony;
-
                 let prayerSnap = null;
                 if (testimonyData.answeredPrayerId) {
                     prayerSnap = await transaction.get(doc(firestore, 'prayerRequests', testimonyData.answeredPrayerId));
                 }
 
-                // ALL DELETIONS OR UPDATES HAPPEN AT THE END
+                // RESTRICTION: ALL UPDATES HAPPEN AT THE END
                 transaction.delete(docRef);
 
                 if (prayerSnap && prayerSnap.exists()) {
@@ -301,6 +301,7 @@ export default function TestimoniesPage() {
         }, user);
         errorEmitter.emit('permission-error', permissionError);
     } finally {
+        // ESSENTIAL: Clear UI state always to avoid freeze
         setItemToDelete(null);
         setIsDeleting(false);
     }
@@ -323,7 +324,7 @@ export default function TestimoniesPage() {
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
       inert={isAnyModalOpen ? true : undefined}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
             <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden">
                 <CardContent className="p-3 sm:p-6">
@@ -432,16 +433,16 @@ export default function TestimoniesPage() {
       </div>
       
       <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-          <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
-          <AlertDialogHeader className="text-left">
-              <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight text-left">Remove from Feed?</AlertDialogTitle>
-              <AlertDialogDescription className="text-sm font-medium text-left">
+          <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
+          <AlertDialogHeader>
+              <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight">Remove from Feed?</AlertDialogTitle>
+              <AlertDialogDescription>
               This will permanently delete this {itemToDelete?.type}. This action cannot be undone.
               </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3 mt-6">
               <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
+              <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Confirm Deletion
               </AlertDialogAction>
@@ -520,15 +521,15 @@ export default function TestimoniesPage() {
           ) : (
             <>
               <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-6 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Make changes to your testimony here.</DialogDescription>
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+                  <div className="p-6 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Testimony</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
-                    <div className="p-6 text-left">
+                    <div className="p-6">
                         {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}
                     </div>
                   </ScrollArea>
@@ -536,15 +537,15 @@ export default function TestimoniesPage() {
               </Dialog>
 
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-6 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Update the details of your request.</DialogDescription>
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+                  <div className="p-6 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Edit Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">Update the details of your request.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
-                    <div className="p-6 text-left">
+                    <div className="p-6">
                         {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}
                     </div>
                   </ScrollArea>
@@ -552,15 +553,15 @@ export default function TestimoniesPage() {
               </Dialog>
 
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-6 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+                  <div className="p-6 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
-                    <div className="p-6 text-left">
+                    <div className="p-6">
                         {testimonyFormContent}
                     </div>
                   </ScrollArea>
@@ -568,15 +569,15 @@ export default function TestimoniesPage() {
               </Dialog>
 
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-6 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Share your request with the Body of Christ.</DialogDescription>
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
+                  <div className="p-6 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Share Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
                   <ScrollArea className="max-h-[70vh]">
-                    <div className="p-6 text-left">
+                    <div className="p-6">
                         {prayerFormContent}
                     </div>
                   </ScrollArea>

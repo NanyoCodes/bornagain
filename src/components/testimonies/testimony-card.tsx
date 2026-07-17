@@ -233,8 +233,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         testimony.answeredPrayerId && "border-l-4 border-l-amber-500"
       )}>
         <div className="p-4 sm:p-6 pb-2 text-left">
-          <div className="flex flex-row items-start justify-between gap-3 text-left">
-            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+          <div className="flex flex-row items-start justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
                 {testimony.isAnonymous ? (
                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
                         <AvatarFallback className="bg-primary/10 text-primary font-bold"><Users className="h-5 w-5" /></AvatarFallback>
@@ -250,7 +250,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                     </div>
                     </DialogTrigger>
                     {authorAvatarUrl && (
-                    <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
+                    <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
                         <DialogHeader className="sr-only"><DialogTitle>Profile photo of {authorFullName}</DialogTitle></DialogHeader>
                         <div className="relative h-full w-full flex items-center justify-center p-4">
                             <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
@@ -267,8 +267,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                     )}
                 </Dialog>
                 )}
-                <div className="min-w-0 flex-1 text-left">
-                    <div className="flex items-center gap-2 flex-wrap text-left">
+                <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
                         <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
                             <h3 className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize leading-none">{authorFullName}</h3>
                         </Link>
@@ -281,12 +281,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                                             {isRequestingPartner ? <Loader2 className="h-3 w-3 animate-spin" /> : hasPendingRequest ? <Hourglass className="h-3 w-3" /> : <UserPlus className="h-3 w-3" />}
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className={cn("text-[10px] uppercase font-black tracking-widest text-left")}>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p></TooltipContent>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className={cn("text-[10px] uppercase font-black tracking-widest")}>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         )}
                     </div>
-                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left">
+                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5">
                         <div className="truncate text-[10px] sm:text-xs opacity-70">{displayDate}</div>
                         <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
                         <div className="mt-1.5 flex gap-2">
@@ -344,10 +344,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({
           )}
 
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
-            <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden text-left">
+            <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden">
                 <div className="p-4">
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1 text-left">Answer to Prayer Request:</div>
-                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground text-left">
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">Answer to Prayer Request:</div>
+                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground">
                         <div className="line-clamp-2">
                            <div ref={prayerRef}>{testimony.answeredPrayerContent}</div>
                         </div>
@@ -387,7 +387,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 {isProcessingReaction === 'amen' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <HandHeart className={cn("h-3 w-3 sm:h-4 sm:w-4", hasAmened && "fill-current")} />}<span>Amen</span>
             </Button>
             <Button onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}>
-                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <Sparkles className={cn("h-3 w-3 sm:h-4 sm:w-4", hasInspired && "fill-current")} />}<span>Hallelujah</span>
+                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <Sparkles className={cn("h-3_3 sm:h-4 sm:w-4", hasInspired && "fill-current")} />}<span>Hallelujah</span>
             </Button>
             <Button onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasConnected && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}>
                 {isProcessingReaction === 'connect' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <PartyPopper className={cn("h-3 w-3 sm:h-4 sm:w-4", hasConnected && "fill-current")} />}<span>Celebrate</span>
@@ -404,42 +404,42 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <>
                     <Sheet open={showFullText} onOpenChange={setShowFullText}>
                         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Kingdom Testimony</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
-                            <div className="flex-grow min-h-0 pt-8 px-6 text-left">{fullTextContent}</div>
+                            <div className="p-8 border-b shrink-0 bg-muted/20"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline">Kingdom Testimony</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
+                            <div className="flex-grow min-h-0 pt-8 px-6">{fullTextContent}</div>
                         </SheetContent>
                     </Sheet>
                     <Sheet open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <SheetContent side="bottom" className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline uppercase text-amber-600">Answered Prayer</SheetTitle><SheetDescription className="text-sm font-medium mt-1 text-left">The specific request that God has fulfilled.</SheetDescription></SheetHeader></div>
+                            <div className="p-8 border-b shrink-0 bg-amber-500/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline uppercase text-amber-600">Answered Prayer</SheetTitle><SheetDescription className="text-sm font-medium mt-1">The specific request that God has fulfilled.</SheetDescription></SheetHeader></div>
                             <ScrollArea className="flex-grow px-8 py-10">
                                 {fullPrayerContent}
                             </ScrollArea>
                         </SheetContent>
                     </Sheet>
                     <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Responses</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left">GATHERED JOY FOR {authorFullName}</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0 text-left"><CommentSection testimonyId={testimony.id} /></div></SheetContent>
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]"><div className="p-8 border-b shrink-0 bg-muted/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Responses</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize">GATHERED JOY FOR {authorFullName}</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0"><CommentSection testimonyId={testimony.id} /></div></SheetContent>
                     </Sheet>
                 </>
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={showFullText => { setShowFullText(showFullText); if(!showFullText) setIsCommentsOpen(false); }}>
-                        <DialogContent className="sm:max-w-3xl rounded-3xl overflow-hidden p-0 text-left"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase text-left">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest capitalize text-left">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8">{fullTextContent}</div></DialogContent>
+                        <DialogContent className="sm:max-w-3xl rounded-3xl overflow-hidden p-0"><div className="p-8 border-b bg-muted/10"><DialogHeader><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest capitalize">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8">{fullTextContent}</div></DialogContent>
                     </Dialog>
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
-                             <div className="p-8 border-b bg-amber-500/10 text-left">
+                             <div className="p-8 border-b bg-amber-500/10">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-amber-600">Answered Prayer Request</DialogTitle>
-                                    <DialogDescription className="text-left">The original request shared with the body.</DialogDescription>
+                                    <DialogDescription>The original request shared with the body.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <div className="p-8 text-left">
+                            <div className="p-8">
                                 {fullPrayerContent}
                             </div>
                         </DialogContent>
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left"><DialogHeader><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Gathered Responses</DialogTitle><DialogDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription></DialogHeader></div><div className="flex-1 min-h-0 text-left"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl"><div className="p-8 border-b shrink-0 bg-muted/10"><DialogHeader><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Gathered Responses</DialogTitle><DialogDescription className="text-[10px] font-bold uppercase tracking-widest capitalize">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription></DialogHeader></div><div className="flex-1 min-h-0"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
                     </Dialog>
                 </>
             )}
