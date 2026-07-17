@@ -66,7 +66,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
-import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import { useCollection, useFirestore, useUser } from "@/firebase";
+import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -75,7 +76,7 @@ import { cn, safeToDate } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
+import { RelationshipCircleTracker } from "@/components/dashboard/stronghold-tracker";
 import Image from "next/image";
 import {
   DropdownMenu,
@@ -623,7 +624,7 @@ export default function SoulsWonPage() {
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
             <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                <AlertDialogHeader className="text-left">
+                <AlertDialogHeader>
                     <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
@@ -644,7 +645,7 @@ export default function SoulsWonPage() {
                 <>
                     <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Log New Soul</SheetTitle><SheetDescription className="text-sm text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
