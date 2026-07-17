@@ -40,6 +40,7 @@ import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { actionItems, prayerTemplates } from '@/lib/follow-up-data';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   Dialog,
   DialogContent,
