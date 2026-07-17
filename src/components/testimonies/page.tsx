@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -119,7 +120,7 @@ export default function TestimoniesPage() {
     };
   }, [setIsSearchVisible, setSearchTerm]);
 
-  // One-time Data Migration: Ensure authorId is saved as string
+  // One-time Data Migration: Ensure authorId is saved as string for the current user
   useEffect(() => {
     if (!firestore || !user || !testimonies || testimonies.length === 0) return;
     
@@ -128,10 +129,11 @@ export default function TestimoniesPage() {
       let migrationCount = 0;
 
       testimonies.forEach(t => {
-        // If authorId is an object (reference) instead of string, extract ID
+        // If authorId is an object (legacy reference) instead of string, extract ID
         if (t.authorId && typeof t.authorId !== 'string') {
           const legacyId = (t.authorId as any).id || (t.authorId as any).uid;
-          if (legacyId) {
+          // We only attempt to migrate the current user's documents due to security rules
+          if (legacyId === user.uid) {
             batch.update(doc(firestore, 'testimonies', t.id), { authorId: String(legacyId) });
             migrationCount++;
           }
@@ -297,6 +299,8 @@ export default function TestimoniesPage() {
         
         setItemToDelete(null);
     } catch (error: any) {
+        console.error("Deletion failed:", error);
+        setItemToDelete(null); // Clear item to avoid getting UI stuck
         const permissionError = new FirestorePermissionError({
           path: docRef.path,
           operation: 'delete',
@@ -581,3 +585,4 @@ export default function TestimoniesPage() {
     </div>
   );
 }
+
