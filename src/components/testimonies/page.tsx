@@ -36,7 +36,7 @@ import type { Testimony, PrayerRequest, UserProfile, AccountabilityRequest } fro
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where, getDoc } from "firebase/firestore";
+import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where } from "firebase/firestore";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { haversineDistance, safeToDate } from "@/lib/utils";
@@ -47,7 +47,6 @@ import { EditTestimonyForm } from "@/components/testimonies/edit-testimony-form"
 import { EditPrayerRequestForm } from "@/components/prayer/EditPrayerRequestForm";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
-import { cn } from "@/lib/utils";
 
 export default function TestimoniesPage() {
   const [isTestimonyDialogOpen, setIsTestimonyDialogOpen] = useState(false);
@@ -281,7 +280,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      {...(isAnyModalOpen ? { ["inert" as any]: true } : {})}
+      {...(isAnyModalOpen ? { inert: true } : {})}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">
@@ -363,7 +362,7 @@ export default function TestimoniesPage() {
                         [...Array(3)].map((_, i) => (
                             <Card key={i} className="flex flex-col h-full rounded-2xl border bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
                         ))
-                        ) : filteredPrayerRequests?.map((req) => (
+                        ) : prayerRequests && prayerRequests.map((req) => (
                         <PrayerRequestCard 
                             key={req.id}
                             prayerRequest={req}
@@ -372,7 +371,7 @@ export default function TestimoniesPage() {
                             onEdit={() => setPrayerToEdit(req)}
                         />
                         ))}
-                        {!loading && filteredPrayerRequests?.length === 0 && (
+                        {!loading && prayerRequests?.length === 0 && (
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
                             <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
                             <h3 className="text-2xl font-black font-headline uppercase tracking-tight">United in Faith</h3>

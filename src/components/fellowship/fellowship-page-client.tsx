@@ -46,7 +46,7 @@ import { LogSoulForm } from '@/components/souls/log-soul-form';
 import { CommentSection } from '../testimonies/comment-section';
 import NextLink from 'next/link';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '../ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -903,7 +903,7 @@ export default function FellowshipPageClient() {
                     <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                                <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline">Log Group Convert</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Record a new life won directly to this community.</SheetDescription></SheetHeader>
+                                <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Log Group Convert</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Record a new life won directly to this community.</SheetDescription></SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8">
                                 <LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultFellowship={fellowship?.groupType === 'Fellowship' ? fellowship : undefined} defaultAssociation={fellowship?.groupType === 'Association' ? fellowship : undefined} />

@@ -123,10 +123,10 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
             </Avatar>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                 <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
               </div>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
                 Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
               </p>
             </div>
@@ -256,11 +256,11 @@ export default function SoulsWonPage() {
     return allCampaignsData.filter(c => c.status === 'active');
   }, [allCampaignsData]);
   
-  const fellowshipsQuery = useMemo(() => {
+  const activeFellowshipsQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'fellowships'), where('status', '==', 'active'));
   }, [firestore]);
-  const { data: activeFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+  const { data: activeFellowships } = useCollection<Fellowship>(activeFellowshipsQuery);
 
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
