@@ -80,6 +80,7 @@ import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { CircleResource } from '@/lib/types';
 
 const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
@@ -406,304 +407,324 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 </div>
             </div>
 
-            <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-xl overflow-hidden bg-primary text-primary-foreground">
-                <CardContent className="p-8 sm:p-10 space-y-6">
-                    <div className="flex items-start gap-4 text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
-                            <ShieldCheck className="h-6 w-6 text-white" />
-                        </div>
-                        <div className="space-y-1">
-                            <h2 className="text-xl font-black uppercase tracking-tight leading-tight">Shared Transparency</h2>
-                            <p className="text-sm font-medium text-white/80 leading-relaxed text-balance">
-                                Bringing struggles into the Light of the Body reveals the path to victory. Share your story or strategy below.
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div className="space-y-4 pt-2">
-                        <Textarea 
-                            placeholder="Share your struggle or a victory strategy..."
-                            value={newPostText}
-                            onChange={(e) => setNewPostText(e.target.value)}
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[120px] rounded-2xl text-base focus-visible:ring-white/30"
-                        />
-                        <div className="flex items-center space-x-2 px-1">
-                            <Checkbox 
-                                id="anonymous-toggle" 
-                                checked={isAnonymous} 
-                                onCheckedChange={(val) => setIsAnonymous(!!val)}
-                                className="border-white/40 data-[state=checked]:bg-white data-[state=checked]:text-primary"
-                            />
-                            <Label htmlFor="anonymous-toggle" className="text-xs font-bold text-white/80 cursor-pointer uppercase tracking-widest">Post Anonymously</Label>
-                        </div>
-                        <Button 
-                            onClick={handleCreatePost} 
-                            disabled={isSubmitting || !newPostText.trim()}
-                            className="w-full h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-widest uppercase"
-                        >
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            SHARE IN THE LIGHT
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Armor of the Word - Dropdown Version */}
-            <section className="space-y-4 px-4 sm:px-0">
-                <div className="flex items-center gap-3 text-left">
-                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
-                        <BookOpen className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-black uppercase tracking-tight">Armor of the Word</h3>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Select your weapon</p>
-                    </div>
+            <Tabs defaultValue="discussions" className="w-full">
+                <div className="px-4 sm:px-0 mb-8">
+                    <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/40 p-1 rounded-2xl">
+                        <TabsTrigger value="word" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl flex items-center gap-2">
+                            <BookOpen className="h-3.5 w-3.5" /> Word
+                        </TabsTrigger>
+                        <TabsTrigger value="discussions" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl flex items-center gap-2">
+                            <MessageSquare className="h-3.5 w-3.5" /> Circle
+                        </TabsTrigger>
+                        <TabsTrigger value="supplies" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl flex items-center gap-2">
+                            <Library className="h-3.5 w-3.5" /> Supplies
+                        </TabsTrigger>
+                    </TabsList>
                 </div>
 
-                <Card className="rounded-[1.5rem] sm:rounded-[2rem] border-2 border-dashed bg-muted/5 overflow-hidden">
-                    <CardHeader className="p-4 sm:p-6 pb-2">
-                        <Select value={selectedVerseIdx} onValueChange={setSelectedVerseIdx}>
-                            <SelectTrigger className="h-12 rounded-xl bg-background shadow-md border-primary/20 text-primary font-black uppercase tracking-widest text-xs">
-                                <SelectValue placeholder="Choose Armor" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-none shadow-2xl">
-                                {scriptures.map((s, idx) => (
-                                    <SelectItem key={idx} value={idx.toString()} className="rounded-lg font-bold uppercase text-[10px] tracking-widest">
-                                        {s.verse}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </CardHeader>
-                    <CardContent className="p-4 sm:p-8 pt-4">
-                        <div className="space-y-6">
-                            <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group text-left">
-                                <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
-                                <p className="text-base sm:text-lg text-muted-foreground italic leading-relaxed text-balance">
-                                    &ldquo;{activeScripture.text}&rdquo;
-                                </p>
-                                <p className="text-xs font-black uppercase tracking-[0.2em] text-primary text-right mt-4">— {activeScripture.verse}</p>
+                <TabsContent value="word" className="space-y-6 outline-none">
+                    <section className="space-y-4 px-4 sm:px-0">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
+                                <BookOpen className="h-5 w-5 text-primary" />
                             </div>
-                            <div className="p-5 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20">
-                                <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 mb-2 text-left">
-                                    <HandHeart className="h-3 w-3" /> Victory Prayer
-                                </div>
-                                <p className="text-sm font-medium leading-relaxed text-foreground/70 italic text-left">
-                                    &ldquo;{activeScripture.prayer}&rdquo;
-                                </p>
-                                <div className="pt-4 flex justify-start">
-                                    <Button 
-                                        onClick={() => handleAmen(parseInt(selectedVerseIdx, 10))}
-                                        variant="outline" 
-                                        size="sm" 
-                                        className={cn(
-                                            "h-8 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest transition-all",
-                                            amenScriptureIdx === parseInt(selectedVerseIdx, 10) ? "bg-primary text-white border-none scale-105 shadow-lg" : "bg-background hover:bg-primary/5 text-primary/60 hover:text-primary"
-                                        )}
-                                    >
-                                        {amenScriptureIdx === parseInt(selectedVerseIdx, 10) ? <Check className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />}
-                                        AMEN
-                                    </Button>
-                                </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-lg font-black uppercase tracking-tight">Armor of the Word</h3>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Select your weapon</p>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
-            </section>
 
-            {/* Kingdom Provisions - Resources Box */}
-            <section className="space-y-6 px-4 sm:px-0">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3 text-left">
-                        <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner">
-                            <Library className="h-5 w-5 text-indigo-600" />
-                        </div>
-                        <div className="min-w-0">
-                            <h3 className="text-lg font-black uppercase tracking-tight">Kingdom Provisions</h3>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Shared battle supplies</p>
-                        </div>
-                    </div>
-                    <Button onClick={() => { setResourceToEdit(null); setIsAddResourceOpen(true); }} variant="outline" size="sm" className="h-9 rounded-xl font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm">
-                        <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> DROP PROVISION
-                    </Button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {resourcesLoading ? (
-                        <div className="col-span-full flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
-                    ) : resources && resources.length > 0 ? (
-                        resources.map(res => {
-                            const isResAuthor = user?.uid === res.authorId;
-                            return (
-                            <Card key={res.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all group">
-                                <CardContent className="p-4 flex items-center gap-4 relative">
-                                    <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                                        {getResourceIcon(res.type)}
+                        <Card className="rounded-[1.5rem] sm:rounded-[2rem] border-2 border-dashed bg-muted/5 overflow-hidden">
+                            <CardHeader className="p-4 sm:p-6 pb-2">
+                                <Select value={selectedVerseIdx} onValueChange={setSelectedVerseIdx}>
+                                    <SelectTrigger className="h-12 rounded-xl bg-background shadow-md border-primary/20 text-primary font-black uppercase tracking-widest text-xs">
+                                        <SelectValue placeholder="Choose Armor" />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-none shadow-2xl">
+                                        {scriptures.map((s, idx) => (
+                                            <SelectItem key={idx} value={idx.toString()} className="rounded-lg font-bold uppercase text-[10px] tracking-widest">
+                                                {s.verse}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </CardHeader>
+                            <CardContent className="p-4 sm:p-8 pt-4">
+                                <div className="space-y-6">
+                                    <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group text-left">
+                                        <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
+                                        <p className="text-base sm:text-lg text-muted-foreground italic leading-relaxed text-balance">
+                                            &ldquo;{activeScripture.text}&rdquo;
+                                        </p>
+                                        <p className="text-xs font-black uppercase tracking-[0.2em] text-primary text-right mt-4">— {activeScripture.verse}</p>
                                     </div>
-                                    <div className="min-w-0 flex-1 text-left">
-                                        <div className="flex items-center gap-2 mb-0.5">
-                                            <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50">{res.type}</Badge>
-                                            <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest truncate opacity-60">By {res.authorName}</span>
+                                    <div className="p-5 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20">
+                                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 mb-2 text-left">
+                                            <HandHeart className="h-3 w-3" /> Victory Prayer
                                         </div>
-                                        <h4 className="font-black text-xs uppercase tracking-tight truncate leading-tight mb-2">{res.title}</h4>
-                                        <Button asChild variant="ghost" size="sm" className="h-7 p-0 hover:bg-transparent hover:text-primary transition-colors text-[9px] font-black uppercase tracking-widest">
-                                            <a href={res.url} target="_blank" rel="noopener noreferrer">
-                                                GO TO RESOURCE <ExternalLink className="ml-1.5 h-3 w-3" />
-                                            </a>
-                                        </Button>
+                                        <p className="text-sm font-medium leading-relaxed text-foreground/70 italic text-left">
+                                            &ldquo;{activeScripture.prayer}&rdquo;
+                                        </p>
+                                        <div className="pt-4 flex justify-start">
+                                            <Button 
+                                                onClick={() => handleAmen(parseInt(selectedVerseIdx, 10))}
+                                                variant="outline" 
+                                                size="sm" 
+                                                className={cn(
+                                                    "h-8 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest transition-all",
+                                                    amenScriptureIdx === parseInt(selectedVerseIdx, 10) ? "bg-primary text-white border-none scale-105 shadow-lg" : "bg-background hover:bg-primary/5 text-primary/60 hover:text-primary"
+                                                )}
+                                            >
+                                                {amenScriptureIdx === parseInt(selectedVerseIdx, 10) ? <Check className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />}
+                                                AMEN
+                                            </Button>
+                                        </div>
                                     </div>
-                                    {isResAuthor && (
-                                        <div className="absolute top-2 right-2">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <MoreHorizontal className="h-3.5 w-3.5" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="rounded-xl">
-                                                    <DropdownMenuItem onClick={() => { setResourceToEdit(res); setIsAddResourceOpen(true); }} className="rounded-lg">
-                                                        <Edit className="mr-2 h-4 w-4 text-primary" /> Edit
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem onClick={() => handleDeleteResource(res.id)} className="text-destructive focus:text-destructive rounded-lg">
-                                                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        )})
-                    ) : (
-                        <div className="col-span-full text-center py-16 border-2 border-dashed rounded-[2rem] bg-muted/5">
-                            <p className="text-xs text-muted-foreground italic font-medium px-12">No provisions dropped yet. Share a sermon or article that helped you!</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </section>
+                </TabsContent>
+
+                <TabsContent value="supplies" className="space-y-6 outline-none">
+                    <section className="space-y-6 px-4 sm:px-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 text-left">
+                                <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner">
+                                    <Library className="h-5 w-5 text-indigo-600" />
+                                </div>
+                                <div className="min-w-0">
+                                    <h3 className="text-lg font-black uppercase tracking-tight">Kingdom Provisions</h3>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Shared battle supplies</p>
+                                </div>
+                            </div>
+                            <Button onClick={() => { setResourceToEdit(null); setIsAddResourceOpen(true); }} variant="outline" size="sm" className="h-9 rounded-xl font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm">
+                                <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> DROP PROVISION
+                            </Button>
                         </div>
-                    )}
-                </div>
-            </section>
 
-            <div className="space-y-6 px-4 sm:px-0">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner">
-                            <MessageSquare className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                        <h3 className="text-lg font-black uppercase tracking-tight">Circle Discussions</h3>
-                    </div>
-                    <div className="relative flex-1 max-w-sm">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
-                        <Input 
-                            placeholder="Search discussions..." 
-                            value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
-                            className="h-10 pl-9 rounded-xl bg-muted/20 border-none shadow-inner text-sm"
-                        />
-                    </div>
-                </div>
-
-                <div className="space-y-6">
-                    {loading ? (
-                        <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20" /></div>
-                    ) : filteredPosts && filteredPosts.length > 0 ? (
-                        filteredPosts.map((post: any) => {
-                            const postDate = safeToDate(post.createdAt);
-                            const isOwner = user?.uid === post.authorId;
-                            const isEditing = editingPostId === post.id;
-
-                            return (
-                                <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5">
-                                    <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between">
-                                        <div className="flex items-center gap-3 text-left">
-                                            <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner">
-                                                <Users className="h-5 w-5 text-muted-foreground/40" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {resourcesLoading ? (
+                                <div className="col-span-full flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
+                            ) : resources && resources.length > 0 ? (
+                                resources.map(res => {
+                                    const isResAuthor = user?.uid === res.authorId;
+                                    return (
+                                    <Card key={res.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all group">
+                                        <CardContent className="p-4 flex items-center gap-4 relative">
+                                            <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                                                {getResourceIcon(res.type)}
                                             </div>
-                                            <div className="min-w-0">
-                                                <p className="text-sm font-black uppercase tracking-tight">{post.authorName}</p>
-                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                                                    {postDate ? format(postDate, 'PPP') : 'Just now'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Badge variant="outline" className="h-5 text-[9px] font-black uppercase tracking-widest bg-background/50">{categoryTitle}</Badge>
-                                            {isOwner && !isEditing && (
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                                                            <MoreVertical className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="rounded-xl">
-                                                        <DropdownMenuItem onClick={() => { setEditingPostId(post.id); setEditingText(post.text); }} className="rounded-lg">
-                                                            <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Story
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg">
-                                                            <Trash2 className="mr-2 h-4 w-4" /> Remove from Circle
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            )}
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent className="p-6 pt-4">
-                                        {isEditing ? (
-                                            <div className="space-y-4">
-                                                <Textarea 
-                                                    value={editingText}
-                                                    onChange={(e) => setEditingText(e.target.value)}
-                                                    className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base"
-                                                    autoFocus
-                                                />
-                                                <div className="flex justify-end gap-2">
-                                                    <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold">
-                                                        <X className="mr-1 h-3 w-3" /> Cancel
-                                                    </Button>
-                                                    <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px]">
-                                                        {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3" />}
-                                                        Save Changes
-                                                    </Button>
+                                            <div className="min-w-0 flex-1 text-left">
+                                                <div className="flex items-center gap-2 mb-0.5">
+                                                    <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50">{res.type}</Badge>
+                                                    <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest truncate opacity-60">By {res.authorName}</span>
                                                 </div>
+                                                <h4 className="font-black text-xs uppercase tracking-tight truncate leading-tight mb-2">{res.title}</h4>
+                                                <Button asChild variant="ghost" size="sm" className="h-7 p-0 hover:bg-transparent hover:text-primary transition-colors text-[9px] font-black uppercase tracking-widest">
+                                                    <a href={res.url} target="_blank" rel="noopener noreferrer">
+                                                        GO TO RESOURCE <ExternalLink className="ml-1.5 h-3 w-3" />
+                                                    </a>
+                                                </Button>
                                             </div>
-                                        ) : (
-                                            <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                                <button className="w-full text-left outline-none group/post">
-                                                    <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left">
-                                                        <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
-                                                        <p className="text-base text-muted-foreground leading-relaxed italic font-medium">
-                                                            &ldquo;{post.text}&rdquo;
+                                            {isResAuthor && (
+                                                <div className="absolute top-2 right-2">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <MoreHorizontal className="h-3.5 w-3.5" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" className="rounded-xl">
+                                                            <DropdownMenuItem onClick={() => { setResourceToEdit(res); setIsAddResourceOpen(true); }} className="rounded-lg">
+                                                                <Edit className="mr-2 h-4 w-4 text-primary" /> Edit
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem onClick={() => handleDeleteResource(res.id)} className="text-destructive focus:text-destructive rounded-lg">
+                                                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                )})
+                            ) : (
+                                <div className="col-span-full text-center py-16 border-2 border-dashed rounded-[2rem] bg-muted/5">
+                                    <p className="text-xs text-muted-foreground italic font-medium px-12">No provisions dropped yet. Share a sermon or article that helped you!</p>
+                                </div>
+                            )}
+                        </div>
+                    </section>
+                </TabsContent>
+
+                <TabsContent value="discussions" className="space-y-8 outline-none">
+                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-xl overflow-hidden bg-primary text-primary-foreground mx-4 sm:mx-0">
+                        <CardContent className="p-8 sm:p-10 space-y-6">
+                            <div className="flex items-start gap-4 text-left">
+                                <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+                                    <ShieldCheck className="h-6 w-6 text-white" />
+                                </div>
+                                <div className="space-y-1">
+                                    <h2 className="text-xl font-black uppercase tracking-tight leading-tight">Bring it to Light</h2>
+                                    <p className="text-sm font-medium text-white/80 leading-relaxed text-balance">
+                                        Transparency in the body of Christ breaks the power of isolation. Share your struggle or victory below.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-4 pt-2">
+                                <Textarea 
+                                    placeholder="Share your struggle or a victory strategy..."
+                                    value={newPostText}
+                                    onChange={(e) => setNewPostText(e.target.value)}
+                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[120px] rounded-2xl text-base focus-visible:ring-white/30"
+                                />
+                                <div className="flex items-center space-x-2 px-1">
+                                    <Checkbox 
+                                        id="anonymous-toggle" 
+                                        checked={isAnonymous} 
+                                        onCheckedChange={(val) => setIsAnonymous(!!val)}
+                                        className="border-white/40 data-[state=checked]:bg-white data-[state=checked]:text-primary"
+                                    />
+                                    <Label htmlFor="anonymous-toggle" className="text-xs font-bold text-white/80 cursor-pointer uppercase tracking-widest">Post Anonymously</Label>
+                                </div>
+                                <Button 
+                                    onClick={handleCreatePost} 
+                                    disabled={isSubmitting || !newPostText.trim()}
+                                    className="w-full h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-widest uppercase"
+                                >
+                                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    SHARE IN THE LIGHT
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <div className="space-y-6 px-4 sm:px-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner">
+                                    <MessageSquare className="h-5 w-5 text-muted-foreground" />
+                                </div>
+                                <h3 className="text-lg font-black uppercase tracking-tight">Circle Discussions</h3>
+                            </div>
+                            <div className="relative flex-1 max-w-sm">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
+                                <Input 
+                                    placeholder="Search discussions..." 
+                                    value={searchTerm}
+                                    onChange={e => setSearchTerm(e.target.value)}
+                                    className="h-10 pl-9 rounded-xl bg-muted/20 border-none shadow-inner text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            {loading ? (
+                                <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20" /></div>
+                            ) : filteredPosts && filteredPosts.length > 0 ? (
+                                filteredPosts.map((post: any) => {
+                                    const postDate = safeToDate(post.createdAt);
+                                    const isOwner = user?.uid === post.authorId;
+                                    const isEditing = editingPostId === post.id;
+
+                                    return (
+                                        <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5">
+                                            <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between">
+                                                <div className="flex items-center gap-3 text-left">
+                                                    <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner">
+                                                        <Users className="h-5 w-5 text-muted-foreground/40" />
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-black uppercase tracking-tight">{post.authorName}</p>
+                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                                                            {postDate ? format(postDate, 'PPP') : 'Just now'}
                                                         </p>
                                                     </div>
-                                                </button>
-                                            </PostResponsesDialog>
-                                        )}
-                                    </CardContent>
-                                    <CardFooter className="p-3 bg-muted/5 flex justify-between items-center">
-                                         <div className="flex items-center gap-2 px-3">
-                                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Victory Support Active</span>
-                                         </div>
-                                         <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                            <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary">
-                                                Participate
-                                            </Button>
-                                         </PostResponsesDialog>
-                                    </CardFooter>
-                                </Card>
-                            );
-                        })
-                    ) : (
-                        <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0">
-                            <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
-                                <Sparkles className="h-10 w-10 text-muted-foreground opacity-10" />
-                            </div>
-                            <h4 className="text-xl font-black uppercase tracking-tight opacity-40">Circle Silence</h4>
-                            <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Badge variant="outline" className="h-5 text-[9px] font-black uppercase tracking-widest bg-background/50">{categoryTitle}</Badge>
+                                                    {isOwner && !isEditing && (
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                                                                    <MoreVertical className="h-4 w-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end" className="rounded-xl">
+                                                                <DropdownMenuItem onClick={() => { setEditingPostId(post.id); setEditingText(post.text); }} className="rounded-lg">
+                                                                    <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Story
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg">
+                                                                    <Trash2 className="mr-2 h-4 w-4" /> Remove from Circle
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    )}
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent className="p-6 pt-4">
+                                                {isEditing ? (
+                                                    <div className="space-y-4">
+                                                        <Textarea 
+                                                            value={editingText}
+                                                            onChange={(e) => setEditingText(e.target.value)}
+                                                            className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base"
+                                                            autoFocus
+                                                        />
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold">
+                                                                <X className="mr-1 h-3 w-3" /> Cancel
+                                                            </Button>
+                                                            <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px]">
+                                                                {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3" />}
+                                                                Save Changes
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
+                                                        <button className="w-full text-left outline-none group/post">
+                                                            <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left">
+                                                                <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
+                                                                <p className="text-base text-muted-foreground leading-relaxed italic font-medium">
+                                                                    &ldquo;{post.text}&rdquo;
+                                                                </p>
+                                                            </div>
+                                                        </button>
+                                                    </PostResponsesDialog>
+                                                )}
+                                            </CardContent>
+                                            <CardFooter className="p-3 bg-muted/5 flex justify-between items-center">
+                                                 <div className="flex items-center gap-2 px-3">
+                                                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                                                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Victory Support Active</span>
+                                                 </div>
+                                                 <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
+                                                    <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary">
+                                                        Participate
+                                                    </Button>
+                                                 </PostResponsesDialog>
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                })
+                            ) : (
+                                <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0">
+                                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+                                        <Sparkles className="h-10 w-10 text-muted-foreground opacity-10" />
+                                    </div>
+                                    <h4 className="text-xl font-black uppercase tracking-tight opacity-40">Circle Silence</h4>
+                                    <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
-            </div>
+                    </div>
+                </TabsContent>
+            </Tabs>
 
             {/* Drop Provision Dialog */}
             <Dialog open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
