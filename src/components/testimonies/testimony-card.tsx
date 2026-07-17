@@ -10,7 +10,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -235,12 +235,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({
 
   return (
     <>
-      <Card id={testimony.id} className={cn(
-        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-xl border-x-0 sm:border-x border-t-4 border-t-primary/20 border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm",
+      <div id={testimony.id} className={cn(
+        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-xl border border-border border-t-4 border-t-primary/20 border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm",
         isPartner && "ring-1 ring-primary/20",
         testimony.answeredPrayerId && "border-l-4 border-l-amber-500"
       )}>
-        <CardHeader className="p-4 sm:p-6 pb-2 text-left">
+        <div className="p-4 sm:p-6 pb-2 text-left">
           <div className="flex flex-row items-start justify-between gap-3 text-left">
             <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                 {testimony.isAnonymous ? (
@@ -278,7 +278,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <div className="min-w-0 flex-1 text-left">
                 <div className="flex items-center gap-2 flex-wrap text-left">
                         <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
-                            <CardTitle className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize">{authorFullName}</CardTitle>
+                            <h3 className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize leading-none">{authorFullName}</h3>
                         </Link>
                         {isPartner && <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20 shrink-0">Partner</Badge>}
                         {!isAuthor && !isPartner && currentUserProfile && (
@@ -317,9 +317,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 )}
             </div>
           </div>
-        </CardHeader>
+        </div>
         
-        <CardContent className="flex-grow pt-2 px-4 sm:px-6 space-y-4">
+        <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4">
           <div className="text-sm sm:text-base text-muted-foreground leading-relaxed text-left">
             <div className={cn("leading-relaxed capitalize", testimony.mediaUrl ? "line-clamp-3" : "line-clamp-6")}>
                 <div ref={contentRef}>{testimony.content}</div>
@@ -387,10 +387,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 {testimony.campaignTitle && <span className="text-[9px] font-black uppercase text-muted-foreground/60 truncate italic bg-muted/50 px-2 py-0.5 rounded-full border max-w-[150px]">RE: {testimony.campaignTitle}</span>}
              </div>
            )}
-        </CardContent>
+        </div>
 
         <Separator className="mx-4 sm:mx-6 w-auto opacity-50" />
-        <CardFooter className="py-2 sm:py-3 px-2 sm:px-6 grid grid-cols-4 gap-1 sm:gap-2">
+        <div className="py-2 sm:py-3 px-2 sm:px-6 grid grid-cols-4 gap-1 sm:gap-2">
             <Button onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasAmened && "text-primary hover:text-primary bg-primary/5")}>
                 {isProcessingReaction === 'amen' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <HandHeart className={cn("h-3 w-3 sm:h-4 sm:w-4", hasAmened && "fill-current")} />}<span>Amen</span>
             </Button>
@@ -403,8 +403,8 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
                 <div className="relative"><MessageSquare className={cn("h-3 w-3 sm:h-4 sm:w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm">{commentCount}</span>}</div><span>Comment</span>
             </Button>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
 
       {mounted && (
         <>

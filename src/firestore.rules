@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refined permission logic for testimony deletion and unlinking - 2025-07-26T14:30:00Z
+    // Deployment trigger: Permission refinement for testimony-prayer detachment - 2025-07-26T14:45:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -201,8 +201,8 @@ service cloud.firestore {
       allow update: if isAuthenticated() && ( 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
         (resource.data.authorId == request.auth.uid && request.resource.data.status in ['pending', 'answered']) ||
-        (data.get('answeredTestimonyId', '') != '' && 
-          get(/databases/$(database)/documents/testimonies/$(data.answeredTestimonyId)).data.authorId == request.auth.uid)
+        (resource.data.get('answeredTestimonyId', '') != '' && 
+          get(/databases/$(database)/documents/testimonies/$(resource.data.answeredTestimonyId)).data.authorId == request.auth.uid)
       );
     }
 
