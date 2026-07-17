@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -119,36 +118,6 @@ export default function TestimoniesPage() {
       setSearchTerm("");
     };
   }, [setIsSearchVisible, setSearchTerm]);
-
-  useEffect(() => {
-    if (!firestore || !user || !testimonies || testimonies.length === 0) return;
-    
-    const runMigration = async () => {
-      const batch = writeBatch(firestore);
-      let migrationCount = 0;
-
-      testimonies.forEach(t => {
-        const rawId = t.authorId;
-        if (typeof rawId !== 'string' && rawId) {
-          const stringId = (rawId as any).id || (rawId as any).uid || (rawId as any).path?.split('/').pop();
-          if (stringId === user.uid) {
-            batch.update(doc(firestore, 'testimonies', t.id), { authorId: String(stringId) });
-            migrationCount++;
-          }
-        }
-      });
-
-      if (migrationCount > 0) {
-        try {
-          await batch.commit();
-        } catch (e) {
-          console.error("Migration failed:", e);
-        }
-      }
-    };
-
-    runMigration();
-  }, [firestore, user, testimonies]);
 
   useEffect(() => {
     if (activeTab === 'testimonies') {
