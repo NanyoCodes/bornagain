@@ -171,8 +171,6 @@ export default function SoulsWonPage() {
     };
   }, [setIsSearchVisible, setSearchTerm, setSearchPlaceholder]);
 
-  const isAnyModalOpen = !!(followUpSoulId || historySoulId || assignSoulId || editSoulId || deleteSoulId || isLogDialogOpen || assessmentSoulId || selectedAgeGroup);
-
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));

@@ -584,7 +584,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 
   return (
     <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden">
-      <CardHeader className="p-8 border-b bg-muted/5">
+      <CardHeader className="p-8 border-b bg-muted/5 text-left">
         <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
             <Heart className="h-6 w-6 text-primary fill-current" />
             Harvest Dashboard

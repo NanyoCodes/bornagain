@@ -479,7 +479,7 @@ export function LogSoulForm({
 
         <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="optional-details" className="border-none">
-                <AccordionTrigger className="text-sm font-semibold py-4 hover:no-underline">Additional Details & Location</AccordionTrigger>
+                <AccordionTrigger className="text-sm font-semibold py-4 hover:no-underline text-left">Additional Details & Location</AccordionTrigger>
                 <AccordionContent>
                     <div className="space-y-6 pt-2">
                         <div className="space-y-4">

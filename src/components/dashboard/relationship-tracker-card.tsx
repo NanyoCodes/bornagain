@@ -219,15 +219,6 @@ export function RelationshipTrackerCard() {
       setIsSoulDialogOpen(true);
   };
 
-  const handleHelpNeedConfirm = async (note: string) => {
-    if (!helpNeedTargetSoul) return;
-    setTogglingId('helped_with_need');
-    await performLogging(helpNeedTargetSoul, 'helped_with_need', note);
-    setIsHelpNeedDialogOpen(false);
-    setHelpNeedTargetSoul(null);
-    setTogglingId(null);
-  };
-
   const performLogging = async (soul: Soul, actionId: string, customNote?: string) => {
       if (!user || !firestore) return;
 
@@ -323,6 +314,16 @@ export function RelationshipTrackerCard() {
           }, user);
           errorEmitter.emit('permission-error', permissionError);
       }
+  };
+
+  const handleHelpNeedConfirm = (note: string) => {
+    if (!helpNeedTargetSoul) return;
+    setTogglingId('helped_with_need');
+    performLogging(helpNeedTargetSoul, 'helped_with_need', note).finally(() => {
+        setIsHelpNeedDialogOpen(false);
+        setHelpNeedTargetSoul(null);
+        setTogglingId(null);
+    });
   };
 
   const handleSoulSelected = async (soul: Soul) => {
