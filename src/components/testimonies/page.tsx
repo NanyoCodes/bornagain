@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
@@ -116,7 +117,6 @@ function TestimoniesContent() {
     setMounted(true);
     setIsSearchVisible(true);
     
-    // Support direct linking to prayers tab
     const initialTab = searchParams?.get('tab');
     if (initialTab === 'prayers') {
         setActiveTab('prayers');
@@ -526,7 +526,7 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
+                <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-8 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>

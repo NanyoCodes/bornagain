@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -98,7 +99,7 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
   ],
   poverty: [
     { verse: "2 Corinthians 8:9", text: "For you know the grace of our Lord Jesus Christ, that though he was rich, yet for your sake he became poor, so that you through his poverty might become rich.", prayer: "Lord Jesus, I thank You for Your sacrifice. I break the mindset of lack and declare that through Your poverty, I have been made rich in grace and provision. Amen." },
-    { verse: "Philippians 4:19", text: "And my God will meet all your needs according to the riches of his glory in Christ Jesus.", prayer: "Father, I trust in Your limitless resources. You are my source and my provider. I believe every need is met today. Amen." },
+    { verse: "Philippians 4:13", text: "And my God will meet all your needs according to the riches of his glory in Christ Jesus.", prayer: "Father, I trust in Your limitless resources. You are my source and my provider. I believe every need is met today. Amen." },
     { verse: "Psalm 37:25", text: "I was young and now I am old, yet I have never seen the righteous forsaken or their children begging bread.", prayer: "Thank You, Lord, for Your faithfulness. I am the righteous in Christ, and I declare that I and my house shall never lack bread. Amen." }
   ],
   other: [

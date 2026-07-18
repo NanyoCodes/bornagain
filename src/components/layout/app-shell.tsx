@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -416,8 +417,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
 function BottomNavBar() {
     const pathname = usePathname();
-    
-    // Optimized bottom navigation for mobile: Remove Partners to prevent crowding
     const mobileNavItems = navItems.filter(item => item.href !== '/accountability');
     
     return (
@@ -1014,139 +1013,139 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                    <div className="flex items-center gap-3 mb-4">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <div className="flex items-center gap-3 mb-4 text-left">
                         <Avatar className="h-12 w-12 border-2 border-primary/20">
                           <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
                           <AvatarFallback className="font-black bg-primary/10 text-primary">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 text-left">
-                          <p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{user?.displayName || 'User'}</p>
-                          <p className="text-[10px] text-muted-foreground truncate font-medium">{user?.email}</p>
+                          <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{user?.displayName || 'User'}</p>
+                          <p className="text-[10px] text-muted-foreground truncate font-medium text-left">{user?.email}</p>
                         </div>
                     </div>
                     <SheetHeader className="text-left flex-shrink-0">
-                      <SheetTitle className="text-xl font-black font-headline uppercase tracking-tight">Kingdom Hub</SheetTitle>
-                      <SheetDescription className="text-[10px] font-bold uppercase tracking-widest text-primary">Mission Navigation</SheetDescription>
+                      <SheetTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">Kingdom Hub</SheetTitle>
+                      <SheetDescription className="text-[10px] font-bold uppercase tracking-widest text-primary text-left">Mission Navigation</SheetDescription>
                     </SheetHeader>
                 </div>
-                <ScrollArea className="flex-grow">
+                <ScrollArea className="flex-grow text-left">
                     <div className="p-6 space-y-2 text-left">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Identity</p>
-                        <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">My Identity</p>
+                        <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <User className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Profile</span>
                         </Link>
-                        <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <Settings className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Settings</span>
                         </Link>
-                        <Link href="/accountability" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <Link href="/accountability" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <HeartHandshake className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Partners</span>
                         </Link>
                         
                         <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Core Sectors</p>
                         {navItems.filter(item => item.href !== '/dashboard/victory-hub' && item.href !== '/accountability').map((item) => (
-                          <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                             <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", item.color)} />
                             <span className="font-black uppercase tracking-widest text-sm">{item.label}</span>
                           </Link>
                         ))}
 
                         <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Recovery & Provision</p>
-                        <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Recovery & Provision</p>
+                        <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <ShieldCheck className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Victory Hub</span>
                         </Link>
-                        <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <Store className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Meals Center</span>
                         </Link>
-                        <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <Gift className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Kindness Center</span>
                         </Link>
-                        <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <Package className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Order Tracker</span>
                         </Link>
 
                         <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Study Tools</p>
-                        <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Study Tools</p>
+                        <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <BookOpen className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Bible Reader</span>
                         </Link>
-                        <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <Edit className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Journal</span>
                         </Link>
 
                         <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
-                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Resources</p>
+                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <BookMarked className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">App Guide</span>
                         </Link>
-                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <BookOpen className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Resources</span>
                         </Link>
 
                         <Separator className="my-6 opacity-50" />
-                        <button onClick={() => { signOut(getAuth()).then(() => router.push("/login")); setIsMenuOpen(false); }} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive">
+                        <button onClick={() => { signOut(getAuth()).then(() => router.push("/login")); setIsMenuOpen(false); }} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive text-left">
                           <LogOut className="h-6 w-6" />
                           <span className="font-black uppercase tracking-widest text-sm">Logout</span>
                         </button>
                     </div>
                 </ScrollArea>
-                <div className="p-8 border-t bg-muted/5 flex-shrink-0">
+                <div className="p-8 border-t bg-muted/5 flex-shrink-0 text-left">
                     <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40 text-left">Testify Global • Mobilizing the Body</p>
                 </div>
             </SheetContent>
         </Sheet>
 
         <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                <div className="p-6 sm:p-8 border-b flex-shrink-0 bg-muted/10">
-                    <div className="flex items-center gap-2 mb-2">
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <div className="p-6 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <div className="flex items-center gap-2 mb-2 text-left">
                         <ShoppingCart className="h-4 w-4 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Provision</span>
                     </div>
                     <SheetHeader className="text-left flex-shrink-0">
-                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight">Kindness Package</SheetTitle>
-                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1">Review your selections for the harvest.</SheetDescription>
+                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-left">Kindness Package</SheetTitle>
+                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Review your selections for the harvest.</SheetDescription>
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left">
                     <div className="p-6 sm:p-8 space-y-10 text-left">
                         {cartItems.length > 0 ? (
-                            <div className="space-y-10">
+                            <div className="space-y-10 text-left">
                                 <div className="space-y-6 text-left">
                                     {cartByVendor.map(group => (
                                         <div key={group.vendorId} className="space-y-3 text-left">
-                                            <div className="flex items-center justify-between px-1">
-                                                <div className="flex items-center gap-2 max-w-[60%]">
+                                            <div className="flex items-center justify-between px-1 text-left">
+                                                <div className="flex items-center gap-2 max-w-[60%] text-left">
                                                     <Store className="h-3.5 w-3.5 text-primary shrink-0" />
-                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate">{group.vendorName}</h4>
+                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate text-left">{group.vendorName}</h4>
                                                 </div>
-                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 shrink-0">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
+                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 shrink-0 text-left">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
                                             </div>
                                             <div className="space-y-2 text-left">
                                                 {group.items.map(c => (
                                                     <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group gap-3 text-left">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div>
+                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div>
                                                             <div className="min-w-0 flex-1 text-left">
                                                                 <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">{c.item.name}</p>
                                                                 <p className="text-[10px] font-bold text-primary uppercase text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center gap-2 shrink-0">
-                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm">
+                                                        <div className="flex items-center gap-2 shrink-0 text-left">
+                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left">
                                                                 <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
                                                                 <span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span>
                                                                 <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
@@ -1170,14 +1169,14 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                     </div>
                                 </div>
                                 <div className="space-y-4 text-left">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label>
                                     <div className="space-y-3 text-left">
                                         {cartByVendor.map(v => (
                                             <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left">
-                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity"><Store className="h-10 w-10 text-primary" /></div>
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p>
-                                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
+                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left"><Store className="h-10 w-10 text-primary" /></div>
+                                                <div className="flex justify-between items-start mb-2 text-left">
+                                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Pay to: {v.vendorName}</p>
+                                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
                                                 </div>
                                                 <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left">{v.paymentDetails || 'Contact provider for details.'}</p>
                                                 <Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button>
@@ -1187,10 +1186,10 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                 </div>
                             </div>
                         ) : (
-                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center">
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left">
                                 <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4" />
-                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed">Add items to place an order and bless the Body of Christ.</p>
+                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3>
+                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-left text-center">Add items to place an order and bless the Body of Christ.</p>
                                 <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
                                     <Link href="/dashboard/marketplace">GIVE PROVISION</Link>
                                 </Button>
@@ -1200,8 +1199,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                     </div>
                 </ScrollArea>
                 {cartItems.length > 0 && (
-                    <SheetFooter className="p-6 sm:p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
-                        <Button onClick={handleGiftItems} disabled={isProcessingOrder || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
+                    <SheetFooter className="p-6 sm:p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left">
+                        <Button onClick={handleGiftItems} disabled={isProcessingOrder || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left">
                             {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             DISPATCH OFFERINGS
                         </Button>
