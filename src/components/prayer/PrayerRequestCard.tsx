@@ -153,7 +153,9 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
 
   return (
     <>
-      <Card className="flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-[2rem] border-x sm:border border-border border-t-4 border-t-amber-500/20 shadow-none bg-card/50 backdrop-blur-sm">
+      <div className={cn(
+        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-[2rem] border-x sm:border border-border border-t-4 border-t-amber-500/20 shadow-none bg-card/50 backdrop-blur-sm"
+      )}>
         <CardHeader className="flex flex-row items-start justify-between gap-4 p-4 sm:p-6">
             <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                 {prayerRequest.isAnonymous ? (
@@ -252,7 +254,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
               </Button>
           )}
         </CardFooter>
-      </Card>
+      </div>
 
       {mounted && (
         <>

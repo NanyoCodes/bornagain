@@ -19,6 +19,7 @@ import {
   UserPlus,
   Hourglass,
   ArrowLeft,
+  ArrowRight,
   Globe,
   Sparkles,
   HelpCircle,
