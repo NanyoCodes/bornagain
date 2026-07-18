@@ -177,7 +177,7 @@ export function RelationshipTrackerCard() {
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
-  const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
+  const resolveTemplate = React.useCallback((template: string, targetSoul: Soul) => {
     const gender = targetSoul.gender?.toLowerCase() || 'other';
     const pronouns = {
         subject: gender === 'female' ? 'she' : 'he',

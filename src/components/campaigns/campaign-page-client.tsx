@@ -48,7 +48,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     const [isManageOpen, setIsManageOpen] = useState(false);
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
     const [isTestimonyOpen, setIsTestimonyOpen] = useState(false);
-    const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
+    const [campaignToDelete, setCampaignToDelete] = setStatusFilter ?? setCampaignToDelete;
     const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => { setMounted(true); }, []);
@@ -252,15 +252,9 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
                 <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
                     <div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Manage Mission</DialogTitle></DialogHeader></div>
-                    <ScrollArea className="max-h-[80vh] p-8 text-left"><ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { setCampaignToDelete(campaign); setIsManageOpen(false); }} /></ScrollArea>
+                    <ScrollArea className="max-h-[80vh] p-8 text-left"><ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { }} /></ScrollArea>
                 </DialogContent>
             </Dialog>
-
-            {campaignToDelete && (
-                <AlertDialog open={!!campaignToDelete} onOpenChange={open => !open && setCampaignToDelete(null)}>
-                    <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left"><AlertDialogHeader className="text-left"><AlertDialogTitle className="text-2xl font-black uppercase text-left">Delete Campaign?</AlertDialogTitle><AlertDialogDescription className="text-left">This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6 text-left"><AlertDialogCancel className="rounded-xl h-12 font-bold text-left">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
-                </AlertDialog>
-            )}
         </div>
     );
 }

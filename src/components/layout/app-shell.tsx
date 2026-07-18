@@ -983,7 +983,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         {user && mounted && isMobile ? (
           <Sheet open={!!isProfileIncomplete}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-              <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
+              <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
                 <SheetHeader className="text-left">
                   <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
                   <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
@@ -996,11 +996,11 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           </Sheet>
         ) : user ? (
           <Dialog open={!!isProfileIncomplete}>
-            <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
+            <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
               <div className="p-6 border-b bg-muted/10">
-                <DialogHeader>
-                    <DialogTitle>Complete Your Profile</DialogTitle>
-                    <DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                <DialogHeader className="text-left">
+                    <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
+                    <DialogDescription className="text-sm">Please provide your name and photo to continue.</DialogDescription>
                 </DialogHeader>
               </div>
               <div className="p-6 max-h-[70vh] overflow-y-auto">
@@ -1013,6 +1013,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
                 <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <SheetHeader className="text-left">
+                        <SheetTitle className="sr-only">Main Navigation Menu</SheetTitle>
+                    </SheetHeader>
                     <div className="flex items-center gap-3 mb-4 text-left">
                         <Avatar className="h-12 w-12 border-2 border-primary/20">
                           <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
