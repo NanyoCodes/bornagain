@@ -103,7 +103,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic text-left">No souls found in this age group.</p>
+        <p className="text-sm text-muted-foreground italic text-left text-center">No souls found in this age group.</p>
       </div>
     );
   }
@@ -568,7 +568,7 @@ export function SoulsWonPage() {
                             </div>
                             <SheetHeader className="text-left">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedAgeGroup} Directory</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
+                                <SheetDescription className="text-sm font-medium mt-1 text-left text-center">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left">
@@ -588,7 +588,7 @@ export function SoulsWonPage() {
                             </div>
                             <DialogHeader className="text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedAgeGroup} Directory</DialogTitle>
-                                <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this age group.</DialogDescription>
+                                <DialogDescription className="text-sm font-medium text-left text-center">Viewing all souls within this age group.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="max-h-[60vh] text-left">

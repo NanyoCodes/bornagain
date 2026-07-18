@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -632,7 +632,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 )})
                             ) : (
                                 <div className="col-span-full text-center py-16 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">
-                                    <p className="text-xs text-muted-foreground italic font-medium px-12 text-left">
+                                    <p className="text-xs text-muted-foreground italic font-medium px-12 text-left text-center">
                                         {searchTerm ? "No supplies match your search." : "No provisions dropped yet. Share a sermon or article that helped you!"}
                                     </p>
                                 </div>
@@ -817,7 +817,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     <SheetDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</SheetDescription>
                                 </SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow">
+                            <ScrollArea className="flex-grow text-left">
                                 {supplyForm}
                             </ScrollArea>
                         </SheetContent>
@@ -834,7 +834,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                                     </DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</SheetDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">

@@ -192,10 +192,10 @@ function CategoryCard({ category }: { category: typeof strongholdCategories[0] }
                         {participantCount} Participant{participantCount !== 1 ? 's' : ''}
                     </Badge>
                 </div>
-                <CardTitle className="text-2xl font-black font-headline tracking-tight uppercase group-hover:text-primary transition-colors text-left">
+                <CardTitle className="text-2xl font-black font-headline tracking-tight uppercase group-hover:text-primary transition-colors text-left text-left">
                     VICTORY OVER {category.name}
                 </CardTitle>
-                <CardDescription className="text-sm font-medium mt-2 leading-relaxed text-left">
+                <CardDescription className="text-sm font-medium mt-2 leading-relaxed text-left text-left">
                     {category.desc}
                 </CardDescription>
             </CardHeader>
@@ -229,13 +229,13 @@ export default function VictoryHubPage() {
     }, [searchTerm]);
 
     return (
-        <div className="space-y-10 max-w-6xl mx-auto pb-32 text-left">
+        <div className="space-y-10 max-w-6xl mx-auto pb-32 text-left text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                     <div className="space-y-1 text-left">
                         <div className="flex items-center gap-2 mb-2 text-left">
                             <ShieldCheck className="h-5 w-5 text-primary" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Recovery</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Recovery</span>
                         </div>
                         <h1 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left">Victory Hub</h1>
                         <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-xl text-balance italic text-left">
@@ -277,14 +277,14 @@ export default function VictoryHubPage() {
                         <div className="h-20 w-20 rounded-full bg-muted/20 flex items-center justify-center mb-6">
                             <ShieldCheck className="h-10 w-10 text-muted-foreground opacity-20" />
                         </div>
-                        <p className="text-base font-black uppercase tracking-tight opacity-40">No matching circles found</p>
-                        <p className="text-xs text-muted-foreground mt-2 italic">Try a different search term or enter the "Other" circle.</p>
+                        <p className="text-base font-black uppercase tracking-tight opacity-40 text-center">No matching circles found</p>
+                        <p className="text-xs text-muted-foreground mt-2 italic text-center">Try a different search term or enter the "Other" circle.</p>
                     </div>
                 )}
             </div>
 
             <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto">
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium italic text-balance">
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium italic text-balance text-center">
                     "And they overcame him by the blood of the Lamb, and by the word of their testimony; and they loved not their lives unto the death." — Revelation 12:11
                 </p>
             </footer>

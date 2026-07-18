@@ -1098,7 +1098,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                     </div>
                 </ScrollArea>
                 <div className="p-8 border-t bg-muted/5 flex-shrink-0">
-                    <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">Testify Global • Mobilizing the Body</p>
+                    <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40 text-left">Testify Global • Mobilizing the Body</p>
                 </div>
             </SheetContent>
         </Sheet>
@@ -1215,7 +1215,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <Suspense fallback={
         <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Kingdom Network Active</p>
+            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left text-left">Kingdom Network Active</p>
         </div>
     }>
         <ShellInner>{children}</ShellInner>
