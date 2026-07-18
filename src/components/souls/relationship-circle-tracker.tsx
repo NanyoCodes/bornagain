@@ -34,24 +34,24 @@ function CategorySoulList({ souls }: { souls: Soul[] }) {
   }
 
   return (
-    <div className="space-y-2 pb-4">
+    <div className="space-y-2 pb-4 text-left">
       {souls.map((soul) => {
         const wonAt = safeToDate(soul.wonAt);
         return (
           <Link 
             href={`/dashboard/souls-won#${soul.id}`} 
             key={soul.id} 
-            className="flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full"
+            className="flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left"
           >
             <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
               <AvatarFallback className="font-black bg-primary/5 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+            <div className="flex-1 min-w-0 text-left">
+              <div className="flex items-center gap-2 text-left">
+                <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                 <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
               </div>
-              <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
                 Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
               </p>
             </div>
@@ -126,16 +126,16 @@ export function RelationshipCircleTracker({
         <>
             {isMobile ? (
                 <Sheet open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
-                    <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="flex items-center justify-between gap-4 text-left">
                                 <div className="min-w-0 text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left">
                                         <Users className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Directory</span>
                                     </div>
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedCategoryName} Circle</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Viewing all converts in your {selectedCategoryName.toLowerCase()} group.</SheetDescription>
+                                    <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight text-left">{selectedCategoryName} Circle</SheetTitle>
+                                    <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Viewing all converts in your {selectedCategoryName.toLowerCase()} group.</SheetDescription>
                                 </div>
                                 <Button 
                                     onClick={(e) => handleOpenLogFromCircle(e, selectedCategoryName)}
@@ -148,8 +148,8 @@ export function RelationshipCircleTracker({
                                 </Button>
                             </div>
                         </div>
-                        <div className="flex-grow overflow-hidden relative">
-                            <ScrollArea className="h-full px-8 pt-6">
+                        <div className="flex-grow overflow-hidden relative text-left">
+                            <ScrollArea className="h-full px-4 sm:px-8 pt-6">
                                 <CategorySoulList souls={activeCategorySouls} />
                                 <div className="h-24" />
                             </ScrollArea>
@@ -158,7 +158,7 @@ export function RelationshipCircleTracker({
                 </Sheet>
             ) : (
                 <Dialog open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
-                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center justify-between gap-4 text-left">
                                 <div className="min-w-0 text-left">
@@ -178,7 +178,7 @@ export function RelationshipCircleTracker({
                                 </Button>
                             </div>
                         </div>
-                        <ScrollArea className="max-h-[60vh] p-6">
+                        <ScrollArea className="max-h-[60vh] p-6 text-left">
                             <CategorySoulList souls={activeCategorySouls} />
                         </ScrollArea>
                     </DialogContent>
@@ -190,14 +190,14 @@ export function RelationshipCircleTracker({
     const logSoulView = isLogSoulOpen && (
         isMobile ? (
             <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left">
-                            <SheetTitle className="text-2xl font-black font-headline">Log {selectedCategoryName} Soul</SheetTitle>
-                            <SheetDescription className="text-sm font-medium">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</SheetDescription>
+                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                        <SheetHeader className="text-left text-left">
+                            <SheetTitle className="text-2xl font-black font-headline text-left">Log {selectedCategoryName} Soul</SheetTitle>
+                            <SheetDescription className="text-sm font-medium text-left">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <div className="flex-grow overflow-y-auto p-8">
+                    <div className="flex-grow overflow-y-auto p-8 text-left">
                         <LogSoulForm 
                             onSoulLogged={() => setIsLogSoulOpen(false)} 
                             fellowships={fellowships} 
@@ -209,12 +209,12 @@ export function RelationshipCircleTracker({
             </Sheet>
         ) : (
             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <DialogContent className="sm:max-w-lg">
-                    <DialogHeader>
-                        <DialogTitle>Log {selectedCategoryName} Soul</DialogTitle>
-                        <DialogDescription>Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</DialogDescription>
+                <DialogContent className="sm:max-w-lg text-left">
+                    <DialogHeader className="text-left">
+                        <DialogTitle className="text-left">Log {selectedCategoryName} Soul</DialogTitle>
+                        <DialogDescription className="text-left">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</DialogDescription>
                     </DialogHeader>
-                    <div className="max-h-[70vh] overflow-y-auto pr-2">
+                    <div className="max-h-[70vh] overflow-y-auto pr-2 text-left">
                         <LogSoulForm 
                             onSoulLogged={() => setIsLogSoulOpen(false)} 
                             fellowships={fellowships} 
@@ -229,7 +229,7 @@ export function RelationshipCircleTracker({
 
     return (
         <>
-            <Card className={cn("overflow-hidden border-none shadow-sm bg-card/50 backdrop-blur-sm", className)}>
+            <Card className={cn("overflow-hidden border-none shadow-sm bg-card/50 backdrop-blur-sm text-left", className)}>
                 <CardHeader className="pb-3 text-left">
                     <CardTitle className="text-lg flex items-center gap-2 text-left">
                         <Home className="h-5 w-5 text-primary" />
@@ -239,33 +239,33 @@ export function RelationshipCircleTracker({
                         Ensuring your closest circles are saved and nurtured in faith.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="grid grid-cols-3 gap-2">
+                <CardContent className="space-y-6 text-left">
+                    <div className="grid grid-cols-3 gap-2 text-left">
                         <div 
-                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
+                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm text-left"
                             onClick={() => handleCategoryClick('Family')}
                         >
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Family</p>
-                            <p className="text-xl font-black text-primary">{stats.family.count}</p>
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary text-center">Family</p>
+                            <p className="text-xl font-black text-primary text-center">{stats.family.count}</p>
                         </div>
                         <div 
-                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
+                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm text-left"
                             onClick={() => handleCategoryClick('Friends')}
                         >
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Friends</p>
-                            <p className="text-xl font-black text-primary">{stats.friends.count}</p>
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary text-center">Friends</p>
+                            <p className="text-xl font-black text-primary text-center">{stats.friends.count}</p>
                         </div>
                         <div 
-                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm"
+                            className="p-3 rounded-2xl bg-muted/30 border text-center space-y-1 cursor-pointer hover:bg-primary/5 hover:border-primary/20 transition-all active:scale-95 group shadow-sm text-left"
                             onClick={() => handleCategoryClick('Outreach')}
                         >
-                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary">Outreach</p>
-                            <p className="text-xl font-black text-foreground">{stats.outreach.count}</p>
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter group-hover:text-primary text-center">Outreach</p>
+                            <p className="text-xl font-black text-foreground text-center">{stats.outreach.count}</p>
                         </div>
                     </div>
 
                     {stats.family.count === 0 && (
-                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3 shadow-inner">
+                        <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3 shadow-inner text-left">
                             <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                             <p className="text-xs text-primary font-medium leading-relaxed text-left">
                                 Have you shared the Gospel with your household? Log your family members here to prioritize their spiritual growth.

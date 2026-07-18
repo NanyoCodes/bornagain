@@ -1109,13 +1109,13 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-6 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <div className="flex items-center gap-2 mb-2 text-left">
-                        <ShoppingCart className="h-4 w-4 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span>
+                    <div className="flex items-center gap-2 mb-2 text-left text-left">
+                        <ShoppingCart className="h-4 w-4 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Provision</span>
                     </div>
-                    <SheetHeader className="text-left flex-shrink-0 text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                       <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left">Kindness Package</SheetTitle>
-                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left text-left">Review your selections for the harvest.</SheetDescription>
+                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Review your selections for the harvest.</SheetDescription>
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left">

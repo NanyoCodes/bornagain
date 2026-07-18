@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -51,7 +51,8 @@ import {
     Mic,
     ExternalLink,
     Library,
-    Target
+    Target,
+    MoreHorizontal
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -151,14 +152,14 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left flex-shrink-0">
-                            <div className="flex items-center gap-2 mb-2">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                        <SheetHeader className="text-left flex-shrink-0 text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left">
                                 <Zap className="h-4 w-4 text-primary" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Circle Conversation</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">Victory over {categoryTitle}</SheetTitle>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance text-left">Victory over {categoryTitle}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1 text-left">Community responses and spiritual solutions.</SheetDescription>
                         </SheetHeader>
                     </div>
@@ -394,7 +395,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                             <SelectValue placeholder="Resource Type" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-2xl border-none shadow-2xl">
+                        <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
                             <SelectItem value="Video" className="rounded-lg">Video / YouTube</SelectItem>
                             <SelectItem value="Article" className="rounded-lg">Article / Link</SelectItem>
                             <SelectItem value="Sermon" className="rounded-lg">Sermon / Audio</SelectItem>
@@ -405,7 +406,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 </div>
                 <div className="space-y-2 text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Title</Label>
-                    <Input name="title" defaultValue={resourceToEdit?.title} placeholder="e.g. Breaking Chains" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" required />
+                    <Input name="title" defaultValue={resourceToEdit?.title} placeholder="e.g. Breaking Chains" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
                 </div>
                 <div className="space-y-2 text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Description</Label>
@@ -417,9 +418,9 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 </div>
             </div>
             <div className="p-8 bg-muted/5 border-t flex gap-3 text-left">
-                <Button type="button" variant="outline" onClick={() => { setIsAddResourceOpen(false); setResourceToEdit(null); }} className="flex-1 h-12 rounded-xl font-bold">Cancel</Button>
-                <Button type="submit" disabled={isSubmittingResource} className="flex-1 h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
-                    {isSubmittingResource && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button type="button" variant="outline" onClick={() => { setIsAddResourceOpen(false); setResourceToEdit(null); }} className="flex-1 h-12 rounded-xl font-bold text-left">Cancel</Button>
+                <Button type="submit" disabled={isSubmittingResource} className="flex-1 h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left">
+                    {isSubmittingResource && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                     {resourceToEdit ? 'SAVE CHANGES' : 'SHARE SUPPLY'}
                 </Button>
             </div>
@@ -443,7 +444,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         </div>
                     </div>
 
-                    <div className="relative flex-grow max-w-md text-left text-left">
+                    <div className="relative flex-grow max-w-md text-left">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                         <Input 
                             placeholder={`Search this circle...`} 
@@ -455,7 +456,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 </div>
             </header>
 
-            <Tabs defaultValue="discussions" className="w-full text-left text-left">
+            <Tabs defaultValue="discussions" className="w-full text-left">
                 <div className="px-4 sm:px-0 mb-8 text-left">
                     <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/40 p-1 rounded-2xl text-left">
                         <TabsTrigger value="word" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl flex items-center gap-2 h-full">
@@ -473,12 +474,12 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 <TabsContent value="word" className="space-y-6 outline-none text-left">
                     <section className="space-y-4 px-4 sm:px-0 text-left">
                         <div className="flex items-center gap-3 text-left">
-                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
+                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
                                 <BookOpen className="h-5 w-5 text-primary" />
                             </div>
                             <div className="flex-1 min-w-0 text-left">
-                                <h3 className="text-lg font-black uppercase tracking-tight text-left text-left">Armor of the Word</h3>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">Select your weapon</p>
+                                <h3 className="text-lg font-black uppercase tracking-tight text-left">Armor of the Word</h3>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">Select your weapon</p>
                             </div>
                         </div>
 
@@ -490,7 +491,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-none shadow-2xl text-left">
                                         {scriptures.map((s, idx) => (
-                                            <SelectItem key={idx} value={idx.toString()} className="rounded-lg font-bold uppercase text-[10px] tracking-widest text-left text-left">
+                                            <SelectItem key={idx} value={idx.toString()} className="rounded-lg font-bold uppercase text-[10px] tracking-widest text-left">
                                                 {s.verse}
                                             </SelectItem>
                                         ))}
@@ -500,20 +501,20 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             <CardContent className="p-4 sm:p-8 pt-4 text-left">
                                 <div className="space-y-6 text-left">
                                     <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group text-left">
-                                        <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110 text-left text-left" />
-                                        <p className="text-base sm:text-xl text-muted-foreground italic font-medium leading-relaxed text-left text-balance text-left">
+                                        <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110 text-left" />
+                                        <p className="text-base sm:text-xl text-muted-foreground italic font-medium text-left text-balance">
                                             &ldquo;{activeScripture.text}&rdquo;
                                         </p>
                                         <p className="text-xs font-black uppercase tracking-[0.2em] text-primary text-right mt-4 text-left">— {activeScripture.verse}</p>
                                     </div>
                                     <div className="p-5 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20 text-left">
                                         <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 mb-2 text-left">
-                                            <HandHeart className="h-3 w-3 text-left" /> Victory Prayer
+                                            <HandHeart className="h-3 w-3" /> Victory Prayer
                                         </div>
-                                        <p className="text-sm font-medium leading-relaxed text-foreground/70 italic text-left text-left">
+                                        <p className="text-sm font-medium leading-relaxed text-foreground/70 italic text-left">
                                             &ldquo;{activeScripture.prayer}&rdquo;
                                         </p>
-                                        <div className="pt-4 flex justify-start text-left text-left">
+                                        <div className="pt-4 flex justify-start text-left">
                                             <Button 
                                                 onClick={() => handleAmen(parseInt(selectedVerseIdx, 10))}
                                                 variant="outline" 
@@ -537,59 +538,59 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 <TabsContent value="supplies" className="space-y-6 outline-none text-left">
                     <section className="space-y-6 px-4 sm:px-0 text-left">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
-                            <div className="flex items-center gap-3 text-left text-left">
-                                <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner">
+                            <div className="flex items-center gap-3 text-left">
+                                <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner text-left">
                                     <Library className="h-5 w-5 text-indigo-600" />
                                 </div>
                                 <div className="min-w-0 text-left">
-                                    <h3 className="text-lg font-black uppercase tracking-tight text-left text-left text-left">Kingdom Provisions</h3>
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left">Shared battle supplies</p>
+                                    <h3 className="text-lg font-black uppercase tracking-tight text-left">Kingdom Provisions</h3>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">Shared battle supplies</p>
                                 </div>
                             </div>
-                            <Button onClick={() => { setResourceToEdit(null); setIsAddResourceOpen(true); }} variant="outline" size="sm" className="h-9 rounded-xl font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left text-left">
+                            <Button onClick={() => { setResourceToEdit(null); setIsAddResourceOpen(true); }} variant="outline" size="sm" className="h-9 rounded-xl font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left">
                                 <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> DROP PROVISION
                             </Button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left text-left">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                             {resourcesLoading ? (
-                                <div className="col-span-full flex justify-center py-12 text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
+                                <div className="col-span-full flex justify-center py-12 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
                             ) : filteredResources && filteredResources.length > 0 ? (
                                 filteredResources.map(res => {
                                     const isResAuthor = user?.uid === res.authorId;
                                     return (
-                                    <Card key={res.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all group flex flex-col h-full text-left text-left">
-                                        <CardContent className="p-4 flex flex-col gap-4 relative flex-grow text-left text-left">
-                                            <div className="flex items-center gap-4 text-left text-left">
-                                                <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform text-left text-left">
+                                    <Card key={res.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all group flex flex-col h-full text-left">
+                                        <CardContent className="p-4 flex flex-col gap-4 relative flex-grow text-left">
+                                            <div className="flex items-center gap-4 text-left">
+                                                <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform text-left">
                                                     {getResourceIcon(res.type)}
                                                 </div>
-                                                <div className="min-w-0 flex-1 text-left text-left">
-                                                    <div className="flex items-center gap-2 mb-0.5 text-left text-left">
-                                                        <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left text-left">{res.type}</Badge>
-                                                        <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest truncate opacity-60 text-left text-left">By {res.authorName}</span>
+                                                <div className="min-w-0 flex-1 text-left">
+                                                    <div className="flex items-center gap-2 mb-0.5 text-left">
+                                                        <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left">{res.type}</Badge>
+                                                        <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest truncate opacity-60 text-left">By {res.authorName}</span>
                                                     </div>
-                                                    <h4 className="font-black text-xs uppercase tracking-tight truncate leading-tight mb-2 text-left text-left">{res.title}</h4>
+                                                    <h4 className="font-black text-xs uppercase tracking-tight truncate leading-tight mb-2 text-left">{res.title}</h4>
                                                 </div>
                                             </div>
                                             
                                             {res.description && (
-                                                <p className="text-xs text-muted-foreground leading-relaxed italic px-1 text-left text-balance text-left">
+                                                <p className="text-xs text-muted-foreground leading-relaxed italic px-1 text-left text-balance">
                                                     &ldquo;{res.description}&rdquo;
                                                 </p>
                                             )}
 
-                                            <Button asChild variant="ghost" size="sm" className="h-7 p-0 hover:bg-transparent hover:text-primary transition-colors text-[9px] font-black uppercase tracking-widest self-start mt-auto text-left text-left">
+                                            <Button asChild variant="ghost" size="sm" className="h-7 p-0 hover:bg-transparent hover:text-primary transition-colors text-[9px] font-black uppercase tracking-widest self-start mt-auto text-left">
                                                 <a href={res.url} target="_blank" rel="noopener noreferrer">
                                                     GO TO RESOURCE <ExternalLink className="ml-1.5 h-3 w-3" />
                                                 </a>
                                             </Button>
 
                                             {isResAuthor && (
-                                                <div className="absolute top-2 right-2 text-left text-left">
+                                                <div className="absolute top-2 right-2 text-left">
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-left text-left">
+                                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-left">
                                                                 <MoreHorizontal className="h-3.5 w-3.5 text-left" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
@@ -609,8 +610,8 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     </Card>
                                 )})
                             ) : (
-                                <div className="col-span-full text-center py-16 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left">
-                                    <p className="text-xs text-muted-foreground italic font-medium px-12 text-center text-left text-left">
+                                <div className="col-span-full text-center py-16 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">
+                                    <p className="text-xs text-muted-foreground italic font-medium px-12 text-center text-left">
                                         {searchTerm ? "No supplies match your search." : "No provisions dropped yet. Share a sermon or article that helped you!"}
                                     </p>
                                 </div>
@@ -695,7 +696,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-left text-left">
+                                                <div className="flex items-center gap-2 text-left">
                                                     <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-black uppercase tracking-widest bg-background/50 text-left">{categoryTitle}</Badge>
                                                     {isOwner && !isEditing && (
                                                         <DropdownMenu>
@@ -750,12 +751,12 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                 )}
                                             </CardContent>
                                             <CardFooter className="p-3 bg-muted/5 flex justify-between items-center mt-auto text-left">
-                                                 <div className="flex items-center gap-2 px-3 text-left text-left">
+                                                 <div className="flex items-center gap-2 px-3 text-left">
                                                     <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
-                                                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60 text-left text-left">Victory Support Active</span>
+                                                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60 text-left">Victory Support Active</span>
                                                  </div>
                                                  <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                                    <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-left text-left">
+                                                    <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-left">
                                                         Participate
                                                     </Button>
                                                  </PostResponsesDialog>
@@ -764,12 +765,12 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     );
                                 })
                             ) : (
-                                <div className="col-span-full text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0 text-left text-left text-left">
+                                <div className="col-span-full text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0 text-left">
                                     <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
                                         <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
                                     </div>
-                                    <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left text-left">Circle Silence</h4>
-                                    <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left text-left">
+                                    <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Circle Silence</h4>
+                                    <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left">
                                         {searchTerm ? "No discussions match your search." : "No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light."}
                                     </p>
                                 </div>
@@ -812,7 +813,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                                     </DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Share a resource that fueled your victory.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">

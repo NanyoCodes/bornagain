@@ -101,30 +101,30 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic">No souls found in this age group.</p>
+        <p className="text-sm text-muted-foreground italic text-left">No souls found in this age group.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2 pb-4">
+    <div className="space-y-2 pb-4 text-left">
       {souls.map((soul) => {
         const wonAt = safeToDate(soul.wonAt);
         return (
           <Link 
             href={`/dashboard/souls-won#${soul.id}`} 
             key={soul.id} 
-            className="flex items-center gap-4 p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group"
+            className="flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group text-left"
           >
             <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
               <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
             </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+            <div className="flex-1 min-w-0 text-left">
+              <div className="flex items-center gap-2 text-left">
+                <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                 <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
               </div>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
                 Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
               </p>
             </div>
@@ -136,7 +136,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
   );
 }
 
-export default function SoulsWonPage() {
+export function SoulsWonPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
@@ -729,7 +729,7 @@ export default function SoulsWonPage() {
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left">
-                            <div className="p-8 text-left">
+                            <div className="p-4 sm:p-8 text-left">
                                 <AgeGroupSoulList souls={activeAgeGroupSouls} />
                             </div>
                         </ScrollArea>
@@ -749,7 +749,7 @@ export default function SoulsWonPage() {
                             </DialogHeader>
                         </div>
                         <ScrollArea className="max-h-[60vh] text-left">
-                            <div className="p-8 text-left">
+                            <div className="p-4 sm:p-8 text-left">
                                 <AgeGroupSoulList souls={activeAgeGroupSouls} />
                             </div>
                         </ScrollArea>
