@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -1043,7 +1042,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         
                         <Separator className="my-6 opacity-50" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
-                        {/* Remove victory-hub from loop as it's specialized below */}
                         {navItems.filter(item => item.href !== '/dashboard/victory-hub').map((item) => (
                           <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                             <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", item.color)} />
@@ -1207,8 +1205,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         </Sheet>
         
         {user && <PendingProvisionReminder />}
-    </div>
-  SearchProvider>
+      </div>
+    </SearchProvider>
   );
 }
 
