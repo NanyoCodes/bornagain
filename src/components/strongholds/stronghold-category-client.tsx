@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -732,7 +732,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                                 <X className="mr-1 h-3 w-3 text-left" /> Cancel
                                                             </Button>
                                                             <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left">
-                                                                {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin text-left" /> : <Check className="mr-1 h-3 w-3 text-left" />}
+                                                                {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3 text-left" />}
                                                                 Save Changes
                                                             </Button>
                                                         </div>
