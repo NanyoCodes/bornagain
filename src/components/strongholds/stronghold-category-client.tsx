@@ -233,6 +233,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const isMobile = useIsMobile();
+    const [mounted, setMounted] = useState(false);
     
     const [newPostText, setNewPostText] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
@@ -252,6 +253,10 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     const [editingPostId, setEditingPostId] = useState<string | null>(null);
     const [editingText, setEditingText] = useState('');
     const [isUpdating, setIsUpdating] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
     const categoryKey = category.toLowerCase();
@@ -763,7 +768,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                             <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold">
                                                                 <X className="mr-1 h-3 w-3" /> Cancel
                                                             </Button>
-                                                            <Button size="sm" onClick={handleUpdatePost} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px]">
+                                                            <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px]">
                                                                 {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3" />}
                                                                 Save Changes
                                                             </Button>
@@ -834,7 +839,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     </Sheet>
                 ) : (
                     <Dialog open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
-                        <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[85vh]">
+                        <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh]">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">
