@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -230,7 +229,7 @@ function ScriptureSelectionDialog({
                     )}
 
                     <div className="space-y-4 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2 text-left">pick from any scripture in the bible</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2 text-left">Pick from any scripture</Label>
                         
                         <div className="grid grid-cols-1 gap-3 px-1 text-left">
                             <div className="space-y-1.5 text-left">
@@ -812,7 +811,7 @@ export function RelationshipTrackerCard() {
             </div>
             <div className="p-8 space-y-6 text-left">
                 <div className="space-y-3 text-left">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Prayer Focus</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Select Prayer Focus</label>
                     <div className="flex flex-wrap gap-2 text-left">
                         {prayerTemplates.map(t => (
                             <Button 
@@ -829,7 +828,7 @@ export function RelationshipTrackerCard() {
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Your Prayer</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Customize Your Prayer</Label>
                     <Textarea 
                         value={customPrayerText}
                         onChange={e => setCustomPrayerText(e.target.value)}

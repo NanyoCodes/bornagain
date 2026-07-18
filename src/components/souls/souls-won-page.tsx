@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
@@ -108,7 +107,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
   }
 
   return (
-    <div className="space-y-2 pb-4">
+    <div className="space-y-2 pb-4 text-left">
       {souls.map((soul) => {
         const wonAt = safeToDate(soul.wonAt);
         return (
@@ -552,7 +551,7 @@ export default function SoulsWonPage() {
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <Button onClick={() => setIsLogDialogOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none">
+                            <Button onClick={() => setIsLogDialogOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none text-left">
                                 <PlusCircle className="mr-2 h-4 w-4" /> ADD SOUL
                             </Button>
                         </div>
@@ -744,7 +743,7 @@ export default function SoulsWonPage() {
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
                             </div>
-                            <DialogHeader className="text-left">
+                            <DialogHeader className="text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedAgeGroup} Directory</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this age group.</DialogDescription>
                             </DialogHeader>

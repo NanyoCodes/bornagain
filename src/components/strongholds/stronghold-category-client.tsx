@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -25,6 +24,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { 
     Loader2, 
     ArrowLeft, 
@@ -441,7 +441,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 <Users className="h-3.5 w-3.5 text-primary" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Victory Circle</span>
                             </div>
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate leading-tight text-balance text-left">Victory over {categoryTitle}</h1>
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight text-balance text-left">Victory over {categoryTitle}</h1>
                         </div>
                     </div>
 
