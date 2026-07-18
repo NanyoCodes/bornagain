@@ -104,18 +104,7 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
   other: [
     { verse: "Philippians 4:13", text: "I can do all this through him who gives me strength.", prayer: "Whatever I face today, I have the victory through Your power, Jesus. Amen." },
     { verse: "Romans 8:37", text: "No, in all these things we are more than conquerors through him who loved us.", prayer: "I am more than a conqueror! I walk in the victory of Your love today. Amen." },
-    { verse: "1 John 4:4", text: "The one who is in you is greater than the one who is in the world.", prayer: "Greater is He that is in me than any problem in the world. I am victorious! Amen." },
-    { verse: "Isaiah 41:10", text: "So do not fear, for I am with you; do not be dismayed, for I am your God.", prayer: "I cast out fear today. You are my God, and You are holding my hand. Amen." },
-    { verse: "1 Corinthians 15:57", text: "But thanks be to God, who gives us the victory through our Lord Jesus Christ.", prayer: "Thank You, Father, for the victory already won. I stand in triumph through Christ. Amen." },
-    { verse: "1 John 5:4", text: "For everyone born of God overcomes the world.", prayer: "My faith is the victory that has overcome the world. I am a child of God. Amen." },
-    { verse: "Luke 10:19", text: "I have given you authority... to overcome all the power of the enemy.", prayer: "I walk in the authority of Jesus today, stepping over every obstacle of the enemy. Amen." },
-    { verse: "Romans 5:20", text: "Where sin abounded, grace abounded much more.", prayer: "I am flooded with Your grace, Lord. It is greater than any struggle I face. Amen." },
-    { verse: "Isaiah 54:17", text: "No weapon forged against you will prevail.", prayer: "I stand under Your protection, Father. No scheme of the enemy can prosper against me. Amen." },
-    { verse: "Exodus 14:14", text: "The Lord will fight for you; you need only to be still.", prayer: "I choose to be still and trust in Your mighty hand, Lord. The victory is Yours. Amen." },
-    { verse: "Psalm 18:2", text: "The Lord is my rock, my fortress and your deliverer.", prayer: "You are my safety and my strength. I hide myself in You, my God. Amen." },
-    { verse: "Psalm 34:17", text: "The righteous cry out, and the Lord hears them; he delivers them from all their troubles.", prayer: "Thank You for hearing my cry, Lord. I trust in Your deliverance from every trouble. Amen." },
-    { verse: "2 Corinthians 12:9", text: "My grace is sufficient for you, for my power is made perfect in weakness.", prayer: "I boast in my weakness so that Your power may rest on me. Your grace is all I need. Amen." },
-    { verse: "Deuteronomy 31:6", text: "Be strong and courageous. Do not be afraid or terrified... for the Lord your God goes with you.", prayer: "I take courage today. I am never alone, for the Lord is my constant companion. Amen." }
+    { verse: "1 John 4:4", text: "The one who is in you is greater than the one who is in the world.", prayer: "Greater is He that is in me than any problem in the world. I am victorious! Amen." }
   ]
 };
 
@@ -755,7 +744,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                                 <X className="mr-1 h-3 w-3" /> Cancel
                                                             </Button>
                                                             <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left">
-                                                                {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" text-left /> : <Check className="mr-1 h-3 w-3" />}
+                                                                {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3" />}
                                                                 Save Changes
                                                             </Button>
                                                         </div>
@@ -808,7 +797,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     <Sheet open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
                         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+                                <SheetHeader className="text-left flex-shrink-0 text-left">
                                     <div className="flex items-center gap-2.5 mb-1.5 text-left">
                                         <Target className="h-4 w-4 text-primary text-left" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Supply Drop</span>
@@ -827,16 +816,16 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 ) : (
                     <Dialog open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
                         <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <DialogHeader className="text-left text-left text-left">
-                                    <div className="flex items-center gap-2.5 mb-1.5 text-left text-left">
-                                        <Target className="h-4 w-4 text-primary text-left text-left text-left" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Supply Drop</span>
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                                <DialogHeader className="text-left">
+                                    <div className="flex items-center gap-2.5 mb-1.5 text-left">
+                                        <Target className="h-4 w-4 text-primary text-left" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Supply Drop</span>
                                     </div>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                                     </DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Share a resource that fueled your victory.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
@@ -847,8 +836,8 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 )
             )}
             
-            <footer className="text-center pt-12 border-t mt-12 px-8 text-left text-left">
-                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance text-center text-left text-left">
+            <footer className="text-center pt-12 border-t mt-12 px-8 text-left">
+                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance text-center">
                     "Confess your faults one to another, and pray one for another, that ye may be healed. The effectual fervent prayer of a righteous man availeth much." — James 5:16
                 </p>
             </footer>
