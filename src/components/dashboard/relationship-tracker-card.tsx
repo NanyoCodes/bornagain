@@ -30,7 +30,8 @@ import {
   Send,
   X,
   HeartHandshake,
-  HandHeart
+  HandHeart,
+  Globe
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -161,8 +162,12 @@ export function RelationshipTrackerCard() {
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
   const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
+  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
+  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
+  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
   const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
   const [customPrayerText, setCustomPrayerText] = useState('');
+  const [clickedActionId, setClickedActionId] = useState<string | null>(null);
   
   const { userProfile, loading: profileLoading } = useUserProfile();
 
@@ -348,6 +353,7 @@ export function RelationshipTrackerCard() {
             toast({ variant: 'destructive', title: 'Phone Missing', description: `Please save a number for ${soul.firstName} first.` });
             return;
         }
+        setClickedActionId(selectedActionId);
         setIsCommChannelDialogOpen(true);
     } else {
         performFinalLog(soul, selectedActionId);
@@ -357,6 +363,7 @@ export function RelationshipTrackerCard() {
   const handlePrayerConfirm = (text: string) => {
     setCustomPrayerText(text);
     setIsPrayerCustomizationOpen(false);
+    setClickedActionId('prayed_together');
     requestAnimationFrame(() => {
         setIsCommChannelDialogOpen(true);
     });

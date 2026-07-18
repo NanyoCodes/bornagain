@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -112,7 +112,7 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "Romans 5:20", text: "Where sin abounded, grace abounded much more.", prayer: "I am flooded with Your grace, Lord. It is greater than any struggle I face. Amen." },
     { verse: "Isaiah 54:17", text: "No weapon forged against you will prevail.", prayer: "I stand under Your protection, Father. No scheme of the enemy can prosper against me. Amen." },
     { verse: "Exodus 14:14", text: "The Lord will fight for you; you need only to be still.", prayer: "I choose to be still and trust in Your mighty hand, Lord. The victory is Yours. Amen." },
-    { verse: "Psalm 18:2", text: "The Lord is my rock, my fortress and my deliverer.", prayer: "You are my safety and my strength. I hide myself in You, my God. Amen." },
+    { verse: "Psalm 18:2", text: "The Lord is my rock, my fortress and your deliverer.", prayer: "You are my safety and my strength. I hide myself in You, my God. Amen." },
     { verse: "Psalm 34:17", text: "The righteous cry out, and the Lord hears them; he delivers them from all their troubles.", prayer: "Thank You for hearing my cry, Lord. I trust in Your deliverance from every trouble. Amen." },
     { verse: "2 Corinthians 12:9", text: "My grace is sufficient for you, for my power is made perfect in weakness.", prayer: "I boast in my weakness so that Your power may rest on me. Your grace is all I need. Amen." },
     { verse: "Deuteronomy 31:6", text: "Be strong and courageous. Do not be afraid or terrified... for the Lord your God goes with you.", prayer: "I take courage today. I am never alone, for the Lord is my constant companion. Amen." }
