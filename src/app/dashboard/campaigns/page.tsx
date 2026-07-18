@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
@@ -141,19 +142,6 @@ export default function CampaignsPage() {
   const [campaignForSoul, setCampaignForSoul] = useState<Campaign | null>(null);
   const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  // Interactivity Safety Valve
-  const isAnyModalOpen = !!(isCreateOpen || campaignToManage || campaignForTestimony || campaignForSoul || campaignToDelete);
-
-  useEffect(() => {
-    if (!isAnyModalOpen && typeof document !== 'undefined') {
-      const timer = setTimeout(() => {
-        document.body.style.pointerEvents = 'auto';
-        document.body.removeAttribute('aria-hidden');
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnyModalOpen]);
 
   useEffect(() => {
     setMounted(true);
@@ -379,7 +367,6 @@ export default function CampaignsPage() {
   return (
     <div 
         className="w-full max-w-7xl mx-auto"
-        inert={isAnyModalOpen ? true : undefined}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-8 space-y-8 pb-32">
@@ -499,7 +486,7 @@ export default function CampaignsPage() {
             <div className="p-8 border-b bg-muted/10">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Create a New Mission</DialogTitle>
-                    <DialogDescription className="text-sm font-medium">
+                    <DialogDescription className="text-sm font-medium text-left">
                         Fill in the details below to organize your soul-winning efforts.
                     </DialogDescription>
                 </DialogHeader>
@@ -545,8 +532,8 @@ export default function CampaignsPage() {
           <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
              <div className="p-8 border-b bg-muted/10">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Manage Mission</DialogTitle>
-                    <DialogDescription className="text-sm font-medium">Update the details or status of your campaign.</DialogDescription>
+                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Manage Mission</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">Update the details or status of your campaign.</DialogDescription>
                 </DialogHeader>
             </div>
             <ScrollArea className="max-h-[80vh]">
@@ -572,8 +559,8 @@ export default function CampaignsPage() {
       <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => { if (!open) setCampaignToDelete(null); router.refresh(); }}>
         <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
           <AlertDialogHeader>
-              <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">Delete Mission?</AlertDialogTitle>
-              <AlertDialogDescription className="text-sm font-medium">
+              <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Mission?</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
                   This will permanently remove the campaign and all associated data. This action cannot be undone.
               </AlertDialogDescription>
           </AlertDialogHeader>
@@ -615,8 +602,8 @@ export default function CampaignsPage() {
             <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                  <div className="p-8 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Share Victory</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Share Victory</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">
                             Encourage others by sharing what God has done during this mission.
                         </DialogDescription>
                     </DialogHeader>
@@ -664,8 +651,8 @@ export default function CampaignsPage() {
             <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
                 <div className="p-8 border-b bg-muted/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Log Harvest</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Log Harvest</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">
                             Record the details of the person won during this mission.
                         </DialogDescription>
                     </DialogHeader>

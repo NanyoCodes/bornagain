@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -167,7 +168,7 @@ export function RelationshipTrackerCard() {
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
   const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
   const [customPrayerText, setCustomPrayerText] = useState('');
-  const [clickedActionId, setClickedActionId] = useState<string | null>(null);
+  const [clickedActionId, setClickedActionId] = React.useState<string | null>(null);
   
   const { userProfile, loading: profileLoading } = useUserProfile();
 
