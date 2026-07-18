@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -786,7 +785,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                         Participate
                                                     </Button>
                                                  </PostResponsesDialog>
-                                            </CardFooter>
+                                            </CardHeader>
                                         </Card>
                                     );
                                 })

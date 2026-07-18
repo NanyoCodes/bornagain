@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -203,7 +202,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
           {logo && (
             <Avatar className="h-10 w-10 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
-              <AvatarFallback>T</AvatarFallback>
+              <AvatarFallback className="font-bold">T</AvatarFallback>
             </Avatar>
           )}
           <span className="sr-only">Testify</span>

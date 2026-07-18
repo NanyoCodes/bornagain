@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -568,7 +567,7 @@ export default function SoulsWonPage() {
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
                             </div>
-                            <SheetHeader className="text-left">
+                            <SheetHeader className="text-left flex-shrink-0">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedAgeGroup} Directory</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
                             </SheetHeader>
