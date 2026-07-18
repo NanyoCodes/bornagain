@@ -70,6 +70,14 @@ const iconMap: Record<string, any> = {
     'invited_to_event': Calendar,
 };
 
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+  );
+}
+
 function SoulSelectionList({ 
     souls, 
     onSelect, 
@@ -110,7 +118,7 @@ function SoulSelectionList({
                                 disabled={isLoading}
                             >
                                 <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left">
-                                    <AvatarFallback className="font-bold bg-primary/5 text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                    <AvatarFallback className="font-black bg-primary/5 text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="text-left min-w-0 flex-1">
                                     <p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
@@ -148,8 +156,13 @@ export function RelationshipTrackerCard() {
   const [pendingActions, setPendingActions] = useState<string[]>([]);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
+  const [activeSoul, setActiveSoul] = useState<Soul | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
+
+  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
+  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
+  const [customPrayerText, setCustomPrayerText] = useState('');
   
   const { userProfile, loading: profileLoading } = useUserProfile();
 
@@ -158,6 +171,21 @@ export function RelationshipTrackerCard() {
     return query(collection(firestore, 'users', user.uid, 'souls'), orderBy("wonAt", "desc"));
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+
+  const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
+    const gender = targetSoul.gender?.toLowerCase() || 'other';
+    const pronouns = {
+        subject: gender === 'female' ? 'she' : 'he',
+        object: gender === 'female' ? 'her' : 'him',
+        possessive: gender === 'female' ? 'her' : 'his'
+    };
+    
+    return template
+        .replace(/{name}/g, targetSoul.firstName)
+        .replace(/{subject}/g, pronouns.subject)
+        .replace(/{object}/g, pronouns.object)
+        .replace(/{possessive}/g, pronouns.possessive);
+  }, []);
 
   const checkPending = useCallback(() => {
     if (typeof window === 'undefined' || !user?.uid) {
@@ -207,24 +235,22 @@ export function RelationshipTrackerCard() {
       setIsSoulDialogOpen(true);
   };
 
-  const handleSoulSelected = async (soul: Soul) => {
-    if (!user || !firestore || !selectedActionId) return;
+  const performFinalLog = async (soul: Soul, actionId: string, notePrefix = '') => {
+    if (!user || !firestore) return;
     
-    setIsSoulDialogOpen(false);
-    setTogglingId(selectedActionId);
-
-    const action = actionItems.find(a => a.id === selectedActionId);
+    setTogglingId(actionId);
+    const action = actionItems.find(a => a.id === actionId);
     if (!action) return;
 
     const today = new Date();
     const dateString = format(today, 'yyyy-MM-dd');
     const batch = writeBatch(firestore);
 
-    const isProvisionAction = selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift';
+    const isProvisionAction = actionId === 'shared_meal' || actionId === 'gave_gift';
 
     if (!isProvisionAction) {
-        const wasCompleted = completedToday.includes(selectedActionId);
-        const newCompleted = wasCompleted ? completedToday : [...completedToday, selectedActionId];
+        const wasCompleted = completedToday.includes(actionId);
+        const newCompleted = wasCompleted ? completedToday : [...completedToday, actionId];
 
         const userRef = doc(firestore, 'users', user.uid);
         batch.update(userRef, {
@@ -242,12 +268,13 @@ export function RelationshipTrackerCard() {
     }
 
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
+    const logNote = notePrefix ? `${notePrefix} (${action.label})` : `Logged via Kingdom Connections: ${action.label}`;
     const logEntry = {
         date: new Date(), 
         note: isProvisionAction 
             ? `Initiated ${action.label} via Kingdom Connections` 
-            : `Logged via Kingdom Connections: ${action.label}`,
-        actions: [selectedActionId],
+            : logNote,
+        actions: [actionId],
         memberId: user.uid,
         memberName: memberName,
     };
@@ -276,31 +303,82 @@ export function RelationshipTrackerCard() {
                     provisions = stored ? JSON.parse(stored) : [];
                 } catch (e) { provisions = []; }
 
-                if (!provisions.some((p: any) => p.soulId === soul.id && p.actionId === selectedActionId)) {
+                if (!provisions.some((p: any) => p.soulId === soul.id && p.actionId === actionId)) {
                     provisions.push({
                         soulId: soul.id,
                         soulName: soul.firstName,
-                        actionId: selectedActionId,
+                        actionId: actionId,
                         timestamp: Date.now()
                     });
                 }
                 localStorage.setItem(key, JSON.stringify(provisions));
                 window.dispatchEvent(new Event('testify_pending_action_update'));
             }
-            const path = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-            router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
+            const path = actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+            router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${actionId}`);
         } else {
             toast({ title: 'Kingdom Impact Saved!', description: `Logged '${action.label}' for ${soul.firstName}.` });
         }
     } catch (err: any) {
-        const permissionError = new FirestorePermissionError({
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
             path: `BATCH_WRITE:RELATION_TRACKER:${soul.id}`,
             operation: 'write',
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
+        }, user));
     } finally {
         setTogglingId(null);
+        setActiveSoul(null);
     }
+  };
+
+  const handleSoulSelected = (soul: Soul) => {
+    if (!selectedActionId) return;
+    
+    setActiveSoul(soul);
+    setIsSoulDialogOpen(false);
+
+    if (selectedActionId === 'prayed_together') {
+        if (!soul.phone) {
+            toast({ variant: 'destructive', title: 'Phone Missing', description: `Please save a number for ${soul.firstName} first.` });
+            return;
+        }
+        setCustomPrayerText(resolveTemplate(prayerTemplates[0].text, soul));
+        setIsPrayerCustomizationOpen(true);
+    } else if (selectedActionId === 'text_message') {
+        if (!soul.phone) {
+            toast({ variant: 'destructive', title: 'Phone Missing', description: `Please save a number for ${soul.firstName} first.` });
+            return;
+        }
+        setIsCommChannelDialogOpen(true);
+    } else {
+        performFinalLog(soul, selectedActionId);
+    }
+  };
+
+  const handlePrayerConfirm = (text: string) => {
+    setCustomPrayerText(text);
+    setIsPrayerCustomizationOpen(false);
+    requestAnimationFrame(() => {
+        setIsCommChannelDialogOpen(true);
+    });
+  };
+
+  const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
+    if (!activeSoul?.phone || !selectedActionId) return;
+    const cleanPhone = activeSoul.phone.replace(/\+/g, '').replace(/\D/g, '');
+    
+    let message = customPrayerText || `Hi ${activeSoul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
+    const messageText = encodeURIComponent(message);
+    
+    if (channel === 'whatsapp') {
+        window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
+    } else {
+        window.location.href = `sms:${activeSoul.phone}?body=${messageText}`;
+    }
+    
+    const notePrefix = selectedActionId === 'prayed_together' ? `Prayed: ${message}` : `Messaged: ${message}`;
+    performFinalLog(activeSoul, selectedActionId, notePrefix);
+    setIsCommChannelDialogOpen(false);
+    setCustomPrayerText('');
   };
 
   const activeActionLabel = useMemo(() => 
@@ -502,10 +580,12 @@ export function RelationshipTrackerCard() {
         <Dialog open={isSoulDialogOpen} onOpenChange={setIsSoulDialogOpen}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                 <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="p-0 text-left">
-                        <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {activeActionLabel.toLowerCase()}?</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
-                    </DialogHeader>
+                    <div className="p-0 text-left">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {activeActionLabel.toLowerCase()}?</DialogTitle>
+                            <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
+                        </DialogHeader>
+                    </div>
                 </div>
                 <div className="p-6 text-left">
                     <SoulSelectionList 
@@ -517,6 +597,74 @@ export function RelationshipTrackerCard() {
             </DialogContent>
         </Dialog>
       )}
+
+      {/* Shared Prayer Customization Dialog */}
+      <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
+        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+            <div className="p-8 border-b bg-muted/10 text-left">
+                <DialogHeader>
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DialogDescription>
+                </DialogHeader>
+            </div>
+            <div className="p-8 space-y-6 text-left">
+                <div className="space-y-3 text-left">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Prayer Focus</label>
+                    <div className="flex flex-wrap gap-2 text-left">
+                        {prayerTemplates.map(t => (
+                            <Button 
+                                key={t.id} 
+                                variant="outline" 
+                                size="sm" 
+                                className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary"
+                                onClick={() => activeSoul && setCustomPrayerText(resolveTemplate(t.text, activeSoul))}
+                            >
+                                {t.label}
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="space-y-2 text-left">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Your Prayer</Label>
+                    <Textarea 
+                        value={customPrayerText}
+                        onChange={e => setCustomPrayerText(e.target.value)}
+                        className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6"
+                    />
+                </div>
+
+                <Button 
+                    onClick={() => handlePrayerConfirm(customPrayerText)} 
+                    disabled={!customPrayerText.trim()} 
+                    className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
+                >
+                    CONTINUE TO CHANNEL
+                </Button>
+            </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Shared Communication Channel Dialog */}
+      <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
+            <DialogHeader className="text-center space-y-2">
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                    <MessageSquare className="h-7 w-7 text-primary" />
+                </div>
+                <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Message Hub</DialogTitle>
+                <DialogDescription className="text-sm font-medium">How would you like to encourage {activeSoul?.firstName}?</DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-3 pt-6">
+                <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+                    <span className="flex items-center gap-2"><Globe className="h-5 w-5" /> WhatsApp</span>
+                </Button>
+                <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+                    <MessageSquare className="h-5 w-5" /> Standard SMS
+                </Button>
+            </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

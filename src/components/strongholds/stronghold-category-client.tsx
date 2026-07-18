@@ -1,9 +1,8 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -620,7 +619,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                                 <MoreHorizontal className="h-3.5 w-3.5" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="rounded-xl">
+                                                        <DropdownMenuContent align={isResAuthor ? "end" : "start"} className="rounded-xl">
                                                             <DropdownMenuItem onClick={() => { setResourceToEdit(res); setIsAddResourceOpen(true); }} className="rounded-lg">
                                                                 <Edit className="mr-2 h-4 w-4 text-primary" /> Edit
                                                             </DropdownMenuItem>

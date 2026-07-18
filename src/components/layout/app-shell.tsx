@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -665,7 +664,7 @@ function PendingProvisionReminder() {
                             const Icon = p.actionId === 'shared_meal' ? Utensils : Gift;
                             return (
                                 <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group text-left">
-                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
+                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">
                                         <Icon className="h-5 w-5 text-primary" />
                                     </div>
                                     <div className="min-w-0 flex-1 text-left">
@@ -674,8 +673,8 @@ function PendingProvisionReminder() {
                                             {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
                                         </p>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md">
+                                    <div className="flex items-center gap-2 text-left">
+                                        <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md text-left">
                                             <Link href={`${path}?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`}>
                                                 GO
                                             </Link>
@@ -1069,7 +1068,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                           <span className="font-black uppercase tracking-widest text-sm">Kindness Center</span>
                         </Link>
                         <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                          <Package className="h-6 w-6 text-primary" />
+                          <Package className="mr-2 h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Order Tracker</span>
                         </Link>
 
@@ -1116,7 +1115,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Provision</span>
                     </div>
                     <SheetHeader className="text-left flex-shrink-0">
-                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-left">Kindness Package</SheetTitle>
+                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-left text-balance">Kindness Package</SheetTitle>
                       <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Review your selections for the harvest.</SheetDescription>
                     </SheetHeader>
                 </div>
