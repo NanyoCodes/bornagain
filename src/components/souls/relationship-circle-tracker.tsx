@@ -39,9 +39,9 @@ function CategorySoulList({ souls }: { souls: Soul[] }) {
         const wonAt = safeToDate(soul.wonAt);
         return (
           <Link 
-            href="/dashboard/souls-won" 
+            href={`/dashboard/souls-won#${soul.id}`} 
             key={soul.id} 
-            className="flex items-center gap-4 p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group"
+            className="flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full"
           >
             <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
               <AvatarFallback className="font-black bg-primary/5 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
@@ -51,11 +51,11 @@ function CategorySoulList({ souls }: { souls: Soul[] }) {
                 <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
                 <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
               </div>
-              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
                 Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
               </p>
             </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+            <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
           </Link>
         );
       })}
@@ -127,15 +127,15 @@ export function RelationshipCircleTracker({
             {isMobile ? (
                 <Sheet open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="min-w-0">
-                                    <div className="flex items-center gap-2 mb-2">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <div className="flex items-center justify-between gap-4 text-left">
+                                <div className="min-w-0 text-left">
+                                    <div className="flex items-center gap-2 mb-2 text-left">
                                         <Users className="h-4 w-4 text-primary" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Relationship Directory</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Directory</span>
                                     </div>
-                                    <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase leading-tight">{selectedCategoryName} Circle</SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1">Viewing all converts in your {selectedCategoryName.toLowerCase()} group.</SheetDescription>
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedCategoryName} Circle</SheetTitle>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Viewing all converts in your {selectedCategoryName.toLowerCase()} group.</SheetDescription>
                                 </div>
                                 <Button 
                                     onClick={(e) => handleOpenLogFromCircle(e, selectedCategoryName)}
@@ -159,12 +159,12 @@ export function RelationshipCircleTracker({
             ) : (
                 <Dialog open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
-                        <div className="p-8 border-b bg-muted/10">
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="min-w-0">
-                                    <DialogHeader>
-                                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedCategoryName} Directory</DialogTitle>
-                                        <DialogDescription className="text-sm font-medium">Souls won within your {selectedCategoryName.toLowerCase()} circle.</DialogDescription>
+                        <div className="p-8 border-b bg-muted/10 text-left">
+                            <div className="flex items-center justify-between gap-4 text-left">
+                                <div className="min-w-0 text-left">
+                                    <DialogHeader className="text-left">
+                                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedCategoryName} Directory</DialogTitle>
+                                        <DialogDescription className="text-sm font-medium text-left">Souls won within your {selectedCategoryName.toLowerCase()} circle.</DialogDescription>
                                     </DialogHeader>
                                 </div>
                                 <Button 
@@ -230,12 +230,12 @@ export function RelationshipCircleTracker({
     return (
         <>
             <Card className={cn("overflow-hidden border-none shadow-sm bg-card/50 backdrop-blur-sm", className)}>
-                <CardHeader className="pb-3">
-                    <CardTitle className="text-lg flex items-center gap-2">
+                <CardHeader className="pb-3 text-left">
+                    <CardTitle className="text-lg flex items-center gap-2 text-left">
                         <Home className="h-5 w-5 text-primary" />
                         Relationship Circle Tracker
                     </CardTitle>
-                    <CardDescription className="font-medium">
+                    <CardDescription className="font-medium text-left">
                         Ensuring your closest circles are saved and nurtured in faith.
                     </CardDescription>
                 </CardHeader>
@@ -267,7 +267,7 @@ export function RelationshipCircleTracker({
                     {stats.family.count === 0 && (
                         <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3 shadow-inner">
                             <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                            <p className="text-xs text-primary font-medium leading-relaxed">
+                            <p className="text-xs text-primary font-medium leading-relaxed text-left">
                                 Have you shared the Gospel with your household? Log your family members here to prioritize their spiritual growth.
                             </p>
                         </div>
