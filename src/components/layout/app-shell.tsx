@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -111,6 +112,7 @@ const navItems = [
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
+  { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
   { href: "/dashboard/victory-hub", label: "Victory", icon: ShieldCheck, color: "text-primary" },
 ];
 

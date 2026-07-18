@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -536,9 +537,18 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                             &ldquo;{activeScripture.prayer}&rdquo;
                                         </p>
                                         <div className="pt-4 flex justify-start">
-                                            <AffirmationButton onClick={() => handleAmen(parseInt(selectedVerseIdx, 10))}>
+                                            <Button 
+                                                onClick={() => handleAmen(parseInt(selectedVerseIdx, 10))}
+                                                variant="outline" 
+                                                size="sm" 
+                                                className={cn(
+                                                    "h-8 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest transition-all",
+                                                    amenScriptureIdx === parseInt(selectedVerseIdx, 10) ? "bg-primary text-white border-none scale-105 shadow-lg" : "bg-background hover:bg-primary/5 text-primary/60 hover:text-primary"
+                                                )}
+                                            >
+                                                {amenScriptureIdx === parseInt(selectedVerseIdx, 10) ? <Check className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />}
                                                 AMEN
-                                            </AffirmationButton>
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
@@ -792,11 +802,10 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 </TabsContent>
             </Tabs>
 
-            {/* Drop Provision Content (Responsive Dialog/Sheet) */}
             {mounted && (
                 isMobile ? (
                     <Sheet open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left flex-shrink-0">
                                     <div className="flex items-center gap-2.5 mb-1.5 text-left">
