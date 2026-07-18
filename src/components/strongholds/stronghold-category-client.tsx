@@ -731,7 +731,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                                     <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Story
                                                                 </DropdownMenuItem>
                                                                 <DropdownMenuSeparator />
-                                                                <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg">
+                                                                <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive rounded-lg">
                                                                     <Trash2 className="mr-2 h-4 w-4" /> Remove from Circle
                                                                 </DropdownMenuItem>
                                                             </DropdownMenuContent>
@@ -763,7 +763,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                         <button className="w-full text-left outline-none group/post text-left">
                                                             <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left">
                                                                 <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
-                                                                <p className="text-base text-muted-foreground leading-relaxed italic font-medium text-left">
+                                                                <p className="text-base text-muted-foreground italic font-medium text-left">
                                                                     &ldquo;{post.text}&rdquo;
                                                                 </p>
                                                             </div>

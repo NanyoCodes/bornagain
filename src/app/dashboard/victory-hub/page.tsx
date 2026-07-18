@@ -37,6 +37,8 @@ import { Badge } from '@/components/ui/badge';
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { useCollection, useFirestore } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
 
 const strongholdCategories = [
     { 
@@ -162,32 +164,48 @@ const strongholdCategories = [
 ];
 
 function CategoryCard({ category }: { category: typeof strongholdCategories[0] }) {
+    const firestore = useFirestore();
     const circleLink = `/dashboard/strongholds/${category.name.toLowerCase()}`;
     const Icon = category.icon;
+
+    // Fetch unique participant count from posts in this category
+    const postsQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'victoryCircles', category.name.toLowerCase(), 'posts'));
+    }, [firestore, category.name]);
+    
+    const { data: posts } = useCollection<any>(postsQuery);
+    
+    const participantCount = useMemo(() => {
+        if (!posts) return 0;
+        return new Set(posts.map(p => p.authorId)).size;
+    }, [posts]);
     
     return (
         <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5">
-            <CardHeader className="p-8 pb-4">
+            <CardHeader className="p-8 pb-4 text-left">
                 <div className="flex justify-between items-start mb-6">
                     <div className={cn("h-16 w-16 rounded-[1.5rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform", category.bg)}>
                         <Icon className={cn("h-8 w-8", category.color)} />
                     </div>
-                    <Badge variant="outline" className="h-6 px-3 text-[10px] font-black uppercase tracking-widest bg-background/50">Circle</Badge>
+                    <Badge variant="outline" className="h-6 px-3 text-[10px] font-black uppercase tracking-widest bg-background/50">
+                        {participantCount} Participant{participantCount !== 1 ? 's' : ''}
+                    </Badge>
                 </div>
-                <CardTitle className="text-2xl font-black font-headline tracking-tight uppercase group-hover:text-primary transition-colors">
+                <CardTitle className="text-2xl font-black font-headline tracking-tight uppercase group-hover:text-primary transition-colors text-left">
                     {category.name}
                 </CardTitle>
-                <CardDescription className="text-sm font-medium mt-2 leading-relaxed">
+                <CardDescription className="text-sm font-medium mt-2 leading-relaxed text-left">
                     {category.desc}
                 </CardDescription>
             </CardHeader>
-            <CardContent className="px-8 pb-8 flex-grow">
+            <CardContent className="px-8 pb-8 flex-grow text-left">
                 <div className="relative pl-6 border-l-4 border-primary/20 py-1 italic text-xs text-muted-foreground font-medium text-left">
                     <Quote className="absolute top-0 right-0 h-8 w-8 opacity-5 pointer-events-none" />
                     &ldquo;{category.mission}&rdquo;
                 </div>
             </CardContent>
-            <CardFooter className="p-0 border-t mt-auto">
+            <CardFooter className="p-0 border-t mt-auto text-left">
                 <Button asChild variant="ghost" className="w-full h-14 rounded-none gap-2 font-black uppercase tracking-widest text-[11px] group/btn hover:bg-primary/5 hover:text-primary transition-all">
                     <Link href={circleLink}>
                         ENTER VICTORY CIRCLE <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
@@ -211,26 +229,26 @@ export default function VictoryHubPage() {
     }, [searchTerm]);
 
     return (
-        <div className="space-y-10 max-w-6xl mx-auto pb-32">
-            <header className="px-4 sm:px-0 space-y-6 pt-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-2 mb-2">
+        <div className="space-y-10 max-w-6xl mx-auto pb-32 text-left">
+            <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+                    <div className="space-y-1 text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left">
                             <ShieldCheck className="h-5 w-5 text-primary" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Recovery</span>
                         </div>
-                        <h1 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase">Victory Hub</h1>
-                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-xl text-balance italic">
+                        <h1 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left">Victory Hub</h1>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-xl text-balance italic text-left">
                             A sanctuary for transparency and spiritual breakthrough. Join a circle to find communal solutions for lasting victory.
                         </p>
                     </div>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex items-start gap-5 shadow-inner">
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex items-start gap-5 shadow-inner text-left">
                     <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1">
                         <Lock className="h-6 w-6 text-white" />
                     </div>
-                    <div>
+                    <div className="text-left">
                         <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left">Choice-Based Sanctuary</h3>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance text-left">
                             Participation in Victory Circles offers <span className="text-foreground font-bold underline decoration-primary/30">choice-based anonymity</span>. You can choose to appear as yourself or post anonymously to ensure you can bring your struggles into the Light without fear, receiving support from the global body of Christ.
@@ -238,18 +256,18 @@ export default function VictoryHubPage() {
                     </div>
                 </div>
 
-                <div className="relative">
+                <div className="relative text-left">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
                     <Input 
                         placeholder="Search for a struggle circle..." 
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="h-14 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-lg font-bold"
+                        className="h-14 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-lg font-bold w-full"
                     />
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
                 {filteredCategories.length > 0 ? (
                     filteredCategories.map(cat => (
                         <CategoryCard key={cat.name} category={cat} />
