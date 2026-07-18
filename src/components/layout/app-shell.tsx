@@ -243,7 +243,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
         </div>
       </nav>
         
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 text-left">
         {isSearchVisible && (
           <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-5 w-5 md:h-6 md:w-6" />
@@ -412,7 +412,7 @@ function BottomNavBar() {
     
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-3 py-1">
+        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-3 py-1 text-left">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -424,7 +424,7 @@ function BottomNavBar() {
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex flex-col items-center justify-center p-1.5 rounded-xl w-full"
+                  className="relative flex flex-col items-center justify-center p-1.5 rounded-xl w-full text-left"
                   whileTap={{ scale: 0.85 }}
                 >
                   {isActive && (
@@ -582,10 +582,10 @@ function PendingProvisionReminder() {
                     className="rounded-[2rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col group cursor-pointer"
                     onClick={() => isMultiple && setShowList(true)}
                 >
-                    <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none text-left">
                         <ShoppingCart className="h-16 w-16 text-primary" />
                     </div>
-                    <CardContent className="p-4 sm:p-5 flex items-center gap-4">
+                    <CardContent className="p-4 sm:p-5 flex items-center gap-4 text-left">
                         <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform">
                             {isMultiple ? <PlusCircle className="h-6 w-6 text-white" /> : <Icon className="h-6 w-6 text-white" />}
                         </div>
@@ -639,29 +639,29 @@ function PendingProvisionReminder() {
                 isMobile ? "bottom-24" : "bottom-8"
             )}
         >
-            <Card className="rounded-[2.5rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col max-h-[60vh]">
-                <CardHeader className="p-6 pb-2 border-b bg-muted/5 flex flex-row items-center justify-between shrink-0">
+            <Card className="rounded-[2.5rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col max-h-[60vh] text-left">
+                <CardHeader className="p-6 pb-2 border-b bg-muted/5 flex flex-row items-center justify-between shrink-0 text-left">
                     <div className="space-y-0.5 text-left">
-                        <CardTitle className="text-lg font-black font-headline uppercase tracking-tight">Kindness Tasks</CardTitle>
-                        <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-primary">Pending acts for the harvest</CardDescription>
+                        <CardTitle className="text-lg font-black font-headline uppercase tracking-tight text-left">Kindness Tasks</CardTitle>
+                        <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-primary text-left">Pending acts for the harvest</CardDescription>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => setShowList(false)} className="rounded-full">
                         <X className="h-5 w-5" />
                     </Button>
                 </CardHeader>
-                <ScrollArea className="flex-1 min-h-0">
-                    <div className="p-4 space-y-3">
+                <ScrollArea className="flex-1 min-h-0 text-left">
+                    <div className="p-4 space-y-3 text-left">
                         {provisions.map((p) => {
                             const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
                             const Icon = p.actionId === 'shared_meal' ? Utensils : Gift;
                             return (
-                                <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group">
+                                <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group text-left">
                                     <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
                                         <Icon className="h-5 w-5 text-primary" />
                                     </div>
                                     <div className="min-w-0 flex-1 text-left">
-                                        <p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{p.soulName}</p>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                                        <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{p.soulName}</p>
+                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                                             {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
                                         </p>
                                     </div>
@@ -937,7 +937,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
         <div className="relative mb-8"><Loader2 className="h-12 w-12 animate-spin text-primary" /><div className="absolute inset-0 flex items-center justify-center"><div className="h-2 w-2 rounded-full bg-primary animate-pulse" /></div></div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">{loadingMessage || "GOD FIRST"}</p>
-        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">Kingdom Network Active</p>
+        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left">Kingdom Network Active</p>
       </div>
     );
   }
@@ -961,7 +961,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
             )}
             <div className="flex-1 relative min-h-0">
             <main ref={scrollContainerRef} className={cn("absolute inset-0", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
-                <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-7xl p-4 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
+                <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
                     <PageTransition>{children}</PageTransition>
                 </div>
             </main>
@@ -1107,7 +1107,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                       <SheetDescription className="text-xs sm:text-sm font-medium mt-1">Review your selections for the harvest.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 overscroll-contain">
+                <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left">
                     <div className="p-6 sm:p-8 space-y-10 text-left">
                         {cartItems.length > 0 ? (
                             <div className="space-y-10">
@@ -1123,7 +1123,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                             </div>
                                             <div className="space-y-2 text-left">
                                                 {group.items.map(c => (
-                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group gap-3">
+                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group gap-3 text-left">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                                                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div>
                                                             <div className="min-w-0 flex-1 text-left">
@@ -1207,7 +1207,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <Suspense fallback={
         <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Kingdom Network Active</p>
+            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Kingdom Network Active</p>
         </div>
     }>
         <ShellInner>{children}</ShellInner>

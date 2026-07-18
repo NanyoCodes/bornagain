@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -66,7 +65,6 @@ import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
-import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
 import { format } from "date-fns";
 import { safeToDate, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -87,6 +85,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
 
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
   loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,

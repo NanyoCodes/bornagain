@@ -243,7 +243,7 @@ export default function LandingPage() {
                  viewport={{ once: true }}
                  className="space-y-3"
                >
-                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-left">
                    <ShieldCheck className="h-4 w-4 text-primary" /> Moderation
                  </h3>
                  <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
@@ -257,7 +257,7 @@ export default function LandingPage() {
                  transition={{ delay: 0.1 }}
                  className="space-y-3"
                >
-                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-left">
                    <Zap className="h-4 w-4 text-primary" /> Integrity
                  </h3>
                  <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
@@ -271,7 +271,7 @@ export default function LandingPage() {
                  transition={{ delay: 0.2 }}
                  className="space-y-3"
                >
-                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-left">
                    <HeartHandshake className="h-4 w-4 text-primary" /> Partnerships
                  </h3>
                  <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
@@ -299,7 +299,7 @@ export default function LandingPage() {
                     <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4", feature.bgColor)}>
                       <feature.icon className={cn("h-6 w-6", feature.color)} />
                     </div>
-                    <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">{feature.title}</CardTitle>
+                    <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="px-6 sm:px-8 pb-8">
                     <p className="text-muted-foreground leading-relaxed font-medium text-sm sm:text-base text-left">
@@ -414,9 +414,9 @@ export default function LandingPage() {
                             <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shrink-0">
                               <AvatarFallback className="text-[10px] sm:text-xs bg-primary/10 text-primary font-black uppercase">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0">
-                              <p className="text-[10px] sm:text-xs font-black uppercase tracking-tight truncate">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
-                              <p className="text-[8px] sm:text-[9px] font-bold text-primary uppercase tracking-widest truncate">{t.category}</p>
+                            <div className="min-w-0 text-left">
+                              <p className="text-[10px] sm:text-xs font-black uppercase tracking-tight truncate text-left">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
+                              <p className="text-[8px] sm:text-[9px] font-bold text-primary uppercase tracking-widest truncate text-left">{t.category}</p>
                             </div>
                           </div>
                         </div>
@@ -492,7 +492,7 @@ export default function LandingPage() {
               <ul className="space-y-3">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Glory Feed</Link></li>
                 <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Mission Hub</Link></li>
-                <li><Link href="/progress" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Harvest Progress</Link></li>
+                <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Harvest Progress</Link></li>
                 <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Directory</Link></li>
               </ul>
             </div>
