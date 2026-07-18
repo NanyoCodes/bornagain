@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -82,6 +83,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { CircleResource } from '@/lib/types';
+import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
 
 const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
   pride: [
