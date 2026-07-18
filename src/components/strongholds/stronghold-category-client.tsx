@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -61,7 +61,7 @@ import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { CommentSection } from '../testimonies/comment-section';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
   DropdownMenu,
@@ -834,7 +834,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                                     </DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</SheetDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">

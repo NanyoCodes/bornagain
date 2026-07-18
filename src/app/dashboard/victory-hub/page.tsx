@@ -193,7 +193,7 @@ function CategoryCard({ category }: { category: typeof strongholdCategories[0] }
                     </Badge>
                 </div>
                 <CardTitle className="text-2xl font-black font-headline tracking-tight uppercase group-hover:text-primary transition-colors text-left">
-                    {category.name}
+                    VICTORY OVER {category.name}
                 </CardTitle>
                 <CardDescription className="text-sm font-medium mt-2 leading-relaxed text-left">
                     {category.desc}

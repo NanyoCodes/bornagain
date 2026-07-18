@@ -121,7 +121,7 @@ function SoulSelectionList({
                             </Button>
                         ))
                     ) : (
-                        <div className="text-center py-16 px-8 space-y-3 text-left text-center">
+                        <div className="text-center py-16 px-8 space-y-3 text-left">
                             <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left">
                                 <Users className="h-6 w-6 text-muted-foreground opacity-20 text-left" />
                             </div>
@@ -152,10 +152,6 @@ export function RelationshipTrackerCard() {
   const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
   
-  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = React.useState(false);
-  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
-  const [customPrayerText, setCustomPrayerText] = React.useState('');
-
   const { userProfile, loading: profileLoading } = useUserProfile();
 
   const soulsQuery = useMemo(() => {
