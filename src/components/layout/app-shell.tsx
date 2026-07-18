@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -412,10 +411,13 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 function BottomNavBar() {
     const pathname = usePathname();
     
+    // Space management for mobile bottom nav: Remove Accountability (Partners) specifically
+    const mobileNavItems = navItems.filter(item => item.href !== '/accountability');
+    
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
         <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-3 py-1 text-left">
-          {navItems.map((item) => {
+          {mobileNavItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
               <Link
@@ -780,10 +782,10 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     const key = `testify_marketplace_cart_${user.uid}`;
     const existing = cart[itemId];
     if (!existing) return;
+    const { [itemId]: _, ...rest } = cart;
     const newQty = existing.quantity + delta;
     let next;
     if (newQty <= 0) {
-        const { [itemId]: _, ...rest } = cart;
         next = rest;
     } else {
         next = { ...cart, [itemId]: { ...existing, quantity: newQty } };
