@@ -22,7 +22,9 @@ import {
     Cloud,
     Globe,
     BookOpen,
-    Share2
+    Share2,
+    Banknote,
+    ShoppingBag
 } from 'lucide-react';
 import { 
     Card, 
@@ -65,6 +67,14 @@ const strongholdCategories = [
         icon: ShieldAlert, 
         color: 'text-blue-600', 
         bg: 'bg-blue-600/10' 
+    },
+    { 
+        name: 'Poverty', 
+        desc: 'Breaking the spirit of lack to walk in divine abundance and stewardship.', 
+        mission: '2 Corinthians 8:9 - For you know the grace of our Lord Jesus Christ, that though he was rich, yet for your sake he became poor, so that you through his poverty might become rich.',
+        icon: Banknote, 
+        color: 'text-emerald-600', 
+        bg: 'bg-emerald-600/10' 
     },
     { 
         name: 'Unforgiveness', 

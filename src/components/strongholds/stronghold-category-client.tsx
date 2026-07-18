@@ -80,6 +80,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 import type { CircleResource } from '@/lib/types';
 
 const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
@@ -94,6 +95,11 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
   ],
   anger: [
     { verse: "James 1:19-20", text: "Everyone should be quick to listen, slow to speak and slow to become angry, because human anger does not produce the righteousness that God desires.", prayer: "Lord, put a guard over my mouth and a peace in my spirit. Let Your righteousness be my response. Amen." }
+  ],
+  poverty: [
+    { verse: "2 Corinthians 8:9", text: "For you know the grace of our Lord Jesus Christ, that though he was rich, yet for your sake he became poor, so that you through his poverty might become rich.", prayer: "Lord Jesus, I thank You for Your sacrifice. I break the mindset of lack and declare that through Your poverty, I have been made rich in grace and provision. Amen." },
+    { verse: "Philippians 4:19", text: "And my God will meet all your needs according to the riches of his glory in Christ Jesus.", prayer: "Father, I trust in Your limitless resources. You are my source and my provider. I believe every need is met today. Amen." },
+    { verse: "Psalm 37:25", text: "I was young and now I am old, yet I have never seen the righteous forsaken or their children begging bread.", prayer: "Thank You, Lord, for Your faithfulness. I am the righteous in Christ, and I declare that I and my house shall never lack bread. Amen." }
   ],
   other: [
     { verse: "Philippians 4:13", text: "I can do all this through him who gives me strength.", prayer: "Whatever I face today, I have the victory through Your power, Jesus. Amen." },
