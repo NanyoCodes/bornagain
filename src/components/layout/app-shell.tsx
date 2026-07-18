@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -601,7 +602,7 @@ function PendingProvisionReminder() {
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5">
                                 {isMultiple ? `${provisions.length} Acts of Kindness` : 'Finish Provision'}
                             </p>
-                            <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight">
+                            <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight text-left">
                                 {isMultiple 
                                     ? `Click to view pending gifts` 
                                     : `Complete ${displayItem.actionId === 'shared_meal' ? 'meal' : 'gift'} for ${displayItem.soulName}`
@@ -657,7 +658,7 @@ function PendingProvisionReminder() {
                         <X className="h-5 w-5" />
                     </Button>
                 </CardHeader>
-                <ScrollArea className="flex-1 min-h-0">
+                <ScrollArea className="flex-1 min-h-0 overscroll-contain">
                     <div className="p-4 space-y-3">
                         {provisions.map((p) => {
                             const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
@@ -668,8 +669,8 @@ function PendingProvisionReminder() {
                                         <Icon className="h-5 w-5 text-primary" />
                                     </div>
                                     <div className="min-w-0 flex-1 text-left">
-                                        <p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{p.soulName}</p>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                                        <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{p.soulName}</p>
+                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                                             {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
                                         </p>
                                     </div>
@@ -1032,71 +1033,71 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Identity</p>
                         <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <User className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Profile</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Profile</span>
                         </Link>
                         <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <Settings className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Settings</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Settings</span>
                         </Link>
                         <Link href="/accountability" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <HeartHandshake className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Partners</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Partners</span>
                         </Link>
                         
                         <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Core Sectors</p>
                         {navItems.filter(item => item.href !== '/dashboard/victory-hub' && item.href !== '/accountability').map((item) => (
                           <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                             <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", item.color)} />
-                            <span className="font-black uppercase tracking-widest text-sm">{item.label}</span>
+                            <span className="font-black uppercase tracking-widest text-sm text-left">{item.label}</span>
                           </Link>
                         ))}
 
                         <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Recovery & Provision</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Recovery & Provision</p>
                         <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <ShieldCheck className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Victory Hub</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Victory Hub</span>
                         </Link>
                         <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <Store className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Meals Center</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Meals Center</span>
                         </Link>
                         <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <Gift className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Kindness Center</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Kindness Center</span>
                         </Link>
                         <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <Package className="mr-2 h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Order Tracker</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Order Tracker</span>
                         </Link>
 
                         <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Study Tools</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Study Tools</p>
                         <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <BookOpen className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Bible Reader</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Bible Reader</span>
                         </Link>
                         <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <Edit className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Journal</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Journal</span>
                         </Link>
 
                         <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Resources</p>
                         <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <BookMarked className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">App Guide</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">App Guide</span>
                         </Link>
                         <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <BookOpen className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Resources</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Resources</span>
                         </Link>
 
                         <Separator className="my-6 opacity-50" />
                         <button onClick={() => { signOut(getAuth()).then(() => router.push("/login")); setIsMenuOpen(false); }} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive">
                           <LogOut className="h-6 w-6" />
-                          <span className="font-black uppercase tracking-widest text-sm">Logout</span>
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Logout</span>
                         </button>
                     </div>
                 </ScrollArea>
@@ -1111,11 +1112,11 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                 <div className="p-6 sm:p-8 border-b flex-shrink-0 bg-muted/10">
                     <div className="flex items-center gap-2 mb-2 text-left">
                         <ShoppingCart className="h-4 w-4 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Provision</span>
                     </div>
-                    <SheetHeader className="text-left flex-shrink-0">
-                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance">Kindness Package</SheetTitle>
-                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1">Review your selections for the harvest.</SheetDescription>
+                    <SheetHeader className="text-left flex-shrink-0 text-left">
+                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left">Kindness Package</SheetTitle>
+                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Review your selections for the harvest.</SheetDescription>
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 overscroll-contain">
@@ -1158,16 +1159,16 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                 </div>
                                 <div className="space-y-6">
                                     <div className="space-y-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label>
-                                        <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Recipient Name</Label>
+                                        <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label>
-                                        <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" />
+                                    <div className="space-y-2 text-left">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Logistical Instructions</Label>
+                                        <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" />
                                     </div>
                                 </div>
-                                <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label>
+                                <div className="space-y-4 text-left">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label>
                                     <div className="space-y-3">
                                         {cartByVendor.map(v => (
                                             <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden">

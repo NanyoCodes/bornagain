@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
@@ -291,7 +292,7 @@ function TestimoniesContent() {
 
   return (
     <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
         <div className="lg:col-span-8 space-y-6 md:space-y-10 text-left">
             <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-3xl border-x-0 sm:border-x -mx-3 sm:mx-0 text-left bg-card/50 backdrop-blur-sm overflow-hidden">
                 <CardContent className="p-3 sm:p-6 text-left">
@@ -337,7 +338,7 @@ function TestimoniesContent() {
                 </TabsList>
                 
                 <TabsContent value="testimonies" className="outline-none text-left">
-                    <div className="flex flex-col gap-0 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
+                    <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
                         {loading ? (
                         [...Array(3)].map((_, i) => (
                             <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
@@ -357,7 +358,7 @@ function TestimoniesContent() {
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
                             <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
                             <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Your Altar of Praise</h3>
-                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-left text-center">
                             Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
                             </p>
                         </div>
@@ -366,7 +367,7 @@ function TestimoniesContent() {
                 </TabsContent>
                 
                 <TabsContent value="prayers" className="outline-none text-left">
-                    <div className="flex flex-col gap-0 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
+                    <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
                         {loading ? (
                         [...Array(3)].map((_, i) => (
                             <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
@@ -384,7 +385,7 @@ function TestimoniesContent() {
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
                             <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
                             <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">United in Faith</h3>
-                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-left text-center">
                             No one should walk through a trial alone. Share your request with the global community.
                             </p>
                         </div>
@@ -456,7 +457,7 @@ function TestimoniesContent() {
               <Sheet open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <SheetHeader className="text-left">
+                    <SheetHeader className="text-left text-left">
                       <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{prayerToAnswer ? 'Record Miracle' : 'Share Testimony'}</SheetTitle>
                       <SheetDescription className="text-sm font-medium mt-1 text-left">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others with what God has done."}</SheetDescription>
                     </SheetHeader>

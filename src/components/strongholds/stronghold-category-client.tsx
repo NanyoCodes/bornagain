@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -502,7 +503,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 <div className="space-y-6 text-left">
                                     <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group text-left">
                                         <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110 text-left" />
-                                        <p className="text-base sm:text-xl text-muted-foreground italic font-medium text-left text-balance">
+                                        <p className="text-base sm:text-xl text-muted-foreground italic font-medium text-left text-balance text-left">
                                             &ldquo;{activeScripture.text}&rdquo;
                                         </p>
                                         <p className="text-xs font-black uppercase tracking-[0.2em] text-primary text-right mt-4 text-left">— {activeScripture.verse}</p>
@@ -554,7 +555,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                             {resourcesLoading ? (
-                                <div className="col-span-full flex justify-center py-12 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
+                                <div className="col-span-full flex justify-center py-12 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div>
                             ) : filteredResources && filteredResources.length > 0 ? (
                                 filteredResources.map(res => {
                                     const isResAuthor = user?.uid === res.authorId;
