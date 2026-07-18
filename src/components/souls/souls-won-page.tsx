@@ -26,7 +26,8 @@ import {
   CheckCircle2,
   X,
   ArrowRight,
-  HelpCircle
+  HelpCircle,
+  ClipboardList
 } from "lucide-react";
 import { 
   Dialog, 
@@ -58,7 +59,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Soul, Campaign, Fellowship, UserProfile } from "@/lib/types";
+import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where } from "firebase/firestore";

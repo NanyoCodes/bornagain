@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -785,7 +785,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                         Participate
                                                     </Button>
                                                  </PostResponsesDialog>
-                                            </CardHeader>
+                                            </CardFooter>
                                         </Card>
                                     );
                                 })

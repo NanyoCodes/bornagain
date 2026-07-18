@@ -302,28 +302,28 @@ function TestimoniesContent() {
                     onClick={() => setIsTestimonyDialogOpen(true)}
                     disabled={loading}
                     >
-                    <span className="truncate">What has God done today?</span>
+                    <span className="truncate text-left">What has God done today?</span>
                     </Button>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0 text-left">
                     <Button 
                         variant="secondary" 
                         size="icon" 
-                        className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg"
+                        className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg text-left"
                         onClick={() => setIsTestimonyDialogOpen(true)}
                         disabled={loading}
                         title="Share Testimony"
                     >
-                        < Newspaper className="h-5 w-5" />
+                        < Newspaper className="h-5 w-5 text-left" />
                     </Button>
                     <Button 
                         variant="outline" 
                         size="icon" 
-                        className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-md bg-background"
+                        className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-md bg-background text-left"
                         onClick={() => setIsPrayerDialogOpen(true)}
                         disabled={loading}
                         title="Request Prayer"
                     >
-                        <HandHeart className="h-5 w-5" />
+                        <HandHeart className="h-5 w-5 text-left" />
                     </Button>
                     </div>
                 </div>
@@ -340,7 +340,7 @@ function TestimoniesContent() {
                     <div className="flex flex-col gap-4 w-full pb-24 sm:pb-12 text-left -mx-4 sm:mx-0">
                         {loading ? (
                         [...Array(3)].map((_, i) => (
-                            <Card key={i} className="flex flex-col h-full rounded-2xl border bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
+                            <Card key={i} className="flex flex-col h-full rounded-2xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
                         ))
                         ) : filteredTestimonies.map((testimony) => (
                             <TestimonyCard 
@@ -354,10 +354,10 @@ function TestimoniesContent() {
                             />
                         ))}
                         {!loading && filteredTestimonies?.length === 0 && (
-                        <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
-                            <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
+                        <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
+                            <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
                             <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Your Altar of Praise</h3>
-                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-left text-center">
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
                             Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
                             </p>
                         </div>
@@ -369,7 +369,7 @@ function TestimoniesContent() {
                     <div className="flex flex-col gap-4 w-full pb-24 sm:pb-12 text-left -mx-4 sm:mx-0">
                         {loading ? (
                         [...Array(3)].map((_, i) => (
-                            <Card key={i} className="flex flex-col h-full rounded-2xl border bg-card/50 backdrop-blur-sm"><CardContent className="p-6 space-y-4"><Skeleton className="h-12 w-12 rounded-full" /><div className="w-full space-y-2"><Skeleton className="h-4 w-1/4" /><Skeleton className="h-4 w-1/5" /></div><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /></CardContent></Card>
+                            <Card key={i} className="flex flex-col h-full rounded-2xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
                         ))
                         ) : filteredPrayerRequests.map((req) => (
                         <PrayerRequestCard 
@@ -381,10 +381,10 @@ function TestimoniesContent() {
                         />
                         ))}
                         {!loading && filteredPrayerRequests?.length === 0 && (
-                        <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
-                            <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6" />
+                        <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
+                            <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
                             <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">United in Faith</h3>
-                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-left text-center">
+                            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
                             No one should walk through a trial alone. Share your request with the global community.
                             </p>
                         </div>
@@ -403,14 +403,14 @@ function TestimoniesContent() {
           <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
           <AlertDialogHeader className="text-left">
               <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight text-left">Remove from Feed?</AlertDialogTitle>
-              <AlertDialogDescription className="text-left text-sm font-medium">
+              <AlertDialogDescription className="text-left text-sm font-medium text-left">
               This will permanently delete this {itemToDelete?.type}. This action cannot be undone.
               </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3 mt-6 text-left">
               <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
               Confirm Deletion
               </AlertDialogAction>
           </AlertDialogFooter>
