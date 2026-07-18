@@ -37,7 +37,7 @@ import type { Testimony, PrayerRequest, UserProfile, AccountabilityRequest } fro
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where, getDocs, writeBatch } from "firebase/firestore";
+import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where } from "firebase/firestore";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { haversineDistance, safeToDate } from "@/lib/utils";
@@ -286,7 +286,7 @@ export default function TestimoniesPage() {
   return (
     <div 
       className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4"
-      inert={isAnyModalOpen ? true : undefined}
+      inert={isAnyModalOpen}
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10">

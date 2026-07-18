@@ -339,6 +339,12 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                     <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                  <Link href="/accountability">
+                    <HeartHandshake className="mr-2 h-4 w-4" />
+                    <span>Partners</span>
+                  </Link>
+                </DropdownMenuItem>
                 
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Recovery Hub</DropdownMenuLabel>
@@ -411,7 +417,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 function BottomNavBar() {
     const pathname = usePathname();
     
-    // Bottom nav shows top-level sectors (Partners filtered out for crowding)
     const mobileNavItems = navItems.filter(item => item.href !== '/accountability');
     
     return (
@@ -1215,7 +1220,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <Suspense fallback={
         <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left text-left">Kingdom Network Active</p>
+            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Kingdom Network Active</p>
         </div>
     }>
         <ShellInner>{children}</ShellInner>

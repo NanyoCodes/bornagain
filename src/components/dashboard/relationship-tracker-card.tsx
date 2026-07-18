@@ -121,7 +121,7 @@ function SoulSelectionList({
                             </Button>
                         ))
                     ) : (
-                        <div className="text-center py-16 px-8 space-y-3 text-left">
+                        <div className="text-center py-16 px-8 space-y-3 text-left text-center">
                             <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left">
                                 <Users className="h-6 w-6 text-muted-foreground opacity-20 text-left" />
                             </div>
@@ -148,8 +148,6 @@ export function RelationshipTrackerCard() {
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
-  const [helpNeedTargetSoul, setHelpNeedTargetSoul] = useState<Soul | null>(null);
-  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
   
   const { userProfile, loading: profileLoading } = useUserProfile();
@@ -208,127 +206,103 @@ export function RelationshipTrackerCard() {
       setIsSoulDialogOpen(true);
   };
 
-  const performLogging = async (soul: Soul, actionId: string, customNote?: string) => {
-      if (!user || !firestore) return;
-
-      const action = actionItems.find(a => a.id === actionId);
-      if (!action) return;
-
-      const today = new Date();
-      const dateString = format(today, 'yyyy-MM-dd');
-      const batch = writeBatch(firestore);
-
-      const isProvisionAction = actionId === 'shared_meal' || actionId === 'gave_gift';
-
-      if (!isProvisionAction) {
-          const wasCompleted = completedToday.includes(actionId);
-          const newCompleted = wasCompleted ? completedToday : [...completedToday, actionId];
-
-          const userRef = doc(firestore, 'users', user.uid);
-          batch.update(userRef, {
-              'dailyDiscipline.completed': newCompleted,
-              'dailyDiscipline.lastUpdated': serverTimestamp(),
-          });
-
-          const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
-          batch.set(historyRef, {
-              completed: newCompleted,
-              date: serverTimestamp()
-          }, { merge: true });
-          
-          setCompletedToday(newCompleted);
-      }
-
-      const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
-      const logEntry = {
-          date: new Date(), 
-          note: customNote 
-              ? `Logged via Kingdom Connections: ${action.label}. Note: ${customNote}`
-              : isProvisionAction 
-                  ? `Initiated ${action.label} via Kingdom Connections` 
-                  : `Logged via Kingdom Connections: ${action.label}`,
-          actions: [actionId],
-          memberId: user.uid,
-          memberName: memberName,
-      };
-
-      const soulUserRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
-      const globalSoulRef = doc(firestore, 'souls', soul.id);
-      
-      const updateData: any = {
-          followUpLog: arrayUnion(logEntry),
-          lastUpdatedAt: serverTimestamp(),
-      };
-
-      if (soul.status === 'New') {
-          updateData.status = 'Contacted';
-      }
-
-      batch.update(soulUserRef, updateData);
-      batch.update(globalSoulRef, updateData);
-
-      try {
-          await batch.commit();
-
-          if (isProvisionAction) {
-              if (typeof window !== 'undefined') {
-                  const key = `testify_pending_provisions_${user.uid}`;
-                  const stored = localStorage.getItem(key);
-                  let provisions = [];
-                  try {
-                      provisions = stored ? JSON.parse(stored) : [];
-                  } catch (e) { provisions = []; }
-
-                  if (!provisions.some((p: any) => p.soulId === soul.id && p.actionId === actionId)) {
-                      provisions.push({
-                          soulId: soul.id,
-                          soulName: soul.firstName,
-                          actionId: actionId,
-                          timestamp: Date.now()
-                      });
-                  }
-                  localStorage.setItem(key, JSON.stringify(provisions));
-                  window.dispatchEvent(new Event('testify_pending_action_update'));
-              }
-              const path = actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-              router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${actionId}`);
-              toast({ title: 'Opening Hub...', description: `Finish act of kindness for ${soul.firstName}.` });
-          } else {
-              toast({ title: 'Kingdom Impact Saved!', description: `Logged '${action.label}' for ${soul.firstName}.` });
-          }
-      } catch (err: any) {
-          const permissionError = new FirestorePermissionError({
-              path: `BATCH_WRITE:RELATION_TRACKER:${soul.id}`,
-              operation: 'write',
-          }, user);
-          errorEmitter.emit('permission-error', permissionError);
-      }
-  };
-
-  const handleHelpNeedConfirm = (note: string) => {
-    if (!helpNeedTargetSoul) return;
-    setTogglingId('helped_with_need');
-    performLogging(helpNeedTargetSoul, 'helped_with_need', note).finally(() => {
-        setIsHelpNeedDialogOpen(false);
-        setHelpNeedTargetSoul(null);
-        setTogglingId(null);
-    });
-  };
-
   const handleSoulSelected = async (soul: Soul) => {
     if (!user || !firestore || !selectedActionId) return;
     
     setIsSoulDialogOpen(false);
+    setTogglingId(selectedActionId);
 
-    if (selectedActionId === 'helped_with_need') {
-        setHelpNeedTargetSoul(soul);
-        setIsHelpNeedDialogOpen(true);
-        return;
+    const action = actionItems.find(a => a.id === selectedActionId);
+    if (!action) return;
+
+    const today = new Date();
+    const dateString = format(today, 'yyyy-MM-dd');
+    const batch = writeBatch(firestore);
+
+    const isProvisionAction = selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift';
+
+    if (!isProvisionAction) {
+        const wasCompleted = completedToday.includes(selectedActionId);
+        const newCompleted = wasCompleted ? completedToday : [...completedToday, selectedActionId];
+
+        const userRef = doc(firestore, 'users', user.uid);
+        batch.update(userRef, {
+            'dailyDiscipline.completed': newCompleted,
+            'dailyDiscipline.lastUpdated': serverTimestamp(),
+        });
+
+        const historyRef = doc(firestore, 'users', user.uid, 'disciplineHistory', dateString);
+        batch.set(historyRef, {
+            completed: newCompleted,
+            date: serverTimestamp()
+        }, { merge: true });
+        
+        setCompletedToday(newCompleted);
     }
 
-    setTogglingId(selectedActionId);
-    await performLogging(soul, selectedActionId);
-    setTogglingId(null);
+    const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
+    const logEntry = {
+        date: new Date(), 
+        note: isProvisionAction 
+            ? `Initiated ${action.label} via Kingdom Connections` 
+            : `Logged via Kingdom Connections: ${action.label}`,
+        actions: [selectedActionId],
+        memberId: user.uid,
+        memberName: memberName,
+    };
+
+    const soulUserRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
+    const globalSoulRef = doc(firestore, 'souls', soul.id);
+    
+    const updateData: any = {
+        followUpLog: arrayUnion(logEntry),
+        lastUpdatedAt: serverTimestamp(),
+    };
+
+    if (soul.status === 'New') {
+        updateData.status = 'Contacted';
+    }
+
+    batch.update(soulUserRef, updateData);
+    batch.update(globalSoulRef, updateData);
+
+    try {
+        await batch.commit();
+
+        if (isProvisionAction) {
+            if (typeof window !== 'undefined') {
+                const key = `testify_pending_provisions_${user.uid}`;
+                const stored = localStorage.getItem(key);
+                let provisions = [];
+                try {
+                    provisions = stored ? JSON.parse(stored) : [];
+                } catch (e) { provisions = []; }
+
+                if (!provisions.some((p: any) => p.soulId === soul.id && p.actionId === selectedActionId)) {
+                    provisions.push({
+                        soulId: soul.id,
+                        soulName: soul.firstName,
+                        actionId: selectedActionId,
+                        timestamp: Date.now()
+                    });
+                }
+                localStorage.setItem(key, JSON.stringify(provisions));
+                window.dispatchEvent(new Event('testify_pending_action_update'));
+            }
+            const path = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+            router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
+        } else {
+            toast({ title: 'Kingdom Impact Saved!', description: `Logged '${action.label}' for ${soul.firstName}.` });
+        }
+    } catch (err: any) {
+        const permissionError = new FirestorePermissionError({
+            path: `BATCH_WRITE:RELATION_TRACKER:${soul.id}`,
+            operation: 'write',
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
+        setTogglingId(null);
+    }
   };
 
   const activeActionLabel = useMemo(() => 

@@ -76,6 +76,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuPortal,
   DropdownMenuSub,
@@ -138,7 +139,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
   );
 }
 
-export function SoulsWonPage() {
+export default function SoulsWonPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
@@ -681,5 +682,3 @@ export function SoulsWonPage() {
     </div>
   );
 }
-
-export default SoulsWonPage;

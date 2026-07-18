@@ -21,7 +21,8 @@ import {
     Eye,
     Cloud,
     Globe,
-    BookOpen
+    BookOpen,
+    Share2
 } from 'lucide-react';
 import { 
     Card, 
@@ -37,8 +38,8 @@ import { Badge } from '@/components/ui/badge';
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { useCollection, useFirestore } from '@/firebase';
-import { collection, query } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { useToast } from '@/hooks/use-toast';
 
 const strongholdCategories = [
     { 
@@ -164,22 +165,28 @@ const strongholdCategories = [
 ];
 
 function CategoryCard({ category }: { category: typeof strongholdCategories[0] }) {
-    const firestore = useFirestore();
+    const { toast } = useToast();
     const circleLink = `/dashboard/strongholds/${category.name.toLowerCase()}`;
     const Icon = category.icon;
 
-    // Fetch unique participant count from posts in this category
-    const postsQuery = useMemo(() => {
-        if (!firestore) return null;
-        return query(collection(firestore, 'victoryCircles', category.name.toLowerCase(), 'posts'));
-    }, [firestore, category.name]);
-    
-    const { data: posts } = useCollection<any>(postsQuery);
-    
-    const participantCount = useMemo(() => {
-        if (!posts) return 0;
-        return new Set(posts.map(p => p.authorId)).size;
-    }, [posts]);
+    const handleShare = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const shareUrl = `${window.location.origin}${circleLink}`;
+        const text = `Join the Victory Circle for ${category.name} on Testify! We overcome by the blood of the Lamb and the word of our testimony.`;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: `Victory Over ${category.name}`,
+                text: text,
+                url: shareUrl,
+            }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(`${text} ${shareUrl}`);
+            toast({ title: "Link Copied", description: "You can now share this circle with others." });
+        }
+    };
     
     return (
         <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5">
@@ -188,14 +195,20 @@ function CategoryCard({ category }: { category: typeof strongholdCategories[0] }
                     <div className={cn("h-16 w-16 rounded-[1.5rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform", category.bg)}>
                         <Icon className={cn("h-8 w-8", category.color)} />
                     </div>
-                    <Badge variant="outline" className="h-6 px-3 text-[10px] font-black uppercase tracking-widest bg-background/50">
-                        {participantCount} Participant{participantCount !== 1 ? 's' : ''}
-                    </Badge>
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-9 w-9 rounded-full bg-muted/20 hover:bg-primary/10 hover:text-primary transition-all shadow-sm"
+                        onClick={handleShare}
+                    >
+                        <Share2 className="h-4 w-4" />
+                        <span className="sr-only">Share Circle</span>
+                    </Button>
                 </div>
-                <CardTitle className="text-2xl font-black font-headline tracking-tight uppercase group-hover:text-primary transition-colors text-left text-left">
+                <CardTitle className="text-2xl font-black font-headline tracking-tight uppercase group-hover:text-primary transition-colors text-left">
                     VICTORY OVER {category.name}
                 </CardTitle>
-                <CardDescription className="text-sm font-medium mt-2 leading-relaxed text-left text-left">
+                <CardDescription className="text-sm font-medium mt-2 leading-relaxed text-left">
                     {category.desc}
                 </CardDescription>
             </CardHeader>
@@ -229,7 +242,7 @@ export default function VictoryHubPage() {
     }, [searchTerm]);
 
     return (
-        <div className="space-y-10 max-w-6xl mx-auto pb-32 text-left text-left">
+        <div className="space-y-10 max-w-6xl mx-auto pb-32 text-left">
             <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                     <div className="space-y-1 text-left">
@@ -251,7 +264,7 @@ export default function VictoryHubPage() {
                     <div className="text-left">
                         <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left">Choice-Based Sanctuary</h3>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance text-left">
-                            Participation in Victory Circles offers <span className="text-foreground font-bold underline decoration-primary/30">choice-based anonymity</span>. You can choose to appear as yourself or post anonymously to ensure you can bring your struggles into the Light without fear, receiving support from the global body of Christ.
+                            Participation in Victory Circles offers <span className="text-foreground font-bold underline decoration-primary/30">choice-based anonymity</span>. You can choose to appear as yourself or post anonymously to ensure you can bring your struggles into the Light without fear.
                         </p>
                     </div>
                 </div>
