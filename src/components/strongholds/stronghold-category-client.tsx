@@ -121,11 +121,11 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
 
 function getResourceIcon(type: string) {
     switch (type) {
-        case 'Video': return <Youtube className="h-4 w-4 text-red-500 text-left" />;
-        case 'Article': return <FileText className="h-4 w-4 text-blue-500 text-left" />;
-        case 'Book': return <Library className="h-4 w-4 text-primary text-left" />;
-        case 'Sermon': return <Mic className="h-4 w-4 text-orange-500 text-left" />;
-        default: return <LinkIcon className="h-4 w-4 text-muted-foreground text-left" />;
+        case 'Video': return <Youtube className="h-4 w-4 text-red-500" />;
+        case 'Article': return <FileText className="h-4 w-4 text-blue-500" />;
+        case 'Book': return <Library className="h-4 w-4 text-primary" />;
+        case 'Sermon': return <Mic className="h-4 w-4 text-orange-500" />;
+        default: return <LinkIcon className="h-4 w-4 text-muted-foreground" />;
     }
 }
 
@@ -135,34 +135,34 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
     const postDate = safeToDate(post.createdAt);
 
     const content = (
-        <div className="flex flex-col h-full overflow-hidden text-left">
-            <div className="p-6 border-b bg-muted/5 shrink-0 text-left">
-                <div className="flex items-center gap-3 mb-4 text-left">
-                    <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left">
-                        <Users className="h-5 w-5 text-muted-foreground/40 text-left" />
+        <div className="flex flex-col h-full overflow-hidden">
+            <div className="p-6 border-b bg-muted/5 shrink-0">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner">
+                        <Users className="h-5 w-5 text-muted-foreground/40" />
                     </div>
-                    <div className="min-w-0 text-left">
-                        <p className="text-sm font-black uppercase tracking-tight text-left">{post.authorName}</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
+                    <div className="min-w-0">
+                        <p className="text-sm font-black uppercase tracking-tight">{post.authorName}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                             {postDate ? format(postDate, 'PPP') : 'Just now'}
                         </p>
                     </div>
                 </div>
                 <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2 text-left">
-                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
-                    <p className="text-sm text-muted-foreground leading-relaxed italic font-medium text-left text-balance">
+                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
+                    <p className="text-sm text-muted-foreground leading-relaxed italic font-medium text-balance">
                         &ldquo;{post.text}&rdquo;
                     </p>
                 </div>
             </div>
             
-            <div className="flex-grow min-h-0 flex flex-col text-left">
-                <div className="p-4 sm:p-6 pb-2 shrink-0 text-left">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 text-left">
-                        <Zap className="h-3.5 w-3.5 text-left" /> Circle Responses & Solutions
+            <div className="flex-grow min-h-0 flex flex-col">
+                <div className="p-4 sm:p-6 pb-2 shrink-0">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60">
+                        <Zap className="h-3.5 w-3.5" /> Circle Responses & Solutions
                     </div>
                 </div>
-                <div className="flex-1 min-h-0 text-left">
+                <div className="flex-1 min-h-0">
                     <CommentSection path={`victoryCircles/${post.category}/posts/${post.id}/comments`} />
                 </div>
             </div>
@@ -173,18 +173,18 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left text-left">
-                                <Zap className="h-4 w-4 text-primary text-left text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Circle Conversation</span>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left flex-shrink-0">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Zap className="h-4 w-4 text-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Circle Conversation</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance">Victory over {categoryTitle}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left">Community responses and spiritual solutions.</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">Victory over {categoryTitle}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Community responses and spiritual solutions.</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <div className="flex-grow min-h-0 text-left">
+                    <div className="flex-grow min-h-0">
                         {content}
                     </div>
                 </SheetContent>
@@ -197,14 +197,14 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-xl max-h-[85vh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col text-left text-left text-left">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
-                    <DialogHeader className="text-left text-left text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Victory over {categoryTitle}</DialogTitle>
-                        <DialogDescription className="text-base font-medium text-left text-left text-left text-left">Shared wisdom and encouragement for victory.</DialogDescription>
+            <DialogContent className="sm:max-w-xl max-h-[85vh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col">
+                <div className="p-8 border-b bg-muted/10 shrink-0">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Victory over {categoryTitle}</DialogTitle>
+                        <DialogDescription className="text-base font-medium">Shared wisdom and encouragement for victory.</DialogDescription>
                     </DialogHeader>
                 </div>
-                <div className="flex-grow min-h-0 text-left text-left text-left">
+                <div className="flex-grow min-h-0">
                     {content}
                 </div>
             </DialogContent>
@@ -437,7 +437,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 </div>
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL / Link</Label>
-                    <Input name="url" defaultValue={resourceToEdit?.url} placeholder="https://..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left" required />
+                    <Input name="url" defaultValue={resourceToEdit?.url} placeholder="https://..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                 </div>
             </div>
             <div className="p-8 bg-muted/5 border-t flex gap-3">
@@ -452,9 +452,9 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
     return (
         <div className="space-y-8 max-w-6xl mx-auto pb-32 w-full text-left">
-            <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
+            <header className="px-4 sm:px-0 space-y-6 pt-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="flex items-center gap-4 text-left">
+                    <div className="flex items-center gap-4">
                         <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
                             <ArrowLeft className="h-6 w-6" />
                         </Button>
@@ -575,7 +575,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             </Button>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                             {resourcesLoading ? (
                                 <div className="col-span-full flex justify-center py-12 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
                             ) : filteredResources && filteredResources.length > 0 ? (
@@ -755,7 +755,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                                 <X className="mr-1 h-3 w-3" /> Cancel
                                                             </Button>
                                                             <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left">
-                                                                {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin text-left" /> : <Check className="mr-1 h-3 w-3" />}
+                                                                {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" text-left /> : <Check className="mr-1 h-3 w-3" />}
                                                                 Save Changes
                                                             </Button>
                                                         </div>

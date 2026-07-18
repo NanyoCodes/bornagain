@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
@@ -452,7 +451,7 @@ function TestimoniesContent() {
                     <div className="p-8 text-left">
                       {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}
                     </div>
-                  </ScrollArea>
+                  </SheetArea>
                 </SheetContent>
               </Sheet>
               
