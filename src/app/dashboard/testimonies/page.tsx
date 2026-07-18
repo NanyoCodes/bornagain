@@ -355,7 +355,7 @@ function TestimoniesContent() {
                         ))}
                         {!loading && filteredTestimonies?.length === 0 && (
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
-                            <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
+                            <Newspaper className="h-20 w-20 text-muted-foreground opacity-20 mb-6 text-left" />
                             <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Your Altar of Praise</h3>
                             <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
                             Every miracle shared strengthens a brother. Be the first to record God's goodness in this feed!
@@ -382,7 +382,7 @@ function TestimoniesContent() {
                         ))}
                         {!loading && filteredPrayerRequests?.length === 0 && (
                         <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
-                            <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
+                            <HandHeart className="h-20 w-20 text-muted-foreground opacity-20 mb-6 text-left" />
                             <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">United in Faith</h3>
                             <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
                             No one should walk through a trial alone. Share your request with the global community.

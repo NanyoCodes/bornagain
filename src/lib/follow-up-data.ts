@@ -32,3 +32,14 @@ export const prayerTemplates = [
         text: "Gracious God, I lift up {name} to Your loving care. You are the Great Physician and our Jehovah Jireh. I pray for Your divine provision and healing to flow into {possessive} life right now. Meet every need according to Your riches in glory in Christ Jesus. I speak health to {possessive} body, peace to {possessive} mind, and prosperity to {possessive} soul. May {subject} see Your hand moving in {possessive} circumstances, making a way where there seems to be no way. Strengthen {possessive} faith to trust in Your perfect timing and Your unfailing love. Thank You for Your faithfulness. Amen."
     }
 ];
+
+export const kingdomVerses = [
+    { reference: "John 3:16", text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life." },
+    { reference: "Romans 10:9", text: "If you declare with your mouth, 'Jesus is Lord,' and believe in your heart that God raised him from the dead, you will be saved." },
+    { reference: "2 Corinthians 5:17", text: "Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!" },
+    { reference: "Ephesians 2:8-9", text: "For it is by grace you have been saved, through faith—and this is not from yourselves, it is the gift of God—not by works, so that no one can boast." },
+    { reference: "Psalm 23:1", text: "The Lord is my shepherd, I lack nothing." },
+    { reference: "Matthew 11:28", text: "Come to me, all you who are weary and burdened, and I will give you rest." },
+    { reference: "Joshua 1:9", text: "Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go." },
+    { reference: "Jeremiah 29:11", text: "'For I know the plans I have for you,' declares the Lord, 'plans to prosper you and not to harm you, plans to give you hope and a future.'" }
+];

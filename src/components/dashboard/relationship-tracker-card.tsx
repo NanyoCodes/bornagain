@@ -1,11 +1,10 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc, updateDoc, where, getDocs, deleteField } from 'firebase/firestore';
-import type { UserProfile, Soul } from '@/lib/types';
+import type { UserProfile, Soul, BibleHighlight } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -32,7 +31,8 @@ import {
   X,
   HeartHandshake,
   HandHeart,
-  Globe
+  Globe,
+  BookMarked
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -41,7 +41,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { actionItems, prayerTemplates } from '@/lib/follow-up-data';
+import { actionItems, prayerTemplates, kingdomVerses } from '@/lib/follow-up-data';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -147,6 +147,111 @@ function SoulSelectionList({
     );
 }
 
+function ScriptureSelectionDialog({
+    isOpen,
+    onOpenChange,
+    highlights,
+    onSelect,
+}: {
+    isOpen: boolean;
+    onOpenChange: (open: boolean) => void;
+    highlights: BibleHighlight[] | null;
+    onSelect: (scripture: { reference: string; text?: string }) => void;
+}) {
+    const [search, setSearch] = useState('');
+    
+    const filteredHighlights = useMemo(() => {
+        if (!highlights) return [];
+        return highlights.filter(h => {
+            const ref = `${h.book} ${h.chapter}`;
+            return ref.toLowerCase().includes(search.toLowerCase());
+        });
+    }, [highlights, search]);
+
+    const filteredKingdomVerses = useMemo(() => {
+        return kingdomVerses.filter(v => 
+            v.reference.toLowerCase().includes(search.toLowerCase()) ||
+            v.text.toLowerCase().includes(search.toLowerCase())
+        );
+    }, [search]);
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                <div className="p-8 border-b bg-muted/10 text-left">
+                    <DialogHeader className="text-left">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Word</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">Choose a scripture from your study or Kingdom essentials.</DialogDescription>
+                    </DialogHeader>
+                </div>
+                <div className="p-6 space-y-6 text-left">
+                    <div className="relative text-left">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                        <Input 
+                            placeholder="Search by book or keyword..." 
+                            value={search} 
+                            onChange={e => setSearch(e.target.value)}
+                            className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
+                        />
+                    </div>
+                    <ScrollArea className="h-[45vh] border rounded-3xl bg-muted/5 text-left">
+                        <div className="p-4 space-y-8 text-left">
+                            {filteredHighlights.length > 0 && (
+                                <div className="space-y-3 text-left">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2">From Your Journal</Label>
+                                    <div className="space-y-1.5">
+                                        {filteredHighlights.map(h => {
+                                            const ref = `${h.book} ${h.chapter}`;
+                                            return (
+                                                <Button 
+                                                    key={h.id} 
+                                                    variant="ghost" 
+                                                    className="w-full justify-start h-auto py-3.5 px-4 rounded-2xl hover:bg-primary/5 text-left border border-transparent hover:border-primary/20 transition-all group"
+                                                    onClick={() => onSelect({ reference: ref, text: h.note })}
+                                                >
+                                                    <div className="min-w-0">
+                                                        <div className="flex items-center gap-2 mb-0.5">
+                                                            <BookMarked className="h-3 w-3 text-primary/40 group-hover:text-primary transition-colors" />
+                                                            <p className="font-black text-sm uppercase tracking-tight">{ref}</p>
+                                                        </div>
+                                                        {h.note && <p className="text-xs text-muted-foreground line-clamp-1 italic font-medium opacity-60">Note: {h.note}</p>}
+                                                    </div>
+                                                </Button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="space-y-3 text-left">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2">Kingdom Essentials</Label>
+                                <div className="space-y-1.5">
+                                    {filteredKingdomVerses.map((v, i) => (
+                                        <Button 
+                                            key={i} 
+                                            variant="ghost" 
+                                            className="w-full justify-start h-auto py-4 px-4 rounded-2xl hover:bg-primary/5 text-left border border-transparent hover:border-primary/20 transition-all group"
+                                            onClick={() => onSelect(v)}
+                                        >
+                                            <div className="min-w-0">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <Sparkles className="h-3.5 w-3.5 text-primary/40 group-hover:text-primary transition-colors" />
+                                                    <p className="font-black text-sm uppercase tracking-tight">{v.reference}</p>
+                                                </div>
+                                                <p className="text-xs text-muted-foreground leading-relaxed italic font-medium opacity-80">&ldquo;{v.text}&rdquo;</p>
+                                            </div>
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </ScrollArea>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 export function RelationshipTrackerCard() {
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
@@ -167,10 +272,17 @@ export function RelationshipTrackerCard() {
   const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
   const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
-  const [customPrayerText, setCustomPrayerText] = React.useState('');
-  const [clickedActionId, setClickedActionId] = React.useState<string | null>(null);
+  const [isScriptureSelectionOpen, setIsScriptureSelectionOpen] = useState(false);
+  const [customPrayerText, setCustomPrayerText] = useState('');
+  const [clickedActionId, setClickedActionId] = useState<string | null>(null);
   
   const { userProfile, loading: profileLoading } = useUserProfile();
+
+  const highlightsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, 'users', user.uid, 'bibleHighlights'), orderBy('createdAt', 'desc'));
+  }, [user?.uid, firestore]);
+  const { data: highlights } = useCollection<BibleHighlight>(highlightsQuery);
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -178,7 +290,7 @@ export function RelationshipTrackerCard() {
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
-  const resolveTemplate = React.useCallback((template: string, targetSoul: Soul) => {
+  const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
     const gender = targetSoul.gender?.toLowerCase() || 'other';
     const pronouns = {
         subject: gender === 'female' ? 'she' : 'he',
@@ -349,6 +461,8 @@ export function RelationshipTrackerCard() {
         }
         setCustomPrayerText(resolveTemplate(prayerTemplates[0].text, soul));
         setIsPrayerCustomizationOpen(true);
+    } else if (selectedActionId === 'studied_bible') {
+        setIsScriptureSelectionOpen(true);
     } else if (selectedActionId === 'text_message') {
         if (!soul.phone) {
             toast({ variant: 'destructive', title: 'Phone Missing', description: `Please save a number for ${soul.firstName} first.` });
@@ -359,6 +473,20 @@ export function RelationshipTrackerCard() {
     } else {
         performFinalLog(soul, selectedActionId);
     }
+  };
+
+  const handleScriptureSelected = (scripture: { reference: string; text?: string }) => {
+      if (!activeSoul?.phone) {
+          toast({ variant: 'destructive', title: 'Phone Missing', description: 'Cannot share scripture without a phone number.' });
+          return;
+      }
+      setIsScriptureSelectionOpen(false);
+      setClickedActionId('studied_bible');
+      const text = scripture.text ? `"${scripture.text}" — ${scripture.reference}` : `I was thinking of this word for you: ${scripture.reference}`;
+      setCustomPrayerText(text);
+      requestAnimationFrame(() => {
+          setIsCommChannelDialogOpen(true);
+      });
   };
 
   const handlePrayerConfirm = (text: string) => {
@@ -383,7 +511,7 @@ export function RelationshipTrackerCard() {
         window.location.href = `sms:${activeSoul.phone}?body=${messageText}`;
     }
     
-    const notePrefix = selectedActionId === 'prayed_together' ? `Prayed: ${message}` : `Messaged: ${message}`;
+    const notePrefix = selectedActionId === 'prayed_together' ? `Prayed: ${message}` : selectedActionId === 'studied_bible' ? `Shared Word: ${message}` : `Messaged: ${message}`;
     performFinalLog(activeSoul, selectedActionId, notePrefix);
     setIsCommChannelDialogOpen(false);
     setCustomPrayerText('');
@@ -652,6 +780,13 @@ export function RelationshipTrackerCard() {
             </div>
         </DialogContent>
       </Dialog>
+
+      <ScriptureSelectionDialog 
+          isOpen={isScriptureSelectionOpen}
+          onOpenChange={setIsScriptureSelectionOpen}
+          highlights={highlights}
+          onSelect={handleScriptureSelected}
+      />
 
       {/* Shared Communication Channel Dialog */}
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
