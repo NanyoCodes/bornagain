@@ -1023,9 +1023,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                           <p className="text-[10px] text-muted-foreground truncate font-medium text-left">{user?.email}</p>
                         </div>
                     </div>
-                    <SheetHeader className="text-left flex-shrink-0">
-                      <SheetDescription className="text-[10px] font-bold uppercase tracking-widest text-primary text-left">Mission Navigation</SheetDescription>
-                    </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow text-left">
                     <div className="p-6 space-y-2 text-left">
