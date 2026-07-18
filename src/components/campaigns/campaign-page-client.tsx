@@ -48,7 +48,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     const [isManageOpen, setIsManageOpen] = useState(false);
     const [isLogSoulOpen, setIsLogSoulOpen] = useState(false);
     const [isTestimonyOpen, setIsTestimonyOpen] = useState(false);
-    const [campaignToDelete, setCampaignToDelete] = setStatusFilter ?? setCampaignToDelete;
+    const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => { setMounted(true); }, []);

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -516,7 +515,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 <div className="space-y-6 text-left">
                                     <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group text-left">
                                         <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110 text-left" />
-                                        <p className="text-base sm:text-xl text-muted-foreground italic font-medium leading-relaxed text-balance text-left">
+                                        <p className="text-base sm:text-xl text-muted-foreground italic font-medium leading-relaxed text-left text-balance">
                                             &ldquo;{activeScripture.text}&rdquo;
                                         </p>
                                         <p className="text-xs font-black uppercase tracking-[0.2em] text-primary text-right mt-4">— {activeScripture.verse}</p>
@@ -818,7 +817,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 ) : (
                     <Dialog open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
                         <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b bg-muted/10 text-left">
                                 <DialogHeader className="text-left">
                                     <div className="flex items-center gap-2.5 mb-1.5 text-left">
                                         <Target className="h-4 w-4 text-primary text-left" />

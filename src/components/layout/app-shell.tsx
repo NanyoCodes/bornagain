@@ -1218,7 +1218,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <Suspense fallback={
         <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Kingdom Network Active</p>
+            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Kingdom Network Active</p>
         </div>
     }>
         <ShellInner>{children}</ShellInner>
