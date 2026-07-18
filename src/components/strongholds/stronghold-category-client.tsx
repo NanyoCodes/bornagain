@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useDoc, useCollection, useUserProfile, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useDoc, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -31,6 +32,7 @@ import {
     MessageSquare, 
     Sparkles, 
     ShieldCheck, 
+    Send,
     Flame,
     Zap,
     Quote,
@@ -44,14 +46,13 @@ import {
     BookOpen,
     HandHeart,
     ChevronDown,
+    Library,
+    PlusCircle,
+    Link as LinkIcon,
     Youtube,
     FileText,
     Mic,
-    LinkIcon,
-    Library,
-    PlusCircle,
-    ExternalLink,
-    Target
+    ExternalLink
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -60,7 +61,7 @@ import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { CommentSection } from '../testimonies/comment-section';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
   DropdownMenu,
@@ -93,25 +94,8 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "1 Corinthians 10:13", text: "No temptation has overtaken you except what is common to mankind. And God is faithful; he will not let you be tempted beyond what you can bear.", prayer: "Lord, I thank You for providing a way out. I choose Your path of escape and declare my freedom in Christ. Amen." },
     { verse: "Matthew 5:28", text: "But I tell you that anyone who looks at a woman lustfully has already committed adultery with her in his heart.", prayer: "Father, purify my vision and my heart. Let my eyes see only what is holy and honoring to You. Amen." }
   ],
-  fear: [
-    { verse: "2 Timothy 1:7", text: "For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.", prayer: "I reject the spirit of fear and claim the power, love, and sound mind You have given me, Lord. Amen." },
-    { verse: "Psalm 34:4", text: "I sought the Lord, and he answered me; he delivered me from all my fears.", prayer: "Thank You for hearing my cry, Father. I stand delivered from every shadow of anxiety today. Amen." }
-  ],
-  unforgiveness: [
-    { verse: "Matthew 6:14-15", text: "For if you forgive other people when they sin against you, your heavenly Father will also forgive you.", prayer: "Lord, grant me the grace to release those who have hurt me, just as You have forgiven me. Amen." }
-  ],
   anger: [
     { verse: "James 1:19-20", text: "Everyone should be quick to listen, slow to speak and slow to become angry, because human anger does not produce the righteousness that God desires.", prayer: "Lord, put a guard over my mouth and a peace in my spirit. Let Your righteousness be my response. Amen." }
-  ],
-  addiction: [
-    { verse: "1 Corinthians 6:12", text: "I will not be mastered by anything.", prayer: "I declare that only Jesus is my Master. No substance or habit has authority over my life. Amen." },
-    { verse: "John 8:36", text: "So if the Son sets you free, you will be free indeed.", prayer: "Jesus, You have set me free. I receive my total deliverance today. I am free indeed! Amen." }
-  ],
-  laziness: [
-    { verse: "Colossians 3:23", text: "Whatever you do, work at it with all your heart, as working for the Lord, not for human masters.", prayer: "I offer my work today as an act of worship to You, Jesus. Let me be productive for Your Kingdom. Amen." }
-  ],
-  unbelief: [
-    { verse: "Mark 9:24", text: "I do believe; help me overcome my unbelief!", prayer: "Lord, I choose to trust You. Where my faith is weak, strengthen it by Your Spirit. Amen." }
   ],
   other: [
     { verse: "Philippians 4:13", text: "I can do all this through him who gives me strength.", prayer: "Whatever I face today, I have the victory through Your power, Jesus. Amen." },
@@ -195,7 +179,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Circle Conversation</span>
                             </div>
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Victory over {categoryTitle}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Community responses and spiritual solutions.</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left">Community responses and spiritual solutions.</SheetDescription>
                         </SheetHeader>
                     </div>
                     <div className="flex-grow min-h-0">
@@ -821,7 +805,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             {mounted && (
                 isMobile ? (
                     <Sheet open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
-                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <SheetHeader className="text-left flex-shrink-0">
                                     <div className="flex items-center gap-2.5 mb-1.5 text-left">
