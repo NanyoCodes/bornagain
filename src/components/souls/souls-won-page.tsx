@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -20,13 +19,8 @@ import {
   UserPlus,
   Hourglass,
   ArrowLeft,
-  Newspaper,
   Globe,
   Sparkles,
-  Search,
-  CheckCircle2,
-  X,
-  ArrowRight,
   HelpCircle,
   ClipboardList
 } from "lucide-react";
@@ -80,15 +74,12 @@ import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Papa from 'papaparse';
 
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -278,15 +269,32 @@ export function SoulsWonPage() {
   const handleOpenDelete = useCallback((soul: Soul) => setDeleteSoulId(soul.id), []);
   const handleOpenAssessment = useCallback((soul: Soul) => setAssessmentSoulId(soul.id), []);
 
+  const getBase64Logo = useCallback(async (url: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new (window as any).Image();
+      img.crossOrigin = 'Anonymous';
+      img.src = url;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => reject('Logo load failed');
+    });
+  }, []);
+
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
     if (!souls || souls.length === 0) {
         toast({ variant: 'destructive', title: 'Empty Harvest', description: 'No souls found to export.' });
         return;
     }
     
-    toast({ title: "Exporting...", description: "Your harvest list is being prepared." });
+    toast({ title: "Exporting...", description: "Your high-fidelity Kingdom report is being generated." });
 
-    const headers = ["First Name", "Last Name", "Gender", "Status", "Won At", "Source", "Phone", "Email", "Church", "City", "Country"];
+    const headers = ["First Name", "Last Name", "Gender", "Status", "Won At", "Source", "Phone", "Email", "City", "Country"];
     const body = souls.map(s => [
         s.firstName,
         s.lastName || '',
@@ -296,7 +304,6 @@ export function SoulsWonPage() {
         s.source,
         s.phone || 'N/A',
         s.email || 'N/A',
-        s.church || 'N/A',
         s.locationWon?.city || 'N/A',
         s.locationWon?.country || 'N/A'
     ]);
@@ -305,30 +312,66 @@ export function SoulsWonPage() {
         const { jsPDF } = await import('jspdf');
         const { default: autoTable } = await import('jspdf-autotable');
         const doc = new jsPDF({ orientation: 'landscape' });
-        doc.text("My Soul Winning Harvest", 14, 15);
+        
+        const logo = PlaceHolderImages.find(img => img.id === 'logo');
+        if (logo) {
+            try {
+                const base64 = await getBase64Logo(logo.imageUrl);
+                doc.addImage(base64, 'PNG', 14, 10, 15, 15);
+            } catch (e) {}
+        }
+
+        doc.setFontSize(22);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Testify Global: Soul Winning Harvest", 32, 21);
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(100);
+        doc.text(`Mobilizer: ${userProfile?.firstName} ${userProfile?.lastName || ''}`, 32, 27);
+        doc.text(`Total Lives Logged: ${souls.length}`, 14, 40);
+        doc.text(`Export Date: ${format(new Date(), 'PPPP')}`, 235, 40, { align: 'right' });
+
         autoTable(doc, {
             head: [headers],
             body: body,
-            startY: 20,
-            styles: { fontSize: 8 },
-            headStyles: { fillColor: [249, 116, 22] }
+            startY: 45,
+            styles: { fontSize: 8, font: 'helvetica' },
+            headStyles: { 
+                fillColor: [249, 116, 22], // Primary Theme Orange
+                textColor: [255, 255, 255],
+                fontStyle: 'bold'
+            },
+            alternateRowStyles: {
+                fillColor: [250, 245, 240]
+            },
+            margin: { top: 45 }
         });
-        doc.save(`harvest-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+
+        const pageCount = (doc as any).internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            doc.text(`Page ${i} of ${pageCount}`, 14, 200);
+            doc.text("Built for the Great Commission - testifyglobal.com", 235, 200, { align: 'right' });
+        }
+
+        doc.save(`testify-harvest-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
     } else {
         const csv = Papa.unparse({ fields: headers, data: body });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", `harvest-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+        link.setAttribute("download", `testify-harvest-${format(new Date(), 'yyyy-MM-dd')}.csv`);
         link.click();
         URL.revokeObjectURL(url);
     }
-    toast({ title: "Download Started" });
+    toast({ title: "Report Ready", description: "Download started." });
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
-      const headers = ["Field", "Detail"];
       const wonAt = safeToDate(soul.wonAt);
       const data = [
           ["First Name", soul.firstName],
@@ -347,26 +390,64 @@ export function SoulsWonPage() {
           const { jsPDF } = await import('jspdf');
           const { default: autoTable } = await import('jspdf-autotable');
           const doc = new jsPDF();
-          doc.text(`Kingdom Identity: ${soul.firstName}`, 14, 15);
+          
+          const logo = PlaceHolderImages.find(img => img.id === 'logo');
+          if (logo) {
+            try {
+                const base64 = await getBase64Logo(logo.imageUrl);
+                doc.addImage(base64, 'PNG', 14, 10, 12, 12);
+            } catch (e) {}
+          }
+
+          doc.setFontSize(18);
+          doc.setFont('helvetica', 'bold');
+          doc.text(`Kingdom Identity Profile`, 28, 19);
+
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(100);
+          doc.text(`Full Record: ${soul.firstName} ${soul.lastName || ''}`, 14, 32);
+          doc.text(`Log Date: ${format(new Date(), 'PPP')}`, 196, 32, { align: 'right' });
+
           autoTable(doc, {
-              head: [headers],
+              head: [["Attribute", "Information"]],
               body: data,
-              startY: 20,
-              headStyles: { fillColor: [249, 116, 22] }
+              startY: 38,
+              theme: 'striped',
+              headStyles: { fillColor: [249, 116, 22] },
+              styles: { cellPadding: 5 }
           });
-          doc.save(`${soul.firstName.toLowerCase()}-record.pdf`);
+          
+          doc.setFontSize(10);
+          doc.setTextColor(0);
+          doc.text("Spiritual History & Notes:", 14, (doc as any).lastAutoTable.finalY + 15);
+          
+          if (soul.followUpLog && soul.followUpLog.length > 0) {
+              const logs = soul.followUpLog.map(l => [
+                  format(safeToDate(l.date)!, 'MMM d, yyyy'),
+                  l.note || 'Interaction recorded'
+              ]);
+              autoTable(doc, {
+                  head: [["Date", "Pastoral Notes"]],
+                  body: logs,
+                  startY: (doc as any).lastAutoTable.finalY + 20,
+                  headStyles: { fillColor: [50, 50, 50] }
+              });
+          }
+
+          doc.save(`record-${soul.firstName.toLowerCase()}.pdf`);
       } else {
-          const csv = Papa.unparse({ fields: headers, data });
+          const csv = Papa.unparse({ fields: ["Field", "Detail"], data });
           const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
           const url = URL.createObjectURL(blob);
           const link = document.createElement("a");
           link.setAttribute("href", url);
-          link.setAttribute("download", `${soul.firstName.toLowerCase()}-record.csv`);
+          link.setAttribute("download", `record-${soul.firstName.toLowerCase()}.csv`);
           link.click();
           URL.revokeObjectURL(url);
       }
-      toast({ title: "Export Success" });
-  }, [toast]);
+      toast({ title: "Record Exported" });
+  }, [toast, getBase64Logo]);
 
   const handleDeleteSoul = () => {
     if (!soulToDelete || !user || !firestore) return;
@@ -479,7 +560,7 @@ export function SoulsWonPage() {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="rounded-xl">
                                         <DropdownMenuItem onSelect={() => handleExportHarvest('csv')}>CSV (Excel)</DropdownMenuItem>
-                                        <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')}>PDF Document</DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')}>PDF Report (With Logo)</DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>
@@ -652,7 +733,7 @@ export function SoulsWonPage() {
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
                             </div>
-                            <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+                            <SheetHeader className="text-left flex-shrink-0">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedAgeGroup} Directory</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
                             </SheetHeader>

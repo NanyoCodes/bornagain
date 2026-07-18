@@ -289,6 +289,8 @@ function TestimoniesContent() {
     <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} />
   );
 
+  const anyDialogOpen = !!itemToDelete || !!testimonyToEdit || !!prayerToEdit || isTestimonyDialogOpen || isPrayerDialogOpen;
+
   return (
     <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">

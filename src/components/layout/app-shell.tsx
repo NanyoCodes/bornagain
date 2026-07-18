@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -198,10 +197,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
   return (
     <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
-      <div className="flex items-center shrink-0">
-        <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+      <div className="flex items-center shrink-0 text-left">
+        <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
           {logo && (
-            <Avatar className="h-10 w-10 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
+            <Avatar className="h-10 w-10 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent shrink-0">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
               <AvatarFallback className="font-bold">T</AvatarFallback>
             </Avatar>
@@ -210,8 +209,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
         </Link>
       </div>
 
-      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 xl:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
-        <div className="flex items-center gap-1.5 lg:gap-3 h-full">
+      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 xl:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1 text-left">
+        <div className="flex items-center gap-1.5 lg:gap-3 h-full text-left">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -219,14 +218,14 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "transition-all hover:bg-muted/50 px-2 lg:px-4 h-[90%] rounded-2xl whitespace-nowrap flex flex-col items-center justify-center group relative",
+                    "transition-all hover:bg-muted/50 px-2 lg:px-4 h-[90%] rounded-2xl whitespace-nowrap flex flex-col items-center justify-center group relative text-left",
                     isActive ? "text-primary" : "text-muted-foreground"
                   )}
               >
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1 text-left">
                   <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
                   <span className={cn(
-                    "text-[8px] font-black uppercase tracking-tighter transition-all leading-none mt-0.5",
+                    "text-[8px] font-black uppercase tracking-tighter transition-all leading-none mt-0.5 text-left",
                     isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-60"
                   )}>
                     {item.label}
@@ -247,7 +246,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
         
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 text-left">
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
+          <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95 text-left" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-5 w-5 md:h-6 md:w-6" />
             <span className="sr-only">Search</span>
           </Button>
@@ -259,7 +258,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                 <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full"
+                    className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full text-left"
                     onClick={onOpenCart}
                 >
                   <ShoppingCart className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
@@ -272,7 +271,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
             </motion.div>
             <Link href="/chats" prefetch={true}>
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full text-left">
                       <MessagesSquare className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
@@ -284,7 +283,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
             </Link>
             <Link href="/notifications" prefetch={true}>
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full text-left">
                       <Bell className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
@@ -298,7 +297,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
             <Button 
                 variant="ghost" 
                 size="icon" 
-                className="xl:hidden h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95 group" 
+                className="xl:hidden h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95 group text-left" 
                 onClick={onOpenMenu}
             >
                 <Menu className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
@@ -307,7 +306,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="hidden xl:inline-flex">
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0 text-left">
                   <Avatar className="h-9 w-9 md:h-11 md:w-11 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
                     <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
@@ -320,27 +319,27 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 rounded-2xl shadow-xl" align="end">
-                <DropdownMenuLabel className="font-normal p-4">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-bold leading-none">{user.displayName || 'User'}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+              <DropdownMenuContent className="w-64 rounded-2xl shadow-xl text-left" align="end">
+                <DropdownMenuLabel className="font-normal p-4 text-left">
+                  <div className="flex flex-col space-y-1 text-left">
+                    <p className="text-sm font-bold leading-none text-left">{user.displayName || 'User'}</p>
+                    <p className="text-xs text-muted-foreground truncate text-left">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                   <Link href="/profile">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                   <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                   <Link href="/accountability">
                     <HeartHandshake className="mr-2 h-4 w-4" />
                     <span>Partners</span>
@@ -348,8 +347,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                 </DropdownMenuItem>
                 
                 <DropdownMenuSeparator />
-                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Recovery Hub</DropdownMenuLabel>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2 text-left">Recovery Hub</DropdownMenuLabel>
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                   <Link href="/dashboard/victory-hub">
                     <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
                     <span>Victory Hub</span>
@@ -357,20 +356,20 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
-                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2">Provision Hub</DropdownMenuLabel>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2 text-left">Provision Hub</DropdownMenuLabel>
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                   <Link href="/dashboard/marketplace">
                     <Store className="mr-2 h-4 w-4" />
                     <span>Meals Center</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                   <Link href="/dashboard/marketplace/gifts">
                     <Gift className="mr-2 h-4 w-4" />
                     <span>Kindness Center</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                   <Link href="/dashboard/marketplace/orders">
                     <Package className="mr-2 h-4 w-4" />
                     <span>Order Tracker</span>
@@ -378,20 +377,20 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                 </DropdownMenuItem>
                 
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                    <Link href="/guide" className="cursor-pointer">
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
+                    <Link href="/guide" className="cursor-pointer text-left">
                     < BookOpen className="mr-2 h-4 w-4" />
                     <span>App Guide</span>
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                    <Link href="/resources" className="cursor-pointer">
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
+                    <Link href="/resources" className="cursor-pointer text-left">
                     <BookMarked className="mr-2 h-4 w-4" />
                     <span>Spiritual Resources</span>
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => { signOut(getAuth()).then(() => router.push("/login")); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg mx-1">
+                <DropdownMenuItem onClick={() => { signOut(getAuth()).then(() => router.push("/login")); }} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg mx-1 text-left">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
                 </DropdownMenuItem>
@@ -399,16 +398,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
             </DropdownMenu>
           </>
         ) : showGuestButtons ? (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-9 px-4 rounded-full font-bold">
+          <div className="flex items-center gap-2 text-left">
+            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-9 px-4 rounded-full font-bold text-left">
               <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-9 px-5 rounded-full font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-lg shadow-primary/20">
+            <Button asChild size="sm" className="h-9 px-5 rounded-full font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-lg shadow-primary/20 text-left">
               <Link href="/">Get Started</Link>
             </Button>
           </div>
         ) : (
-          <div className="h-10 w-10 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
+          <div className="h-10 w-10 md:h-12 md:w-12 animate-pulse rounded-full bg-muted shrink-0" />
         )}
       </div>
     </header>
@@ -450,7 +449,7 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10 flex flex-col items-center gap-0.5",
+                      "relative z-10 flex flex-col items-center gap-0.5 text-left",
                       isActive ? "text-primary" : "text-muted-foreground"
                     )}
                   >
@@ -602,7 +601,7 @@ function PendingProvisionReminder() {
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5 text-left">
                                 {isMultiple ? `${provisions.length} Acts of Kindness` : 'Finish Provision'}
                             </p>
-                            <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight text-left">
+                            <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight text-left text-left">
                                 {isMultiple 
                                     ? `Click to view pending gifts` 
                                     : `Complete ${displayItem.actionId === 'shared_meal' ? 'meal' : 'gift'} for ${displayItem.soulName}`
@@ -958,7 +957,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     <SearchProvider>
       <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
         <AnimatePresence>{showSplash && <SplashScreen onDismiss={handleDismissSplash} />}</AnimatePresence>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0 text-left">
             {!isTakeoverPage && (
                 <AppHeader 
                     unreadChatCount={unreadChatNotifications?.length || 0} 
@@ -968,7 +967,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                     onOpenMenu={() => setIsMenuOpen(true)} 
                 />
             )}
-            <div className="flex-1 relative min-h-0">
+            <div className="flex-1 relative min-h-0 text-left">
             <main ref={scrollContainerRef} className={cn("absolute inset-0", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
                 <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
                     <PageTransition>{children}</PageTransition>
@@ -983,14 +982,14 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         
         {user && mounted && isMobile ? (
           <Sheet open={!!isProfileIncomplete}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
               <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
                 <SheetHeader className="text-left">
-                  <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                  <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+                  <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
+                  <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
                 </SheetHeader>
               </div>
-              <div className="flex-grow overflow-y-auto p-6">
+              <div className="flex-grow overflow-y-auto p-6 text-left">
                 {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
               </div>
             </SheetContent>
@@ -998,13 +997,13 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         ) : user ? (
           <Dialog open={!!isProfileIncomplete}>
             <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
-              <div className="p-6 border-b bg-muted/10">
+              <div className="p-6 border-b bg-muted/10 text-left">
                 <DialogHeader className="text-left">
-                    <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
-                    <DialogDescription className="text-sm">Please provide your name and photo to continue.</DialogDescription>
+                    <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
+                    <DialogDescription className="text-sm text-left">Please provide your name and photo to continue.</DialogDescription>
                 </DialogHeader>
               </div>
-              <div className="p-6 max-h-[70vh] overflow-y-auto">
+              <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
                 {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
               </div>
             </DialogContent>
@@ -1012,13 +1011,13 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         ) : null}
 
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-            <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
+            <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col text-left">
                 <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <SheetHeader className="text-left flex-shrink-0">
+                    <SheetHeader className="text-left flex-shrink-0 text-left">
                         <SheetTitle className="sr-only">Main Navigation Menu</SheetTitle>
                     </SheetHeader>
                     <div className="flex items-center gap-3 mb-4 text-left">
-                        <Avatar className="h-12 w-12 border-2 border-primary/20">
+                        <Avatar className="h-12 w-12 border-2 border-primary/20 shrink-0">
                           <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
                           <AvatarFallback className="font-black bg-primary/10 text-primary">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                         </Avatar>
@@ -1114,7 +1113,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         <ShoppingCart className="h-4 w-4 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Provision</span>
                     </div>
-                    <SheetHeader className="text-left flex-shrink-0">
+                    <SheetHeader className="text-left flex-shrink-0 text-left">
                       <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-left text-balance">Kindness Package</SheetTitle>
                       <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Review your selections for the harvest.</SheetDescription>
                     </SheetHeader>
@@ -1127,7 +1126,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                     {cartByVendor.map(group => (
                                         <div key={group.vendorId} className="space-y-3 text-left">
                                             <div className="flex items-center justify-between px-1 text-left">
-                                                <div className="flex items-center gap-2 max-w-[60%] text-left">
+                                                <div className="flex items-center gap-2 max-w-[60%] text-left text-left">
                                                     <Store className="h-3.5 w-3.5 text-primary shrink-0" />
                                                     <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate text-left">{group.vendorName}</h4>
                                                 </div>
@@ -1168,11 +1167,11 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                     </div>
                                 </div>
                                 <div className="space-y-4 text-left">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left text-left"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label>
                                     <div className="space-y-3 text-left">
                                         {cartByVendor.map(v => (
                                             <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left">
-                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left"><Store className="h-10 w-10 text-primary" /></div>
+                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left text-left"><Store className="h-10 w-10 text-primary" /></div>
                                                 <div className="flex justify-between items-start mb-2 text-left">
                                                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Pay to: {v.vendorName}</p>
                                                     <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
@@ -1186,10 +1185,10 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                             </div>
                         ) : (
                             <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left">
-                                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4" />
+                                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left" />
                                 <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3>
                                 <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-left text-center">Add items to place an order and bless the Body of Christ.</p>
-                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
+                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left" onClick={() => setIsCartOpen(false)}>
                                     <Link href="/dashboard/marketplace">GIVE PROVISION</Link>
                                 </Button>
                             </div>
@@ -1217,7 +1216,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={
-        <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+        <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-left">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
             <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Kingdom Network Active</p>
         </div>

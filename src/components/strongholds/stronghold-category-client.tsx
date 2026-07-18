@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -525,7 +524,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             <CardContent className="p-4 sm:p-8 pt-4">
                                 <div className="space-y-6 text-left">
                                     <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group text-left">
-                                        <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
+                                        <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110 text-left" />
                                         <p className="text-base sm:text-xl text-muted-foreground italic font-medium leading-relaxed text-balance text-left">
                                             &ldquo;{activeScripture.text}&rdquo;
                                         </p>
@@ -578,7 +577,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                             {resourcesLoading ? (
-                                <div className="col-span-full flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
+                                <div className="col-span-full flex justify-center py-12 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
                             ) : filteredResources && filteredResources.length > 0 ? (
                                 filteredResources.map(res => {
                                     const isResAuthor = user?.uid === res.authorId;
@@ -586,12 +585,12 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     <Card key={res.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all group flex flex-col h-full text-left">
                                         <CardContent className="p-4 flex flex-col gap-4 relative flex-grow text-left">
                                             <div className="flex items-center gap-4 text-left">
-                                                <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
+                                                <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform text-left">
                                                     {getResourceIcon(res.type)}
                                                 </div>
-                                                <div className="min-w-0 flex-1">
-                                                    <div className="flex items-center gap-2 mb-0.5">
-                                                        <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50">{res.type}</Badge>
+                                                <div className="min-w-0 flex-1 text-left">
+                                                    <div className="flex items-center gap-2 mb-0.5 text-left">
+                                                        <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left">{res.type}</Badge>
                                                         <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest truncate opacity-60 text-left">By {res.authorName}</span>
                                                     </div>
                                                     <h4 className="font-black text-xs uppercase tracking-tight truncate leading-tight mb-2 text-left">{res.title}</h4>
@@ -604,17 +603,17 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                 </p>
                                             )}
 
-                                            <Button asChild variant="ghost" size="sm" className="h-7 p-0 hover:bg-transparent hover:text-primary transition-colors text-[9px] font-black uppercase tracking-widest self-start mt-auto">
+                                            <Button asChild variant="ghost" size="sm" className="h-7 p-0 hover:bg-transparent hover:text-primary transition-colors text-[9px] font-black uppercase tracking-widest self-start mt-auto text-left">
                                                 <a href={res.url} target="_blank" rel="noopener noreferrer">
                                                     GO TO RESOURCE <ExternalLink className="ml-1.5 h-3 w-3" />
                                                 </a>
                                             </Button>
 
                                             {isResAuthor && (
-                                                <div className="absolute top-2 right-2">
+                                                <div className="absolute top-2 right-2 text-left">
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-left">
                                                                 <MoreHorizontal className="h-3.5 w-3.5" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
@@ -634,8 +633,8 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     </Card>
                                 )})
                             ) : (
-                                <div className="col-span-full text-center py-16 border-2 border-dashed rounded-[2rem] bg-muted/5">
-                                    <p className="text-xs text-muted-foreground italic font-medium px-12 text-center">
+                                <div className="col-span-full text-center py-16 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">
+                                    <p className="text-xs text-muted-foreground italic font-medium px-12 text-center text-left">
                                         {searchTerm ? "No supplies match your search." : "No provisions dropped yet. Share a sermon or article that helped you!"}
                                     </p>
                                 </div>
@@ -648,10 +647,10 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-xl overflow-hidden bg-primary text-primary-foreground mx-4 sm:mx-0 text-left">
                         <CardContent className="p-8 sm:p-10 space-y-6 text-left">
                             <div className="flex items-start gap-4 text-left">
-                                <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
-                                    <ShieldCheck className="h-6 w-6 text-white" />
+                                <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0 text-left">
+                                    <ShieldCheck className="h-6 w-6 text-white text-left" />
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1 text-left">
                                     <h2 className="text-xl font-black uppercase tracking-tight leading-tight text-left">Bring it to Light</h2>
                                     <p className="text-sm font-medium text-white/80 leading-relaxed text-balance text-left">
                                         Transparency in the body of Christ breaks the power of isolation. Share your struggle or victory below.
@@ -659,14 +658,14 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 </div>
                             </div>
                             
-                            <div className="space-y-4 pt-2">
+                            <div className="space-y-4 pt-2 text-left">
                                 <Textarea 
                                     placeholder="Share your struggle or a victory strategy..."
                                     value={newPostText}
                                     onChange={(e) => setNewPostText(e.target.value)}
                                     className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[120px] rounded-2xl text-base focus-visible:ring-white/30 text-left"
                                 />
-                                <div className="flex items-center space-x-2 px-1">
+                                <div className="flex items-center space-x-2 px-1 text-left">
                                     <Checkbox 
                                         id="anonymous-toggle" 
                                         checked={isAnonymous} 
@@ -690,8 +689,8 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     <div className="space-y-6 px-4 sm:px-0 text-left">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
                             <div className="flex items-center gap-3 text-left">
-                                <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner">
-                                    <MessageSquare className="h-5 w-5 text-muted-foreground" />
+                                <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner text-left">
+                                    <MessageSquare className="h-5 w-5 text-muted-foreground text-left" />
                                 </div>
                                 <h3 className="text-lg font-black uppercase tracking-tight text-left">Circle Discussions</h3>
                             </div>
@@ -708,7 +707,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
                                     return (
                                         <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5 h-full flex flex-col text-left">
-                                            <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between">
+                                            <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between text-left">
                                                 <div className="flex items-center gap-3 text-left">
                                                     <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left">
                                                         <Users className="h-5 w-5 text-muted-foreground/40 text-left" />
@@ -744,7 +743,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                             </CardHeader>
                                             <CardContent className="p-6 pt-4 flex-grow text-left">
                                                 {isEditing ? (
-                                                    <div className="space-y-4">
+                                                    <div className="space-y-4 text-left">
                                                         <Textarea 
                                                             value={editingText}
                                                             onChange={(e) => setEditingText(e.target.value)}
@@ -763,7 +762,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                     </div>
                                                 ) : (
                                                     <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                                        <button className="w-full text-left outline-none group/post">
+                                                        <button className="w-full text-left outline-none group/post text-left">
                                                             <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left">
                                                                 <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110 text-left" />
                                                                 <p className="text-base text-muted-foreground italic font-medium text-left text-balance">
@@ -790,8 +789,8 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 })
                             ) : (
                                 <div className="col-span-full text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0 text-left">
-                                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
-                                        <Sparkles className="h-10 w-10 text-muted-foreground opacity-10" />
+                                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
+                                        <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
                                     </div>
                                     <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Circle Silence</h4>
                                     <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left">
@@ -809,9 +808,9 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     <Sheet open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
                         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left flex-shrink-0 text-left">
+                                <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                                     <div className="flex items-center gap-2.5 mb-1.5 text-left">
-                                        <Target className="h-4 w-4 text-primary" />
+                                        <Target className="h-4 w-4 text-primary text-left" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Supply Drop</span>
                                     </div>
                                     <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance">
@@ -828,16 +827,16 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 ) : (
                     <Dialog open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
                         <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="text-left text-left">
-                                    <div className="flex items-center gap-2.5 mb-1.5 text-left">
-                                        <Target className="h-4 w-4 text-primary" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Supply Drop</span>
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                                <DialogHeader className="text-left text-left text-left">
+                                    <div className="flex items-center gap-2.5 mb-1.5 text-left text-left">
+                                        <Target className="h-4 w-4 text-primary text-left text-left text-left" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Supply Drop</span>
                                     </div>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                                     </DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left text-left">Share a resource that fueled your victory.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
@@ -848,8 +847,8 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 )
             )}
             
-            <footer className="text-center pt-12 border-t mt-12 px-8 text-left">
-                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance text-center text-left">
+            <footer className="text-center pt-12 border-t mt-12 px-8 text-left text-left">
+                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance text-center text-left text-left">
                     "Confess your faults one to another, and pray one for another, that ye may be healed. The effectual fervent prayer of a righteous man availeth much." — James 5:16
                 </p>
             </footer>
