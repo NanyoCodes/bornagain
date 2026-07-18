@@ -76,10 +76,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
@@ -530,22 +526,17 @@ export default function SoulsWonPage() {
             <div className="lg:col-span-8 space-y-8 pb-32">
                 <header className="px-4 sm:px-0 space-y-6 pt-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                        <div className="flex items-center gap-4">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
-                                <ArrowLeft className="h-6 w-6" />
-                            </Button>
-                            <div className="space-y-1 text-left">
-                                <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">MY HARVEST</h1>
-                                <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
-                                    <ClipboardList className="h-4 w-4 text-primary" /> Logged Records
-                                </p>
-                            </div>
+                        <div className="space-y-1 text-left">
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">MY HARVEST</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
+                                <ClipboardList className="h-4 w-4 text-primary" /> Logged Records
+                            </p>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="h-12 px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background">
-                                        <Download className="mr-2 h-4 w-4" /> EXPORT HARVEST
+                                    <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none">
+                                        <Download className="mr-2 h-4 w-4" /> EXPORT
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl">
@@ -559,7 +550,7 @@ export default function SoulsWonPage() {
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <Button onClick={() => setIsLogDialogOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20">
+                            <Button onClick={() => setIsLogDialogOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none">
                                 <PlusCircle className="mr-2 h-4 w-4" /> LOG SOUL
                             </Button>
                         </div>
