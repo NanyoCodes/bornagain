@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
@@ -288,6 +289,8 @@ function TestimoniesContent() {
   const prayerFormContent = (
     <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} />
   );
+
+  const anyDialogOpen = !!itemToDelete || !!testimonyToEdit || !!prayerToEdit || isTestimonyDialogOpen || isPrayerDialogOpen;
 
   return (
     <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">

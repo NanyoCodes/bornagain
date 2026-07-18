@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -1013,7 +1014,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
                 <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <SheetHeader className="text-left">
+                    <SheetHeader className="text-left flex-shrink-0">
                         <SheetTitle className="sr-only">Main Navigation Menu</SheetTitle>
                     </SheetHeader>
                     <div className="flex items-center gap-3 mb-4 text-left">

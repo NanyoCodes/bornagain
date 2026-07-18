@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -88,6 +89,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { FeedSidebar } from "@/components/layout/feed-sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RelationshipCircleTracker } from "@/components/souls/relationship-circle-tracker";
+import Papa from 'papaparse';
 
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
   loading: () => <div className="flex justify-center p-12 text-left"><Loader2 className="h-8 w-8 animate-spin" /></div>,
@@ -140,7 +142,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
   );
 }
 
-export default function SoulsWonPage() {
+export function SoulsWonPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
@@ -277,11 +279,93 @@ export default function SoulsWonPage() {
   const handleOpenAssessment = useCallback((soul: Soul) => setAssessmentSoulId(soul.id), []);
 
   const handleExportHarvest = async (formatType: 'csv' | 'pdf') => {
-    toast({ title: "Export Started", description: "Your harvest list is being prepared." });
+    if (!souls || souls.length === 0) {
+        toast({ variant: 'destructive', title: 'Empty Harvest', description: 'No souls found to export.' });
+        return;
+    }
+    
+    toast({ title: "Exporting...", description: "Your harvest list is being prepared." });
+
+    const headers = ["First Name", "Last Name", "Gender", "Status", "Won At", "Source", "Phone", "Email", "Church", "City", "Country"];
+    const body = souls.map(s => [
+        s.firstName,
+        s.lastName || '',
+        s.gender || 'N/A',
+        s.status,
+        s.wonAt ? format(s.wonAt.toDate(), 'yyyy-MM-dd') : 'N/A',
+        s.source,
+        s.phone || 'N/A',
+        s.email || 'N/A',
+        s.church || 'N/A',
+        s.locationWon?.city || 'N/A',
+        s.locationWon?.country || 'N/A'
+    ]);
+
+    if (formatType === 'pdf') {
+        const { jsPDF } = await import('jspdf');
+        const { default: autoTable } = await import('jspdf-autotable');
+        const doc = new jsPDF({ orientation: 'landscape' });
+        doc.text("My Soul Winning Harvest", 14, 15);
+        autoTable(doc, {
+            head: [headers],
+            body: body,
+            startY: 20,
+            styles: { fontSize: 8 },
+            headStyles: { fillColor: [249, 116, 22] }
+        });
+        doc.save(`harvest-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+    } else {
+        const csv = Papa.unparse({ fields: headers, data: body });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `harvest-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+    toast({ title: "Download Started" });
   };
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
-      toast({ title: "Exported", description: `Record for ${soul.firstName} exported.` });
+      const headers = ["Field", "Detail"];
+      const wonAt = safeToDate(soul.wonAt);
+      const data = [
+          ["First Name", soul.firstName],
+          ["Last Name", soul.lastName || ''],
+          ["Gender", soul.gender || 'N/A'],
+          ["Status", soul.status],
+          ["Date Won", wonAt ? format(wonAt, 'PPP') : 'N/A'],
+          ["Source", soul.source],
+          ["Phone", soul.phone || 'N/A'],
+          ["Email", soul.email || 'N/A'],
+          ["Home Church", soul.church || 'N/A'],
+          ["Location", [soul.locationWon?.city, soul.locationWon?.country].filter(Boolean).join(', ') || 'N/A']
+      ];
+
+      if (formatType === 'pdf') {
+          const { jsPDF } = await import('jspdf');
+          const { default: autoTable } = await import('jspdf-autotable');
+          const doc = new jsPDF();
+          doc.text(`Kingdom Identity: ${soul.firstName}`, 14, 15);
+          autoTable(doc, {
+              head: [headers],
+              body: data,
+              startY: 20,
+              headStyles: { fillColor: [249, 116, 22] }
+          });
+          doc.save(`${soul.firstName.toLowerCase()}-record.pdf`);
+      } else {
+          const csv = Papa.unparse({ fields: headers, data });
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.setAttribute("href", url);
+          link.setAttribute("download", `${soul.firstName.toLowerCase()}-record.csv`);
+          link.click();
+          URL.revokeObjectURL(url);
+      }
+      toast({ title: "Export Success" });
   }, [toast]);
 
   const handleDeleteSoul = () => {
@@ -683,3 +767,5 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+
+export default SoulsWonPage;

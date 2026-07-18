@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -710,7 +711,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                             <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between">
                                                 <div className="flex items-center gap-3 text-left">
                                                     <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left">
-                                                        <Users className="h-5 w-5 text-muted-foreground/40" />
+                                                        <Users className="h-5 w-5 text-muted-foreground/40 text-left" />
                                                     </div>
                                                     <div className="min-w-0 text-left">
                                                         <p className="text-sm font-black uppercase tracking-tight text-left">{post.authorName}</p>
