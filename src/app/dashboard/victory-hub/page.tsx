@@ -1,4 +1,3 @@
-
 'use client';
 
 import { 
@@ -224,7 +223,7 @@ function CategoryCard({ category }: { category: typeof strongholdCategories[0] }
     return (
         <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5">
             <CardHeader className="p-8 pb-4 text-left">
-                <div className="flex justify-between items-start mb-6">
+                <div className="flex justify-between items-start mb-6 text-left">
                     <div className={cn("h-16 w-16 rounded-[1.5rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform", category.bg)}>
                         <Icon className={cn("h-8 w-8", category.color)} />
                     </div>
@@ -303,7 +302,7 @@ export default function VictoryHubPage() {
                 </div>
 
                 <div className="relative text-left">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                     <Input 
                         placeholder="Search for a struggle circle..." 
                         value={searchTerm}
@@ -323,14 +322,14 @@ export default function VictoryHubPage() {
                         <div className="h-20 w-20 rounded-full bg-muted/20 flex items-center justify-center mb-6">
                             <ShieldCheck className="h-10 w-10 text-muted-foreground opacity-20" />
                         </div>
-                        <p className="text-base font-black uppercase tracking-tight opacity-40 text-center">No matching circles found</p>
-                        <p className="text-xs text-muted-foreground mt-2 italic text-center">Try a different search term or enter the "Other" circle.</p>
+                        <p className="text-base font-black uppercase tracking-tight opacity-40 text-center text-left">No matching circles found</p>
+                        <p className="text-xs text-muted-foreground mt-2 italic text-center text-left">Try a different search term or enter the "Other" circle.</p>
                     </div>
                 )}
             </div>
 
-            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto">
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium italic text-balance text-center">
+            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left">
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium italic text-balance text-center text-left">
                     "And they overcame him by the blood of the Lamb, and by the word of their testimony; and they loved not their lives unto the death." — Revelation 12:11
                 </p>
             </footer>

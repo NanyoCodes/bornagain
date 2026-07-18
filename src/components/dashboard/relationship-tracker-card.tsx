@@ -58,6 +58,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { bibleData } from '@/lib/bible-data';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -159,6 +167,8 @@ function ScriptureSelectionDialog({
     onSelect: (scripture: { reference: string; text?: string }) => void;
 }) {
     const [search, setSearch] = useState('');
+    const [selectedBook, setSelectedBook] = useState<string | null>(null);
+    const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
     
     const filteredHighlights = useMemo(() => {
         if (!highlights) return [];
@@ -168,12 +178,11 @@ function ScriptureSelectionDialog({
         });
     }, [highlights, search]);
 
-    const filteredKingdomVerses = useMemo(() => {
-        return kingdomVerses.filter(v => 
-            v.reference.toLowerCase().includes(search.toLowerCase()) ||
-            v.text.toLowerCase().includes(search.toLowerCase())
-        );
-    }, [search]);
+    const bookOptions = useMemo(() => bibleData, []);
+    const chapterOptions = useMemo(() => {
+        if (!selectedBook) return [];
+        return bookOptions.find(b => b.name === selectedBook)?.chapters || [];
+    }, [selectedBook, bookOptions]);
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -181,14 +190,14 @@ function ScriptureSelectionDialog({
                 <div className="p-8 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Word</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Choose a scripture from your study or Kingdom essentials.</DialogDescription>
+                        <DialogDescription className="text-sm font-medium text-left">Choose a scripture from your study or pick from any scripture in the bible.</DialogDescription>
                     </DialogHeader>
                 </div>
                 <div className="p-6 space-y-6 text-left">
                     <div className="relative text-left">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                         <Input 
-                            placeholder="Search by book or keyword..." 
+                            placeholder="Search book or journal..." 
                             value={search} 
                             onChange={e => setSearch(e.target.value)}
                             className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
@@ -223,25 +232,54 @@ function ScriptureSelectionDialog({
                                 </div>
                             )}
 
-                            <div className="space-y-3 text-left">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2">Kingdom Essentials</Label>
-                                <div className="space-y-1.5">
-                                    {filteredKingdomVerses.map((v, i) => (
-                                        <Button 
-                                            key={i} 
-                                            variant="ghost" 
-                                            className="w-full justify-start h-auto py-4 px-4 rounded-2xl hover:bg-primary/5 text-left border border-transparent hover:border-primary/20 transition-all group"
-                                            onClick={() => onSelect(v)}
-                                        >
-                                            <div className="min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <Sparkles className="h-3.5 w-3.5 text-primary/40 group-hover:text-primary transition-colors" />
-                                                    <p className="font-black text-sm uppercase tracking-tight">{v.reference}</p>
-                                                </div>
-                                                <p className="text-xs text-muted-foreground leading-relaxed italic font-medium opacity-80">&ldquo;{v.text}&rdquo;</p>
+                            <div className="space-y-4 text-left">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2">pick from any scripture in the bible</Label>
+                                
+                                <div className="grid grid-cols-1 gap-3 px-1">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Bible Book</label>
+                                        <Select value={selectedBook || ""} onValueChange={(val) => { setSelectedBook(val); setSelectedChapter(null); }}>
+                                            <SelectTrigger className="h-12 rounded-2xl bg-background border-none shadow-sm font-bold text-sm">
+                                                <SelectValue placeholder="Select Book" />
+                                            </SelectTrigger>
+                                            <SelectContent className="max-h-[300px] rounded-2xl">
+                                                {bookOptions.map(b => (
+                                                    <SelectItem key={b.name} value={b.name} className="rounded-xl">{b.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    {selectedBook && (
+                                        <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Chapter</label>
+                                            <div className="grid grid-cols-5 gap-2 max-h-40 overflow-y-auto p-1 rounded-xl bg-background/30">
+                                                {chapterOptions.map(c => (
+                                                    <Button 
+                                                        key={c.chapter} 
+                                                        variant={selectedChapter === c.chapter ? "default" : "ghost"}
+                                                        size="sm"
+                                                        className={cn(
+                                                            "h-9 rounded-lg font-bold transition-all",
+                                                            selectedChapter === c.chapter ? "shadow-md scale-105" : "hover:bg-primary/5"
+                                                        )}
+                                                        onClick={() => setSelectedChapter(c.chapter)}
+                                                    >
+                                                        {c.chapter}
+                                                    </Button>
+                                                ))}
                                             </div>
+                                        </div>
+                                    )}
+
+                                    {selectedBook && selectedChapter && (
+                                        <Button 
+                                            className="w-full h-12 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 mt-2 animate-in zoom-in duration-300"
+                                            onClick={() => onSelect({ reference: `${selectedBook} ${selectedChapter}` })}
+                                        >
+                                            CONFIRM WORD
                                         </Button>
-                                    ))}
+                                    )}
                                 </div>
                             </div>
                         </div>
