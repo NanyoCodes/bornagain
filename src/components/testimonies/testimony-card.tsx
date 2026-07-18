@@ -227,7 +227,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   return (
     <>
       <div id={testimony.id} className={cn(
-        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-xl border border-border border-t-4 border-t-primary/20 border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm",
+        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-[2rem] border-x sm:border-x border-y sm:border-y border-border border-t-4 border-t-primary/20 shadow-none bg-card/50 backdrop-blur-sm",
         isPartner && "ring-1 ring-primary/20",
         testimony.answeredPrayerId && "border-l-4 border-l-amber-500"
       )}>
@@ -385,10 +385,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 {isProcessingReaction === 'amen' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <HandHeart className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", hasAmened && "fill-current")} />}<span>Amen</span>
             </Button>
             <Button onClick={(e) => { e.stopPropagation(); handleReaction('inspired'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasInspired && "text-chart-3 hover:text-chart-3 bg-chart-3/5")}>
-                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <Sparkles className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", hasInspired && "fill-current")} />}<span>Hallelujah</span>
+                {isProcessingReaction === 'inspired' ? <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" /> : <Sparkles className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", hasInspired && "fill-current")} />}<span>Hallelujah</span>
             </Button>
             <Button onClick={(e) => { e.stopPropagation(); handleReaction('connect'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", hasConnected && "text-blue-500 hover:text-blue-500 bg-blue-500/5")}>
-                {isProcessingReaction === 'connect' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" /> : <PartyPopper className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", hasConnected && "fill-current")} />}<span>Celebrate</span>
+                {isProcessingReaction === 'connect' ? <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" /> : <PartyPopper className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", hasConnected && "fill-current")} />}<span>Celebrate</span>
             </Button>
             <Button variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all", isCommentsOpen && "text-primary hover:text-primary bg-primary/5")} onClick={(e) => { e.stopPropagation(); setIsCommentsOpen(true); }}>
                 <div className="relative flex flex-col items-center justify-center h-full"><MessageSquare className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", isCommentsOpen && "fill-current")} />{commentCount > 0 && <span className="absolute -top-1.5 -right-1.5 flex h-3 w-3 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-primary text-[7px] sm:text-[8px] font-black text-primary-foreground border-background border-2 shadow-sm">{commentCount}</span>}</div><span>Comment</span>

@@ -289,13 +289,11 @@ function TestimoniesContent() {
     <CreatePrayerRequestForm onPrayerRequestCreated={handlePrayerRequestCreated} />
   );
 
-  const anyDialogOpen = !!itemToDelete || !!testimonyToEdit || !!prayerToEdit || isTestimonyDialogOpen || isPrayerDialogOpen;
-
   return (
     <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10 text-left">
-            <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-xl border-x-0 sm:border-x -mx-4 sm:mx-0 text-left bg-card/50 backdrop-blur-sm overflow-hidden">
+            <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-3xl border-x-0 sm:border-x -mx-3 sm:mx-0 text-left bg-card/50 backdrop-blur-sm overflow-hidden">
                 <CardContent className="p-3 sm:p-6 text-left">
                 <div className="flex flex-row items-center gap-2 sm:gap-4 w-full text-left">
                     <Button 
@@ -339,10 +337,10 @@ function TestimoniesContent() {
                 </TabsList>
                 
                 <TabsContent value="testimonies" className="outline-none text-left">
-                    <div className="flex flex-col gap-4 w-full pb-24 sm:pb-12 text-left -mx-4 sm:mx-0">
+                    <div className="flex flex-col gap-0 sm:gap-6 w-full pb-24 sm:pb-12 text-left -mx-3 sm:mx-0">
                         {loading ? (
                         [...Array(3)].map((_, i) => (
-                            <Card key={i} className="flex flex-col h-full rounded-2xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
+                            <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
                         ))
                         ) : filteredTestimonies.map((testimony) => (
                             <TestimonyCard 
@@ -368,10 +366,10 @@ function TestimoniesContent() {
                 </TabsContent>
                 
                 <TabsContent value="prayers" className="outline-none text-left">
-                    <div className="flex flex-col gap-4 w-full pb-24 sm:pb-12 text-left -mx-4 sm:mx-0">
+                    <div className="flex flex-col gap-0 sm:gap-6 w-full pb-24 sm:pb-12 text-left -mx-3 sm:mx-0">
                         {loading ? (
                         [...Array(3)].map((_, i) => (
-                            <Card key={i} className="flex flex-col h-full rounded-2xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
+                            <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
                         ))
                         ) : filteredPrayerRequests.map((req) => (
                         <PrayerRequestCard 

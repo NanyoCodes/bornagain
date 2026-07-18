@@ -153,9 +153,9 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
 
   return (
     <>
-      <Card className="flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-xl border-x-0 sm:border-x border-t-4 border-t-amber-500/20 border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm">
+      <Card className="flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-[2rem] border-x sm:border-x border-y sm:border-y border-border border-t-4 border-t-amber-500/20 shadow-none bg-card/50 backdrop-blur-sm">
         <CardHeader className="flex flex-row items-start justify-between gap-4 p-4 sm:p-6">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                 {prayerRequest.isAnonymous ? (
                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
                         <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
@@ -167,22 +167,22 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
                         className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm"
                     />
                 )}
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 text-left">
                      <Link href={profileLink} onClick={(e) => { if (!isClickable) e.preventDefault(); e.stopPropagation(); }} className={cn(!isClickable && 'pointer-events-none')}>
                         <CardTitle className={cn("text-base sm:text-lg font-bold", isClickable && "hover:underline")}>{authorName}</CardTitle>
                     </Link>
-                    <CardDescription className="text-[10px] sm:text-xs mt-1">
+                    <CardDescription className="text-[10px] sm:text-xs mt-1 text-left">
                         {displayDate}
                     </CardDescription>
-                    <div className="mt-1.5">
+                    <div className="mt-1.5 text-left">
                         <Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">{prayerRequest.category}</Badge>
                     </div>
                 </div>
             </div>
         </CardHeader>
-        <CardContent className="flex-grow py-0 px-4 sm:px-6">
+        <CardContent className="flex-grow py-0 px-4 sm:px-6 text-left">
           <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap text-left">
-            <p ref={contentRef} className="line-clamp-4 leading-relaxed">
+            <p ref={contentRef} className="line-clamp-4 leading-relaxed text-left">
               {prayerRequest.content}
             </p>
             {isTruncated && !isAuthor && (
@@ -199,13 +199,13 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
             )}
           </div>
         </CardContent>
-        <CardFooter className="pt-4 flex justify-between items-center mt-auto p-4 sm:p-6">
-          <div className="flex items-center gap-1.5 text-[11px] sm:text-sm text-muted-foreground font-medium">
+        <CardFooter className="pt-4 flex justify-between items-center mt-auto p-4 sm:p-6 border-t border-dashed mt-4">
+          <div className="flex items-center gap-1.5 text-[11px] sm:text-sm text-muted-foreground font-medium text-left">
               <Users className="h-4 w-4 text-primary" />
               <span>{prayerCount} believers praying</span>
           </div>
           {isAuthor ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-left">
                 {!isAnswered ? (
                     <Button onClick={onAnswerPrayer} size="sm" className="font-bold h-8 px-3">
                         <Award className="mr-2 h-4 w-4" />
@@ -258,28 +258,28 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
         <>
           {isMobile ? (
             <Sheet open={showFullText} onOpenChange={setShowFullText}>
-              <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                <div className="p-8 border-b shrink-0 bg-muted/20">
+              <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/20 text-left">
                   <SheetHeader className="text-left">
-                    <SheetTitle className="text-2xl font-black font-headline">Prayer Request from {authorName}</SheetTitle>
-                    <SheetDescription className="text-sm font-medium">{displayDate}</SheetDescription>
+                    <SheetTitle className="text-2xl font-black font-headline text-left">Prayer Request from {authorName}</SheetTitle>
+                    <SheetDescription className="text-sm font-medium text-left">{displayDate}</SheetDescription>
                   </SheetHeader>
                 </div>
-                <div className="flex-grow min-h-0 p-8 overflow-y-auto">
+                <div className="flex-grow min-h-0 p-8 overflow-y-auto text-left">
                   {fullTextContent}
                 </div>
               </SheetContent>
             </Sheet>
           ) : (
             <Dialog open={showFullText} onOpenChange={setShowFullText}>
-              <DialogContent className="sm:max-w-2xl rounded-3xl overflow-hidden p-0">
-                <div className="p-8 border-b bg-muted/10">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-black font-headline">Prayer Request from {authorName}</DialogTitle>
-                    <DialogDescription className="text-sm font-medium">{displayDate}</DialogDescription>
+              <DialogContent className="sm:max-w-2xl rounded-3xl overflow-hidden p-0 text-left">
+                <div className="p-8 border-b bg-muted/10 text-left">
+                  <DialogHeader className="text-left">
+                    <DialogTitle className="text-2xl font-black font-headline text-left">Prayer Request from {authorName}</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">{displayDate}</DialogDescription>
                   </DialogHeader>
                 </div>
-                <div className="p-8">
+                <div className="p-8 text-left">
                     {fullTextContent}
                 </div>
               </DialogContent>
