@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -24,7 +23,8 @@ import {
   Sparkles,
   HelpCircle,
   ClipboardList,
-  ChevronRight
+  ChevronRight,
+  Plus
 } from "lucide-react";
 import { 
   Dialog, 
@@ -294,7 +294,7 @@ export default function SoulsWonPage() {
         return;
     }
     
-    toast({ title: "Exporting...", description: "Your high-fidelity Kingdom report is being generated." });
+    toast({ title: "Exporting...", description: "Your professional Kingdom report is being generated." });
 
     const headers = ["First Name", "Last Name", "Gender", "Status", "Won At", "Source", "Phone", "Email", "City", "Country"];
     const body = souls.map(s => [
@@ -331,8 +331,8 @@ export default function SoulsWonPage() {
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(100);
         doc.text(`Mobilizer: ${userProfile?.firstName} ${userProfile?.lastName || ''}`, 32, 27);
-        doc.text(`Total Lives Logged: ${souls.length}`, 14, 40);
-        doc.text(`Export Date: ${format(new Date(), 'PPPP')}`, 235, 40, { align: 'right' });
+        doc.text(`Total Impact: ${souls.length} Lives`, 14, 40);
+        doc.text(`Export Date: ${format(new Date(), 'PPPP')}`, 283, 40, { align: 'right' });
 
         autoTable(doc, {
             head: [headers],
@@ -356,7 +356,7 @@ export default function SoulsWonPage() {
             doc.setFontSize(8);
             doc.setTextColor(150);
             doc.text(`Page ${i} of ${pageCount}`, 14, 200);
-            doc.text("Built for the Great Commission - testifyglobal.com", 235, 200, { align: 'right' });
+            doc.text("Built for the Great Commission - testifyglobal.com", 283, 200, { align: 'right' });
         }
 
         doc.save(`testify-harvest-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
@@ -524,7 +524,7 @@ export default function SoulsWonPage() {
     <div className="w-full max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
             <div className="lg:col-span-8 space-y-8 pb-32">
-                <header className="px-4 sm:px-0 space-y-6 pt-4">
+                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div className="space-y-1 text-left">
                             <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">MY HARVEST</h1>
@@ -551,7 +551,7 @@ export default function SoulsWonPage() {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                             <Button onClick={() => setIsLogDialogOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none">
-                                <PlusCircle className="mr-2 h-4 w-4" /> LOG SOUL
+                                <PlusCircle className="mr-2 h-4 w-4" /> ADD SOUL
                             </Button>
                         </div>
                     </div>
@@ -791,7 +791,7 @@ export default function SoulsWonPage() {
                     <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Log New Soul</SheetTitle><SheetDescription className="text-sm text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
+                                <SheetHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
@@ -815,7 +815,7 @@ export default function SoulsWonPage() {
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline">Log New Soul</DialogTitle>
+                                    <DialogTitle className="text-2xl font-black font-headline">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>
