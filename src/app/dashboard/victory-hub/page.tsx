@@ -24,7 +24,8 @@ import {
     BookOpen,
     Share2,
     Banknote,
-    ShoppingBag
+    ShoppingBag,
+    Loader2
 } from 'lucide-react';
 import { 
     Card, 
@@ -37,11 +38,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useCollection } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
+import { collection, query, where, getCountFromServer } from 'firebase/firestore';
 
 const strongholdCategories = [
     { 
@@ -176,8 +178,28 @@ const strongholdCategories = [
 
 function CategoryCard({ category }: { category: typeof strongholdCategories[0] }) {
     const { toast } = useToast();
+    const firestore = useFirestore();
     const circleLink = `/dashboard/strongholds/${category.name.toLowerCase()}`;
     const Icon = category.icon;
+
+    const [participantCount, setParticipantCount] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (!firestore) return;
+        const fetchParticipants = async () => {
+            try {
+                const postsRef = collection(firestore, 'victoryCircles', category.name.toLowerCase(), 'posts');
+                const snapshot = await getCountFromServer(postsRef);
+                setParticipantCount(snapshot.data().count);
+            } catch (e) {
+                console.error("Failed to fetch circle participants:", e);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchParticipants();
+    }, [firestore, category.name]);
 
     const handleShare = (e: React.MouseEvent) => {
         e.preventDefault();

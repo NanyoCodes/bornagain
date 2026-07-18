@@ -815,7 +815,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                         <Target className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Supply Drop</span>
                                     </div>
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                                     </SheetTitle>
                                     <SheetDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</SheetDescription>

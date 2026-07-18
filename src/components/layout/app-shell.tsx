@@ -417,6 +417,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 function BottomNavBar() {
     const pathname = usePathname();
     
+    // Optimized bottom navigation for mobile: Remove Partners to prevent crowding
     const mobileNavItems = navItems.filter(item => item.href !== '/accountability');
     
     return (

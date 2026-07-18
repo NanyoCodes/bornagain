@@ -29,7 +29,8 @@ import {
   ArrowRight,
   Send,
   X,
-  HeartHandshake
+  HeartHandshake,
+  HandHeart
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -121,7 +122,7 @@ function SoulSelectionList({
                             </Button>
                         ))
                     ) : (
-                        <div className="text-center py-16 px-8 space-y-3 text-left text-center">
+                        <div className="text-center py-16 px-8 space-y-3 text-left">
                             <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left">
                                 <Users className="h-6 w-6 text-muted-foreground opacity-20 text-left" />
                             </div>
@@ -256,12 +257,9 @@ export function RelationshipTrackerCard() {
     
     const updateData: any = {
         followUpLog: arrayUnion(logEntry),
+        status: soul.status === 'New' ? 'Contacted' : soul.status,
         lastUpdatedAt: serverTimestamp(),
     };
-
-    if (soul.status === 'New') {
-        updateData.status = 'Contacted';
-    }
 
     batch.update(soulUserRef, updateData);
     batch.update(globalSoulRef, updateData);
@@ -339,7 +337,15 @@ export function RelationshipTrackerCard() {
                       <Sparkles className="h-5 w-5 text-primary text-left" />
                       KINGDOM SOULS FOLLOW-UP
                   </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
+                  <div className="flex items-center gap-2 text-left">
+                    <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
+                    <span className="text-muted-foreground opacity-30">•</span>
+                    <Button asChild variant="link" className="h-auto p-0 text-[10px] font-black uppercase text-primary hover:no-underline">
+                        <Link href="/dashboard/testimonies?tab=prayers">
+                            <HandHeart className="mr-1 h-3 w-3" /> GLOBAL PRAYER FEED
+                        </Link>
+                    </Button>
+                  </div>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end shrink-0 text-left">
                 {currentDate && (
@@ -359,6 +365,7 @@ export function RelationshipTrackerCard() {
                     const isCompleted = completedToday.includes(action.id);
                     const Icon = iconMap[action.id] || Heart;
                     const isToggling = togglingId === action.id;
+                    const isPrayAction = action.id === 'prayed_together';
                     
                     const buttonEl = (
                         <motion.div layout whileTap={{ scale: 0.95 }} whileHover={isMobile ? {} : { y: -2 }} className="w-full h-24 text-left">
@@ -418,6 +425,18 @@ export function RelationshipTrackerCard() {
                                     )}>
                                         {action.label}
                                     </span>
+                                    {isPrayAction && (
+                                        <div 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                router.push('/dashboard/testimonies?tab=prayers');
+                                            }}
+                                            className="h-2.5 flex items-center justify-center text-primary/40 hover:text-primary transition-colors cursor-pointer group/feed"
+                                        >
+                                            <span className="text-[7px] font-black uppercase tracking-tighter group-hover/feed:underline">View Feed</span>
+                                            <ArrowRight className="h-1.5 w-1.5 ml-0.5" />
+                                        </div>
+                                    )}
                                     <div className="h-2.5 flex items-center justify-center text-left">
                                         {isPending && !isCompleted && !isToggling && (
                                             <span className="text-[8px] font-black uppercase text-amber-600/60 leading-none text-left">Pending Hub</span>
@@ -439,6 +458,7 @@ export function RelationshipTrackerCard() {
                                 <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left" side="bottom">
                                     <p className="text-[10px] font-bold uppercase text-primary text-left">Kingdom Action</p>
                                     <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left">{action.label}</p>
+                                    {isPrayAction && <p className="text-[9px] text-muted-foreground mt-1 text-left">Click button to pray with soul, or small link to see global requests.</p>}
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -455,7 +475,7 @@ export function RelationshipTrackerCard() {
                   </Link>
               </Button>
               <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 text-left">
-                  Unity • Growth • Love
+                  Unity • Growth • Love • Support
               </p>
         </CardFooter>
       </Card>
