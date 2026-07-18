@@ -594,11 +594,11 @@ function PendingProvisionReminder() {
                         <ShoppingCart className="h-16 w-16 text-primary" />
                     </div>
                     <CardContent className="p-4 sm:p-5 flex items-center gap-4 text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform">
+                        <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform text-left">
                             {isMultiple ? <PlusCircle className="h-6 w-6 text-white" /> : <Icon className="h-6 w-6 text-white" />}
                         </div>
                         <div className="min-w-0 flex-1 text-left">
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5 text-left">
                                 {isMultiple ? `${provisions.length} Acts of Kindness` : 'Finish Provision'}
                             </p>
                             <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight text-left">
@@ -608,9 +608,9 @@ function PendingProvisionReminder() {
                                 }
                             </p>
                         </div>
-                        <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-1 text-left" onClick={e => e.stopPropagation()}>
                             {!isMultiple && (
-                                <Button asChild size="icon" className="h-10 w-10 rounded-full shadow-lg shrink-0">
+                                <Button asChild size="icon" className="h-10 w-10 rounded-full shadow-lg shrink-0 text-left">
                                     <Link href={`${path}?soulId=${displayItem.soulId}&soulName=${encodeURIComponent(displayItem.soulName)}&actionId=${displayItem.actionId}`}>
                                         <ArrowRight className="h-5 w-5" />
                                     </Link>
@@ -619,7 +619,7 @@ function PendingProvisionReminder() {
                             <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive shrink-0"
+                                className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive shrink-0 text-left"
                                 onClick={() => {
                                     if (isMultiple) {
                                         setShowList(true);
@@ -653,7 +653,7 @@ function PendingProvisionReminder() {
                         <CardTitle className="text-lg font-black font-headline uppercase tracking-tight text-left">Kindness Tasks</CardTitle>
                         <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-primary text-left">Pending acts for the harvest</CardDescription>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => setShowList(false)} className="rounded-full">
+                    <Button variant="ghost" size="icon" onClick={() => setShowList(false)} className="rounded-full text-left">
                         <X className="h-5 w-5" />
                     </Button>
                 </CardHeader>
@@ -682,7 +682,7 @@ function PendingProvisionReminder() {
                                         <Button 
                                             variant="ghost" 
                                             size="icon" 
-                                            className="h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive"
+                                            className="h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive text-left"
                                             onClick={() => removeOne(p.soulId, p.actionId)}
                                         >
                                             <X className="h-3.5 w-3.5" />
@@ -693,8 +693,8 @@ function PendingProvisionReminder() {
                         })}
                     </div>
                 </ScrollArea>
-                <CardFooter className="p-4 border-t bg-muted/5 justify-center">
-                    <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100" onClick={() => {
+                <CardFooter className="p-4 border-t bg-muted/5 justify-center text-left">
+                    <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 text-left" onClick={() => {
                          if(user?.uid) {
                              const key = `testify_pending_provisions_${user.uid}`;
                              localStorage.removeItem(key);

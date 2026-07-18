@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
-import type { Campaign, UserProfile, CampaignParticipant, Testimony } from '@/lib/types';
+import type { Campaign, UserProfile, CampaignParticipant, Testimony, Fellowship } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -73,6 +73,12 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         return query(collection(firestore, 'campaigns', campaignId, 'participants'));
     }, [firestore, campaignId, isJoined]);
     const { data: participants, loading: participantsLoading } = useCollection<CampaignParticipant>(participantsQuery);
+
+    const activeFellowshipsQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'fellowships'), where('status', '==', 'active'));
+    }, [firestore]);
+    const { data: activeFellowships } = useCollection<Fellowship>(activeFellowshipsQuery);
 
     const testimoniesQuery = useMemo(() => {
         if (!firestore || !campaignId) return null;
@@ -171,7 +177,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden mx-4 sm:mx-0">
                         <CardHeader className="p-8 border-b bg-muted/5 text-left">
                             <CardTitle className="flex items-center justify-between text-lg font-black uppercase tracking-tight">
-                                <span className="flex items-center gap-2"><Users className="h-5 w-5 text-primary" /> Participants</span>
+                                <span className="flex items-center gap-2 text-left"><Users className="h-5 w-5 text-primary" /> Participants</span>
                                 <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold">{participants?.length || 0}</Badge>
                             </CardTitle>
                         </CardHeader>
@@ -197,7 +203,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
                 <div className="space-y-8 flex flex-col px-4 sm:px-0 text-left">
                     <Card className="rounded-[2rem] sm:rounded-3xl shadow-xl border-none bg-primary text-primary-foreground">
-                        <CardHeader className="pb-4"><CardTitle className="text-base font-black uppercase tracking-[0.2em] opacity-80">Mission Hub</CardTitle></CardHeader>
+                        <CardHeader className="pb-4"><CardTitle className="text-base font-black uppercase tracking-[0.2em] opacity-80 text-left">Mission Hub</CardTitle></CardHeader>
                         <CardContent className="flex flex-col gap-3">
                             {isJoined && status === 'Ongoing' && (
                                 <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20" onClick={() => setIsLogSoulOpen(true)}>
@@ -218,7 +224,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </Card>
 
                     <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10">
-                        <CardHeader className="pb-3 text-left"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Organizer</CardTitle></CardHeader>
+                        <CardHeader className="pb-3 text-left"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-left">Organizer</CardTitle></CardHeader>
                         <CardContent>
                             <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-all text-left">
                                 <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-xl"><AvatarFallback className="font-black">{campaign.organizerFirstName?.charAt(0)}</AvatarFallback></Avatar>
@@ -230,29 +236,29 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             </div>
 
             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-                    <div className="p-8 border-b bg-muted/10"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight">Log Harvest</DialogTitle></DialogHeader></div>
-                    <ScrollArea className="max-h-[70vh] p-8"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultCampaign={campaign} /></ScrollArea>
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
+                    <div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Log Harvest</DialogTitle></DialogHeader></div>
+                    <ScrollArea className="max-h-[70vh] p-8 text-left"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultCampaign={campaign} /></ScrollArea>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={isTestimonyOpen} onOpenChange={setIsTestimonyOpen}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-                    <div className="p-8 border-b bg-muted/10"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight">Share Victory</DialogTitle></DialogHeader></div>
-                    <ScrollArea className="max-h-[70vh] p-8">{userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={() => setIsTestimonyOpen(false)} campaign={campaign} />}</ScrollArea>
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
+                    <div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Share Victory</DialogTitle></DialogHeader></div>
+                    <ScrollArea className="max-h-[70vh] p-8 text-left">{userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={() => setIsTestimonyOpen(false)} campaign={campaign} />}</ScrollArea>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-                <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-                    <div className="p-8 border-b bg-muted/10"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight">Manage Mission</DialogTitle></DialogHeader></div>
-                    <ScrollArea className="max-h-[80vh] p-8"><ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { setCampaignToDelete(campaign); setIsManageOpen(false); }} /></ScrollArea>
+                <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
+                    <div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Manage Mission</DialogTitle></DialogHeader></div>
+                    <ScrollArea className="max-h-[80vh] p-8 text-left"><ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { setCampaignToDelete(campaign); setIsManageOpen(false); }} /></ScrollArea>
                 </DialogContent>
             </Dialog>
 
             {campaignToDelete && (
                 <AlertDialog open={!!campaignToDelete} onOpenChange={open => !open && setCampaignToDelete(null)}>
-                    <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black uppercase">Delete Campaign?</AlertDialogTitle><AlertDialogDescription>This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel className="rounded-xl h-12 font-bold">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+                    <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black uppercase text-left">Delete Campaign?</AlertDialogTitle><AlertDialogDescription className="text-left">This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel className="rounded-xl h-12 font-bold text-left">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
                 </AlertDialog>
             )}
         </div>
