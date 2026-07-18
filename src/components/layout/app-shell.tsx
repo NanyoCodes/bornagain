@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -64,7 +65,7 @@ import { signOut, getAuth } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, getDoc, writeBatch, addDoc } from "firebase/firestore";
-import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus, Meal, VendorProfile } from "@/lib/types";
+import type { Notification, UserProfile, Soul, MealGift, MealGiftStatus, Meal } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
@@ -411,7 +412,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 function BottomNavBar() {
     const pathname = usePathname();
     
-    // Space management for mobile bottom nav: Remove Accountability (Partners) specifically
+    // Bottom nav shows top-level sectors
     const mobileNavItems = navItems.filter(item => item.href !== '/accountability');
     
     return (
@@ -1035,10 +1036,15 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                           <Settings className="h-6 w-6 text-primary" />
                           <span className="font-black uppercase tracking-widest text-sm">Settings</span>
                         </Link>
+                        <Link href="/accountability" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                          <HeartHandshake className="h-6 w-6 text-primary" />
+                          <span className="font-black uppercase tracking-widest text-sm">Partners</span>
+                        </Link>
                         
                         <Separator className="my-6 opacity-50" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
-                        {navItems.map((item) => (
+                        {/* Remove victory-hub from loop as it's specialized below */}
+                        {navItems.filter(item => item.href !== '/dashboard/victory-hub').map((item) => (
                           <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                             <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", item.color)} />
                             <span className="font-black uppercase tracking-widest text-sm">{item.label}</span>
@@ -1202,7 +1208,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         
         {user && <PendingProvisionReminder />}
     </div>
-  </SearchProvider>
+  SearchProvider>
   );
 }
 
