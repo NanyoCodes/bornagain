@@ -113,7 +113,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     };
 
     if (loading || !mounted) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
-    if (campaignError || !campaign || campaign.status === 'deleted') return <div className="text-center p-12"><h2 className="text-xl font-bold">Campaign Not Found</h2><Button asChild variant="outline" className="mt-4"><Link href="/dashboard/campaigns">Return to Campaigns</Link></Button></div>;
+    if (campaignError || !campaign || campaign.status === 'deleted') return <div className="text-center p-12"><h2 className="text-xl font-bold text-left">Campaign Not Found</h2><Button asChild variant="outline" className="mt-4"><Link href="/dashboard/campaigns">Return to Campaigns</Link></Button></div>;
 
     return (
         <div className="space-y-8 pb-32">
@@ -194,8 +194,8 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     </Card>
 
                     <div className="space-y-6 px-4 sm:px-0 text-left">
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-2"><Newspaper className="h-5 w-5 text-primary" /> Campaign Testimonies</h3>
-                        <div className="flex flex-col gap-4">
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left"><Newspaper className="h-5 w-5 text-primary" /> Campaign Testimonies</h3>
+                        <div className="flex flex-col gap-4 text-left">
                             {testimonies?.map(t => <TestimonyCard key={t.id} testimony={t} onDelete={() => {}} onEdit={() => {}} currentUserProfile={userProfile} />)}
                         </div>
                     </div>
@@ -258,7 +258,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
             {campaignToDelete && (
                 <AlertDialog open={!!campaignToDelete} onOpenChange={open => !open && setCampaignToDelete(null)}>
-                    <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left"><AlertDialogHeader><AlertDialogTitle className="text-2xl font-black uppercase text-left">Delete Campaign?</AlertDialogTitle><AlertDialogDescription className="text-left">This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6"><AlertDialogCancel className="rounded-xl h-12 font-bold text-left">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
+                    <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left"><AlertDialogHeader className="text-left"><AlertDialogTitle className="text-2xl font-black uppercase text-left">Delete Campaign?</AlertDialogTitle><AlertDialogDescription className="text-left">This action cannot be undone.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter className="gap-3 mt-6 text-left"><AlertDialogCancel className="rounded-xl h-12 font-bold text-left">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left">{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Confirm Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent>
                 </AlertDialog>
             )}
         </div>

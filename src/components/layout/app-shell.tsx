@@ -1024,7 +1024,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         </div>
                     </div>
                     <SheetHeader className="text-left flex-shrink-0">
-                      <SheetTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">Kingdom Hub</SheetTitle>
                       <SheetDescription className="text-[10px] font-bold uppercase tracking-widest text-primary text-left">Mission Navigation</SheetDescription>
                     </SheetHeader>
                 </div>
