@@ -33,7 +33,12 @@ import {
   HandHeart,
   Globe,
   BookMarked,
-  Share
+  Share,
+  Plus,
+  Minus,
+  Trash2,
+  ChevronRight,
+  ChevronDown
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -59,6 +64,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { bibleData } from '@/lib/bible-data';
+import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -160,7 +168,27 @@ function ScriptureSelectionDialog({
     onSelect: (scripture: { reference: string; text: string }) => void;
 }) {
     const [search, setSearch] = useState('');
+    const [activeTab, setActiveTab] = useState('quick');
+    const [selectedBook, setSelectedBook] = useState<string | null>(null);
+    const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+    const [chapterContent, setChapterContent] = useState<BibleChapterOutput | null>(null);
+    const [isLoadingChapter, setIsLoadingChapter] = useState(false);
+    const [selectedVerseNumbers, setSelectedVerseNumbers] = useState<number[]>([]);
+    const [bookSearch, setBookSearch] = useState('');
+    
     const isMobile = useIsMobile();
+
+    useEffect(() => {
+        if (!isOpen) {
+            setSearch('');
+            setActiveTab('quick');
+            setSelectedBook(null);
+            setSelectedChapter(null);
+            setChapterContent(null);
+            setSelectedVerseNumbers([]);
+            setBookSearch('');
+        }
+    }, [isOpen]);
     
     const filteredHighlights = useMemo(() => {
         if (!highlights) return [];
@@ -178,10 +206,52 @@ function ScriptureSelectionDialog({
         );
     }, [search]);
 
+    const filteredBooks = useMemo(() => {
+        if (!bookSearch) return bibleData;
+        return bibleData.filter(b => b.name.toLowerCase().includes(bookSearch.toLowerCase()));
+    }, [bookSearch]);
+
+    const handleChapterSelect = async (book: string, chapterNum: number) => {
+        setSelectedChapter(chapterNum);
+        setIsLoadingChapter(true);
+        try {
+            const content = await getBibleChapter({ book, chapter: chapterNum });
+            setChapterContent(content);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsLoadingChapter(false);
+        }
+    };
+
+    const handleToggleVerse = (v: number) => {
+        setSelectedVerseNumbers(prev => 
+            prev.includes(v) ? prev.filter(n => n !== v) : [...prev, v]
+        );
+    };
+
+    const handleSharePassage = () => {
+        if (!chapterContent || selectedVerseNumbers.length === 0) return;
+        const selected = chapterContent.verses
+            .filter(v => selectedVerseNumbers.includes(v.verse))
+            .sort((a, b) => a.verse - b.verse);
+        
+        const text = selected.map(v => v.text).join(' ');
+        const sorted = [...selectedVerseNumbers].sort((a, b) => a - b);
+        let ref = `${selectedBook} ${selectedChapter}:`;
+        if (sorted.length === 1) ref += sorted[0];
+        else {
+            const isContiguous = sorted.every((n, i) => i === 0 || n === sorted[i-1] + 1);
+            if (isContiguous) ref += `${sorted[0]}-${sorted[sorted.length-1]}`;
+            else ref += sorted.join(', ');
+        }
+        onSelect({ reference: ref, text });
+    };
+
     const title = "Select Word";
     const desc = "Choose a scripture to share. Full quotes are automatically included.";
 
-    const content = (
+    const quickWordsContent = (
         <div className="p-4 sm:p-6 space-y-6 text-left">
             <div className="relative text-left">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
@@ -248,19 +318,147 @@ function ScriptureSelectionDialog({
         </div>
     );
 
+    const browseBibleContent = (
+        <div className="p-4 sm:p-6 space-y-4 text-left">
+            {!selectedBook ? (
+                <div className="space-y-4 text-left">
+                    <div className="relative text-left">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                        <Input 
+                            placeholder="Search Bible books..." 
+                            value={bookSearch} 
+                            onChange={e => setBookSearch(e.target.value)}
+                            className="rounded-2xl h-11 pl-10 bg-muted/20 border-none shadow-inner text-sm text-left"
+                        />
+                    </div>
+                    <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[45vh]")}>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 text-left">
+                            {filteredBooks.map(b => (
+                                <Button 
+                                    key={b.name} 
+                                    variant="ghost" 
+                                    className="h-10 text-xs font-bold uppercase tracking-tight rounded-xl bg-background shadow-sm hover:bg-primary/5 hover:text-primary transition-all text-center"
+                                    onClick={() => setSelectedBook(b.name)}
+                                >
+                                    {b.name}
+                                </Button>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </div>
+            ) : !selectedChapter ? (
+                <div className="space-y-4 text-left">
+                    <div className="flex items-center gap-3 text-left">
+                        <Button variant="ghost" size="icon" onClick={() => setSelectedBook(null)} className="rounded-full h-8 w-8">
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <p className="font-black text-sm uppercase tracking-widest text-primary text-left">{selectedBook}</p>
+                    </div>
+                    <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[45vh]")}>
+                        <div className="grid grid-cols-5 gap-2 p-4 text-center">
+                            {bibleData.find(b => b.name === selectedBook)?.chapters.map(c => (
+                                <Button 
+                                    key={c.chapter} 
+                                    variant="ghost" 
+                                    className="h-10 w-10 text-xs font-black rounded-lg bg-background shadow-sm hover:bg-primary/5 hover:text-primary transition-all p-0 text-center"
+                                    onClick={() => handleChapterSelect(selectedBook, c.chapter)}
+                                >
+                                    {c.chapter}
+                                </Button>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </div>
+            ) : (
+                <div className="space-y-4 text-left">
+                    <div className="flex items-center justify-between text-left">
+                        <div className="flex items-center gap-3 text-left">
+                            <Button variant="ghost" size="icon" onClick={() => { setSelectedChapter(null); setChapterContent(null); setSelectedVerseNumbers([]); }} className="rounded-full h-8 w-8">
+                                <ArrowLeft className="h-4 w-4" />
+                            </Button>
+                            <p className="font-black text-sm uppercase tracking-widest text-primary text-left">{selectedBook} {selectedChapter}</p>
+                        </div>
+                        {selectedVerseNumbers.length > 0 && (
+                            <Button size="sm" onClick={handleSharePassage} className="rounded-full h-8 px-4 font-black uppercase text-[10px] tracking-widest shadow-lg">
+                                SHARE ({selectedVerseNumbers.length})
+                            </Button>
+                        )}
+                    </div>
+                    <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[45vh]")}>
+                        <div className="p-4 space-y-4 text-left">
+                            {isLoadingChapter ? (
+                                <div className="py-12 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary opacity-20" /></div>
+                            ) : chapterContent?.verses.map(v => (
+                                <div 
+                                    key={v.verse} 
+                                    className={cn(
+                                        "flex gap-3 p-3 rounded-2xl transition-all cursor-pointer group text-left",
+                                        selectedVerseNumbers.includes(v.verse) ? "bg-primary/10 ring-1 ring-primary/20" : "hover:bg-muted/30"
+                                    )}
+                                    onClick={() => handleToggleVerse(v.verse)}
+                                >
+                                    <div className={cn(
+                                        "h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors",
+                                        selectedVerseNumbers.includes(v.verse) ? "bg-primary border-primary" : "border-muted-foreground/30"
+                                    )}>
+                                        {selectedVerseNumbers.includes(v.verse) && <CheckCircle2 className="h-3 w-3 text-white" />}
+                                    </div>
+                                    <div className="space-y-1 text-left">
+                                        <span className="text-[10px] font-black text-primary/40 uppercase tracking-tighter text-left">Verse {v.verse}</span>
+                                        <p className="text-sm leading-relaxed text-muted-foreground font-medium text-left">{v.text}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </div>
+            )}
+        </div>
+    );
+
+    const dialogInner = (
+        <div className="flex flex-col h-full text-left">
+            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                <SheetHeader className="text-left flex-shrink-0 text-left">
+                    <div className="flex items-center gap-3 mb-2 text-left">
+                        <BookOpen className="h-5 w-5 text-primary text-left" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Word</span>
+                    </div>
+                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</SheetTitle>
+                    <SheetDescription className="text-sm font-medium mt-1 text-left">{desc}</SheetDescription>
+                </SheetHeader>
+            </div>
+            
+            <div className="flex-grow min-h-0 flex flex-col text-left">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-grow flex flex-col min-h-0 text-left">
+                    <div className="px-6 sm:p-8 pb-0 text-left">
+                        <TabsList className="grid w-full grid-cols-2 h-12 bg-muted/30 p-1 rounded-2xl mb-2 text-left">
+                            <TabsTrigger value="quick" className="font-black text-[10px] uppercase tracking-widest rounded-xl">Quick Words</TabsTrigger>
+                            <TabsTrigger value="browse" className="font-black text-[10px] uppercase tracking-widest rounded-xl">Browse Bible</TabsTrigger>
+                        </TabsList>
+                    </div>
+                    <div className="flex-grow min-h-0 overflow-hidden text-left">
+                        <TabsContent value="quick" className="h-full mt-0 outline-none text-left">
+                            {quickWordsContent}
+                        </TabsContent>
+                        <TabsContent value="browse" className="h-full mt-0 outline-none text-left">
+                            {browseBibleContent}
+                        </TabsContent>
+                    </div>
+                </Tabs>
+            </div>
+
+            <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left">
+                <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-full px-8 font-bold text-left">Close Hub</Button>
+            </div>
+        </div>
+    );
+
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left text-left">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left">{desc}</SheetDescription>
-                        </SheetHeader>
-                    </div>
-                    <div className="flex-grow min-h-0 text-left">
-                        {content}
-                    </div>
+                    {dialogInner}
                 </SheetContent>
             </Sheet>
         );
@@ -268,16 +466,8 @@ function ScriptureSelectionDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">{desc}</DialogDescription>
-                    </DialogHeader>
-                </div>
-                <div className="text-left">
-                    {content}
-                </div>
+            <DialogContent className="sm:max-w-xl h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+                {dialogInner}
             </DialogContent>
         </Dialog>
     );
@@ -825,8 +1015,8 @@ export function RelationshipTrackerCard() {
         <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
             <div className="p-8 border-b bg-muted/10 text-left">
                 <DialogHeader className="text-left text-left text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DialogDescription>
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kingdom Intercession</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DialogDescription>
                 </DialogHeader>
             </div>
             <div className="p-8 space-y-6 text-left">
@@ -909,21 +1099,21 @@ export function RelationshipTrackerCard() {
       </Dialog>
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-            <div className="p-8 border-b bg-muted/10 text-left text-left">
-                <DialogHeader className="text-left text-left text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+            <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                <DialogHeader className="text-left text-left text-left text-left">
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left text-left">Which partner should receive these details?</DialogDescription>
                 </DialogHeader>
             </div>
-            <div className="p-6 text-left text-left">
-            <ScrollArea className="h-64 text-left">
-                <div className="space-y-2 text-left">
+            <div className="p-6 text-left text-left text-left">
+            <ScrollArea className="h-64 text-left text-left">
+                <div className="space-y-2 text-left text-left">
                     {uniquePartners.map(p => (
                         <Button 
                             key={p.userId} 
                             variant="ghost" 
-                            className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group text-left"
+                            className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group text-left text-left"
                             onClick={() => handleShareToPartner(p)}
                         >
                             <Avatar className="h-8 w-8 border shrink-0 text-left">
@@ -934,7 +1124,7 @@ export function RelationshipTrackerCard() {
                         </Button>
                     ))}
                     {uniquePartners.length === 0 && (
-                        <p className="text-center text-xs text-muted-foreground py-12 text-center">No partners found. Connect with some in Settings!</p>
+                        <p className="text-center text-xs text-muted-foreground py-12 text-center text-left">No partners found. Connect with some in Settings!</p>
                     )}
                 </div>
             </ScrollArea>
@@ -943,23 +1133,23 @@ export function RelationshipTrackerCard() {
       </Dialog>
 
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-          <div className="p-8 border-b bg-muted/10 text-left">
-            <DialogHeader className="text-left text-left text-left">
-              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
-              <DialogDescription className="text-sm font-medium text-left">Describe how you supported {activeSoul?.firstName}.</DialogDescription>
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+          <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+            <DialogHeader className="text-left text-left text-left text-left">
+              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Support Provided</DialogTitle>
+              <DialogDescription className="text-sm font-medium text-left text-left">Describe how you supported {activeSoul?.firstName}.</DialogDescription>
             </DialogHeader>
           </div>
-          <div className="p-8 space-y-6 text-left">
-            <div className="space-y-2 text-left">
+          <div className="p-8 space-y-6 text-left text-left">
+            <div className="space-y-2 text-left text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomPrayerText(e.target.value)} 
-                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
+                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left"
                 />
             </div>
-            <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold text-left">Confirm Service</Button>
+            <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold text-left text-left">Confirm Service</Button>
           </div>
         </DialogContent>
       </Dialog>
