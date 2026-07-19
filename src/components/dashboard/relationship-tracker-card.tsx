@@ -42,7 +42,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { actionItems, prayerTemplates } from '@/lib/follow-up-data';
+import { actionItems, prayerTemplates, kingdomVerses } from '@/lib/follow-up-data';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -165,7 +165,7 @@ function ScriptureSelectionDialog({
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
     highlights: BibleHighlight[] | null;
-    onSelect: (scripture: { reference: string; text?: string }) => void;
+    onSelect: (scripture: { reference: string; text: string }) => void;
 }) {
     const [search, setSearch] = useState('');
     const [selectedBook, setSelectedBook] = useState<string | null>(null);
@@ -176,18 +176,20 @@ function ScriptureSelectionDialog({
         if (!highlights) return [];
         return highlights.filter(h => {
             const ref = `${h.book} ${h.chapter}`;
-            return ref.toLowerCase().includes(search.toLowerCase());
+            return ref.toLowerCase().includes(search.toLowerCase()) || (h.note && h.note.toLowerCase().includes(search.toLowerCase()));
         });
     }, [highlights, search]);
 
-    const bookOptions = useMemo(() => bibleData, []);
-    const chapterOptions = useMemo(() => {
-        if (!selectedBook) return [];
-        return bookOptions.find(b => b.name === selectedBook)?.chapters || [];
-    }, [selectedBook, bookOptions]);
+    const filteredEssentials = useMemo(() => {
+        if (!search) return kingdomVerses;
+        return kingdomVerses.filter(v => 
+            v.reference.toLowerCase().includes(search.toLowerCase()) || 
+            v.text.toLowerCase().includes(search.toLowerCase())
+        );
+    }, [search]);
 
     const title = "Select Word";
-    const desc = "Choose a scripture from your study or pick from any scripture in the bible.";
+    const desc = "Choose a scripture to share. Quotes are automatically included.";
 
     const content = (
         <div className="p-4 sm:p-6 space-y-6 text-left">
@@ -196,7 +198,7 @@ function ScriptureSelectionDialog({
                 <Input 
                     placeholder="Search book or journal..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left"
                 />
             </div>
@@ -204,7 +206,7 @@ function ScriptureSelectionDialog({
                 <div className="p-4 space-y-8 text-left">
                     {filteredHighlights.length > 0 && (
                         <div className="space-y-3 text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2 text-left">From Your Journal</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2 text-left">Your Journal Highlights</Label>
                             <div className="space-y-1.5 text-left">
                                 {filteredHighlights.map(h => {
                                     const ref = `${h.book} ${h.chapter}`;
@@ -213,14 +215,15 @@ function ScriptureSelectionDialog({
                                             key={h.id} 
                                             variant="ghost" 
                                             className="w-full justify-start h-auto py-3.5 px-4 rounded-2xl hover:bg-primary/5 text-left border border-transparent hover:border-primary/20 transition-all group"
-                                            onClick={() => onSelect({ reference: ref, text: h.note })}
+                                            onClick={() => h.note && onSelect({ reference: ref, text: h.note })}
+                                            disabled={!h.note}
                                         >
                                             <div className="min-w-0 text-left">
                                                 <div className="flex items-center gap-2 mb-0.5 text-left">
                                                     <BookMarked className="h-3 w-3 text-primary/40 group-hover:text-primary transition-colors" />
                                                     <p className="font-black text-sm uppercase tracking-tight text-left">{ref}</p>
                                                 </div>
-                                                {h.note && <p className="text-xs text-muted-foreground line-clamp-1 italic font-medium opacity-60 text-left">Note: {h.note}</p>}
+                                                {h.note && <p className="text-xs text-muted-foreground line-clamp-1 italic font-medium opacity-60 text-left">{h.note}</p>}
                                             </div>
                                         </Button>
                                     );
@@ -229,54 +232,25 @@ function ScriptureSelectionDialog({
                         </div>
                     )}
 
-                    <div className="space-y-4 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2 text-left">Pick from any scripture</Label>
-                        
-                        <div className="grid grid-cols-1 gap-3 px-1 text-left">
-                            <div className="space-y-1.5 text-left">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Bible Book</label>
-                                <Select value={selectedBook || ""} onValueChange={(val) => { setSelectedBook(val); setSelectedChapter(null); }}>
-                                    <SelectTrigger className="h-12 rounded-2xl bg-background border-none shadow-sm font-bold text-sm text-left">
-                                        <SelectValue placeholder="Select Book" />
-                                    </SelectTrigger>
-                                    <SelectContent className="max-h-[300px] rounded-2xl text-left">
-                                        {bookOptions.map(b => (
-                                            <SelectItem key={b.name} value={b.name} className="rounded-xl text-left">{b.name}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {selectedBook && (
-                                <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-300 text-left">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Chapter</label>
-                                    <div className="grid grid-cols-5 gap-2 max-h-40 overflow-y-auto p-1 rounded-xl bg-background/30 text-left">
-                                        {chapterOptions.map(c => (
-                                            <Button 
-                                                key={c.chapter} 
-                                                variant={selectedChapter === c.chapter ? "default" : "ghost"}
-                                                size="sm"
-                                                className={cn(
-                                                    "h-9 rounded-lg font-bold transition-all text-left",
-                                                    selectedChapter === c.chapter ? "shadow-md scale-105" : "hover:bg-primary/5"
-                                                )}
-                                                onClick={() => setSelectedChapter(c.chapter)}
-                                            >
-                                                {c.chapter}
-                                            </Button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {selectedBook && selectedChapter && (
+                    <div className="space-y-3 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2 text-left">Kingdom Essentials</Label>
+                        <div className="space-y-1.5 text-left">
+                            {filteredEssentials.map((v, idx) => (
                                 <Button 
-                                    className="w-full h-12 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 mt-2 animate-in zoom-in duration-300 text-left"
-                                    onClick={() => onSelect({ reference: `${selectedBook} ${selectedChapter}` })}
+                                    key={idx} 
+                                    variant="ghost" 
+                                    className="w-full justify-start h-auto py-3.5 px-4 rounded-2xl hover:bg-primary/5 text-left border border-transparent hover:border-primary/20 transition-all group"
+                                    onClick={() => onSelect({ reference: v.reference, text: v.text })}
                                 >
-                                    CONFIRM WORD
+                                    <div className="min-w-0 text-left">
+                                        <div className="flex items-center gap-2 mb-0.5 text-left">
+                                            <Sparkles className="h-3 w-3 text-primary/40 group-hover:text-primary transition-colors" />
+                                            <p className="font-black text-sm uppercase tracking-tight text-left">{v.reference}</p>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground line-clamp-1 italic font-medium opacity-60 text-left">{v.text}</p>
+                                    </div>
                                 </Button>
-                            )}
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -289,7 +263,7 @@ function ScriptureSelectionDialog({
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left">
+                        <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1 text-left">{desc}</SheetDescription>
                         </SheetHeader>
@@ -543,14 +517,15 @@ export function RelationshipTrackerCard() {
     }
   };
 
-  const handleScriptureSelected = (scripture: { reference: string; text?: string }) => {
+  const handleScriptureSelected = (scripture: { reference: string; text: string }) => {
       if (!activeSoul?.phone) {
           toast({ variant: 'destructive', title: 'Phone Missing', description: 'Cannot share scripture without a phone number.' });
           return;
       }
       setIsScriptureSelectionOpen(false);
       setClickedActionId('studied_bible');
-      const text = scripture.text ? `"${scripture.text}" — ${scripture.reference}` : `I was thinking of this word for you: ${scripture.reference}`;
+      
+      const text = `Hi ${activeSoul.firstName}, I was thinking of this word for you:\n\n"${scripture.text}" — ${scripture.reference}\n\nRead more miracles on Testify: https://testifyglobal.com`;
       setCustomPrayerText(text);
       requestAnimationFrame(() => {
           setIsCommChannelDialogOpen(true);
@@ -558,7 +533,8 @@ export function RelationshipTrackerCard() {
   };
 
   const handlePrayerConfirm = (text: string) => {
-    setCustomPrayerText(text);
+    const finalText = `${text}\n\nRead more testimonies on Testify: https://testifyglobal.com`;
+    setCustomPrayerText(finalText);
     setIsPrayerCustomizationOpen(false);
     setClickedActionId('prayed_together');
     requestAnimationFrame(() => {
@@ -570,7 +546,7 @@ export function RelationshipTrackerCard() {
     if (!activeSoul?.phone || !selectedActionId) return;
     const cleanPhone = activeSoul.phone.replace(/\+/g, '').replace(/\D/g, '');
     
-    let message = customPrayerText || `Hi ${activeSoul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
+    let message = customPrayerText || `Hi ${activeSoul.firstName}, I'm thinking of you today and praying for you. God bless you!\n\nJoin the movement: https://testifyglobal.com`;
     const messageText = encodeURIComponent(message);
     
     if (channel === 'whatsapp') {
@@ -588,7 +564,7 @@ export function RelationshipTrackerCard() {
   const handleShareToWhatsApp = () => {
     if (!activeSoul) return;
     const wonAt = safeToDate(activeSoul.wonAt);
-    const details = `Here is a soul I'm following up with on Testify:\nName: ${activeSoul.firstName} ${activeSoul.lastName}\nStatus: ${activeSoul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nLet's keep them in our prayers.`;
+    const details = `Here is a soul I'm following up with on Testify:\nName: ${activeSoul.firstName} ${activeSoul.lastName}\nStatus: ${activeSoul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nJoin the Great Commission: https://testifyglobal.com`;
     
     window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
 
@@ -600,7 +576,7 @@ export function RelationshipTrackerCard() {
       if (!user || !firestore || !activeSoul || !userProfile) return;
 
       const wonAt = safeToDate(activeSoul.wonAt);
-      const text = `SHARING SOUL DATA:\nName: ${activeSoul.firstName} ${activeSoul.lastName}\nStatus: ${activeSoul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nRelationship: ${activeSoul.relationship || 'Outreach'}\nLet's keep them in our prayers and coordinate follow-up.`;
+      const text = `SHARING SOUL DATA:\nName: ${activeSoul.firstName} ${activeSoul.lastName}\nStatus: ${activeSoul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nRelationship: ${activeSoul.relationship || 'Outreach'}\n\nLet's coordinate follow-up on Testify: https://testifyglobal.com`;
 
       try {
           const participantIds = [user.uid, partner.userId].sort();
@@ -773,18 +749,6 @@ export function RelationshipTrackerCard() {
                                     )}>
                                         {action.label}
                                     </span>
-                                    {isPrayAction && (
-                                        <div 
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                router.push('/dashboard/testimonies?tab=prayers');
-                                            }}
-                                            className="h-2.5 flex items-center justify-center text-primary/40 hover:text-primary transition-colors cursor-pointer group/feed text-left"
-                                        >
-                                            <span className="text-[7px] font-black uppercase tracking-tighter group-hover/feed:underline">View Feed</span>
-                                            <ArrowRight className="h-1.5 w-1.5 ml-0.5" />
-                                        </div>
-                                    )}
                                     <div className="h-2.5 flex items-center justify-center text-left">
                                         {isPending && !isCompleted && !isToggling && (
                                             <span className="text-[8px] font-black uppercase text-amber-600/60 leading-none text-left">Pending Hub</span>
@@ -806,7 +770,6 @@ export function RelationshipTrackerCard() {
                                 <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left" side="bottom">
                                     <p className="text-[10px] font-bold uppercase text-primary text-left">Kingdom Action</p>
                                     <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left">{action.label}</p>
-                                    {isPrayAction && <p className="text-[9px] text-muted-foreground mt-1 text-left">Click button to pray with soul, or small link to see global requests.</p>}
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -868,6 +831,14 @@ export function RelationshipTrackerCard() {
         </Dialog>
       )}
 
+      {/* Scripture Selection Dialog */}
+      <ScriptureSelectionDialog 
+          isOpen={isScriptureSelectionOpen}
+          onOpenChange={setIsScriptureSelectionOpen}
+          highlights={highlights}
+          onSelect={handleScriptureSelected}
+      />
+
       {/* Shared Prayer Customization Dialog */}
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
         <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
@@ -914,13 +885,6 @@ export function RelationshipTrackerCard() {
             </div>
         </DialogContent>
       </Dialog>
-
-      <ScriptureSelectionDialog 
-          isOpen={isScriptureSelectionOpen}
-          onOpenChange={setIsScriptureSelectionOpen}
-          highlights={highlights}
-          onSelect={handleScriptureSelected}
-      />
 
       {/* Shared Communication Channel Dialog */}
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
@@ -1007,7 +971,7 @@ export function RelationshipTrackerCard() {
           </div>
           <div className="p-8 space-y-6 text-left">
             <div className="space-y-2 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomPrayerText(e.target.value)} 
