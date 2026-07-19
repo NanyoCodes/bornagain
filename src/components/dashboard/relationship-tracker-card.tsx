@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
-import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc, updateDoc, where, getDocs } from 'firebase/firestore';
+import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc, updateDoc, where, getDocs, setDoc } from 'firebase/firestore';
 import type { UserProfile, Soul, BibleHighlight } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
@@ -27,6 +27,7 @@ import {
   PlusCircle,
   Hourglass,
   ArrowRight,
+  ArrowLeft,
   Send,
   X,
   HeartHandshake,
@@ -38,7 +39,8 @@ import {
   Minus,
   Trash2,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Target
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -985,13 +987,13 @@ export function RelationshipTrackerCard() {
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                 <div className="p-8 border-b bg-muted/10 text-left">
                     <div className="p-0 text-left text-left">
-                        <DialogHeader className="text-left text-left text-left">
+                        <DialogHeader className="text-left text-left text-left text-left">
                             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left text-left">Who did you {activeActionLabel.toLowerCase()}?</DialogTitle>
                             <DialogDescription className="text-sm font-medium text-left text-left">Select a convert to link this action to their record.</DialogDescription>
                         </DialogHeader>
                     </div>
                 </div>
-                <div className="p-6 text-left text-left">
+                <div className="p-6 text-left text-left text-left">
                     <SoulSelectionList 
                         souls={souls} 
                         onSelect={handleSoulSelected} 
@@ -1038,7 +1040,7 @@ export function RelationshipTrackerCard() {
                 </div>
 
                 <div className="space-y-2 text-left text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Customize Your Prayer</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Your Prayer</Label>
                     <Textarea 
                         value={customPrayerText}
                         onChange={e => setCustomPrayerText(e.target.value)}
@@ -1064,16 +1066,16 @@ export function RelationshipTrackerCard() {
                 <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                     <MessageSquare className="h-7 w-7 text-primary text-center" />
                 </div>
-                <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {activeSoul?.firstName}?</DialogDescription>
+              <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
+              <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {activeSoul?.firstName}?</DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-3 pt-6 text-center">
-                <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
-                    <span className="flex items-center gap-2 text-center"><Globe className="h-5 w-5 text-center" /> WhatsApp</span>
-                </Button>
-                <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
-                    <MessageSquare className="h-5 w-5" /> Standard SMS
-                </Button>
+              <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+                <WhatsAppIcon className="h-5 w-5" /> WhatsApp
+              </Button>
+              <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+                <MessageSquare className="h-5 w-5" /> Standard SMS
+              </Button>
             </div>
         </DialogContent>
       </Dialog>
