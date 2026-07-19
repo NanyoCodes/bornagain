@@ -786,15 +786,15 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     <Sheet open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
                         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left flex-shrink-0 text-left">
-                                    <div className="flex items-center gap-2.5 mb-1.5 text-left">
-                                        <Target className="h-4 w-4 text-primary text-left" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Supply Drop</span>
+                                <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+                                    <div className="flex items-center gap-2.5 mb-1.5 text-left text-left">
+                                        <Target className="h-4 w-4 text-primary text-left text-left" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Supply Drop</span>
                                     </div>
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance text-left">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                                     </SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</SheetDescription>
+                                    <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Share a resource that fueled your victory.</SheetDescription>
                                 </SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
@@ -805,16 +805,16 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 ) : (
                     <Dialog open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
                         <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                            <div className="p-8 border-b bg-muted/10 text-left">
-                                <DialogHeader className="text-left">
-                                    <div className="flex items-center gap-2.5 mb-1.5 text-left">
-                                        <Target className="h-4 w-4 text-primary text-left" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Supply Drop</span>
+                            <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                                <DialogHeader className="text-left text-left">
+                                    <div className="flex items-center gap-2.5 mb-1.5 text-left text-left">
+                                        <Target className="h-4 w-4 text-primary text-left text-left" />
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Supply Drop</span>
                                     </div>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance text-left">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                                     </DialogTitle>
-                                    <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</DialogDescription>
+                                    <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Share a resource that fueled your victory.</DialogDescription>
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">

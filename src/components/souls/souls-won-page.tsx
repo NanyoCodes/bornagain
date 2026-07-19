@@ -116,16 +116,16 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
             key={soul.id} 
             className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left"
           >
-            <div className="flex items-center gap-3 min-w-0">
-                <Avatar className="h-10 w-10 border shadow-sm shrink-0">
-                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+            <div className="flex items-center gap-3 min-w-0 text-left">
+                <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
+                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
-                <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                        <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
-                        <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
+                <div className="min-w-0 text-left">
+                    <div className="flex items-center gap-2 text-left">
+                        <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                        <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left">{soul.status}</Badge>
                     </div>
-                    <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+                    <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
                         Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
                     </p>
                 </div>
@@ -492,7 +492,7 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
-  if (authLoading || profileLoading || !mounted) return <div className="flex h-full w-full flex-col items-center justify-center py-20"><Loader2 className="h-12 w-12 animate-spin text-primary" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse">Accessing Records...</p></div>;
+  if (authLoading || soulsLoading || profileLoading || !mounted) return <div className="flex h-full w-full flex-col items-center justify-center py-20"><Loader2 className="h-12 w-12 animate-spin text-primary" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse">Accessing Records...</p></div>;
 
   return (
     <div className="w-full max-w-7xl mx-auto">
