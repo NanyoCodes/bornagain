@@ -147,7 +147,12 @@ export function SoulsImportTemplateCard() {
             { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        if (!response.ok) throw new Error("Failed to fetch Google contacts.");
+        if (!response.ok) {
+            if (response.status === 403) {
+                throw new Error("People API not enabled. Please enable 'Google People API' in your Google Cloud Console.");
+            }
+            throw new Error(`Failed to fetch Google contacts: ${response.status}`);
+        }
 
         const data = await response.json();
         const connections = data.connections || [];
@@ -173,7 +178,11 @@ export function SoulsImportTemplateCard() {
     } catch (error: any) {
         console.error("Google Contacts Import Error:", error);
         if (error.code !== 'auth/popup-closed-by-user') {
-            toast({ variant: 'destructive', title: 'Import Failed', description: error.message || 'Check your permissions and try again.' });
+            toast({ 
+                variant: 'destructive', 
+                title: 'Import Failed', 
+                description: error.message || 'Check your permissions and try again.' 
+            });
         }
     } finally {
         setIsFetchingContacts(false);
@@ -437,7 +446,7 @@ export function SoulsImportTemplateCard() {
                 <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight">
                 <FileSpreadsheet className="h-5 w-5 text-primary" /> Harvest Mobilization
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm font-medium">
+                <CardDescription className="text-xs sm:text-sm font-medium text-left">
                 Synchronize bulk convert data by uploading a spreadsheet or importing from Google.
                 </CardDescription>
             </div>
@@ -483,7 +492,7 @@ export function SoulsImportTemplateCard() {
 
         <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4">
             <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-            <p className="text-xs text-muted-foreground leading-relaxed font-medium">
+            <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
                 Standardize your follow-up data. Import your existing contacts or use our template to organize outreach results for professional tracking.
             </p>
         </div>

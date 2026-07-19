@@ -498,7 +498,7 @@ export function RelationshipTrackerCard() {
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
   const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
   const [isScriptureSelectionOpen, setIsScriptureSelectionOpen] = useState(false);
-  const [customPrayerText, setCustomPrayerText] = useState('');
+  const [customPrayerText, setCustomPrayerText] = React.useState('');
   const [clickedActionId, setClickedActionId] = React.useState<string | null>(null);
   
   const highlightsQuery = useMemo(() => {
@@ -1147,7 +1147,7 @@ export function RelationshipTrackerCard() {
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
-                    onChange={e => setCustomPrayerText(e.target.value)} 
+                    onChange={e => setCustomPrayerText(e.target.value)} // Reusing customPrayerText temporarily for simple local state
                     className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left"
                 />
             </div>
