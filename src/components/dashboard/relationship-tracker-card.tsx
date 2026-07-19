@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
-import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc, updateDoc, where, getDocs, deleteField } from 'firebase/firestore';
-import type { UserProfile, Soul, BibleHighlight } from '@/lib/types';
+import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc, updateDoc, where } from 'firebase/firestore';
+import type { UserProfile, Soul, BibleHighlight, Chat } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -32,7 +32,8 @@ import {
   HeartHandshake,
   HandHeart,
   Globe,
-  BookMarked
+  BookMarked,
+  Share
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -41,7 +42,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { actionItems, prayerTemplates, kingdomVerses } from '@/lib/follow-up-data';
+import { actionItems, prayerTemplates } from '@/lib/follow-up-data';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -536,6 +537,8 @@ export function RelationshipTrackerCard() {
         }
         setClickedActionId(selectedActionId);
         setIsCommChannelDialogOpen(true);
+    } else if (selectedActionId === 'introduced_friend') {
+        setIsShareTargetDialogOpen(true);
     } else {
         performFinalLog(soul, selectedActionId);
     }
@@ -583,6 +586,68 @@ export function RelationshipTrackerCard() {
     setCustomPrayerText('');
   };
 
+  const handleShareToWhatsApp = () => {
+    if (!activeSoul) return;
+    const wonAt = safeToDate(activeSoul.wonAt);
+    const details = `Here is a soul I'm following up with on Testify:\nName: ${activeSoul.firstName} ${activeSoul.lastName}\nStatus: ${activeSoul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nLet's keep them in our prayers.`;
+    
+    window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
+
+    performFinalLog(activeSoul, 'introduced_friend', `Shared details via WhatsApp`);
+    setIsShareTargetDialogOpen(false);
+  };
+
+  const handleShareToPartner = async (partner: UserProfile['accountabilityPartners'][0]) => {
+      if (!user || !firestore || !activeSoul || !userProfile) return;
+
+      const wonAt = safeToDate(activeSoul.wonAt);
+      const text = `SHARING SOUL DATA:\nName: ${activeSoul.firstName} ${activeSoul.lastName}\nStatus: ${activeSoul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nRelationship: ${activeSoul.relationship || 'Outreach'}\nLet's keep them in our prayers and coordinate follow-up.`;
+
+      try {
+          const participantIds = [user.uid, partner.userId].sort();
+          const chatsRef = collection(firestore, 'chats');
+          const q = query(chatsRef, where('participantIds', '==', participantIds), where('isGroupChat', '==', false));
+          const snap = await getDocs(q);
+          let chatId: string;
+
+          if (!snap.empty) {
+              chatId = snap.docs[0].id;
+          } else {
+              const otherDoc = await getDoc(doc(firestore, 'users', partner.userId));
+              const otherProfile = otherDoc.data() as UserProfile;
+              const newChat = {
+                  participantIds,
+                  participantInfo: {
+                      [user.uid]: { firstName: userProfile.firstName, lastName: userProfile.lastName, photoURL: userProfile.photoURL || '' },
+                      [partner.userId]: { firstName: partner.firstName, lastName: partner.lastName, photoURL: partner.photoURL || '' }
+                  },
+                  lastUpdatedAt: serverTimestamp(),
+                  isGroupChat: false,
+                  hasMessages: true
+              };
+              const ref = await addDoc(chatsRef, newChat);
+              chatId = ref.id;
+          }
+
+          await addDoc(collection(firestore, 'chats', chatId, 'messages'), {
+              senderId: user.uid,
+              text,
+              createdAt: serverTimestamp()
+          });
+
+          await updateDoc(doc(firestore, 'chats', chatId), { lastUpdatedAt: serverTimestamp(), hasMessages: true });
+          
+          toast({ title: 'Shared with Partner!', description: `Details sent to ${partner.firstName}.` });
+          
+          performFinalLog(activeSoul, 'introduced_friend', `Introduced to partner: ${partner.firstName}`);
+          setIsPartnerSelectionDialogOpen(false);
+          setIsShareTargetDialogOpen(false);
+          router.push(`/dashboard/chats/${chatId}`);
+      } catch (e) {
+          toast({ variant: 'destructive', title: 'Share Failed' });
+      }
+  };
+
   const activeActionLabel = useMemo(() => 
     actionItems.find(a => a.id === selectedActionId)?.label || "Connect with", 
   [selectedActionId]);
@@ -602,6 +667,8 @@ export function RelationshipTrackerCard() {
       </Card>
     );
   }
+
+  const uniquePartners = Array.from(new Map((userProfile?.accountabilityPartners || []).map(p => [p.userId, p])).values());
 
   return (
     <>
@@ -811,7 +878,7 @@ export function RelationshipTrackerCard() {
             </div>
             <div className="p-8 space-y-6 text-left">
                 <div className="space-y-3 text-left">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Select Prayer Focus</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Prayer Focus</label>
                     <div className="flex flex-wrap gap-2 text-left">
                         {prayerTemplates.map(t => (
                             <Button 
@@ -828,7 +895,7 @@ export function RelationshipTrackerCard() {
                 </div>
 
                 <div className="space-y-2 text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Customize Your Prayer</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Your Prayer</Label>
                     <Textarea 
                         value={customPrayerText}
                         onChange={e => setCustomPrayerText(e.target.value)}
@@ -872,6 +939,82 @@ export function RelationshipTrackerCard() {
                     <MessageSquare className="h-5 w-5" /> Standard SMS
                 </Button>
             </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
+          <DialogHeader className="text-center space-y-2">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                  <Share className="h-7 w-7 text-primary" />
+              </div>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Share Details</DialogTitle>
+            <DialogDescription className="text-sm font-medium">Where would you like to share {activeSoul?.firstName}'s info?</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 pt-6">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+              <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
+            </Button>
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+              <HeartHandshake className="h-5 w-5" /> Partner on App
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+            <div className="p-8 border-b bg-muted/10">
+                <DialogHeader>
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
+                    <DialogDescription className="text-sm font-medium">Which partner should receive these details?</DialogDescription>
+                </DialogHeader>
+            </div>
+            <div className="p-6">
+            <ScrollArea className="h-64">
+                <div className="space-y-2">
+                    {uniquePartners.map(p => (
+                        <Button 
+                            key={p.userId} 
+                            variant="ghost" 
+                            className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group"
+                            onClick={() => handleShareToPartner(p)}
+                        >
+                            <Avatar className="h-8 w-8 border shrink-0">
+                                <AvatarImage src={p.photoURL} />
+                                <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <span className="font-bold text-sm group-hover:text-primary transition-colors">{p.firstName} {p.lastName}</span>
+                        </Button>
+                    ))}
+                    {uniquePartners.length === 0 && (
+                        <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
+                    )}
+                </div>
+            </ScrollArea>
+            </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+          <div className="p-8 border-b bg-muted/10">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DialogTitle>
+              <DialogDescription className="text-sm font-medium">Describe how you supported {activeSoul?.firstName}.</DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="p-8 space-y-6">
+            <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
+                <Textarea 
+                    placeholder="e.g. Provided food items, helped with bill..." 
+                    onChange={e => setCustomPrayerText(e.target.value)} 
+                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
+                />
+            </div>
+            <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold">Confirm Service</Button>
+          </div>
         </DialogContent>
       </Dialog>
     </>

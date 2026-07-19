@@ -114,19 +114,21 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
           <Link 
             href={`/dashboard/souls-won#${soul.id}`} 
             key={soul.id} 
-            className="flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left"
           >
-            <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
-              <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0 text-left">
-              <div className="flex items-center gap-2 text-left">
-                <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
-                <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
-              </div>
-              <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
-                Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
-              </p>
+            <div className="flex items-center gap-3 min-w-0">
+                <Avatar className="h-10 w-10 border shadow-sm shrink-0">
+                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                        <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                        <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
+                    </div>
+                    <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+                        Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
+                    </p>
+                </div>
             </div>
             <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
           </Link>
@@ -245,14 +247,9 @@ export default function SoulsWonPage() {
 
   const campaignsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, 'campaigns'), orderBy('createdAt', 'desc'));
+    return query(collection(firestore, 'campaigns'), where('organizerId', '==', user.uid), where('status', '==', 'active'));
   }, [user?.uid, firestore]);
-  const { data: allCampaignsData } = useCollection<Campaign>(campaignsQuery);
-
-  const campaigns = useMemo(() => {
-    if (!allCampaignsData) return [];
-    return allCampaignsData.filter(c => c.status === 'active');
-  }, [allCampaignsData]);
+  const { data: campaigns } = useCollection<Campaign>(campaignsQuery);
   
   const activeFellowshipsQuery = useMemo(() => {
     if (!firestore) return null;
@@ -295,7 +292,7 @@ export default function SoulsWonPage() {
         return;
     }
     
-    toast({ title: "Exporting...", description: "Your professional Kingdom report is being generated." });
+    toast({ title: "Exporting...", description: "Your profesional Kingdom report is being generated." });
 
     const headers = ["First Name", "Last Name", "Gender", "Status", "Won At", "Source", "Phone", "Email", "City", "Country"];
     const body = souls.map(s => [
@@ -314,34 +311,34 @@ export default function SoulsWonPage() {
     if (formatType === 'pdf') {
         const { jsPDF } = await import('jspdf');
         const { default: autoTable } = await import('jspdf-autotable');
-        const doc = new jsPDF({ orientation: 'landscape' });
+        const docObj = new jsPDF({ orientation: 'landscape' });
         
         const logo = PlaceHolderImages.find(img => img.id === 'logo');
         if (logo) {
             try {
                 const base64 = await getBase64Logo(logo.imageUrl);
-                doc.addImage(base64, 'PNG', 14, 10, 15, 15);
+                docObj.addImage(base64, 'PNG', 14, 10, 15, 15);
             } catch (e) {}
         }
 
-        doc.setFontSize(22);
-        doc.setFont('helvetica', 'bold');
-        doc.text("Testify Global: Soul Winning Harvest", 32, 21);
+        docObj.setFontSize(22);
+        docObj.setFont('helvetica', 'bold');
+        docObj.text("Testify Global: Soul Winning Harvest", 32, 21);
 
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(100);
-        doc.text(`Mobilizer: ${userProfile?.firstName} ${userProfile?.lastName || ''}`, 32, 27);
-        doc.text(`Total Impact: ${souls.length} Lives`, 14, 40);
-        doc.text(`Export Date: ${format(new Date(), 'PPPP')}`, 283, 40, { align: 'right' });
+        docObj.setFontSize(10);
+        docObj.setFont('helvetica', 'normal');
+        docObj.setTextColor(100);
+        docObj.text(`Mobilizer: ${userProfile?.firstName} ${userProfile?.lastName || ''}`, 32, 27);
+        docObj.text(`Total Impact: ${souls.length} Lives`, 14, 40);
+        docObj.text(`Export Date: ${format(new Date(), 'PPPP')}`, 283, 40, { align: 'right' });
 
-        autoTable(doc, {
+        autoTable(docObj, {
             head: [headers],
             body: body,
             startY: 45,
             styles: { fontSize: 8, font: 'helvetica' },
             headStyles: { 
-                fillColor: [249, 116, 22], // Primary Theme Orange
+                fillColor: [249, 116, 22],
                 textColor: [255, 255, 255],
                 fontStyle: 'bold'
             },
@@ -351,16 +348,7 @@ export default function SoulsWonPage() {
             margin: { top: 45 }
         });
 
-        const pageCount = (doc as any).internal.getNumberOfPages();
-        for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8);
-            doc.setTextColor(150);
-            doc.text(`Page ${i} of ${pageCount}`, 14, 200);
-            doc.text("Built for the Great Commission - testifyglobal.com", 283, 200, { align: 'right' });
-        }
-
-        doc.save(`testify-harvest-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+        docObj.save(`testify-harvest-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
     } else {
         const csv = Papa.unparse({ fields: headers, data: body });
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -392,27 +380,27 @@ export default function SoulsWonPage() {
       if (formatType === 'pdf') {
           const { jsPDF } = await import('jspdf');
           const { default: autoTable } = await import('jspdf-autotable');
-          const doc = new jsPDF();
+          const docObj = new jsPDF();
           
           const logo = PlaceHolderImages.find(img => img.id === 'logo');
           if (logo) {
             try {
                 const base64 = await getBase64Logo(logo.imageUrl);
-                doc.addImage(base64, 'PNG', 14, 10, 12, 12);
+                docObj.addImage(base64, 'PNG', 14, 10, 12, 12);
             } catch (e) {}
           }
 
-          doc.setFontSize(18);
-          doc.setFont('helvetica', 'bold');
-          doc.text(`Kingdom Identity Profile`, 28, 19);
+          docObj.setFontSize(18);
+          docObj.setFont('helvetica', 'bold');
+          docObj.text(`Kingdom Identity Profile`, 28, 19);
 
-          doc.setFontSize(10);
-          doc.setFont('helvetica', 'normal');
-          doc.setTextColor(100);
-          doc.text(`Full Record: ${soul.firstName} ${soul.lastName || ''}`, 14, 32);
-          doc.text(`Log Date: ${format(new Date(), 'PPP')}`, 196, 32, { align: 'right' });
+          docObj.setFontSize(10);
+          docObj.setFont('helvetica', 'normal');
+          docObj.setTextColor(100);
+          docObj.text(`Full Record: ${soul.firstName} ${soul.lastName || ''}`, 14, 32);
+          docObj.text(`Log Date: ${format(new Date(), 'PPP')}`, 196, 32, { align: 'right' });
 
-          autoTable(doc, {
+          autoTable(docObj, {
               head: [["Attribute", "Information"]],
               body: data,
               startY: 38,
@@ -421,24 +409,7 @@ export default function SoulsWonPage() {
               styles: { cellPadding: 5 }
           });
           
-          doc.setFontSize(10);
-          doc.setTextColor(0);
-          doc.text("Spiritual History & Notes:", 14, (doc as any).lastAutoTable.finalY + 15);
-          
-          if (soul.followUpLog && soul.followUpLog.length > 0) {
-              const logs = soul.followUpLog.map(l => [
-                  format(safeToDate(l.date)!, 'MMM d, yyyy'),
-                  l.note || 'Interaction recorded'
-              ]);
-              autoTable(doc, {
-                  head: [["Date", "Pastoral Notes"]],
-                  body: logs,
-                  startY: (doc as any).lastAutoTable.finalY + 20,
-                  headStyles: { fillColor: [50, 50, 50] }
-              });
-          }
-
-          doc.save(`record-${soul.firstName.toLowerCase()}.pdf`);
+          docObj.save(`record-${soul.firstName.toLowerCase()}.pdf`);
       } else {
           const csv = Papa.unparse({ fields: ["Field", "Detail"], data });
           const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -521,6 +492,8 @@ export default function SoulsWonPage() {
     );
   }, [souls, searchTerm]);
 
+  if (authLoading || profileLoading || !mounted) return <div className="flex h-full w-full flex-col items-center justify-center py-20"><Loader2 className="h-12 w-12 animate-spin text-primary" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse">Accessing Records...</p></div>;
+
   return (
     <div className="w-full max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
@@ -533,10 +506,10 @@ export default function SoulsWonPage() {
                                 <ClipboardList className="h-4 w-4 text-primary" /> Logged Records
                             </p>
                         </div>
-                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap text-left">
+                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap text-left w-full sm:w-auto">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none">
+                                    <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none text-left">
                                         <Download className="mr-2 h-4 w-4" /> EXPORT
                                     </Button>
                                 </DropdownMenuTrigger>
@@ -688,7 +661,7 @@ export default function SoulsWonPage() {
                 <div className="px-4 sm:px-0 text-left">
                     <RelationshipCircleTracker 
                         souls={souls || []}
-                        campaigns={campaigns}
+                        campaigns={campaigns || []}
                         fellowships={activeFellowships || []}
                         className="rounded-3xl"
                     />
