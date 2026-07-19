@@ -421,7 +421,7 @@ function ScriptureSelectionDialog({
     const dialogInner = (
         <div className="flex flex-col h-full text-left">
             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                <SheetHeader className="text-left flex-shrink-0 text-left">
+                <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                     <div className="flex items-center gap-3 mb-2 text-left">
                         <BookOpen className="h-5 w-5 text-primary text-left" />
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Word</span>
@@ -509,7 +509,7 @@ export function RelationshipTrackerCard() {
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, 'users', user.uid, 'souls'), orderBy("wonAt", "desc"));
+    return query(collection(firestore, `users/${user.uid}/souls`), orderBy("wonAt", "desc"));
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 

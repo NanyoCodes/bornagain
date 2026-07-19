@@ -566,146 +566,146 @@ function PendingProvisionReminder() {
         }
     };
 
-    if (provisions.length === 0) return null;
-    if (pathname.includes('/marketplace')) return null;
+  if (provisions.length === 0) return null;
+  if (pathname.includes('/marketplace')) return null;
 
-    const isMultiple = provisions.length > 1;
+  const isMultiple = provisions.length > 1;
 
-    if (!showList) {
-        const displayItem = provisions[0];
-        const path = displayItem.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-        const Icon = displayItem.actionId === 'shared_meal' ? Utensils : Gift;
+  if (!showList) {
+      const displayItem = provisions[0];
+      const path = displayItem.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+      const Icon = displayItem.actionId === 'shared_meal' ? Utensils : Gift;
 
-        return (
-            <motion.div
-                initial={{ y: 100, opacity: 0, scale: 0.8 }}
-                animate={{ y: 0, opacity: 1, scale: 1 }}
-                exit={{ y: 100, opacity: 0, scale: 0.8 }}
-                className={cn(
-                    "fixed z-[100] right-4 sm:right-8 w-[calc(100vw-2rem)] sm:w-[22rem] transition-all",
-                    isMobile ? "bottom-24" : "bottom-8"
-                )}
-            >
-                <Card 
-                    className="rounded-[2rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col group cursor-pointer"
-                    onClick={() => isMultiple && setShowList(true)}
-                >
-                    <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none">
-                        <ShoppingCart className="h-16 w-16 text-primary" />
-                    </div>
-                    <CardContent className="p-4 sm:p-5 flex items-center gap-4 text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform">
-                            {isMultiple ? <PlusCircle className="h-6 w-6 text-white" /> : <Icon className="h-6 w-6 text-white" />}
-                        </div>
-                        <div className="min-w-0 flex-1 text-left">
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5 text-left">
-                                {isMultiple ? `${provisions.length} Acts of Kindness` : 'Finish Provision'}
-                            </p>
-                            <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight text-left">
-                                {isMultiple 
-                                    ? `Click to view pending gifts` 
-                                    : `Complete ${displayItem.actionId === 'shared_meal' ? 'meal' : 'gift'} for ${displayItem.soulName}`
-                                }
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-                            {!isMultiple && (
-                                <Button asChild size="icon" className="h-10 w-10 rounded-full shadow-lg shrink-0">
-                                    <Link href={`${path}?soulId=${displayItem.soulId}&soulName=${encodeURIComponent(displayItem.soulName)}&actionId=${displayItem.actionId}`}>
-                                        <ArrowRight className="h-5 w-5" />
-                                    </Link>
-                                </Button>
-                            )}
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive shrink-0"
-                                onClick={() => {
-                                    if (isMultiple) {
-                                        setShowList(true);
-                                    } else {
-                                        removeOne(displayItem.soulId, displayItem.actionId);
-                                    }
-                                }}
-                            >
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            </motion.div>
-        );
-    }
+      return (
+          <motion.div
+              initial={{ y: 100, opacity: 0, scale: 0.8 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 100, opacity: 0, scale: 0.8 }}
+              className={cn(
+                  "fixed z-[100] right-4 sm:right-8 w-[calc(100vw-2rem)] sm:w-[22rem] transition-all",
+                  isMobile ? "bottom-24" : "bottom-8"
+              )}
+          >
+              <Card 
+                  className="rounded-[2rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col group cursor-pointer"
+                  onClick={() => isMultiple && setShowList(true)}
+              >
+                  <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none">
+                      <ShoppingCart className="h-16 w-16 text-primary" />
+                  </div>
+                  <CardContent className="p-4 sm:p-5 flex items-center gap-4 text-left">
+                      <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform">
+                          {isMultiple ? <PlusCircle className="h-6 w-6 text-white" /> : <Icon className="h-6 w-6 text-white" />}
+                      </div>
+                      <div className="min-w-0 flex-1 text-left">
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5 text-left">
+                              {isMultiple ? `${provisions.length} Acts of Kindness` : 'Finish Provision'}
+                          </p>
+                          <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight text-left">
+                              {isMultiple 
+                                  ? `Click to view pending gifts` 
+                                  : `Complete ${displayItem.actionId === 'shared_meal' ? 'meal' : 'gift'} for ${displayItem.soulName}`
+                              }
+                          </p>
+                      </div>
+                      <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                          {!isMultiple && (
+                              <Button asChild size="icon" className="h-10 w-10 rounded-full shadow-lg shrink-0">
+                                  <Link href={`${path}?soulId=${displayItem.soulId}&soulName=${encodeURIComponent(displayItem.soulName)}&actionId=${displayItem.actionId}`}>
+                                      <ArrowRight className="h-5 w-5" />
+                                  </Link>
+                              </Button>
+                          )}
+                          <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive shrink-0"
+                              onClick={() => {
+                                  if (isMultiple) {
+                                      setShowList(true);
+                                  } else {
+                                      removeOne(displayItem.soulId, displayItem.actionId);
+                                  }
+                              }}
+                          >
+                              <X className="h-4 w-4" />
+                          </Button>
+                      </div>
+                  </CardContent>
+              </Card>
+          </motion.div>
+      );
+  }
 
-    return (
-        <motion.div
-            initial={{ y: 100, opacity: 0, scale: 0.8 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 100, opacity: 0, scale: 0.8 }}
-            className={cn(
-                "fixed z-[100] right-4 sm:right-8 w-[calc(100vw-2rem)] sm:w-[24rem] transition-all",
-                isMobile ? "bottom-24" : "bottom-8"
-            )}
-        >
-            <Card className="rounded-[2.5rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col max-h-[60vh] text-left">
-                <CardHeader className="p-6 pb-2 border-b bg-muted/5 flex flex-row items-center justify-between shrink-0 text-left">
-                    <div className="space-y-0.5 text-left">
-                        <CardTitle className="text-lg font-black font-headline uppercase tracking-tight text-left">Kindness Tasks</CardTitle>
-                        <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-primary text-left">Pending acts for the harvest</CardDescription>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => setShowList(false)} className="rounded-full">
-                        <X className="h-5 w-5" />
-                    </Button>
-                </CardHeader>
-                <ScrollArea className="flex-1 min-h-0 overscroll-contain text-left">
-                    <div className="p-4 space-y-3 text-left">
-                        {provisions.map((p) => {
-                            const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-                            const Icon = p.actionId === 'shared_meal' ? Utensils : Gift;
-                            return (
-                                <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group text-left">
-                                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">
-                                        <Icon className="h-5 w-5 text-primary text-left" />
-                                    </div>
-                                    <div className="min-w-0 flex-1 text-left">
-                                        <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{p.soulName}</p>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left">
-                                            {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-left">
-                                        <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md">
-                                            <Link href={`${path}?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`}>
-                                                GO
-                                            </Link>
-                                        </Button>
-                                        <Button 
-                                            variant="ghost" 
-                                            size="icon" 
-                                            className="h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive text-left"
-                                            onClick={() => removeOne(p.soulId, p.actionId)}
-                                        >
-                                            <X className="h-3.5 w-3.5 text-left" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </ScrollArea>
-                <CardFooter className="p-4 border-t bg-muted/5 justify-center text-left">
-                    <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 text-left" onClick={() => {
-                         if(user?.uid) {
-                             const key = `testify_pending_provisions_${user.uid}`;
-                             localStorage.removeItem(key);
-                             setProvisions([]);
-                             window.dispatchEvent(new Event('testify_pending_action_update'));
-                         }
-                    }}>Clear All Pending</Button>
-                </CardFooter>
-            </Card>
-        </motion.div>
-    );
+  return (
+      <motion.div
+          initial={{ y: 100, opacity: 0, scale: 0.8 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          exit={{ y: 100, opacity: 0, scale: 0.8 }}
+          className={cn(
+              "fixed z-[100] right-4 sm:right-8 w-[calc(100vw-2rem)] sm:w-[24rem] transition-all",
+              isMobile ? "bottom-24" : "bottom-8"
+          )}
+      >
+          <Card className="rounded-[2.5rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col max-h-[60vh] text-left">
+              <CardHeader className="p-6 pb-2 border-b bg-muted/5 flex flex-row items-center justify-between shrink-0 text-left">
+                  <div className="space-y-0.5 text-left">
+                      <CardTitle className="text-lg font-black font-headline uppercase tracking-tight text-left">Kindness Tasks</CardTitle>
+                      <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-primary text-left">Pending acts for the harvest</CardDescription>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => setShowList(false)} className="rounded-full">
+                      <X className="h-5 w-5" />
+                  </Button>
+              </CardHeader>
+              <ScrollArea className="flex-1 min-h-0 overscroll-contain text-left">
+                  <div className="p-4 space-y-3 text-left">
+                      {provisions.map((p) => {
+                          const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+                          const Icon = p.actionId === 'shared_meal' ? Utensils : Gift;
+                          return (
+                              <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group text-left">
+                                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">
+                                      <Icon className="h-5 w-5 text-primary text-left" />
+                                  </div>
+                                  <div className="min-w-0 flex-1 text-left">
+                                      <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{p.soulName}</p>
+                                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left">
+                                          {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
+                                      </p>
+                                  </div>
+                                  <div className="flex items-center gap-2 text-left">
+                                      <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md">
+                                          <Link href={`${path}?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`}>
+                                              GO
+                                          </Link>
+                                      </Button>
+                                      <Button 
+                                          variant="ghost" 
+                                          size="icon" 
+                                          className="h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive text-left"
+                                          onClick={() => removeOne(p.soulId, p.actionId)}
+                                      >
+                                          <X className="h-3.5 w-3.5 text-left" />
+                                      </Button>
+                                  </div>
+                              </div>
+                          );
+                      })}
+                  </div>
+              </ScrollArea>
+              <CardFooter className="p-4 border-t bg-muted/5 justify-center text-left">
+                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 text-left" onClick={() => {
+                       if(user?.uid) {
+                           const key = `testify_pending_provisions_${user.uid}`;
+                           localStorage.removeItem(key);
+                           setProvisions([]);
+                           window.dispatchEvent(new Event('testify_pending_action_update'));
+                       }
+                  }}>Clear All Pending</Button>
+              </CardFooter>
+          </Card>
+      </motion.div>
+  );
 }
 
 function ShellInner({ children }: { children: React.ReactNode }) {
@@ -1013,7 +1013,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col text-left">
                 <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <SheetHeader className="text-left flex-shrink-0 text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                         <SheetTitle className="text-xs font-black uppercase tracking-widest text-primary mb-2 text-left">Kingdom Menu</SheetTitle>
                     </SheetHeader>
                     <div className="flex items-center gap-3 mb-4 text-left">
