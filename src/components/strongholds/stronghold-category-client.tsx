@@ -421,7 +421,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             <div className="p-8 bg-muted/5 border-t flex gap-3 text-left text-left">
                 <Button type="button" variant="outline" onClick={() => { setIsAddResourceOpen(false); setResourceToEdit(null); }} className="flex-1 h-12 rounded-xl font-bold text-left text-left">Cancel</Button>
                 <Button type="submit" disabled={isSubmittingResource} className="flex-1 h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left text-left">
-                    {isSubmittingResource && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                    {isSubmittingResource && <Loader2 className="mr-2 h-4 w-4 animate-spin" text-left text-left" />}
                     {resourceToEdit ? 'SAVE CHANGES' : 'SHARE SUPPLY'}
                 </Button>
             </div>
@@ -503,7 +503,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 <div className="space-y-6 text-left text-left">
                                     <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group text-left text-left">
                                         <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110 text-left text-left" />
-                                        <p className="text-base sm:text-xl text-muted-foreground italic font-medium text-left text-balance text-left text-left text-left text-left">
+                                        <p className="text-base sm:text-xl text-muted-foreground italic font-medium text-left text-balance text-left text-left text-left text-left text-left">
                                             &ldquo;{activeScripture.text}&rdquo;
                                         </p>
                                         <p className="text-xs font-black uppercase tracking-[0.2em] text-primary text-right mt-4 text-left text-left text-left">— {activeScripture.verse}</p>
@@ -808,8 +808,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
                                 <DialogHeader className="text-left text-left text-left">
                                     <div className="flex items-center gap-2.5 mb-1.5 text-left text-left text-left text-left">
-                                        <Target className="h-4 w-4 text-primary text-left text-left text-left text-left" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left text-left">Supply Drop</span>
+                                        <Target className="h-4 w-4 text-primary text-left text-left text-left text-left text-left">Supply Drop</span>
                                     </div>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance text-left text-left text-left text-left">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
@@ -833,5 +832,3 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         </div>
     );
 }
-
-export default StrongholdCategoryClient;

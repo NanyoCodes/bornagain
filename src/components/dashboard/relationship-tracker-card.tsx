@@ -476,7 +476,7 @@ function ScriptureSelectionDialog({
 }
 
 export function RelationshipTrackerCard() {
-  const { user, loading: authLoading } = useUser();
+  const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
@@ -811,7 +811,7 @@ export function RelationshipTrackerCard() {
     actionItems.find(a => a.id === selectedActionId)?.label || "Connect with", 
   [selectedActionId]);
 
-  if (authLoading || profileLoading || soulsLoading) {
+  if (userLoading || profileLoading || soulsLoading) {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
         <CardHeader className="p-4 sm:p-6 text-left">
