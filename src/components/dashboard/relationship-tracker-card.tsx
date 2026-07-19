@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, getDoc, updateDoc, where, getDocs } from 'firebase/firestore';
 import type { UserProfile, Soul, BibleHighlight } from '@/lib/types';
@@ -59,14 +59,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { bibleData } from '@/lib/bible-data';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -98,7 +90,7 @@ function SoulSelectionList({
     onSelect: (soul: Soul) => void;
     isLoading: boolean;
 }) {
-    const [search, setSearchTerm] = useState('');
+    const [search, setSearch] = useState('');
     const filteredSouls = useMemo(() => {
         if (!souls) return [];
         if (!search) return souls;
@@ -113,7 +105,7 @@ function SoulSelectionList({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearchTerm(e.target.value)}
+                    onChange={e => setSearch(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left"
                 />
             </div>
@@ -168,8 +160,6 @@ function ScriptureSelectionDialog({
     onSelect: (scripture: { reference: string; text: string }) => void;
 }) {
     const [search, setSearch] = useState('');
-    const [selectedBook, setSelectedBook] = useState<string | null>(null);
-    const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
     const isMobile = useIsMobile();
     
     const filteredHighlights = useMemo(() => {
@@ -189,7 +179,7 @@ function ScriptureSelectionDialog({
     }, [search]);
 
     const title = "Select Word";
-    const desc = "Choose a scripture to share. Quotes are automatically included.";
+    const desc = "Choose a scripture to share. Full quotes are automatically included.";
 
     const content = (
         <div className="p-4 sm:p-6 space-y-6 text-left">
@@ -198,7 +188,7 @@ function ScriptureSelectionDialog({
                 <Input 
                     placeholder="Search book or journal..." 
                     value={search} 
-                    onChange={e => setSearchTerm(e.target.value)}
+                    onChange={e => setSearch(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left"
                 />
             </div>
@@ -533,7 +523,7 @@ export function RelationshipTrackerCard() {
   };
 
   const handlePrayerConfirm = (text: string) => {
-    const finalText = `${text}\n\nRead more testimonies on Testify: https://testifyglobal.com`;
+    const finalText = `${text}\n\nRead more miracles on Testify: https://testifyglobal.com`;
     setCustomPrayerText(finalText);
     setIsPrayerCustomizationOpen(false);
     setClickedActionId('prayed_together');
@@ -654,22 +644,14 @@ export function RelationshipTrackerCard() {
           <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 min-h-[5.5rem] text-left">
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
               <div className="space-y-1 text-left">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-primary" />
-                      KINGDOM SOULS FOLLOW-UP
+                      Kingdom Connections
                   </CardTitle>
-                  <div className="flex items-center gap-2 text-left">
-                    <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
-                    <span className="text-muted-foreground opacity-30">•</span>
-                    <Button asChild variant="link" className="h-auto p-0 text-[10px] font-black uppercase text-primary hover:no-underline">
-                        <Link href="/dashboard/testimonies?tab=prayers">
-                            <HandHeart className="mr-1 h-3 w-3" /> GLOBAL PRAYER FEED
-                        </Link>
-                    </Button>
-                  </div>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end shrink-0 text-left">
                 {currentDate && (
@@ -689,7 +671,6 @@ export function RelationshipTrackerCard() {
                     const isCompleted = completedToday.includes(action.id);
                     const Icon = iconMap[action.id] || Heart;
                     const isToggling = togglingId === action.id;
-                    const isPrayAction = action.id === 'prayed_together';
                     
                     const buttonEl = (
                         <motion.div layout whileTap={{ scale: 0.95 }} whileHover={isMobile ? {} : { y: -2 }} className="w-full h-24 text-left">
@@ -794,13 +775,13 @@ export function RelationshipTrackerCard() {
       {isMobile ? (
         <Sheet open={isSoulDialogOpen} onOpenChange={setIsSoulDialogOpen}>
             <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-4 sm:p-8 border-b shrink-0 bg-muted/10 text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                     <SheetHeader className="text-left text-left">
                         <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {activeActionLabel.toLowerCase()}?</SheetTitle>
                         <SheetDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <div className="flex-grow min-h-0 p-4 sm:p-6 text-left">
+                <div className="flex-grow min-h-0 p-8 text-left">
                     <SoulSelectionList 
                         souls={souls} 
                         onSelect={handleSoulSelected} 
