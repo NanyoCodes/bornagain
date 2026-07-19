@@ -38,8 +38,8 @@ import {
   Plus,
   Minus,
   Trash2,
-  ChevronRight,
-  ChevronDown,
+  CreditCard,
+  Clipboard,
   Target
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
