@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,6 +49,8 @@ const formSchema = z.object({
   locationWonCity: z.string().optional(),
   locationWonState: z.string().optional(),
   locationWonCountry: z.string().optional(),
+  locationWonStreet: z.string().optional(),
+  locationWonLandmark: z.string().optional(),
   locationWonLatitude: z.number().optional().nullable(),
   locationWonLongitude: z.number().optional().nullable(),
   source: z.string({ required_error: "Please select a source." }),
@@ -105,6 +108,8 @@ export function LogSoulForm({
       locationWonCity: "",
       locationWonState: "",
       locationWonCountry: "",
+      locationWonStreet: "",
+      locationWonLandmark: "",
       locationWonLatitude: null,
       locationWonLongitude: null,
       source: defaultCampaign ? "Campaign" : "Personal",
@@ -187,6 +192,8 @@ export function LogSoulForm({
       city: values.locationWonCity || null,
       state: values.locationWonState || null,
       country: values.locationWonCountry || null,
+      street: values.locationWonStreet || null,
+      landmark: values.locationWonLandmark || null,
       latitude: values.locationWonLatitude ?? null,
       longitude: values.locationWonLongitude ?? null,
     };
@@ -486,6 +493,34 @@ export function LogSoulForm({
                           <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Location Won</Label>
                           <LocationWonInput form={form} />
                         </div>
+
+                        <FormField
+                            control={form.control}
+                            name="locationWonStreet"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Street Name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="e.g., 42 Grace Avenue" {...field} value={field.value || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="locationWonLandmark"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nearest Landmark</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="e.g., Opposite the central park" {...field} value={field.value || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <FormField
                         control={form.control}

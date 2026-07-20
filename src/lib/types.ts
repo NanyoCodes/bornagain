@@ -318,6 +318,8 @@ export type Soul = {
     city?: string;
     state?: string;
     country?: string;
+    street?: string;
+    landmark?: string;
     latitude?: number;
     longitude?: number;
   };

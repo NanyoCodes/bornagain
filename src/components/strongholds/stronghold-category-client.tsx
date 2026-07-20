@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -680,7 +681,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             ) : filteredPosts && filteredPosts.length > 0 ? (
                                 filteredPosts.map((post: any) => {
                                     const postDate = safeToDate(post.createdAt);
-                                    const isOwner = user?.uid === post.authorId;
+                                    const isAuthor = user?.uid === post.authorId;
                                     const isEditing = editingPostId === post.id;
 
                                     return (
@@ -699,7 +700,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                 </div>
                                                 <div className="flex items-center gap-2 text-left">
                                                     <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-black uppercase tracking-widest bg-background/50 text-left">{categoryTitle}</Badge>
-                                                    {isOwner && !isEditing && (
+                                                    {isAuthor && !isEditing && (
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
                                                                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
@@ -811,9 +812,9 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                         <Target className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Supply Drop</span>
                                     </div>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-balance">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
-                                    </DialogTitle>
+                                    </SheetTitle>
                                     <DialogDescription className="text-sm font-medium mt-1 text-left">Share a resource that fueled your victory.</DialogDescription>
                                 </DialogHeader>
                             </div>

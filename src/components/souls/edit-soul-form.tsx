@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,6 +48,8 @@ const formSchema = z.object({
   locationWonCity: z.string().optional(),
   locationWonState: z.string().optional(),
   locationWonCountry: z.string().optional(),
+  locationWonStreet: z.string().optional(),
+  locationWonLandmark: z.string().optional(),
   locationWonLatitude: z.number().optional().nullable(),
   locationWonLongitude: z.number().optional().nullable(),
   source: z.string({ required_error: "Please select a source." }),
@@ -89,6 +92,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       locationWonCity: soul.locationWon?.city || "",
       locationWonState: soul.locationWon?.state || "",
       locationWonCountry: soul.locationWon?.country || "",
+      locationWonStreet: soul.locationWon?.street || "",
+      locationWonLandmark: soul.locationWon?.landmark || "",
       locationWonLatitude: soul.locationWon?.latitude ?? null,
       locationWonLongitude: soul.locationWon?.longitude ?? null,
       source: soul.source || "Personal",
@@ -118,6 +123,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             locationWonCity: soul.locationWon?.city || "",
             locationWonState: soul.locationWon?.state || "",
             locationWonCountry: soul.locationWon?.country || "",
+            locationWonStreet: soul.locationWon?.street || "",
+            locationWonLandmark: soul.locationWon?.landmark || "",
             locationWonLatitude: soul.locationWon?.latitude ?? null,
             locationWonLongitude: soul.locationWon?.longitude ?? null,
             source: soul.source || "Personal",
@@ -154,7 +161,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    // PHONE SANITIZATION: Strictly numeric storage
     const sanitizedPhone = values.phone ? values.phone.replace(/[^\d+]/g, '') : null;
 
     const soulUpdateData: { [key: string]: any } = {
@@ -180,6 +186,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       city: values.locationWonCity || null,
       state: values.locationWonState || null,
       country: values.locationWonCountry || null,
+      street: values.locationWonStreet || null,
+      landmark: values.locationWonLandmark || null,
       latitude: values.locationWonLatitude ?? null,
       longitude: values.locationWonLongitude ?? null,
     };
@@ -466,13 +474,41 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
 
         <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="optional-details" className="border-none">
-                <AccordionTrigger className="text-sm font-semibold py-4 hover:no-underline">Additional Details & Location</AccordionTrigger>
+                <AccordionTrigger className="text-sm font-semibold py-4 hover:no-underline text-left">Additional Details & Location</AccordionTrigger>
                 <AccordionContent>
                     <div className="space-y-6 pt-2">
                         <div className="space-y-4">
                           <Label className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Location Won</Label>
                           <LocationWonInput form={form} />
                         </div>
+
+                        <FormField
+                            control={form.control}
+                            name="locationWonStreet"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Street Name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="e.g., 42 Grace Avenue" {...field} value={field.value || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="locationWonLandmark"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nearest Landmark</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="e.g., Opposite the central park" {...field} value={field.value || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         <FormField
                             control={form.control}
