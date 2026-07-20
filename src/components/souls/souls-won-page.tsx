@@ -496,7 +496,7 @@ export default function SoulsWonPage() {
     <div className="w-full max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
             <div className="lg:col-span-8 space-y-8 pb-32 text-left">
-                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left">
+                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                         <div className="space-y-1 text-left">
                             <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY HARVEST</h1>

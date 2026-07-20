@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -131,7 +132,7 @@ function SoulSelectionList({
                                 disabled={isLoading}
                             >
                                 <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
-                                    <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                    <AvatarFallback className="font-bold bg-primary/5 text-xs">{soul.firstName?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="text-left min-w-0 flex-1">
                                     <p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
@@ -250,184 +251,16 @@ function ScriptureSelectionDialog({
         onSelect({ reference: ref, text });
     };
 
-    const title = "Select Word";
-    const desc = "Choose a scripture to share. Full quotes are automatically included.";
-
-    const quickWordsContent = (
-        <div className="p-4 sm:p-6 space-y-6 text-left">
-            <div className="relative text-left">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-                <Input 
-                    placeholder="Search book or journal..." 
-                    value={search} 
-                    onChange={e => setSearch(e.target.value)}
-                    className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left"
-                />
-            </div>
-            <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[45vh]")}>
-                <div className="p-4 space-y-8 text-left">
-                    {filteredHighlights.length > 0 && (
-                        <div className="space-y-3 text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2 text-left">Your Journal Highlights</Label>
-                            <div className="space-y-1.5 text-left">
-                                {filteredHighlights.map(h => {
-                                    const ref = `${h.book} ${h.chapter}`;
-                                    return (
-                                        <Button 
-                                            key={h.id} 
-                                            variant="ghost" 
-                                            className="w-full justify-start h-auto py-3.5 px-4 rounded-2xl hover:bg-primary/5 text-left border border-transparent hover:border-primary/20 transition-all group"
-                                            onClick={() => h.note && onSelect({ reference: ref, text: h.note })}
-                                            disabled={!h.note}
-                                        >
-                                            <div className="min-w-0 text-left">
-                                                <div className="flex items-center gap-2 mb-0.5 text-left">
-                                                    <BookMarked className="h-3 w-3 text-primary/40 group-hover:text-primary transition-colors" />
-                                                    <p className="font-black text-sm uppercase tracking-tight text-left">{ref}</p>
-                                                </div>
-                                                {h.note && <p className="text-xs text-muted-foreground line-clamp-1 italic font-medium opacity-60 text-left">{h.note}</p>}
-                                            </div>
-                                        </Button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="space-y-3 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2 text-left">Kingdom Essentials</Label>
-                        <div className="space-y-1.5 text-left">
-                            {filteredEssentials.map((v, idx) => (
-                                <Button 
-                                    key={idx} 
-                                    variant="ghost" 
-                                    className="w-full justify-start h-auto py-3.5 px-4 rounded-2xl hover:bg-primary/5 text-left border border-transparent hover:border-primary/20 transition-all group"
-                                    onClick={() => onSelect({ reference: v.reference, text: v.text })}
-                                >
-                                    <div className="min-w-0 text-left">
-                                        <div className="flex items-center gap-2 mb-0.5 text-left">
-                                            <Sparkles className="h-3 w-3 text-primary/40 group-hover:text-primary transition-colors" />
-                                            <p className="font-black text-sm uppercase tracking-tight text-left">{v.reference}</p>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground line-clamp-1 italic font-medium opacity-60 text-left">{v.text}</p>
-                                    </div>
-                                </Button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </ScrollArea>
-        </div>
-    );
-
-    const browseBibleContent = (
-        <div className="p-4 sm:p-6 space-y-4 text-left">
-            {!selectedBook ? (
-                <div className="space-y-4 text-left">
-                    <div className="relative text-left">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-                        <Input 
-                            placeholder="Search Bible books..." 
-                            value={bookSearch} 
-                            onChange={e => setBookSearch(e.target.value)}
-                            className="rounded-2xl h-11 pl-10 bg-muted/20 border-none shadow-inner text-sm text-left"
-                        />
-                    </div>
-                    <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[45vh]")}>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 text-left">
-                            {filteredBooks.map(b => (
-                                <Button 
-                                    key={b.name} 
-                                    variant="ghost" 
-                                    className="h-10 text-xs font-bold uppercase tracking-tight rounded-xl bg-background shadow-sm hover:bg-primary/5 hover:text-primary transition-all text-center"
-                                    onClick={() => setSelectedBook(b.name)}
-                                >
-                                    {b.name}
-                                </Button>
-                            ))}
-                        </div>
-                    </ScrollArea>
-                </div>
-            ) : !selectedChapter ? (
-                <div className="space-y-4 text-left">
-                    <div className="flex items-center gap-3 text-left">
-                        <Button variant="ghost" size="icon" onClick={() => setSelectedBook(null)} className="rounded-full h-8 w-8">
-                            <ArrowLeft className="h-4 w-4" />
-                        </Button>
-                        <p className="font-black text-sm uppercase tracking-widest text-primary text-left">{selectedBook}</p>
-                    </div>
-                    <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[45vh]")}>
-                        <div className="grid grid-cols-5 gap-2 p-4 text-center">
-                            {bibleData.find(b => b.name === selectedBook)?.chapters.map(c => (
-                                <Button 
-                                    key={c.chapter} 
-                                    variant="ghost" 
-                                    className="h-10 w-10 text-xs font-black rounded-lg bg-background shadow-sm hover:bg-primary/5 hover:text-primary transition-all p-0 text-center"
-                                    onClick={() => handleChapterSelect(selectedBook, c.chapter)}
-                                >
-                                    {c.chapter}
-                                </Button>
-                            ))}
-                        </div>
-                    </ScrollArea>
-                </div>
-            ) : (
-                <div className="space-y-4 text-left">
-                    <div className="flex items-center justify-between text-left">
-                        <div className="flex items-center gap-3 text-left">
-                            <Button variant="ghost" size="icon" onClick={() => { setSelectedChapter(null); setChapterContent(null); setSelectedVerseNumbers([]); }} className="rounded-full h-8 w-8">
-                                <ArrowLeft className="h-4 w-4" />
-                            </Button>
-                            <p className="font-black text-sm uppercase tracking-widest text-primary text-left">{selectedBook} {selectedChapter}</p>
-                        </div>
-                        {selectedVerseNumbers.length > 0 && (
-                            <Button size="sm" onClick={handleSharePassage} className="rounded-full h-8 px-4 font-black uppercase text-[10px] tracking-widest shadow-lg">
-                                SHARE ({selectedVerseNumbers.length})
-                            </Button>
-                        )}
-                    </div>
-                    <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[45vh]")}>
-                        <div className="p-4 space-y-4 text-left">
-                            {isLoadingChapter ? (
-                                <div className="py-12 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary opacity-20" /></div>
-                            ) : chapterContent?.verses.map(v => (
-                                <div 
-                                    key={v.verse} 
-                                    className={cn(
-                                        "flex gap-3 p-3 rounded-2xl transition-all cursor-pointer group text-left",
-                                        selectedVerseNumbers.includes(v.verse) ? "bg-primary/10 ring-1 ring-primary/20" : "hover:bg-muted/30"
-                                    )}
-                                    onClick={() => handleToggleVerse(v.verse)}
-                                >
-                                    <div className={cn(
-                                        "h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors",
-                                        selectedVerseNumbers.includes(v.verse) ? "bg-primary border-primary" : "border-muted-foreground/30"
-                                    )}>
-                                        {selectedVerseNumbers.includes(v.verse) && <CheckCircle2 className="h-3 w-3 text-white" />}
-                                    </div>
-                                    <div className="space-y-1 text-left">
-                                        <span className="text-[10px] font-black text-primary/40 uppercase tracking-tighter text-left">Verse {v.verse}</span>
-                                        <p className="text-sm leading-relaxed text-muted-foreground font-medium text-left">{v.text}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </ScrollArea>
-                </div>
-            )}
-        </div>
-    );
-
     const dialogInner = (
         <div className="flex flex-col h-full text-left">
             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+                <SheetHeader className="text-left flex-shrink-0 text-left">
                     <div className="flex items-center gap-3 mb-2 text-left">
                         <BookOpen className="h-5 w-5 text-primary text-left" />
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Word</span>
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Word</span>
                     </div>
-                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</SheetTitle>
-                    <SheetDescription className="text-sm font-medium mt-1 text-left">{desc}</SheetDescription>
+                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Word</SheetTitle>
+                    <SheetDescription className="text-sm font-medium mt-1 text-left">Choose a scripture to share. Full quotes are automatically included.</SheetDescription>
                 </SheetHeader>
             </div>
             
@@ -441,17 +274,174 @@ function ScriptureSelectionDialog({
                     </div>
                     <div className="flex-grow min-h-0 overflow-hidden text-left">
                         <TabsContent value="quick" className="h-full mt-0 outline-none text-left">
-                            {quickWordsContent}
+                            <div className="p-4 sm:p-6 space-y-6 text-left">
+                                <div className="relative text-left">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                                    <Input 
+                                        placeholder="Search book or journal..." 
+                                        value={search} 
+                                        onChange={e => setSearch(e.target.value)}
+                                        className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left"
+                                    />
+                                </div>
+                                <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[45vh]")}>
+                                    <div className="p-4 space-y-8 text-left">
+                                        {filteredHighlights.length > 0 && (
+                                            <div className="space-y-3 text-left">
+                                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2 text-left">Your Journal Highlights</Label>
+                                                <div className="space-y-1.5 text-left">
+                                                    {filteredHighlights.map(h => {
+                                                        const ref = `${h.book} ${h.chapter}`;
+                                                        return (
+                                                            <Button 
+                                                                key={h.id} 
+                                                                variant="ghost" 
+                                                                className="w-full justify-start h-auto py-3.5 px-4 rounded-2xl hover:bg-primary/5 text-left border border-transparent hover:border-primary/20 transition-all group"
+                                                                onClick={() => h.note && onSelect({ reference: ref, text: h.note })}
+                                                                disabled={!h.note}
+                                                            >
+                                                                <div className="min-w-0 text-left">
+                                                                    <div className="flex items-center gap-2 mb-0.5 text-left">
+                                                                        <BookMarked className="h-3 w-3 text-primary/40 group-hover:text-primary transition-colors" />
+                                                                        <p className="font-black text-sm uppercase tracking-tight text-left">{ref}</p>
+                                                                    </div>
+                                                                    {h.note && <p className="text-xs text-muted-foreground line-clamp-1 italic font-medium opacity-60 text-left">{h.note}</p>}
+                                                                </div>
+                                                            </Button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="space-y-3 text-left">
+                                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-primary ml-2 text-left">Kingdom Essentials</Label>
+                                            <div className="space-y-1.5 text-left">
+                                                {filteredEssentials.map((v, idx) => (
+                                                    <Button 
+                                                        key={idx} 
+                                                        variant="ghost" 
+                                                        className="w-full justify-start h-auto py-3.5 px-4 rounded-2xl hover:bg-primary/5 text-left border border-transparent hover:border-primary/20 transition-all group"
+                                                        onClick={() => onSelect({ reference: v.reference, text: v.text })}
+                                                    >
+                                                        <div className="min-w-0 text-left">
+                                                            <div className="flex items-center gap-2 mb-0.5 text-left">
+                                                                <Sparkles className="h-3 w-3 text-primary/40 group-hover:text-primary transition-colors" />
+                                                                <p className="font-black text-sm uppercase tracking-tight text-left">{v.reference}</p>
+                                                            </div>
+                                                            <p className="text-xs text-muted-foreground line-clamp-1 italic font-medium opacity-60 text-left">{v.text}</p>
+                                                        </div>
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ScrollArea>
+                            </div>
                         </TabsContent>
                         <TabsContent value="browse" className="h-full mt-0 outline-none text-left">
-                            {browseBibleContent}
+                            <div className="p-4 sm:p-6 space-y-4 text-left">
+                                {!selectedBook ? (
+                                    <div className="space-y-4 text-left">
+                                        <div className="relative text-left">
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
+                                            <Input 
+                                                placeholder="Search Bible books..." 
+                                                value={bookSearch} 
+                                                onChange={e => setBookSearch(e.target.value)}
+                                                className="rounded-2xl h-11 pl-10 bg-muted/20 border-none shadow-inner text-sm text-left"
+                                            />
+                                        </div>
+                                        <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[45vh]")}>
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 text-left">
+                                                {filteredBooks.map(b => (
+                                                    <Button 
+                                                        key={b.name} 
+                                                        variant="ghost" 
+                                                        className="h-10 text-xs font-bold uppercase tracking-tight rounded-xl bg-background shadow-sm hover:bg-primary/5 hover:text-primary transition-all text-center"
+                                                        onClick={() => setSelectedBook(b.name)}
+                                                    >
+                                                        {b.name}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        </ScrollArea>
+                                    </div>
+                                ) : !selectedChapter ? (
+                                    <div className="space-y-4 text-left">
+                                        <div className="flex items-center gap-3 text-left">
+                                            <Button variant="ghost" size="icon" onClick={() => setSelectedBook(null)} className="rounded-full h-8 w-8">
+                                                <ArrowLeft className="h-4 w-4" />
+                                            </Button>
+                                            <p className="font-black text-sm uppercase tracking-widest text-primary text-left">{selectedBook}</p>
+                                        </div>
+                                        <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[45vh]")}>
+                                            <div className="grid grid-cols-5 gap-2 p-4 text-center">
+                                                {bibleData.find(b => b.name === selectedBook)?.chapters.map(c => (
+                                                    <Button 
+                                                        key={c.chapter} 
+                                                        variant="ghost" 
+                                                        className="h-10 w-10 text-xs font-black rounded-lg bg-background shadow-sm hover:bg-primary/5 hover:text-primary transition-all p-0 text-center"
+                                                        onClick={() => handleChapterSelect(selectedBook, c.chapter)}
+                                                    >
+                                                        {c.chapter}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        </ScrollArea>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4 text-left">
+                                        <div className="flex items-center justify-between text-left">
+                                            <div className="flex items-center gap-3 text-left">
+                                                <Button variant="ghost" size="icon" onClick={() => { setSelectedChapter(null); setChapterContent(null); setSelectedVerseNumbers([]); }} className="rounded-full h-8 w-8">
+                                                    <ArrowLeft className="h-4 w-4" />
+                                                </Button>
+                                                <p className="font-black text-sm uppercase tracking-widest text-primary text-left">{selectedBook} {selectedChapter}</p>
+                                            </div>
+                                            {selectedVerseNumbers.length > 0 && (
+                                                <Button size="sm" onClick={handleSharePassage} className="rounded-full h-8 px-4 font-black uppercase text-[10px] tracking-widest shadow-lg">
+                                                    SHARE ({selectedVerseNumbers.length})
+                                                </Button>
+                                            )}
+                                        </div>
+                                        <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[45vh]")}>
+                                            <div className="p-4 space-y-4 text-left">
+                                                {isLoadingChapter ? (
+                                                    <div className="py-12 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary opacity-20" /></div>
+                                                ) : chapterContent?.verses.map(v => (
+                                                    <div 
+                                                        key={v.verse} 
+                                                        className={cn(
+                                                            "flex gap-3 p-3 rounded-2xl transition-all cursor-pointer group text-left",
+                                                            selectedVerseNumbers.includes(v.verse) ? "bg-primary/10 ring-1 ring-primary/20" : "hover:bg-muted/30"
+                                                        )}
+                                                        onClick={() => handleToggleVerse(v.verse)}
+                                                    >
+                                                        <div className={cn(
+                                                            "h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors",
+                                                            selectedVerseNumbers.includes(v.verse) ? "bg-primary border-primary" : "border-muted-foreground/30"
+                                                        )}>
+                                                            {selectedVerseNumbers.includes(v.verse) && <CheckCircle2 className="h-3 w-3 text-white" />}
+                                                        </div>
+                                                        <div className="space-y-1 text-left">
+                                                            <span className="text-[10px] font-black text-primary/40 uppercase tracking-tighter text-left">Verse {v.verse}</span>
+                                                            <p className="text-sm leading-relaxed text-muted-foreground font-medium text-left">{v.text}</p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </ScrollArea>
+                                    </div>
+                                )}
+                            </div>
                         </TabsContent>
                     </div>
                 </Tabs>
             </div>
 
             <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0 text-left">
-                <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-full px-8 font-bold text-left">Close Hub</Button>
+                <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-full px-8 font-bold text-left">Close</Button>
             </div>
         </div>
     );
@@ -486,7 +476,7 @@ export function RelationshipTrackerCard() {
 
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [pendingActions, setPendingActions] = useState<string[]>([]);
-  const [togglingId, setTogglingId] = setTogglingId(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [activeSoul, setActiveSoul] = useState<Soul | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
@@ -498,8 +488,9 @@ export function RelationshipTrackerCard() {
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
   const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
   const [isScriptureSelectionOpen, setIsScriptureSelectionOpen] = useState(false);
-  const [customPrayerText, setCustomPrayerText] = React.useState('');
-  const [clickedActionId, setClickedActionId] = React.useState<string | null>(null);
+  const [isPrayerChoiceOpen, setIsPrayerChoiceOpen] = useState(false);
+  const [customPrayerText, setCustomPrayerText] = useState('');
+  const [clickedActionId, setClickedActionId] = useState<string | null>(null);
   
   const highlightsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -513,7 +504,7 @@ export function RelationshipTrackerCard() {
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
 
-  const resolveTemplate = React.useCallback((template: string, targetSoul: Soul) => {
+  const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
     const gender = targetSoul.gender?.toLowerCase() || 'other';
     const pronouns = {
         subject: gender === 'female' ? 'she' : 'he',
@@ -572,6 +563,10 @@ export function RelationshipTrackerCard() {
   }, [userProfile]);
 
   const handleActionClick = (id: string) => {
+      if (id === 'prayed_together') {
+          setIsPrayerChoiceOpen(true);
+          return;
+      }
       setSelectedActionId(id);
       setIsSoulDialogOpen(true);
   };
@@ -657,7 +652,7 @@ export function RelationshipTrackerCard() {
             }
             const path = actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
             router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${actionId}`);
-        } else if (actionId !== 'introduced_friend') {
+        } else if (actionId !== 'introduced_friend' && actionId !== 'text_message' && actionId !== 'studied_bible' && actionId !== 'prayed_together') {
             toast({ title: 'Kingdom Impact Saved!', description: `Logged '${action.label}' for ${soul.firstName}.` });
         }
     } catch (err: any) {
@@ -725,7 +720,7 @@ export function RelationshipTrackerCard() {
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
-    if (!activeSoul?.phone || !selectedActionId) return;
+    if (!activeSoul?.phone || !clickedActionId) return;
     const cleanPhone = activeSoul.phone.replace(/\+/g, '').replace(/\D/g, '');
     
     let message = customPrayerText || `Hi ${activeSoul.firstName}, I'm thinking of you today and praying for you. God bless you!\n\nJoin the movement: https://testifyglobal.com`;
@@ -737,8 +732,8 @@ export function RelationshipTrackerCard() {
         window.location.href = `sms:${activeSoul.phone}?body=${messageText}`;
     }
     
-    const notePrefix = selectedActionId === 'prayed_together' ? `Prayed: ${message}` : selectedActionId === 'studied_bible' ? `Shared Word: ${message}` : `Messaged: ${message}`;
-    performFinalLog(activeSoul, selectedActionId, notePrefix);
+    const notePrefix = clickedActionId === 'prayed_together' ? `Prayed: ${message}` : clickedActionId === 'studied_bible' ? `Shared Word: ${message}` : `Messaged: ${message}`;
+    performFinalLog(activeSoul, clickedActionId, notePrefix);
     setIsCommChannelDialogOpen(false);
     setCustomPrayerText('');
   };
@@ -816,7 +811,7 @@ export function RelationshipTrackerCard() {
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
         <CardHeader className="p-4 sm:p-6 text-left">
           <Skeleton className="h-5 w-32 mb-2 text-left" />
-          <Skeleton className="h-3 w-48" />
+          <Skeleton className="h-3 w-48 text-left" />
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6 text-left">
           {[...Array(4)].map((_, i) => (
@@ -839,11 +834,11 @@ export function RelationshipTrackerCard() {
         <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
               <div className="space-y-1 text-left">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
                       <Sparkles className="h-5 w-5 text-primary" />
                       Kingdom Connections
                   </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end shrink-0 text-left">
                 {currentDate && (
@@ -905,7 +900,7 @@ export function RelationshipTrackerCard() {
                                 </AnimatePresence>
 
                                 <div className={cn(
-                                    "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500 relative shrink-0",
+                                    "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500 relative shrink-0 text-left",
                                     isCompleted ? "bg-primary/20 scale-110 shadow-lg" : isPending ? "bg-amber-500/20" : "bg-muted/30"
                                 )}>
                                     {isToggling ? (
@@ -964,6 +959,29 @@ export function RelationshipTrackerCard() {
         </CardFooter>
       </Card>
 
+      {/* Prayer Choice Hub */}
+      <Dialog open={isPrayerChoiceOpen} onOpenChange={setIsPrayerChoiceOpen}>
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
+          <DialogHeader className="text-center space-y-2">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                  <HandHeart className="h-7 w-7 text-primary" />
+              </div>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Intercession Hub</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">Where would you like to intercede today?</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 pt-6">
+            <Button asChild className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+              <Link href="/dashboard/testimonies?tab=prayers">
+                <Globe className="h-5 w-5" /> Community Feed
+              </Link>
+            </Button>
+            <Button onClick={() => { setIsPrayerChoiceOpen(false); setSelectedActionId('prayed_together'); setIsSoulDialogOpen(true); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+              <Users className="h-5 w-5" /> My Harvest List
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {isMobile ? (
         <Sheet open={isSoulDialogOpen} onOpenChange={setIsSoulDialogOpen}>
             <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
@@ -987,13 +1005,13 @@ export function RelationshipTrackerCard() {
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                 <div className="p-8 border-b bg-muted/10 text-left">
                     <div className="p-0 text-left text-left">
-                        <DialogHeader className="text-left text-left text-left text-left">
-                            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left text-left">Who did you {activeActionLabel.toLowerCase()}?</DialogTitle>
-                            <DialogDescription className="text-sm font-medium text-left text-left">Select a convert to link this action to their record.</DialogDescription>
+                        <DialogHeader className="text-left text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {activeActionLabel.toLowerCase()}?</DialogTitle>
+                            <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
                         </DialogHeader>
                     </div>
                 </div>
-                <div className="p-6 text-left text-left text-left">
+                <div className="p-6 text-left">
                     <SoulSelectionList 
                         souls={souls} 
                         onSelect={handleSoulSelected} 
@@ -1004,7 +1022,6 @@ export function RelationshipTrackerCard() {
         </Dialog>
       )}
 
-      {/* Scripture Selection Dialog */}
       <ScriptureSelectionDialog 
           isOpen={isScriptureSelectionOpen}
           onOpenChange={setIsScriptureSelectionOpen}
@@ -1012,13 +1029,12 @@ export function RelationshipTrackerCard() {
           onSelect={handleScriptureSelected}
       />
 
-      {/* Shared Prayer Customization Dialog */}
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
         <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
             <div className="p-8 border-b bg-muted/10 text-left">
                 <DialogHeader className="text-left text-left text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kingdom Intercession</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DialogDescription>
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DialogDescription>
                 </DialogHeader>
             </div>
             <div className="p-8 space-y-6 text-left">
@@ -1039,8 +1055,8 @@ export function RelationshipTrackerCard() {
                     </div>
                 </div>
 
-                <div className="space-y-2 text-left text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Your Prayer</Label>
+                <div className="space-y-2 text-left">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Your Prayer</Label>
                     <Textarea 
                         value={customPrayerText}
                         onChange={e => setCustomPrayerText(e.target.value)}
@@ -1049,7 +1065,7 @@ export function RelationshipTrackerCard() {
                 </div>
 
                 <Button 
-                    onClick={() => handlePrayerConfirm(customPrayerText)} 
+                    onClick={() => handlePrayerCustomizationConfirm(customPrayerText)} 
                     disabled={!customPrayerText.trim()} 
                     className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
                 >
@@ -1059,11 +1075,10 @@ export function RelationshipTrackerCard() {
         </DialogContent>
       </Dialog>
 
-      {/* Shared Communication Channel Dialog */}
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
             <DialogHeader className="text-center space-y-2">
-                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
                     <MessageSquare className="h-7 w-7 text-primary text-center" />
                 </div>
               <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
@@ -1083,39 +1098,39 @@ export function RelationshipTrackerCard() {
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
           <DialogHeader className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
                   <Share className="h-7 w-7 text-primary text-center" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center">Where would you like to share {activeSoul?.firstName}'s info?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Introduction Hub</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">How would you like to introduce {activeSoul?.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6 text-center">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
-              <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+              <HeartHandshake className="h-5 w-5" /> Internal Partner
             </Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
-              <HeartHandshake className="h-5 w-5" /> Partner on App
+            <Button onClick={handleShareToWhatsApp} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+              <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
-            <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
-                <DialogHeader className="text-left text-left text-left text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left text-left">Which partner should receive these details?</DialogDescription>
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+            <div className="p-8 border-b bg-muted/10 text-left">
+                <DialogHeader className="text-left text-left text-left">
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
                 </DialogHeader>
             </div>
-            <div className="p-6 text-left text-left text-left">
-            <ScrollArea className="h-64 text-left text-left">
-                <div className="space-y-2 text-left text-left">
+            <div className="p-6 text-left">
+            <ScrollArea className="h-64 text-left">
+                <div className="space-y-2 text-left">
                     {uniquePartners.map(p => (
                         <Button 
                             key={p.userId} 
                             variant="ghost" 
-                            className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group text-left text-left"
+                            className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group text-left"
                             onClick={() => handleShareToPartner(p)}
                         >
                             <Avatar className="h-8 w-8 border shrink-0 text-left">
@@ -1135,23 +1150,24 @@ export function RelationshipTrackerCard() {
       </Dialog>
 
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
-          <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
-            <DialogHeader className="text-left text-left text-left text-left">
-              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Support Provided</DialogTitle>
-              <DialogDescription className="text-sm font-medium text-left text-left">Describe how you supported {activeSoul?.firstName}.</DialogDescription>
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+          <div className="p-8 border-b bg-muted/10 text-left text-left">
+            <DialogHeader className="text-left text-left text-left">
+              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
+              <DialogDescription className="text-sm font-medium text-left">Describe how you supported {activeSoul?.firstName}.</DialogDescription>
             </DialogHeader>
           </div>
-          <div className="p-8 space-y-6 text-left text-left">
-            <div className="space-y-2 text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
+          <div className="p-8 space-y-6 text-left">
+            <div className="space-y-2 text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
-                    onChange={e => setCustomPrayerText(e.target.value)} // Reusing customPrayerText temporarily for simple local state
-                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left"
+                    value={customPrayerText}
+                    onChange={e => setCustomPrayerText(e.target.value)}
+                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
                 />
             </div>
-            <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold text-left text-left">Confirm Service</Button>
+            <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold text-left">Confirm Service</Button>
           </div>
         </DialogContent>
       </Dialog>

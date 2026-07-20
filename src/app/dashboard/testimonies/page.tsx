@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
@@ -454,11 +455,11 @@ function TestimoniesContent() {
               </Sheet>
               
               <Sheet open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                    <SheetHeader className="text-left text-left text-left text-left text-left">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
+                    <SheetHeader className="text-left text-left text-left text-left text-left text-left">
                       <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">{prayerToAnswer ? 'Record Miracle' : 'Share Testimony'}</SheetTitle>
-                      <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others with what God has done."}</SheetDescription>
+                      <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others with what God has done."}</SheetDescription>
                     </SheetHeader>
                   </div>
                   <ScrollArea className="flex-grow text-left text-left text-left text-left text-left">
@@ -471,7 +472,7 @@ function TestimoniesContent() {
 
               <Sheet open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
-                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
+                  <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
                     <SheetHeader className="text-left text-left text-left text-left text-left text-left">
                       <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Request Prayer</SheetTitle>
                       <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left">Share your need with the global community.</SheetDescription>
@@ -505,8 +506,8 @@ function TestimoniesContent() {
 
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
                 <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
-                    <DialogHeader className="text-left text-left text-left text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
+                    <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left">Edit Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
@@ -537,7 +538,7 @@ function TestimoniesContent() {
 
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left">Share Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left text-left">Share your request with the Body of Christ.</DialogDescription>
