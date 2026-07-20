@@ -344,13 +344,13 @@ function ShareWordDialog({
       return (
           <Sheet open={isOpen} onOpenChange={onOpenChange}>
               <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                  <div className="p-8 border-b bg-muted/10 shrink-0">
+                  <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                       <SheetHeader className="text-left">
                           <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</SheetTitle>
                           <SheetDescription className="text-sm font-medium mt-1">{desc}</SheetDescription>
                       </SheetHeader>
                   </div>
-                  <div className="flex-grow min-h-0 overflow-hidden">
+                  <div className="flex-grow min-h-0 overflow-hidden text-left">
                     {dialogContent}
                   </div>
               </SheetContent>
@@ -700,6 +700,7 @@ export function RelationshipTrackerCard() {
                               <TooltipTrigger asChild>
                                   <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }} className="w-full">
                                       <Button
+                                          type="button"
                                           variant="outline"
                                           className={cn(
                                               "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden",
@@ -875,8 +876,8 @@ export function RelationshipTrackerCard() {
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
                   <Share2 className="h-7 w-7 text-primary" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Share Identity</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-left">Coordinate follow-up for {selectedSoulForAction?.firstName}.</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Share Details</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-left">Where would you like to share {selectedSoulForAction?.firstName}'s info?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6 text-left">
             <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">

@@ -429,16 +429,16 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
             <TableCell className="p-4 text-left"><Badge className={cn("w-[110px] justify-center text-[10px] uppercase font-black tracking-widest leading-none h-6 text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
             <TableCell className="hidden lg:table-cell p-4 text-left">
                 <div className="space-y-1.5 text-left">
-                    {soul.fellowshipName ? (
+                    {soul.fellowshipId ? (
                         <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary leading-none text-left">
                             <HeartHandshake className="h-3 w-3 shrink-0 text-left" />
-                            {soul.fellowshipName}
+                            {soul.fellowshipName || 'Spiritual Group'}
                         </div>
                     ) : null}
-                    {soul.associationName ? (
+                    {soul.associationId ? (
                         <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-blue-500 leading-none text-left">
                             <Users className="h-3 w-3 shrink-0 text-left" />
-                            {soul.associationName}
+                            {soul.associationName || 'Community Hub'}
                         </div>
                     ) : null}
                 </div>

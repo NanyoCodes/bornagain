@@ -44,8 +44,6 @@ import {
     BookOpen,
     HandHeart,
     ChevronDown,
-    Target,
-    Plus,
     PlusCircle,
     Video,
     Book,
@@ -53,7 +51,8 @@ import {
     Mic,
     Globe,
     ExternalLink,
-    Link as LinkIcon
+    Plus,
+    Target
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -76,6 +75,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { CircleResource } from '@/lib/types';
 
 const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
