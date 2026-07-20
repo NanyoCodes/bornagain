@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -29,7 +30,8 @@ import {
   Mail,
   ArrowLeft,
   CalendarDays,
-  BookOpen
+  BookOpen,
+  Banknote
 } from "lucide-react";
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -269,7 +271,7 @@ function SoulProfileContent({
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Placement</p>
                     <button className="text-[9px] font-black text-primary uppercase hover:underline flex items-center gap-1" onClick={() => onOpenAssignDialog(soul)}>
                         <Users className="h-3 w-3" />
-                        assigning hub
+                        assigning fellowship and association can be done here
                     </button>
                 </div>
                 <div className="space-y-3">
@@ -319,21 +321,66 @@ function SoulProfileContent({
                     </p>
                     <button className="text-[9px] font-black text-primary uppercase hover:underline flex items-center gap-1" onClick={() => onAssess(soul)}>
                         <Edit className="h-3 w-3" />
-                        assess
+                        assess needs here
                     </button>
                 </div>
                 {needs ? (
                     <div className="space-y-4 text-left">
                         {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
-                        <div className="grid grid-cols-2 gap-2">
-                            {needs.emotionalNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black">Emotional</Badge>}
-                            {needs.physicalNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black">Physical</Badge>}
-                            {needs.financialNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black">Financial</Badge>}
-                            {needs.socialNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black">Social</Badge>}
+                        
+                        <div className="space-y-3">
+                            {needs.emotionalNeeds && (
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black">Emotional</Badge>
+                                        <Heart className="h-3 w-3 text-red-500" />
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground pl-1 font-medium leading-relaxed">{needs.emotionalNeeds}</p>
+                                </div>
+                            )}
+                            {needs.physicalNeeds && (
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black">Physical</Badge>
+                                        <Zap className="h-3 w-3 text-amber-500" />
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground pl-1 font-medium leading-relaxed">{needs.physicalNeeds}</p>
+                                </div>
+                            )}
+                            {needs.financialNeeds && (
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black">Financial</Badge>
+                                        <Banknote className="h-3 w-3 text-green-600" />
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground pl-1 font-medium leading-relaxed">{needs.financialNeeds}</p>
+                                </div>
+                            )}
+                            {needs.socialNeeds && (
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black">Social</Badge>
+                                        <Users className="h-3 w-3 text-indigo-600" />
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground pl-1 font-medium leading-relaxed">{needs.socialNeeds}</p>
+                                </div>
+                            )}
+                            {needs.otherNeeds && (
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="secondary" className="text-[7px] h-4 bg-slate-500/10 text-slate-600 border-none px-1.5 uppercase font-black">Other</Badge>
+                                        <Info className="h-3 w-3 text-slate-500" />
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground pl-1 font-medium leading-relaxed">{needs.otherNeeds}</p>
+                                </div>
+                            )}
                         </div>
+
                         {needs.followUpPlan && (
                             <div className="pt-2 border-t border-primary/10 text-left">
-                                <p className="text-[8px] font-black uppercase text-primary/60 mb-1">Strategy</p>
+                                <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5">
+                                    <Target className="h-2.5 w-2.5" /> Strategy
+                                </p>
                                 <p className="text-[10px] text-muted-foreground leading-relaxed italic">{needs.followUpPlan}</p>
                             </div>
                         )}
