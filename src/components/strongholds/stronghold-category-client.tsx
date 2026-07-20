@@ -46,6 +46,7 @@ import {
     ChevronDown,
     Target,
     Plus,
+    PlusCircle,
     Video,
     Book,
     FileText,
@@ -290,7 +291,7 @@ function ShareResourceDialog({ category, onResourceAdded }: { category: string, 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
+            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20 text-left">
                 <Plus className="mr-2 h-4 w-4" /> SHARE RESOURCE
             </Button>
         </DialogTrigger>
@@ -304,37 +305,37 @@ function ShareResourceDialog({ category, onResourceAdded }: { category: string, 
             <form onSubmit={handleShare} className="p-8 space-y-6 text-left">
                 <div className="space-y-4 text-left">
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Resource Title</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Resource Title</Label>
                         <Input placeholder="e.g., Understanding Grace Video" value={title} onChange={e => setTitle(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner" />
                     </div>
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Type</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Type</Label>
                         <Select value={type} onValueChange={(val: any) => setType(val)}>
                             <SelectTrigger className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-none shadow-2xl text-left">
-                                <SelectItem value="Video" className="rounded-lg">Video</SelectItem>
-                                <SelectItem value="Article" className="rounded-lg">Article</SelectItem>
-                                <SelectItem value="Book" className="rounded-lg">Book</SelectItem>
-                                <SelectItem value="Sermon" className="rounded-lg">Sermon</SelectItem>
-                                <SelectItem value="Other" className="rounded-lg">Other</SelectItem>
+                                <SelectItem value="Video" className="rounded-lg text-left">Video</SelectItem>
+                                <SelectItem value="Article" className="rounded-lg text-left">Article</SelectItem>
+                                <SelectItem value="Book" className="rounded-lg text-left">Book</SelectItem>
+                                <SelectItem value="Sermon" className="rounded-lg text-left">Sermon</SelectItem>
+                                <SelectItem value="Other" className="rounded-lg text-left">Other</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL / Link</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">URL / Link</Label>
                         <Input type="url" placeholder="https://..." value={url} onChange={e => setUrl(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner" />
                     </div>
                     <div className="space-y-2 text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description (Optional)</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Description (Optional)</Label>
                         <Textarea placeholder="How did this help you?" value={description} onChange={e => setDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/20 border-none shadow-inner" />
                     </div>
                 </div>
                 <div className="flex gap-3 pt-2 text-left">
-                    <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
-                    <Button type="submit" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20">
-                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'SHARE NOW'}
+                    <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
+                    <Button type="submit" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left">
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin text-left" /> : 'SHARE NOW'}
                     </Button>
                 </div>
             </form>
@@ -576,7 +577,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                         amenScriptureIdx === idx ? "bg-primary text-white border-none scale-105 shadow-lg" : "bg-background hover:bg-primary/5 text-primary/60 hover:text-primary"
                                                     )}
                                                 >
-                                                    {amenScriptureIdx === idx ? <Check className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />}
+                                                    {amenScriptureIdx === idx ? <Check className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5 text-left" />}
                                                     AMEN
                                                 </Button>
                                             </div>
@@ -741,7 +742,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                             <p className="text-[8px] font-bold text-muted-foreground uppercase text-left">Shared by {res.authorName}</p>
                                             <Button variant="ghost" size="sm" asChild className="h-7 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left">
                                                 <a href={res.url} target="_blank" rel="noopener noreferrer">
-                                                    Open <ExternalLink className="ml-1 h-2.5 w-2.5" />
+                                                    Open <ExternalLink className="ml-1 h-2.5 w-2.5 text-left" />
                                                 </a>
                                             </Button>
                                         </div>
@@ -751,7 +752,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         ) : (
                             <div className="col-span-full py-20 text-center border-2 border-dashed rounded-3xl bg-muted/5 flex flex-col items-center text-left">
                                 <PlusCircle className="h-12 w-12 text-muted-foreground opacity-10 mb-4 text-left" />
-                                <p className="text-sm text-muted-foreground italic text-left">The armory is empty. Share a supply to help others!</p>
+                                <p className="text-sm text-muted-foreground italic text-left text-left">The armory is empty. Share a supply to help others!</p>
                             </div>
                         )}
                     </div>
