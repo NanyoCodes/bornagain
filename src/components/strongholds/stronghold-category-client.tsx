@@ -43,7 +43,8 @@ import {
     Search,
     BookOpen,
     HandHeart,
-    ChevronDown
+    ChevronDown,
+    Target
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -72,7 +73,7 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "James 4:6", text: "God opposes the proud but shows favor to the humble.", prayer: "I choose to humble myself before You today, Lord. May Your favor rest upon me as I decrease and You increase. Amen." },
     { verse: "1 Peter 5:5", text: "Clothe yourselves, all of you, with humility toward one another.", prayer: "Holy Spirit, help me to serve others with a genuine heart, free from the need for recognition or praise. Amen." },
     { verse: "Proverbs 11:2", text: "When pride comes, then comes disgrace, but with humility comes wisdom.", prayer: "Father, give me a heart that seeks Your wisdom above my own reputation. Protect me from the snare of arrogance. Amen." },
-    { verse: "Proverbs 29:23", text: "Pride brings a person low, but the lowly in spirit gain honor.", prayer: "I surrender my need to be right or superior. I find my true honor in being Your child. Amen." },
+    { verse: "Proverbs 29:23", text: "Pride brings a person low, but the lowly in spirit gain honor.", prayer: "I surrender my need to right or superior. I find my true honor in being Your child. Amen." },
     { verse: "Obadiah 1:3", text: "The pride of your heart has deceived you.", prayer: "Lord, search my heart. Remove any deception that makes me feel self-sufficient without You. Amen." },
     { verse: "Luke 14:11", text: "For all those who exalt themselves will be humbled, and those who humble themselves will be exalted.", prayer: "Jesus, I choose the lowest seat. I trust You to lift me up in Your perfect timing. Amen." }
   ],
@@ -531,7 +532,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                         <X className="mr-1 h-3 w-3 text-left" /> Cancel
                                                     </Button>
                                                     <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left">
-                                                        {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin text-left" /> : <Check className="mr-1 h-3 w-3 text-left" />}
+                                                        {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3 text-left" />}
                                                         Save Changes
                                                     </Button>
                                                 </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
-import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy } from 'firebase/firestore';
+import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, updateDoc, getDoc, getDocs } from 'firebase/firestore';
 import type { UserProfile, Soul } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
@@ -25,7 +25,9 @@ import {
   UserPlus,
   Search,
   PlusCircle,
-  ArrowRight
+  ArrowRight,
+  X,
+  Send
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -34,8 +36,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { actionItems } from '@/lib/follow-up-data';
-import Link from 'next/link';
+import { actionItems, prayerTemplates } from '@/lib/follow-up-data';
 import { useRouter } from 'next/navigation';
 import {
   Dialog,
@@ -55,6 +56,8 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -68,6 +71,14 @@ const iconMap: Record<string, any> = {
     'helped_with_need': Heart,
     'invited_to_event': Calendar,
 };
+
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+  );
+}
 
 function SoulSelectionDialog({ 
   isOpen, 
@@ -200,6 +211,11 @@ export function RelationshipTrackerCard() {
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
+  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
+  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
+  const [customPrayerText, setCustomPrayerText] = useState('');
+  const [selectedSoulForAction, setSelectedSoulForAction] = useState<Soul | null>(null);
+
   const { userProfile, loading: profileLoading } = useUserProfile();
 
   const soulsQuery = useMemo(() => {
@@ -228,15 +244,48 @@ export function RelationshipTrackerCard() {
       setIsSoulDialogOpen(true);
   };
 
+  const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
+      const gender = targetSoul.gender?.toLowerCase() || 'other';
+      const pronouns = {
+          subject: gender === 'female' ? 'she' : 'he',
+          object: gender === 'female' ? 'her' : 'him',
+          possessive: gender === 'female' ? 'her' : 'his'
+      };
+      
+      return template
+          .replace(/{name}/g, targetSoul.firstName)
+          .replace(/{subject}/g, pronouns.subject)
+          .replace(/{object}/g, pronouns.object)
+          .replace(/{possessive}/g, pronouns.possessive);
+  }, []);
+
   const handleSoulSelected = async (soul: Soul) => {
     if (!user || !firestore || !selectedActionId) return;
-    
-    setIsSoulDialogOpen(false);
     
     const action = actionItems.find(a => a.id === selectedActionId);
     if (!action) return;
 
-    // 1. Identify Linking/Special Actions
+    setSelectedSoulForAction(soul);
+    setIsSoulDialogOpen(false);
+
+    // Identify specialized flows
+    if (selectedActionId === 'prayed_together') {
+        setCustomPrayerText(resolveTemplate(prayerTemplates[0].text, soul));
+        setIsPrayerCustomizationOpen(true);
+        return;
+    }
+
+    if (selectedActionId === 'studied_bible') {
+        setCustomPrayerText(`Hi ${soul.firstName}, I was thinking of this word for you today: "And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus." - Phil 4:7. God bless you!`);
+        setIsPrayerCustomizationOpen(true);
+        return;
+    }
+
+    if (selectedActionId === 'text_message') {
+        setIsCommChannelDialogOpen(true);
+        return;
+    }
+
     if (selectedActionId === 'visited_home') {
         const address = [soul.locationWon?.street, soul.locationWon?.city, soul.locationWon?.state, soul.locationWon?.country].filter(Boolean).join(', ');
         if (address) {
@@ -268,16 +317,21 @@ export function RelationshipTrackerCard() {
         router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
     }
 
-    setTogglingId(selectedActionId);
+    finalizeLog(soul, selectedActionId);
+  };
 
+  const finalizeLog = async (soul: Soul, actionId: string, noteAddendum: string = '') => {
+    if (!user || !firestore) return;
+    setTogglingId(actionId);
+
+    const action = actionItems.find(a => a.id === actionId);
     const today = new Date();
     const dateString = format(today, 'yyyy-MM-dd');
     const batch = writeBatch(firestore);
 
-    // 2. Update user's daily discipline (habit tracking)
-    const wasCompleted = completedToday.includes(selectedActionId);
+    const wasCompleted = completedToday.includes(actionId);
     const newCompleted = [...completedToday];
-    if (!wasCompleted) newCompleted.push(selectedActionId);
+    if (!wasCompleted) newCompleted.push(actionId);
 
     const userRef = doc(firestore, 'users', user.uid);
     batch.update(userRef, {
@@ -291,12 +345,11 @@ export function RelationshipTrackerCard() {
         date: serverTimestamp()
     }, { merge: true });
 
-    // 3. Update soul's history
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(), 
-        note: `Logged via Kingdom Connections: ${action.label} (Initiated)`,
-        actions: [selectedActionId],
+        note: `Logged via Kingdom Connections: ${action?.label}${noteAddendum ? ` - ${noteAddendum}` : ''}`,
+        actions: [actionId],
         memberId: user.uid,
         memberName: memberName,
     };
@@ -316,21 +369,31 @@ export function RelationshipTrackerCard() {
     try {
         await batch.commit();
         setCompletedToday(newCompleted);
-        toast({ 
-            title: 'Kingdom Impact Saved!', 
-            description: `Logged '${action.label}' for ${soul.firstName}.` 
-        });
+        toast({ title: 'Kingdom Impact Saved!' });
     } catch (err: any) {
-        console.error("Batch update failed:", err);
-        const permissionError = new FirestorePermissionError({
-            path: `BATCH_WRITE:RELATION_TRACKER:${soul.id}`,
-            operation: 'write',
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `BATCH:RELATION_TRACKER:${soul.id}`, operation: 'write' }, user));
     } finally {
         setTogglingId(null);
         setSelectedActionId(null);
+        setSelectedSoulForAction(null);
+        setCustomPrayerText('');
     }
+  };
+
+  const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
+      if (!selectedSoulForAction?.phone || !selectedActionId) return;
+      const cleanPhone = selectedSoulForAction.phone.replace(/\+/g, '').replace(/\D/g, '');
+      const message = customPrayerText || `Hi ${selectedSoulForAction.firstName}, I'm thinking of you today and praying for you. God bless you!`;
+      const messageText = encodeURIComponent(message);
+      
+      if (channel === 'whatsapp') {
+          window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
+      } else {
+          window.location.href = `sms:${selectedSoulForAction.phone}?body=${messageText}`;
+      }
+      
+      finalizeLog(selectedSoulForAction, selectedActionId, message);
+      setIsCommChannelDialogOpen(false);
   };
 
   const activeActionLabel = useMemo(() => 
@@ -419,10 +482,11 @@ export function RelationshipTrackerCard() {
                                               <>
                                                   <div className={cn(
                                                       "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
-                                                      isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
+                                                      isSelected ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
                                                   )}>
-                                                      <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
+                                                      <Icon className={cn("h-4 w-4 transition-all", isSelected ? "text-primary fill-current" : "text-primary/60")} />
                                                   </div>
+                                                  
                                                   <div className="space-y-0.5 min-w-0 w-full text-center">
                                                       <span className={cn(
                                                           "text-[9px] font-black uppercase tracking-tight block truncate",
@@ -447,15 +511,12 @@ export function RelationshipTrackerCard() {
           </div>
         </CardContent>
         <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
-              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm">
+              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm text-left">
                   <Link href="/dashboard/souls-won">
                       <UserPlus className="mr-2 h-4 w-4" />
                       MANAGE SOULS WON
                   </Link>
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground font-black uppercase tracking-[0.2em] opacity-40">
-                  Unity • Growth • Love
-              </p>
         </CardFooter>
       </Card>
 
@@ -467,6 +528,54 @@ export function RelationshipTrackerCard() {
           actionLabel={activeActionLabel}
           isLoading={togglingId !== null}
       />
+
+      <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
+          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+              <div className="p-8 border-b bg-muted/10">
+                  <DialogHeader>
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Message</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left">Draft a powerful word for {selectedSoulForAction?.firstName}.</DialogDescription>
+                  </DialogHeader>
+              </div>
+              <div className="p-8 space-y-6 text-left">
+                  <div className="space-y-2 text-left">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Message</Label>
+                      <Textarea 
+                          value={customPrayerText}
+                          onChange={e => setCustomPrayerText(e.target.value)}
+                          className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left"
+                      />
+                  </div>
+                  <Button 
+                      onClick={() => { setIsPrayerCustomizationOpen(false); setIsCommChannelDialogOpen(true); }} 
+                      disabled={!customPrayerText.trim()} 
+                      className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
+                  >
+                      CONTINUE TO CHANNEL
+                  </Button>
+              </div>
+          </DialogContent>
+      </Dialog>
+
+      <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
+          <DialogHeader className="text-center space-y-2 text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
+                  <MessageSquare className="h-7 w-7 text-primary text-left" />
+              </div>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Message Hub</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-left">Choose a delivery channel for {selectedSoulForAction?.firstName}.</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 pt-6 text-left">
+            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
+              <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp
+            </Button>
+            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
+              <MessageSquare className="h-5 w-5 text-left" /> Standard SMS
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
