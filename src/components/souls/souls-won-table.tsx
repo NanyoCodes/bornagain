@@ -77,6 +77,8 @@ import { useUser, useFirestore, useDoc } from "@/firebase";
 import { doc } from "firebase/firestore";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Image from "next/image";
+import { ScrollArea } from "../ui/scroll-area";
+import { Separator } from "../ui/separator";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -383,8 +385,10 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
 });
 SoulCard.displayName = "SoulCard";
 
-const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: { 
+const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: { 
   soul: Soul; 
+  isSelected: boolean;
+  onSelect: () => void;
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
@@ -413,11 +417,14 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
     };
 
     return (
-        <TableRow className="hover:bg-muted/30 transition-colors">
+        <TableRow 
+            className={cn("hover:bg-muted/30 transition-colors cursor-pointer", isSelected && "bg-primary/[0.03]")}
+            onClick={onSelect}
+        >
             <TableCell className="font-medium p-4 text-left">
                 <div className="flex items-center gap-4">
                     <Dialog>
-                        <DialogTrigger asChild disabled={!soul.photoURL}>
+                        <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!soul.photoURL}>
                             <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
                                 <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                                 <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
@@ -445,57 +452,12 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                             </DialogContent>
                         )}
                     </Dialog>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <div className="min-w-0 text-left cursor-pointer hover:bg-muted/50 p-1 -m-1 rounded-lg transition-colors group">
-                                <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight group-hover:text-primary transition-colors">
-                                  {soul.firstName} {soul.lastName}
-                                </div>
-                                {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
-                            </div>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80 p-0 rounded-[2rem] border-none shadow-2xl overflow-hidden bg-card/95 backdrop-blur-xl z-[100]">
-                            <div className="p-6 space-y-6">
-                                <div className="flex items-center gap-4">
-                                    <Avatar className="h-16 w-16 border-2 border-primary/20 shadow-lg">
-                                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                                        <AvatarFallback className="text-xl font-black bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="min-w-0">
-                                        <h4 className="font-black text-lg uppercase tracking-tight truncate leading-tight">{soul.firstName} {soul.lastName}</h4>
-                                        <Badge className={cn("mt-1.5 h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
-                                    </div>
-                                </div>
-                                
-                                <div className="grid grid-cols-2 gap-4 text-xs font-medium text-muted-foreground">
-                                    <div className="space-y-1">
-                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Identity</p>
-                                        <p className="text-foreground font-bold">{soul.gender || 'Gender N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Relationship</p>
-                                        <p className="text-foreground font-bold">{soul.relationship || 'Outreach'}</p>
-                                    </div>
-                                    <div className="space-y-1 col-span-2">
-                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Sector</p>
-                                        <p className="text-foreground font-bold truncate">
-                                            {soul.fellowshipName ? `Fellowship: ${soul.fellowshipName}` : 'No Fellowship Assigned'}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="pt-4 border-t border-dashed flex justify-between items-center">
-                                    <div className="space-y-0.5 text-left">
-                                        <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Won on</p>
-                                        <p className="text-xs font-bold">{format(wonAt, "PPP")}</p>
-                                    </div>
-                                    <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px]" onClick={() => onViewHistory(soul)}>
-                                        Full History
-                                    </Button>
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
+                    <div className="min-w-0 text-left">
+                        <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight group-hover:text-primary transition-colors">
+                          {soul.firstName} {soul.lastName}
+                        </div>
+                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
+                    </div>
                 </div>
             </TableCell>
             <TableCell className="hidden md:table-cell p-4 text-left">{soul.phone && <div className="text-xs font-bold text-muted-foreground">{soul.phone}</div>}</TableCell>
@@ -524,14 +486,9 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                     </div>
                 ) : <span className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-20 text-left">—</span>}
             </TableCell>
-            <TableCell className="hidden md:table-cell p-4 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-left">{format(wonAt, "MMM d, yyyy")}</TableCell>
-            <TableCell className="hidden xl:table-cell p-4 text-left">
-                <div className="text-[10px] font-black uppercase tracking-widest text-foreground/80">{soul.source}</div>
-                {soul.sourceDetails && <div className="text-[9px] font-bold text-muted-foreground/60 uppercase truncate max-w-[120px]">{soul.sourceDetails}</div>}
-            </TableCell>
             <TableCell className="p-4 text-right">
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="h-8 w-8 rounded-full"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}><Button size="icon" variant="ghost" className="h-8 w-8 rounded-full"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Soul Control</DropdownMenuLabel>
                         <DropdownMenuItem onSelect={() => triggerAction(onEdit)}>
@@ -584,8 +541,18 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
+  const [selectedId, setSelectedId] = React.useState<string | null>(null);
 
-  React.useEffect(() => { setMounted(true); }, []);
+  React.useEffect(() => { 
+    setMounted(true); 
+    if (souls.length > 0 && !selectedId && !isMobile) {
+        setSelectedId(souls[0].id);
+    }
+  }, [souls, isMobile, selectedId]);
+
+  const selectedSoul = React.useMemo(() => 
+    souls.find(s => s.id === selectedId) || null
+  , [souls, selectedId]);
 
   if (loading || !mounted) {
     return (
@@ -628,37 +595,145 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   }
 
   return (
-    <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden">
-      <CardHeader className="p-8 border-b bg-muted/5 text-left">
-        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
-            <Heart className="h-6 w-6 text-primary fill-current" />
-            Harvest Dashboard
-        </CardTitle>
-        <CardDescription className="text-base font-medium text-left">Keep track of the spiritual development and community integration of every convert.</CardDescription>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-            <Table>
-            <TableHeader className="bg-muted/10">
-                <TableRow className="hover:bg-transparent">
-                <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
-                <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Contact</TableHead>
-                <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
-                <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Placements</TableHead>
-                <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Latest Log</TableHead>
-                <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Date Won</TableHead>
-                <TableHead className="hidden xl:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Source</TableHead>
-                <TableHead className="p-4 text-right"><span className="sr-only">Actions</span></TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {souls.map((soul) => (
-                <SoulTableRow key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} onAssess={onAssess} />
-                ))}
-            </TableBody>
-            </Table>
+    <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden flex-1 w-full">
+            <CardHeader className="p-8 border-b bg-muted/5 text-left">
+                <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
+                    <Heart className="h-6 w-6 text-primary fill-current" />
+                    Harvest Dashboard
+                </CardTitle>
+                <CardDescription className="text-base font-medium text-left">Keep track of spiritual development and community integration.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                    <Table>
+                    <TableHeader className="bg-muted/10">
+                        <TableRow className="hover:bg-transparent">
+                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
+                        <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Contact</TableHead>
+                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
+                        <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Placements</TableHead>
+                        <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Latest Log</TableHead>
+                        <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Date Won</TableHead>
+                        <TableHead className="p-4 text-right"><span className="sr-only">Actions</span></TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {souls.map((soul) => (
+                        <SoulTableRow 
+                            key={soul.id} 
+                            soul={soul} 
+                            isSelected={selectedId === soul.id}
+                            onSelect={() => setSelectedId(soul.id)}
+                            onFollowUp={onFollowUp} 
+                            onViewHistory={onViewHistory} 
+                            onExportSingle={onExportSingle} 
+                            onOpenAssignDialog={onOpenAssignDialog} 
+                            onEdit={onEdit} 
+                            onDelete={onDelete} 
+                            onAssess={onAssess} 
+                        />
+                        ))}
+                    </TableBody>
+                    </Table>
+                </div>
+            </CardContent>
+        </Card>
+
+        {/* Desktop Detailed Preview Panel */}
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24">
+            <AnimatePresence mode="wait">
+                {selectedSoul ? (
+                    <motion.div
+                        key={selectedSoul.id}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        className="space-y-6"
+                    >
+                        <Card className="rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-md border-t-8 border-t-primary/20">
+                            <CardHeader className="p-8 pb-4 text-center">
+                                <div className="relative inline-block mx-auto mb-4">
+                                    <Avatar className="h-24 w-24 border-4 border-background shadow-xl ring-2 ring-primary/10">
+                                        <AvatarImage src={selectedSoul.photoURL || undefined} className="object-cover" />
+                                        <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary">{selectedSoul.firstName?.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    {selectedSoul.locationWon && (
+                                        <Button 
+                                            size="icon" 
+                                            className="absolute -bottom-1 -right-1 h-9 w-9 rounded-full shadow-lg border-2 border-background"
+                                            onClick={() => {
+                                                const loc = selectedSoul.locationWon;
+                                                const address = [loc?.street, loc?.landmark, loc?.city, loc?.state, loc?.country].filter(Boolean).join(', ');
+                                                if (address) {
+                                                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+                                                }
+                                            }}
+                                            title="Open Map"
+                                        >
+                                            <MapPin className="h-4 w-4" />
+                                        </Button>
+                                    )}
+                                </div>
+                                <CardTitle className="text-xl font-black uppercase tracking-tight">{selectedSoul.firstName} {selectedSoul.lastName}</CardTitle>
+                                <Badge className={cn("mt-2 h-5 px-2 text-[9px] uppercase font-black tracking-widest", getStatusClasses(selectedSoul.status))} variant="outline">
+                                    {selectedSoul.status}
+                                </Badge>
+                            </CardHeader>
+                            <CardContent className="p-8 pt-0 space-y-6 text-left">
+                                <Separator className="opacity-50" />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Demographics</p>
+                                        <p className="text-xs font-bold">{selectedSoul.gender || 'N/A'} • {selectedSoul.age ? `${selectedSoul.age} yrs` : 'Age N/A'}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Circle</p>
+                                        <p className="text-xs font-bold">{selectedSoul.relationship || 'Outreach'}</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-1">
+                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Placement</p>
+                                    <div className="space-y-1.5">
+                                        <p className="text-xs font-bold flex items-center gap-2 truncate">
+                                            <HeartHandshake className="h-3 w-3 text-primary shrink-0" />
+                                            {selectedSoul.fellowshipName || 'No Fellowship'}
+                                        </p>
+                                        <p className="text-xs font-bold flex items-center gap-2 truncate">
+                                            <Group className="h-3 w-3 text-blue-500 shrink-0" />
+                                            {selectedSoul.associationName || 'No Association'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Spiritual Milestones</p>
+                                    <div className="flex gap-2 flex-wrap">
+                                        <Badge variant={selectedSoul.attendingChurch ? 'default' : 'outline'} className="text-[8px] h-5 px-1.5 uppercase font-black tracking-widest leading-none">Church</Badge>
+                                        <Badge variant={selectedSoul.inBibleStudy ? 'default' : 'outline'} className="text-[8px] h-5 px-1.5 uppercase font-black tracking-widest leading-none">Study</Badge>
+                                    </div>
+                                </div>
+
+                                <div className="pt-2">
+                                    <Button className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20" onClick={() => onFollowUp(selectedSoul)}>
+                                        LOG FOLLOW-UP
+                                    </Button>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="p-4 bg-muted/10 border-t justify-center">
+                                <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em]">Kingdom Identity Profile</p>
+                            </CardFooter>
+                        </Card>
+                    </motion.div>
+                ) : (
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5">
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Select a record to preview identity</p>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
