@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
     collection, 
     query, 
@@ -161,7 +161,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Circle Conversation</span>
                             </div>
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">Victory over {categoryTitle}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">Community responses and spiritual solutions.</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left">Community responses and spiritual solutions.</SheetDescription>
                         </SheetHeader>
                     </div>
                     <div className="flex-grow min-h-0 text-left">
@@ -407,7 +407,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 </div>
                 <div className="space-y-2 text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</Label>
-                    <Input name="title" defaultValue={resourceToEdit?.title} placeholder="e.g. Breaking Chains" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
+                    <Input name="title" defaultValue={resourceToEdit?.title} placeholder="e.g. Breaking Chains" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
                 </div>
                 <div className="space-y-2 text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label>

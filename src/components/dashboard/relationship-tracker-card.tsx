@@ -486,7 +486,7 @@ export function RelationshipTrackerCard() {
 
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [pendingActions, setPendingActions] = useState<string[]>([]);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = setTogglingId(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [activeSoul, setActiveSoul] = useState<Soul | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);

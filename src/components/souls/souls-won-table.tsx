@@ -78,6 +78,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import type { UserProfile } from "@/lib/types";
 import { useFirestore } from "@/firebase";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Image from "next/image";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
@@ -163,7 +164,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
         <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300">
             <Collapsible>
                 <div className="flex items-center justify-between p-4 gap-4">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                         <Dialog>
                             <DialogTrigger asChild disabled={!soul.photoURL}>
                                 <Avatar className={cn("h-10 w-10 sm:h-11 sm:w-11 shrink-0 border shadow-inner transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
@@ -326,10 +327,10 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                            return (
                                                <div key={p.actionId} className="p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-2 shadow-inner">
                                                    <div className="flex items-center gap-2.5 min-w-0">
-                                                        <div className="h-6 w-6 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                                                        <div className="h-6 v-6 rounded-lg bg-primary flex items-center justify-center shrink-0">
                                                             <Icon className="h-3.5 w-3.5 text-white" />
                                                         </div>
-                                                        <div className="min-w-0">
+                                                        <div className="min-w-0 text-left">
                                                             <p className="text-[10px] font-black uppercase text-primary leading-tight">PENDING {label} PROVISION</p>
                                                             <p className="text-[9px] text-primary/60 font-bold uppercase truncate">Click to finish act of kindness</p>
                                                         </div>
@@ -447,10 +448,57 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                             </DialogContent>
                         )}
                     </Dialog>
-                    <div className="min-w-0 text-left">
-                        <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight">{soul.firstName} {soul.lastName}</div>
-                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
-                    </div>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <div className="min-w-0 text-left cursor-pointer hover:bg-muted/50 p-1 -m-1 rounded-lg transition-colors group">
+                                <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight group-hover:text-primary transition-colors">
+                                  {soul.firstName} {soul.lastName}
+                                </div>
+                                {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
+                            </div>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 p-0 rounded-[2rem] border-none shadow-2xl overflow-hidden bg-card/95 backdrop-blur-xl z-[100]">
+                            <div className="p-6 space-y-6">
+                                <div className="flex items-center gap-4">
+                                    <Avatar className="h-16 w-16 border-2 border-primary/20 shadow-lg">
+                                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                                        <AvatarFallback className="text-xl font-black bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="min-w-0">
+                                        <h4 className="font-black text-lg uppercase tracking-tight truncate leading-tight">{soul.firstName} {soul.lastName}</h4>
+                                        <Badge className={cn("mt-1.5 h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                                    </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4 text-xs font-medium text-muted-foreground">
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Identity</p>
+                                        <p className="text-foreground font-bold">{soul.gender || 'Gender N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Relationship</p>
+                                        <p className="text-foreground font-bold">{soul.relationship || 'Outreach'}</p>
+                                    </div>
+                                    <div className="space-y-1 col-span-2">
+                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Sector</p>
+                                        <p className="text-foreground font-bold truncate">
+                                            {soul.fellowshipName ? `Fellowship: ${soul.fellowshipName}` : 'No Fellowship Assigned'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 border-t border-dashed flex justify-between items-center">
+                                    <div className="space-y-0.5">
+                                        <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Won on</p>
+                                        <p className="text-xs font-bold">{format(wonAt, "PPP")}</p>
+                                    </div>
+                                    <Button variant="outline" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px]" onClick={() => onViewHistory(soul)}>
+                                        Full History
+                                    </Button>
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                 </div>
             </TableCell>
             <TableCell className="hidden md:table-cell p-4 text-left">{soul.phone && <div className="text-xs font-bold text-muted-foreground">{soul.phone}</div>}</TableCell>
