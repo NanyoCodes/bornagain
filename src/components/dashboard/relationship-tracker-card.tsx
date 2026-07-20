@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { actionItems, prayerTemplates, kingdomVerses } from '@/lib/follow-up-data';
@@ -59,14 +60,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -224,34 +221,99 @@ function ShareWordDialog({
 }) {
   const isMobile = useIsMobile();
   const [customPassage, setCustomPassage] = useState('');
+  const [bibleSearch, setBibleSearch] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<{reference: string, text: string}[]>([]);
+
+  const handleSearch = async () => {
+      if (!bibleSearch.trim()) return;
+      setIsSearching(true);
+      try {
+          const res = await fetch(`https://bible-api.com/${encodeURIComponent(bibleSearch)}`);
+          if (res.ok) {
+              const data = await res.json();
+              if (data.verses) {
+                  setSearchResults([{ 
+                      reference: data.reference, 
+                      text: data.text 
+                  }]);
+              }
+          }
+      } catch (e) {
+          console.warn("Bible search failed", e);
+      } finally {
+          setIsSearching(false);
+      }
+  };
 
   const dialogContent = (
     <div className="p-6 space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <Button onClick={onBrowseBible} variant="outline" className="h-20 rounded-2xl gap-4 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-2">
+      <div className="space-y-4">
+        <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+            <Input 
+                placeholder="Search Bible (e.g. John 3:16 or 'Love')..." 
+                value={bibleSearch}
+                onChange={e => setBibleSearch(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                className="h-12 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+            />
+            <Button 
+                onClick={handleSearch} 
+                disabled={isSearching || !bibleSearch.trim()}
+                variant="ghost"
+                size="sm"
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 px-3 rounded-xl font-black text-[10px] uppercase text-primary"
+            >
+                {isSearching ? <Loader2 className="h-3 w-3 animate-spin" /> : 'SEARCH'}
+            </Button>
+        </div>
+
+        {searchResults.length > 0 && (
+            <div className="animate-in fade-in slide-in-from-top-2">
+                {searchResults.map((res, idx) => (
+                    <Button 
+                        key={idx}
+                        variant="outline"
+                        className="w-full h-auto p-4 rounded-2xl border-primary/20 bg-primary/5 flex flex-col items-start gap-2 text-left hover:bg-primary/10 transition-all border-2 border-dashed"
+                        onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}
+                    >
+                        <div className="flex items-center justify-between w-full">
+                            <span className="font-black text-[10px] uppercase tracking-widest text-primary">{res.reference}</span>
+                            <Send className="h-3 w-3 text-primary opacity-40" />
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed italic line-clamp-3">"{res.text.trim()}"</p>
+                    </Button>
+                ))}
+            </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Button onClick={onBrowseBible} variant="outline" className="h-20 rounded-2xl gap-2 border-2 border-muted-foreground/10 text-muted-foreground hover:bg-muted/30 group transition-all flex flex-col items-center justify-center p-2">
             <BookOpen className="h-5 w-5 mb-1 group-hover:scale-110 transition-transform" />
             <span className="font-black text-[10px] uppercase tracking-widest">Browse Bible</span>
         </Button>
-        <div className="relative group">
-            <Input 
-                placeholder="Enter custom passage..." 
+        <div className="relative group h-20">
+            <Textarea 
+                placeholder="Type custom passage..." 
                 value={customPassage}
                 onChange={e => setCustomPassage(e.target.value)}
-                className="h-20 rounded-2xl bg-muted/20 border-none shadow-inner text-center font-bold pb-8"
+                className="h-full rounded-2xl bg-muted/20 border-none shadow-inner text-[10px] font-bold pt-2 pb-8 resize-none"
             />
             <Button 
                 onClick={() => onSelectVerse(customPassage)} 
                 disabled={!customPassage.trim()}
-                className="absolute bottom-2 left-2 right-2 h-7 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-md"
+                className="absolute bottom-1.5 left-1.5 right-1.5 h-6 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-md"
             >
-                SHARE PASSAGE
+                SHARE
             </Button>
         </div>
       </div>
 
-      <div className="space-y-4">
-        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Essential Scriptures</label>
-        <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
+      <div className="space-y-3">
+        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Kingdom Essential Scriptures</label>
+        <ScrollArea className={cn("border rounded-3xl bg-muted/5", searchResults.length > 0 ? "h-[25vh]" : "h-[40vh]")}>
           <div className="p-2 space-y-2 text-left">
             {kingdomVerses.map((v, idx) => (
               <Button 
@@ -260,7 +322,10 @@ function ShareWordDialog({
                 className="w-full justify-start h-auto py-4 px-4 rounded-2xl hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all text-left block"
                 onClick={() => onSelectVerse(`"${v.text}" — ${v.reference}`)}
               >
-                <p className="font-black text-[10px] uppercase tracking-widest text-primary mb-1">{v.reference}</p>
+                <div className="flex items-center justify-between w-full mb-1">
+                    <span className="font-black text-[10px] uppercase tracking-widest text-primary">{v.reference}</span>
+                    <PlusCircle className="h-3 w-3 opacity-0 group-hover:opacity-40 transition-opacity" />
+                </div>
                 <p className="text-xs text-muted-foreground leading-relaxed italic line-clamp-2">"{v.text}"</p>
               </Button>
             ))}
@@ -325,7 +390,7 @@ export function RelationshipTrackerCard() {
   const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
   const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
-  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
+  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = React.useState(false);
   const [customMessageText, setCustomMessageText] = useState('');
 
   const { userProfile, loading: profileLoading } = useUserProfile();
@@ -453,7 +518,6 @@ export function RelationshipTrackerCard() {
     setSelectedSoulForAction(soul);
     setIsSoulDialogOpen(false);
 
-    // specialized flows
     if (selectedActionId === 'prayed_together') {
         setCustomMessageText(resolveTemplate(prayerTemplates[0].text, soul));
         setIsPrayerCustomizationOpen(true);
