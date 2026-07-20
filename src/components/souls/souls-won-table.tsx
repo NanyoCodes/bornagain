@@ -121,10 +121,24 @@ function SoulProfileContent({
       <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-md border-t-8 border-t-primary/20">
         <CardHeader className="p-8 pb-4 text-center">
             <div className="relative inline-block mx-auto mb-4">
-                <Avatar className="h-24 w-24 border-4 border-background shadow-xl ring-2 ring-primary/10">
-                    <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                    <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
-                </Avatar>
+                <Dialog>
+                    <DialogTrigger asChild disabled={!soul.photoURL}>
+                        <Avatar className={cn("h-40 w-40 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                            <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                            <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                    </DialogTrigger>
+                    {soul.photoURL && (
+                        <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
+                            <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
+                            <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
+                                    <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
+                                </div>
+                            </div>
+                        </DialogContent>
+                    )}
+                </Dialog>
                 {address && (
                     <Button 
                         size="icon" 

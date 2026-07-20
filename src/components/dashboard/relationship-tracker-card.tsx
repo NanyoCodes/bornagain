@@ -26,9 +26,10 @@ import {
   Search,
   PlusCircle,
   ArrowRight,
-  MapPin,
+  ArrowLeft,
   Target,
-  Globe
+  Globe,
+  MapPin
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
