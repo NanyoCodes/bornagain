@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy } from 'firebase/firestore';
-import type { UserProfile, Soul } from '@/lib/types';
+import type { UserProfile, Soul, BibleHighlight } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -26,7 +26,11 @@ import {
   Search,
   PlusCircle,
   MapPin,
-  ArrowRight
+  ArrowLeft,
+  ArrowRight,
+  Target,
+  Globe,
+  X
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -35,7 +39,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { actionItems } from '@/lib/follow-up-data';
+import { actionItems, kingdomVerses } from '@/lib/follow-up-data';
 import Link from 'next/link';
 import {
   Dialog,
@@ -55,6 +59,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Separator } from '../ui/separator';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -93,6 +98,22 @@ function SoulSelectionDialog({
         return souls.filter(s => `${s.firstName} ${s.lastName}`.toLowerCase().includes(term));
     }, [souls, search]);
 
+    const handleSoulClick = (soul: Soul) => {
+        // Construct full address for map link
+        const loc = soul.locationWon;
+        const address = [
+            loc?.street, 
+            loc?.city, 
+            loc?.state, 
+            loc?.country
+        ].filter(Boolean).join(', ');
+
+        if (address) {
+            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+        }
+        onSelect(soul);
+    };
+
     const listContent = (
         <div className="p-2 space-y-1.5">
             {filteredSouls.length > 0 ? (
@@ -101,15 +122,7 @@ function SoulSelectionDialog({
                         key={soul.id} 
                         variant="ghost" 
                         className="w-full justify-start h-auto py-4 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex items-center"
-                        onClick={() => {
-                            // If this was a visit or has an address, lead to map
-                            const loc = soul.locationWon;
-                            const address = [loc?.street, loc?.landmark, loc?.city, loc?.state, loc?.country].filter(Boolean).join(', ');
-                            if (address) {
-                                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
-                            }
-                            onSelect(soul);
-                        }}
+                        onClick={() => handleSoulClick(soul)}
                         disabled={isLoading}
                     >
                         <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm shrink-0">
@@ -118,7 +131,7 @@ function SoulSelectionDialog({
                         <div className="text-left min-w-0 flex-1">
                             <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
                             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
-                            {soul.locationWon && (
+                            {soul.locationWon?.street && (
                                 <div className="flex items-center gap-1 text-[8px] font-black text-primary mt-1 uppercase tracking-widest">
                                     <MapPin className="h-2.5 w-2.5" />
                                     <span>Home Map Ready</span>
@@ -143,27 +156,142 @@ function SoulSelectionDialog({
         </div>
     );
 
-    const dialogHeader = (
-        <div className="p-8 border-b bg-muted/10">
-            <h2 className="text-2xl font-black font-headline tracking-tight uppercase">Who did you {actionLabel.toLowerCase()}?</h2>
-            <p className="text-sm font-medium mt-1 text-muted-foreground">Select a convert to link this action and view their home map.</p>
+    const title = `Who did you ${actionLabel.toLowerCase()}?`;
+    const desc = "Select a convert to link this action and view their home map.";
+
+    if (isMobile) {
+        return (
+            <Sheet open={isOpen} onOpenChange={onOpenChange}>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b bg-muted/10 shrink-0">
+                        <SheetHeader className="text-left">
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">{desc}</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                            <Input 
+                                placeholder="Search by name..." 
+                                value={search} 
+                                onChange={e => setSearch(e.target.value)}
+                                className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
+                            />
+                        </div>
+                        <ScrollArea className="flex-1 border rounded-3xl bg-muted/5">
+                            {listContent}
+                        </ScrollArea>
+                    </div>
+                </SheetContent>
+            </Sheet>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+                <div className="p-8 border-b bg-muted/10">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">{desc}</DialogDescription>
+                    </DialogHeader>
+                </div>
+                <div className="p-6 space-y-6">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                        <Input 
+                            placeholder="Search by name..." 
+                            value={search} 
+                            onChange={e => setSearch(e.target.value)}
+                            className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
+                        />
+                    </div>
+                    <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
+                        {listContent}
+                    </ScrollArea>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function ScriptureSelectionDialog({ 
+    isOpen, 
+    onOpenChange, 
+    highlights, 
+    onSelect 
+}: { 
+    isOpen: boolean; 
+    onOpenChange: (open: boolean) => void; 
+    highlights: BibleHighlight[] | null; 
+    onSelect: (text: string) => void;
+}) {
+    const isMobile = useIsMobile();
+    const [search, setSearch] = useState('');
+    
+    const filteredHighlights = useMemo(() => {
+        if (!highlights) return [];
+        if (!search) return highlights;
+        const term = search.toLowerCase();
+        return highlights.filter(h => 
+            h.book.toLowerCase().includes(term) || 
+            (h.note && h.note.toLowerCase().includes(term))
+        );
+    }, [highlights, search]);
+
+    const listContent = (
+        <div className="space-y-6">
+            <div className="space-y-3">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-primary ml-1">Your Journal Highlights</h3>
+                <div className="grid gap-2">
+                    {filteredHighlights.length > 0 ? (
+                        filteredHighlights.map(h => (
+                            <Button 
+                                key={h.id} 
+                                variant="outline" 
+                                className="h-auto p-4 flex flex-col items-start text-left rounded-2xl border-primary/10 hover:bg-primary/5 group"
+                                onClick={() => onSelect(`${h.book} ${h.chapter}: "${h.note || 'Scripture Highlight'}"`)}
+                            >
+                                <p className="font-black text-xs uppercase tracking-tight group-hover:text-primary transition-colors">{h.book} {h.chapter}</p>
+                                {h.note && <p className="text-xs text-muted-foreground mt-1 italic line-clamp-2 leading-relaxed">&ldquo;{h.note}&rdquo;</p>}
+                            </Button>
+                        ))
+                    ) : (
+                        <p className="text-xs text-muted-foreground italic p-4 text-center">No journal highlights matching search.</p>
+                    )}
+                </div>
+            </div>
+
+            <Separator className="opacity-50" />
+
+            <div className="space-y-3">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-primary ml-1">Kingdom Essentials</h3>
+                <div className="grid gap-2">
+                    {kingdomVerses.map((v, i) => (
+                        <Button 
+                            key={i} 
+                            variant="outline" 
+                            className="h-auto p-4 flex flex-col items-start text-left rounded-2xl border-primary/10 hover:bg-primary/5 group"
+                            onClick={() => onSelect(`${v.reference}: "${v.text}"`)}
+                        >
+                            <p className="font-black text-xs uppercase tracking-tight group-hover:text-primary transition-colors">{v.reference}</p>
+                            <p className="text-xs text-muted-foreground mt-1 italic line-clamp-2 leading-relaxed">&ldquo;{v.text}&rdquo;</p>
+                        </Button>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 
-    const dialogContent = (
-        <div className="p-6 space-y-6">
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-                <Input 
-                    placeholder="Search by name..." 
-                    value={search} 
-                    onChange={e => setSearch(e.target.value)}
-                    className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
-                />
+    const dialogHeader = (
+        <div className="p-8 border-b bg-muted/10">
+            <div className="flex items-center gap-3 mb-2">
+                <BookOpen className="h-5 w-5 text-primary" />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Scripture Hub</span>
             </div>
-            <ScrollArea className={cn("border rounded-3xl bg-muted/5", isMobile ? "h-[50vh]" : "h-[40vh]")}>
-                {listContent}
-            </ScrollArea>
+            <h2 className="text-2xl font-black font-headline uppercase tracking-tight">Select Word</h2>
+            <p className="text-sm font-medium mt-1 text-muted-foreground">Choose a scripture to share. Full quotes are automatically included.</p>
         </div>
     );
 
@@ -172,8 +300,20 @@ function SoulSelectionDialog({
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     {dialogHeader}
-                    <div className="flex-grow min-h-0">
-                        {dialogContent}
+                    <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0">
+                         <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                            <Input 
+                                placeholder="Search book or journal..." 
+                                value={search} 
+                                onChange={e => setSearch(e.target.value)}
+                                className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
+                            />
+                        </div>
+                        <ScrollArea className="flex-1 pr-1">
+                            {listContent}
+                            <div className="h-20" />
+                        </ScrollArea>
                     </div>
                 </SheetContent>
             </Sheet>
@@ -184,7 +324,20 @@ function SoulSelectionDialog({
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
                 {dialogHeader}
-                {dialogContent}
+                <div className="p-6 space-y-6">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                        <Input 
+                            placeholder="Search book or journal..." 
+                            value={search} 
+                            onChange={e => setSearch(e.target.value)}
+                            className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
+                        />
+                    </div>
+                    <ScrollArea className="h-[50vh] pr-1">
+                        {listContent}
+                    </ScrollArea>
+                </div>
             </DialogContent>
         </Dialog>
     );
@@ -198,6 +351,7 @@ export function RelationshipTrackerCard() {
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
+  const [isScriptureDialogOpen, setIsScriptureDialogOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
   const { userProfile, loading: profileLoading } = useUserProfile();
@@ -207,6 +361,12 @@ export function RelationshipTrackerCard() {
     return query(collection(firestore, 'users', user.uid, 'souls'), orderBy("wonAt", "desc"));
   }, [user?.uid, firestore]);
   const { data: souls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+
+  const highlightsQuery = useMemo(() => {
+      if (!user?.uid || !firestore) return null;
+      return query(collection(firestore, 'users', user.uid, 'bibleHighlights'), orderBy('createdAt', 'desc'));
+  }, [user?.uid, firestore]);
+  const { data: highlights } = useCollection<BibleHighlight>(highlightsQuery);
 
   useEffect(() => {
     setCurrentDate(new Date());
@@ -225,6 +385,20 @@ export function RelationshipTrackerCard() {
 
   const handleActionClick = (id: string) => {
       setSelectedActionId(id);
+      if (id === 'studied_bible') {
+          setIsScriptureDialogOpen(true);
+      } else {
+          setIsSoulDialogOpen(true);
+      }
+  };
+
+  const handleScriptureSelected = (text: string) => {
+      setIsScriptureDialogOpen(false);
+      // Construct message and proceed to soul selection
+      const referralMsg = `\n\nShared via Testify Global: https://testifyglobal.com`;
+      const finalMsg = text + referralMsg;
+      
+      // We will handle the actual sending in the handleSoulSelected flow
       setIsSoulDialogOpen(true);
   };
 
@@ -241,7 +415,7 @@ export function RelationshipTrackerCard() {
     const dateString = format(today, 'yyyy-MM-dd');
     const batch = writeBatch(firestore);
 
-    // 1. Update user's daily discipline (habit tracking)
+    // 1. Update user's daily discipline
     const wasCompleted = completedToday.includes(selectedActionId);
     const newCompleted = [...completedToday];
     if (!wasCompleted) newCompleted.push(selectedActionId);
@@ -329,7 +503,7 @@ export function RelationshipTrackerCard() {
 
         <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
-              <div className="space-y-1">
+              <div className="space-y-1 text-left">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-primary" />
                       Kingdom Connections
@@ -433,6 +607,13 @@ export function RelationshipTrackerCard() {
           onSelect={handleSoulSelected} 
           actionLabel={activeActionLabel}
           isLoading={togglingId !== null}
+      />
+
+      <ScriptureSelectionDialog
+          isOpen={isScriptureDialogOpen}
+          onOpenChange={setIsScriptureDialogOpen}
+          highlights={highlights}
+          onSelect={handleScriptureSelected}
       />
     </>
   );
