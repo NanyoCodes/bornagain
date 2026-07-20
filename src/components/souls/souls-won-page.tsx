@@ -641,7 +641,7 @@ export default function SoulsWonPage() {
                                                 </div>
                                                 <span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span>
                                             </div>
-                                            <div className="space-y-1.5 text-left">
+                                            <div className="space-y-1 text-left">
                                                 <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">
                                                     <span className="text-left">{group.label}</span>
                                                     <span className="text-left">{Math.round(percent)}%</span>

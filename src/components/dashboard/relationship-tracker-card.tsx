@@ -101,6 +101,7 @@ function SoulSelectionList({
     onSelect: (soul: Soul) => void;
     isLoading: boolean;
 }) {
+    const { toast } = useToast();
     const [search, setSearch] = useState('');
     const filteredSouls = useMemo(() => {
         if (!souls) return [];
@@ -124,10 +125,10 @@ function SoulSelectionList({
                 <div className="p-2 space-y-1.5 text-left">
                     {filteredSouls.length > 0 ? (
                         filteredSouls.map(soul => (
-                            <div key={soul.id} className="relative group">
+                            <div key={soul.id} className="relative group flex items-center bg-transparent rounded-2xl transition-all">
                                 <Button 
                                     variant="ghost" 
-                                    className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 text-left group"
+                                    className="flex-1 justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 text-left group"
                                     onClick={() => onSelect(soul)}
                                     disabled={isLoading}
                                 >
@@ -146,7 +147,7 @@ function SoulSelectionList({
                                     <Button
                                         variant="outline"
                                         size="icon"
-                                        className="absolute right-12 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-background shadow-sm hover:text-primary transition-all"
+                                        className="h-10 w-10 rounded-xl bg-background shadow-sm hover:text-primary transition-all mr-2 shrink-0 border-primary/20"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             const loc = soul.locationWon!;
@@ -161,7 +162,7 @@ function SoulSelectionList({
                                         }}
                                         title="View on Map"
                                     >
-                                        <MapPin className="h-4 w-4" />
+                                        <MapPin className="h-5 w-5 text-primary" />
                                     </Button>
                                 )}
                             </div>
@@ -1126,11 +1127,11 @@ export function RelationshipTrackerCard() {
             <DialogDescription className="text-sm font-medium text-center">How would you like to introduce {activeSoul?.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6 text-center">
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
-              <HeartHandshake className="h-5 w-5" /> Internal Partner
-            </Button>
-            <Button onClick={handleShareToWhatsApp} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
               <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
+            </Button>
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+              <HeartHandshake className="h-5 w-5" /> Internal Partner
             </Button>
           </div>
         </DialogContent>
@@ -1171,7 +1172,7 @@ export function RelationshipTrackerCard() {
       </Dialog>
 
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
           <div className="p-8 border-b bg-muted/10 text-left text-left">
             <DialogHeader className="text-left text-left text-left">
               <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>

@@ -27,7 +27,7 @@ import {
   Info,
   Target
 } from "lucide-react";
-import type { Soul, FollowUpStatus } from "@/lib/types";
+import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -73,11 +73,8 @@ import { Badge } from "@/components/ui/badge";
 import { actionItems } from "@/lib/follow-up-data";
 import { Label } from "../ui/label";
 import Link from "next/link";
-import { useUser } from "@/firebase";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useDoc } from "@/firebase/firestore/use-doc";
-import type { UserProfile } from "@/lib/types";
-import { useFirestore } from "@/firebase";
+import { useUser, useFirestore, useDoc } from "@/firebase";
+import { doc } from "firebase/firestore";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Image from "next/image";
 
@@ -106,7 +103,6 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
   onAssess: (soul: Soul) => void;
 }) => {
     const { user } = useUser();
-    const firestore = useFirestore();
     const [pendingProvisions, setPendingProvisions] = React.useState<{ soulId: string; actionId: string }[]>([]);
 
     const checkPending = React.useCallback(() => {
@@ -180,7 +176,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                         <DialogTitle>Photo of {soul.firstName}</DialogTitle>
                                         <DialogDescription>Full screen view of the convert's photo.</DialogDescription>
                                     </DialogHeader>
-                                    <div className="relative h-full w-full flex items-center justify-center p-4">
+                                    <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
                                         <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                                             <Image 
                                                 src={soul.photoURL} 
@@ -397,6 +393,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
   onDelete: (soul: Soul) => void;
   onAssess: (soul: Soul) => void;
 }) => {
+    const firestore = useFirestore();
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return [...soul.followUpLog].sort((a, b) => {
@@ -434,7 +431,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                                     <DialogTitle>Photo of {soul.firstName}</DialogTitle>
                                     <DialogDescription>Full screen view of the convert's photo.</DialogDescription>
                                 </DialogHeader>
-                                <div className="relative h-full w-full flex items-center justify-center p-4">
+                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
                                     <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                                         <Image 
                                             src={soul.photoURL} 
@@ -488,7 +485,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
                                 </div>
 
                                 <div className="pt-4 border-t border-dashed flex justify-between items-center">
-                                    <div className="space-y-0.5">
+                                    <div className="space-y-0.5 text-left">
                                         <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Won on</p>
                                         <p className="text-xs font-bold">{format(wonAt, "PPP")}</p>
                                     </div>
@@ -522,7 +519,7 @@ const SoulTableRow = React.memo(({ soul, onFollowUp, onViewHistory, onExportSing
             </TableCell>
             <TableCell className="hidden sm:table-cell p-4 text-left">
                 {latestFollowUpDate ? (
-                    <div className="text-[10px] space-y-1">
+                    <div className="text-[10px] space-y-1 text-left">
                         <div className="text-muted-foreground font-black uppercase tracking-widest text-left">{format(latestFollowUpDate, "MMM d, yyyy")}</div>
                     </div>
                 ) : <span className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-20 text-left">—</span>}
@@ -613,7 +610,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40" />
                     </div>
                     <h3 className="text-xl font-black font-headline uppercase tracking-tight">Your Harvest Field</h3>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-[280px] leading-relaxed font-medium italic opacity-60 text-balance text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
+                    <p className="text-sm text-muted-foreground mt-2 max-w-[280px] leading-relaxed font-medium italic opacity-60 text-balance text-left text-center">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
                 </div>
             </CardContent>
         </Card>
