@@ -105,6 +105,12 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     }
 }
 
+const getSoulAddress = (soul: Soul) => {
+  const loc = soul.locationWon;
+  if (!loc) return '';
+  return [loc.street, loc.city, loc.state, loc.country].filter(Boolean).join(', ');
+};
+
 function SoulProfileContent({ 
   soul, 
   onFollowUp,
@@ -115,12 +121,12 @@ function SoulProfileContent({
   onEdit: (s: Soul) => void;
 }) {
   const loc = soul.locationWon;
-  const address = [loc?.street, loc?.landmark, loc?.city, loc?.state, loc?.country].filter(Boolean).join(', ');
+  const address = getSoulAddress(soul);
   const needs = soul.needsAssessment;
 
   return (
-    <div className="space-y-6 text-left">
-      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-md border-t-8 border-t-primary/20">
+    <div className="space-y-6">
+      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20">
         <CardHeader className="p-8 pb-4 text-center">
             <div className="relative inline-block mx-auto mb-4">
                 <Dialog>
@@ -131,10 +137,10 @@ function SoulProfileContent({
                         </Avatar>
                     </DialogTrigger>
                     {soul.photoURL && (
-                        <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
+                        <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
                             <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
-                            <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
+                            <div className="relative h-full w-full flex items-center justify-center p-4">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
@@ -158,13 +164,10 @@ function SoulProfileContent({
                     <Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center", getStatusClasses(soul.status))} variant="outline">
                         {soul.status}
                     </Badge>
-                    <Button variant="ghost" size="icon" className="h-5 w-5 rounded-full hover:bg-primary/10 hover:text-primary" onClick={() => onEdit(soul)}>
-                        <Edit className="h-3 w-3" />
-                    </Button>
                 </div>
             </div>
         </CardHeader>
-        <CardContent className="p-8 pt-0 space-y-6 text-left">
+        <CardContent className="p-8 pt-0 space-y-6">
             <Separator className="opacity-50" />
             
             <div className="space-y-4">
@@ -182,7 +185,7 @@ function SoulProfileContent({
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
                         <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Contact Identity</p>
-                        <button className="text-[9px] font-black text-primary uppercase hover:underline" onClick={() => onEdit(soul)}>Edit Details</button>
+                        <button className="text-[9px] font-black text-primary uppercase hover:underline" onClick={() => onEdit(soul)}>edits can be done here</button>
                     </div>
                     <div className="space-y-2">
                         {soul.email && (
@@ -216,7 +219,7 @@ function SoulProfileContent({
             </div>
             
             <div className="space-y-1">
-                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Placement</p>
+                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">assigning fellowship and association can be done here</p>
                 <div className="space-y-1.5">
                     <p className="text-xs font-bold flex items-center gap-2 truncate">
                         <HeartHandshake className="h-3 w-3 text-primary shrink-0" />
@@ -311,25 +314,33 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
         pendingProvisions.filter(p => p.soulId === soul.id), 
     [pendingProvisions, soul.id]);
 
+    const handleItemClick = (e: React.MouseEvent) => {
+        const address = getSoulAddress(soul);
+        if (address) {
+            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+        }
+        onClick();
+    };
+
     return (
-        <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02]">
+        <Card onClick={handleItemClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02]">
             <div className="flex items-center justify-between p-4 gap-4">
-                <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0")}>
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 transition-transform active:scale-95")}>
                         <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
                             {soul.firstName?.charAt(0) || 'S'}
                         </AvatarFallback>
                     </Avatar>
-                    <div className="min-w-0 text-left">
-                        <p className="font-bold truncate text-sm sm:text-base leading-tight capitalize tracking-tight text-left">
+                    <div className="min-w-0">
+                        <p className="font-bold truncate text-sm sm:text-base leading-tight capitalize tracking-tight">
                           {soul.firstName || 'Unknown'} {soul.lastName || ''}
                         </p>
-                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left text-left text-left text-left text-left">
-                            <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left text-left text-left text-left text-left text-left text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
-                            {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 text-left text-left text-left text-left text-left text-left">Fellowship</Badge>}
-                            {soul.associationName && <Badge variant="outline" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter border-blue-500/20 text-blue-600 bg-blue-500/5 text-left text-left text-left text-left text-left text-left">Association</Badge>}
-                            {myPending.length > 0 && <Badge className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary text-white animate-pulse border-none text-left text-left text-left text-left text-left text-left">Pending Gift</Badge>}
+                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
+                            <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                            {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20">Fellowship</Badge>}
+                            {soul.associationName && <Badge variant="outline" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter border-blue-500/20 text-blue-600 bg-blue-500/5">Association</Badge>}
+                            {myPending.length > 0 && <Badge className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary text-white animate-pulse border-none">Pending Gift</Badge>}
                         </div>
                     </div>
                 </div>
@@ -363,65 +374,73 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
 
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
+    const handleRowClick = (e: React.MouseEvent) => {
+        const address = getSoulAddress(soul);
+        if (address) {
+            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+        }
+        onSelect();
+    };
+
     return (
         <TableRow 
             className={cn("hover:bg-muted/30 transition-colors cursor-pointer", isSelected && "bg-primary/[0.03]")}
-            onClick={onSelect}
+            onClick={handleRowClick}
         >
-            <TableCell className="font-medium p-4 text-left text-left text-left text-left text-left text-left">
-                <div className="flex items-center gap-4 text-left text-left text-left text-left text-left">
+            <TableCell className="font-medium p-4">
+                <div className="flex items-center gap-4">
                     <Dialog>
                         <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!soul.photoURL}>
-                            <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 transition-transform active:scale-95 text-left text-left text-left text-left text-left text-left", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                            <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
                                 <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left text-left text-left text-left text-left">
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
                                     {soul.firstName?.charAt(0) || 'S'}
                                 </AvatarFallback>
                             </Avatar>
                         </DialogTrigger>
                         {soul.photoURL && (
-                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left text-left">
+                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
                                 <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
-                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left text-left">
-                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left text-left">
+                                <div className="relative h-full w-full flex items-center justify-center p-4">
+                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                                         <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                     </div>
                                 </div>
                             </DialogContent>
                         )}
                     </Dialog>
-                    <div className="min-w-0 text-left text-left text-left text-left text-left">
-                        <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight group-hover:text-primary transition-colors text-left text-left text-left text-left text-left">
+                    <div className="min-w-0">
+                        <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight group-hover:text-primary transition-colors">
                           {soul.firstName} {soul.lastName}
                         </div>
-                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left text-left text-left text-left text-left"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
+                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
                     </div>
                 </div>
             </TableCell>
-            <TableCell className="hidden md:table-cell p-4 text-left text-left text-left text-left text-left text-left">{soul.phone && <div className="text-xs font-bold text-muted-foreground text-left text-left text-left text-left text-left">{soul.phone}</div>}</TableCell>
-            <TableCell className="p-4 text-left text-left text-left text-left text-left text-left text-left text-left"><Badge className={cn("w-[110px] justify-center text-[10px] uppercase font-black tracking-widest leading-none h-6 text-left text-left text-left text-left text-left text-left text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
-            <TableCell className="hidden lg:table-cell p-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                <div className="space-y-1.5 text-left text-left text-left text-left text-left text-left text-left text-left">
+            <TableCell className="hidden md:table-cell p-4">{soul.phone && <div className="text-xs font-bold text-muted-foreground">{soul.phone}</div>}</TableCell>
+            <TableCell className="p-4"><Badge className={cn("w-[110px] justify-center text-[10px] uppercase font-black tracking-widest leading-none h-6", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
+            <TableCell className="hidden lg:table-cell p-4">
+                <div className="space-y-1.5">
                     {soul.fellowshipId && soul.fellowshipName ? (
-                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary leading-none text-left text-left text-left text-left text-left text-left">
+                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary leading-none">
                             <HeartHandshake className="h-3 w-3 shrink-0" />
                             {soul.fellowshipName}
                         </div>
                     ) : null}
                     {soul.associationId && soul.associationName ? (
-                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-blue-500 leading-none text-left text-left text-left text-left text-left text-left">
+                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-blue-500 leading-none">
                             <Group className="h-3 w-3 shrink-0" />
                             {soul.associationName}
                         </div>
                     ) : null}
                 </div>
             </TableCell>
-            <TableCell className="hidden sm:table-cell p-4 text-left text-left text-left text-left text-left text-left text-left text-left">
+            <TableCell className="hidden sm:table-cell p-4">
                 {latestFollowUpDate ? (
-                    <div className="text-[10px] space-y-1 text-left text-left text-left text-left text-left text-left">
-                        <div className="text-muted-foreground font-black uppercase tracking-widest text-left text-left text-left text-left text-left text-left">{format(latestFollowUpDate, "MMM d, yyyy")}</div>
+                    <div className="text-[10px] space-y-1">
+                        <div className="text-muted-foreground font-black uppercase tracking-widest">{format(latestFollowUpDate, "MMM d, yyyy")}</div>
                     </div>
-                ) : <span className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-20 text-left text-left text-left text-left text-left text-left">—</span>}
+                ) : <span className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-20">—</span>}
             </TableCell>
             <TableCell className="p-4 text-right">
                 <DropdownMenu>
@@ -507,14 +526,14 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   
   if (souls.length === 0) {
     return (
-        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none bg-card/50 backdrop-blur-sm border-2 border-dashed">
+        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed">
             <CardContent>
                 <div className="text-center py-24 flex flex-col items-center">
                     <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20">
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40" />
                     </div>
                     <h3 className="text-xl font-black font-headline uppercase tracking-tight">Your Harvest Field</h3>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-[280px] leading-relaxed font-medium italic opacity-60 text-balance text-left text-center text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
+                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed italic opacity-60 text-balance">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
                 </div>
             </CardContent>
         </Card>
@@ -528,19 +547,19 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                 <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} onAssess={onAssess} onClick={() => setSelectedId(soul.id)} />
             ))}
             <Sheet open={isMobile && !!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
-                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left">
+                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left flex-shrink-0">
+                            <div className="flex items-center gap-2 mb-2">
                                 <Sparkles className="h-4 w-4 text-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity Hub</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Identity Profile</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Identity Profile</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <ScrollArea className="flex-grow min-h-0 text-left">
-                        <div className="p-6 pb-24 text-left">
+                    <ScrollArea className="flex-grow min-h-0">
+                        <div className="p-6 pb-24">
                             {selectedSoul && <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} />}
                         </div>
                     </ScrollArea>
@@ -551,29 +570,29 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start text-left text-left">
-        <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden flex-1 w-full text-left text-left text-left">
-            <CardHeader className="p-8 border-b bg-muted/5 text-left text-left">
-                <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left">
+    <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden flex-1 w-full">
+            <CardHeader className="p-8 border-b bg-muted/5">
+                <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase">
                     <Heart className="h-6 w-6 text-primary fill-current" />
                     Harvest Dashboard
                 </CardTitle>
-                <CardDescription className="text-base font-medium text-left text-left text-left text-left">Keep track of spiritual development and community integration.</CardDescription>
+                <CardDescription className="text-base font-medium">Keep track of spiritual development and community integration.</CardDescription>
             </CardHeader>
-            <CardContent className="p-0 text-left text-left">
-                <div className="overflow-x-auto text-left text-left">
-                    <Table className="text-left text-left text-left">
-                    <TableHeader className="bg-muted/10 text-left text-left text-left">
-                        <TableRow className="hover:bg-transparent text-left text-left">
-                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Soul Identity</TableHead>
-                        <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Contact</TableHead>
-                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left">Status</TableHead>
-                        <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left">Placements</TableHead>
-                        <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left text-left text-left text-left">Latest Log</TableHead>
+            <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                    <Table>
+                    <TableHeader className="bg-muted/10">
+                        <TableRow className="hover:bg-transparent">
+                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Soul Identity</TableHead>
+                        <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Contact</TableHead>
+                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</TableHead>
+                        <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Placements</TableHead>
+                        <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Latest Log</TableHead>
                         <TableHead className="p-4 text-right"><span className="sr-only">Actions</span></TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody className="text-left text-left text-left text-left">
+                    <TableBody>
                         {souls.map((soul) => (
                         <SoulTableRow 
                             key={soul.id} 
@@ -596,7 +615,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
         </Card>
 
         {/* Desktop Detailed Preview Panel */}
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left text-left text-left">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24">
             <AnimatePresence mode="wait">
                 {selectedSoul ? (
                     <motion.div
@@ -604,14 +623,14 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="space-y-6 text-left text-left text-left text-left text-left text-left text-left"
+                        className="space-y-6"
                     >
                         <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} />
                         <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center">Kingdom Identity Profile</p>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left text-left text-left">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left text-left" />
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5">
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center">Select a record to preview identity</p>
                     </div>
                 )}
@@ -620,3 +639,4 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
     </div>
   );
 }
+

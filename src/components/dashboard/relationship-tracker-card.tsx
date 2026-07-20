@@ -72,6 +72,12 @@ const iconMap: Record<string, any> = {
     'invited_to_event': Calendar,
 };
 
+const getSoulAddress = (soul: Soul) => {
+  const loc = soul.locationWon;
+  if (!loc) return '';
+  return [loc.street, loc.city, loc.state, loc.country].filter(Boolean).join(', ');
+};
+
 function SoulSelectionDialog({ 
   isOpen, 
   onOpenChange, 
@@ -97,9 +103,7 @@ function SoulSelectionDialog({
     }, [souls, search]);
 
     const handleSoulClick = (soul: Soul) => {
-        const loc = soul.locationWon;
-        const address = [loc?.street, loc?.city, loc?.state, loc?.country].filter(Boolean).join(', ');
-
+        const address = getSoulAddress(soul);
         if (address) {
             window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
         }
@@ -123,7 +127,7 @@ function SoulSelectionDialog({
                         <div className="text-left min-w-0 flex-1">
                             <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
                             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
-                            {(soul.locationWon?.street || soul.locationWon?.city) && (
+                            {getSoulAddress(soul) && (
                                 <div className="flex items-center gap-1 text-[8px] font-black text-primary mt-1 uppercase tracking-widest">
                                     <MapPin className="h-2.5 w-2.5" />
                                     <span>Home Map Ready</span>
@@ -164,11 +168,11 @@ function SoulSelectionDialog({
                     <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-                            <Input 
+                            <input 
                                 placeholder="Search by name..." 
                                 value={search} 
                                 onChange={e => setSearch(e.target.value)}
-                                className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
+                                className="w-full rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
                             />
                         </div>
                         <ScrollArea className="flex-1 border rounded-3xl bg-muted/5">
@@ -192,11 +196,11 @@ function SoulSelectionDialog({
                 <div className="p-6 space-y-6">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-                        <Input 
+                        <input 
                             placeholder="Search by name..." 
                             value={search} 
                             onChange={e => setSearch(e.target.value)}
-                            className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
+                            className="w-full rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
                         />
                     </div>
                     <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
@@ -348,11 +352,11 @@ export function RelationshipTrackerCard() {
         <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
               <div className="space-y-1">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-primary" />
                       Kingdom Connections
                   </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                 {currentDate && (
@@ -423,7 +427,7 @@ export function RelationshipTrackerCard() {
                               </TooltipTrigger>
                               <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
                                   <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
-                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left">{action.label}</p>
+                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">{action.label}</p>
                               </TooltipContent>
                           </Tooltip>
                       </TooltipProvider>
@@ -438,7 +442,7 @@ export function RelationshipTrackerCard() {
                       MANAGE SOULS WON
                   </Link>
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40">
+              <p className="text-[8px] text-center text-muted-foreground font-black uppercase tracking-[0.2em] opacity-40">
                   Unity • Growth • Love
               </p>
         </CardFooter>

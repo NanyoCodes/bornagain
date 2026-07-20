@@ -70,10 +70,11 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/menu";
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import type { CircleResource } from '@/lib/types';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
   pride: [
@@ -113,34 +114,34 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
     const postDate = safeToDate(post.createdAt);
 
     const content = (
-        <div className="flex flex-col h-full overflow-hidden text-left">
-            <div className="p-6 border-b bg-muted/5 shrink-0 text-left text-left">
-                <div className="flex items-center gap-3 mb-4 text-left text-left">
+        <div className="flex flex-col h-full overflow-hidden">
+            <div className="p-6 border-b bg-muted/5 shrink-0">
+                <div className="flex items-center gap-3 mb-4">
                     <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner">
                         <Users className="h-5 w-5 text-muted-foreground/40" />
                     </div>
-                    <div className="min-w-0 text-left text-left">
+                    <div className="min-w-0">
                         <p className="text-sm font-black uppercase tracking-tight">{post.authorName}</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                             {postDate ? format(postDate, 'PPP') : 'Just now'}
                         </p>
                     </div>
                 </div>
-                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2 text-left text-left">
+                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2">
                     <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
-                    <p className="text-sm text-muted-foreground leading-relaxed italic font-medium text-left text-left">
+                    <p className="text-sm text-muted-foreground leading-relaxed italic font-medium">
                         &ldquo;{post.text}&rdquo;
                     </p>
                 </div>
             </div>
             
-            <div className="flex-grow min-h-0 flex flex-col text-left text-left">
-                <div className="p-4 sm:p-6 pb-2 shrink-0 text-left text-left">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 text-left text-left">
+            <div className="flex-grow min-h-0 flex flex-col">
+                <div className="p-4 sm:p-6 pb-2 shrink-0">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60">
                         <Zap className="h-3.5 w-3.5" /> Circle Responses & Solutions
                     </div>
                 </div>
-                <div className="flex-1 min-h-0 text-left text-left">
+                <div className="flex-1 min-h-0">
                     <CommentSection path={`victoryCircles/${post.category}/posts/${post.id}/comments`} />
                 </div>
             </div>
@@ -151,18 +152,18 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left flex-shrink-0">
+                            <div className="flex items-center gap-2 mb-2">
                                 <Zap className="h-4 w-4 text-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Circle Conversation</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Circle Conversation</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance text-left text-left text-left">Victory over {categoryTitle}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Community responses and spiritual solutions.</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">Victory over {categoryTitle}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Community responses and spiritual solutions.</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <div className="flex-grow min-h-0 text-left text-left">
+                    <div className="flex-grow min-h-0">
                         {content}
                     </div>
                 </SheetContent>
@@ -175,14 +176,14 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-xl max-h-[85vh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col text-left text-left">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-                    <DialogHeader className="text-left text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Victory over {categoryTitle}</DialogTitle>
-                        <DialogDescription className="text-base font-medium text-left text-left">Shared wisdom and encouragement for victory.</DialogDescription>
+            <DialogContent className="sm:max-w-xl max-h-[85vh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col">
+                <div className="p-8 border-b bg-muted/10 shrink-0">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Victory over {categoryTitle}</DialogTitle>
+                        <DialogDescription className="text-base font-medium">Shared wisdom and encouragement for victory.</DialogDescription>
                     </DialogHeader>
                 </div>
-                <div className="flex-grow min-h-0 text-left text-left">
+                <div className="flex-grow min-h-0">
                     {content}
                 </div>
             </DialogContent>
@@ -386,15 +387,15 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     const activeScripture = scriptures[parseInt(selectedVerseIdx, 10)] || scriptures[0];
 
     const supplyForm = (
-        <form onSubmit={handleCreateOrUpdateResource} className="text-left text-left">
-            <div className="p-8 space-y-6 text-left text-left text-left">
-                <div className="space-y-2 text-left text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Type of Supply</Label>
+        <form onSubmit={handleCreateOrUpdateResource}>
+            <div className="p-8 space-y-6">
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Type of Supply</Label>
                     <Select name="type" defaultValue={resourceToEdit?.type || "Video"}>
-                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left">
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
                             <SelectValue placeholder="Resource Type" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-2xl border-none shadow-2xl text-left text-left">
+                        <SelectContent className="rounded-2xl border-none shadow-2xl">
                             <SelectItem value="Video" className="rounded-lg">Video / YouTube</SelectItem>
                             <SelectItem value="Article" className="rounded-lg">Article / Link</SelectItem>
                             <SelectItem value="Sermon" className="rounded-lg">Sermon / Audio</SelectItem>
@@ -403,22 +404,22 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="space-y-2 text-left text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Title</Label>
-                    <Input name="title" defaultValue={resourceToEdit?.title} placeholder="e.g. Breaking Chains" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" required />
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Title</Label>
+                    <Input name="title" defaultValue={resourceToEdit?.title} placeholder="e.g. Breaking Chains" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
                 </div>
-                <div className="space-y-2 text-left text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Description</Label>
-                    <Textarea name="description" defaultValue={resourceToEdit?.description} placeholder="e.g. A message on identity..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" />
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description</Label>
+                    <Textarea name="description" defaultValue={resourceToEdit?.description} placeholder="e.g. A message on identity..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner" />
                 </div>
-                <div className="space-y-2 text-left text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">URL / Link</Label>
-                    <Input name="url" defaultValue={resourceToEdit?.url} placeholder="https://..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" required />
+                <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL / Link</Label>
+                    <Input name="url" defaultValue={resourceToEdit?.url} placeholder="https://..." className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                 </div>
             </div>
-            <div className="p-8 bg-muted/5 border-t flex gap-3 text-left text-left">
-                <Button type="button" variant="outline" onClick={() => { setIsAddResourceOpen(false); setResourceToEdit(null); }} className="flex-1 h-12 rounded-xl font-bold text-left text-left">Cancel</Button>
-                <Button type="submit" disabled={isSubmittingResource} className="flex-1 h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left text-left">
+            <div className="p-8 bg-muted/5 border-t flex gap-3">
+                <Button type="button" variant="outline" onClick={() => { setIsAddResourceOpen(false); setResourceToEdit(null); }} className="flex-1 h-12 rounded-xl font-bold">Cancel</Button>
+                <Button type="submit" disabled={isSubmittingResource} className="flex-1 h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                     {isSubmittingResource && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {resourceToEdit ? 'SAVE CHANGES' : 'SHARE SUPPLY'}
                 </Button>
@@ -427,93 +428,93 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     );
 
     return (
-        <div className="space-y-8 max-w-6xl mx-auto pb-32 w-full text-left text-left">
-            <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left text-left">
-                    <div className="flex items-center gap-4 text-left text-left">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left">
+        <div className="space-y-8 max-w-6xl mx-auto pb-32 w-full">
+            <header className="px-4 sm:px-0 space-y-6 pt-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
-                        <div className="min-w-0 text-left text-left">
-                            <div className="flex items-center gap-2 mb-1 text-left text-left">
+                        <div className="min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
                                 <Users className="h-3.5 w-3.5 text-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Victory Circle</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Victory Circle</span>
                             </div>
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight text-balance text-left text-left">Victory over {categoryTitle}</h1>
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight text-balance">Victory over {categoryTitle}</h1>
                         </div>
                     </div>
 
-                    <div className="relative flex-grow max-w-md text-left text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left" />
+                    <div className="relative flex-grow max-w-md">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
                         <Input 
                             placeholder={`Search this circle...`} 
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            className="h-12 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-base font-bold text-left text-left"
+                            className="h-12 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-base font-bold"
                         />
                     </div>
                 </div>
             </header>
 
-            <Tabs defaultValue="discussions" className="w-full text-left text-left">
-                <div className="px-4 sm:px-0 mb-8 text-left text-left">
-                    <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/40 p-1 rounded-2xl text-left text-left">
-                        <TabsTrigger value="word" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl flex items-center gap-2 h-full text-left text-left">
+            <Tabs defaultValue="discussions" className="w-full">
+                <div className="px-4 sm:px-0 mb-8">
+                    <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/40 p-1 rounded-2xl">
+                        <TabsTrigger value="word" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl flex items-center gap-2 h-full">
                             <BookOpen className="h-3.5 w-3.5" /> Word
                         </TabsTrigger>
-                        <TabsTrigger value="discussions" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl flex items-center gap-2 h-full text-left text-left">
+                        <TabsTrigger value="discussions" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl flex items-center gap-2 h-full">
                             <MessageSquare className="h-3.5 w-3.5" /> Circle
                         </TabsTrigger>
-                        <TabsTrigger value="supplies" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl flex items-center gap-2 h-full text-left text-left">
+                        <TabsTrigger value="supplies" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl flex items-center gap-2 h-full">
                             <Library className="h-3.5 w-3.5" /> Supplies
                         </TabsTrigger>
                     </TabsList>
                 </div>
 
-                <TabsContent value="word" className="space-y-6 outline-none text-left text-left">
-                    <section className="space-y-4 px-4 sm:px-0 text-left text-left">
-                        <div className="flex items-center gap-3 text-left text-left">
+                <TabsContent value="word" className="space-y-6 outline-none">
+                    <section className="space-y-4 px-4 sm:px-0">
+                        <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner">
                                 <BookOpen className="h-5 w-5 text-primary" />
                             </div>
-                            <div className="flex-1 min-w-0 text-left text-left">
+                            <div className="flex-1 min-w-0">
                                 <h3 className="text-lg font-black uppercase tracking-tight">Armor of the Word</h3>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">Select your weapon</p>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Select your weapon</p>
                             </div>
                         </div>
 
-                        <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] border-2 border-dashed bg-muted/5 overflow-hidden text-left text-left">
-                            <CardHeader className="p-4 sm:p-6 pb-2 text-left text-left">
+                        <Card className="rounded-[1.5rem] sm:rounded-[2.5rem] border-2 border-dashed bg-muted/5 overflow-hidden">
+                            <CardHeader className="p-4 sm:p-6 pb-2">
                                 <Select value={selectedVerseIdx} onValueChange={setSelectedVerseIdx}>
-                                    <SelectTrigger className="h-12 rounded-xl bg-background shadow-md border-primary/20 text-primary font-black uppercase tracking-widest text-xs text-left text-left">
+                                    <SelectTrigger className="h-12 rounded-xl bg-background shadow-md border-primary/20 text-primary font-black uppercase tracking-widest text-xs">
                                         <SelectValue placeholder="Choose Armor" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-none shadow-2xl text-left text-left">
+                                    <SelectContent className="rounded-xl border-none shadow-2xl">
                                         {scriptures.map((s, idx) => (
-                                            <SelectItem key={idx} value={idx.toString()} className="rounded-lg font-bold uppercase text-[10px] tracking-widest text-left text-left">
+                                            <SelectItem key={idx} value={idx.toString()} className="rounded-lg font-bold uppercase text-[10px] tracking-widest">
                                                 {s.verse}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </CardHeader>
-                            <CardContent className="p-4 sm:p-8 pt-4 text-left text-left">
-                                <div className="space-y-6 text-left text-left">
-                                    <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group text-left text-left">
+                            <CardContent className="p-4 sm:p-8 pt-4">
+                                <div className="space-y-6">
+                                    <div className="relative pl-6 border-l-4 border-primary/20 bg-background p-5 rounded-r-3xl shadow-inner group">
                                         <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
-                                        <p className="text-base text-muted-foreground italic font-medium text-balance text-left text-left">
+                                        <p className="text-base text-muted-foreground italic font-medium text-balance">
                                             &ldquo;{activeScripture.text}&rdquo;
                                         </p>
                                         <p className="text-xs font-black uppercase tracking-[0.2em] text-primary text-right mt-4">— {activeScripture.verse}</p>
                                     </div>
-                                    <div className="p-5 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20 text-left text-left">
-                                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 mb-2 text-left text-left text-left">
+                                    <div className="p-5 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20">
+                                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 mb-2">
                                             <HandHeart className="h-3 w-3" /> Victory Prayer
                                         </div>
-                                        <p className="text-sm font-medium leading-relaxed text-foreground/70 italic text-left text-left">
+                                        <p className="text-sm font-medium leading-relaxed text-foreground/70 italic">
                                             &ldquo;{activeScripture.prayer}&rdquo;
                                         </p>
-                                        <div className="pt-4 flex justify-start text-left text-left">
+                                        <div className="pt-4 flex justify-start">
                                             <Button 
                                                 onClick={() => handleAmen(parseInt(selectedVerseIdx, 10))}
                                                 variant="outline" 
@@ -534,59 +535,59 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     </section>
                 </TabsContent>
 
-                <TabsContent value="supplies" className="space-y-6 outline-none text-left text-left">
-                    <section className="space-y-6 px-4 sm:px-0 text-left text-left">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left text-left">
-                            <div className="flex items-center gap-3 text-left text-left">
-                                <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner text-left text-left">
+                <TabsContent value="supplies" className="space-y-6 outline-none">
+                    <section className="space-y-6 px-4 sm:px-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner">
                                     <Library className="h-5 w-5 text-indigo-600" />
                                 </div>
-                                <div className="min-w-0 text-left text-left">
-                                    <h3 className="text-lg font-black uppercase tracking-tight text-left text-left">Kingdom Provisions</h3>
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">Shared battle supplies</p>
+                                <div className="min-w-0">
+                                    <h3 className="text-lg font-black uppercase tracking-tight">Kingdom Provisions</h3>
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Shared battle supplies</p>
                                 </div>
                             </div>
-                            <Button onClick={() => { setResourceToEdit(null); setIsAddResourceOpen(true); }} variant="outline" size="sm" className="h-9 rounded-xl font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left text-left">
+                            <Button onClick={() => { setResourceToEdit(null); setIsAddResourceOpen(true); }} variant="outline" size="sm" className="h-9 rounded-xl font-black uppercase tracking-widest text-[9px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm">
                                 <PlusCircle className="mr-1.5 h-3.5 w-3.5" /> DROP PROVISION
                             </Button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left text-left text-left">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {resourcesLoading ? (
-                                <div className="col-span-full flex justify-center py-12 text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left text-left" /></div>
+                                <div className="col-span-full flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
                             ) : filteredResources && filteredResources.length > 0 ? (
                                 filteredResources.map(res => {
                                     const isResAuthor = user?.uid === res.authorId;
                                     return (
-                                    <Card key={res.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all group flex flex-col h-full text-left text-left">
-                                        <CardContent className="p-4 flex flex-col gap-4 relative flex-grow text-left text-left">
-                                            <div className="flex items-center gap-4 text-left text-left">
-                                                <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform text-left text-left">
+                                    <Card key={res.id} className="rounded-2xl border bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-lg transition-all group flex flex-col h-full">
+                                        <CardContent className="p-4 flex flex-col gap-4 relative flex-grow">
+                                            <div className="flex items-center gap-4">
+                                                <div className="h-12 w-12 rounded-xl bg-muted/50 border flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform">
                                                     {getResourceIcon(res.type)}
                                                 </div>
-                                                <div className="min-w-0 flex-1 text-left text-left">
-                                                    <div className="flex items-center gap-2 mb-0.5 text-left text-left">
-                                                        <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50 text-left text-left">{res.type}</Badge>
-                                                        <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest truncate opacity-60 text-left text-left text-left">By {res.authorName}</span>
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center gap-2 mb-0.5">
+                                                        <Badge variant="outline" className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-background/50">{res.type}</Badge>
+                                                        <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest truncate opacity-60">By {res.authorName}</span>
                                                     </div>
-                                                    <h4 className="font-black text-xs uppercase tracking-tight truncate leading-tight mb-2 text-left text-left text-left">{res.title}</h4>
+                                                    <h4 className="font-black text-xs uppercase tracking-tight truncate leading-tight mb-2">{res.title}</h4>
                                                 </div>
                                             </div>
                                             
                                             {res.description && (
-                                                <p className="text-xs text-muted-foreground leading-relaxed italic px-1 text-balance text-left text-left">
+                                                <p className="text-xs text-muted-foreground leading-relaxed italic px-1 text-balance">
                                                     &ldquo;{res.description}&rdquo;
                                                 </p>
                                             )}
 
-                                            <Button asChild variant="ghost" size="sm" className="h-7 p-0 hover:bg-transparent hover:text-primary transition-colors text-[9px] font-black uppercase tracking-widest self-start mt-auto text-left text-left">
+                                            <Button asChild variant="ghost" size="sm" className="h-7 p-0 hover:bg-transparent hover:text-primary transition-colors text-[9px] font-black uppercase tracking-widest self-start mt-auto">
                                                 <a href={res.url} target="_blank" rel="noopener noreferrer">
                                                     GO TO RESOURCE <ExternalLink className="ml-1.5 h-3 w-3" />
                                                 </a>
                                             </Button>
 
                                             {isResAuthor && (
-                                                <div className="absolute top-2 right-2 text-left text-left text-left">
+                                                <div className="absolute top-2 right-2">
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
                                                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
@@ -609,8 +610,8 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     </Card>
                                 )})
                             ) : (
-                                <div className="col-span-full text-center py-16 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left">
-                                    <p className="text-xs text-muted-foreground italic font-medium px-12 text-center text-left text-left">
+                                <div className="col-span-full text-center py-16 border-2 border-dashed rounded-[2rem] bg-muted/5">
+                                    <p className="text-xs text-muted-foreground italic font-medium px-12 text-center">
                                         {searchTerm ? "No supplies match your search." : "No provisions dropped yet. Share a sermon or article that helped you!"}
                                     </p>
                                 </div>
@@ -619,41 +620,41 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     </section>
                 </TabsContent>
 
-                <TabsContent value="discussions" className="space-y-8 outline-none text-left text-left">
-                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-xl overflow-hidden bg-primary text-primary-foreground mx-4 sm:mx-0 text-left text-left text-left">
-                        <CardContent className="p-8 sm:p-10 space-y-6 text-left text-left text-left">
-                            <div className="flex items-start gap-4 text-left text-left">
+                <TabsContent value="discussions" className="space-y-8 outline-none">
+                    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-xl overflow-hidden bg-primary text-primary-foreground mx-4 sm:mx-0">
+                        <CardContent className="p-8 sm:p-10 space-y-6">
+                            <div className="flex items-start gap-4">
                                 <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
                                     <ShieldCheck className="h-6 w-6 text-white" />
                                 </div>
-                                <div className="space-y-1 text-left text-left text-left">
-                                    <h2 className="text-xl font-black uppercase tracking-tight text-left text-left">Bring it to Light</h2>
-                                    <p className="text-sm font-medium text-white/80 leading-relaxed text-balance text-left text-left">
+                                <div className="space-y-1">
+                                    <h2 className="text-xl font-black uppercase tracking-tight">Bring it to Light</h2>
+                                    <p className="text-sm font-medium text-white/80 leading-relaxed text-balance">
                                         Transparency in the body of Christ breaks the power of isolation. Share your struggle or victory below.
                                     </p>
                                 </div>
                             </div>
                             
-                            <div className="space-y-4 pt-2 text-left text-left text-left">
+                            <div className="space-y-4 pt-2">
                                 <Textarea 
                                     placeholder="Share your struggle or a victory strategy..."
                                     value={newPostText}
                                     onChange={(e) => setNewPostText(e.target.value)}
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[120px] rounded-2xl text-base focus-visible:ring-white/30 text-left text-left"
+                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[120px] rounded-2xl text-base focus-visible:ring-white/30"
                                 />
-                                <div className="flex items-center space-x-2 px-1 text-left text-left">
+                                <div className="flex items-center space-x-2 px-1">
                                     <Checkbox 
                                         id="anonymous-toggle" 
                                         checked={isAnonymous} 
                                         onCheckedChange={(val) => setIsAnonymous(!!val)}
                                         className="border-white/40 data-[state=checked]:bg-white data-[state=checked]:text-primary"
                                     />
-                                    <Label htmlFor="anonymous-toggle" className="text-xs font-bold text-white/80 cursor-pointer uppercase tracking-widest text-left text-left">Post Anonymously</Label>
+                                    <Label htmlFor="anonymous-toggle" className="text-xs font-bold text-white/80 cursor-pointer uppercase tracking-widest">Post Anonymously</Label>
                                 </div>
                                 <Button 
                                     onClick={handleCreatePost} 
                                     disabled={isSubmitting || !newPostText.trim()}
-                                    className="w-full h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-widest uppercase text-left text-left text-left"
+                                    className="w-full h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-xl tracking-widest uppercase"
                                 >
                                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     SHARE IN THE LIGHT
@@ -662,19 +663,19 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         </CardContent>
                     </Card>
 
-                    <div className="space-y-6 px-4 sm:px-0 text-left text-left">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left text-left text-left">
-                            <div className="flex items-center gap-3 text-left text-left">
+                    <div className="space-y-6 px-4 sm:px-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner">
                                     <MessageSquare className="h-5 w-5 text-muted-foreground" />
                                 </div>
-                                <h3 className="text-lg font-black uppercase tracking-tight text-left text-left">Circle Discussions</h3>
+                                <h3 className="text-lg font-black uppercase tracking-tight">Circle Discussions</h3>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left text-left text-left">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {loading ? (
-                                <div className="col-span-full flex justify-center py-20 text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left text-left" /></div>
+                                <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20" /></div>
                             ) : filteredPosts && filteredPosts.length > 0 ? (
                                 filteredPosts.map((post: any) => {
                                     const postDate = safeToDate(post.createdAt);
@@ -682,21 +683,21 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     const isEditing = editingPostId === post.id;
 
                                     return (
-                                        <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5 h-full flex flex-col text-left text-left text-left">
-                                            <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between text-left text-left">
-                                                <div className="flex items-center gap-3 text-left text-left">
+                                        <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5 h-full flex flex-col">
+                                            <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between">
+                                                <div className="flex items-center gap-3">
                                                     <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner">
                                                         <Users className="h-5 w-5 text-muted-foreground/40" />
                                                     </div>
-                                                    <div className="min-w-0 text-left text-left">
-                                                        <p className="text-sm font-black uppercase tracking-tight text-left text-left">{post.authorName}</p>
-                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left">
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-black uppercase tracking-tight">{post.authorName}</p>
+                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                                                             {postDate ? format(postDate, 'PPP') : 'Just now'}
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-left text-left">
-                                                    <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-black uppercase tracking-widest bg-background/50 text-left text-left text-left">{categoryTitle}</Badge>
+                                                <div className="flex items-center gap-2">
+                                                    <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-black uppercase tracking-widest bg-background/50">{categoryTitle}</Badge>
                                                     {isAuthor && !isEditing && (
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
@@ -717,20 +718,20 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                     )}
                                                 </div>
                                             </CardHeader>
-                                            <CardContent className="p-6 pt-4 flex-grow text-left text-left">
+                                            <CardContent className="p-6 pt-4 flex-grow">
                                                 {isEditing ? (
-                                                    <div className="space-y-4 text-left text-left">
+                                                    <div className="space-y-4">
                                                         <Textarea 
                                                             value={editingText}
                                                             onChange={(e) => setEditingText(e.target.value)}
-                                                            className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left text-left"
+                                                            className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base"
                                                             autoFocus
                                                         />
-                                                        <div className="flex justify-end gap-2 text-left text-left">
-                                                            <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold text-left text-left">
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold">
                                                                 <X className="mr-1 h-3 w-3" /> Cancel
                                                             </Button>
-                                                            <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left text-left">
+                                                            <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px]">
                                                                 {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3" />}
                                                                 Save Changes
                                                             </Button>
@@ -738,10 +739,10 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                     </div>
                                                 ) : (
                                                     <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                                        <button className="w-full text-left outline-none group/post text-left text-left">
-                                                            <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left text-left">
+                                                        <button className="w-full text-left outline-none group/post">
+                                                            <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99]">
                                                                 <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
-                                                                <p className="text-base text-muted-foreground italic font-medium text-left text-left text-balance">
+                                                                <p className="text-base text-muted-foreground italic font-medium text-balance">
                                                                     &ldquo;{post.text}&rdquo;
                                                                 </p>
                                                             </div>
@@ -749,13 +750,13 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                     </PostResponsesDialog>
                                                 )}
                                             </CardContent>
-                                            <CardFooter className="p-3 bg-muted/5 flex justify-between items-center mt-auto text-left text-left">
-                                                 <div className="flex items-center gap-2 px-3 text-left text-left">
-                                                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left text-left" />
-                                                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60 text-left text-left">Victory Support Active</span>
+                                            <CardFooter className="p-3 bg-muted/5 flex justify-between items-center mt-auto">
+                                                 <div className="flex items-center gap-2 px-3">
+                                                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                                                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Victory Support Active</span>
                                                  </div>
                                                  <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                                    <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-left text-left">
+                                                    <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary">
                                                         Participate
                                                     </Button>
                                                  </PostResponsesDialog>
@@ -764,12 +765,12 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     );
                                 })
                             ) : (
-                                <div className="col-span-full text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0 text-left text-left">
-                                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left">
-                                        <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left text-left" />
+                                <div className="col-span-full text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0">
+                                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+                                        <Sparkles className="h-10 w-10 text-muted-foreground opacity-10" />
                                     </div>
-                                    <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left">Circle Silence</h4>
-                                    <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left text-left">
+                                    <h4 className="text-xl font-black uppercase tracking-tight opacity-40">Circle Silence</h4>
+                                    <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center">
                                         {searchTerm ? "No discussions match your search." : "No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light."}
                                     </p>
                                 </div>
@@ -782,20 +783,20 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             {mounted && (
                 isMobile ? (
                     <Sheet open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
-                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <SheetHeader className="text-left flex-shrink-0 text-left text-left">
-                                    <div className="flex items-center gap-2.5 mb-1.5 text-left text-left">
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                                <SheetHeader className="text-left flex-shrink-0">
+                                    <div className="flex items-center gap-2.5 mb-1.5">
                                         <Target className="h-4 w-4 text-primary" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Supply Drop</span>
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Supply Drop</span>
                                     </div>
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-balance">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                                     </SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Share a resource that fueled your victory.</SheetDescription>
+                                    <SheetDescription className="text-sm font-medium mt-1">Share a resource that fueled your victory.</SheetDescription>
                                 </SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow text-left text-left">
+                            <ScrollArea className="flex-grow">
                                 <div className="p-8">
                                     {supplyForm}
                                 </div>
@@ -804,20 +805,20 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     </Sheet>
                 ) : (
                     <Dialog open={isAddResourceOpen} onOpenChange={(open) => { setIsAddResourceOpen(open); if(!open) setResourceToEdit(null); }}>
-                        <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <DialogHeader className="text-left text-left">
-                                    <div className="flex items-center gap-2.5 mb-1.5 text-left text-left">
+                        <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh]">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
+                                <DialogHeader>
+                                    <div className="flex items-center gap-2.5 mb-1.5">
                                         <Target className="h-4 w-4 text-primary" />
-                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Supply Drop</span>
+                                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Supply Drop</span>
                                     </div>
-                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-balance">
+                                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">
                                         {resourceToEdit ? 'Update Provision' : 'Drop Provision'}
                                     </SheetTitle>
-                                    <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Share a resource that fueled your victory.</SheetDescription>
+                                    <SheetDescription className="text-sm font-medium mt-1">Share a resource that fueled your victory.</SheetDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-grow text-left text-left">
+                            <ScrollArea className="flex-grow">
                                 {supplyForm}
                             </ScrollArea>
                         </DialogContent>
@@ -825,8 +826,8 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 )
             )}
             
-            <footer className="text-center pt-12 border-t mt-12 px-8 text-left text-left">
-                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance text-center text-left text-left">
+            <footer className="text-center pt-12 border-t mt-12 px-8">
+                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance text-center">
                     "Confess your faults one to another, and pray one for another, that ye may be healed. The effectual fervent prayer of a righteous man availeth much." — James 5:16
                 </p>
             </footer>
