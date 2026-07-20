@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -488,8 +487,8 @@ export function LogSoulForm({
             <AccordionItem value="optional-details" className="border-none">
                 <AccordionTrigger className="text-sm font-semibold py-4 hover:no-underline text-left">Additional Details & Location</AccordionTrigger>
                 <AccordionContent>
-                    <div className="space-y-6 pt-2">
-                        <div className="space-y-4">
+                    <div className="space-y-6 pt-2 text-left">
+                        <div className="space-y-4 text-left">
                           <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Location Won</Label>
                           <LocationWonInput form={form} />
                         </div>
@@ -609,3 +608,4 @@ export function LogSoulForm({
     </Form>
   );
 }
+

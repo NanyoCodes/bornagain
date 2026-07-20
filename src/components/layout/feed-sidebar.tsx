@@ -112,14 +112,14 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
             {/* Goal Widget - Primary Mission Tracker */}
             {mode !== 'fellowships' && (
                 <Card className="rounded-3xl border-none shadow-lg bg-primary text-primary-foreground overflow-hidden border-b-8 border-b-black/10 shrink-0">
-                    <CardHeader className="p-6 pb-2">
+                    <CardHeader className="p-6 pb-2 text-left">
                         <div className="flex items-center justify-between mb-2">
                             <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
                                 <Target className="h-5 w-5 text-white" />
                             </div>
                             <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">Harvest Progress</Badge>
                         </div>
-                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">Total Harvest</CardTitle>
+                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">HARVEST</CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 pt-2 space-y-4">
                         <div className="space-y-1">
@@ -129,7 +129,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                             </div>
                             <Progress value={progressValue} className="h-2 bg-white/20" indicatorClassName="bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                         </div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance">
+                        <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
                             Every life logged contributes to the global harvest map and city impact stats.
                         </p>
                     </CardContent>
@@ -139,14 +139,14 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
             {/* Specialized Fellowship Widget - Clarified Joined vs Active */}
             {mode === 'fellowships' && (
                 <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0">
-                    <CardHeader className="p-6 pb-2">
+                    <CardHeader className="p-6 pb-2 text-left">
                         <div className="flex items-center justify-between mb-2">
                             <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
                                 <Users className="h-5 w-5 text-white" />
                             </div>
                             <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">Active Alliance</Badge>
                         </div>
-                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">Alliance Summary</CardTitle>
+                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">Alliance Summary</CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 pt-2 space-y-4">
                         <div className="grid grid-cols-2 gap-3">
@@ -161,7 +161,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                                 <p className="text-[7px] font-medium opacity-40 uppercase">(Active work)</p>
                             </div>
                         </div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance">
+                        <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
                             Groups provide long-term community, while Missions are active field assignments.
                         </p>
                     </CardContent>
@@ -171,8 +171,8 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
             {/* Daily Rituals Tracker */}
             {(mode === 'harvest' || mode === 'campaigns' || mode === 'general') && (
                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
-                    <CardHeader className="p-5 pb-2">
-                        <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                    <CardHeader className="p-5 pb-2 text-left">
+                        <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 text-left">
                             <Zap className="h-4 w-4 text-primary" /> Daily Disciplines
                         </CardTitle>
                     </CardHeader>
@@ -206,15 +206,15 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
             {/* Faith Seed - Spiritual Inspiration */}
             {mode === 'testimonies' && (
                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
-                    <CardHeader className="p-5 pb-2">
-                        <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
+                    <CardHeader className="p-5 pb-2 text-left">
+                        <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2 text-left">
                             <Sparkles className="h-4 w-4 text-primary" /> Seed of Faith
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 pt-4">
                         <div className="p-5 rounded-2xl bg-primary/5 border-2 border-dashed border-primary/20 relative group">
                             <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
-                            <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance">
+                            <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance text-left">
                                 &ldquo;{randomSeed.text}&rdquo;
                             </p>
                             <p className="text-[9px] font-black text-primary text-right mt-3 uppercase tracking-widest">— {randomSeed.ref}</p>
@@ -225,8 +225,8 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
 
             {/* Quick Kingdom Sectors Navigation */}
             <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
-                <CardHeader className="p-5 pb-2">
-                    <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Sectors</CardTitle>
+                <CardHeader className="p-5 pb-2 text-left">
+                    <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Kingdom Sectors</CardTitle>
                 </CardHeader>
                 <CardContent className="p-3 space-y-1">
                     <Link href="/dashboard/victory-hub" className="flex items-center gap-4 p-3 rounded-2xl hover:bg-muted group">
@@ -248,7 +248,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                         <span className="font-black uppercase tracking-widest text-[10px]">Kindness Center</span>
                     </Link>
                 </CardContent>
-                <CardFooter className="p-5 pt-0">
+                <CardFooter className="p-5 pt-0 text-left">
                     <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full">
                         <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic">
                             "Equipping the saints for the work of ministry." — Eph 4:12

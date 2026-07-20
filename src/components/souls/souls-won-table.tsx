@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -138,7 +137,7 @@ function SoulProfileContent({
             <div className="relative inline-block mx-auto mb-4">
                 <Dialog>
                     <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!soul.photoURL}>
-                        <Avatar className={cn("h-40 w-40 sm:h-48 sm:w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                        <Avatar className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                             <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
@@ -157,11 +156,11 @@ function SoulProfileContent({
                 {address && (
                     <Button 
                         size="icon" 
-                        className="absolute -bottom-1 -right-1 h-9 w-9 rounded-full shadow-lg border-2 border-background"
+                        className="absolute -bottom-1 -right-1 h-10 w-10 rounded-full shadow-lg border-2 border-background"
                         onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')}
                         title="View Map"
                     >
-                        <MapPin className="h-4 w-4" />
+                        <MapPin className="h-5 w-5" />
                     </Button>
                 )}
             </div>
@@ -211,7 +210,12 @@ function SoulProfileContent({
             <Separator className="opacity-20" />
 
             <div className="space-y-3 text-left">
-                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Contact Identity</p>
+                <div className="flex items-center justify-between">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Contact Identity</p>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}>
+                        <Edit className="h-3.5 w-3.5" />
+                    </Button>
+                </div>
                 <div className="space-y-2">
                     {soul.email ? (
                         <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground truncate">
@@ -647,7 +651,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         <TableRow className="hover:bg-transparent">
                         <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
                         <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Contact</TableHead>
-                        <TableHead className="p-4 text-[10px) font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
+                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
                         <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Placements</TableHead>
                         <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Latest Log</TableHead>
                         <TableHead className="p-4 text-right"><span className="sr-only">Actions</span></TableHead>
