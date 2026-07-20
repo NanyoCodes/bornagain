@@ -695,4 +695,3 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
     </div>
   );
 }
-

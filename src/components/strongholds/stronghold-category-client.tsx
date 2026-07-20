@@ -332,7 +332,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         } catch (error) {
             toast({ variant: 'destructive', title: 'Action Failed' });
         } finally {
-            setIsSubmitting(false);
+            setIsSubmittingResource(false);
         }
     };
 
@@ -834,4 +834,3 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         </div>
     );
 }
-

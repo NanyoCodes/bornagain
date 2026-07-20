@@ -69,7 +69,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
     const completedToday = useMemo(() => {
         if (!userProfile?.dailyDiscipline?.lastUpdated) return [];
         const lastUpdated = safeToDate(userProfile.dailyDiscipline.lastUpdated);
-        if (lastUpdated && lastUpdated.getDate() === now.getDate() && lastUpdated.getMonth() === now.getMonth() && lastReload.getFullYear() === now.getFullYear()) {
+        if (lastUpdated && lastUpdated.getDate() === now.getDate() && lastUpdated.getMonth() === now.getMonth() && lastUpdated.getFullYear() === now.getFullYear()) {
             return userProfile.dailyDiscipline.completed || [];
         }
         return [];
@@ -131,36 +131,6 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                         </div>
                         <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
                             Every life logged contributes to the global harvest map and city impact stats.
-                        </p>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Specialized Fellowship Widget - Clarified Joined vs Active */}
-            {mode === 'fellowships' && (
-                <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0">
-                    <CardHeader className="p-6 pb-2 text-left">
-                        <div className="flex items-center justify-between mb-2">
-                            <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
-                                <Users className="h-5 w-5 text-white" />
-                            </div>
-                            <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">Active Alliance</Badge>
-                        </div>
-                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">Alliance Hub</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 pt-2 space-y-4">
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-white/10 rounded-2xl p-3 border border-white/10 text-center">
-                                <p className="text-2xl font-black">{activeGroups?.length || 0}</p>
-                                <p className="text-[9px] font-bold uppercase opacity-60">My Groups</p>
-                            </div>
-                            <div className="bg-white/10 rounded-2xl p-3 border border-white/10 text-center">
-                                <p className="text-2xl font-black">{liveMissionsCount}</p>
-                                <p className="text-[9px] font-bold uppercase opacity-60">Missions</p>
-                            </div>
-                        </div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
-                            Groups provide long-term spiritual community, while Missions are active field assignments.
                         </p>
                     </CardContent>
                 </Card>

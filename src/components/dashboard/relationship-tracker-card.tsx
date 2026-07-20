@@ -27,8 +27,6 @@ import {
   PlusCircle,
   ArrowRight,
   ArrowLeft,
-  Target,
-  Globe,
   MapPin
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
@@ -54,7 +52,6 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -102,14 +99,6 @@ function SoulSelectionDialog({
         return souls.filter(s => `${s.firstName} ${s.lastName}`.toLowerCase().includes(term));
     }, [souls, search]);
 
-    const handleSoulClick = (soul: Soul) => {
-        const address = getSoulAddress(soul);
-        if (address) {
-            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
-        }
-        onSelect(soul);
-    };
-
     const listContent = (
         <div className="p-2 space-y-1.5 text-left">
             {filteredSouls.length > 0 ? (
@@ -118,21 +107,15 @@ function SoulSelectionDialog({
                         key={soul.id} 
                         variant="ghost" 
                         className="w-full justify-start h-auto py-4 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex items-center"
-                        onClick={() => handleSoulClick(soul)}
+                        onClick={() => onSelect(soul)}
                         disabled={isLoading}
                     >
                         <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm shrink-0">
                             <AvatarFallback className="font-bold bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="text-left min-w-0 flex-1">
-                            <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
-                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p>
-                            {getSoulAddress(soul) && (
-                                <div className="flex items-center gap-1 text-[8px] font-black text-primary mt-1 uppercase tracking-widest text-left">
-                                    <MapPin className="h-2.5 w-2.5" />
-                                    <span>Follow-up Map Ready</span>
-                                </div>
-                            )}
+                            <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
                         </div>
                         <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <ArrowRight className="h-4 w-4" />
@@ -153,20 +136,20 @@ function SoulSelectionDialog({
     );
 
     const title = `Who did you ${actionLabel.toLowerCase()}?`;
-    const desc = "Select a convert to link this action and view their home map.";
+    const desc = "Select a convert to link this action to their spiritual record.";
 
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0">
                         <SheetHeader className="text-left">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left">{desc}</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">{desc}</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0 text-left">
-                        <div className="relative text-left">
+                    <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0">
+                        <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                             <input 
                                 placeholder="Search by name..." 
@@ -175,7 +158,7 @@ function SoulSelectionDialog({
                                 className="w-full rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
                             />
                         </div>
-                        <ScrollArea className="flex-1 border rounded-3xl bg-muted/5 text-left">
+                        <ScrollArea className="flex-1 border rounded-3xl bg-muted/5">
                             {listContent}
                         </ScrollArea>
                     </div>
@@ -187,14 +170,14 @@ function SoulSelectionDialog({
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 text-left">
+                <div className="p-8 border-b bg-muted/10">
                     <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">{desc}</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">{desc}</DialogDescription>
                     </DialogHeader>
                 </div>
-                <div className="p-6 space-y-6 text-left">
-                    <div className="relative text-left">
+                <div className="p-6 space-y-6">
+                    <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                         <input 
                             placeholder="Search by name..." 
@@ -203,7 +186,7 @@ function SoulSelectionDialog({
                             className="w-full rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
                         />
                     </div>
-                    <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left">
+                    <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
                         {listContent}
                     </ScrollArea>
                 </div>
@@ -254,6 +237,17 @@ export function RelationshipTrackerCard() {
     if (!user || !firestore || !selectedActionId) return;
     
     setIsSoulDialogOpen(false);
+    
+    // Execute respective follow-up logic
+    if (selectedActionId === 'visited_home') {
+        const address = getSoulAddress(soul);
+        if (address) {
+            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+        }
+    } else if (selectedActionId === 'phone_call' && soul.phone) {
+        window.location.href = `tel:${soul.phone}`;
+    }
+
     setTogglingId(selectedActionId);
 
     const action = actionItems.find(a => a.id === selectedActionId);
@@ -352,11 +346,11 @@ export function RelationshipTrackerCard() {
         <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
               <div className="space-y-1 text-left">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-primary" />
                       Kingdom Connections
                   </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end text-left">
                 {currentDate && (
