@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -41,7 +40,8 @@ import {
   Trash2,
   CreditCard,
   Clipboard,
-  Target
+  Target,
+  MapPin
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -124,24 +124,47 @@ function SoulSelectionList({
                 <div className="p-2 space-y-1.5 text-left">
                     {filteredSouls.length > 0 ? (
                         filteredSouls.map(soul => (
-                            <Button 
-                                key={soul.id} 
-                                variant="ghost" 
-                                className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group text-left"
-                                onClick={() => onSelect(soul)}
-                                disabled={isLoading}
-                            >
-                                <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
-                                    <AvatarFallback className="font-bold bg-primary/5 text-xs">{soul.firstName?.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div className="text-left min-w-0 flex-1">
-                                    <p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
-                                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p>
-                                </div>
-                                <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <PlusCircle className="h-4 w-4" />
-                                </div>
-                            </Button>
+                            <div key={soul.id} className="relative group">
+                                <Button 
+                                    variant="ghost" 
+                                    className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 text-left group"
+                                    onClick={() => onSelect(soul)}
+                                    disabled={isLoading}
+                                >
+                                    <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
+                                        <AvatarFallback className="font-bold bg-primary/5 text-xs">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="text-left min-w-0 flex-1">
+                                        <p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p>
+                                    </div>
+                                    <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <PlusCircle className="h-4 w-4" />
+                                    </div>
+                                </Button>
+                                {soul.locationWon && (
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="absolute right-12 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-background shadow-sm hover:text-primary transition-all"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            const loc = soul.locationWon!;
+                                            const address = [loc.street, loc.landmark, loc.city, loc.state, loc.country].filter(Boolean).join(', ');
+                                            if (address) {
+                                                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+                                            } else if (loc.latitude && loc.longitude) {
+                                                window.open(`https://www.google.com/maps/search/?api=1&query=${loc.latitude},${loc.longitude}`, '_blank');
+                                            } else {
+                                                toast({ title: 'No Address Set', description: 'This convert has no location data recorded.' });
+                                            }
+                                        }}
+                                        title="View on Map"
+                                    >
+                                        <MapPin className="h-4 w-4" />
+                                    </Button>
+                                )}
+                            </div>
                         ))
                     ) : (
                         <div className="text-center py-16 px-8 space-y-3">
@@ -709,14 +732,12 @@ export function RelationshipTrackerCard() {
       });
   };
 
-  const handlePrayerConfirm = (text: string) => {
-    const finalText = `${text}\n\nRead more miracles on Testify: https://testifyglobal.com`;
-    setCustomPrayerText(finalText);
-    setIsPrayerCustomizationOpen(false);
-    setClickedActionId('prayed_together');
-    requestAnimationFrame(() => {
-        setIsCommChannelDialogOpen(true);
-    });
+  const handlePrayerCustomizationConfirm = (text: string) => {
+      setCustomPrayerText(text);
+      setIsPrayerCustomizationOpen(false);
+      requestAnimationFrame(() => {
+          setIsCommChannelDialogOpen(true);
+      });
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
