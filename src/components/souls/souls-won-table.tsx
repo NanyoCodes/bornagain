@@ -31,7 +31,8 @@ import {
   ArrowLeft,
   CalendarDays,
   BookOpen,
-  Banknote
+  Banknote,
+  Plus
 } from "lucide-react";
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -136,7 +137,7 @@ function SoulProfileContent({
         <CardHeader className="p-8 pb-4 text-center">
             <div className="relative inline-block mx-auto mb-4">
                 <Dialog>
-                    <DialogTrigger asChild disabled={!soul.photoURL}>
+                    <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!soul.photoURL}>
                         <Avatar className={cn("h-40 w-40 sm:h-48 sm:w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                             <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
@@ -179,10 +180,9 @@ function SoulProfileContent({
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Spiritual Identity</p>
-                    <button className="text-[9px] font-black text-primary uppercase hover:underline flex items-center gap-1" onClick={() => onEdit(soul)}>
-                        <Edit className="h-3 w-3" />
-                        edits can be done here
-                    </button>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}>
+                        <Edit className="h-3.5 w-3.5" />
+                    </Button>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-left">
                     <div className="space-y-1">
@@ -269,10 +269,9 @@ function SoulProfileContent({
             <div className="space-y-4 text-left">
                 <div className="flex items-center justify-between">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Placement</p>
-                    <button className="text-[9px] font-black text-primary uppercase hover:underline flex items-center gap-1" onClick={() => onOpenAssignDialog(soul)}>
-                        <Users className="h-3 w-3" />
-                        assigning fellowship and association can be done here
-                    </button>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full text-primary hover:bg-primary/10" onClick={() => onOpenAssignDialog(soul)}>
+                        <Edit className="h-3.5 w-3.5" />
+                    </Button>
                 </div>
                 <div className="space-y-3">
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10">
@@ -316,13 +315,12 @@ function SoulProfileContent({
 
             <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left">
                 <div className="flex items-center justify-between">
-                    <p className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5 text-left">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left">
                         <ClipboardList className="h-3.5 w-3.5" /> Assessed Needs
                     </p>
-                    <button className="text-[9px] font-black text-primary uppercase hover:underline flex items-center gap-1" onClick={() => onAssess(soul)}>
-                        <Edit className="h-3 w-3" />
-                        assess needs here
-                    </button>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full text-primary hover:bg-primary/10" onClick={() => onAssess(soul)}>
+                        <Edit className="h-3.5 w-3.5" />
+                    </Button>
                 </div>
                 {needs ? (
                     <div className="space-y-4 text-left">
@@ -649,7 +647,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         <TableRow className="hover:bg-transparent">
                         <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
                         <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Contact</TableHead>
-                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
+                        <TableHead className="p-4 text-[10px) font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
                         <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Placements</TableHead>
                         <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Latest Log</TableHead>
                         <TableHead className="p-4 text-right"><span className="sr-only">Actions</span></TableHead>
