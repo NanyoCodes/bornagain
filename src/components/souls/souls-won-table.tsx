@@ -58,6 +58,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import {
   Table,
   TableBody,
   TableCell,
@@ -96,7 +103,107 @@ const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     }
 }
 
-const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: { 
+function SoulProfileContent({ 
+  soul, 
+  onFollowUp 
+}: { 
+  soul: Soul; 
+  onFollowUp: (s: Soul) => void;
+}) {
+  const loc = soul.locationWon;
+  const address = [loc?.street, loc?.landmark, loc?.city, loc?.state, loc?.country].filter(Boolean).join(', ');
+  const needs = soul.needsAssessment;
+
+  return (
+    <div className="space-y-6 text-left">
+      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-md border-t-8 border-t-primary/20">
+        <CardHeader className="p-8 pb-4 text-center">
+            <div className="relative inline-block mx-auto mb-4">
+                <Avatar className="h-24 w-24 border-4 border-background shadow-xl ring-2 ring-primary/10">
+                    <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                    <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
+                </Avatar>
+                {address && (
+                    <Button 
+                        size="icon" 
+                        className="absolute -bottom-1 -right-1 h-9 w-9 rounded-full shadow-lg border-2 border-background"
+                        onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank')}
+                        title="View Map"
+                    >
+                        <MapPin className="h-4 w-4" />
+                    </Button>
+                )}
+            </div>
+            <CardTitle className="text-xl font-black uppercase tracking-tight">{soul.firstName} {soul.lastName}</CardTitle>
+            <Badge className={cn("mt-2 h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center mx-auto", getStatusClasses(soul.status))} variant="outline">
+                {soul.status}
+            </Badge>
+        </CardHeader>
+        <CardContent className="p-8 pt-0 space-y-6 text-left">
+            <Separator className="opacity-50" />
+            
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Demographics</p>
+                    <p className="text-xs font-bold">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
+                </div>
+                <div className="space-y-1">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Circle</p>
+                    <p className="text-xs font-bold">{soul.relationship || 'Outreach'}</p>
+                </div>
+            </div>
+            
+            <div className="space-y-1">
+                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Placement</p>
+                <div className="space-y-1.5">
+                    <p className="text-xs font-bold flex items-center gap-2 truncate">
+                        <HeartHandshake className="h-3 w-3 text-primary shrink-0" />
+                        {soul.fellowshipName || 'No Fellowship'}
+                    </p>
+                    <p className="text-xs font-bold flex items-center gap-2 truncate">
+                        <Group className="h-3 w-3 text-blue-500 shrink-0" />
+                        {soul.associationName || 'No Association'}
+                    </p>
+                </div>
+            </div>
+
+            <div className="space-y-1">
+                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Spiritual Milestones</p>
+                <div className="flex gap-2 flex-wrap">
+                    <Badge variant={soul.attendingChurch ? 'default' : 'outline'} className="text-[8px] h-5 px-1.5 uppercase font-black tracking-widest">Church</Badge>
+                    <Badge variant={soul.inBibleStudy ? 'default' : 'outline'} className="text-[8px] h-5 px-1.5 uppercase font-black tracking-widest">Study</Badge>
+                </div>
+            </div>
+
+            {needs && (
+              <div className="space-y-3 p-4 bg-muted/20 rounded-2xl border-2 border-dashed border-primary/10 shadow-inner">
+                <p className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
+                  <ClipboardList className="h-3 w-3" /> Assessed Needs
+                </p>
+                <div className="space-y-2">
+                  {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed">&ldquo;{needs.generalImpression}&rdquo;</p>}
+                  <div className="flex flex-wrap gap-1.5">
+                    {needs.emotionalNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black">Emotional</Badge>}
+                    {needs.physicalNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black">Physical</Badge>}
+                    {needs.financialNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black">Financial</Badge>}
+                    {needs.socialNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black">Social</Badge>}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="pt-2">
+                <Button className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20" onClick={() => onFollowUp(soul)}>
+                    LOG FOLLOW-UP
+                </Button>
+            </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess, onClick }: { 
   soul: Soul; 
   onFollowUp: (soul: Soul) => void; 
   onViewHistory: (soul: Soul) => void; 
@@ -105,6 +212,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
   onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
   onAssess: (soul: Soul) => void;
+  onClick: () => void;
 }) => {
     const { user } = useUser();
     const [pendingProvisions, setPendingProvisions] = React.useState<{ soulId: string; actionId: string }[]>([]);
@@ -138,20 +246,6 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
         pendingProvisions.filter(p => p.soulId === soul.id), 
     [pendingProvisions, soul.id]);
 
-    const latestFollowUp = React.useMemo(() => {
-        if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
-        return [...soul.followUpLog].sort((a, b) => {
-            const dateB = safeToDate(b.date)?.getTime() ?? 0;
-            const dateA = safeToDate(a.date)?.getTime() ?? 0;
-            return dateB - dateA;
-        })[0];
-    }, [soul.followUpLog]);
-
-    const locationWonString = React.useMemo(() => {
-        if (!soul.locationWon) return null;
-        return [soul.locationWon.street, soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ');
-    }, [soul.locationWon]);
-
     const triggerAction = (action: (s: Soul) => void) => {
       requestAnimationFrame(() => {
         action(soul);
@@ -159,115 +253,29 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
     };
 
     return (
-        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300">
-            <Collapsible>
-                <div className="flex items-center justify-between p-4 gap-4">
-                    <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-                        <Dialog>
-                            <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!soul.photoURL}>
-                                <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
-                                    <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
-                                        {soul.firstName?.charAt(0) || 'S'}
-                                    </AvatarFallback>
-                                </Avatar>
-                            </DialogTrigger>
-                            {soul.photoURL && (
-                                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
-                                    <DialogHeader className="sr-only">
-                                        <DialogTitle>Photo of {soul.firstName}</DialogTitle>
-                                        <DialogDescription>Full screen view of the convert's photo.</DialogDescription>
-                                    </DialogHeader>
-                                    <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
-                                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
-                                            <Image 
-                                                src={soul.photoURL} 
-                                                alt={soul.firstName} 
-                                                fill 
-                                                className="object-contain shadow-2xl ring-4 ring-white/10" 
-                                                unoptimized 
-                                            />
-                                        </div>
-                                    </div>
-                                </DialogContent>
-                            )}
-                        </Dialog>
-                        <CollapsibleTrigger className="min-w-0 text-left flex-1 outline-none">
-                            <div className="min-w-0 text-left">
-                                <p className="font-bold truncate text-sm sm:text-base leading-tight capitalize tracking-tight text-left">
-                                  {soul.firstName || 'Unknown'} {soul.lastName || ''}
-                                </p>
-                                <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left">
-                                    <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
-                                    {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20">Fellowship</Badge>}
-                                    {soul.associationName && <Badge variant="outline" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter border-blue-500/20 text-blue-600 bg-blue-500/5">Association</Badge>}
-                                    {myPending.length > 0 && <Badge className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary text-white animate-pulse border-none">Pending Gift</Badge>}
-                                </div>
-                            </div>
-                        </CollapsibleTrigger>
-                    </div>
-                    <CollapsibleTrigger asChild>
-                        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180 shrink-0 cursor-pointer" />
-                    </CollapsibleTrigger>
-                </div>
-                <CollapsibleContent className="px-4 pb-4">
-                    <div className="border-t pt-4 space-y-5 text-left">
-                        <div className="flex justify-between items-start gap-4 text-left">
-                            <div className="text-xs sm:text-sm text-muted-foreground space-y-3 flex-1 min-w-0 font-medium text-left">
-                                <div className="flex items-center gap-2 text-left">
-                                    <Badge variant="secondary" className="h-4 px-1.5 rounded uppercase tracking-widest text-[8px] font-black opacity-80">Ref: {soul.source}</Badge>
-                                    {soul.sourceDetails && <span className="truncate text-[10px] opacity-60 font-bold uppercase tracking-tight">• {soul.sourceDetails}</span>}
-                                </div>
-                                {soul.phone && <div className="truncate flex items-center gap-2.5 font-bold"><Phone className="h-3.5 w-3.5 text-primary"/>{soul.phone}</div>}
-                                {soul.church && <div className="flex items-start gap-2.5 leading-snug text-left"><Church className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> {soul.church}</div>}
-                                {locationWonString && <div className="flex items-start gap-2.5 leading-snug text-left"><MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> <span className="line-clamp-2 text-left">{locationWonString}</span></div>}
-                                {soul.fellowshipName && <div className="flex items-center gap-2.5 font-black text-[10px] text-primary uppercase tracking-widest text-left"><HeartHandshake className="h-3.5 w-3.5" /> FELLOWSHIP: {soul.fellowshipName}</div>}
-                                {soul.associationName && <div className="flex items-center gap-2.5 font-black text-[10px] text-blue-500 uppercase tracking-widest text-left"><Group className="h-3.5 w-3.5" /> ASSOCIATION: {soul.associationName}</div>}
-                            </div>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button aria-haspopup="true" size="icon" variant="ghost" className="h-9 w-9 shrink-0 rounded-full hover:bg-background shadow-sm">
-                                        <MoreHorizontal className="h-4 w-4" />
-                                        <span className="sr-only">Toggle menu</span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
-                                    <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground font-black">Record Control</DropdownMenuLabel>
-                                    <DropdownMenuItem onSelect={() => triggerAction(onEdit)} className="rounded-lg">
-                                        <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Details
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => triggerAction(onAssess)} className="rounded-lg">
-                                        <ClipboardList className="mr-2 h-4 w-4 text-primary" /> Assess Needs
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => triggerAction(onFollowUp)} className="rounded-lg">
-                                        <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => triggerAction(onViewHistory)} className="rounded-lg">
-                                        <History className="mr-2 h-4 w-4" /> Interaction History
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => triggerAction(onOpenAssignDialog)} className="rounded-lg">
-                                        <Users className="mr-2 h-4 w-4" /> Assign Community
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuSub>
-                                        <DropdownMenuSubTrigger className="rounded-lg"><Download className="mr-2 h-4 w-4" /> Export Report</DropdownMenuSubTrigger>
-                                        <DropdownMenuPortal>
-                                            <DropdownMenuSubContent className="rounded-xl">
-                                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')} className="rounded-lg">CSV (Excel)</DropdownMenuItem>
-                                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')} className="rounded-lg">PDF Document</DropdownMenuItem>
-                                            </DropdownMenuSubContent>
-                                        </DropdownMenuPortal>
-                                    </DropdownMenuSub>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onSelect={() => triggerAction(onDelete)}>
-                                        <Trash2 className="mr-2 h-4 w-4" /> Delete Permanently
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+        <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02]">
+            <div className="flex items-center justify-between p-4 gap-4">
+                <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0")}>
+                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+                            {soul.firstName?.charAt(0) || 'S'}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 text-left">
+                        <p className="font-bold truncate text-sm sm:text-base leading-tight capitalize tracking-tight text-left">
+                          {soul.firstName || 'Unknown'} {soul.lastName || ''}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left">
+                            <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                            {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20">Fellowship</Badge>}
+                            {soul.associationName && <Badge variant="outline" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter border-blue-500/20 text-blue-600 bg-blue-500/5">Association</Badge>}
+                            {myPending.length > 0 && <Badge className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary text-white animate-pulse border-none">Pending Gift</Badge>}
                         </div>
                     </div>
-                </CollapsibleContent>
-            </Collapsible>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-20 group-hover:opacity-100 transition-opacity" />
+            </div>
         </Card>
     );
 });
@@ -309,35 +317,12 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
         >
             <TableCell className="font-medium p-4 text-left">
                 <div className="flex items-center gap-4 text-left">
-                    <Dialog>
-                        <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!soul.photoURL}>
-                            <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
-                                <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
-                                    {soul.firstName?.charAt(0) || 'S'}
-                                </AvatarFallback>
-                            </Avatar>
-                        </DialogTrigger>
-                        {soul.photoURL && (
-                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
-                                <DialogHeader className="sr-only">
-                                    <DialogTitle>Photo of {soul.firstName}</DialogTitle>
-                                    <DialogDescription>Full screen view of the convert's photo.</DialogDescription>
-                                </DialogHeader>
-                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
-                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
-                                        <Image 
-                                            src={soul.photoURL} 
-                                            alt={soul.firstName} 
-                                            fill 
-                                            className="object-contain shadow-2xl ring-4 ring-white/10" 
-                                            unoptimized 
-                                        />
-                                    </div>
-                                </div>
-                            </DialogContent>
-                        )}
-                    </Dialog>
+                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0")}>
+                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+                            {soul.firstName?.charAt(0) || 'S'}
+                        </AvatarFallback>
+                    </Avatar>
                     <div className="min-w-0 text-left">
                         <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight group-hover:text-primary transition-colors text-left">
                           {soul.firstName} {soul.lastName}
@@ -376,19 +361,19 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
                     <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}><Button size="icon" variant="ghost" className="h-8 w-8 rounded-full"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Soul Control</DropdownMenuLabel>
-                        <DropdownMenuItem onSelect={() => triggerAction(onEdit)}>
+                        <DropdownMenuItem onSelect={() => triggerAction(onEdit)} className="rounded-lg">
                             <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => triggerAction(onAssess)}>
+                        <DropdownMenuItem onSelect={() => triggerAction(onAssess)} className="rounded-lg">
                             <ClipboardList className="mr-2 h-4 w-4 text-primary" /> Assess Needs
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => triggerAction(onFollowUp)}>
+                        <DropdownMenuItem onSelect={() => triggerAction(onFollowUp)} className="rounded-lg">
                             <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => triggerAction(onViewHistory)}>
+                        <DropdownMenuItem onSelect={() => triggerAction(onViewHistory)} className="rounded-lg">
                             <History className="mr-2 h-4 w-4" /> Interaction History
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => triggerAction(onOpenAssignDialog)}>
+                        <DropdownMenuItem onSelect={() => triggerAction(onOpenAssignDialog)} className="rounded-lg">
                             <Users className="mr-2 h-4 w-4" /> Assign Community
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -473,8 +458,27 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
       return (
         <div className="space-y-px">
             {souls.map((soul) => (
-                <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} onAssess={onAssess} />
+                <SoulCard key={soul.id} soul={soul} onFollowUp={onFollowUp} onViewHistory={onViewHistory} onExportSingle={onExportSingle} onOpenAssignDialog={onOpenAssignDialog} onEdit={onEdit} onDelete={onDelete} onAssess={onAssess} onClick={() => setSelectedId(soul.id)} />
             ))}
+            <Sheet open={isMobile && !!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
+                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <div className="p-8 border-b shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left flex-shrink-0">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Sparkles className="h-4 w-4 text-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity Hub</span>
+                            </div>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Identity Profile</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Full spiritual snapshot for the harvest workforce.</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <ScrollArea className="flex-grow min-h-0">
+                        <div className="p-6 pb-24">
+                            {selectedSoul && <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} />}
+                        </div>
+                    </ScrollArea>
+                </SheetContent>
+            </Sheet>
         </div>
       )
   }
@@ -496,7 +500,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         <TableRow className="hover:bg-transparent">
                         <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
                         <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Contact</TableHead>
-                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
+                        <TableHead className="p-4 text-[10px) font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
                         <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Placements</TableHead>
                         <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Latest Log</TableHead>
                         <TableHead className="p-4 text-right"><span className="sr-only">Actions</span></TableHead>
@@ -535,80 +539,8 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         exit={{ opacity: 0, x: 20 }}
                         className="space-y-6 text-left"
                     >
-                        <Card className="rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-md border-t-8 border-t-primary/20 text-left">
-                            <CardHeader className="p-8 pb-4 text-center">
-                                <div className="relative inline-block mx-auto mb-4 text-center">
-                                    <Avatar className="h-24 w-24 border-4 border-background shadow-xl ring-2 ring-primary/10">
-                                        <AvatarImage src={selectedSoul.photoURL || undefined} className="object-cover" />
-                                        <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary">{selectedSoul.firstName?.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    {selectedSoul.locationWon && (
-                                        <Button 
-                                            size="icon" 
-                                            className="absolute -bottom-1 -right-1 h-9 w-9 rounded-full shadow-lg border-2 border-background"
-                                            onClick={() => {
-                                                const loc = selectedSoul.locationWon;
-                                                const address = [loc?.street, loc?.landmark, loc?.city, loc?.state, loc?.country].filter(Boolean).join(', ');
-                                                if (address) {
-                                                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
-                                                }
-                                            }}
-                                            title="Open Map"
-                                        >
-                                            <MapPin className="h-4 w-4" />
-                                        </Button>
-                                    )}
-                                </div>
-                                <CardTitle className="text-xl font-black uppercase tracking-tight text-center">{selectedSoul.firstName} {selectedSoul.lastName}</CardTitle>
-                                <Badge className={cn("mt-2 h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center mx-auto", getStatusClasses(selectedSoul.status))} variant="outline">
-                                    {selectedSoul.status}
-                                </Badge>
-                            </CardHeader>
-                            <CardContent className="p-8 pt-0 space-y-6 text-left">
-                                <Separator className="opacity-50" />
-                                <div className="grid grid-cols-2 gap-4 text-left">
-                                    <div className="space-y-1 text-left">
-                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Demographics</p>
-                                        <p className="text-xs font-bold text-left">{selectedSoul.gender || 'N/A'} • {selectedSoul.age ? `${selectedSoul.age} yrs` : 'Age N/A'}</p>
-                                    </div>
-                                    <div className="space-y-1 text-left">
-                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Circle</p>
-                                        <p className="text-xs font-bold text-left">{selectedSoul.relationship || 'Outreach'}</p>
-                                    </div>
-                                </div>
-                                
-                                <div className="space-y-1 text-left">
-                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Kingdom Placement</p>
-                                    <div className="space-y-1.5 text-left">
-                                        <p className="text-xs font-bold flex items-center gap-2 truncate text-left">
-                                            <HeartHandshake className="h-3 w-3 text-primary shrink-0" />
-                                            {selectedSoul.fellowshipName || 'No Fellowship'}
-                                        </p>
-                                        <p className="text-xs font-bold flex items-center gap-2 truncate text-left">
-                                            <Group className="h-3 w-3 text-blue-500 shrink-0" />
-                                            {selectedSoul.associationName || 'No Association'}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-1 text-left">
-                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Milestones</p>
-                                    <div className="flex gap-2 flex-wrap text-left">
-                                        <Badge variant={selectedSoul.attendingChurch ? 'default' : 'outline'} className="text-[8px] h-5 px-1.5 uppercase font-black tracking-widest leading-none">Church</Badge>
-                                        <Badge variant={selectedSoul.inBibleStudy ? 'default' : 'outline'} className="text-[8px] h-5 px-1.5 uppercase font-black tracking-widest leading-none">Study</Badge>
-                                    </div>
-                                </div>
-
-                                <div className="pt-2 text-left">
-                                    <Button className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 text-left" onClick={() => onFollowUp(selectedSoul)}>
-                                        LOG FOLLOW-UP
-                                    </Button>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="p-4 bg-muted/10 border-t justify-center text-left">
-                                <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center">Kingdom Identity Profile</p>
-                            </CardFooter>
-                        </Card>
+                        <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} />
+                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center">Kingdom Identity Profile</p>
                     </motion.div>
                 ) : (
                     <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">

@@ -417,8 +417,8 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 </div>
             </div>
             <div className="p-8 bg-muted/5 border-t flex gap-3 text-left">
-                <Button type="button" variant="outline" onClick={() => { setIsAddResourceOpen(false); setResourceToEdit(null); }} className="flex-1 h-12 rounded-xl font-bold text-left">Cancel</Button>
-                <Button type="submit" disabled={isSubmittingResource} className="flex-1 h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left">
+                <Button type="button" variant="outline" onClick={() => { setIsAddResourceOpen(false); setResourceToEdit(null); }} className="flex-1 h-12 rounded-xl font-bold text-left text-left">Cancel</Button>
+                <Button type="submit" disabled={isSubmittingResource} className="flex-1 h-12 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left text-left">
                     {isSubmittingResource && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {resourceToEdit ? 'SAVE CHANGES' : 'SHARE SUPPLY'}
                 </Button>
@@ -444,7 +444,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     </div>
 
                     <div className="relative flex-grow max-w-md text-left">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                         <Input 
                             placeholder={`Search this circle...`} 
                             value={searchTerm}
