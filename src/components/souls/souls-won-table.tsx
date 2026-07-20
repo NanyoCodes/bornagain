@@ -114,13 +114,16 @@ const getSoulAddress = (soul: Soul) => {
 function SoulProfileContent({ 
   soul, 
   onFollowUp,
-  onEdit 
+  onEdit,
+  onAssess,
+  onOpenAssignDialog
 }: { 
   soul: Soul; 
   onFollowUp: (s: Soul) => void;
   onEdit: (s: Soul) => void;
+  onAssess: (s: Soul) => void;
+  onOpenAssignDialog: (s: Soul) => void;
 }) {
-  const loc = soul.locationWon;
   const address = getSoulAddress(soul);
   const needs = soul.needsAssessment;
 
@@ -131,7 +134,7 @@ function SoulProfileContent({
             <div className="relative inline-block mx-auto mb-4">
                 <Dialog>
                     <DialogTrigger asChild disabled={!soul.photoURL}>
-                        <Avatar className={cn("h-40 w-40 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                        <Avatar className={cn("h-40 w-40 sm:h-48 sm:w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                             <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
@@ -185,7 +188,10 @@ function SoulProfileContent({
                 <div className="space-y-3">
                     <div className="flex items-center justify-between">
                         <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Contact Identity</p>
-                        <button className="text-[9px] font-black text-primary uppercase hover:underline" onClick={() => onEdit(soul)}>edits can be done here</button>
+                        <button className="text-[9px] font-black text-primary uppercase hover:underline flex items-center gap-1" onClick={() => onEdit(soul)}>
+                            <Edit className="h-3 w-3" />
+                            edits can be done here
+                        </button>
                     </div>
                     <div className="space-y-2">
                         {soul.email && (
@@ -201,7 +207,7 @@ function SoulProfileContent({
                             </div>
                         )}
                         {soul.church && (
-                            <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground truncate">
+                            <div className="flex items-start gap-2 text-xs font-medium text-muted-foreground truncate">
                                 <Church className="h-3.5 w-3.5 text-primary shrink-0" />
                                 {soul.church}
                             </div>
@@ -218,8 +224,14 @@ function SoulProfileContent({
                 </div>
             </div>
             
-            <div className="space-y-1">
-                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">assigning fellowship and association can be done here</p>
+            <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Placement</p>
+                    <button className="text-[9px] font-black text-primary uppercase hover:underline flex items-center gap-1" onClick={() => onOpenAssignDialog(soul)}>
+                        <Users className="h-3 w-3" />
+                        assigning fellowship and association can be done here
+                    </button>
+                </div>
                 <div className="space-y-1.5">
                     <p className="text-xs font-bold flex items-center gap-2 truncate">
                         <HeartHandshake className="h-3 w-3 text-primary shrink-0" />
@@ -240,25 +252,34 @@ function SoulProfileContent({
                 </div>
             </div>
 
-            {needs && (
-              <div className="space-y-3 p-4 bg-muted/20 rounded-2xl border-2 border-dashed border-primary/10 shadow-inner">
+            <div className="space-y-3 p-4 bg-muted/20 rounded-2xl border-2 border-dashed border-primary/10 shadow-inner">
                 <div className="flex items-center justify-between">
                     <p className="text-[9px] font-black uppercase text-primary tracking-widest flex items-center gap-1.5">
                         <ClipboardList className="h-3 w-3" /> Assessed Needs
                     </p>
-                    <button className="text-[9px] font-black text-primary uppercase hover:underline" onClick={() => onEdit(soul)}>Update</button>
+                    <button className="text-[9px] font-black text-primary uppercase hover:underline flex items-center gap-1" onClick={() => onAssess(soul)}>
+                        <Edit className="h-3 w-3" />
+                        assess needs here
+                    </button>
                 </div>
-                <div className="space-y-2">
-                  {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed">&ldquo;{needs.generalImpression}&rdquo;</p>}
-                  <div className="flex flex-wrap gap-1.5">
-                    {needs.emotionalNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black">Emotional</Badge>}
-                    {needs.physicalNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black">Physical</Badge>}
-                    {needs.financialNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black">Financial</Badge>}
-                    {needs.socialNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black">Social</Badge>}
-                  </div>
-                </div>
-              </div>
-            )}
+                {needs ? (
+                    <div className="space-y-2">
+                        {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed">&ldquo;{needs.generalImpression}&rdquo;</p>}
+                        <div className="flex flex-wrap gap-1.5">
+                            {needs.emotionalNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black">Emotional</Badge>}
+                            {needs.physicalNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black">Physical</Badge>}
+                            {needs.financialNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black">Financial</Badge>}
+                            {needs.socialNeeds && <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black">Social</Badge>}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="py-2">
+                        <Button variant="ghost" size="sm" className="h-8 text-[9px] font-black uppercase border border-primary/20 text-primary w-full" onClick={() => onAssess(soul)}>
+                            BEGIN ASSESSMENT
+                        </Button>
+                    </div>
+                )}
+            </div>
 
             <div className="pt-2">
                 <Button className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20" onClick={() => onFollowUp(soul)}>
@@ -315,10 +336,6 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
     [pendingProvisions, soul.id]);
 
     const handleItemClick = (e: React.MouseEvent) => {
-        const address = getSoulAddress(soul);
-        if (address) {
-            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
-        }
         onClick();
     };
 
@@ -375,10 +392,6 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
     const handleRowClick = (e: React.MouseEvent) => {
-        const address = getSoulAddress(soul);
-        if (address) {
-            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
-        }
         onSelect();
     };
 
@@ -533,7 +546,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40" />
                     </div>
                     <h3 className="text-xl font-black font-headline uppercase tracking-tight">Your Harvest Field</h3>
-                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed italic opacity-60 text-balance">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
+                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
                 </div>
             </CardContent>
         </Card>
@@ -560,7 +573,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                     </div>
                     <ScrollArea className="flex-grow min-h-0">
                         <div className="p-6 pb-24">
-                            {selectedSoul && <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} />}
+                            {selectedSoul && <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} onAssess={onAssess} onOpenAssignDialog={onOpenAssignDialog} />}
                         </div>
                     </ScrollArea>
                 </SheetContent>
@@ -625,7 +638,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         exit={{ opacity: 0, x: 20 }}
                         className="space-y-6"
                     >
-                        <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} />
+                        <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} onAssess={onAssess} onOpenAssignDialog={onOpenAssignDialog} />
                         <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center">Kingdom Identity Profile</p>
                     </motion.div>
                 ) : (
@@ -639,4 +652,3 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
     </div>
   );
 }
-

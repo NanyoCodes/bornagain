@@ -267,7 +267,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 <FormControl>
                     <Input placeholder="John" {...field} value={field.value ?? ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
                 </FormControl>
-                <FormMessage />
+                <FormItem />
                 </FormItem>
             )}
             />
