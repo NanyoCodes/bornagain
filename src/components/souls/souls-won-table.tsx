@@ -133,7 +133,6 @@ function SoulProfileContent({
 }) {
   const address = getSoulAddress(soul);
   const needs = soul.needsAssessment;
-  const wonAt = safeToDate(soul.wonAt);
 
   return (
     <div className="space-y-6 text-left">
@@ -218,6 +217,12 @@ function SoulProfileContent({
                     ) : (
                         <p className="text-[9px] text-muted-foreground/40 italic text-left">No phone recorded</p>
                     )}
+                    {soul.email && (
+                        <div className="flex items-center gap-2 text-xs font-bold text-foreground text-left">
+                            <Mail className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
+                            {soul.email}
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -268,6 +273,8 @@ function SoulProfileContent({
                     {[
                         { label: 'Church', val: soul.attendingChurch, icon: Church },
                         { label: 'Study', val: soul.inBibleStudy, icon: BookOpen },
+                        { label: 'Prayer', val: soul.attendingPrayer, icon: Zap },
+                        { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck },
                     ].map(milestone => (
                         <div key={milestone.label} className={cn(
                             "flex items-center gap-2 p-2 rounded-xl border transition-all text-left",
@@ -280,16 +287,16 @@ function SoulProfileContent({
                 </div>
             </div>
 
-            {needs && (
-                <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left">
-                    <div className="flex items-center justify-between text-left">
-                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left">
-                            <ClipboardList className="h-3.5 w-3.5 text-left" /> Assessed Needs
-                        </p>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onAssess(soul)}>
-                            <Edit className="h-4 w-4 text-left" />
-                        </Button>
-                    </div>
+            <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left">
+                <div className="flex items-center justify-between text-left">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left">
+                        <ClipboardList className="h-3.5 w-3.5 text-left" /> Assessed Needs
+                    </p>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onAssess(soul)}>
+                        <Edit className="h-4 w-4 text-left" />
+                    </Button>
+                </div>
+                {needs ? (
                     <div className="space-y-4 text-left">
                         {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
                         
@@ -329,8 +336,14 @@ function SoulProfileContent({
                             </div>
                         )}
                     </div>
-                </div>
-            )}
+                ) : (
+                    <div className="py-4 text-center">
+                        <Button variant="outline" size="sm" className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5" onClick={() => onAssess(soul)}>
+                            BEGIN ASSESSMENT
+                        </Button>
+                    </div>
+                )}
+            </div>
 
             <div className="pt-2 text-left">
                 <Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 text-left" onClick={() => onFollowUp(soul)}>
