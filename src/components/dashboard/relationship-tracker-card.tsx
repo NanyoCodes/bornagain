@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, updateDoc, getDocs, getDoc } from 'firebase/firestore';
@@ -64,6 +64,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -153,7 +155,7 @@ function SoulSelectionDialog({
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0">
                         <SheetHeader className="text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">{desc}</SheetDescription>
@@ -252,7 +254,7 @@ function ShareWordDialog({
         <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
             <Input 
-                placeholder="Search Bible (e.g. John 3:16 or 'Love')..." 
+                placeholder="Search Bible (e.g. John 3:16)..." 
                 value={bibleSearch}
                 onChange={e => setBibleSearch(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
@@ -290,7 +292,7 @@ function ShareWordDialog({
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <Button onClick={onBrowseBible} variant="outline" className="h-20 rounded-2xl gap-2 border-2 border-muted-foreground/10 text-muted-foreground hover:bg-muted/30 group transition-all flex flex-col items-center justify-center p-2">
+        <Button onClick={onBrowseBible} variant="outline" className="h-20 rounded-2xl gap-2 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-2">
             <BookOpen className="h-5 w-5 mb-1 group-hover:scale-110 transition-transform" />
             <span className="font-black text-[10px] uppercase tracking-widest">Browse Bible</span>
         </Button>
@@ -390,7 +392,7 @@ export function RelationshipTrackerCard() {
   const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
   const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
-  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = React.useState(false);
+  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
   const [customMessageText, setCustomMessageText] = useState('');
 
   const { userProfile, loading: profileLoading } = useUserProfile();
@@ -736,7 +738,7 @@ export function RelationshipTrackerCard() {
                                                           "text-[9px] font-black uppercase tracking-tight block truncate",
                                                           isCompleted ? "text-primary" : "text-foreground"
                                                       )}>
-                                                          {action.label}
+                                                          {item.label}
                                                       </span>
                                                   </div>
                                               </>
