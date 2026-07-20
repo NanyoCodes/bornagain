@@ -236,7 +236,7 @@ function SoulProfileContent({
 
             <div className="space-y-4 text-left text-left">
                 <div className="flex items-center justify-between text-left text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left">assigning fellowship and association can be done here</p>
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left">Kingdom Placement</p>
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left" onClick={() => onOpenAssignDialog(soul)}>
                         <Edit className="h-4 w-4 text-left text-left" />
                     </Button>
@@ -266,7 +266,7 @@ function SoulProfileContent({
                 <div className="grid grid-cols-2 gap-2 text-left text-left">
                     {[
                         { label: 'Church', val: soul.attendingChurch, icon: Church },
-                        { label: 'Word Study', val: soul.inBibleStudy, icon: BookOpen },
+                        { label: 'Study', val: soul.inBibleStudy, icon: BookOpen },
                         { label: 'Prayer', val: soul.attendingPrayer, icon: Zap },
                         { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck },
                     ].map(milestone => (
@@ -284,7 +284,7 @@ function SoulProfileContent({
             <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left text-left">
                 <div className="flex items-center justify-between text-left text-left text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left text-left text-left">
-                        <ClipboardList className="h-3.5 w-3.5 text-left text-left text-left" /> assess needs here
+                        <ClipboardList className="h-3.5 w-3.5 text-left text-left text-left" /> Assessed Needs
                     </p>
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left" onClick={() => onAssess(soul)}>
                         <Edit className="h-4 w-4 text-left text-left text-left" />
@@ -341,7 +341,7 @@ function SoulProfileContent({
 
             <div className="pt-2 text-left text-left">
                 <Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 text-left text-left" onClick={() => onFollowUp(soul)}>
-                    LOG INTERACTION
+                    LOG FOLLOW-UP
                 </Button>
             </div>
         </CardContent>
@@ -455,6 +455,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
                     <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}><Button size="icon" variant="ghost" className="h-8 w-8 rounded-full text-left text-left"><MoreHorizontal className="h-4 w-4 text-left text-left" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl text-left text-left">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black px-4 py-2 text-left text-left">Soul Control</DropdownMenuLabel>
+                        <DropdownMenuSeparator className="text-left text-left" />
                         <DropdownMenuItem onSelect={() => onEdit(soul)} className="rounded-lg text-left text-left">
                             <Edit className="mr-2 h-4 w-4 text-primary text-left text-left" /> Edit Details
                         </DropdownMenuItem>
@@ -557,7 +558,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
             <Sheet open={isMobile && !!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
                 <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
+                        <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
                                 <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity Hub</span>
