@@ -30,6 +30,7 @@ import { LocationWonInput } from "./location-won-input";
 import { Label } from "@/components/ui/label";
 import { Country } from 'country-state-city';
 import { ImageUpload } from "../common/image-upload";
+import { Textarea } from "../ui/textarea";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -453,7 +454,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Campaign Name</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value || ""}>
                   <FormControl>
-                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                       <SelectValue placeholder={!campaigns ? "Loading..." : "Select Mission"} />
                     </SelectTrigger>
                   </FormControl>
@@ -556,7 +557,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                                 <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nationality</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                     <FormControl>
-                                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                    <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                         <SelectValue placeholder="Select Country" />
                                     </SelectTrigger>
                                     </FormControl>

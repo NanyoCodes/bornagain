@@ -25,12 +25,12 @@ import {
   UserPlus,
   Search,
   PlusCircle,
-  MapPin,
   ArrowLeft,
   ArrowRight,
   Target,
   Globe,
-  X
+  X,
+  MapPin
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -279,8 +279,8 @@ function ScriptureSelectionDialog({
     );
 
     const dialogHeader = (
-        <div className="p-8 border-b bg-muted/10">
-            <div className="flex items-center gap-3 mb-2">
+        <div className="p-8 border-b bg-muted/10 text-left">
+            <div className="flex items-center gap-3 mb-2 text-left">
                 <BookOpen className="h-5 w-5 text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Scripture Hub</span>
             </div>
@@ -294,7 +294,7 @@ function ScriptureSelectionDialog({
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     {dialogHeader}
-                    <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0">
+                    <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0 text-left">
                          <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                             <Input 
@@ -316,7 +316,7 @@ function ScriptureSelectionDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                 {dialogHeader}
                 <div className="p-6 space-y-6">
                     <div className="relative">

@@ -80,6 +80,7 @@ import Image from "next/image";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import { motion, AnimatePresence } from 'framer-motion';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -146,12 +147,10 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
         })[0];
     }, [soul.followUpLog]);
 
-    const wonAt = React.useMemo(() => safeToDate(soul.wonAt) ?? new Date(), [soul.wonAt]);
     const locationWonString = React.useMemo(() => {
         if (!soul.locationWon) return null;
         return [soul.locationWon.street, soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ');
     }, [soul.locationWon]);
-    const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
     const triggerAction = (action: (s: Soul) => void) => {
       requestAnimationFrame(() => {
@@ -166,7 +165,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                     <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                         <Dialog>
                             <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!soul.photoURL}>
-                                <Avatar className={cn("h-10 w-10 sm:h-11 sm:w-11 shrink-0 border shadow-inner transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                                <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
                                     <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                                     <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
                                         {soul.firstName?.charAt(0) || 'S'}
@@ -194,11 +193,11 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                             )}
                         </Dialog>
                         <CollapsibleTrigger className="min-w-0 text-left flex-1 outline-none">
-                            <div className="min-w-0">
-                                <p className="font-bold truncate text-sm sm:text-base leading-tight capitalize tracking-tight">
+                            <div className="min-w-0 text-left">
+                                <p className="font-bold truncate text-sm sm:text-base leading-tight capitalize tracking-tight text-left">
                                   {soul.firstName || 'Unknown'} {soul.lastName || ''}
                                 </p>
-                                <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
+                                <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left">
                                     <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                                     {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20">Fellowship</Badge>}
                                     {soul.associationName && <Badge variant="outline" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter border-blue-500/20 text-blue-600 bg-blue-500/5">Association</Badge>}
@@ -212,18 +211,18 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                     </CollapsibleTrigger>
                 </div>
                 <CollapsibleContent className="px-4 pb-4">
-                    <div className="border-t pt-4 space-y-5">
-                        <div className="flex justify-between items-start gap-4">
+                    <div className="border-t pt-4 space-y-5 text-left">
+                        <div className="flex justify-between items-start gap-4 text-left">
                             <div className="text-xs sm:text-sm text-muted-foreground space-y-3 flex-1 min-w-0 font-medium text-left">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 text-left">
                                     <Badge variant="secondary" className="h-4 px-1.5 rounded uppercase tracking-widest text-[8px] font-black opacity-80">Ref: {soul.source}</Badge>
                                     {soul.sourceDetails && <span className="truncate text-[10px] opacity-60 font-bold uppercase tracking-tight">• {soul.sourceDetails}</span>}
                                 </div>
                                 {soul.phone && <div className="truncate flex items-center gap-2.5 font-bold"><Phone className="h-3.5 w-3.5 text-primary"/>{soul.phone}</div>}
-                                {soul.church && <div className="flex items-start gap-2.5 leading-snug"><Church className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> {soul.church}</div>}
-                                {locationWonString && <div className="flex items-start gap-2.5 leading-snug"><MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> <span className="line-clamp-2">{locationWonString}</span></div>}
-                                {soul.fellowshipName && <div className="flex items-center gap-2.5 font-black text-[10px] text-primary uppercase tracking-widest"><HeartHandshake className="h-3.5 w-3.5" /> FELLOWSHIP: {soul.fellowshipName}</div>}
-                                {soul.associationName && <div className="flex items-center gap-2.5 font-black text-[10px] text-blue-500 uppercase tracking-widest"><Group className="h-3.5 w-3.5" /> ASSOCIATION: {soul.associationName}</div>}
+                                {soul.church && <div className="flex items-start gap-2.5 leading-snug text-left"><Church className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> {soul.church}</div>}
+                                {locationWonString && <div className="flex items-start gap-2.5 leading-snug text-left"><MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> <span className="line-clamp-2 text-left">{locationWonString}</span></div>}
+                                {soul.fellowshipName && <div className="flex items-center gap-2.5 font-black text-[10px] text-primary uppercase tracking-widest text-left"><HeartHandshake className="h-3.5 w-3.5" /> FELLOWSHIP: {soul.fellowshipName}</div>}
+                                {soul.associationName && <div className="flex items-center gap-2.5 font-black text-[10px] text-blue-500 uppercase tracking-widest text-left"><Group className="h-3.5 w-3.5" /> ASSOCIATION: {soul.associationName}</div>}
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -309,7 +308,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
             onClick={onSelect}
         >
             <TableCell className="font-medium p-4 text-left">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 text-left">
                     <Dialog>
                         <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!soul.photoURL}>
                             <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
@@ -340,25 +339,25 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
                         )}
                     </Dialog>
                     <div className="min-w-0 text-left">
-                        <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight group-hover:text-primary transition-colors">
+                        <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight group-hover:text-primary transition-colors text-left">
                           {soul.firstName} {soul.lastName}
                         </div>
-                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
+                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
                     </div>
                 </div>
             </TableCell>
-            <TableCell className="hidden md:table-cell p-4 text-left">{soul.phone && <div className="text-xs font-bold text-muted-foreground">{soul.phone}</div>}</TableCell>
+            <TableCell className="hidden md:table-cell p-4 text-left">{soul.phone && <div className="text-xs font-bold text-muted-foreground text-left">{soul.phone}</div>}</TableCell>
             <TableCell className="p-4 text-left"><Badge className={cn("w-[110px] justify-center text-[10px] uppercase font-black tracking-widest leading-none h-6", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
             <TableCell className="hidden lg:table-cell p-4 text-left">
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 text-left">
                     {soul.fellowshipId && soul.fellowshipName ? (
-                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary leading-none">
+                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary leading-none text-left">
                             <HeartHandshake className="h-3 w-3 shrink-0" />
                             {soul.fellowshipName}
                         </div>
                     ) : null}
                     {soul.associationId && soul.associationName ? (
-                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-blue-500 leading-none">
+                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-blue-500 leading-none text-left">
                             <Group className="h-3 w-3 shrink-0" />
                             {soul.associationName}
                         </div>
@@ -481,8 +480,8 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start">
-        <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden flex-1 w-full">
+    <div className="flex flex-col lg:flex-row gap-8 items-start text-left">
+        <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden flex-1 w-full text-left">
             <CardHeader className="p-8 border-b bg-muted/5 text-left">
                 <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
                     <Heart className="h-6 w-6 text-primary fill-current" />
@@ -491,7 +490,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                 <CardDescription className="text-base font-medium text-left">Keep track of spiritual development and community integration.</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto text-left">
                     <Table>
                     <TableHeader className="bg-muted/10">
                         <TableRow className="hover:bg-transparent">
@@ -526,7 +525,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
         </Card>
 
         {/* Desktop Detailed Preview Panel */}
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left">
             <AnimatePresence mode="wait">
                 {selectedSoul ? (
                     <motion.div
@@ -534,11 +533,11 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="space-y-6"
+                        className="space-y-6 text-left"
                     >
-                        <Card className="rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-md border-t-8 border-t-primary/20">
+                        <Card className="rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-md border-t-8 border-t-primary/20 text-left">
                             <CardHeader className="p-8 pb-4 text-center">
-                                <div className="relative inline-block mx-auto mb-4">
+                                <div className="relative inline-block mx-auto mb-4 text-center">
                                     <Avatar className="h-24 w-24 border-4 border-background shadow-xl ring-2 ring-primary/10">
                                         <AvatarImage src={selectedSoul.photoURL || undefined} className="object-cover" />
                                         <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary">{selectedSoul.firstName?.charAt(0)}</AvatarFallback>
@@ -560,61 +559,61 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                                         </Button>
                                     )}
                                 </div>
-                                <CardTitle className="text-xl font-black uppercase tracking-tight">{selectedSoul.firstName} {selectedSoul.lastName}</CardTitle>
-                                <Badge className={cn("mt-2 h-5 px-2 text-[9px] uppercase font-black tracking-widest", getStatusClasses(selectedSoul.status))} variant="outline">
+                                <CardTitle className="text-xl font-black uppercase tracking-tight text-center">{selectedSoul.firstName} {selectedSoul.lastName}</CardTitle>
+                                <Badge className={cn("mt-2 h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center mx-auto", getStatusClasses(selectedSoul.status))} variant="outline">
                                     {selectedSoul.status}
                                 </Badge>
                             </CardHeader>
                             <CardContent className="p-8 pt-0 space-y-6 text-left">
                                 <Separator className="opacity-50" />
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Demographics</p>
-                                        <p className="text-xs font-bold">{selectedSoul.gender || 'N/A'} • {selectedSoul.age ? `${selectedSoul.age} yrs` : 'Age N/A'}</p>
+                                <div className="grid grid-cols-2 gap-4 text-left">
+                                    <div className="space-y-1 text-left">
+                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Demographics</p>
+                                        <p className="text-xs font-bold text-left">{selectedSoul.gender || 'N/A'} • {selectedSoul.age ? `${selectedSoul.age} yrs` : 'Age N/A'}</p>
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Circle</p>
-                                        <p className="text-xs font-bold">{selectedSoul.relationship || 'Outreach'}</p>
+                                    <div className="space-y-1 text-left">
+                                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Circle</p>
+                                        <p className="text-xs font-bold text-left">{selectedSoul.relationship || 'Outreach'}</p>
                                     </div>
                                 </div>
                                 
-                                <div className="space-y-1">
-                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Placement</p>
-                                    <div className="space-y-1.5">
-                                        <p className="text-xs font-bold flex items-center gap-2 truncate">
+                                <div className="space-y-1 text-left">
+                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Kingdom Placement</p>
+                                    <div className="space-y-1.5 text-left">
+                                        <p className="text-xs font-bold flex items-center gap-2 truncate text-left">
                                             <HeartHandshake className="h-3 w-3 text-primary shrink-0" />
                                             {selectedSoul.fellowshipName || 'No Fellowship'}
                                         </p>
-                                        <p className="text-xs font-bold flex items-center gap-2 truncate">
+                                        <p className="text-xs font-bold flex items-center gap-2 truncate text-left">
                                             <Group className="h-3 w-3 text-blue-500 shrink-0" />
                                             {selectedSoul.associationName || 'No Association'}
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="space-y-1">
-                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Spiritual Milestones</p>
-                                    <div className="flex gap-2 flex-wrap">
+                                <div className="space-y-1 text-left">
+                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Milestones</p>
+                                    <div className="flex gap-2 flex-wrap text-left">
                                         <Badge variant={selectedSoul.attendingChurch ? 'default' : 'outline'} className="text-[8px] h-5 px-1.5 uppercase font-black tracking-widest leading-none">Church</Badge>
                                         <Badge variant={selectedSoul.inBibleStudy ? 'default' : 'outline'} className="text-[8px] h-5 px-1.5 uppercase font-black tracking-widest leading-none">Study</Badge>
                                     </div>
                                 </div>
 
-                                <div className="pt-2">
-                                    <Button className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20" onClick={() => onFollowUp(selectedSoul)}>
+                                <div className="pt-2 text-left">
+                                    <Button className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 text-left" onClick={() => onFollowUp(selectedSoul)}>
                                         LOG FOLLOW-UP
                                     </Button>
                                 </div>
                             </CardContent>
-                            <CardFooter className="p-4 bg-muted/10 border-t justify-center">
-                                <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em]">Kingdom Identity Profile</p>
+                            <CardFooter className="p-4 bg-muted/10 border-t justify-center text-left">
+                                <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center">Kingdom Identity Profile</p>
                             </CardFooter>
                         </Card>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5">
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">
                         <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Select a record to preview identity</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>

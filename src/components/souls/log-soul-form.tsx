@@ -568,7 +568,7 @@ export function LogSoulForm({
                             <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nationality</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
-                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                                <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                     <SelectValue placeholder="Select Country" />
                                 </SelectTrigger>
                                 </FormControl>
@@ -589,7 +589,7 @@ export function LogSoulForm({
                             <FormItem>
                             <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Initial Note</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="e.g., Met at the park, prayed together..." {...field} value={field.value || ""} className="rounded-2xl bg-muted/20 border-none shadow-inner"/>
+                                <Textarea placeholder="e.g., Met at the park, prayed together..." {...field} value={field.value || ""} className="rounded-2xl bg-muted/20 border-none shadow-inner text-left"/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>
