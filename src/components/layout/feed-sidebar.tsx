@@ -121,7 +121,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                         </div>
                         <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">HARVEST</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-6 pt-2 space-y-4">
+                    <CardContent className="p-6 pt-2 space-y-4 text-left">
                         <div className="space-y-1">
                             <div className="flex justify-between items-baseline">
                                 <span className="text-3xl font-black">{totalSouls}</span>
@@ -181,7 +181,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                     </CardHeader>
                     <CardContent className="p-5 pt-4">
                         <div className="p-5 rounded-2xl bg-primary/5 border-2 border-dashed border-primary/20 relative group">
-                            <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
+                            <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110 text-left" />
                             <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance text-left">
                                 &ldquo;{randomSeed.text}&rdquo;
                             </p>
@@ -216,7 +216,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                         <span className="font-black uppercase tracking-widest text-[10px]">Kindness Center</span>
                     </Link>
                 </CardContent>
-                <CardFooter className="p-5 pt-0 text-left">
+                <CardFooter className="p-5 pt-0">
                     <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full">
                         <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic">
                             "Equipping the saints for the work of ministry." — Eph 4:12

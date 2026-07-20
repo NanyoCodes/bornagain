@@ -25,9 +25,7 @@ import {
   UserPlus,
   Search,
   PlusCircle,
-  ArrowRight,
-  ArrowLeft,
-  MapPin
+  ArrowRight
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -38,6 +36,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { actionItems } from '@/lib/follow-up-data';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Dialog,
   DialogContent,
@@ -52,6 +51,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
+import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -67,12 +67,6 @@ const iconMap: Record<string, any> = {
     'text_message': MessageSquare,
     'helped_with_need': Heart,
     'invited_to_event': Calendar,
-};
-
-const getSoulAddress = (soul: Soul) => {
-  const loc = soul.locationWon;
-  if (!loc) return '';
-  return [loc.street, loc.city, loc.state, loc.country].filter(Boolean).join(', ');
 };
 
 function SoulSelectionDialog({ 
@@ -151,11 +145,11 @@ function SoulSelectionDialog({
                     <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-                            <input 
+                            <Input 
                                 placeholder="Search by name..." 
                                 value={search} 
                                 onChange={e => setSearch(e.target.value)}
-                                className="w-full rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                                className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                             />
                         </div>
                         <ScrollArea className="flex-1 border rounded-3xl bg-muted/5">
@@ -179,11 +173,11 @@ function SoulSelectionDialog({
                 <div className="p-6 space-y-6">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-                        <input 
+                        <Input 
                             placeholder="Search by name..." 
                             value={search} 
                             onChange={e => setSearch(e.target.value)}
-                            className="w-full rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
+                            className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
                     <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
@@ -198,6 +192,7 @@ function SoulSelectionDialog({
 export function RelationshipTrackerCard() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
+  const router = useRouter();
   const { toast } = useToast();
   const [completedToday, setCompletedToday] = useState<string[]>([]);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -238,26 +233,48 @@ export function RelationshipTrackerCard() {
     
     setIsSoulDialogOpen(false);
     
-    // Execute respective follow-up logic
+    const action = actionItems.find(a => a.id === selectedActionId);
+    if (!action) return;
+
+    // 1. Identify Linking/Special Actions
     if (selectedActionId === 'visited_home') {
-        const address = getSoulAddress(soul);
+        const address = [soul.locationWon?.street, soul.locationWon?.city, soul.locationWon?.state, soul.locationWon?.country].filter(Boolean).join(', ');
         if (address) {
             window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+        } else {
+            toast({ variant: 'destructive', title: 'Location Undefined', description: `Please set a location for ${soul.firstName} first.` });
+            return;
         }
     } else if (selectedActionId === 'phone_call' && soul.phone) {
         window.location.href = `tel:${soul.phone}`;
+    } else if (selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift') {
+        const provisionKey = `testify_pending_provisions_${user.uid}`;
+        const stored = localStorage.getItem(provisionKey);
+        let current = stored ? JSON.parse(stored) : [];
+        if (!Array.isArray(current)) current = [];
+        
+        if (!current.some((p: any) => p.soulId === soul.id && p.actionId === selectedActionId)) {
+            current.push({
+                soulId: soul.id,
+                soulName: `${soul.firstName} ${soul.lastName}`,
+                actionId: selectedActionId,
+                timestamp: Date.now()
+            });
+            localStorage.setItem(provisionKey, JSON.stringify(current));
+            window.dispatchEvent(new Event('testify_pending_action_update'));
+        }
+
+        const path = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+        router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
     }
 
     setTogglingId(selectedActionId);
-
-    const action = actionItems.find(a => a.id === selectedActionId);
-    if (!action) return;
 
     const today = new Date();
     const dateString = format(today, 'yyyy-MM-dd');
     const batch = writeBatch(firestore);
 
-    // 1. Update user's daily discipline (habit tracking)
+    // 2. Update user's daily discipline (habit tracking)
     const wasCompleted = completedToday.includes(selectedActionId);
     const newCompleted = [...completedToday];
     if (!wasCompleted) newCompleted.push(selectedActionId);
@@ -274,11 +291,11 @@ export function RelationshipTrackerCard() {
         date: serverTimestamp()
     }, { merge: true });
 
-    // 2. Update soul's history
+    // 3. Update soul's history
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(), 
-        note: `Logged via Kingdom Connections: ${action.label}`,
+        note: `Logged via Kingdom Connections: ${action.label} (Initiated)`,
         actions: [selectedActionId],
         memberId: user.uid,
         memberName: memberName,

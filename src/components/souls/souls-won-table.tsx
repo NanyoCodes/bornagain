@@ -79,6 +79,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
@@ -91,7 +97,6 @@ import { doc } from "firebase/firestore";
 import Image from 'next/image';
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -188,22 +193,10 @@ function SoulProfileContent({
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Full Name</p>
                         <p className="text-xs font-bold truncate capitalize text-left">{soul.firstName} {soul.lastName}</p>
                     </div>
-                    {soul.nickname && (
-                        <div className="space-y-1 text-left">
-                            <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Nickname</p>
-                            <p className="text-xs font-bold truncate capitalize text-left">{soul.nickname}</p>
-                        </div>
-                    )}
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Gender/Age</p>
                         <p className="text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
-                    {soul.nationality && (
-                        <div className="space-y-1 text-left">
-                            <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Nationality</p>
-                            <p className="text-xs font-bold truncate text-left">{soul.nationality}</p>
-                        </div>
-                    )}
                 </div>
             </div>
 
@@ -217,19 +210,13 @@ function SoulProfileContent({
                     </Button>
                 </div>
                 <div className="space-y-2 text-left">
-                    {soul.email ? (
-                        <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground truncate text-left">
-                            <Mail className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
-                            {soul.email}
-                        </div>
-                    ) : null}
                     {soul.phone ? (
                         <div className="flex items-center gap-2 text-xs font-bold text-foreground text-left">
                             <Phone className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
                             {soul.phone}
                         </div>
                     ) : (
-                        <p className="text-[9px] text-muted-foreground/40 italic text-left">No contact details recorded</p>
+                        <p className="text-[9px] text-muted-foreground/40 italic text-left">No phone recorded</p>
                     )}
                 </div>
             </div>
@@ -237,34 +224,12 @@ function SoulProfileContent({
             <Separator className="opacity-20 text-left" />
 
             <div className="space-y-4 text-left">
-                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Mission Logistics</p>
-                <div className="space-y-3 text-left">
-                    <div className="p-3 rounded-xl bg-muted/20 border border-dashed space-y-2 text-left">
-                        <div className="flex items-start gap-2 text-left">
-                            <MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5 text-left" />
-                            <div className="min-w-0 flex-1 text-left">
-                                <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest text-left">Location Won</p>
-                                <p className="text-xs font-bold leading-snug break-words capitalize text-left">{address || 'Global Network'}</p>
-                                {soul.locationWon?.landmark && <p className="text-[10px] text-primary/60 mt-1 italic font-medium break-words capitalize text-left">Near: {soul.locationWon.landmark}</p>}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 text-left">
-                        <div className="space-y-1 text-left">
-                            <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Harvest Source</p>
-                            <p className="text-xs font-bold flex items-center gap-1.5 truncate text-left">
-                                <Target className="h-3 w-3 text-primary text-left" />
-                                {soul.source}
-                            </p>
-                        </div>
-                        <div className="space-y-1 text-left">
-                            <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Date Won</p>
-                            <p className="text-xs font-bold flex items-center gap-1.5 truncate text-left">
-                                <CalendarDays className="h-3 w-3 text-primary text-left" />
-                                {wonAt ? format(wonAt, 'MMM d, yyyy') : 'Recently'}
-                            </p>
-                        </div>
-                    </div>
+                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Harvest Context</p>
+                <div className="space-y-1 text-left">
+                    <p className="text-xs font-bold flex items-center gap-1.5 truncate text-left">
+                        <Target className="h-3 w-3 text-primary text-left" />
+                        Source: {soul.source}
+                    </p>
                 </div>
             </div>
 
@@ -282,14 +247,14 @@ function SoulProfileContent({
                         <HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left" />
                         <div className="min-w-0 text-left">
                             <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p>
-                            <p className="text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'Awaiting Placement'}</p>
+                            <p className="text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left">
                         <Users className="h-4 w-4 text-blue-500 shrink-0 text-left" />
                         <div className="min-w-0 text-left">
                             <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p>
-                            <p className="text-xs font-bold truncate capitalize text-left">{soul.associationName || 'Awaiting Placement'}</p>
+                            <p className="text-xs font-bold truncate capitalize text-left">{soul.associationName || 'No Association'}</p>
                         </div>
                     </div>
                 </div>
@@ -302,9 +267,7 @@ function SoulProfileContent({
                 <div className="grid grid-cols-2 gap-2 text-left">
                     {[
                         { label: 'Church', val: soul.attendingChurch, icon: Church },
-                        { label: 'Word Study', val: soul.inBibleStudy, icon: BookOpen },
-                        { label: 'Prayer', val: soul.attendingPrayer, icon: Zap },
-                        { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck },
+                        { label: 'Study', val: soul.inBibleStudy, icon: BookOpen },
                     ].map(milestone => (
                         <div key={milestone.label} className={cn(
                             "flex items-center gap-2 p-2 rounded-xl border transition-all text-left",
@@ -317,54 +280,42 @@ function SoulProfileContent({
                 </div>
             </div>
 
-            <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left">
-                <div className="flex items-center justify-between text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left">
-                        <ClipboardList className="h-3.5 w-3.5 text-left" /> Assessed Needs
-                    </p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onAssess(soul)}>
-                        <Edit className="h-4 w-4 text-left" />
-                    </Button>
-                </div>
-                {needs ? (
+            {needs && (
+                <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left">
+                    <div className="flex items-center justify-between text-left">
+                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left">
+                            <ClipboardList className="h-3.5 w-3.5 text-left" /> Assessed Needs
+                        </p>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onAssess(soul)}>
+                            <Edit className="h-4 w-4 text-left" />
+                        </Button>
+                    </div>
                     <div className="space-y-4 text-left">
                         {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
                         
-                        <div className="space-y-3 text-left">
+                        <div className="grid grid-cols-2 gap-3 text-left">
                             {needs.emotionalNeeds && (
                                 <div className="space-y-1 text-left">
-                                    <div className="flex items-center gap-2 text-left">
-                                        <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge>
-                                        <Heart className="h-3 w-3 text-red-500 text-left" />
-                                    </div>
-                                    <p className="text-[10px] text-muted-foreground pl-1 font-medium leading-relaxed text-left">{needs.emotionalNeeds}</p>
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.emotionalNeeds}</p>
                                 </div>
                             )}
                             {needs.physicalNeeds && (
                                 <div className="space-y-1 text-left">
-                                    <div className="flex items-center gap-2 text-left">
-                                        <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge>
-                                        <Zap className="h-3 w-3 text-amber-500 text-left" />
-                                    </div>
-                                    <p className="text-[10px] text-muted-foreground pl-1 font-medium leading-relaxed text-left">{needs.physicalNeeds}</p>
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.physicalNeeds}</p>
                                 </div>
                             )}
                             {needs.financialNeeds && (
                                 <div className="space-y-1 text-left">
-                                    <div className="flex items-center gap-2 text-left">
-                                        <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left">Financial</Badge>
-                                        <Banknote className="h-3 w-3 text-green-600 text-left" />
-                                    </div>
-                                    <p className="text-[10px] text-muted-foreground pl-1 font-medium leading-relaxed text-left">{needs.financialNeeds}</p>
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left">Financial</Badge>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.financialNeeds}</p>
                                 </div>
                             )}
                             {needs.socialNeeds && (
                                 <div className="space-y-1 text-left">
-                                    <div className="flex items-center gap-2 text-left">
-                                        <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left">Social</Badge>
-                                        <Users className="h-3 w-3 text-indigo-600 text-left" />
-                                    </div>
-                                    <p className="text-[10px] text-muted-foreground pl-1 font-medium leading-relaxed text-left">{needs.socialNeeds}</p>
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left">Social</Badge>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.socialNeeds}</p>
                                 </div>
                             )}
                         </div>
@@ -378,14 +329,8 @@ function SoulProfileContent({
                             </div>
                         )}
                     </div>
-                ) : (
-                    <div className="py-2 text-left">
-                        <Button variant="ghost" size="sm" className="h-9 text-[9px] font-black uppercase border-2 border-primary/20 text-primary w-full rounded-xl hover:bg-primary/5 text-left" onClick={() => onAssess(soul)}>
-                            BEGIN ASSESSMENT
-                        </Button>
-                    </div>
-                )}
-            </div>
+                </div>
+            )}
 
             <div className="pt-2 text-left">
                 <Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 text-left" onClick={() => onFollowUp(soul)}>
