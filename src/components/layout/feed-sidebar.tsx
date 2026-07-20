@@ -69,7 +69,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
     const completedToday = useMemo(() => {
         if (!userProfile?.dailyDiscipline?.lastUpdated) return [];
         const lastUpdated = safeToDate(userProfile.dailyDiscipline.lastUpdated);
-        if (lastUpdated && lastUpdated.getDate() === now.getDate() && lastUpdated.getMonth() === now.getMonth() && lastUpdated.getFullYear() === now.getFullYear()) {
+        if (lastUpdated && lastUpdated.getDate() === now.getDate() && lastUpdated.getMonth() === now.getMonth() && lastReload.getFullYear() === now.getFullYear()) {
             return userProfile.dailyDiscipline.completed || [];
         }
         return [];
@@ -146,23 +146,21 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                             </div>
                             <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">Active Alliance</Badge>
                         </div>
-                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">Alliance Summary</CardTitle>
+                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">Alliance Hub</CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 pt-2 space-y-4">
                         <div className="grid grid-cols-2 gap-3">
                             <div className="bg-white/10 rounded-2xl p-3 border border-white/10 text-center">
                                 <p className="text-2xl font-black">{activeGroups?.length || 0}</p>
                                 <p className="text-[9px] font-bold uppercase opacity-60">My Groups</p>
-                                <p className="text-[7px] font-medium opacity-40 uppercase">(Communities)</p>
                             </div>
                             <div className="bg-white/10 rounded-2xl p-3 border border-white/10 text-center">
                                 <p className="text-2xl font-black">{liveMissionsCount}</p>
-                                <p className="text-[9px] font-bold uppercase opacity-60">Field Missions</p>
-                                <p className="text-[7px] font-medium opacity-40 uppercase">(Active work)</p>
+                                <p className="text-[9px] font-bold uppercase opacity-60">Missions</p>
                             </div>
                         </div>
                         <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
-                            Groups provide long-term community, while Missions are active field assignments.
+                            Groups provide long-term spiritual community, while Missions are active field assignments.
                         </p>
                     </CardContent>
                 </Card>

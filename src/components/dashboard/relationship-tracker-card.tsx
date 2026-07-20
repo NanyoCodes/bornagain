@@ -111,7 +111,7 @@ function SoulSelectionDialog({
     };
 
     const listContent = (
-        <div className="p-2 space-y-1.5">
+        <div className="p-2 space-y-1.5 text-left">
             {filteredSouls.length > 0 ? (
                 filteredSouls.map(soul => (
                     <Button 
@@ -125,12 +125,12 @@ function SoulSelectionDialog({
                             <AvatarFallback className="font-bold bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="text-left min-w-0 flex-1">
-                            <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
-                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
+                            <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p>
                             {getSoulAddress(soul) && (
-                                <div className="flex items-center gap-1 text-[8px] font-black text-primary mt-1 uppercase tracking-widest">
+                                <div className="flex items-center gap-1 text-[8px] font-black text-primary mt-1 uppercase tracking-widest text-left">
                                     <MapPin className="h-2.5 w-2.5" />
-                                    <span>Home Map Ready</span>
+                                    <span>Follow-up Map Ready</span>
                                 </div>
                             )}
                         </div>
@@ -158,15 +158,15 @@ function SoulSelectionDialog({
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b bg-muted/10 shrink-0">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                         <SheetHeader className="text-left">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1">{desc}</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1 text-left">{desc}</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0">
-                        <div className="relative">
+                    <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0 text-left">
+                        <div className="relative text-left">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                             <input 
                                 placeholder="Search by name..." 
@@ -175,7 +175,7 @@ function SoulSelectionDialog({
                                 className="w-full rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
                             />
                         </div>
-                        <ScrollArea className="flex-1 border rounded-3xl bg-muted/5">
+                        <ScrollArea className="flex-1 border rounded-3xl bg-muted/5 text-left">
                             {listContent}
                         </ScrollArea>
                     </div>
@@ -186,15 +186,15 @@ function SoulSelectionDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
-                <div className="p-8 border-b bg-muted/10">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">{desc}</DialogDescription>
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                <div className="p-8 border-b bg-muted/10 text-left">
+                    <DialogHeader className="text-left">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">{desc}</DialogDescription>
                     </DialogHeader>
                 </div>
-                <div className="p-6 space-y-6">
-                    <div className="relative">
+                <div className="p-6 space-y-6 text-left">
+                    <div className="relative text-left">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                         <input 
                             placeholder="Search by name..." 
@@ -203,7 +203,7 @@ function SoulSelectionDialog({
                             className="w-full rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20"
                         />
                     </div>
-                    <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
+                    <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left">
                         {listContent}
                     </ScrollArea>
                 </div>
@@ -329,11 +329,11 @@ export function RelationshipTrackerCard() {
   if (userLoading || profileLoading || soulsLoading) {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
-        <CardHeader className="p-4 sm:p-6">
+        <CardHeader className="p-4 sm:p-6 text-left">
           <Skeleton className="h-5 w-32 mb-2" />
           <Skeleton className="h-3 w-48" />
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6">
+        <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6 text-left">
           {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="h-20 w-full rounded-2xl" />
           ))}
@@ -344,21 +344,21 @@ export function RelationshipTrackerCard() {
 
   return (
     <>
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card">
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card text-left">
         <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity">
           <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
-              <div className="space-y-1">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
+              <div className="space-y-1 text-left">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
                       <Sparkles className="h-5 w-5 text-primary" />
                       Kingdom Connections
                   </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
               </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end text-left">
                 {currentDate && (
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
                     {format(currentDate, 'PPPP')}
@@ -368,8 +368,8 @@ export function RelationshipTrackerCard() {
           </div>
         </CardHeader>
 
-        <CardContent className="px-4 sm:px-6 pb-2 relative z-10">
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+        <CardContent className="px-4 sm:px-6 pb-2 relative z-10 text-left">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 text-left">
               {actionItems.map(action => {
                   const isCompleted = completedToday.includes(action.id);
                   const Icon = iconMap[action.id] || Heart;
@@ -377,7 +377,7 @@ export function RelationshipTrackerCard() {
                       <TooltipProvider key={action.id}>
                           <Tooltip>
                               <TooltipTrigger asChild>
-                                  <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }}>
+                                  <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }} className="w-full">
                                       <Button
                                           variant="outline"
                                           className={cn(
@@ -412,7 +412,7 @@ export function RelationshipTrackerCard() {
                                                   )}>
                                                       <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                                   </div>
-                                                  <div className="space-y-0.5 min-w-0 w-full">
+                                                  <div className="space-y-0.5 min-w-0 w-full text-center">
                                                       <span className={cn(
                                                           "text-[9px] font-black uppercase tracking-tight block truncate",
                                                           isCompleted ? "text-primary" : "text-foreground"
@@ -426,8 +426,8 @@ export function RelationshipTrackerCard() {
                                   </motion.div>
                               </TooltipTrigger>
                               <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
-                                  <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
-                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">{action.label}</p>
+                                  <p className="text-[10px] font-bold uppercase text-primary text-left">Kingdom Action</p>
+                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left">{action.label}</p>
                               </TooltipContent>
                           </Tooltip>
                       </TooltipProvider>
@@ -435,7 +435,7 @@ export function RelationshipTrackerCard() {
               })}
           </div>
         </CardContent>
-        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5">
+        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
               <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm">
                   <Link href="/dashboard/souls-won">
                       <UserPlus className="mr-2 h-4 w-4" />
