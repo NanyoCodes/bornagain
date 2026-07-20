@@ -79,6 +79,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import Image from "next/image";
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
+import { motion, AnimatePresence } from 'framer-motion';
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -148,7 +149,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
     const wonAt = React.useMemo(() => safeToDate(soul.wonAt) ?? new Date(), [soul.wonAt]);
     const locationWonString = React.useMemo(() => {
         if (!soul.locationWon) return null;
-        return [soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ');
+        return [soul.locationWon.street, soul.locationWon.city, soul.locationWon.state, soul.locationWon.country].filter(Boolean).join(', ');
     }, [soul.locationWon]);
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
@@ -164,7 +165,7 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                 <div className="flex items-center justify-between p-4 gap-4">
                     <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                         <Dialog>
-                            <DialogTrigger asChild disabled={!soul.photoURL}>
+                            <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!soul.photoURL}>
                                 <Avatar className={cn("h-10 w-10 sm:h-11 sm:w-11 shrink-0 border shadow-inner transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
                                     <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                                     <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
@@ -223,50 +224,6 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 {locationWonString && <div className="flex items-start gap-2.5 leading-snug"><MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> <span className="line-clamp-2">{locationWonString}</span></div>}
                                 {soul.fellowshipName && <div className="flex items-center gap-2.5 font-black text-[10px] text-primary uppercase tracking-widest"><HeartHandshake className="h-3.5 w-3.5" /> FELLOWSHIP: {soul.fellowshipName}</div>}
                                 {soul.associationName && <div className="flex items-center gap-2.5 font-black text-[10px] text-blue-500 uppercase tracking-widest"><Group className="h-3.5 w-3.5" /> ASSOCIATION: {soul.associationName}</div>}
-                                
-                                {soul.needsAssessment && (
-                                    <div className="pt-2 space-y-2 border-t border-dashed mt-2">
-                                        <p className="text-[10px] font-black uppercase text-primary tracking-widest">Assessed Needs</p>
-                                        <div className="grid grid-cols-1 gap-1.5">
-                                            {soul.needsAssessment.generalImpression && (
-                                                <div className="text-[11px] leading-tight flex items-start gap-2">
-                                                    <Sparkles className="h-3 w-3 text-amber-500 shrink-0 mt-0.5" />
-                                                    <span><span className="font-bold">Spiritual State:</span> {soul.needsAssessment.generalImpression}</span>
-                                                </div>
-                                            )}
-                                            {soul.needsAssessment.followUpPlan && (
-                                                <div className="text-[11px] leading-tight flex items-start gap-2">
-                                                    <Target className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-                                                    <span><span className="font-bold">Follow-up Strategy:</span> {soul.needsAssessment.followUpPlan}</span>
-                                                </div>
-                                            )}
-                                            {soul.needsAssessment.emotionalNeeds && (
-                                                <div className="text-[11px] leading-tight flex items-start gap-2">
-                                                    <Heart className="h-3 w-3 text-red-500 shrink-0 mt-0.5" />
-                                                    <span><span className="font-bold">Emotional:</span> {soul.needsAssessment.emotionalNeeds}</span>
-                                                </div>
-                                            )}
-                                            {soul.needsAssessment.physicalNeeds && (
-                                                <div className="text-[11px] leading-tight flex items-start gap-2">
-                                                    <Zap className="h-3 w-3 text-amber-500 shrink-0 mt-0.5" />
-                                                    <span><span className="font-bold">Physical:</span> {soul.needsAssessment.physicalNeeds}</span>
-                                                </div>
-                                            )}
-                                            {soul.needsAssessment.financialNeeds && (
-                                                <div className="text-[11px] leading-tight flex items-start gap-2">
-                                                    <ShieldCheck className="h-3 w-3 text-blue-500 shrink-0 mt-0.5" />
-                                                    <span><span className="font-bold">Financial:</span> {soul.needsAssessment.financialNeeds}</span>
-                                                </div>
-                                            )}
-                                            {soul.needsAssessment.socialNeeds && (
-                                                <div className="text-[11px] leading-tight flex items-start gap-2">
-                                                    <Users className="h-3 w-3 text-indigo-500 shrink-0 mt-0.5" />
-                                                    <span><span className="font-bold">Social:</span> {soul.needsAssessment.socialNeeds}</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -309,74 +266,6 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
-                        
-                        <div className="space-y-3 p-4 rounded-2xl border-2 border-dashed bg-background/40">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-[9px] uppercase tracking-[0.2em] font-black text-muted-foreground/60">Harvest Follow-up</Label>
-                            </div>
-                            
-                            <div className="space-y-4 text-left">
-                               {myPending.length > 0 && (
-                                   <div className="space-y-2">
-                                       {myPending.map(p => {
-                                           const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-                                           const label = p.actionId === 'shared_meal' ? 'Meal' : 'Gift';
-                                           const Icon = p.actionId === 'shared_meal' ? Utensils : Gift;
-                                           return (
-                                               <div key={p.actionId} className="p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-2 shadow-inner">
-                                                   <div className="flex items-center gap-2.5 min-w-0">
-                                                        <div className="h-6 v-6 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                                                            <Icon className="h-3.5 w-3.5 text-white" />
-                                                        </div>
-                                                        <div className="min-w-0 text-left">
-                                                            <p className="text-[10px] font-black uppercase text-primary leading-tight">PENDING {label} PROVISION</p>
-                                                            <p className="text-[9px] text-primary/60 font-bold uppercase truncate">Click to finish act of kindness</p>
-                                                        </div>
-                                                   </div>
-                                                   <Button asChild size="sm" className="h-7 px-3 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-md">
-                                                       <Link href={`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${p.actionId}`}>
-                                                           FINISH
-                                                       </Link>
-                                                   </Button>
-                                               </div>
-                                           );
-                                       })}
-                                   </div>
-                               )}
-
-                               {latestFollowUp && latestFollowUpDate ? (
-                                    <div className="text-xs">
-                                        <p className="font-black uppercase tracking-tighter text-primary/70 mb-2 text-left">LAST LOG: {format(latestFollowUpDate, "MMM d, yyyy")}</p>
-                                        <div className="flex flex-wrap gap-1.5 mb-2">
-                                            {latestFollowUp.actions?.map(actionId => {
-                                                const action = actionItems.find(a => a.id === actionId);
-                                                return action ? (
-                                                    <Badge key={actionId} variant="secondary" className="text-[8px] px-1.5 h-4 font-black uppercase tracking-tight bg-background border leading-none">
-                                                        {action.label}
-                                                    </Badge>
-                                                ) : null;
-                                            })}
-                                        </div>
-                                        {latestFollowUp.note && (
-                                            <p className="text-muted-foreground line-clamp-3 italic leading-relaxed text-balance text-left">
-                                                &ldquo;{latestFollowUp.note}&rdquo;
-                                            </p>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <p className="text-xs text-muted-foreground italic py-2 opacity-60 text-left">No follow-up interactions recorded yet. Begin their journey today!</p>
-                                )}
-                                <div className="grid grid-cols-2 gap-2 pt-1">
-                                    <Button size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-md" onClick={() => triggerAction(onFollowUp)}>FOLLOW-UP</Button>
-                                    <Button size="sm" variant="outline" className="h-9 text-[10px] font-black uppercase tracking-widest rounded-xl bg-background/50" onClick={() => triggerAction(onViewHistory)}>HISTORY</Button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 pt-2 border-t border-dashed">
-                            <span>{soul.source} Outreach</span>
-                            <span>Won {format(wonAt, "PPP")}</span>
-                        </div>
                     </div>
                 </CollapsibleContent>
             </Collapsible>
@@ -397,7 +286,6 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
   onDelete: (soul: Soul) => void;
   onAssess: (soul: Soul) => void;
 }) => {
-    const firestore = useFirestore();
     const latestFollowUp = React.useMemo(() => {
         if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
         return [...soul.followUpLog].sort((a, b) => {
@@ -407,7 +295,6 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
         })[0];
     }, [soul.followUpLog]);
 
-    const wonAt = React.useMemo(() => safeToDate(soul.wonAt) ?? new Date(), [soul.wonAt]);
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
     const triggerAction = (action: (s: Soul) => void) => {
@@ -476,7 +363,6 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
                             {soul.associationName}
                         </div>
                     ) : null}
-                    {!soul.fellowshipId && !soul.associationId && <span className="text-muted-foreground text-[9px] font-black uppercase tracking-widest opacity-30 italic text-left">Unplaced</span>}
                 </div>
             </TableCell>
             <TableCell className="hidden sm:table-cell p-4 text-left">
@@ -614,7 +500,6 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
                         <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Placements</TableHead>
                         <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Latest Log</TableHead>
-                        <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Date Won</TableHead>
                         <TableHead className="p-4 text-right"><span className="sr-only">Actions</span></TableHead>
                         </TableRow>
                     </TableHeader>

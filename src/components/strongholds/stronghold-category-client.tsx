@@ -796,7 +796,9 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 </SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow text-left">
-                                {supplyForm}
+                                <div className="p-8">
+                                    {supplyForm}
+                                </div>
                             </ScrollArea>
                         </SheetContent>
                     </Sheet>

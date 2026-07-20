@@ -99,14 +99,8 @@ function SoulSelectionDialog({
     }, [souls, search]);
 
     const handleSoulClick = (soul: Soul) => {
-        // Construct full address for map link
         const loc = soul.locationWon;
-        const address = [
-            loc?.street, 
-            loc?.city, 
-            loc?.state, 
-            loc?.country
-        ].filter(Boolean).join(', ');
+        const address = [loc?.street, loc?.city, loc?.state, loc?.country].filter(Boolean).join(', ');
 
         if (address) {
             window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
@@ -131,7 +125,7 @@ function SoulSelectionDialog({
                         <div className="text-left min-w-0 flex-1">
                             <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
                             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
-                            {soul.locationWon?.street && (
+                            {(soul.locationWon?.street || soul.locationWon?.city) && (
                                 <div className="flex items-center gap-1 text-[8px] font-black text-primary mt-1 uppercase tracking-widest">
                                     <MapPin className="h-2.5 w-2.5" />
                                     <span>Home Map Ready</span>
@@ -394,11 +388,6 @@ export function RelationshipTrackerCard() {
 
   const handleScriptureSelected = (text: string) => {
       setIsScriptureDialogOpen(false);
-      // Construct message and proceed to soul selection
-      const referralMsg = `\n\nShared via Testify Global: https://testifyglobal.com`;
-      const finalMsg = text + referralMsg;
-      
-      // We will handle the actual sending in the handleSoulSelected flow
       setIsSoulDialogOpen(true);
   };
 
@@ -415,7 +404,6 @@ export function RelationshipTrackerCard() {
     const dateString = format(today, 'yyyy-MM-dd');
     const batch = writeBatch(firestore);
 
-    // 1. Update user's daily discipline
     const wasCompleted = completedToday.includes(selectedActionId);
     const newCompleted = [...completedToday];
     if (!wasCompleted) newCompleted.push(selectedActionId);
@@ -432,7 +420,6 @@ export function RelationshipTrackerCard() {
         date: serverTimestamp()
     }, { merge: true });
 
-    // 2. Update soul's history
     const memberName = `${userProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(), 
@@ -535,8 +522,8 @@ export function RelationshipTrackerCard() {
                                           className={cn(
                                               "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-500 rounded-3xl border-2 overflow-hidden",
                                               isCompleted 
-                                                  ? "bg-primary/[0.03] border-primary/40 shadow-inner ring-1 ring-primary/10" 
-                                                  : "bg-background/40 hover:bg-muted/50 hover:border-primary/30"
+                                                  ? "bg-primary/5 border-primary/40 shadow-inner ring-1 ring-primary/10" 
+                                                  : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
                                           )}
                                           onClick={() => handleActionClick(action.id)}
                                           disabled={togglingId === action.id}
@@ -562,11 +549,11 @@ export function RelationshipTrackerCard() {
                                                       "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
                                                       isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
                                                   )}>
-                                                      <Icon className={cn("h-5 w-5 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
+                                                      <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                                   </div>
                                                   <div className="space-y-0.5 min-w-0 w-full">
                                                       <span className={cn(
-                                                          "text-[10px] font-black uppercase tracking-tight block truncate",
+                                                          "text-[9px] font-black uppercase tracking-tight block truncate",
                                                           isCompleted ? "text-primary" : "text-foreground"
                                                       )}>
                                                           {action.label}
