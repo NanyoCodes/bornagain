@@ -291,7 +291,7 @@ function TestimoniesContent() {
 
   return (
     <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
         <div className="lg:col-span-8 space-y-6 md:space-y-10 text-left">
             <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-3xl border-x-0 sm:border-x -mx-3 sm:mx-0 text-left bg-card/50 backdrop-blur-sm overflow-hidden">
                 <CardContent className="p-3 sm:p-6 text-left">
@@ -331,13 +331,13 @@ function TestimoniesContent() {
             </Card>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
-                <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8">
+                <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 text-left">
                     <TabsTrigger value="testimonies" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Testimonies</TabsTrigger>
                     <TabsTrigger value="prayers" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Prayer Requests</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="testimonies" className="outline-none text-left">
-                    <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-full">
+                    <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-full text-left">
                         {loading ? (
                         [...Array(3)].map((_, i) => (
                             <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
@@ -366,7 +366,7 @@ function TestimoniesContent() {
                 </TabsContent>
                 
                 <TabsContent value="prayers" className="outline-none text-left">
-                    <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-full">
+                    <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-full text-left">
                         {loading ? (
                         [...Array(3)].map((_, i) => (
                             <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>

@@ -541,7 +541,7 @@ export function LogSoulForm({
                             <FormItem>
                             <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Phone Number</FormLabel>
                             <FormControl>
-                                <Input placeholder="+1 123 456 7890" {...field} value={field.value || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
+                                <Input placeholder="+1 123 456 7890" {...field} value={field.value ?? ''} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -554,7 +554,7 @@ export function LogSoulForm({
                             <FormItem>
                             <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Home Church</FormLabel>
                             <FormControl>
-                                <Input placeholder="e.g., New Life Church" {...field} value={field.value || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
+                                <Input placeholder="e.g., New Life Church" {...field} value={field.value ?? ''} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
                             </FormControl>
                             <FormMessage />
                             </FormItem>

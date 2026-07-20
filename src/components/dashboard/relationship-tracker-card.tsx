@@ -120,7 +120,7 @@ function SoulSelectionDialog({
                         disabled={isLoading}
                     >
                         <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm shrink-0">
-                            <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className="font-bold bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="text-left min-w-0 flex-1">
                             <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
@@ -488,7 +488,7 @@ export function RelationshipTrackerCard() {
           <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
               <div className="space-y-1 text-left">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">

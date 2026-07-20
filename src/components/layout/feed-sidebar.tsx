@@ -52,23 +52,19 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
         return () => clearInterval(timer);
     }, []);
 
-    // Live query for souls to calculate monthly progress
+    // Live query for souls to calculate progress
     const soulsQuery = useMemo(() => {
         if (!user?.uid || !firestore) return null;
         return query(collection(firestore, `users/${user.uid}/souls`));
     }, [user?.uid, firestore]);
     const { data: souls } = useCollection<Soul>(soulsQuery);
 
-    const soulsThisMonth = useMemo(() => {
-        if (!souls) return 0;
-        return souls.filter((s: Soul) => {
-            const wonAt = safeToDate(s.wonAt);
-            return wonAt && isSameMonth(wonAt, now);
-        }).length;
-    }, [souls, now]);
+    const totalSouls = useMemo(() => {
+        return souls ? souls.length : 0;
+    }, [souls]);
 
     const monthlyGoal = userProfile?.monthlySoulsGoal || 10;
-    const progress = Math.min((soulsThisMonth / monthlyGoal) * 100, 100);
+    const progressValue = Math.min((totalSouls / monthlyGoal) * 100, 100);
 
     const completedToday = useMemo(() => {
         if (!userProfile?.dailyDiscipline?.lastUpdated) return [];
@@ -121,17 +117,17 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                             <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
                                 <Target className="h-5 w-5 text-white" />
                             </div>
-                            <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">{format(now, 'MMMM')} Progress</Badge>
+                            <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">Harvest Progress</Badge>
                         </div>
-                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">Harvest Goal</CardTitle>
+                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">Total Harvest</CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 pt-2 space-y-4">
                         <div className="space-y-1">
                             <div className="flex justify-between items-baseline">
-                                <span className="text-3xl font-black">{soulsThisMonth}</span>
+                                <span className="text-3xl font-black">{totalSouls}</span>
                                 <span className="text-xs font-bold opacity-70">/{monthlyGoal} SOULS</span>
                             </div>
-                            <Progress value={progress} className="h-2 bg-white/20" indicatorClassName="bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                            <Progress value={progressValue} className="h-2 bg-white/20" indicatorClassName="bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                         </div>
                         <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance">
                             Every life logged contributes to the global harvest map and city impact stats.
@@ -140,7 +136,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 </Card>
             )}
 
-            {/* Specialized Fellowship Widget */}
+            {/* Specialized Fellowship Widget - Clarified Joined vs Active */}
             {mode === 'fellowships' && (
                 <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0">
                     <CardHeader className="p-6 pb-2">
@@ -150,21 +146,23 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                             </div>
                             <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">Active Alliance</Badge>
                         </div>
-                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">My Communities</CardTitle>
+                        <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">Alliance Summary</CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 pt-2 space-y-4">
                         <div className="grid grid-cols-2 gap-3">
                             <div className="bg-white/10 rounded-2xl p-3 border border-white/10 text-center">
                                 <p className="text-2xl font-black">{activeGroups?.length || 0}</p>
-                                <p className="text-[9px] font-bold uppercase opacity-60">Joined</p>
+                                <p className="text-[9px] font-bold uppercase opacity-60">My Groups</p>
+                                <p className="text-[7px] font-medium opacity-40 uppercase">(Communities)</p>
                             </div>
                             <div className="bg-white/10 rounded-2xl p-3 border border-white/10 text-center">
                                 <p className="text-2xl font-black">{liveMissionsCount}</p>
-                                <p className="text-[9px] font-bold uppercase opacity-60">Active Missions</p>
+                                <p className="text-[9px] font-bold uppercase opacity-60">Field Missions</p>
+                                <p className="text-[7px] font-medium opacity-40 uppercase">(Active work)</p>
                             </div>
                         </div>
                         <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance">
-                            Connecting with the body ensures no convert is left behind.
+                            Groups provide long-term community, while Missions are active field assignments.
                         </p>
                     </CardContent>
                 </Card>
