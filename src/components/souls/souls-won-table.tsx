@@ -25,7 +25,9 @@ import {
   Zap,
   ShieldCheck,
   Info,
-  Target
+  Target,
+  Mail,
+  ArrowLeft
 } from "lucide-react";
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -142,14 +144,48 @@ function SoulProfileContent({
         <CardContent className="p-8 pt-0 space-y-6 text-left">
             <Separator className="opacity-50" />
             
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Demographics</p>
-                    <p className="text-xs font-bold">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
+            <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Demographics</p>
+                        <p className="text-xs font-bold">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Circle</p>
+                        <p className="text-xs font-bold">{soul.relationship || 'Outreach'}</p>
+                    </div>
                 </div>
+
+                <div className="space-y-3">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Contact Identity</p>
+                    <div className="space-y-2">
+                        {soul.email && (
+                            <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground truncate">
+                                <Mail className="h-3.5 w-3.5 text-primary shrink-0" />
+                                {soul.email}
+                            </div>
+                        )}
+                        {soul.phone && (
+                            <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+                                <Phone className="h-3.5 w-3.5 text-primary shrink-0" />
+                                {soul.phone}
+                            </div>
+                        )}
+                        {soul.church && (
+                            <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground truncate">
+                                <Church className="h-3.5 w-3.5 text-primary shrink-0" />
+                                {soul.church}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
                 <div className="space-y-1">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Circle</p>
-                    <p className="text-xs font-bold">{soul.relationship || 'Outreach'}</p>
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Harvest Context</p>
+                    <p className="text-xs font-bold flex items-center gap-2">
+                        <Target className="h-3.5 w-3.5 text-primary shrink-0" />
+                        Source: {soul.source} {soul.sourceDetails ? `(${soul.sourceDetails})` : ''}
+                    </p>
                 </div>
             </div>
             
@@ -246,12 +282,6 @@ const SoulCard = React.memo(({ soul, onFollowUp, onViewHistory, onExportSingle, 
         pendingProvisions.filter(p => p.soulId === soul.id), 
     [pendingProvisions, soul.id]);
 
-    const triggerAction = (action: (s: Soul) => void) => {
-      requestAnimationFrame(() => {
-        action(soul);
-      });
-    };
-
     return (
         <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02]">
             <div className="flex items-center justify-between p-4 gap-4">
@@ -304,12 +334,6 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
 
     const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
 
-    const triggerAction = (action: (s: Soul) => void) => {
-      requestAnimationFrame(() => {
-        action(soul);
-      });
-    };
-
     return (
         <TableRow 
             className={cn("hover:bg-muted/30 transition-colors cursor-pointer", isSelected && "bg-primary/[0.03]")}
@@ -317,12 +341,26 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
         >
             <TableCell className="font-medium p-4 text-left">
                 <div className="flex items-center gap-4 text-left">
-                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0")}>
-                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
-                            {soul.firstName?.charAt(0) || 'S'}
-                        </AvatarFallback>
-                    </Avatar>
+                    <Dialog>
+                        <DialogTrigger asChild onClick={(e) => e.stopPropagation()} disabled={!soul.photoURL}>
+                            <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 transition-transform active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                                <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+                                    {soul.firstName?.charAt(0) || 'S'}
+                                </AvatarFallback>
+                            </Avatar>
+                        </DialogTrigger>
+                        {soul.photoURL && (
+                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                                <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
+                                <div className="relative h-full w-full flex items-center justify-center p-4">
+                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                                        <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
+                                    </div>
+                                </div>
+                            </DialogContent>
+                        )}
+                    </Dialog>
                     <div className="min-w-0 text-left">
                         <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight group-hover:text-primary transition-colors text-left">
                           {soul.firstName} {soul.lastName}
@@ -361,19 +399,19 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
                     <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}><Button size="icon" variant="ghost" className="h-8 w-8 rounded-full"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
                         <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Soul Control</DropdownMenuLabel>
-                        <DropdownMenuItem onSelect={() => triggerAction(onEdit)} className="rounded-lg">
+                        <DropdownMenuItem onSelect={() => onEdit(soul)} className="rounded-lg">
                             <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => triggerAction(onAssess)} className="rounded-lg">
+                        <DropdownMenuItem onSelect={() => onAssess(soul)} className="rounded-lg">
                             <ClipboardList className="mr-2 h-4 w-4 text-primary" /> Assess Needs
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => triggerAction(onFollowUp)} className="rounded-lg">
+                        <DropdownMenuItem onSelect={() => onFollowUp(soul)} className="rounded-lg">
                             <HeartHandshake className="mr-2 h-4 w-4 text-primary" /> Log Follow-up
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => triggerAction(onViewHistory)} className="rounded-lg">
+                        <DropdownMenuItem onSelect={() => onViewHistory(soul)} className="rounded-lg">
                             <History className="mr-2 h-4 w-4" /> Interaction History
                         </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => triggerAction(onOpenAssignDialog)} className="rounded-lg">
+                        <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)} className="rounded-lg">
                             <Users className="mr-2 h-4 w-4" /> Assign Community
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -387,7 +425,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
                             </DropdownMenuPortal>
                         </DropdownMenuSub>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onSelect={() => triggerAction(onDelete)}>
+                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg" onSelect={() => onDelete(soul)}>
                             <Trash2 className="mr-2 h-4 w-4" /> Delete Record
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -500,7 +538,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         <TableRow className="hover:bg-transparent">
                         <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
                         <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Contact</TableHead>
-                        <TableHead className="p-4 text-[10px) font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
+                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
                         <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Placements</TableHead>
                         <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Latest Log</TableHead>
                         <TableHead className="p-4 text-right"><span className="sr-only">Actions</span></TableHead>

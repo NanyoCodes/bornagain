@@ -3,10 +3,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
-import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, getDocs, getDoc, addDoc, updateDoc } from 'firebase/firestore';
-import type { UserProfile, Soul, BibleHighlight } from '@/lib/types';
+import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy } from 'firebase/firestore';
+import type { UserProfile, Soul } from '@/lib/types';
 import { isToday, format } from 'date-fns';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '../ui/skeleton';
 import { 
   Heart, 
   MessageSquare, 
@@ -25,13 +25,10 @@ import {
   UserPlus,
   Search,
   PlusCircle,
-  ArrowLeft,
   ArrowRight,
-  Target,
-  Globe,
-  X,
   MapPin,
-  Share
+  Target,
+  Globe
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -40,7 +37,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { actionItems, kingdomVerses } from '@/lib/follow-up-data';
+import { actionItems } from '@/lib/follow-up-data';
 import Link from 'next/link';
 import {
   Dialog,
@@ -60,7 +57,6 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Separator } from '../ui/separator';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -124,7 +120,7 @@ function SoulSelectionDialog({
                             <AvatarFallback className="font-bold bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="text-left min-w-0 flex-1">
-                            <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                            <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
                             <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
                             {(soul.locationWon?.street || soul.locationWon?.city) && (
                                 <div className="flex items-center gap-1 text-[8px] font-black text-primary mt-1 uppercase tracking-widest">
@@ -133,7 +129,7 @@ function SoulSelectionDialog({
                                 </div>
                             )}
                         </div>
-                        <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                        <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <ArrowRight className="h-4 w-4" />
                         </div>
                     </Button>
@@ -143,7 +139,7 @@ function SoulSelectionDialog({
                     <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
                         <Users className="h-6 w-6 text-muted-foreground opacity-20" />
                     </div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-balance text-center">
+                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60">
                         {search ? "No matches found" : "Log your first soul to begin tracking"}
                     </p>
                 </div>
@@ -158,13 +154,13 @@ function SoulSelectionDialog({
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0">
                         <SheetHeader className="text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">{desc}</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0 text-left">
+                    <div className="p-6 space-y-4 flex-grow flex flex-col min-h-0">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                             <Input 
@@ -186,8 +182,8 @@ function SoulSelectionDialog({
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
-                <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
+                <div className="p-8 border-b bg-muted/10">
+                    <DialogHeader>
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</DialogTitle>
                         <DialogDescription className="text-sm font-medium">{desc}</DialogDescription>
                     </DialogHeader>
@@ -348,9 +344,9 @@ export function RelationshipTrackerCard() {
           <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
-              <div className="space-y-1 text-left">
+              <div className="space-y-1">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-primary" />
                       Kingdom Connections

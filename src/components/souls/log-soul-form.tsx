@@ -565,7 +565,7 @@ export function LogSoulForm({
                         name="nationality"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nationality</FormLabel>
+                            <FormLabel className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1">Nationality</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                 <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
