@@ -44,7 +44,15 @@ import {
     BookOpen,
     HandHeart,
     ChevronDown,
-    Target
+    Target,
+    Plus,
+    Video,
+    Book,
+    FileText,
+    Mic,
+    Globe,
+    ExternalLink,
+    Link as LinkIcon
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -66,6 +74,8 @@ import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import type { CircleResource } from '@/lib/types';
 
 const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
   pride: [
@@ -73,7 +83,7 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "James 4:6", text: "God opposes the proud but shows favor to the humble.", prayer: "I choose to humble myself before You today, Lord. May Your favor rest upon me as I decrease and You increase. Amen." },
     { verse: "1 Peter 5:5", text: "Clothe yourselves, all of you, with humility toward one another.", prayer: "Holy Spirit, help me to serve others with a genuine heart, free from the need for recognition or praise. Amen." },
     { verse: "Proverbs 11:2", text: "When pride comes, then comes disgrace, but with humility comes wisdom.", prayer: "Father, give me a heart that seeks Your wisdom above my own reputation. Protect me from the snare of arrogance. Amen." },
-    { verse: "Proverbs 29:23", text: "Pride brings a person low, but the lowly in spirit gain honor.", prayer: "I surrender my need to right or superior. I find my true honor in being Your child. Amen." },
+    { verse: "Proverbs 29:23", text: "Pride brings a person low, but the lowly in spirit gain honor.", prayer: "I surrender my need to be right or superior. I find my true honor in being Your child. Amen." },
     { verse: "Obadiah 1:3", text: "The pride of your heart has deceived you.", prayer: "Lord, search my heart. Remove any deception that makes me feel self-sufficient without You. Amen." },
     { verse: "Luke 14:11", text: "For all those who exalt themselves will be humbled, and those who humble themselves will be exalted.", prayer: "Jesus, I choose the lowest seat. I trust You to lift me up in Your perfect timing. Amen." }
   ],
@@ -197,7 +207,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left flex-shrink-0">
+                        <SheetHeader className="text-left flex-shrink-0 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <Zap className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Circle Conversation</span>
@@ -234,18 +244,118 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
     );
 }
 
+function ShareResourceDialog({ category, onResourceAdded }: { category: string, onResourceAdded: () => void }) {
+  const { user } = useUser();
+  const { userProfile } = useUserProfile();
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [title, setTitle] = useState('');
+  const [url, setUrl] = useState('');
+  const [type, setType] = useState<'Video' | 'Article' | 'Book' | 'Sermon' | 'Other'>('Video');
+  const [description, setDescription] = useState('');
+
+  const handleShare = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !firestore || !title.trim() || !url.trim()) return;
+
+    setIsSubmitting(true);
+    const resourceData = {
+        title: title.trim(),
+        url: url.trim(),
+        type,
+        description: description.trim(),
+        authorId: user.uid,
+        authorName: `${userProfile?.firstName || 'User'} ${userProfile?.lastName || ''}`.trim(),
+        createdAt: serverTimestamp(),
+    };
+
+    try {
+        await addDoc(collection(firestore, 'victoryCircles', category.toLowerCase(), 'resources'), resourceData);
+        toast({ title: 'Resource Shared', description: 'Your supply has been added to the armory.' });
+        setIsOpen(false);
+        setTitle('');
+        setUrl('');
+        setDescription('');
+        onResourceAdded();
+    } catch (error) {
+        toast({ variant: 'destructive', title: 'Action Failed' });
+    } finally {
+        setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
+                <Plus className="mr-2 h-4 w-4" /> SHARE RESOURCE
+            </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+            <div className="p-8 border-b bg-muted/10 text-left">
+                <DialogHeader className="text-left">
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Add to Armory</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">Share a resource that helped you overcome.</DialogDescription>
+                </DialogHeader>
+            </div>
+            <form onSubmit={handleShare} className="p-8 space-y-6 text-left">
+                <div className="space-y-4 text-left">
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Resource Title</Label>
+                        <Input placeholder="e.g., Understanding Grace Video" value={title} onChange={e => setTitle(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner" />
+                    </div>
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Type</Label>
+                        <Select value={type} onValueChange={(val: any) => setType(val)}>
+                            <SelectTrigger className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-none shadow-2xl text-left">
+                                <SelectItem value="Video" className="rounded-lg">Video</SelectItem>
+                                <SelectItem value="Article" className="rounded-lg">Article</SelectItem>
+                                <SelectItem value="Book" className="rounded-lg">Book</SelectItem>
+                                <SelectItem value="Sermon" className="rounded-lg">Sermon</SelectItem>
+                                <SelectItem value="Other" className="rounded-lg">Other</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL / Link</Label>
+                        <Input type="url" placeholder="https://..." value={url} onChange={e => setUrl(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner" />
+                    </div>
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description (Optional)</Label>
+                        <Textarea placeholder="How did this help you?" value={description} onChange={e => setDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/20 border-none shadow-inner" />
+                    </div>
+                </div>
+                <div className="flex gap-3 pt-2 text-left">
+                    <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
+                    <Button type="submit" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'SHARE NOW'}
+                    </Button>
+                </div>
+            </form>
+        </DialogContent>
+    </Dialog>
+  );
+}
+
 export function StrongholdCategoryClient({ category }: { category: string }) {
     const router = useRouter();
     const { user } = useUser();
     const { userProfile } = useUserProfile();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const isMobile = useIsMobile();
+    
     const [newPostText, setNewPostText] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    // Management State
     const [editingPostId, setEditingPostId] = useState<string | null>(null);
     const [editingText, setEditingText] = useState('');
     const [isUpdating, setIsUpdating] = useState(false);
@@ -258,12 +368,20 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     const postsQuery = useMemo(() => {
         if (!firestore) return null;
         return query(
-            collection(firestore, 'victoryCircles', category.toLowerCase(), 'posts'),
+            collection(firestore, 'victoryCircles', categoryKey, 'posts'),
             orderBy('createdAt', 'desc')
         );
-    }, [firestore, category]);
+    }, [firestore, categoryKey]);
+    const { data: posts, loading: loadingPosts } = useCollection<any>(postsQuery);
 
-    const { data: posts, loading } = useCollection<any>(postsQuery);
+    const resourcesQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(
+            collection(firestore, 'victoryCircles', categoryKey, 'resources'),
+            orderBy('createdAt', 'desc')
+        );
+    }, [firestore, categoryKey]);
+    const { data: resources, loading: loadingResources } = useCollection<CircleResource>(resourcesQuery);
 
     const filteredPosts = useMemo(() => {
         if (!posts) return [];
@@ -287,14 +405,14 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             authorId: user.uid,
             authorName,
             isAnonymous,
-            category: category.toLowerCase(),
+            category: categoryKey,
             text: newPostText.trim(),
             createdAt: serverTimestamp(),
             supporters: []
         };
 
         try {
-            await addDoc(collection(firestore, 'victoryCircles', category.toLowerCase(), 'posts'), postData);
+            await addDoc(collection(firestore, 'victoryCircles', categoryKey, 'posts'), postData);
             toast({ title: 'Shared in the Light', description: 'Your honesty encourages others.' });
             setNewPostText('');
         } catch (error) {
@@ -308,7 +426,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         if (!user || !firestore || !editingText.trim()) return;
         setIsUpdating(true);
 
-        const postRef = doc(firestore, 'victoryCircles', category.toLowerCase(), 'posts', postId);
+        const postRef = doc(firestore, 'victoryCircles', categoryKey, 'posts', postId);
         try {
             await updateDoc(postRef, {
                 text: editingText.trim(),
@@ -325,8 +443,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
     const handleDeletePost = async (postId: string) => {
         if (!user || !firestore) return;
-
-        const postRef = doc(firestore, 'victoryCircles', category.toLowerCase(), 'posts', postId);
+        const postRef = doc(firestore, 'victoryCircles', categoryKey, 'posts', postId);
         try {
             await deleteDoc(postRef);
             toast({ title: 'Post Removed' });
@@ -337,26 +454,36 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
 
     const handleAmen = (idx: number) => {
         setAmenScriptureIdx(idx);
-        toast({ title: 'Amen!', description: 'May this word be established in your heart and provide lasting victory.' });
+        toast({ title: 'Amen!', description: 'May this word be established in your heart.' });
         setTimeout(() => setAmenScriptureIdx(null), 2000);
     };
 
+    const getResourceIcon = (type: string) => {
+        switch (type) {
+            case 'Video': return <Video className="h-5 w-5 text-red-500" />;
+            case 'Book': return <Book className="h-5 w-5 text-blue-500" />;
+            case 'Article': return <FileText className="h-5 w-5 text-emerald-500" />;
+            case 'Sermon': return <Mic className="h-5 w-5 text-purple-500" />;
+            default: return <Globe className="h-5 w-5 text-primary" />;
+        }
+    };
+
     return (
-        <div className="space-y-8 max-w-3xl mx-auto pb-32 text-left">
-            <div className="flex items-center gap-4 px-4 sm:px-0 pt-4 text-left">
+        <div className="space-y-8 max-w-4xl mx-auto pb-32 text-left">
+            <header className="flex items-center gap-4 px-4 sm:px-0 pt-4 text-left">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
                     <ArrowLeft className="h-5 w-5 text-left" />
                 </Button>
                 <div className="min-w-0 flex-1 text-left">
                     <div className="flex items-center gap-2 mb-1 text-left">
-                        <Users className="h-3.5 w-3.5 text-primary text-left" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Victory Circle</span>
+                        <ShieldCheck className="h-3.5 w-3.5 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Victory Hub</span>
                     </div>
                     <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate leading-tight text-balance text-left">Victory over {categoryTitle}</h1>
                 </div>
-            </div>
+            </header>
 
-            <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-xl overflow-hidden bg-primary text-primary-foreground text-left">
+            <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-xl overflow-hidden bg-primary text-primary-foreground text-left mx-4 sm:mx-0">
                 <CardContent className="p-8 sm:p-10 space-y-6 text-left">
                     <div className="flex items-start gap-4 text-left">
                         <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0 text-left">
@@ -398,183 +525,238 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 </CardContent>
             </Card>
 
-            <section className="space-y-6 px-4 sm:px-0 text-left">
-                <div className="flex items-center gap-3 text-left">
-                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
-                        <BookOpen className="h-5 w-5 text-primary text-left" />
-                    </div>
-                    <h3 className="text-lg font-black uppercase tracking-tight text-left">Armor of the Word</h3>
-                </div>
+            <Tabs defaultValue="armor" className="w-full text-left">
+                <TabsList className="grid w-full grid-cols-3 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 mx-4 sm:mx-0 w-[calc(100%-2rem)] sm:w-full">
+                    <TabsTrigger value="armor" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Armor</TabsTrigger>
+                    <TabsTrigger value="discussion" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Discussion</TabsTrigger>
+                    <TabsTrigger value="resources" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Resources</TabsTrigger>
+                </TabsList>
 
-                <Accordion type="single" collapsible className="w-full space-y-3 text-left">
-                    {scriptures.map((s, idx) => (
-                        <AccordionItem key={idx} value={`item-${idx}`} className="border rounded-2xl overflow-hidden px-4 bg-muted/10 group/item transition-all hover:bg-muted/20 text-left">
-                            <AccordionTrigger className="hover:no-underline py-4 text-left">
-                                <div className="flex items-center gap-3 text-left">
-                                    <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-left">
-                                        <span className="text-[10px] font-black text-primary text-left">{idx + 1}</span>
-                                    </div>
-                                    <span className="text-sm font-black uppercase tracking-tight text-foreground/80 group-hover/item:text-primary transition-colors text-left">{s.verse}</span>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="pb-6 pt-2 text-left">
-                                <div className="space-y-6 text-left">
-                                    <div className="relative pl-6 border-l-4 border-primary/20 bg-background/50 p-4 rounded-r-2xl shadow-inner text-left">
-                                        <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
-                                        <p className="text-base text-muted-foreground italic font-medium text-justify text-balance text-left">
-                                            &ldquo;{s.text}&rdquo;
-                                        </p>
-                                    </div>
-                                    <div className="space-y-3 p-4 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20 text-left">
-                                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 text-left">
-                                            <HandHeart className="h-3 w-3 text-left" /> Victory Prayer
-                                        </div>
-                                        <p className="text-sm font-medium leading-relaxed text-foreground/70 text-balance italic text-left">
-                                            &ldquo;{s.prayer}&rdquo;
-                                        </p>
-                                        <div className="pt-2 text-left">
-                                            <Button 
-                                                onClick={() => handleAmen(idx)}
-                                                variant="outline" 
-                                                size="sm" 
-                                                className={cn(
-                                                    "h-8 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest transition-all text-left",
-                                                    amenScriptureIdx === idx ? "bg-primary text-white border-none scale-105 shadow-lg" : "bg-background hover:bg-primary/5 text-primary/60 hover:text-primary"
-                                                )}
-                                            >
-                                                {amenScriptureIdx === idx ? <Check className="h-3.5 w-3.5 text-left" /> : <Sparkles className="h-3.5 w-3.5 text-left" />}
-                                                AMEN
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-            </section>
-
-            <div className="space-y-6 px-4 sm:px-0 text-left">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
+                <TabsContent value="armor" className="space-y-6 outline-none px-4 sm:px-0 text-left">
                     <div className="flex items-center gap-3 text-left">
-                        <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner text-left">
-                            <MessageSquare className="h-5 w-5 text-muted-foreground text-left" />
+                        <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
+                            <BookOpen className="h-5 w-5 text-primary text-left" />
                         </div>
-                        <h3 className="text-lg font-black uppercase tracking-tight text-left">Circle Discussions</h3>
+                        <h3 className="text-lg font-black uppercase tracking-tight text-left">Armor of the Word</h3>
                     </div>
-                    <div className="relative flex-1 max-w-sm text-left">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
-                        <Input 
-                            placeholder="Search discussions..." 
-                            value={searchTerm}
-                            onChange={e => setSearchTerm(e.target.value)}
-                            className="h-10 pl-9 rounded-xl bg-muted/20 border-none shadow-inner text-sm text-left"
-                        />
-                    </div>
-                </div>
 
-                <div className="space-y-6 text-left">
-                    {loading ? (
-                        <div className="flex justify-center py-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left" /></div>
-                    ) : filteredPosts && filteredPosts.length > 0 ? (
-                        filteredPosts.map((post: any) => {
-                            const postDate = safeToDate(post.createdAt);
-                            const isOwner = user?.uid === post.authorId;
-                            const isEditing = editingPostId === post.id;
-
-                            return (
-                                <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5 text-left">
-                                    <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between text-left">
-                                        <div className="flex items-center gap-3 text-left">
-                                            <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left">
-                                                <Users className="h-5 w-5 text-muted-foreground/40 text-left" />
+                    <Accordion type="single" collapsible className="w-full space-y-3 text-left">
+                        {scriptures.map((s, idx) => (
+                            <AccordionItem key={idx} value={`item-${idx}`} className="border rounded-2xl overflow-hidden px-4 bg-muted/10 group/item transition-all hover:bg-muted/20 text-left">
+                                <AccordionTrigger className="hover:no-underline py-4 text-left">
+                                    <div className="flex items-center gap-3 text-left">
+                                        <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-left">
+                                            <span className="text-[10px] font-black text-primary text-left">{idx + 1}</span>
+                                        </div>
+                                        <span className="text-sm font-black uppercase tracking-tight text-foreground/80 group-hover/item:text-primary transition-colors text-left">{s.verse}</span>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="pb-6 pt-2 text-left">
+                                    <div className="space-y-6 text-left">
+                                        <div className="relative pl-6 border-l-4 border-primary/20 bg-background/50 p-4 rounded-r-2xl shadow-inner text-left">
+                                            <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
+                                            <p className="text-base text-muted-foreground italic font-medium text-justify text-balance text-left">
+                                                &ldquo;{s.text}&rdquo;
+                                            </p>
+                                        </div>
+                                        <div className="space-y-3 p-4 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20 text-left">
+                                            <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 text-left">
+                                                <HandHeart className="h-3 w-3 text-left" /> Victory Prayer
                                             </div>
-                                            <div className="min-w-0 text-left">
-                                                <p className="text-sm font-black uppercase tracking-tight text-left">{post.authorName}</p>
-                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
-                                                    {postDate ? format(postDate, 'PPP') : 'Just now'}
-                                                </p>
+                                            <p className="text-sm font-medium leading-relaxed text-foreground/70 text-balance italic text-left">
+                                                &ldquo;{s.prayer}&rdquo;
+                                            </p>
+                                            <div className="pt-2 text-left">
+                                                <Button 
+                                                    onClick={() => handleAmen(idx)}
+                                                    variant="outline" 
+                                                    size="sm" 
+                                                    className={cn(
+                                                        "h-8 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest transition-all text-left",
+                                                        amenScriptureIdx === idx ? "bg-primary text-white border-none scale-105 shadow-lg" : "bg-background hover:bg-primary/5 text-primary/60 hover:text-primary"
+                                                    )}
+                                                >
+                                                    {amenScriptureIdx === idx ? <Check className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />}
+                                                    AMEN
+                                                </Button>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2 text-left">
-                                            <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-black uppercase tracking-widest bg-background/50 text-left">{categoryTitle}</Badge>
-                                            {isOwner && !isEditing && (
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left">
-                                                            <MoreVertical className="h-4 w-4 text-left" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="rounded-xl text-left">
-                                                        <DropdownMenuItem onClick={() => { setEditingPostId(post.id); setEditingText(post.text); }} className="rounded-lg text-left">
-                                                            <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit Story
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuSeparator className="text-left" />
-                                                        <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive rounded-lg text-left">
-                                                            <Trash2 className="mr-2 h-4 w-4 text-left" /> Remove from Circle
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            )}
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent className="p-6 pt-4 text-left">
-                                        {isEditing ? (
-                                            <div className="space-y-4 text-left">
-                                                <Textarea 
-                                                    value={editingText}
-                                                    onChange={(e) => setEditingText(e.target.value)}
-                                                    className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left"
-                                                    autoFocus
-                                                />
-                                                <div className="flex justify-end gap-2 text-left">
-                                                    <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold text-left">
-                                                        <X className="mr-1 h-3 w-3 text-left" /> Cancel
-                                                    </Button>
-                                                    <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left">
-                                                        {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3 text-left" />}
-                                                        Save Changes
-                                                    </Button>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </TabsContent>
+
+                <TabsContent value="discussion" className="space-y-6 outline-none px-4 sm:px-0 text-left">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner text-left">
+                                <MessageSquare className="h-5 w-5 text-muted-foreground text-left" />
+                            </div>
+                            <h3 className="text-lg font-black uppercase tracking-tight text-left">Circle Discussions</h3>
+                        </div>
+                        <div className="relative flex-1 max-w-sm text-left">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
+                            <Input 
+                                placeholder="Search discussions..." 
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                                className="h-11 pl-11 rounded-2xl bg-muted/20 border-none shadow-inner text-sm text-left"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-6 text-left">
+                        {loadingPosts ? (
+                            <div className="flex justify-center py-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left" /></div>
+                        ) : filteredPosts && filteredPosts.length > 0 ? (
+                            filteredPosts.map((post: any) => {
+                                const postDate = safeToDate(post.createdAt);
+                                const isOwner = user?.uid === post.authorId;
+                                const isEditing = editingPostId === post.id;
+
+                                return (
+                                    <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5 text-left">
+                                        <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between text-left">
+                                            <div className="flex items-center gap-3 text-left">
+                                                <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left">
+                                                    <Users className="h-5 w-5 text-muted-foreground/40 text-left" />
+                                                </div>
+                                                <div className="min-w-0 text-left">
+                                                    <p className="text-sm font-black uppercase tracking-tight text-left">{post.authorName}</p>
+                                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
+                                                        {postDate ? format(postDate, 'PPP') : 'Just now'}
+                                                    </p>
                                                 </div>
                                             </div>
-                                        ) : (
-                                            <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                                <button className="w-full text-left outline-none group/post text-left">
-                                                    <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left">
-                                                        <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
-                                                        <p className="text-base text-muted-foreground leading-relaxed italic font-medium text-left">
-                                                            &ldquo;{post.text}&rdquo;
-                                                        </p>
+                                            <div className="flex items-center gap-2 text-left">
+                                                {isOwner && !isEditing && (
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left">
+                                                                <MoreVertical className="h-4 w-4 text-left" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" className="rounded-xl text-left">
+                                                            <DropdownMenuItem onClick={() => { setEditingPostId(post.id); setEditingText(post.text); }} className="rounded-lg text-left">
+                                                                <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit Story
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator className="text-left" />
+                                                            <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive rounded-lg text-left">
+                                                                <Trash2 className="mr-2 h-4 w-4 text-left" /> Remove from Circle
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                )}
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent className="p-6 pt-4 text-left">
+                                            {isEditing ? (
+                                                <div className="space-y-4 text-left">
+                                                    <Textarea 
+                                                        value={editingText}
+                                                        onChange={(e) => setEditingText(e.target.value)}
+                                                        className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left"
+                                                        autoFocus
+                                                    />
+                                                    <div className="flex justify-end gap-2 text-left">
+                                                        <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold text-left">
+                                                            <X className="mr-1 h-3 w-3 text-left" /> Cancel
+                                                        </Button>
+                                                        <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left">
+                                                            {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3 text-left" />}
+                                                            Save Changes
+                                                        </Button>
                                                     </div>
-                                                </button>
-                                            </PostResponsesDialog>
-                                        )}
-                                    </CardContent>
-                                    <CardFooter className="p-3 bg-muted/5 flex justify-between items-center text-left">
-                                         <div className="flex items-center gap-2 px-3 text-left">
-                                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60 text-left">Victory Support Active</span>
-                                         </div>
-                                         <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                            <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-left">
-                                                Participate
-                                            </Button>
-                                         </PostResponsesDialog>
-                                    </CardFooter>
-                                </Card>
-                            );
-                        })
-                    ) : (
-                        <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center mx-4 sm:mx-0 text-left">
-                            <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
-                                <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
+                                                </div>
+                                            ) : (
+                                                <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
+                                                    <button className="w-full text-left outline-none group/post text-left">
+                                                        <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left">
+                                                            <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
+                                                            <p className="text-base text-muted-foreground leading-relaxed italic font-medium text-left">
+                                                                &ldquo;{post.text}&rdquo;
+                                                            </p>
+                                                        </div>
+                                                    </button>
+                                                </PostResponsesDialog>
+                                            )}
+                                        </CardContent>
+                                        <CardFooter className="p-3 bg-muted/5 flex justify-between items-center text-left">
+                                             <div className="flex items-center gap-2 px-3 text-left">
+                                                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
+                                                <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60 text-left">Victory Support Active</span>
+                                             </div>
+                                             <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
+                                                <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-left">
+                                                    Participate
+                                                </Button>
+                                             </PostResponsesDialog>
+                                        </CardFooter>
+                                    </Card>
+                                );
+                            })
+                        ) : (
+                            <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center text-left">
+                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
+                                    <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
+                                </div>
+                                <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Circle Silence</h4>
+                                <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
                             </div>
-                            <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Circle Silence</h4>
-                            <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-left text-center">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
+                        )}
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="resources" className="space-y-6 outline-none px-4 sm:px-0 text-left">
+                    <div className="flex items-center justify-between gap-4 text-left">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner text-left">
+                                <Target className="h-5 w-5 text-indigo-600 text-left" />
+                            </div>
+                            <h3 className="text-lg font-black uppercase tracking-tight text-left">Kingdom Armory</h3>
                         </div>
-                    )}
-                </div>
-            </div>
+                        <ShareResourceDialog category={categoryKey} onResourceAdded={() => {}} />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+                        {loadingResources ? (
+                            [...Array(4)].map((_, i) => (
+                                <Card key={i} className="h-32 rounded-2xl animate-pulse bg-muted/30 text-left" />
+                            ))
+                        ) : resources && resources.length > 0 ? (
+                            resources.map(res => (
+                                <Card key={res.id} className="rounded-2xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-md transition-all text-left">
+                                    <CardContent className="p-5 text-left">
+                                        <div className="flex items-start justify-between mb-3 text-left">
+                                            <div className="h-10 w-10 rounded-xl bg-muted/50 flex items-center justify-center shrink-0 border text-left">
+                                                {getResourceIcon(res.type)}
+                                            </div>
+                                            <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest text-left">{res.type}</Badge>
+                                        </div>
+                                        <h4 className="font-black text-sm uppercase tracking-tight truncate text-left">{res.title}</h4>
+                                        {res.description && <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1 italic text-left">{res.description}</p>}
+                                        <div className="flex items-center justify-between mt-4 text-left">
+                                            <p className="text-[8px] font-bold text-muted-foreground uppercase text-left">Shared by {res.authorName}</p>
+                                            <Button variant="ghost" size="sm" asChild className="h-7 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left">
+                                                <a href={res.url} target="_blank" rel="noopener noreferrer">
+                                                    Open <ExternalLink className="ml-1 h-2.5 w-2.5" />
+                                                </a>
+                                            </Button>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        ) : (
+                            <div className="col-span-full py-20 text-center border-2 border-dashed rounded-3xl bg-muted/5 flex flex-col items-center text-left">
+                                <PlusCircle className="h-12 w-12 text-muted-foreground opacity-10 mb-4 text-left" />
+                                <p className="text-sm text-muted-foreground italic text-left">The armory is empty. Share a supply to help others!</p>
+                            </div>
+                        )}
+                    </div>
+                </TabsContent>
+            </Tabs>
             
             <footer className="text-center pt-12 border-t mt-12 px-8 text-left">
                 <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance text-center text-left">
