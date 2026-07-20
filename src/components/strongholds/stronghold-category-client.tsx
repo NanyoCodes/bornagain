@@ -221,7 +221,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl max-h-[85vh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col text-left">
                 <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                    <DialogHeader className="text-left">
+                    <DialogHeader>
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Victory over {categoryTitle}</DialogTitle>
                         <DialogDescription className="text-base font-medium text-left">Shared wisdom and encouragement for victory.</DialogDescription>
                     </DialogHeader>

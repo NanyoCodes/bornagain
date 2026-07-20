@@ -4,9 +4,9 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, updateDoc, getDoc, getDocs } from 'firebase/firestore';
-import type { UserProfile, Soul } from '@/lib/types';
+import type { UserProfile, Soul, Chat, MealGiftStatus } from '@/lib/types';
 import { isToday, format } from 'date-fns';
-import { Skeleton } from '../ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Heart, 
   MessageSquare, 
@@ -37,6 +37,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { actionItems, prayerTemplates } from '@/lib/follow-up-data';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Dialog,
@@ -56,8 +57,8 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -271,7 +272,7 @@ export function RelationshipTrackerCard() {
     setSelectedSoulForAction(soul);
     setIsSoulDialogOpen(false);
 
-    // Identify specialized flows
+    // specialized flows
     if (selectedActionId === 'prayed_together') {
         setCustomPrayerText(resolveTemplate(prayerTemplates[0].text, soul));
         setIsPrayerCustomizationOpen(true);
@@ -402,10 +403,6 @@ export function RelationshipTrackerCard() {
   };
 
   const handleHelpNeedConfirm = (note: string) => {
-      const currentNote = form.getValues('note') || '';
-      const finalNote = currentNote ? `${currentNote}\n\nAct of Kindness: ${note}` : `Act of Kindness: ${note}`;
-      // Note: we can't easily access the form instance from here without passing it around or refactoring.
-      // For MVP, we'll manually finalizeLog with the note.
       if (selectedSoulForAction && selectedActionId) {
           finalizeLog(selectedSoulForAction, selectedActionId, note);
       }
@@ -679,14 +676,14 @@ export function RelationshipTrackerCard() {
           </div>
           <div className="p-8 space-y-6">
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Assistance Note</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided grocery supplies, assisted with transport..." 
                     onChange={e => setCustomPrayerText(e.target.value)}
                     className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
                 />
             </div>
-            <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold">Confirm Provision</Button>
+            <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold">Confirm Service</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -747,4 +744,3 @@ export function RelationshipTrackerCard() {
     </>
   );
 }
-

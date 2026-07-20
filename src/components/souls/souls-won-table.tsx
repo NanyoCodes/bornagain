@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import * as React from "react";
 import { format } from "date-fns";
@@ -79,18 +79,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { actionItems } from "@/lib/follow-up-data";
-import { Label } from "../ui/label";
 import Link from "next/link";
 import { useUser, useFirestore, useDoc } from "@/firebase";
 import { doc } from "firebase/firestore";
