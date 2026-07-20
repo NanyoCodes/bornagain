@@ -348,11 +348,11 @@ export function RelationshipTrackerCard() {
         <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
               <div className="space-y-1">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
                       <Sparkles className="h-5 w-5 text-primary" />
                       Kingdom Connections
                   </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                 {currentDate && (
@@ -423,7 +423,7 @@ export function RelationshipTrackerCard() {
                               </TooltipTrigger>
                               <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
                                   <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
-                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">{action.label}</p>
+                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left">{action.label}</p>
                               </TooltipContent>
                           </Tooltip>
                       </TooltipProvider>
