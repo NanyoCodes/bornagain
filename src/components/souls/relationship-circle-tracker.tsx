@@ -29,7 +29,7 @@ function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic">No souls logged in this category yet.</p>
+        <p className="text-sm text-muted-foreground italic text-left">No souls logged in this category yet.</p>
       </div>
     );
   }
@@ -49,7 +49,7 @@ function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
             </Avatar>
             <div className="flex-1 min-w-0 text-left ml-3 sm:ml-4">
               <div className="flex items-center gap-2 text-left">
-                <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                <p className="font-black text-xs sm:text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                 <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
               </div>
               <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
