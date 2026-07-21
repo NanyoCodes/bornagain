@@ -696,7 +696,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                     Participate
                                                 </Button>
                                              </PostResponsesDialog>
-                                        </CardHeader>
+                                        </CardFooter>
                                     </Card>
                                 );
                             })

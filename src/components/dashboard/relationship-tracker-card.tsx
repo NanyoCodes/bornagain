@@ -73,6 +73,14 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -251,7 +259,7 @@ function ShareWordDialog({
   }, [isOpen]);
 
   const constructInvitationMessage = useCallback((verseText: string, reference: string, link: string) => {
-    return `"${verseText.trim()}" — ${reference}\n\nJoin the movement at Testify! Share miracles, win souls, and glorify God. Visit: ${window.location.origin}/bible`;
+    return `"${verseText.trim()}" — ${reference}\n\nJoin the harvest at Testify! Share your miracles, win souls for Christ, and glorify God. Visit: ${window.location.origin}/bible`;
   }, []);
 
   const handleSearch = async () => {
@@ -424,14 +432,14 @@ function ShareWordDialog({
               : 'Select verses below to share...'}
           </p>
        </div>
-       <div className="space-y-1 font-serif">
+       <div className="space-y-1 font-serif text-left">
          {loadingVerses ? (
            <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
          ) : chapterContent?.verses.map(v => (
            <div 
              key={v.verse} 
              className={cn(
-               "p-3 rounded-xl transition-all cursor-pointer border-2",
+               "p-3 rounded-xl transition-all cursor-pointer border-2 text-left",
                selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50"
              )}
              onClick={() => toggleVerse(v.verse)}
@@ -721,21 +729,44 @@ export function RelationshipTrackerCard() {
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
-      if (!selectedSoulForAction?.phone || !selectedActionId) return;
-      const cleanPhone = selectedSoulForAction.phone.replace(/\+/g, '').replace(/\D/g, '');
+      if (!soul?.phone || !clickedActionId) return;
+      const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
       
-      let message = customMessageText || `Hi ${selectedSoulForAction.firstName}, I'm thinking of you today and praying for you. God bless you!`;
+      let message = customMessageText || `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
       
       const messageText = encodeURIComponent(message);
       
       if (channel === 'whatsapp') {
           window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
       } else {
-          window.location.href = `sms:${selectedSoulForAction.phone}?body=${messageText}`;
+          window.location.href = `sms:${soul.phone}?body=${messageText}`;
       }
       
-      finalizeLog(selectedSoulForAction, selectedActionId, message);
+      const current = form.getValues('actions') || [];
+      form.setValue('actions', [...current, clickedActionId]);
       setIsCommChannelDialogOpen(false);
+      setCustomMessageText('');
+  };
+
+  const handleHelpNeedConfirm = (note: string) => {
+      const currentNote = form.getValues('note') || '';
+      const finalNote = currentNote ? `${currentNote}\n\nAct of Kindness: ${note}` : `Act of Kindness: ${note}`;
+      form.setValue('note', finalNote);
+      
+      const currentActions = form.getValues('actions') || [];
+      form.setValue('actions', [...currentActions, 'helped_with_need']);
+      setIsHelpNeedDialogOpen(false);
+  };
+
+  const handleShareToWhatsApp = () => {
+    if (!selectedSoulForAction) return;
+    const wonAt = safeToDate(selectedSoulForAction.wonAt);
+    const details = `I'd love to introduce you to ${selectedSoulForAction.firstName}, a new soul won for the Kingdom! 🎊\n\n${selectedSoulForAction.firstName} is currently in the "${selectedSoulForAction.status}" stage of their spiritual journey. It would be amazing to have you support ${selectedSoulForAction.firstName}'s growth through prayer and fellowship.\n\nKingdom Details:\n✨ Name: ${selectedSoulForAction.firstName} ${selectedSoulForAction.lastName || ''}\n📅 Won on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n🔗 Relationship: ${selectedSoulForAction.relationship || 'Outreach'}\n\nLet's coordinate to support this new life! Join the harvest at Testify: ${window.location.origin}`;
+    
+    window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
+
+    finalizeLog(selectedSoulForAction, 'introduced_friend', 'Shared via WhatsApp External');
+    setIsShareTargetDialogOpen(false);
   };
 
   const handleShareToPartner = async (partner: UserProfile['accountabilityPartners'][0]) => {
@@ -785,17 +816,6 @@ export function RelationshipTrackerCard() {
       } catch (e) {
           toast({ variant: 'destructive', title: 'Share Failed' });
       }
-  };
-
-  const handleShareToWhatsApp = () => {
-    if (!selectedSoulForAction) return;
-    const wonAt = safeToDate(selectedSoulForAction.wonAt);
-    const details = `I'd love to introduce you to ${selectedSoulForAction.firstName}, a new soul won for the Kingdom! 🎊\n\n${selectedSoulForAction.firstName} is currently in the "${selectedSoulForAction.status}" stage of their spiritual journey. It would be amazing to have you support ${selectedSoulForAction.firstName}'s growth through prayer and fellowship.\n\nKingdom Details:\n✨ Name: ${selectedSoulForAction.firstName} ${selectedSoulForAction.lastName || ''}\n📅 Won on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n🔗 Relationship: ${selectedSoulForAction.relationship || 'Outreach'}\n\nLet's coordinate to support this new life! Join the harvest at Testify: ${window.location.origin}`;
-    
-    window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
-
-    finalizeLog(selectedSoulForAction, 'introduced_friend', 'Shared via WhatsApp External');
-    setIsShareTargetDialogOpen(false);
   };
 
   const activeActionLabel = useMemo(() => 
@@ -1004,22 +1024,22 @@ export function RelationshipTrackerCard() {
 
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
         <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-          <div className="p-8 border-b bg-muted/10 text-left">
-            <DialogHeader className="text-left text-left">
-              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Record</DialogTitle>
-              <DialogDescription className="text-sm font-medium text-left">What specific need did you meet for {selectedSoulForAction?.firstName}?</DialogDescription>
+          <div className="p-8 border-b bg-muted/10">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DialogTitle>
+              <DialogDescription className="text-sm font-medium">Describe how you supported {selectedSoulForAction?.firstName}.</DialogDescription>
             </DialogHeader>
           </div>
-          <div className="p-8 space-y-6 text-left">
-            <div className="space-y-2 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Description of Need</Label>
+          <div className="p-8 space-y-6">
+            <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
                 <Textarea 
-                    placeholder="e.g. Provided grocery supplies, assisted with transport..." 
-                    onChange={e => setCustomMessageText(e.target.value)}
-                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
+                    placeholder="e.g. Provided food items, helped with bill..." 
+                    onChange={e => setCustomMessageText(e.target.value)} 
+                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
                 />
             </div>
-            <Button onClick={() => { if(selectedSoulForAction) finalizeLog(selectedSoulForAction, 'helped_with_need', customMessageText); setIsHelpNeedDialogOpen(false); }} className="w-full h-12 rounded-xl font-bold text-left">Confirm Support</Button>
+            <Button onClick={() => { if(selectedSoulForAction) handleHelpNeedConfirm(customMessageText); }} className="w-full h-12 rounded-xl font-bold">Confirm Service</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -1028,7 +1048,7 @@ export function RelationshipTrackerCard() {
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
           <DialogHeader className="text-center space-y-2 text-left">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
-                  <Share2 className="h-7 w-7 text-primary" />
+                  <Share className="h-7 w-7 text-primary" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-left">Where would you like to share {selectedSoulForAction?.firstName}'s info?</DialogDescription>
@@ -1052,25 +1072,25 @@ export function RelationshipTrackerCard() {
                       <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="p-6 text-left">
-              <ScrollArea className="h-64 text-left">
-                  <div className="space-y-2 text-left text-left">
+              <div className="p-6">
+              <ScrollArea className="h-64">
+                  <div className="space-y-2">
                       {uniquePartners.map(p => (
                           <Button 
                               key={p.userId} 
                               variant="ghost" 
-                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center text-left"
+                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group"
                               onClick={() => handleShareToPartner(p)}
                           >
                               <Avatar className="h-8 w-8 border shrink-0">
                                   <AvatarImage src={p.photoURL} />
                                   <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
+                              <span className="font-bold text-sm group-hover:text-primary transition-colors">{p.firstName} {p.lastName}</span>
                           </Button>
                       ))}
                       {uniquePartners.length === 0 && (
-                          <p className="text-center text-xs text-muted-foreground py-12 text-left">No partners found. Connect with some in Settings!</p>
+                          <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
                       )}
                   </div>
               </ScrollArea>
