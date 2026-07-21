@@ -61,6 +61,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -395,7 +397,7 @@ export function RelationshipTrackerCard() {
   const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
   const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
-  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = React.useState(false);
+  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
   const [customMessageText, setCustomMessageText] = useState('');
 
   const { userProfile, loading: profileLoading } = useUserProfile();
@@ -410,10 +412,8 @@ export function RelationshipTrackerCard() {
     const partners = userProfile?.accountabilityPartners || [];
     const uniqueMap = new Map();
     partners.forEach(p => {
-        if (p.userId) {
-          if (!uniqueMap.has(p.userId) || (!uniqueMap.get(p.userId).photoURL && p.photoURL)) {
+        if (p.userId && !uniqueMap.has(p.userId)) {
             uniqueMap.set(p.userId, p);
-          }
         }
     });
     return Array.from(uniqueMap.values());
@@ -821,7 +821,7 @@ export function RelationshipTrackerCard() {
                       />
                   </div>
                   <Button 
-                      onClick={() => { setIsPrayerCustomizationOpen(false); setIsCommChannelDialogOpen(true); }} 
+                      onClick={() => handlePrayerCustomizationConfirm(customMessageText)} 
                       disabled={!customMessageText.trim()} 
                       className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
                   >
@@ -929,4 +929,3 @@ export function RelationshipTrackerCard() {
     </>
   );
 }
-
