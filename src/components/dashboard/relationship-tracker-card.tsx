@@ -36,7 +36,8 @@ import {
   Book,
   BookMarked,
   ArrowLeft,
-  Target
+  Target,
+  ShoppingCart
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -69,8 +70,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { FirestorePermissionError } from '@/firebase/errors';
-import { errorEmitter } from '@/firebase/error-emitter';
 import { Button } from '@/components/ui/button';
 
 const iconMap: Record<string, any> = {
@@ -249,6 +248,10 @@ function ShareWordDialog({
     }
   }, [isOpen]);
 
+  const constructInvitationMessage = useCallback((verseText: string, reference: string, link: string) => {
+    return `"${verseText.trim()}" — ${reference}\n\nRead more and join the harvest at: ${link}\n\nTestify: Share miracles, win souls, and glorify God. Join the movement at ${window.location.origin}`;
+  }, []);
+
   const handleSearch = async () => {
       if (!bibleSearch.trim()) return;
       setIsSearching(true);
@@ -305,8 +308,7 @@ function ShareWordDialog({
     const reference = `${chapterContent.book} ${chapterContent.chapter}:${selectedVerses.join(', ')}`;
     const link = `${window.location.origin}/dashboard/bible?book=${encodeURIComponent(chapterContent.book)}&chapter=${chapterContent.chapter}`;
     
-    const formattedMessage = `"${selectedTexts.trim()}" — ${reference}\n\nRead full context at: ${link}`;
-    onSelectVerse(formattedMessage);
+    onSelectVerse(constructInvitationMessage(selectedTexts, reference, link));
   };
 
   const renderHub = (
@@ -339,7 +341,7 @@ function ShareWordDialog({
                         key={idx}
                         variant="outline"
                         className="w-full h-auto p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left hover:bg-primary/10 transition-all border-2 border-dashed"
-                        onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}
+                        onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference, `${window.location.origin}/dashboard/bible`))}
                     >
                         <div className="flex items-center justify-between w-full">
                             <span className="font-black text-[9px] sm:text-xs uppercase tracking-widest text-primary">{res.reference}</span>
@@ -376,7 +378,7 @@ function ShareWordDialog({
               key={idx} 
               variant="ghost" 
               className="w-full justify-start h-auto py-4 sm:py-6 px-4 sm:px-6 rounded-2xl sm:rounded-[2rem] hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all text-left block relative overflow-hidden bg-muted/5 shadow-sm"
-              onClick={() => onSelectVerse(`"${v.text}" — ${v.reference}`)}
+              onClick={() => onSelectVerse(constructInvitationMessage(v.text, v.reference, `${window.location.origin}/dashboard/bible`))}
             >
               <div className="flex items-center justify-between w-full mb-1.5">
                   <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{v.reference}</span>
@@ -489,7 +491,7 @@ function ShareWordDialog({
           disabled={selectedVerses.length === 0}
           className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest shadow-lg shadow-primary/20"
         >
-          PREPARE SHARE ({selectedVerses.length})
+          INVITE WITH PASSAGE ({selectedVerses.length})
         </Button>
     </div>
   );
@@ -554,10 +556,8 @@ export function RelationshipTrackerCard() {
     const partners = userProfile?.accountabilityPartners || [];
     const uniqueMap = new Map();
     partners.forEach(p => {
-        if (p.userId) {
-          if (!uniqueMap.has(p.userId) || (!uniqueMap.get(p.userId).photoURL && p.photoURL)) {
+        if (p.userId && !uniqueMap.has(p.userId)) {
             uniqueMap.set(p.userId, p);
-          }
         }
     });
     return Array.from(uniqueMap.values());
@@ -718,6 +718,7 @@ export function RelationshipTrackerCard() {
       const cleanPhone = selectedSoulForAction.phone.replace(/\+/g, '').replace(/\D/g, '');
       
       let message = customMessageText || `Hi ${selectedSoulForAction.firstName}, I'm thinking of you today and praying for you. God bless you!`;
+      
       const messageText = encodeURIComponent(message);
       
       if (channel === 'whatsapp') {
@@ -966,7 +967,7 @@ export function RelationshipTrackerCard() {
                   <Button 
                       onClick={() => { setIsPrayerCustomizationOpen(false); setIsCommChannelDialogOpen(true); }} 
                       disabled={!customMessageText.trim()} 
-                      className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
+                      className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
                   >
                       CONTINUE TO CHANNEL
                   </Button>

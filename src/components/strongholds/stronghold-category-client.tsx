@@ -52,7 +52,8 @@ import {
     Globe,
     ExternalLink,
     Plus,
-    Target
+    Target,
+    MoreHorizontal
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -640,11 +641,11 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                             </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end" className="rounded-xl text-left">
-                                                            <DropdownMenuItem onSelect={() => { setEditingPostId(post.id); setEditingText(post.text); }} className="rounded-lg text-left">
+                                                            <DropdownMenuItem onSelect={() => { setEditingPostId(post.id); setEditingText(post.text); }}>
                                                                 <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit Story
                                                             </DropdownMenuItem>
                                                             <DropdownMenuSeparator className="text-left" />
-                                                            <DropdownMenuItem onSelect={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive rounded-lg text-left">
+                                                            <DropdownMenuItem onSelect={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive">
                                                                 <Trash2 className="mr-2 h-4 w-4 text-left" /> Remove from Circle
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
