@@ -423,10 +423,10 @@ function ShareWordDialog({
   );
 
   const renderVerses = (
-    <div className="space-y-4 pb-12">
-       <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6">
-          <p className="text-[10px] font-black uppercase text-primary mb-1">SELECTED FOR SHARING</p>
-          <p className="text-xs font-bold text-muted-foreground">
+    <div className="space-y-4 pb-12 text-left">
+       <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left">
+          <p className="text-[10px] font-black uppercase text-primary mb-1 text-left">SELECTED FOR SHARING</p>
+          <p className="text-xs font-bold text-muted-foreground text-left">
             {selectedVerses.length > 0 
               ? `${selectedBook} ${selectedChapter}:${selectedVerses.join(', ')}`
               : 'Select verses below to share...'}
@@ -434,7 +434,7 @@ function ShareWordDialog({
        </div>
        <div className="space-y-1 font-serif text-left">
          {loadingVerses ? (
-           <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
+           <div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div>
          ) : chapterContent?.verses.map(v => (
            <div 
              key={v.verse} 
@@ -459,14 +459,14 @@ function ShareWordDialog({
     <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left">
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0 text-left">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-2 text-left">
             {view !== 'hub' && (
                 <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
             )}
-            <Target className="h-5 w-5 text-primary" />
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
+            <Target className="h-5 w-5 text-primary text-left" />
+            <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
           </div>
           <DialogHeader className="text-left">
             <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</DialogTitle>
@@ -729,32 +729,27 @@ export function RelationshipTrackerCard() {
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
-      if (!soul?.phone || !clickedActionId) return;
-      const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
+      if (!selectedSoulForAction?.phone || !selectedActionId) return;
+      const cleanPhone = selectedSoulForAction.phone.replace(/\+/g, '').replace(/\D/g, '');
       
-      let message = customMessageText || `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
+      let message = customMessageText || `Hi ${selectedSoulForAction.firstName}, I'm thinking of you today and praying for you. God bless you!`;
       
       const messageText = encodeURIComponent(message);
       
       if (channel === 'whatsapp') {
           window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
       } else {
-          window.location.href = `sms:${soul.phone}?body=${messageText}`;
+          window.location.href = `sms:${selectedSoulForAction.phone}?body=${messageText}`;
       }
       
-      const current = form.getValues('actions') || [];
-      form.setValue('actions', [...current, clickedActionId]);
+      finalizeLog(selectedSoulForAction, selectedActionId, `Sent via ${channel.toUpperCase()}`);
       setIsCommChannelDialogOpen(false);
       setCustomMessageText('');
   };
 
   const handleHelpNeedConfirm = (note: string) => {
-      const currentNote = form.getValues('note') || '';
-      const finalNote = currentNote ? `${currentNote}\n\nAct of Kindness: ${note}` : `Act of Kindness: ${note}`;
-      form.setValue('note', finalNote);
-      
-      const currentActions = form.getValues('actions') || [];
-      form.setValue('actions', [...currentActions, 'helped_with_need']);
+      if(!selectedSoulForAction || !selectedActionId) return;
+      finalizeLog(selectedSoulForAction, selectedActionId, `Assistance details: ${note}`);
       setIsHelpNeedDialogOpen(false);
   };
 

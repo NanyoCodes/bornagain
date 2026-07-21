@@ -601,7 +601,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                             onOpenAssignDialog={onOpenAssignDialog} 
                             onEdit={onEdit} 
                             onDelete={onDelete} 
-                            onAssess={onAssess} 
+                            onAssess={onEdit} 
                         />
                         ))}
                     </TableBody>
