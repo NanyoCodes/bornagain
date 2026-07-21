@@ -4,9 +4,9 @@ import * as React from 'react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
-import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, updateDoc, getDocs, getDoc } from 'firebase/firestore';
+import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, updateDoc, getDocs, getDoc, setDoc } from 'firebase/firestore';
 import type { UserProfile, Soul, Chat, ChatMessage, BibleChapterOutput, SoulRelationship } from '@/lib/types';
-import { isToday, format, isSameDay, differenceInMinutes } from 'date-fns';
+import { isToday, format, isSameDay } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Heart, 
@@ -33,11 +33,11 @@ import {
   Share2,
   ChevronRight,
   ChevronDown,
-  Book,
   BookMarked,
   ArrowLeft,
   Target,
-  ShoppingCart
+  ShoppingCart,
+  Share
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -70,9 +70,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/error-emitter';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -162,7 +161,7 @@ function SoulSelectionDialog({
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0">
                         <SheetHeader className="text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">{desc}</SheetDescription>
@@ -251,7 +250,7 @@ function ShareWordDialog({
   }, [isOpen]);
 
   const constructInvitationMessage = useCallback((verseText: string, reference: string, link: string) => {
-    return `"${verseText.trim()}" — ${reference}\n\nRead more and join the harvest at: ${link}\n\nTestify: Share miracles, win souls, and glorify God. Join the movement at ${window.location.origin}`;
+    return `"${verseText.trim()}" — ${reference}\n\nRead more and join the harvest at Testify! Share miracles, win souls, and glorify God. Visit: ${window.location.origin}/bible`;
   }, []);
 
   const handleSearch = async () => {
@@ -450,7 +449,7 @@ function ShareWordDialog({
   const header = (
     <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left">
       <div className="flex items-center justify-between gap-4">
-        <div className="min-w-0">
+        <div className="min-w-0 text-left">
           <div className="flex items-center gap-3 mb-2">
             {view !== 'hub' && (
                 <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
@@ -493,7 +492,7 @@ function ShareWordDialog({
           disabled={selectedVerses.length === 0}
           className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest shadow-lg shadow-primary/20"
         >
-          INVITE WITH PASSAGE ({selectedVerses.length})
+          PREPARE SHARE ({selectedVerses.length})
         </Button>
     </div>
   );
@@ -680,6 +679,11 @@ export function RelationshipTrackerCard() {
         return;
     }
 
+    if (selectedActionId === 'introduced_friend') {
+        setIsShareTargetDialogOpen(true);
+        return;
+    }
+
     if (selectedActionId === 'text_message') {
         setIsCommChannelDialogOpen(true);
         return;
@@ -737,7 +741,7 @@ export function RelationshipTrackerCard() {
       if (!user || !firestore || !selectedSoulForAction || !userProfile || !selectedActionId) return;
 
       const wonAt = safeToDate(selectedSoulForAction.wonAt);
-      const text = `SHARING SOUL DATA:\nName: ${selectedSoulForAction.firstName} ${selectedSoulForAction.lastName}\nStatus: ${selectedSoulForAction.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nRelationship: ${selectedSoulForAction.relationship || 'Outreach'}\nLet's keep them in our prayers and coordinate follow-up.`;
+      const text = `I'd love to introduce you to ${selectedSoulForAction.firstName}, a new soul won for the Kingdom! 🎊\n\n${selectedSoulForAction.firstName} is currently in the "${selectedSoulForAction.status}" stage of their spiritual journey. It would be amazing to have you support ${selectedSoulForAction.firstName}'s growth through prayer and fellowship.\n\nKingdom Details:\n✨ Name: ${selectedSoulForAction.firstName} ${selectedSoulForAction.lastName || ''}\n📅 Won on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n🔗 Relationship: ${selectedSoulForAction.relationship || 'Outreach'}\n\nLet's coordinate to support this new life! Join the harvest at Testify: ${window.location.origin}`;
 
       try {
           const participantIds = [user.uid, partner.userId].sort();
@@ -785,7 +789,7 @@ export function RelationshipTrackerCard() {
   const handleShareToWhatsApp = () => {
     if (!selectedSoulForAction) return;
     const wonAt = safeToDate(selectedSoulForAction.wonAt);
-    const details = `SHARING SOUL DATA:\nName: ${selectedSoulForAction.firstName} ${selectedSoulForAction.lastName}\nStatus: ${selectedSoulForAction.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nRelationship: ${selectedSoulForAction.relationship || 'Outreach'}\nLet's keep them in our prayers and coordinate follow-up.`;
+    const details = `I'd love to introduce you to ${selectedSoulForAction.firstName}, a new soul won for the Kingdom! 🎊\n\n${selectedSoulForAction.firstName} is currently in the "${selectedSoulForAction.status}" stage of their spiritual journey. It would be amazing to have you support ${selectedSoulForAction.firstName}'s growth through prayer and fellowship.\n\nKingdom Details:\n✨ Name: ${selectedSoulForAction.firstName} ${selectedSoulForAction.lastName || ''}\n📅 Won on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n🔗 Relationship: ${selectedSoulForAction.relationship || 'Outreach'}\n\nLet's coordinate to support this new life! Join the harvest at Testify: ${window.location.origin}`;
     
     window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
 

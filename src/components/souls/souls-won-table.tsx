@@ -7,31 +7,22 @@ import {
   Church, 
   MapPin, 
   Phone, 
-  ChevronDown, 
   Download, 
   HeartHandshake, 
   Edit, 
   Trash2, 
   Users, 
   History, 
-  Group, 
   Heart, 
   Sparkles,
   ArrowRight,
-  Gift,
-  Utensils,
-  Hourglass,
   ClipboardList,
   Zap,
   ShieldCheck,
-  Info,
   Target,
   Mail,
   ArrowLeft,
-  CalendarDays,
-  BookOpen,
-  Banknote,
-  Plus
+  BookOpen
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
@@ -40,7 +31,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";

@@ -111,7 +111,7 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
   addiction: [
     { verse: "1 Corinthians 6:12", text: "I will not be mastered by anything.", prayer: "I declare that only Jesus is my Master. No substance or habit has authority over my life. Amen." },
     { verse: "Galatians 5:1", text: "It is for freedom that Christ has set us free. Stand firm, then, and do not let yourselves be burdened again by a yoke of slavery.", prayer: "I stand firm in the freedom bought by the blood of Jesus. I am no longer a slave to addiction. Amen." },
-    { verse: "1 Peter 5:8", text: "Be alert and of sober mind. Your enemy the devil prowls around like a roaring lion looking for someone to devour.", prayer: "Lord, keep my mind sharp and my spirit alert. I burst the enemy and he must flee. Amen." },
+    { verse: "1 Peter 5:8", text: "Be alert and of sober mind. Your enemy the devil prowls around like a roaring lion looking for someone to devour.", prayer: "Lord, keep my mind sharp and my spirit alert. I resist the enemy and he must flee. Amen." },
     { verse: "John 8:36", text: "So if the Son sets you free, you will be free indeed.", prayer: "Jesus, You have set me free. I receive my total deliverance today. I am free indeed! Amen." },
     { verse: "Romans 6:12-14", text: "For sin shall no longer be your master, because you are not under the law, but under grace.", prayer: "I am under Your grace, Lord. Your grace provides the strength I need to overcome every craving. Amen." },
     { verse: "1 Corinthians 10:13", text: "God is faithful; he will not let you be tempted beyond what you can bear.", prayer: "I thank You, Father, that You have equipped me to handle this moment. I trust Your faithfulness. Amen." },
