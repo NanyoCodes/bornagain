@@ -299,7 +299,7 @@ function ShareResourceDialog({ category, onResourceAdded }: { category: string, 
         </DialogTrigger>
         <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
             <div className="p-8 border-b bg-muted/10 text-left">
-                <DialogHeader className="text-left">
+                <DialogHeader>
                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Add to Armory</DialogTitle>
                     <DialogDescription className="text-sm font-medium text-left">Share a resource that helped you overcome.</DialogDescription>
                 </DialogHeader>
@@ -696,7 +696,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                     Participate
                                                 </Button>
                                              </PostResponsesDialog>
-                                        </CardFooter>
+                                        </CardHeader>
                                     </Card>
                                 );
                             })

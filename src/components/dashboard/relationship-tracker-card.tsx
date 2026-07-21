@@ -37,6 +37,7 @@ import {
   ArrowLeft,
   Target,
   ShoppingCart,
+  Plus,
   Share
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
@@ -250,7 +251,7 @@ function ShareWordDialog({
   }, [isOpen]);
 
   const constructInvitationMessage = useCallback((verseText: string, reference: string, link: string) => {
-    return `"${verseText.trim()}" — ${reference}\n\nRead more and join the harvest at Testify! Share miracles, win souls, and glorify God. Visit: ${window.location.origin}/bible`;
+    return `"${verseText.trim()}" — ${reference}\n\nJoin the movement at Testify! Share miracles, win souls, and glorify God. Visit: ${window.location.origin}/bible`;
   }, []);
 
   const handleSearch = async () => {
