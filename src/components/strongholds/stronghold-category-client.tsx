@@ -555,7 +555,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 <AccordionContent className="pb-6 pt-2 text-left">
                                     <div className="space-y-6 text-left">
                                         <div className="relative pl-6 border-l-4 border-primary/20 bg-background/50 p-4 rounded-r-2xl shadow-inner text-left">
-                                            <開Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
+                                            <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
                                             <p className="text-base text-muted-foreground italic font-medium text-justify text-balance text-left">
                                                 &ldquo;{s.text}&rdquo;
                                             </p>
@@ -636,15 +636,15 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
                                                             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left">
-                                                                <MoreVertical className="h-4 w-4 text-left" />
+                                                                <MoreHorizontal className="h-4 w-4 text-left" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end" className="rounded-xl text-left">
-                                                            <DropdownMenuItem onClick={() => { setEditingPostId(post.id); setEditingText(post.text); }} className="rounded-lg text-left">
+                                                            <DropdownMenuItem onSelect={() => { setEditingPostId(post.id); setEditingText(post.text); }} className="rounded-lg text-left">
                                                                 <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit Story
                                                             </DropdownMenuItem>
                                                             <DropdownMenuSeparator className="text-left" />
-                                                            <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive rounded-lg text-left">
+                                                            <DropdownMenuItem onSelect={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive rounded-lg text-left">
                                                                 <Trash2 className="mr-2 h-4 w-4 text-left" /> Remove from Circle
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
