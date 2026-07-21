@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
+import { useUser, useAuth, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, updateDoc, getDocs, getDoc } from 'firebase/firestore';
 import type { UserProfile, Soul } from '@/lib/types';
 import { isToday, format } from 'date-fns';
@@ -251,20 +251,20 @@ function ShareWordDialog({
             <div className="p-6 sm:p-8 space-y-8 text-left">
               <div className="space-y-4 text-left">
                 <div className="relative text-left">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                    <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                     <Input 
                         placeholder="Search Bible (e.g. John 3:16)..." 
                         value={bibleSearch}
                         onChange={e => setBibleSearch(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                        className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left"
+                        className="h-10 sm:h-12 pl-10 sm:pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-xs sm:text-base text-left"
                     />
                     <Button 
                         onClick={handleSearch} 
                         disabled={isSearching || !bibleSearch.trim()}
                         variant="ghost"
                         size="sm"
-                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 px-4 rounded-xl font-black text-[10px] uppercase text-primary"
+                        className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 h-7 sm:h-8 px-3 sm:px-4 rounded-xl font-black text-[9px] sm:text-[10px] uppercase text-primary"
                     >
                         {isSearching ? <Loader2 className="h-3 w-3 animate-spin" /> : 'SEARCH'}
                     </Button>
@@ -397,7 +397,7 @@ export function RelationshipTrackerCard() {
   const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
   const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
-  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
+  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = React.useState(false);
   const [customMessageText, setCustomMessageText] = useState('');
 
   const { userProfile, loading: profileLoading } = useUserProfile();

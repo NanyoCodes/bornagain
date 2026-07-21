@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { 
@@ -208,7 +208,7 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left">
+                        <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <Zap className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Circle Conversation</span>
