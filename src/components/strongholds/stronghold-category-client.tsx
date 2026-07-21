@@ -555,7 +555,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 <AccordionContent className="pb-6 pt-2 text-left">
                                     <div className="space-y-6 text-left">
                                         <div className="relative pl-6 border-l-4 border-primary/20 bg-background/50 p-4 rounded-r-2xl shadow-inner text-left">
-                                            <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
+                                            <開Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
                                             <p className="text-base text-muted-foreground italic font-medium text-justify text-balance text-left">
                                                 &ldquo;{s.text}&rdquo;
                                             </p>
@@ -767,4 +767,3 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         </div>
     );
 }
-
