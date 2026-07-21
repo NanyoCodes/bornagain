@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, addDoc, updateDoc, getDocs, getDoc } from 'firebase/firestore';
 import type { UserProfile, Soul, Chat, ChatMessage, BibleChapterOutput, SoulRelationship } from '@/lib/types';
-import { isToday, format } from 'date-fns';
+import { isToday, format, isSameDay, differenceInMinutes } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Heart, 
@@ -35,7 +35,8 @@ import {
   ChevronDown,
   Book,
   BookMarked,
-  ArrowLeft
+  ArrowLeft,
+  Target
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -553,8 +554,10 @@ export function RelationshipTrackerCard() {
     const partners = userProfile?.accountabilityPartners || [];
     const uniqueMap = new Map();
     partners.forEach(p => {
-        if (p.userId && !uniqueMap.has(p.userId)) {
+        if (p.userId) {
+          if (!uniqueMap.has(p.userId) || (!uniqueMap.get(p.userId).photoURL && p.photoURL)) {
             uniqueMap.set(p.userId, p);
+          }
         }
     });
     return Array.from(uniqueMap.values());
@@ -575,7 +578,7 @@ export function RelationshipTrackerCard() {
     }
   }, [userProfile]);
 
-  const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
+  const resolveTemplate = React.useCallback((template: string, targetSoul: Soul) => {
       const gender = targetSoul.gender?.toLowerCase() || 'other';
       const pronouns = {
           subject: gender === 'female' ? 'she' : 'he',
