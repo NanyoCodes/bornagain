@@ -62,9 +62,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
-import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -155,7 +152,7 @@ function SoulSelectionDialog({
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                         <SheetHeader className="text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">{desc}</SheetDescription>
@@ -248,92 +245,95 @@ function ShareWordDialog({
       }
   };
 
-  const dialogContent = (
-    <div className="p-6 space-y-6 text-left">
-      <div className="space-y-4">
-        <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-            <Input 
-                placeholder="Search Bible (e.g. John 3:16)..." 
-                value={bibleSearch}
-                onChange={e => setBibleSearch(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                className="h-12 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
-            />
-            <Button 
-                onClick={handleSearch} 
-                disabled={isSearching || !bibleSearch.trim()}
-                variant="ghost"
-                size="sm"
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 px-3 rounded-xl font-black text-[10px] uppercase text-primary"
-            >
-                {isSearching ? <Loader2 className="h-3 w-3 animate-spin" /> : 'SEARCH'}
-            </Button>
-        </div>
-
-        {searchResults.length > 0 && (
-            <div className="animate-in fade-in slide-in-from-top-2">
-                {searchResults.map((res, idx) => (
+  const content = (
+    <div className="flex flex-col h-full min-h-0 text-left">
+        <ScrollArea className="flex-grow">
+            <div className="p-6 sm:p-8 space-y-8 text-left">
+              <div className="space-y-4 text-left">
+                <div className="relative text-left">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                    <Input 
+                        placeholder="Search Bible (e.g. John 3:16)..." 
+                        value={bibleSearch}
+                        onChange={e => setBibleSearch(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                        className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left"
+                    />
                     <Button 
-                        key={idx}
-                        variant="outline"
-                        className="w-full h-auto p-4 rounded-2xl border-primary/20 bg-primary/5 flex flex-col items-start gap-2 text-left hover:bg-primary/10 transition-all border-2 border-dashed"
-                        onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}
+                        onClick={handleSearch} 
+                        disabled={isSearching || !bibleSearch.trim()}
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 px-4 rounded-xl font-black text-[10px] uppercase text-primary"
                     >
-                        <div className="flex items-center justify-between w-full">
-                            <span className="font-black text-[10px] uppercase tracking-widest text-primary">{res.reference}</span>
-                            <Send className="h-3 w-3 text-primary opacity-40" />
-                        </div>
-                        <p className="text-xs text-muted-foreground leading-relaxed italic line-clamp-3">"{res.text.trim()}"</p>
+                        {isSearching ? <Loader2 className="h-3 w-3 animate-spin" /> : 'SEARCH'}
                     </Button>
-                ))}
-            </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <Button onClick={onBrowseBible} variant="outline" className="h-20 rounded-2xl gap-2 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-2">
-            <BookOpen className="h-5 w-5 mb-1 group-hover:scale-110 transition-transform" />
-            <span className="font-black text-[10px] uppercase tracking-widest">Browse Bible</span>
-        </Button>
-        <div className="relative group h-20">
-            <Textarea 
-                placeholder="Type custom passage..." 
-                value={customPassage}
-                onChange={e => setCustomPassage(e.target.value)}
-                className="h-full rounded-2xl bg-muted/20 border-none shadow-inner text-[10px] font-bold pt-2 pb-8 resize-none"
-            />
-            <Button 
-                onClick={() => onSelectVerse(customPassage)} 
-                disabled={!customPassage.trim()}
-                className="absolute bottom-1.5 left-1.5 right-1.5 h-6 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-md"
-            >
-                SHARE
-            </Button>
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Kingdom Essential Scriptures</label>
-        <ScrollArea className={cn("border rounded-3xl bg-muted/5", searchResults.length > 0 ? "h-[25vh]" : "h-[40vh]")}>
-          <div className="p-2 space-y-2 text-left">
-            {kingdomVerses.map((v, idx) => (
-              <Button 
-                key={idx} 
-                variant="ghost" 
-                className="w-full justify-start h-auto py-4 px-4 rounded-2xl hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all text-left block"
-                onClick={() => onSelectVerse(`"${v.text}" — ${v.reference}`)}
-              >
-                <div className="flex items-center justify-between w-full mb-1">
-                    <span className="font-black text-[10px] uppercase tracking-widest text-primary">{v.reference}</span>
-                    <PlusCircle className="h-3 w-3 opacity-0 group-hover:opacity-40 transition-opacity" />
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed italic line-clamp-2">"{v.text}"</p>
-              </Button>
-            ))}
-          </div>
+
+                {searchResults.length > 0 && (
+                    <div className="animate-in fade-in slide-in-from-top-2 text-left">
+                        {searchResults.map((res, idx) => (
+                            <Button 
+                                key={idx}
+                                variant="outline"
+                                className="w-full h-auto p-5 rounded-2xl border-primary/20 bg-primary/5 flex flex-col items-start gap-2 text-left hover:bg-primary/10 transition-all border-2 border-dashed"
+                                onClick={() => onSelectVerse(`"${res.text.trim()}" — ${res.reference}`)}
+                            >
+                                <div className="flex items-center justify-between w-full">
+                                    <span className="font-black text-[10px] uppercase tracking-widest text-primary">{res.reference}</span>
+                                    <Send className="h-3.5 w-3.5 text-primary opacity-40" />
+                                </div>
+                                <p className="text-sm text-muted-foreground leading-relaxed italic line-clamp-3">"{res.text.trim()}"</p>
+                            </Button>
+                        ))}
+                    </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                <Button onClick={onBrowseBible} variant="outline" className="h-24 rounded-[1.5rem] gap-2 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
+                    <BookOpen className="h-6 w-6 mb-1 group-hover:scale-110 transition-transform" />
+                    <span className="font-black text-[11px] uppercase tracking-widest">Browse Bible</span>
+                </Button>
+                <div className="relative group h-24 text-left">
+                    <Textarea 
+                        placeholder="Type custom passage..." 
+                        value={customPassage}
+                        onChange={e => setCustomPassage(e.target.value)}
+                        className="h-full rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-[11px] font-bold pt-3 pb-10 resize-none text-left"
+                    />
+                    <Button 
+                        onClick={() => onSelectVerse(customPassage)} 
+                        disabled={!customPassage.trim()}
+                        className="absolute bottom-2 left-2 right-2 h-8 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg text-left"
+                    >
+                        SHARE PASSAGE
+                    </Button>
+                </div>
+              </div>
+
+              <div className="space-y-4 text-left">
+                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Kingdom Essential Scriptures</Label>
+                <div className="space-y-2 text-left">
+                  {kingdomVerses.map((v, idx) => (
+                    <Button 
+                      key={idx} 
+                      variant="ghost" 
+                      className="w-full justify-start h-auto py-5 px-5 rounded-[1.5rem] hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all text-left block relative overflow-hidden"
+                      onClick={() => onSelectVerse(`"${v.text}" — ${v.reference}`)}
+                    >
+                      <div className="flex items-center justify-between w-full mb-1">
+                          <span className="font-black text-[10px] uppercase tracking-widest text-primary">{v.reference}</span>
+                          <PlusCircle className="h-4 w-4 opacity-0 group-hover:opacity-40 transition-opacity" />
+                      </div>
+                      <p className="text-sm text-muted-foreground leading-relaxed italic line-clamp-2">"{v.text}"</p>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="h-32 sm:h-12 shrink-0" />
         </ScrollArea>
-      </div>
     </div>
   );
 
@@ -343,7 +343,7 @@ function ShareWordDialog({
   if (isMobile) {
       return (
           <Sheet open={isOpen} onOpenChange={onOpenChange}>
-              <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                       <SheetHeader className="text-left">
                           <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</SheetTitle>
@@ -351,7 +351,7 @@ function ShareWordDialog({
                       </SheetHeader>
                   </div>
                   <div className="flex-grow min-h-0 overflow-hidden text-left">
-                    {dialogContent}
+                    {content}
                   </div>
               </SheetContent>
           </Sheet>
@@ -360,14 +360,19 @@ function ShareWordDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-        <div className="p-8 border-b bg-muted/10">
+      <DialogContent className="sm:max-w-md max-h-[85vh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left flex flex-col">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
           <DialogHeader className="text-left">
-            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</DialogTitle>
-            <DialogDescription className="text-sm font-medium">{desc}</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-left">{desc}</DialogDescription>
           </DialogHeader>
         </div>
-        {dialogContent}
+        <div className="flex-grow min-h-0 overflow-hidden text-left">
+            {content}
+        </div>
+        <div className="p-6 border-t bg-muted/5 flex justify-end shrink-0 text-left">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-xl h-11 px-8 font-bold text-left">Close</Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -757,7 +762,7 @@ export function RelationshipTrackerCard() {
               })}
           </div>
         </CardContent>
-        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
+        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left text-left">
               <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm text-left">
                   <Link href="/dashboard/souls-won">
                       <UserPlus className="mr-2 h-4 w-4" />
@@ -900,7 +905,7 @@ export function RelationshipTrackerCard() {
               </div>
               <div className="p-6 text-left">
               <ScrollArea className="h-64 text-left">
-                  <div className="space-y-2 text-left">
+                  <div className="space-y-2 text-left text-left">
                       {uniquePartners.map(p => (
                           <Button 
                               key={p.userId} 
