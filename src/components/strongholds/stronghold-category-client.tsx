@@ -78,6 +78,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { CircleResource } from '@/lib/types';
+import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
 
 const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
   pride: [
@@ -615,7 +616,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         ) : filteredPosts && filteredPosts.length > 0 ? (
                             filteredPosts.map((post: any) => {
                                 const postDate = safeToDate(post.createdAt);
-                                const isOwner = user?.uid === post.authorId;
+                                const isAuthor = user?.uid === post.authorId;
                                 const isEditing = editingPostId === post.id;
 
                                 return (
@@ -633,7 +634,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2 text-left">
-                                                {isOwner && !isEditing && (
+                                                {isAuthor && !isEditing && (
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
                                                             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left">

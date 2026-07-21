@@ -71,6 +71,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -382,7 +384,7 @@ function ShareWordDialog({
             >
               <div className="flex items-center justify-between w-full mb-1.5">
                   <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{v.reference}</span>
-                  <PlusCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 opacity-0 group-hover:opacity-40 transition-opacity" />
+                  <PlusCircle className="h-3.5 w-3.5 sm:h-4 w-4 opacity-0 group-hover:opacity-40 transition-opacity" />
               </div>
               <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic line-clamp-2">&ldquo;{v.text}&rdquo;</p>
             </Button>

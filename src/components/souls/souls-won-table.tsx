@@ -510,10 +510,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 
   React.useEffect(() => { 
     setMounted(true); 
-    if (souls.length > 0 && !selectedId && !isMobile) {
-        setSelectedId(souls[0].id);
-    }
-  }, [souls, isMobile, selectedId]);
+  }, []);
 
   const selectedSoul = React.useMemo(() => 
     souls.find(s => s.id === selectedId) || null
