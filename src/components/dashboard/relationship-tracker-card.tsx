@@ -556,8 +556,10 @@ export function RelationshipTrackerCard() {
     const partners = userProfile?.accountabilityPartners || [];
     const uniqueMap = new Map();
     partners.forEach(p => {
-        if (p.userId && !uniqueMap.has(p.userId)) {
+        if (p.userId) {
+          if (!uniqueMap.has(p.userId) || (!uniqueMap.get(p.userId).photoURL && p.photoURL)) {
             uniqueMap.set(p.userId, p);
+          }
         }
     });
     return Array.from(uniqueMap.values());
@@ -603,8 +605,9 @@ export function RelationshipTrackerCard() {
     const batch = writeBatch(firestore);
 
     const wasCompleted = completedToday.includes(actionId);
-    const newCompleted = [...completedToday];
-    if (!wasCompleted) newCompleted.push(actionId);
+    const newCompleted = wasCompleted
+      ? completedToday
+      : [...completedToday, actionId];
 
     const userRef = doc(firestore, 'users', user.uid);
     batch.update(userRef, {
@@ -719,21 +722,20 @@ export function RelationshipTrackerCard() {
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
-      if (!soul?.phone || !clickedActionId) return;
-      const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
+      if (!selectedSoulForAction?.phone || !selectedActionId) return;
+      const cleanPhone = selectedSoulForAction.phone.replace(/\+/g, '').replace(/\D/g, '');
       
-      let message = customPrayerText || `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
+      let message = customMessageText || `Hi ${selectedSoulForAction.firstName}, I'm thinking of you today and praying for you. God bless you!`;
       
       const messageText = encodeURIComponent(message);
       
       if (channel === 'whatsapp') {
           window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
       } else {
-          window.location.href = `sms:${soul.phone}?body=${messageText}`;
+          window.location.href = `sms:${selectedSoulForAction.phone}?body=${messageText}`;
       }
       
-      const current = form.getValues('actions') || [];
-      form.setValue('actions', [...current, clickedActionId]);
+      finalizeLog(selectedSoulForAction, selectedActionId);
       setIsCommChannelDialogOpen(false);
       setCustomMessageText('');
   };
@@ -1018,7 +1020,7 @@ export function RelationshipTrackerCard() {
           </div>
           <div className="p-8 space-y-6 text-left">
             <div className="space-y-2 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomMessageText(e.target.value)} 

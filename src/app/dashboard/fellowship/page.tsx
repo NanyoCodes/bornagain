@@ -277,7 +277,7 @@ function FellowshipForm({
                 )} />
                 <Button type="submit" disabled={isSubmitting} className="w-full h-11 text-lg">
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Create {form.watch('groupType')}
+                    Create Fellowship
                 </Button>
             </form>
         </Form>
@@ -448,11 +448,11 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
 
                         <FormField control={form.control} name="city" render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11" />
-                                </FormControl>
-                                <FormMessage />
+                                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">City</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Enter City" {...field} value={field.value ?? ''} className="text-base h-11" />
+                                    </FormControl>
+                                    <FormMessage />
                             </FormItem>
                         )} />
                     </div>
@@ -839,7 +839,7 @@ export default function FellowshipPage() {
                                 <DialogDescription className="text-sm font-medium">Create a space for community and growth.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-grow">
+                        <ScrollArea className="flex-grow min-h-0">
                             <div className="p-8">
                                 <FellowshipForm 
                                     userProfile={userProfile ?? null} 
@@ -882,7 +882,7 @@ export default function FellowshipPage() {
                                     <DialogDescription className="text-sm font-medium">Update your group's details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-grow">
+                            <ScrollArea className="flex-grow min-h-0">
                                 <div className="p-8">
                                      <ManageFellowshipForm 
                                         fellowship={fellowshipToManage} 
