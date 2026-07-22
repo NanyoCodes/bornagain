@@ -740,7 +740,7 @@ export function RelationshipTrackerCard() {
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
-      if (!selectedSoulForAction?.phone || !clickedActionId) return;
+      if (!selectedSoulForAction?.phone || !selectedActionId) return;
       const cleanPhone = selectedSoulForAction.phone.replace(/\+/g, '').replace(/\D/g, '');
       
       let message = customMessageText || `Hi ${selectedSoulForAction.firstName}, I'm thinking of you today and praying for you. God bless you!`;
@@ -752,7 +752,7 @@ export function RelationshipTrackerCard() {
           window.location.href = `sms:${selectedSoulForAction.phone}?body=${messageText}`;
       }
       
-      finalizeLog(selectedSoulForAction, clickedActionId, `Sent via ${channel.toUpperCase()}: ${message.substring(0, 50)}...`);
+      finalizeLog(selectedSoulForAction, selectedActionId, `Sent via ${channel.toUpperCase()}: ${message.substring(0, 50)}...`);
       setIsCommChannelDialogOpen(false);
       setCustomMessageText('');
   };
@@ -821,6 +821,14 @@ export function RelationshipTrackerCard() {
       } catch (e) {
           toast({ variant: 'destructive', title: 'Share Failed' });
       }
+  };
+
+  const handlePrayerCustomizationConfirm = (text: string) => {
+      setCustomMessageText(text);
+      setIsPrayerCustomizationOpen(false);
+      requestAnimationFrame(() => {
+          setIsCommChannelDialogOpen(true);
+      });
   };
 
   const activeActionLabel = useMemo(() => 
@@ -910,7 +918,7 @@ export function RelationshipTrackerCard() {
                                               <>
                                                   <div className={cn(
                                                       "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
-                                                      isSelected ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
+                                                      isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
                                                   )}>
                                                       <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                                   </div>
@@ -989,7 +997,7 @@ export function RelationshipTrackerCard() {
                     </div>
                 </div>
                   <div className="space-y-2 text-left">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Message</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Message</Label>
                       <Textarea 
                           value={customMessageText}
                           onChange={e => setCustomMessageText(e.target.value)}
@@ -1010,11 +1018,11 @@ export function RelationshipTrackerCard() {
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
           <DialogHeader className="text-center space-y-2 text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left text-left">
                   <MessageSquare className="h-7 w-7 text-primary" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Message Hub</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-left">How would you like to encourage {selectedSoulForAction?.firstName}?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left text-left">Message Hub</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-left text-left">How would you like to encourage {selectedSoulForAction?.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6 text-left">
             <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
