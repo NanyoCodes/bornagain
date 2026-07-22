@@ -170,7 +170,7 @@ function SoulProfileContent({
                 )}
             </div>
             <div className="flex flex-col items-center gap-2 text-left">
-                <CardTitle className="text-xl font-black uppercase tracking-tight text-center text-left">{soul.nickname || `${soul.firstName} ${soul.lastName}`}</CardTitle>
+                <CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center sm:text-left truncate w-full">{soul.nickname || `${soul.firstName} ${soul.lastName}`}</CardTitle>
                 <div className="flex gap-2 justify-center text-left items-center">
                     <Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center text-left", getStatusClasses(soul.status))} variant="outline">
                         {soul.status}
@@ -205,11 +205,11 @@ function SoulProfileContent({
                 <div className="grid grid-cols-2 gap-4 text-left">
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Full Name</p>
-                        <p className="text-xs font-bold truncate capitalize text-left">{soul.firstName} {soul.lastName}</p>
+                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.firstName} {soul.lastName}</p>
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Gender/Age</p>
-                        <p className="text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
                 </div>
             </div>
@@ -225,7 +225,7 @@ function SoulProfileContent({
                 </div>
                 <div className="space-y-2 text-left">
                     {soul.phone ? (
-                        <div className="flex items-center gap-2 text-xs font-bold text-foreground text-left">
+                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left">
                             <Phone className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
                             {soul.phone}
                         </div>
@@ -233,7 +233,7 @@ function SoulProfileContent({
                         <p className="text-[9px] text-muted-foreground/40 italic text-left">No phone recorded</p>
                     )}
                     {soul.email && (
-                        <div className="flex items-center gap-2 text-xs font-bold text-foreground text-left">
+                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground text-left">
                             <Mail className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
                             {soul.email}
                         </div>
@@ -246,7 +246,7 @@ function SoulProfileContent({
             <div className="space-y-4 text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Harvest Context</p>
                 <div className="space-y-1 text-left">
-                    <p className="text-xs font-bold flex items-center gap-1.5 truncate text-left">
+                    <p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate text-left">
                         <Target className="h-3 w-3 text-primary text-left" />
                         Source: {soul.source}
                     </p>
@@ -267,14 +267,14 @@ function SoulProfileContent({
                         <HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left" />
                         <div className="min-w-0 text-left">
                             <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p>
-                            <p className="text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p>
+                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left">
                         <Users className="h-4 w-4 text-blue-500 shrink-0 text-left" />
                         <div className="min-w-0 text-left">
                             <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p>
-                            <p className="text-xs font-bold truncate capitalize text-left">{soul.associationName || 'No Association'}</p>
+                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.associationName || 'No Association'}</p>
                         </div>
                     </div>
                 </div>
@@ -463,7 +463,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
                     </Avatar>
                     <div className="min-w-0 text-left">
                         <div className="flex items-center gap-2 text-left">
-                            <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight text-left">
+                            <div className="font-black text-[13px] sm:text-sm md:text-base truncate capitalize tracking-tight text-left">
                               {soul.firstName} {soul.lastName}
                             </div>
                             <MutualConnectBadge soul={soul} />
