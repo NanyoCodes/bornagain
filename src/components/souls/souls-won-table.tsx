@@ -81,6 +81,7 @@ import { doc } from "firebase/firestore";
 import Image from 'next/image';
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
+import { MutualConnectBadge } from "./mutual-connect-badge";
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -154,10 +155,11 @@ function SoulProfileContent({
             </div>
             <div className="flex flex-col items-center gap-2 text-left">
                 <CardTitle className="text-xl font-black uppercase tracking-tight text-center text-left">{soul.firstName} {soul.lastName}</CardTitle>
-                <div className="flex gap-2 justify-center text-left">
+                <div className="flex gap-2 justify-center text-left items-center">
                     <Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center text-left", getStatusClasses(soul.status))} variant="outline">
                         {soul.status}
                     </Badge>
+                    <MutualConnectBadge soul={soul} />
                 </div>
             </div>
         </CardHeader>
@@ -355,9 +357,12 @@ const SoulCard = React.memo(({ soul, onClick }: {
                         </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-left">
-                        <p className="font-bold truncate text-sm sm:text-base leading-tight capitalize tracking-tight text-left">
-                          {soul.firstName || 'Unknown'} {soul.lastName || ''}
-                        </p>
+                        <div className="flex items-center gap-2 text-left flex-wrap">
+                            <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight text-left">
+                              {soul.firstName || 'Unknown'} {soul.lastName || ''}
+                            </p>
+                            <MutualConnectBadge soul={soul} />
+                        </div>
                         <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left">
                             <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                             {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0 text-left">Fellowship</Badge>}
@@ -408,8 +413,11 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
                         </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 text-left">
-                        <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight text-left">
-                          {soul.firstName} {soul.lastName}
+                        <div className="flex items-center gap-2 text-left">
+                            <div className="font-black text-sm sm:text-base truncate capitalize tracking-tight text-left">
+                              {soul.firstName} {soul.lastName}
+                            </div>
+                            <MutualConnectBadge soul={soul} />
                         </div>
                         {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left"><Church className="h-3 w-3 shrink-0 text-left" />{soul.church}</div>}
                     </div>

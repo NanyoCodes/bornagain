@@ -7,7 +7,7 @@ import {
     PlusCircle, 
     Home, 
     Sparkles, 
-    ArrowRight,
+    ArrowRight, 
     Target
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -24,6 +24,7 @@ import Link from 'next/link';
 import type { Soul, Campaign, Fellowship, SoulRelationship } from '@/lib/types';
 import { LogSoulForm } from './log-soul-form';
 import { ViewHistoryDialog } from './view-history-dialog';
+import { MutualConnectBadge } from './mutual-connect-badge';
 
 function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul: (soul: Soul) => void }) {
   if (!souls || souls.length === 0) {
@@ -45,19 +46,22 @@ function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
             onClick={() => onSelectSoul(soul)}
             className="flex items-center justify-between p-2.5 sm:p-4 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98]"
           >
-            <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
-              <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0 text-left ml-3 sm:ml-4">
-              <div className="flex items-center gap-2 text-left">
-                <p className="font-black text-xs sm:text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
-                <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0">{soul.status}</Badge>
-              </div>
-              <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
-                Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
-              </p>
+            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors text-left">
+                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0 text-left ml-1 sm:ml-2">
+                <div className="flex items-center gap-2 text-left flex-wrap">
+                    <p className="font-black text-[13px] sm:text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                    <MutualConnectBadge soul={soul} />
+                    <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left">{soul.status}</Badge>
+                </div>
+                <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
+                    Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
+                </p>
+                </div>
             </div>
-            <ArrowRight className="h-3.5 w-3.5 sm:h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+            <ArrowRight className="h-3.5 w-3.5 sm:h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 text-left" />
           </Button>
         );
       })}
@@ -135,7 +139,7 @@ export function RelationshipCircleTracker({
                                 <div className="min-w-0 text-left">
                                     <div className="flex items-center gap-2 mb-2 text-left">
                                         <Users className="h-4 w-4 text-primary" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Directory</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Directory</span>
                                     </div>
                                     <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight text-left">{selectedCategoryName} Circle</SheetTitle>
                                     <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Viewing all converts in your {selectedCategoryName.toLowerCase()} group.</SheetDescription>
@@ -152,7 +156,7 @@ export function RelationshipCircleTracker({
                             </div>
                         </div>
                         <div className="flex-grow overflow-hidden relative text-left">
-                            <ScrollArea className="h-full px-4 sm:px-8 pt-6">
+                            <ScrollArea className="h-full px-4 sm:px-8 pt-6 text-left">
                                 <CategorySoulList souls={activeCategorySouls} onSelectSoul={setDetailedSoul} />
                                 <div className="h-24" />
                             </ScrollArea>
