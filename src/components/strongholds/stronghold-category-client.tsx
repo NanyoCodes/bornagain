@@ -907,4 +907,3 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         </div>
     );
 }
-

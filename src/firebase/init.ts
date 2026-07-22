@@ -27,10 +27,12 @@ export function initializeFirebase(): FirebaseServices {
   // Firestore must be initialized before other services that might implicitly call getFirestore()
   if (typeof window !== 'undefined') {
     try {
-      // Attempt to initialize with long polling for proxy/station compatibility.
-      // This is a known fix for "INTERNAL ASSERTION FAILED" in proxied environments.
+      // Attempt to initialize with long polling and disabled fetch streams for proxy/station compatibility.
+      // This is the robust fix for "INTERNAL ASSERTION FAILED: Unexpected state" in proxied environments.
       firestore = initializeFirestore(app, {
         experimentalForceLongPolling: true,
+        // @ts-ignore - useFetchStreams is valid in newer Firebase versions to resolve proxy stream issues
+        useFetchStreams: false,
       });
     } catch (e: any) {
       // If Firestore is already initialized, initializeFirestore throws an error.
@@ -43,11 +45,6 @@ export function initializeFirebase(): FirebaseServices {
   }
 
   const auth = getAuth(app);
-  
-  /**
-   * Storage Initialization
-   * Relying on the bucket URL defined in config.ts for automatic resolution.
-   */
   const storage = getStorage(app);
   
   const services = { app, auth, firestore, storage };
