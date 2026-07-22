@@ -717,6 +717,11 @@ export function RelationshipTrackerCard() {
         const path = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
         router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
         return;
+    } else if (selectedActionId === 'helped_with_need') {
+        setIsHelpNeedDialogOpen(true);
+        return;
+    } else if (selectedActionId === 'invited_to_event') {
+        router.push('/dashboard/events');
     }
 
     finalizeLog(soul, selectedActionId);
@@ -1024,7 +1029,7 @@ export function RelationshipTrackerCard() {
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
-                    onChange={e => setCustomMessageText(e.target.value)} 
+                    onChange={e => setCustomMessageText(e.target.value)} // Reusing customMessageText temporarily for simple local state
                     className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
                 />
             </div>
