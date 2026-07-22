@@ -62,7 +62,7 @@ import { safeToDate, cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { CommentSection } from '../testimonies/comment-section';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
   DropdownMenu,
@@ -78,7 +78,6 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { CircleResource } from '@/lib/types';
-import { CreateTestimonyForm } from '@/components/testimonies/create-testimony-form';
 
 const categoryScriptures: Record<string, { verse: string; text: string; prayer: string }[]> = {
   pride: [
@@ -111,7 +110,7 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
   addiction: [
     { verse: "1 Corinthians 6:12", text: "I will not be mastered by anything.", prayer: "I declare that only Jesus is my Master. No substance or habit has authority over my life. Amen." },
     { verse: "Galatians 5:1", text: "It is for freedom that Christ has set us free. Stand firm, then, and do not let yourselves be burdened again by a yoke of slavery.", prayer: "I stand firm in the freedom bought by the blood of Jesus. I am no longer a slave to addiction. Amen." },
-    { verse: "1 Peter 5:8", text: "Be alert and of sober mind. Your enemy the devil prowls around like a roaring lion looking for someone to devour.", prayer: "Lord, keep my mind sharp and my spirit alert. I resist the enemy and he must flee. Amen." },
+    { verse: "1 Peter 5:8", text: "Be alert and of sober mind. Your enemy the devil prowls around like a roaring lion looking for someone to devour.", prayer: "Lord, keep my mind sharp and my spirit alert. I refuse to be controlled by any desire. Amen." },
     { verse: "John 8:36", text: "So if the Son sets you free, you will be free indeed.", prayer: "Jesus, You have set me free. I receive my total deliverance today. I am free indeed! Amen." },
     { verse: "Romans 6:12-14", text: "For sin shall no longer be your master, because you are not under the law, but under grace.", prayer: "I am under Your grace, Lord. Your grace provides the strength I need to overcome every craving. Amen." },
     { verse: "1 Corinthians 10:13", text: "God is faithful; he will not let you be tempted beyond what you can bear.", prayer: "I thank You, Father, that You have equipped me to handle this moment. I trust Your faithfulness. Amen." },
@@ -245,6 +244,89 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
             </DialogContent>
         </Dialog>
     );
+}
+
+function AddArmorDialog({ category, onArmorAdded }: { category: string, onArmorAdded: () => void }) {
+  const { user } = useUser();
+  const { userProfile } = useUserProfile();
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [verse, setVerse] = useState('');
+  const [text, setText] = useState('');
+  const [comment, setComment] = useState('');
+
+  const handleAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !firestore || !verse.trim() || !text.trim()) return;
+
+    setIsSubmitting(true);
+    const armorData = {
+        verse: verse.trim(),
+        text: text.trim(),
+        comment: comment.trim(),
+        authorId: user.uid,
+        authorName: `${userProfile?.firstName || 'User'} ${userProfile?.lastName || ''}`.trim(),
+        createdAt: serverTimestamp(),
+        supporters: []
+    };
+
+    try {
+        await addDoc(collection(firestore, 'victoryCircles', category.toLowerCase(), 'armor'), armorData);
+        toast({ title: 'Word Established', description: 'Your contribution has been added to the armor of the Word.' });
+        setIsOpen(false);
+        setVerse('');
+        setText('');
+        setComment('');
+        onArmorAdded();
+    } catch (error) {
+        toast({ variant: 'destructive', title: 'Action Failed' });
+    } finally {
+        setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20 text-left">
+                <Plus className="mr-2 h-4 w-4" /> ADD SCRIPTURE
+            </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+            <div className="p-8 border-b bg-muted/10 text-left">
+                <DialogHeader>
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Equip the Body</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">Add a scripture and your revelation to the circle.</DialogDescription>
+                </DialogHeader>
+            </div>
+            <form onSubmit={handleAdd} className="p-8 space-y-6 text-left">
+                <div className="space-y-4 text-left">
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Scripture Reference</Label>
+                        <Input placeholder="e.g., Romans 8:31" value={verse} onChange={e => setVerse(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold" />
+                    </div>
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">The Word</Label>
+                        <Textarea placeholder="Type the scripture text here..." value={text} onChange={e => setText(e.target.value)} required className="min-h-[100px] rounded-xl bg-muted/20 border-none shadow-inner text-base" />
+                    </div>
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Personal Comment / Revelation</Label>
+                        <Textarea placeholder="How did this Word help you overcome?" value={comment} onChange={e => setComment(e.target.value)} className="min-h-[100px] rounded-xl bg-muted/20 border-none shadow-inner text-base" />
+                    </div>
+                </div>
+                <div className="flex gap-3 pt-2 text-left">
+                    <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left">Cancel</Button>
+                    <Button type="submit" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left">
+                        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin text-left" /> : 'CONTRIBUTE'}
+                    </Button>
+                </div>
+            </form>
+        </DialogContent>
+    </Dialog>
+  );
 }
 
 function ShareResourceDialog({ category, onResourceAdded }: { category: string, onResourceAdded: () => void }) {
@@ -386,6 +468,15 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     }, [firestore, categoryKey]);
     const { data: resources, loading: loadingResources } = useCollection<CircleResource>(resourcesQuery);
 
+    const contributedArmorQuery = useMemo(() => {
+        if (!firestore) return null;
+        return query(
+            collection(firestore, 'victoryCircles', categoryKey, 'armor'),
+            orderBy('createdAt', 'desc')
+        );
+    }, [firestore, categoryKey]);
+    const { data: contributedArmor, loading: loadingArmor } = useCollection<any>(contributedArmorQuery);
+
     const filteredPosts = useMemo(() => {
         if (!posts) return [];
         if (!searchTerm) return posts;
@@ -455,8 +546,8 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         }
     };
 
-    const handleAmen = (idx: number) => {
-        setAmenScriptureIdx(idx);
+    const handleAmen = (idx: number | string) => {
+        setAmenScriptureIdx(typeof idx === 'number' ? idx : -1);
         toast({ title: 'Amen!', description: 'May this word be established in your heart.' });
         setTimeout(() => setAmenScriptureIdx(null), 2000);
     };
@@ -536,59 +627,106 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                 </TabsList>
 
                 <TabsContent value="armor" className="space-y-6 outline-none px-4 sm:px-0 text-left">
-                    <div className="flex items-center gap-3 text-left">
-                        <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
-                            <BookOpen className="h-5 w-5 text-primary text-left" />
+                    <div className="flex items-center justify-between gap-3 text-left">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
+                                <BookOpen className="h-5 w-5 text-primary text-left" />
+                            </div>
+                            <h3 className="text-lg font-black uppercase tracking-tight text-left">Armor of the Word</h3>
                         </div>
-                        <h3 className="text-lg font-black uppercase tracking-tight text-left">Armor of the Word</h3>
+                        <AddArmorDialog category={categoryKey} onArmorAdded={() => {}} />
                     </div>
 
-                    <Accordion type="single" collapsible className="w-full space-y-3 text-left">
-                        {scriptures.map((s, idx) => (
-                            <AccordionItem key={idx} value={`item-${idx}`} className="border rounded-2xl overflow-hidden px-4 bg-muted/10 group/item transition-all hover:bg-muted/20 text-left">
-                                <AccordionTrigger className="hover:no-underline py-4 text-left">
-                                    <div className="flex items-center gap-3 text-left">
-                                        <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-left">
-                                            <span className="text-[10px] font-black text-primary text-left">{idx + 1}</span>
-                                        </div>
-                                        <span className="text-sm font-black uppercase tracking-tight text-foreground/80 group-hover/item:text-primary transition-colors text-left">{s.verse}</span>
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="pb-6 pt-2 text-left">
-                                    <div className="space-y-6 text-left">
-                                        <div className="relative pl-6 border-l-4 border-primary/20 bg-background/50 p-4 rounded-r-2xl shadow-inner text-left">
-                                            <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
-                                            <p className="text-base text-muted-foreground italic font-medium text-justify text-balance text-left">
-                                                &ldquo;{s.text}&rdquo;
-                                            </p>
-                                        </div>
-                                        <div className="space-y-3 p-4 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20 text-left">
-                                            <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 text-left">
-                                                <HandHeart className="h-3 w-3 text-left" /> Victory Prayer
+                    <div className="space-y-12 text-left">
+                        <div className="space-y-4 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-1 text-left">Foundational Armor</Label>
+                            <Accordion type="single" collapsible className="w-full space-y-3 text-left">
+                                {scriptures.map((s, idx) => (
+                                    <AccordionItem key={idx} value={`item-${idx}`} className="border rounded-2xl overflow-hidden px-4 bg-muted/10 group/item transition-all hover:bg-muted/20 text-left">
+                                        <AccordionTrigger className="hover:no-underline py-4 text-left">
+                                            <div className="flex items-center gap-3 text-left">
+                                                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-left">
+                                                    <span className="text-[10px] font-black text-primary text-left">{idx + 1}</span>
+                                                </div>
+                                                <span className="text-sm font-black uppercase tracking-tight text-foreground/80 group-hover/item:text-primary transition-colors text-left">{s.verse}</span>
                                             </div>
-                                            <p className="text-sm font-medium leading-relaxed text-foreground/70 text-balance italic text-left">
-                                                &ldquo;{s.prayer}&rdquo;
-                                            </p>
-                                            <div className="pt-2 text-left">
-                                                <Button 
-                                                    onClick={() => handleAmen(idx)}
-                                                    variant="outline" 
-                                                    size="sm" 
-                                                    className={cn(
-                                                        "h-8 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest transition-all text-left",
-                                                        amenScriptureIdx === idx ? "bg-primary text-white border-none scale-105 shadow-lg" : "bg-background hover:bg-primary/5 text-primary/60 hover:text-primary"
-                                                    )}
-                                                >
-                                                    {amenScriptureIdx === idx ? <Check className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5 text-left" />}
-                                                    AMEN
+                                        </AccordionTrigger>
+                                        <AccordionContent className="pb-6 pt-2 text-left">
+                                            <div className="space-y-6 text-left">
+                                                <div className="relative pl-6 border-l-4 border-primary/20 bg-background/50 p-4 rounded-r-2xl shadow-inner text-left">
+                                                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
+                                                    <p className="text-base text-muted-foreground italic font-medium text-justify text-balance text-left">
+                                                        &ldquo;{s.text}&rdquo;
+                                                    </p>
+                                                </div>
+                                                <div className="space-y-3 p-4 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20 text-left">
+                                                    <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 text-left">
+                                                        <HandHeart className="h-3 w-3 text-left" /> Victory Prayer
+                                                    </div>
+                                                    <p className="text-sm font-medium leading-relaxed text-foreground/70 text-balance italic text-left">
+                                                        &ldquo;{s.prayer}&rdquo;
+                                                    </p>
+                                                    <div className="pt-2 text-left">
+                                                        <Button 
+                                                            onClick={() => handleAmen(idx)}
+                                                            variant="outline" 
+                                                            size="sm" 
+                                                            className={cn(
+                                                                "h-8 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest transition-all text-left",
+                                                                amenScriptureIdx === idx ? "bg-primary text-white border-none scale-105 shadow-lg" : "bg-background hover:bg-primary/5 text-primary/60 hover:text-primary"
+                                                            )}
+                                                        >
+                                                            {amenScriptureIdx === idx ? <Check className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5 text-left" />}
+                                                            AMEN
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        </div>
+
+                        {contributedArmor && contributedArmor.length > 0 && (
+                            <div className="space-y-6 text-left">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-1 text-left">Community Contributions</Label>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+                                    {contributedArmor.map((arm: any) => (
+                                        <Card key={arm.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden flex flex-col h-full text-left">
+                                            <CardHeader className="p-6 pb-2 text-left">
+                                                <div className="flex justify-between items-start mb-3 text-left">
+                                                    <Badge variant="outline" className="h-5 px-2 text-[9px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left">{arm.verse}</Badge>
+                                                    <Sparkles className="h-4 w-4 text-primary opacity-20 text-left" />
+                                                </div>
+                                                <div className="relative pl-4 border-l-4 border-primary/20 bg-muted/20 p-4 rounded-r-2xl shadow-inner text-left">
+                                                    <Quote className="absolute top-1 right-3 h-8 w-8 opacity-5 text-left" />
+                                                    <p className="text-sm text-muted-foreground italic font-medium leading-relaxed text-left">&ldquo;{arm.text}&rdquo;</p>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent className="p-6 pt-2 flex-grow text-left">
+                                                {arm.comment && (
+                                                    <div className="space-y-2 text-left">
+                                                        <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-left">Revelation</p>
+                                                        <p className="text-xs text-foreground font-medium leading-relaxed text-left">{arm.comment}</p>
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                            <CardFooter className="p-4 bg-muted/5 border-t flex items-center justify-between text-left">
+                                                <div className="flex items-center gap-2 text-left">
+                                                    <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
+                                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest text-left">BY {arm.authorName}</p>
+                                                </div>
+                                                <Button variant="ghost" size="sm" className="h-7 rounded-lg text-[9px] font-black text-primary uppercase text-left" onClick={() => handleAmen(arm.id)}>
+                                                    <HandHeart className="mr-1.5 h-3 w-3 text-left" /> AMEN
                                                 </Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
+                                            </CardFooter>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="discussion" className="space-y-6 outline-none px-4 sm:px-0 text-left">
@@ -646,7 +784,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                                 <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit Story
                                                             </DropdownMenuItem>
                                                             <DropdownMenuSeparator className="text-left" />
-                                                            <DropdownMenuItem onSelect={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive">
+                                                            <DropdownMenuItem onSelect={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive text-left">
                                                                 <Trash2 className="mr-2 h-4 w-4 text-left" /> Remove from Circle
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
@@ -664,11 +802,11 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                         autoFocus
                                                     />
                                                     <div className="flex justify-end gap-2 text-left">
-                                                        <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold text-left">
+                                                        <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold text-left text-left">
                                                             <X className="mr-1 h-3 w-3 text-left" /> Cancel
                                                         </Button>
                                                         <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left">
-                                                            {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3 text-left" />}
+                                                            {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin text-left" /> : <Check className="mr-1 h-3 w-3 text-left" />}
                                                             Save Changes
                                                         </Button>
                                                     </div>
@@ -706,7 +844,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
                                 </div>
                                 <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Circle Silence</h4>
-                                <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
+                                <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left text-left">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
                             </div>
                         )}
                     </div>
@@ -723,28 +861,28 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         <ShareResourceDialog category={categoryKey} onResourceAdded={() => {}} />
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left text-left">
                         {loadingResources ? (
                             [...Array(4)].map((_, i) => (
                                 <Card key={i} className="h-32 rounded-2xl animate-pulse bg-muted/30 text-left" />
                             ))
                         ) : resources && resources.length > 0 ? (
                             resources.map(res => (
-                                <Card key={res.id} className="rounded-2xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-md transition-all text-left">
-                                    <CardContent className="p-5 text-left">
-                                        <div className="flex items-start justify-between mb-3 text-left">
-                                            <div className="h-10 w-10 rounded-xl bg-muted/5 flex items-center justify-center shrink-0 border text-left">
+                                <Card key={res.id} className="rounded-2xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-md transition-all text-left text-left">
+                                    <CardContent className="p-5 text-left text-left">
+                                        <div className="flex items-start justify-between mb-3 text-left text-left">
+                                            <div className="h-10 w-10 rounded-xl bg-muted/5 flex items-center justify-center shrink-0 border text-left text-left">
                                                 {getResourceIcon(res.type)}
                                             </div>
-                                            <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest text-left">{res.type}</Badge>
+                                            <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest text-left text-left">{res.type}</Badge>
                                         </div>
-                                        <h4 className="font-black text-sm uppercase tracking-tight truncate text-left">{res.title}</h4>
-                                        {res.description && <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1 italic text-left">{res.description}</p>}
-                                        <div className="flex items-center justify-between mt-4 text-left">
-                                            <p className="text-[8px] font-bold text-muted-foreground uppercase text-left">Shared by {res.authorName}</p>
-                                            <Button variant="ghost" size="sm" asChild className="h-7 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left">
+                                        <h4 className="font-black text-sm uppercase tracking-tight truncate text-left text-left">{res.title}</h4>
+                                        {res.description && <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1 italic text-left text-left">{res.description}</p>}
+                                        <div className="flex items-center justify-between mt-4 text-left text-left">
+                                            <p className="text-[8px] font-bold text-muted-foreground uppercase text-left text-left">Shared by {res.authorName}</p>
+                                            <Button variant="ghost" size="sm" asChild className="h-7 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left text-left">
                                                 <a href={res.url} target="_blank" rel="noopener noreferrer">
-                                                    Open <ExternalLink className="ml-1 h-2.5 w-2.5 text-left" />
+                                                    Open <ExternalLink className="ml-1 h-2.5 w-2.5 text-left text-left" />
                                                 </a>
                                             </Button>
                                         </div>
@@ -752,20 +890,21 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 </Card>
                             ))
                         ) : (
-                            <div className="col-span-full py-20 text-center border-2 border-dashed rounded-3xl bg-muted/5 flex flex-col items-center text-left">
-                                <PlusCircle className="h-12 w-12 text-muted-foreground opacity-10 mb-4 text-left" />
-                                <p className="text-sm text-muted-foreground italic text-left text-left">The armory is empty. Share a supply to help others!</p>
+                            <div className="col-span-full py-20 text-center border-2 border-dashed rounded-3xl bg-muted/5 flex flex-col items-center text-left text-left text-left text-left">
+                                <PlusCircle className="h-12 w-12 text-muted-foreground opacity-10 mb-4 text-left text-left" />
+                                <p className="text-sm text-muted-foreground italic text-left text-left text-left text-left">The armory is empty. Share a supply to help others!</p>
                             </div>
                         )}
                     </div>
                 </TabsContent>
             </Tabs>
             
-            <footer className="text-center pt-12 border-t mt-12 px-8 text-left">
-                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance text-center text-left">
+            <footer className="text-center pt-12 border-t mt-12 px-8 text-left text-left">
+                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance text-center text-left text-left">
                     "Confess your faults one to another, and pray one for another, that ye may be healed. The effectual fervent prayer of a righteous man availeth much." — James 5:16
                 </p>
             </footer>
         </div>
     );
 }
+
