@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -167,7 +168,7 @@ function SoulProfileContent({
                 )}
             </div>
             <div className="flex flex-col items-center gap-2 text-left">
-                <CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center sm:text-left truncate w-full">{soul.nickname || `${soul.firstName} ${soul.lastName}`}</CardTitle>
+                <CardTitle className="text-lg sm:text-xl font-black uppercase tracking-tight text-center sm:text-left truncate w-full">{soul.firstName} {soul.lastName}</CardTitle>
                 <div className="flex gap-2 justify-center text-left items-center">
                     <Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center text-left", getStatusClasses(soul.status))} variant="outline">
                         {soul.status}
@@ -185,11 +186,13 @@ function SoulProfileContent({
                     <div className="flex items-center gap-1">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10">
+                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10">
                                     <Download className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-xl">
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Select Format</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>CSV Export</DropdownMenuItem>
                                 <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem>
                             </DropdownMenuContent>
@@ -209,6 +212,12 @@ function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
                 </div>
+                {soul.nickname && (
+                    <div className="space-y-1 text-left">
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Nickname</p>
+                        <p className="text-[11px] sm:text-xs font-bold text-left">{soul.nickname}</p>
+                    </div>
+                )}
             </div>
 
             <Separator className="opacity-20 text-left" />
@@ -553,7 +562,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
                             </div>
                             <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
-                                {selectedSoul?.nickname ? `Profile: ${selectedSoul.nickname}` : "Kingdom Identity Profile"}
+                                {selectedSoul?.firstName} {selectedSoul?.lastName}
                             </SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                         </SheetHeader>
@@ -612,7 +621,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
                         </div>
                         <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
-                            {selectedSoul?.nickname ? `Profile: ${selectedSoul.nickname}` : "Kingdom Identity Profile"}
+                            {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
                     </SheetHeader>
                 </div>
@@ -635,7 +644,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                     >
                         {profileView}
                         <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left">
-                            {selectedSoul.nickname ? `Profile: ${selectedSoul.nickname}` : "Kingdom Identity Profile"}
+                            {selectedSoul.firstName} {selectedSoul.lastName}
                         </p>
                     </motion.div>
                 ) : (
