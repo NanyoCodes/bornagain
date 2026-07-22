@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
@@ -102,7 +103,7 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
     { verse: "James 1:19-20", text: "Everyone should be quick to listen, slow to speak and slow to become angry, because human anger does not produce the righteousness that God desires.", prayer: "Lord, put a guard over my mouth and a peace in my spirit. Let Your righteousness be my response. Amen." },
     { verse: "Ephesians 4:26-27", text: "In your anger do not sin: Do not let the sun go down while you are still angry, and do not give the devil a foothold.", prayer: "I refuse to give the enemy space in my heart through bitterness. I release all anger to You before I sleep. Amen." },
     { verse: "Proverbs 14:29", text: "Whoever is patient has great understanding, but one who is quick-tempered displays folly.", prayer: "Father, grant me Your patience and a heart of understanding for those who provoke me. Amen." },
-    { verse: "Proverbs 15:1", text: "A gentle answer turns away wrath, but a horizontal word stirs up anger.", prayer: "Holy Spirit, season my speech with grace. Let my gentle responses diffuse every storm. Amen." },
+    { verse: "Proverbs 15:1", text: "A gentle answer turns away wrath, but a harsh word stirs up anger.", prayer: "Holy Spirit, season my speech with grace. Let my gentle responses diffuse every storm. Amen." },
     { verse: "Colossians 3:8", text: "But now you must also rid yourselves of all such things as these: anger, rage, malice, slander, and filthy language.", prayer: "I take off the old self and its rage. I put on Christ, who is my peace. Amen." },
     { verse: "Ecclesiastes 7:9", text: "Do not be quickly provoked in your spirit, for anger resides in the lap of fools.", prayer: "Lord, strengthen my spirit. Make me hard to offend and quick to forgive. Amen." },
     { verse: "Psalm 37:8", text: "Refrain from anger and turn from wrath; do not fret—it leads only to evil.", prayer: "I choose to rest in Your justice, Lord. I release the need to retaliate. Amen." }
@@ -110,7 +111,7 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
   addiction: [
     { verse: "1 Corinthians 6:12", text: "I will not be mastered by anything.", prayer: "I declare that only Jesus is my Master. No substance or habit has authority over my life. Amen." },
     { verse: "Galatians 5:1", text: "It is for freedom that Christ has set us free. Stand firm, then, and do not let yourselves be burdened again by a yoke of slavery.", prayer: "I stand firm in the freedom bought by the blood of Jesus. I am no longer a slave to addiction. Amen." },
-    { verse: "1 Peter 5:8", text: "Be alert and of sober mind. Your enemy the devil prowls around like a roaring lion looking for someone to devour.", prayer: "Lord, keep my mind sharp and my spirit alert. I refuse to be controlled by any desire. Amen." },
+    { verse: "1 Peter 5:8", text: "Be alert and of sober mind. Your enemy the devil prowls around like a roaring lion looking for someone to devour.", prayer: "Lord, keep my mind sharp and my spirit alert. I resist the enemy and he must flee. Amen." },
     { verse: "John 8:36", text: "So if the Son sets you free, you will be free indeed.", prayer: "Jesus, You have set me free. I receive my total deliverance today. I am free indeed! Amen." },
     { verse: "Romans 6:12-14", text: "For sin shall no longer be your master, because you are not under the law, but under grace.", prayer: "I am under Your grace, Lord. Your grace provides the strength I need to overcome every craving. Amen." },
     { verse: "1 Corinthians 10:13", text: "God is faithful; he will not let you be tempted beyond what you can bear.", prayer: "I thank You, Father, that You have equipped me to handle this moment. I trust Your faithfulness. Amen." },
@@ -681,6 +682,12 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                         </Button>
                                                     </div>
                                                 </div>
+                                                <div className="pt-4 border-t border-dashed space-y-4">
+                                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 ml-1">
+                                                        <MessageSquare className="h-3.5 w-3.5" /> Armor Responses
+                                                    </div>
+                                                    <CommentSection path={`victoryCircles/${categoryKey}/foundational_armor/${idx}/comments`} inline />
+                                                </div>
                                             </div>
                                         </AccordionContent>
                                     </AccordionItem>
@@ -844,7 +851,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                     <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
                                 </div>
                                 <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Circle Silence</h4>
-                                <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left text-left">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
+                                <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left text-left text-left">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
                             </div>
                         )}
                     </div>
