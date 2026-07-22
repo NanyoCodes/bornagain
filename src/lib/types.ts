@@ -303,6 +303,8 @@ export type Soul = {
   nationality?: string;
   dateOfBirth?: Timestamp | null;
   age?: number | null;
+  maritalStatus?: string;
+  workStatus?: string;
   relationship?: SoulRelationship;
   source: 'Campaign' | 'Personal';
   sourceDetails?: string;

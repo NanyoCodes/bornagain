@@ -41,6 +41,8 @@ const formSchema = z.object({
   nationality: z.string().optional(),
   dateOfBirth: z.date().optional().nullable(),
   age: z.number().optional().nullable(),
+  maritalStatus: z.string().optional(),
+  workStatus: z.string().optional(),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
@@ -85,6 +87,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       nationality: soul.nationality || "",
       dateOfBirth: safeToDate(soul.dateOfBirth) || null,
       age: soul.age || null,
+      maritalStatus: soul.maritalStatus || "",
+      workStatus: soul.workStatus || "",
       email: soul.email || "",
       phone: soul.phone || "",
       church: soul.church || "",
@@ -116,6 +120,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             nationality: soul.nationality || "",
             dateOfBirth: safeToDate(soul.dateOfBirth) || null,
             age: soul.age || null,
+            maritalStatus: soul.maritalStatus || "",
+            workStatus: soul.workStatus || "",
             email: soul.email || "",
             phone: soul.phone || "",
             church: soul.church || "",
@@ -174,6 +180,8 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       nationality: values.nationality || null,
       dateOfBirth: values.dateOfBirth || null,
       age: values.age || null,
+      maritalStatus: values.maritalStatus || null,
+      workStatus: values.workStatus || null,
       relationship: values.relationship || null,
       source: values.source as 'Personal' | 'Campaign',
       wonAt: values.wonAt,
@@ -329,7 +337,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
               name="relationship"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Relationship</FormLabel>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Relationship to Mobilizer</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
@@ -342,6 +350,60 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                       <SelectItem value="Colleague" className="rounded-xl">Colleague</SelectItem>
                       <SelectItem value="Neighbor" className="rounded-xl">Neighbor</SelectItem>
                       <SelectItem value="Stranger" className="rounded-xl">Stranger / Outreach</SelectItem>
+                      <SelectItem value="Other" className="rounded-xl">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="maritalStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Relationship Status</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded-2xl">
+                      <SelectItem value="Single" className="rounded-xl">Single</SelectItem>
+                      <SelectItem value="Married" className="rounded-xl">Married</SelectItem>
+                      <SelectItem value="Engaged" className="rounded-xl">Engaged</SelectItem>
+                      <SelectItem value="Separated" className="rounded-xl">Separated</SelectItem>
+                      <SelectItem value="Divorced" className="rounded-xl">Divorced</SelectItem>
+                      <SelectItem value="Widowed" className="rounded-xl">Widowed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="workStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Work Status</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                        <SelectValue placeholder="Select Work" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded-2xl">
+                      <SelectItem value="Employed" className="rounded-xl">Employed</SelectItem>
+                      <SelectItem value="Self-Employed" className="rounded-xl">Self-Employed</SelectItem>
+                      <SelectItem value="Business Owner" className="rounded-xl">Business Owner</SelectItem>
+                      <SelectItem value="Unemployed" className="rounded-xl">Unemployed</SelectItem>
+                      <SelectItem value="Student" className="rounded-xl">Student</SelectItem>
+                      <SelectItem value="Retired" className="rounded-xl">Retired</SelectItem>
                       <SelectItem value="Other" className="rounded-xl">Other</SelectItem>
                     </SelectContent>
                   </Select>
