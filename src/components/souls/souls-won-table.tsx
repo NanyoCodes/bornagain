@@ -144,7 +144,7 @@ function SoulProfileContent({
                     <DialogTrigger asChild disabled={!soul.photoURL}>
                         <Avatar className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95 text-left", soul.photoURL && "cursor-pointer hover:scale-105")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                            <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary text-left">{soul.firstName?.charAt(0) || soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                     </DialogTrigger>
                     {soul.photoURL && (
@@ -170,7 +170,7 @@ function SoulProfileContent({
                 )}
             </div>
             <div className="flex flex-col items-center gap-2 text-left">
-                <CardTitle className="text-xl font-black uppercase tracking-tight text-center text-left">{soul.firstName} {soul.lastName}</CardTitle>
+                <CardTitle className="text-xl font-black uppercase tracking-tight text-center text-left">{soul.nickname || `${soul.firstName} ${soul.lastName}`}</CardTitle>
                 <div className="flex gap-2 justify-center text-left items-center">
                     <Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center text-left", getStatusClasses(soul.status))} variant="outline">
                         {soul.status}
@@ -480,9 +480,11 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
 });
 SoulTableRow.displayName = "SoulTableRow";
 
-export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: {
+export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: {
   souls: Soul[];
   loading: boolean;
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
   onFollowUp: (soul: Soul) => void;
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
@@ -493,7 +495,6 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
 }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
-  const [selectedId, setSelectedId] = React.useState<string | null>(null);
 
   React.useEffect(() => { 
     setMounted(true); 
@@ -537,9 +538,9 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
       return (
         <div className="space-y-px text-left">
             {souls.map((soul) => (
-                <SoulCard key={soul.id} soul={soul} onClick={() => setSelectedId(soul.id)} />
+                <SoulCard key={soul.id} soul={soul} onClick={() => onSelect(soul.id)} />
             ))}
-            <Sheet open={isMobile && !!selectedId} onOpenChange={(open) => !open && setSelectedId(null)}>
+            <Sheet open={isMobile && !!selectedId} onOpenChange={(open) => !open && onSelect(null)}>
                 <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                         <SheetHeader className="text-left flex-shrink-0 text-left">
@@ -599,7 +600,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                             key={soul.id} 
                             soul={soul} 
                             isSelected={selectedId === soul.id}
-                            onSelect={() => setSelectedId(soul.id)}
+                            onSelect={() => onSelect(soul.id)}
                         />
                         ))}
                     </TableBody>

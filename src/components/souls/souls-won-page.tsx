@@ -97,7 +97,7 @@ const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').the
 const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 const SoulAssessmentDialog = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
 
-function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
+function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul: (soul: Soul) => void }) {
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
@@ -111,17 +111,18 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
       {souls.map((soul) => {
         const wonAt = safeToDate(soul.wonAt);
         return (
-          <Link 
-            href={`/dashboard/souls-won#${soul.id}`} 
+          <Button 
             key={soul.id} 
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left"
+            variant="ghost"
+            onClick={() => onSelectSoul(soul)}
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98]"
           >
             <div className="flex items-center gap-3 min-w-0 text-left">
                 <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
                 <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 text-left">
-                    <div className="flex items-center gap-2 text-left">
+                    <div className="flex items-center gap-2 text-left flex-wrap">
                         <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                         <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left">{soul.status}</Badge>
                     </div>
@@ -131,7 +132,7 @@ function AgeGroupSoulList({ souls }: { souls: Soul[] }) {
                 </div>
             </div>
             <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-          </Link>
+          </Button>
         );
       })}
     </div>
@@ -149,6 +150,7 @@ export default function SoulsWonPage() {
   const [mounted, setMounted] = useState(false);
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   
+  const [selectedSoulId, setSelectedSoulId] = useState<string | null>(null);
   const [followUpSoulId, setFollowUpSoulId] = useState<string | null>(null);
   const [historySoulId, setHistorySoulId] = useState<string | null>(null);
   const [assignSoulId, setAssignSoulId] = useState<string | null>(null);
@@ -669,6 +671,8 @@ export default function SoulsWonPage() {
                     <SoulsWonTable 
                         souls={filteredSouls || []} 
                         loading={loading}
+                        selectedId={selectedSoulId}
+                        onSelect={setSelectedSoulId}
                         onFollowUp={handleOpenFollowUp}
                         onViewHistory={handleOpenHistory}
                         onExportSingle={handleExportSingleSoul}
@@ -701,7 +705,13 @@ export default function SoulsWonPage() {
                         </div>
                         <ScrollArea className="flex-grow text-left">
                             <div className="p-4 sm:p-8 text-left">
-                                <AgeGroupSoulList souls={activeAgeGroupSouls} />
+                                <AgeGroupSoulList 
+                                  souls={activeAgeGroupSouls} 
+                                  onSelectSoul={(soul) => {
+                                    setSelectedAgeGroup(null);
+                                    setSelectedSoulId(soul.id);
+                                  }} 
+                                />
                             </div>
                         </ScrollArea>
                     </SheetContent>
@@ -721,7 +731,13 @@ export default function SoulsWonPage() {
                         </div>
                         <ScrollArea className="max-h-[60vh] text-left">
                             <div className="p-4 sm:p-8 text-left">
-                                <AgeGroupSoulList souls={activeAgeGroupSouls} />
+                                <AgeGroupSoulList 
+                                  souls={activeAgeGroupSouls} 
+                                  onSelectSoul={(soul) => {
+                                    setSelectedAgeGroup(null);
+                                    setSelectedSoulId(soul.id);
+                                  }} 
+                                />
                             </div>
                         </ScrollArea>
                     </DialogContent>
