@@ -924,7 +924,7 @@ export function RelationshipTrackerCard() {
                                                   </div>
                                                   <div className="space-y-0.5 min-w-0 w-full">
                                                       <span className={cn(
-                                                          "text-[9px] font-black uppercase tracking-tight block truncate",
+                                                          "text-[10px] font-black uppercase tracking-tight block truncate",
                                                           isCompleted ? "text-primary" : "text-foreground"
                                                       )}>
                                                           {action.label}
@@ -1017,7 +1017,7 @@ export function RelationshipTrackerCard() {
 
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
-          <DialogHeader className="text-center space-y-2 text-left">
+          <DialogHeader className="text-center space-y-2 text-left text-left">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left text-left">
                   <MessageSquare className="h-7 w-7 text-primary" />
               </div>
