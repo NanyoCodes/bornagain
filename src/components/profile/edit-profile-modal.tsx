@@ -470,7 +470,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                       <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
                         <Briefcase className="h-3.5 w-3.5" />
                         {organizationLabel}
-                      </Label>
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder={`Enter your ${organizationLabel.toLowerCase()}...`} {...field} value={field.value ?? ''} className="text-base h-11" />
                       </FormControl>
