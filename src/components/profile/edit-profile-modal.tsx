@@ -53,6 +53,8 @@ const formSchema = z.object({
   photoURL: z.string().optional(),
   bio: z.string().max(280, "Bio is too long.").optional(),
   personalMessage: z.string().max(150, "Personal message is too long.").optional(),
+  maritalStatus: z.string().optional(),
+  workStatus: z.string().optional(),
   videoTestimonies: z.array(videoSchema).default([]),
   city: z.string().max(100, "City is too long.").optional(),
   state: z.string().max(100, "State is too long.").optional(),
@@ -134,6 +136,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       photoURL: userProfile.photoURL || "",
       bio: userProfile.bio || "",
       personalMessage: userProfile.personalMessage || "",
+      maritalStatus: userProfile.maritalStatus || "",
+      workStatus: userProfile.workStatus || "",
       videoTestimonies: initialVideos,
       city: userProfile.location?.city || "",
       state: userProfile.location?.state || "",
@@ -214,6 +218,8 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         name_tokens: displayName.toLowerCase().split(/\s+/).filter(Boolean),
         bio: values.bio || "",
         personalMessage: values.personalMessage || "",
+        maritalStatus: values.maritalStatus || "",
+        workStatus: values.workStatus || "",
         videoTestimonies: values.videoTestimonies,
         location: authorLocation,
         phone: values.phone || "",
@@ -375,6 +381,60 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               </FormItem>
             )}
           />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="maritalStatus"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Relationship Status</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="h-11 rounded-xl text-base">
+                          <SelectValue placeholder="Select Status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Single">Single</SelectItem>
+                        <SelectItem value="Married">Married</SelectItem>
+                        <SelectItem value="Engaged">Engaged</SelectItem>
+                        <SelectItem value="Separated">Separated</SelectItem>
+                        <SelectItem value="Divorced">Divorced</SelectItem>
+                        <SelectItem value="Widowed">Widowed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="workStatus"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Work Status</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="h-11 rounded-xl text-base">
+                          <SelectValue placeholder="Select Status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Employed">Employed</SelectItem>
+                        <SelectItem value="Self-Employed">Self-Employed</SelectItem>
+                        <SelectItem value="Business Owner">Business Owner</SelectItem>
+                        <SelectItem value="Unemployed">Unemployed</SelectItem>
+                        <SelectItem value="Student">Student</SelectItem>
+                        <SelectItem value="Retired">Retired</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+          </div>
 
           <FormField
             control={form.control}

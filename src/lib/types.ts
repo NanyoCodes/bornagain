@@ -66,6 +66,8 @@ export type UserProfile = {
   backgroundOverlayOpacity?: number;
   bio?: string;
   personalMessage?: string;
+  maritalStatus?: string;
+  workStatus?: string;
   videoTestimonies?: VideoTestimony[];
   location?: {
     city?: string;
