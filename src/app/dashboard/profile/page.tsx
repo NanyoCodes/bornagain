@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube, Activity, Video, MessageSquare, Sparkles, Search } from "lucide-react";
+import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube, Activity, Video, MessageSquare, Sparkles, Search, Briefcase, Heart } from "lucide-react";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
@@ -382,9 +382,23 @@ export default function ProfilePage() {
   
   if (!userProfile) return <div className="text-center py-12"><p>User profile not found.</p></div>;
   
-  const { firstName, lastName, email, photoURL, bio, personalMessage, location, phone, accountabilityPartners } = userProfile;
+  const { 
+    firstName, 
+    lastName, 
+    email, 
+    photoURL, 
+    bio, 
+    personalMessage, 
+    location, 
+    phone, 
+    accountabilityPartners,
+    maritalStatus,
+    workStatus,
+    organizationName,
+    roleInOrganization
+  } = userProfile;
   const displayName = [firstName, lastName].filter(Boolean).join(' ');
-  const { city, state } = location || {};
+  const { city, state, country } = location || {};
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto px-0 sm:px-0 pb-32">
@@ -421,9 +435,29 @@ export default function ProfilePage() {
             <div className="flex-grow w-full text-center sm:text-left space-y-4">
                 <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4">
                     <div className="flex-grow min-w-0">
-                        <h1 className="text-2xl sm:text-3xl font-bold truncate leading-tight">{displayName}</h1>
-                        <div className="mt-2 flex flex-wrap justify-center sm:justify-start gap-x-6 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
-                            {(city || state) && <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider"><MapPin className="h-3.5 w-3.5" /> {[city, state].filter(Boolean).join(', ')}</div>}
+                        <h1 className="text-2xl sm:text-3xl font-bold truncate leading-tight capitalize">{displayName}</h1>
+                        <div className="mt-3 flex flex-wrap justify-center sm:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
+                            {(city || state || country) && (
+                                <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider">
+                                    <MapPin className="h-4 w-4" /> 
+                                    {[city, state].filter(Boolean).join(', ') || country}
+                                </div>
+                            )}
+                            {maritalStatus && (
+                                <div className="flex items-center gap-1.5">
+                                    <Heart className="h-3.5 w-3.5 text-primary" />
+                                    {maritalStatus}
+                                </div>
+                            )}
+                            {workStatus && (
+                                <div className="flex items-center gap-1.5">
+                                    <Briefcase className="h-3.5 w-3.5 text-primary" />
+                                    <span>
+                                        {roleInOrganization && `${roleInOrganization}${organizationName ? ' @ ' : ''}`}
+                                        {organizationName || workStatus}
+                                    </span>
+                                </div>
+                            )}
                             {phone && <div className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-primary" /> {phone}</div>}
                         </div>
                     </div>
@@ -435,13 +469,13 @@ export default function ProfilePage() {
                                 Edit Profile
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="sm:max-w-lg">
-                                <DialogHeader>
-                                    <DialogTitle>Edit Profile</DialogTitle>
-                                    <DialogDescription>Make changes to your public profile.</DialogDescription>
+                            <DialogContent className="sm:max-w-lg text-left">
+                                <DialogHeader className="text-left">
+                                    <DialogTitle className="text-left">Edit Profile</DialogTitle>
+                                    <DialogDescription className="text-left">Make changes to your public profile.</DialogDescription>
                                 </DialogHeader>
-                                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                  <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
+                                <div className="max-h-[70vh] overflow-y-auto pr-2 text-left">
+                                  {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />}
                                 </div>
                             </DialogContent>
                         </Dialog>
@@ -534,7 +568,7 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setPrayerFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">

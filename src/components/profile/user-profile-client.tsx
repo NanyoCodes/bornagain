@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -23,7 +22,9 @@ import {
     Video,
     MessageSquare,
     UserPlus,
-    Hourglass
+    Hourglass,
+    Briefcase,
+    Heart
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -223,7 +224,18 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     );
   }
 
-  const { firstName, lastName, photoURL, bio, personalMessage, location } = userProfile;
+  const { 
+    firstName, 
+    lastName, 
+    photoURL, 
+    bio, 
+    personalMessage, 
+    location,
+    maritalStatus,
+    workStatus,
+    organizationName,
+    roleInOrganization
+  } = userProfile;
   const displayName = [firstName, lastName].filter(Boolean).join(' ');
   const { city, state, country } = location || {};
   const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
@@ -284,12 +296,29 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4">
                     <div className="min-w-0">
                         <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize">{displayName}</h1>
-                        {(city || state || country) && (
-                            <div className="flex items-center justify-center md:justify-start gap-2 text-primary font-black text-xs sm:text-sm uppercase tracking-[0.2em]">
-                                <MapPin className="h-4 w-4" /> 
-                                {[city, state].filter(Boolean).join(', ') || country}
-                            </div>
-                        )}
+                        <div className="mt-3 flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
+                            {(city || state || country) && (
+                                <div className="flex items-center gap-1.5 text-primary font-black uppercase tracking-wider">
+                                    <MapPin className="h-4 w-4" /> 
+                                    {[city, state].filter(Boolean).join(', ') || country}
+                                </div>
+                            )}
+                            {maritalStatus && (
+                                <div className="flex items-center gap-1.5">
+                                    <Heart className="h-3.5 w-3.5 text-primary" />
+                                    {maritalStatus}
+                                </div>
+                            )}
+                            {workStatus && (
+                                <div className="flex items-center gap-1.5">
+                                    <Briefcase className="h-3.5 w-3.5 text-primary" />
+                                    <span>
+                                        {roleInOrganization && `${roleInOrganization}${organizationName ? ' @ ' : ''}`}
+                                        {organizationName || workStatus}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {!isOwnProfile && currentUserProfile && (
