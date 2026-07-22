@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState, useMemo, useEffect } from "react";
-import { Loader2, LocateFixed, Video, Map as MapIcon, Youtube, Plus, Trash2, ExternalLink, Info, MessageSquare } from "lucide-react";
+import { Loader2, LocateFixed, Video, Map as MapIcon, Youtube, Plus, Trash2, ExternalLink, Info, MessageSquare, Briefcase } from "lucide-react";
 import { useUser, useFirestore, useAuth } from "@/firebase";
 import { doc, updateDoc, serverTimestamp, collection, query, where, getDocs, writeBatch } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
@@ -55,6 +55,7 @@ const formSchema = z.object({
   personalMessage: z.string().max(150, "Personal message is too long.").optional(),
   maritalStatus: z.string().optional(),
   workStatus: z.string().optional(),
+  organizationName: z.string().max(100, "Name is too long.").optional(),
   videoTestimonies: z.array(videoSchema).default([]),
   city: z.string().max(100, "City is too long.").optional(),
   state: z.string().max(100, "State is too long.").optional(),
@@ -138,6 +139,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       personalMessage: userProfile.personalMessage || "",
       maritalStatus: userProfile.maritalStatus || "",
       workStatus: userProfile.workStatus || "",
+      organizationName: userProfile.organizationName || "",
       videoTestimonies: initialVideos,
       city: userProfile.location?.city || "",
       state: userProfile.location?.state || "",
@@ -157,7 +159,21 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
   const watchedLat = form.watch('latitude');
   const watchedLng = form.watch('longitude');
   const watchedCountryName = form.watch('country');
-  const watchedStateName = form.watch('state');
+  const watchedWorkStatus = useWatch({ control: form.control, name: "workStatus" });
+
+  const organizationLabel = useMemo(() => {
+      switch(watchedWorkStatus) {
+          case 'Employed': return 'Company Name';
+          case 'Business Owner': return 'Business Name';
+          case 'Student': return 'School / University';
+          case 'Self-Employed': return 'Organization / Project Name';
+          default: return 'Organization Name';
+      }
+  }, [watchedWorkStatus]);
+
+  const showOrganizationField = useMemo(() => {
+      return ['Employed', 'Business Owner', 'Student', 'Self-Employed', 'Other'].includes(watchedWorkStatus || '');
+  }, [watchedWorkStatus]);
 
   const selectedCountry = useMemo(() => 
     countriesList.find(c => c.name === watchedCountryName), 
@@ -220,6 +236,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         personalMessage: values.personalMessage || "",
         maritalStatus: values.maritalStatus || "",
         workStatus: values.workStatus || "",
+        organizationName: values.organizationName || "",
         videoTestimonies: values.videoTestimonies,
         location: authorLocation,
         phone: values.phone || "",
@@ -435,6 +452,34 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 )}
               />
           </div>
+
+          <AnimatePresence>
+            {showOrganizationField && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <FormField
+                  control={form.control}
+                  name="organizationName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                        <Briefcase className="h-3.5 w-3.5" />
+                        {organizationLabel}
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder={`Enter your ${organizationLabel.toLowerCase()}...`} {...field} value={field.value ?? ''} className="text-base h-11" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <FormField
             control={form.control}
