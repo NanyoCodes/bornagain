@@ -5,7 +5,7 @@ import { useUser, useFirestore } from '@/firebase';
 import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
 import type { Soul, UserProfile } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Users, History, Sparkles, MessageSquare, Clock, Target, MapPin } from 'lucide-react';
+import { Users, History, Sparkles, Clock, Target, MapPin } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -35,10 +35,8 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
   const [loading, setLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
 
-  React.useEffect(() => {
-    if (!firestore || !currentUser) return;
-
-    const fetchMutual = async () => {
+  const fetchMutual = React.useCallback(async () => {
+      if (!firestore || !currentUser) return;
       setLoading(true);
       try {
         const soulsRef = collection(firestore, 'souls');
@@ -119,10 +117,11 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
       } finally {
         setLoading(false);
       }
-    };
+  }, [firestore, currentUser, soul.phone, soul.email, soul.firstName, soul.lastName, soul.nickname]);
 
+  React.useEffect(() => {
     fetchMutual();
-  }, [firestore, currentUser, soul]);
+  }, [fetchMutual]);
 
   if (loading || mutualRecords.length === 0) return null;
 

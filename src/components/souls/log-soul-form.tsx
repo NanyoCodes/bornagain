@@ -118,23 +118,25 @@ export function LogSoulForm({
     },
   });
 
-  const { control, setValue } = form;
+  const { control, setValue, getValues } = form;
 
   const sourceValue = useWatch({ control, name: "source" });
   const dobValue = useWatch({ control, name: "dateOfBirth" });
 
   useEffect(() => {
-    if (sourceValue !== 'Campaign') {
-        setValue('sourceDetails', '');
+    if (sourceValue !== 'Campaign' && getValues('sourceDetails') !== '') {
+        setValue('sourceDetails', '', { shouldDirty: true });
     }
-  }, [sourceValue, setValue]);
+  }, [sourceValue, setValue, getValues]);
 
   useEffect(() => {
     if (dobValue) {
         const calculatedAge = differenceInYears(new Date(), dobValue);
-        setValue('age', calculatedAge, { shouldDirty: true });
+        if (getValues('age') !== calculatedAge) {
+            setValue('age', calculatedAge, { shouldDirty: true });
+        }
     }
-  }, [dobValue, setValue]);
+  }, [dobValue, setValue, getValues]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -566,7 +568,7 @@ export function LogSoulForm({
                         render={({ field }) => (
                             <FormItem>
                             <FormLabel className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1">Nationality</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                 <FormControl>
                                 <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                                     <SelectValue placeholder="Select Country" />

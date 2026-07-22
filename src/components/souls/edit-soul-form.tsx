@@ -102,7 +102,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     },
   });
 
-  const { reset, control, setValue } = form;
+  const { reset, control, setValue, getValues } = form;
   const lastSoulId = useRef(soul.id);
 
   useEffect(() => {
@@ -139,17 +139,19 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
   const dobValue = useWatch({ control, name: "dateOfBirth" });
 
   useEffect(() => {
-    if (sourceValue !== 'Campaign') {
-        setValue('sourceDetails', '');
+    if (sourceValue !== 'Campaign' && getValues('sourceDetails') !== '') {
+        setValue('sourceDetails', '', { shouldDirty: true });
     }
-  }, [sourceValue, setValue]);
+  }, [sourceValue, setValue, getValues]);
 
   useEffect(() => {
     if (dobValue) {
         const calculatedAge = differenceInYears(new Date(), dobValue);
-        setValue('age', calculatedAge, { shouldDirty: true });
+        if (getValues('age') !== calculatedAge) {
+            setValue('age', calculatedAge, { shouldDirty: true });
+        }
     }
-  }, [dobValue, setValue]);
+  }, [dobValue, setValue, getValues]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user || !firestore) {
@@ -267,7 +269,6 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 <FormControl>
                     <Input placeholder="John" {...field} value={field.value ?? ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
                 </FormControl>
-                <FormItem />
                 </FormItem>
             )}
             />
