@@ -106,6 +106,7 @@ const getSoulAddress = (soul: Soul) => {
 function SoulProfileContent({ 
   soul, 
   onFollowUp,
+  onViewHistory,
   onEdit,
   onAssess,
   onOpenAssignDialog,
@@ -113,6 +114,7 @@ function SoulProfileContent({
 }: { 
   soul: Soul; 
   onFollowUp: (s: Soul) => void;
+  onViewHistory: (s: Soul) => void;
   onEdit: (s: Soul) => void;
   onAssess: (s: Soul) => void;
   onOpenAssignDialog: (s: Soul) => void;
@@ -120,6 +122,15 @@ function SoulProfileContent({
 }) {
   const address = getSoulAddress(soul);
   const needs = soul.needsAssessment;
+
+  const sortedHistory = React.useMemo(() => {
+    if (!soul.followUpLog || soul.followUpLog.length === 0) return [];
+    return [...soul.followUpLog].sort((a, b) => {
+      const dateB = safeToDate(b.date)?.getTime() ?? 0;
+      const dateA = safeToDate(a.date)?.getTime() ?? 0;
+      return dateB - dateA;
+    });
+  }, [soul.followUpLog]);
 
   return (
     <div className="space-y-6 text-left">
@@ -285,6 +296,41 @@ function SoulProfileContent({
                             <span className="text-[10px] font-black uppercase tracking-tight text-left">{milestone.label}</span>
                         </div>
                     ))}
+                </div>
+            </div>
+
+            {/* Interaction History Section */}
+            <Separator className="opacity-20 text-left" />
+            <div className="space-y-4 text-left">
+                <div className="flex items-center justify-between text-left">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left">
+                        <History className="h-3.5 w-3.5 text-left" /> Interaction History
+                    </p>
+                    <Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5" onClick={() => onViewHistory(soul)}>
+                        View All
+                    </Button>
+                </div>
+                <div className="space-y-4 pl-1 text-left">
+                    {sortedHistory.length > 0 ? (
+                        sortedHistory.slice(0, 3).map((log, index) => {
+                            const date = safeToDate(log.date);
+                            return (
+                                <div key={index} className="relative pl-4 border-l-2 border-primary/20 text-left">
+                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left">
+                                        {date ? format(date, "MMM d, yyyy") : 'Recently'}
+                                        {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName.split(' ')[0]}</span>}
+                                    </p>
+                                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left">
+                                        &ldquo;{log.note || 'Interaction logged.'}&rdquo;
+                                    </p>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5">
+                            <p className="text-[10px] text-muted-foreground/40 italic">No interactions recorded.</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -579,7 +625,17 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                     </div>
                     <ScrollArea className="flex-grow min-h-0 text-left">
                         <div className="p-6 pb-24 text-left">
-                            {selectedSoul && <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} onAssess={onAssess} onOpenAssignDialog={onOpenAssignDialog} onExportSingle={onExportSingle} />}
+                            {selectedSoul && (
+                              <SoulProfileContent 
+                                soul={selectedSoul} 
+                                onFollowUp={onFollowUp} 
+                                onViewHistory={onViewHistory}
+                                onEdit={onEdit} 
+                                onAssess={onAssess} 
+                                onOpenAssignDialog={onOpenAssignDialog} 
+                                onExportSingle={onExportSingle} 
+                              />
+                            )}
                         </div>
                     </ScrollArea>
                 </SheetContent>
@@ -644,7 +700,15 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         exit={{ opacity: 0, x: 20 }}
                         className="space-y-6 text-left"
                     >
-                        <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} onAssess={onAssess} onOpenAssignDialog={onOpenAssignDialog} onExportSingle={onExportSingle} />
+                        <SoulProfileContent 
+                          soul={selectedSoul} 
+                          onFollowUp={onFollowUp} 
+                          onViewHistory={onViewHistory}
+                          onEdit={onEdit} 
+                          onAssess={onAssess} 
+                          onOpenAssignDialog={onOpenAssignDialog} 
+                          onExportSingle={onExportSingle} 
+                        />
                         <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left">Kingdom Identity Profile</p>
                     </motion.div>
                 ) : (
