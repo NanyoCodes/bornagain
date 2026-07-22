@@ -671,68 +671,79 @@ export function RelationshipTrackerCard() {
     setSelectedSoulForAction(soul);
     setIsSoulDialogOpen(false);
 
-    if (selectedActionId === 'prayed_together') {
-        setCustomMessageText(resolveTemplate(prayerTemplates[0].text, soul));
-        setIsPrayerCustomizationOpen(true);
-        return;
-    }
-
-    if (selectedActionId === 'studied_bible') {
-        setIsStudyWordOpen(true);
-        return;
-    }
-
-    if (selectedActionId === 'introduced_friend') {
-        setIsShareTargetDialogOpen(true);
-        return;
-    }
-
-    if (selectedActionId === 'text_message') {
-        setIsCommChannelDialogOpen(true);
-        return;
-    }
-
-    if (selectedActionId === 'visited_home') {
-        const address = [soul.locationWon?.street, soul.locationWon?.city, soul.locationWon?.state, soul.locationWon?.country].filter(Boolean).join(', ');
-        if (address) {
-            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
-        } else {
-            toast({ variant: 'destructive', title: 'Location Undefined', description: `Please set a location for ${soul.firstName} first.` });
+    switch (selectedActionId) {
+        case 'prayed_together':
+            setCustomMessageText(resolveTemplate(prayerTemplates[0].text, soul));
+            setIsPrayerCustomizationOpen(true);
             return;
-        }
-    } else if (selectedActionId === 'phone_call' && soul.phone) {
-        window.location.href = `tel:${soul.phone}`;
-    } else if (selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift') {
-        const provisionKey = `testify_pending_provisions_${user.uid}`;
-        const stored = localStorage.getItem(provisionKey);
-        let current = stored ? JSON.parse(stored) : [];
-        if (!Array.isArray(current)) current = [];
-        
-        if (!current.some((p: any) => p.soulId === soul.id && p.actionId === selectedActionId)) {
-            current.push({ soulId: soul.id, soulName: `${soul.firstName} ${soul.lastName}`, actionId: selectedActionId, timestamp: Date.now() });
-            localStorage.setItem(provisionKey, JSON.stringify(current));
-            window.dispatchEvent(new Event('testify_pending_action_update'));
-        }
 
-        const path = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-        router.push(`${path}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
-        return;
-    } else if (selectedActionId === 'helped_with_need') {
-        setIsHelpNeedDialogOpen(true);
-        return;
-    } else if (selectedActionId === 'invited_to_event') {
-        router.push('/dashboard/events');
+        case 'studied_bible':
+            setIsStudyWordOpen(true);
+            return;
+
+        case 'introduced_friend':
+            setIsShareTargetDialogOpen(true);
+            return;
+
+        case 'text_message':
+            setIsCommChannelDialogOpen(true);
+            return;
+
+        case 'visited_home':
+            const address = [soul.locationWon?.street, soul.locationWon?.city, soul.locationWon?.state, soul.locationWon?.country].filter(Boolean).join(', ');
+            if (address) {
+                await finalizeLog(soul, selectedActionId, `Navigated to venue: ${address}`);
+                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+            } else {
+                toast({ variant: 'destructive', title: 'Location Undefined', description: `Please set a location for ${soul.firstName} first.` });
+            }
+            return;
+
+        case 'phone_call':
+            if (soul.phone) {
+                await finalizeLog(soul, selectedActionId, 'Dialer initiated');
+                window.location.href = `tel:${soul.phone}`;
+            } else {
+                toast({ variant: 'destructive', title: 'Phone Missing' });
+            }
+            return;
+
+        case 'shared_meal':
+        case 'gave_gift':
+            const provisionKey = `testify_pending_provisions_${user.uid}`;
+            const stored = localStorage.getItem(provisionKey);
+            let current = stored ? JSON.parse(stored) : [];
+            if (!Array.isArray(current)) current = [];
+            
+            if (!current.some((p: any) => p.soulId === soul.id && p.actionId === selectedActionId)) {
+                current.push({ soulId: soul.id, soulName: `${soul.firstName} ${soul.lastName}`, actionId: selectedActionId, timestamp: Date.now() });
+                localStorage.setItem(provisionKey, JSON.stringify(current));
+                window.dispatchEvent(new Event('testify_pending_action_update'));
+            }
+
+            const mPath = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+            router.push(`${mPath}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
+            return;
+
+        case 'helped_with_need':
+            setIsHelpNeedDialogOpen(true);
+            return;
+
+        case 'invited_to_event':
+            await finalizeLog(soul, selectedActionId, 'Redirected to Events Hub');
+            router.push('/dashboard/events');
+            return;
+
+        default:
+            finalizeLog(soul, selectedActionId);
     }
-
-    finalizeLog(soul, selectedActionId);
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
-      if (!selectedSoulForAction?.phone || !selectedActionId) return;
+      if (!selectedSoulForAction?.phone || !clickedActionId) return;
       const cleanPhone = selectedSoulForAction.phone.replace(/\+/g, '').replace(/\D/g, '');
       
       let message = customMessageText || `Hi ${selectedSoulForAction.firstName}, I'm thinking of you today and praying for you. God bless you!`;
-      
       const messageText = encodeURIComponent(message);
       
       if (channel === 'whatsapp') {
@@ -741,7 +752,7 @@ export function RelationshipTrackerCard() {
           window.location.href = `sms:${selectedSoulForAction.phone}?body=${messageText}`;
       }
       
-      finalizeLog(selectedSoulForAction, selectedActionId);
+      finalizeLog(selectedSoulForAction, clickedActionId, `Sent via ${channel.toUpperCase()}: ${message.substring(0, 50)}...`);
       setIsCommChannelDialogOpen(false);
       setCustomMessageText('');
   };
@@ -899,7 +910,7 @@ export function RelationshipTrackerCard() {
                                               <>
                                                   <div className={cn(
                                                       "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
-                                                      isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
+                                                      isSelected ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
                                                   )}>
                                                       <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                                   </div>
@@ -986,7 +997,7 @@ export function RelationshipTrackerCard() {
                       />
                   </div>
                   <Button 
-                      onClick={() => { setIsPrayerCustomizationOpen(false); setIsCommChannelDialogOpen(true); }} 
+                      onClick={() => handlePrayerCustomizationConfirm(customMessageText)} 
                       disabled={!customMessageText.trim()} 
                       className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
                   >
