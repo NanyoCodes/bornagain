@@ -69,6 +69,7 @@ export type UserProfile = {
   maritalStatus?: string;
   workStatus?: string;
   organizationName?: string;
+  roleInOrganization?: string;
   videoTestimonies?: VideoTestimony[];
   location?: {
     city?: string;

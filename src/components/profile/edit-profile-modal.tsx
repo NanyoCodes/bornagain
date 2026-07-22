@@ -57,6 +57,7 @@ const formSchema = z.object({
   maritalStatus: z.string().optional(),
   workStatus: z.string().optional(),
   organizationName: z.string().max(100, "Name is too long.").optional(),
+  roleInOrganization: z.string().max(100, "Role is too long.").optional(),
   videoTestimonies: z.array(videoSchema).default([]),
   city: z.string().max(100, "City is too long.").optional(),
   state: z.string().max(100, "State is too long.").optional(),
@@ -141,6 +142,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       maritalStatus: userProfile.maritalStatus || "",
       workStatus: userProfile.workStatus || "",
       organizationName: userProfile.organizationName || "",
+      roleInOrganization: userProfile.roleInOrganization || "",
       videoTestimonies: initialVideos,
       city: userProfile.location?.city || "",
       state: userProfile.location?.state || "",
@@ -238,6 +240,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         maritalStatus: values.maritalStatus || "",
         workStatus: values.workStatus || "",
         organizationName: values.organizationName || "",
+        roleInOrganization: values.roleInOrganization || "",
         videoTestimonies: values.videoTestimonies,
         location: authorLocation,
         phone: values.phone || "",
@@ -462,22 +465,40 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden"
               >
-                <FormField
-                  control={form.control}
-                  name="organizationName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
-                        <Briefcase className="h-3.5 w-3.5" />
-                        {organizationLabel}
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder={`Enter your ${organizationLabel.toLowerCase()}...`} {...field} value={field.value ?? ''} className="text-base h-11" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1">
+                  <FormField
+                    control={form.control}
+                    name="organizationName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                          <Briefcase className="h-3.5 w-3.5" />
+                          {organizationLabel}
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder={`Enter your ${organizationLabel.toLowerCase()}...`} {...field} value={field.value ?? ''} className="text-base h-11" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="roleInOrganization"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                          <User className="h-3.5 w-3.5" />
+                          Role / Job Title
+                        </FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Manager, Student, Director..." {...field} value={field.value ?? ''} className="text-base h-11" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
