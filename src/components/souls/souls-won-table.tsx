@@ -33,6 +33,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter
 } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -69,7 +70,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
@@ -110,7 +111,8 @@ function SoulProfileContent({
   onEdit,
   onAssess,
   onOpenAssignDialog,
-  onExportSingle
+  onExportSingle,
+  onDelete
 }: { 
   soul: Soul; 
   onFollowUp: (s: Soul) => void;
@@ -119,6 +121,7 @@ function SoulProfileContent({
   onAssess: (s: Soul) => void;
   onOpenAssignDialog: (s: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
+  onDelete: (s: Soul) => void;
 }) {
   const address = getSoulAddress(soul);
   const needs = soul.needsAssessment;
@@ -328,7 +331,7 @@ function SoulProfileContent({
                         })
                     ) : (
                         <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5">
-                            <p className="text-[10px] text-muted-foreground/40 italic">No interactions recorded.</p>
+                            <p className="text-sm text-muted-foreground/40 italic">No interactions recorded.</p>
                         </div>
                     )}
                 </div>
@@ -392,9 +395,12 @@ function SoulProfileContent({
                 )}
             </div>
 
-            <div className="pt-2 text-left">
+            <div className="pt-2 text-left space-y-3">
                 <Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 text-left" onClick={() => onFollowUp(soul)}>
                     LOG FOLLOW-UP
+                </Button>
+                <Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px]" onClick={() => onDelete(soul)}>
+                    <Trash2 className="mr-2 h-4 w-4" /> DELETE RECORD
                 </Button>
             </div>
         </CardContent>
@@ -437,32 +443,14 @@ const SoulCard = React.memo(({ soul, onClick }: {
 });
 SoulCard.displayName = "SoulCard";
 
-const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: { 
+const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: { 
   soul: Soul; 
   isSelected: boolean;
   onSelect: () => void;
-  onFollowUp: (soul: Soul) => void; 
-  onViewHistory: (soul: Soul) => void; 
-  onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
-  onOpenAssignDialog: (soul: Soul) => void;
-  onEdit: (soul: Soul) => void;
-  onDelete: (soul: Soul) => void;
-  onAssess: (soul: Soul) => void;
 }) => {
-    const latestFollowUp = React.useMemo(() => {
-        if (!soul.followUpLog || soul.followUpLog.length === 0) return null;
-        return [...soul.followUpLog].sort((a, b) => {
-            const dateB = safeToDate(b.date)?.getTime() ?? 0;
-            const dateA = safeToDate(a.date)?.getTime() ?? 0;
-            return dateB - dateA;
-        })[0];
-    }, [soul.followUpLog]);
-
-    const latestFollowUpDate = latestFollowUp ? safeToDate(latestFollowUp.date) : null;
-
     return (
         <TableRow 
-            className={cn("hover:bg-muted/30 transition-colors cursor-pointer text-left", isSelected && "bg-primary/[0.03]")}
+            className={cn("hover:bg-muted/30 transition-colors cursor-pointer text-left border-b", isSelected && "bg-primary/[0.03]")}
             onClick={() => onSelect()}
         >
             <TableCell className="font-medium p-4 text-left">
@@ -484,68 +472,8 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect, onFollowUp, onVie
                     </div>
                 </div>
             </TableCell>
-            <TableCell className="hidden md:table-cell p-4 text-left">{soul.phone && <div className="text-xs font-bold text-muted-foreground text-left">{soul.phone}</div>}</TableCell>
-            <TableCell className="p-4 text-left"><Badge className={cn("w-[110px] justify-center text-[10px] uppercase font-black tracking-widest leading-none h-6 text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge></TableCell>
-            <TableCell className="hidden lg:table-cell p-4 text-left">
-                <div className="space-y-1.5 text-left">
-                    {soul.fellowshipId ? (
-                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary leading-none text-left">
-                            <HeartHandshake className="h-3 w-3 shrink-0 text-left" />
-                            {soul.fellowshipName || 'Spiritual Group'}
-                        </div>
-                    ) : null}
-                    {soul.associationId ? (
-                        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-blue-500 leading-none text-left">
-                            <Users className="h-3 w-3 shrink-0 text-left" />
-                            {soul.associationName || 'Community Hub'}
-                        </div>
-                    ) : null}
-                </div>
-            </TableCell>
-            <TableCell className="hidden sm:table-cell p-4 text-left">
-                {latestFollowUpDate ? (
-                    <div className="text-[10px] space-y-1 text-left">
-                        <div className="text-muted-foreground font-black uppercase tracking-widest text-left">{format(latestFollowUpDate, "MMM d, yyyy")}</div>
-                    </div>
-                ) : <span className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-20 text-left">—</span>}
-            </TableCell>
-            <TableCell className="p-4 text-right text-left">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}><Button size="icon" variant="ghost" className="h-8 w-8 rounded-full text-left"><MoreHorizontal className="h-4 w-4 text-left" /></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl text-left">
-                        <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2 text-left">Soul Control</DropdownMenuLabel>
-                        <DropdownMenuSeparator className="text-left" />
-                        <DropdownMenuItem onSelect={() => onEdit(soul)} className="rounded-lg text-left">
-                            <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => onAssess(soul)} className="rounded-lg text-left">
-                            <ClipboardList className="mr-2 h-4 w-4 text-primary text-left" /> Assess Needs
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => onFollowUp(soul)} className="rounded-lg text-left">
-                            <HeartHandshake className="mr-2 h-4 w-4 text-primary text-left" /> Log Follow-up
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => onViewHistory(soul)} className="rounded-lg text-left">
-                            <History className="mr-2 h-4 w-4 text-left" /> Interaction History
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => onOpenAssignDialog(soul)} className="rounded-lg text-left">
-                            <Users className="mr-2 h-4 w-4 text-left" /> Assign Community
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator className="text-left" />
-                        <DropdownMenuSub>
-                            <DropdownMenuSubTrigger className="rounded-lg text-left"><Download className="mr-2 h-4 w-4 text-left" /> Export Report</DropdownMenuSubTrigger>
-                            <DropdownMenuPortal className="text-left">
-                                <DropdownMenuSubContent className="rounded-xl text-left">
-                                    <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')} className="rounded-lg text-left">CSV (Excel)</DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')} className="rounded-lg text-left">PDF Document</DropdownMenuItem>
-                                </DropdownMenuSubContent>
-                            </DropdownMenuPortal>
-                        </DropdownMenuSub>
-                        <DropdownMenuSeparator className="text-left" />
-                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg text-left" onSelect={() => onDelete(soul)}>
-                            <Trash2 className="mr-2 h-4 w-4 text-left" /> Delete Record
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+            <TableCell className="md:hidden p-4 text-left">
+                 <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
             </TableCell>
         </TableRow>
     );
@@ -634,6 +562,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                                 onAssess={onAssess} 
                                 onOpenAssignDialog={onOpenAssignDialog} 
                                 onExportSingle={onExportSingle} 
+                                onDelete={onDelete}
                               />
                             )}
                         </div>
@@ -659,12 +588,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                     <Table className="text-left">
                     <TableHeader className="bg-muted/10 text-left">
                         <TableRow className="hover:bg-transparent text-left">
-                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
-                        <TableHead className="hidden md:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Contact</TableHead>
-                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Status</TableHead>
-                        <TableHead className="hidden lg:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Placements</TableHead>
-                        <TableHead className="hidden sm:table-cell p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Latest Log</TableHead>
-                        <TableHead className="p-4 text-right text-left"><span className="sr-only text-left">Actions</span></TableHead>
+                            <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody className="text-left">
@@ -674,13 +598,6 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                             soul={soul} 
                             isSelected={selectedId === soul.id}
                             onSelect={() => setSelectedId(soul.id)}
-                            onFollowUp={onFollowUp} 
-                            onViewHistory={onViewHistory} 
-                            onExportSingle={onExportSingle} 
-                            onOpenAssignDialog={onOpenAssignDialog} 
-                            onEdit={onEdit} 
-                            onDelete={onDelete} 
-                            onAssess={onAssess} 
                         />
                         ))}
                     </TableBody>
@@ -708,6 +625,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                           onAssess={onAssess} 
                           onOpenAssignDialog={onOpenAssignDialog} 
                           onExportSingle={onExportSingle} 
+                          onDelete={onDelete}
                         />
                         <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left">Kingdom Identity Profile</p>
                     </motion.div>
