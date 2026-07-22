@@ -5,7 +5,7 @@ import { useUser, useFirestore } from '@/firebase';
 import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
 import type { Soul, UserProfile } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Users, History, Sparkles, MessageSquare, Clock, Target } from 'lucide-react';
+import { Users, History, Sparkles, MessageSquare, Clock, Target, MapPin } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -147,11 +147,11 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
             <div className="p-8 border-b bg-muted/10">
                 <div className="flex items-center gap-3 mb-2 text-left">
                     <Sparkles className="h-5 w-5 text-primary text-left" />
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left">Mutual Kingdom Effort</span>
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Mutual Kingdom Effort</span>
                 </div>
                 <DialogHeader className="text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Collective Harvest Intelligence</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left text-left">
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Collective Harvest Intelligence</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">
                         We found {uniqueUserCount} other {uniqueUserCount === 1 ? 'believer' : 'believers'} with a matching record for {soul.firstName}.
                     </DialogDescription>
                 </DialogHeader>
