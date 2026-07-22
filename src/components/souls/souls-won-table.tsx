@@ -108,13 +108,15 @@ function SoulProfileContent({
   onFollowUp,
   onEdit,
   onAssess,
-  onOpenAssignDialog
+  onOpenAssignDialog,
+  onExportSingle
 }: { 
   soul: Soul; 
   onFollowUp: (s: Soul) => void;
   onEdit: (s: Soul) => void;
   onAssess: (s: Soul) => void;
   onOpenAssignDialog: (s: Soul) => void;
+  onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
 }) {
   const address = getSoulAddress(soul);
   const needs = soul.needsAssessment;
@@ -169,9 +171,22 @@ function SoulProfileContent({
             <div className="space-y-4 text-left">
                 <div className="flex items-center justify-between text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Identity</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onEdit(soul)}>
-                        <Edit className="h-4 w-4 text-left" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10">
+                                    <Download className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-xl">
+                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>CSV Export</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onEdit(soul)}>
+                            <Edit className="h-4 w-4 text-left" />
+                        </Button>
+                    </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-left">
                     <div className="space-y-1 text-left">
@@ -564,7 +579,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                     </div>
                     <ScrollArea className="flex-grow min-h-0 text-left">
                         <div className="p-6 pb-24 text-left">
-                            {selectedSoul && <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} onAssess={onAssess} onOpenAssignDialog={onOpenAssignDialog} />}
+                            {selectedSoul && <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} onAssess={onAssess} onOpenAssignDialog={onOpenAssignDialog} onExportSingle={onExportSingle} />}
                         </div>
                     </ScrollArea>
                 </SheetContent>
@@ -629,7 +644,7 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                         exit={{ opacity: 0, x: 20 }}
                         className="space-y-6 text-left"
                     >
-                        <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} onAssess={onAssess} onOpenAssignDialog={onOpenAssignDialog} />
+                        <SoulProfileContent soul={selectedSoul} onFollowUp={onFollowUp} onEdit={onEdit} onAssess={onAssess} onOpenAssignDialog={onOpenAssignDialog} onExportSingle={onExportSingle} />
                         <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left">Kingdom Identity Profile</p>
                     </motion.div>
                 ) : (
