@@ -56,10 +56,10 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest, BibleHighlight } from "@/lib/types";
+import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest, SoulRelationship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
-import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -583,7 +583,7 @@ export default function SoulsWonPage() {
                                                 </div>
                                             </DialogTrigger>
                                             <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
-                                                <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
+                                                <DialogHeader className="sr-only text-left"><DialogTitle className="text-left">Soul Photo</DialogTitle></DialogHeader>
                                                 <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
                                                     <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
                                                         <Image 
@@ -671,8 +671,8 @@ export default function SoulsWonPage() {
                     <SoulsWonTable 
                         souls={filteredSouls || []} 
                         loading={loading}
-                        selectedId={selectedId}
-                        onSelect={onSelect}
+                        selectedId={selectedSoulId}
+                        onSelect={setSelectedSoulId}
                         onFollowUp={handleOpenFollowUp}
                         onViewHistory={handleOpenHistory}
                         onExportSingle={handleExportSingleSoul}
