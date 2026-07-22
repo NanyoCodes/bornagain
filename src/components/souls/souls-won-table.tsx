@@ -450,7 +450,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
 }) => {
     return (
         <TableRow 
-            className={cn("hover:bg-muted/30 transition-colors cursor-pointer text-left border-b", isSelected && "bg-primary/[0.03]")}
+            className={cn("border-b hover:bg-muted/30 transition-colors cursor-pointer text-left", isSelected && "bg-primary/[0.03]")}
             onClick={() => onSelect()}
         >
             <TableCell className="font-medium p-4 text-left">
@@ -547,7 +547,9 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                                 <Sparkles className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Identity Profile</SheetTitle>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
+                                {selectedSoul?.nickname ? `Profile: ${selectedSoul.nickname}` : "Kingdom Identity Profile"}
+                            </SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                         </SheetHeader>
                     </div>
@@ -627,7 +629,9 @@ export function SoulsWonTable({ souls, loading, onFollowUp, onViewHistory, onExp
                           onExportSingle={onExportSingle} 
                           onDelete={onDelete}
                         />
-                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left">Kingdom Identity Profile</p>
+                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left">
+                            {selectedSoul.nickname ? `Profile: ${selectedSoul.nickname}` : "Kingdom Identity Profile"}
+                        </p>
                     </motion.div>
                 ) : (
                     <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">
