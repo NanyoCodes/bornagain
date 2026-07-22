@@ -34,6 +34,7 @@ import { Card, CardContent } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Country, State, City } from 'country-state-city';
+import { motion, AnimatePresence } from "framer-motion";
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -469,7 +470,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                       <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
                         <Briefcase className="h-3.5 w-3.5" />
                         {organizationLabel}
-                      </FormLabel>
+                      </Label>
                       <FormControl>
                         <Input placeholder={`Enter your ${organizationLabel.toLowerCase()}...`} {...field} value={field.value ?? ''} className="text-base h-11" />
                       </FormControl>
