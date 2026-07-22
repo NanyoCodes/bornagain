@@ -24,7 +24,6 @@ import Link from 'next/link';
 import type { Soul, Campaign, Fellowship, SoulRelationship } from '@/lib/types';
 import { LogSoulForm } from './log-soul-form';
 import { ViewHistoryDialog } from './view-history-dialog';
-import { MutualConnectBadge } from './mutual-connect-badge';
 
 function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul: (soul: Soul) => void }) {
   if (!souls || souls.length === 0) {
@@ -53,7 +52,6 @@ function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
                 <div className="flex-1 min-w-0 text-left ml-1 sm:ml-2">
                 <div className="flex items-center gap-2 text-left flex-wrap">
                     <p className="font-black text-[13px] sm:text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
-                    <MutualConnectBadge soul={soul} />
                     <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left">{soul.status}</Badge>
                 </div>
                 <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
@@ -169,7 +167,7 @@ export function RelationshipCircleTracker({
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center justify-between gap-4 text-left">
                                 <div className="min-w-0 text-left">
-                                    <DialogHeader className="text-left">
+                                    <DialogHeader className="text-left text-left">
                                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedCategoryName} Directory</DialogTitle>
                                         <DialogDescription className="text-sm font-medium text-left">Souls won within your {selectedCategoryName.toLowerCase()} circle.</DialogDescription>
                                     </DialogHeader>

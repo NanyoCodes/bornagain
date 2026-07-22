@@ -22,7 +22,8 @@ import {
   Target,
   Mail,
   ArrowLeft,
-  BookOpen
+  BookOpen,
+  X
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
@@ -41,10 +42,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-  DropdownMenuSubContent,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -302,7 +299,6 @@ function SoulProfileContent({
                 </div>
             </div>
 
-            {/* Interaction History Section */}
             <Separator className="opacity-20 text-left" />
             <div className="space-y-4 text-left">
                 <div className="flex items-center justify-between text-left">
@@ -330,7 +326,7 @@ function SoulProfileContent({
                             );
                         })
                     ) : (
-                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5">
+                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left">
                             <p className="text-sm text-muted-foreground/40 italic">No interactions recorded.</p>
                         </div>
                     )}
@@ -428,7 +424,6 @@ const SoulCard = React.memo(({ soul, onClick }: {
                             <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight text-left">
                               {soul.firstName || 'Unknown'} {soul.lastName || ''}
                             </p>
-                            <MutualConnectBadge soul={soul} />
                         </div>
                         <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left">
                             <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
@@ -463,17 +458,13 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
                     </Avatar>
                     <div className="min-w-0 text-left">
                         <div className="flex items-center gap-2 text-left">
-                            <div className="font-black text-[13px] sm:text-sm md:text-base truncate capitalize tracking-tight text-left">
+                            <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left">
                               {soul.firstName} {soul.lastName}
                             </div>
-                            <MutualConnectBadge soul={soul} />
                         </div>
                         {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left"><Church className="h-3 w-3 shrink-0 text-left" />{soul.church}</div>}
                     </div>
                 </div>
-            </TableCell>
-            <TableCell className="md:hidden p-4 text-left">
-                 <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
             </TableCell>
         </TableRow>
     );
@@ -534,13 +525,26 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
     );
   }
 
+  const profileView = selectedSoul && (
+    <SoulProfileContent 
+        soul={selectedSoul} 
+        onFollowUp={onFollowUp} 
+        onViewHistory={onViewHistory}
+        onEdit={onEdit} 
+        onAssess={onAssess} 
+        onOpenAssignDialog={onOpenAssignDialog} 
+        onExportSingle={onExportSingle} 
+        onDelete={onDelete}
+    />
+  );
+
   if (isMobile) {
       return (
         <div className="space-y-px text-left">
             {souls.map((soul) => (
                 <SoulCard key={soul.id} soul={soul} onClick={() => onSelect(soul.id)} />
             ))}
-            <Sheet open={isMobile && !!selectedId} onOpenChange={(open) => !open && onSelect(null)}>
+            <Sheet open={!!selectedId} onOpenChange={(open) => !open && onSelect(null)}>
                 <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                         <SheetHeader className="text-left flex-shrink-0 text-left">
@@ -548,7 +552,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                                 <Sparkles className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
+                            <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
                                 {selectedSoul?.nickname ? `Profile: ${selectedSoul.nickname}` : "Kingdom Identity Profile"}
                             </SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
@@ -556,18 +560,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                     </div>
                     <ScrollArea className="flex-grow min-h-0 text-left">
                         <div className="p-6 pb-24 text-left">
-                            {selectedSoul && (
-                              <SoulProfileContent 
-                                soul={selectedSoul} 
-                                onFollowUp={onFollowUp} 
-                                onViewHistory={onViewHistory}
-                                onEdit={onEdit} 
-                                onAssess={onAssess} 
-                                onOpenAssignDialog={onOpenAssignDialog} 
-                                onExportSingle={onExportSingle} 
-                                onDelete={onDelete}
-                              />
-                            )}
+                            {profileView}
                         </div>
                     </ScrollArea>
                 </SheetContent>
@@ -589,47 +582,58 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
             <CardContent className="p-0 text-left">
                 <div className="overflow-x-auto text-left">
                     <Table className="text-left">
-                    <TableHeader className="bg-muted/10 text-left">
-                        <TableRow className="hover:bg-transparent text-left">
-                            <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody className="text-left">
-                        {souls.map((soul) => (
-                        <SoulTableRow 
-                            key={soul.id} 
-                            soul={soul} 
-                            isSelected={selectedId === soul.id}
-                            onSelect={() => onSelect(soul.id)}
-                        />
-                        ))}
-                    </TableBody>
+                        <TableHeader className="bg-muted/10 text-left">
+                            <TableRow className="hover:bg-transparent text-left">
+                                <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody className="text-left">
+                            {souls.map((soul) => (
+                            <SoulTableRow 
+                                key={soul.id} 
+                                soul={soul} 
+                                isSelected={selectedId === soul.id}
+                                onSelect={() => onSelect(soul.id)}
+                            />
+                            ))}
+                        </TableBody>
                     </Table>
                 </div>
             </CardContent>
         </Card>
 
-        {/* Desktop Detailed Preview Panel */}
+        {/* Tablet/Non-LG Pop-up (Active when Sidebar is Hidden) */}
+        <Sheet open={!!selectedId} onOpenChange={(open) => !open && onSelect(null)}>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] lg:hidden text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                    <SheetHeader className="text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left">
+                            <Sparkles className="h-4 w-4 text-primary text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
+                        </div>
+                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
+                            {selectedSoul?.nickname ? `Profile: ${selectedSoul.nickname}` : "Kingdom Identity Profile"}
+                        </SheetTitle>
+                    </SheetHeader>
+                </div>
+                <ScrollArea className="flex-grow p-6 text-left">
+                    {profileView}
+                </ScrollArea>
+            </SheetContent>
+        </Sheet>
+
+        {/* Desktop Detailed Preview Panel (Large screens only) */}
         <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left">
             <AnimatePresence mode="wait">
                 {selectedSoul ? (
                     <motion.div
-                        key={selectedSoul.id}
+                        key={selectedId}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         className="space-y-6 text-left"
                     >
-                        <SoulProfileContent 
-                          soul={selectedSoul} 
-                          onFollowUp={onFollowUp} 
-                          onViewHistory={onViewHistory}
-                          onEdit={onEdit} 
-                          onAssess={onAssess} 
-                          onOpenAssignDialog={onOpenAssignDialog} 
-                          onExportSingle={onExportSingle} 
-                          onDelete={onDelete}
-                        />
+                        {profileView}
                         <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left">
                             {selectedSoul.nickname ? `Profile: ${selectedSoul.nickname}` : "Kingdom Identity Profile"}
                         </p>
