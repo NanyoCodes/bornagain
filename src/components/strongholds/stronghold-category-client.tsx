@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
@@ -254,10 +253,31 @@ function AddArmorDialog({ category, onArmorAdded }: { category: string, onArmorA
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   
   const [verse, setVerse] = useState('');
   const [text, setText] = useState('');
   const [comment, setComment] = useState('');
+
+  const handleBibleSearch = async () => {
+    if (!verse.trim()) return;
+    setIsSearching(true);
+    try {
+      const response = await fetch(`https://bible-api.com/${encodeURIComponent(verse)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setVerse(data.reference);
+        setText(data.text.trim());
+        toast({ title: 'Word Found', description: 'Scripture text has been auto-populated.' });
+      } else {
+        toast({ variant: 'destructive', title: 'Not Found', description: 'Please check the reference (e.g. John 3:16)' });
+      }
+    } catch (e) {
+      toast({ variant: 'destructive', title: 'Search Error', description: 'Could not reach Bible API.' });
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -307,11 +327,29 @@ function AddArmorDialog({ category, onArmorAdded }: { category: string, onArmorA
                 <div className="space-y-4 text-left">
                     <div className="space-y-2 text-left">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Scripture Reference</Label>
-                        <Input placeholder="e.g., Romans 8:31" value={verse} onChange={e => setVerse(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold" />
+                        <div className="relative">
+                            <Input 
+                                placeholder="e.g., Romans 8:31" 
+                                value={verse} 
+                                onChange={e => setVerse(e.target.value)} 
+                                required 
+                                className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold pr-20" 
+                            />
+                            <Button 
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 text-[9px] font-black uppercase text-primary hover:bg-primary/10"
+                                onClick={handleBibleSearch}
+                                disabled={isSearching || !verse.trim()}
+                            >
+                                {isSearching ? <Loader2 className="h-3 w-3 animate-spin" /> : "SEARCH"}
+                            </Button>
+                        </div>
                     </div>
                     <div className="space-y-2 text-left">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">The Word</Label>
-                        <Textarea placeholder="Type the scripture text here..." value={text} onChange={e => setText(e.target.value)} required className="min-h-[100px] rounded-xl bg-muted/20 border-none shadow-inner text-base" />
+                        <Textarea placeholder="Type or search for the scripture text..." value={text} onChange={e => setText(e.target.value)} required className="min-h-[120px] rounded-xl bg-muted/20 border-none shadow-inner text-base" />
                     </div>
                     <div className="space-y-2 text-left">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Personal Comment / Revelation</Label>
@@ -745,7 +783,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                             <h3 className="text-lg font-black uppercase tracking-tight text-left">Circle Discussions</h3>
                         </div>
                         <div className="relative flex-1 max-w-sm text-left">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                             <Input 
                                 placeholder="Search discussions..." 
                                 value={searchTerm}
