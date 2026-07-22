@@ -688,7 +688,7 @@ export default function FellowshipPage() {
         return activeFellowships.filter(f => (f.groupType || "Fellowship") === activeTab);
     }, [activeFellowships, activeTab]);
 
-    const membershipFilteredFellowships = useMemo(() => {
+    const membershipFilterApplied = useMemo(() => {
       if (!user) return tabFilteredFellowships;
       if (membershipFilter === 'owned') return tabFilteredFellowships.filter(f => f.organizerId === user.uid);
       if (membershipFilter === 'joined') {
@@ -699,16 +699,16 @@ export default function FellowshipPage() {
     }, [tabFilteredFellowships, membershipFilter, user, joinedFellowshipRefs]);
 
     const filteredFellowships = useMemo(() => {
-        if (!searchTerm) return membershipFilteredFellowships;
+        if (!searchTerm) return membershipFilterApplied;
         const term = searchTerm.toLowerCase();
-        return membershipFilteredFellowships.filter(f => 
+        return membershipFilterApplied.filter(f => 
             f.name.toLowerCase().includes(term) || 
             f.description.toLowerCase().includes(term) ||
             f.city?.toLowerCase().includes(term) ||
             f.state?.toLowerCase().includes(term) ||
             f.country?.toLowerCase().includes(term)
         );
-    }, [membershipFilteredFellowships, searchTerm]);
+    }, [membershipFilterApplied, searchTerm]);
 
     const loading = userLoading || profileLoading || fellowshipsLoading;
 
@@ -716,7 +716,6 @@ export default function FellowshipPage() {
         <div className="w-full max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 <div className="lg:col-span-8 space-y-8 pb-32">
-                    {/* Responsive Single-Row Interaction Box */}
                     <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden">
                         <CardContent className="p-3 sm:p-6">
                         <div className="flex flex-row items-center gap-2 sm:gap-4 w-full">
@@ -805,7 +804,6 @@ export default function FellowshipPage() {
                     </div>
                 </div>
 
-                {/* Specialized Fellowship Sidebar */}
                 <div className="lg:col-span-4">
                     <FeedSidebar mode="fellowships" />
                 </div>
@@ -820,19 +818,21 @@ export default function FellowshipPage() {
                                 <SheetDescription className="text-sm font-medium mt-1">Create a space for community and growth.</SheetDescription>
                             </SheetHeader>
                         </div>
-                        <div className="flex-grow overflow-y-auto p-8">
-                            <FellowshipForm 
-                                userProfile={userProfile ?? null} 
-                                onFormSubmit={handleCreateFellowship} 
-                                isSubmitting={isSubmitting} 
-                                defaultType={createType}
-                            />
-                        </div>
+                        <ScrollArea className="flex-grow">
+                            <div className="p-8">
+                                <FellowshipForm 
+                                    userProfile={userProfile ?? null} 
+                                    onFormSubmit={handleCreateFellowship} 
+                                    isSubmitting={isSubmitting} 
+                                    defaultType={createType}
+                                />
+                            </div>
+                        </ScrollArea>
                     </SheetContent>
                 </Sheet>
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+                    <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
                         <div className="p-8 border-b shrink-0 bg-muted/10">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">New Community Group</DialogTitle>
@@ -863,19 +863,21 @@ export default function FellowshipPage() {
                                     <SheetDescription className="text-sm font-medium mt-1">Update your group's details.</SheetDescription>
                                 </SheetHeader>
                             </div>
-                            <div className="flex-grow overflow-y-auto p-8">
-                                <ManageFellowshipForm 
-                                    fellowship={fellowshipToManage} 
-                                    onFormSubmit={handleUpdateFellowship} 
-                                    isSubmitting={isSubmitting} 
-                                    onDelete={() => { setFellowshipToDelete(fellowshipToManage); setFellowshipToManage(null); }}
-                                />
-                            </div>
+                            <ScrollArea className="flex-grow">
+                                <div className="p-8">
+                                    <ManageFellowshipForm 
+                                        fellowship={fellowshipToManage} 
+                                        onFormSubmit={handleUpdateFellowship} 
+                                        isSubmitting={isSubmitting} 
+                                        onDelete={() => { setFellowshipToDelete(fellowshipToManage); setFellowshipToManage(null); }}
+                                    />
+                                </div>
+                            </ScrollArea>
                         </SheetContent>
                     </Sheet>
                 ) : (
                     <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
-                        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+                        <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Group</DialogTitle>

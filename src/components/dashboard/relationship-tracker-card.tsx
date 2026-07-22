@@ -35,7 +35,8 @@ import {
   ChevronDown,
   BookMarked,
   ArrowLeft,
-  Target
+  Target,
+  Share
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -68,9 +69,9 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { Button } from '@/components/ui/button';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -160,7 +161,7 @@ function SoulSelectionDialog({
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                         <SheetHeader className="text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{title}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">{desc}</SheetDescription>

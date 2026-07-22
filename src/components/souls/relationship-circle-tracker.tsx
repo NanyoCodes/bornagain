@@ -39,10 +39,11 @@ function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
       {souls.map((soul) => {
         const wonAt = safeToDate(soul.wonAt);
         return (
-          <button 
+          <Button 
             key={soul.id} 
+            variant="ghost"
             onClick={() => onSelectSoul(soul)}
-            className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left active:scale-[0.98]"
+            className="flex items-center justify-between p-2.5 sm:p-4 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98]"
           >
             <Avatar className="h-10 w-10 border shadow-sm shrink-0 group-hover:border-primary/30 transition-colors">
               <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
@@ -57,7 +58,7 @@ function CategorySoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
               </p>
             </div>
             <ArrowRight className="h-3.5 w-3.5 sm:h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-          </button>
+          </Button>
         );
       })}
     </div>
