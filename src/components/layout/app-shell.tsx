@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -110,6 +111,7 @@ const navItems = [
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
+  { href: "/dashboard/events", label: "Events", icon: CalendarDays, color: "text-primary" },
   { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
   { href: "/dashboard/victory-hub", label: "Victory", icon: ShieldCheck, color: "text-primary" },
@@ -171,7 +173,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
   if (showMobileSearch) {
     return (
       <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
-        <div className="flex w-full items-center gap-3">
+        <div className="flex w-full items-center gap-3 text-left">
           <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-10 w-10 rounded-full hover:bg-muted/50 transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -181,7 +183,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="w-full pl-10 h-11 rounded-2xl bg-muted/20 border-none shadow-inner text-base"
+                className="w-full pl-10 h-11 rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 autoFocus
@@ -347,11 +349,17 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                 </DropdownMenuItem>
                 
                 <DropdownMenuSeparator />
-                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2 text-left">Recovery Hub</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4 py-2 text-left">Kingdom Hubs</DropdownMenuLabel>
                 <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                   <Link href="/dashboard/victory-hub">
                     <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
                     <span>Victory Hub</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
+                  <Link href="/dashboard/events">
+                    <CalendarDays className="mr-2 h-4 w-4 text-primary" />
+                    <span>Events Hub</span>
                   </Link>
                 </DropdownMenuItem>
 
@@ -416,7 +424,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
 function BottomNavBar() {
     const pathname = usePathname();
-    const mobileNavItems = navItems.filter(item => item.href !== '/fellowships');
+    const mobileNavItems = navItems.filter(item => item.href !== '/fellowships' && item.href !== '/dashboard/events');
     
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)] text-left">
@@ -664,17 +672,15 @@ function PendingProvisionReminder() {
                           const Icon = p.actionId === 'shared_meal' ? Utensils : Gift;
                           return (
                               <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group text-left">
-                                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">
-                                      <Icon className="h-5 w-5 text-primary text-left" />
-                                  </div>
-                                  <div className="min-w-0 flex-1 text-left">
-                                      <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{p.soulName}</p>
-                                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left">
+                                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left text-left">{p.actionId === 'shared_meal' ? <Utensils className="h-5 w-5 text-primary text-left" /> : <Gift className="h-5 w-5 text-primary text-left" />}</div>
+                                  <div className="min-w-0 flex-1 text-left text-left">
+                                      <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left text-left text-left">{p.soulName}</p>
+                                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left">
                                           {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
                                       </p>
                                   </div>
-                                  <div className="flex items-center gap-2 text-left">
-                                      <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md text-left">
+                                  <div className="flex items-center gap-2 text-left text-left text-left text-left">
+                                      <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md text-left text-left text-left">
                                           <Link href={`${path}?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`}>
                                               GO
                                           </Link>
@@ -682,10 +688,10 @@ function PendingProvisionReminder() {
                                       <Button 
                                           variant="ghost" 
                                           size="icon" 
-                                          className="h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive text-left"
+                                          className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left text-left text-left"
                                           onClick={() => removeOne(p.soulId, p.actionId)}
                                       >
-                                          <X className="h-3.5 w-3.5" />
+                                          <X className="h-3.5 w-3.5 text-left text-left text-left" />
                                       </Button>
                                   </div>
                               </div>
@@ -693,8 +699,8 @@ function PendingProvisionReminder() {
                       })}
                   </div>
               </ScrollArea>
-              <CardFooter className="p-4 border-t bg-muted/5 justify-center text-left">
-                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 text-left" onClick={() => {
+              <CardFooter className="p-4 border-t bg-muted/5 justify-center text-left text-left">
+                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 text-left text-left" onClick={() => {
                        if(user?.uid) {
                            const key = `testify_pending_provisions_${user.uid}`;
                            localStorage.removeItem(key);
@@ -942,10 +948,10 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   if (authLoading || (profileLoading && !userProfile && !isPublicRoute) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
-        <div className="relative mb-8 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><div className="absolute inset-0 flex items-center justify-center text-left text-left"><div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left text-left" /></div></div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 text-left text-left text-left">{loadingMessage || "GOD FIRST"}</p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left text-left text-left">Kingdom Network Active</p>
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left text-left text-left">
+        <div className="relative mb-8 text-left text-left text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left text-left" /><div className="absolute inset-0 flex items-center justify-center text-left text-left text-left text-left"><div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left text-left text-left text-left" /></div></div>
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 text-left text-left text-left text-left text-left">{loadingMessage || "GOD FIRST"}</p>
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left text-left text-left text-left text-left text-left">Kingdom Network Active</p>
       </div>
     );
   }
@@ -957,7 +963,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     <SearchProvider>
       <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
         <AnimatePresence>{showSplash && <SplashScreen onDismiss={handleDismissSplash} />}</AnimatePresence>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0 text-left">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0 text-left text-left text-left text-left">
             {!isTakeoverPage && (
                 <AppHeader 
                     unreadChatCount={unreadChatNotifications?.length || 0} 
@@ -967,9 +973,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                     onOpenMenu={() => setIsMenuOpen(true)} 
                 />
             )}
-            <div className="flex-1 relative min-h-0 text-left">
-            <main ref={scrollContainerRef} className={cn("absolute inset-0 text-left", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
-                <div className={cn("mx-auto h-full text-left", !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
+            <div className="flex-1 relative min-h-0 text-left text-left text-left text-left">
+            <main ref={scrollContainerRef} className={cn("absolute inset-0 text-left text-left text-left text-left", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
+                <div className={cn("mx-auto h-full text-left text-left text-left text-left", !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
                     <PageTransition>{children}</PageTransition>
                 </div>
             </main>
@@ -982,28 +988,28 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         
         {user && mounted && isMobile ? (
           <Sheet open={!!isProfileIncomplete}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-              <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
-                <SheetHeader className="text-left text-left">
-                  <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
-                  <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left text-left text-left">
+              <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left text-left text-left">
+                <SheetHeader className="text-left text-left text-left text-left text-left">
+                  <SheetTitle className="text-xl font-bold text-left text-left text-left text-left">Complete Your Profile</SheetTitle>
+                  <SheetDescription className="text-xs text-left text-left text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
                 </SheetHeader>
               </div>
-              <div className="flex-grow overflow-y-auto p-6 text-left">
+              <div className="flex-grow overflow-y-auto p-6 text-left text-left text-left text-left">
                 {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
               </div>
             </SheetContent>
           </Sheet>
         ) : user ? (
           <Dialog open={!!isProfileIncomplete}>
-            <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
-              <div className="p-6 border-b bg-muted/10 text-left">
-                <DialogHeader className="text-left text-left">
-                    <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
-                    <DialogDescription className="text-sm text-left">Please provide your name and photo to continue.</DialogDescription>
+            <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left text-left text-left">
+              <div className="p-6 border-b bg-muted/10 text-left text-left text-left text-left">
+                <DialogHeader className="text-left text-left text-left text-left text-left text-left">
+                    <DialogTitle className="text-2xl font-bold text-left text-left text-left text-left text-left">Complete Your Profile</DialogTitle>
+                    <DialogDescription className="text-sm text-left text-left text-left text-left text-left">Please provide your name and photo to continue.</DialogDescription>
                 </DialogHeader>
               </div>
-              <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
+              <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left text-left text-left">
                 {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
               </div>
             </DialogContent>
@@ -1011,144 +1017,162 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         ) : null}
 
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-            <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col text-left">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <SheetHeader className="text-left flex-shrink-0 text-left">
-                        <SheetTitle className="text-xs font-black uppercase tracking-widest text-primary mb-2 text-left">Kingdom Menu</SheetTitle>
+            <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col text-left text-left text-left text-left">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left">
+                        <SheetTitle className="text-xs font-black uppercase tracking-widest text-primary mb-2 text-left text-left text-left text-left">Kingdom Menu</SheetTitle>
                     </SheetHeader>
-                    <div className="flex items-center gap-3 mb-4 text-left">
-                        <Avatar className="h-12 w-12 border-2 border-primary/20 shrink-0 text-left">
-                          <AvatarImage src={user?.photoURL ?? undefined} className="object-cover text-left" />
-                          <AvatarFallback className="font-black bg-primary/10 text-primary text-left">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                    <div className="flex items-center gap-3 mb-4 text-left text-left text-left text-left">
+                        <Avatar className="h-12 w-12 border-2 border-primary/20 shrink-0 text-left text-left text-left text-left">
+                          <AvatarImage src={user?.photoURL ?? undefined} className="object-cover text-left text-left text-left text-left" />
+                          <AvatarFallback className="font-black bg-primary/10 text-primary text-left text-left text-left text-left">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0 text-left text-left">
-                          <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{user?.displayName || 'User'}</p>
-                          <p className="text-[10px] text-muted-foreground truncate font-medium text-left">{user?.email}</p>
+                        <div className="min-w-0 text-left text-left text-left text-left text-left text-left">
+                          <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left text-left text-left text-left text-left">{user?.displayName || 'User'}</p>
+                          <p className="text-[10px] text-muted-foreground truncate font-medium text-left text-left text-left text-left text-left">{user?.email}</p>
                         </div>
                     </div>
                 </div>
-                <ScrollArea className="flex-grow text-left">
-                    <div className="p-6 space-y-2 text-left text-left">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">My Identity</p>
-                        <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                          <User className="h-6 w-6 text-primary text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left">Profile</span>
+                <ScrollArea className="flex-grow text-left text-left text-left text-left">
+                    <div className="p-6 space-y-2 text-left text-left text-left text-left text-left text-left">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left text-left text-left text-left text-left">My Identity</p>
+                        <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left text-left text-left">
+                          <User className="h-6 w-6 text-primary text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left">Profile</span>
                         </Link>
-                        <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                          <Settings className="h-6 w-6 text-primary text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left">Settings</span>
+                        <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left text-left text-left text-left">
+                          <Settings className="h-6 w-6 text-primary text-left text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left text-left">Settings</span>
                         </Link>
-                        <Link href="/accountability" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                          <HeartHandshake className="h-6 w-6 text-primary text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left">Partners</span>
+                        <Link href="/accountability" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left text-left text-left text-left">
+                          <HeartHandshake className="h-6 w-6 text-primary text-left text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left text-left">Partners</span>
                         </Link>
                         
-                        <Separator className="my-6 opacity-50 text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Core Sectors</p>
-                        {navItems.filter(item => item.href !== '/dashboard/victory-hub' && item.href !== '/accountability').map((item) => (
-                          <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                            <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110 text-left", item.color)} />
-                            <span className="font-black uppercase tracking-widest text-sm text-left">{item.label}</span>
-                          </Link>
-                        ))}
-
-                        <Separator className="my-6 opacity-50 text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Recovery & Provision</p>
-                        <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left">
-                          <ShieldCheck className="h-6 w-6 text-primary text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Victory Hub</span>
+                        <Separator className="my-6 opacity-50 text-left text-left text-left text-left text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left text-left text-left text-left text-left text-left">Core Sectors</p>
+                        <Link href="/growth" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left">
+                          <TrendingUp className="h-6 w-6 text-chart-1 text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Growth</span>
                         </Link>
-                        <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left">
-                          <Store className="h-6 w-6 text-primary text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Meals Center</span>
+                        <Link href="/souls-won" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left">
+                          <UserPlus className="h-6 w-6 text-chart-2 text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Souls</span>
                         </Link>
-                        <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left">
-                          <Gift className="h-6 w-6 text-primary text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Kindness Center</span>
+                        <Link href="/testimonies" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left">
+                          <Newspaper className="h-6 w-6 text-chart-3 text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Testimonies</span>
                         </Link>
-                        <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left">
-                          <Package className="mr-2 h-6 w-6 text-primary text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Order Tracker</span>
+                        <Link href="/campaigns" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left">
+                          <Target className="h-6 w-6 text-chart-4 text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Campaigns</span>
                         </Link>
-
-                        <Separator className="my-6 opacity-50 text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Study Tools</p>
-                        <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                          <BookOpen className="h-6 w-6 text-primary text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left">Bible Reader</span>
+                        <Link href="/dashboard/events" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left">
+                          <CalendarDays className="h-6 w-6 text-primary text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Events Hub</span>
                         </Link>
-                        <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                          <Edit className="h-6 w-6 text-primary text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left">Journal</span>
+                        <Link href="/fellowships" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left">
+                          <Users className="h-6 w-6 text-primary text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Groups</span>
                         </Link>
 
-                        <Separator className="my-6 opacity-50 text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Resources</p>
-                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                          <BookMarked className="h-6 w-6 text-primary text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left">App Guide</span>
+                        <Separator className="my-6 opacity-50 text-left text-left text-left text-left text-left text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left text-left text-left text-left text-left text-left text-left">Recovery & Provision</p>
+                        <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left text-left text-left">
+                          <ShieldCheck className="h-6 w-6 text-primary text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left">Victory Hub</span>
                         </Link>
-                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                          <BookOpen className="h-6 w-6 text-primary text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left">Resources</span>
+                        <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left text-left text-left text-left">
+                          <Store className="h-6 w-6 text-primary text-left text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left text-left">Meals Center</span>
+                        </Link>
+                        <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left text-left text-left text-left">
+                          <Gift className="h-6 w-6 text-primary text-left text-left text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left text-left text-left">Kindness Center</span>
+                        </Link>
+                        <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left text-left text-left text-left">
+                          <Package className="mr-2 h-6 w-6 text-primary text-left text-left text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left text-left text-left">Order Tracker</span>
                         </Link>
 
-                        <Separator className="my-6 opacity-50 text-left" />
-                        <button onClick={() => { signOut(getAuth()).then(() => router.push("/login")); setIsMenuOpen(false); }} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive text-left">
-                          <LogOut className="h-6 w-6 text-left" />
-                          <span className="font-black uppercase tracking-widest text-sm text-left">Logout</span>
+                        <Separator className="my-6 opacity-50 text-left text-left text-left text-left text-left text-left text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left text-left text-left text-left text-left text-left text-left text-left">Study Tools</p>
+                        <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left text-left text-left text-left text-left text-left">
+                          <BookOpen className="h-6 w-6 text-primary text-left text-left text-left text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left text-left text-left text-left">Bible Reader</span>
+                        </Link>
+                        <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left text-left text-left text-left text-left text-left">
+                          <Edit className="h-6 w-6 text-primary text-left text-left text-left text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left text-left text-left text-left">Journal</span>
+                        </Link>
+
+                        <Separator className="my-6 opacity-50 text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Resources</p>
+                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                          <BookMarked className="h-6 w-6 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">App Guide</span>
+                        </Link>
+                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                          <BookOpen className="h-6 w-6 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Resources</span>
+                        </Link>
+
+                        <Separator className="my-6 opacity-50 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
+                        <button onClick={() => { signOut(getAuth()).then(() => router.push("/login")); setIsMenuOpen(false); }} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                          <LogOut className="h-6 w-6 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Logout</span>
                         </button>
                     </div>
                 </ScrollArea>
-                <div className="p-8 border-t bg-muted/5 flex-shrink-0 text-left text-left">
-                    <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40 text-center">Testify Global • Mobilizing the Body</p>
+                <div className="p-8 border-t bg-muted/5 flex-shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40 text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Testify Global • Mobilizing the Body</p>
                 </div>
             </SheetContent>
         </Sheet>
 
         <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-6 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <div className="flex items-center gap-2 mb-2 text-left">
-                        <ShoppingCart className="h-4 w-4 text-primary text-left" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Provision</span>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+                <div className="p-6 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
+                    <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left text-left">
+                        <ShoppingCart className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left text-left">Kingdom Provision</span>
                     </div>
-                    <SheetHeader className="text-left flex-shrink-0 text-left text-left">
-                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left text-left">Kindness Package</SheetTitle>
-                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left text-left">Review your selections for the harvest.</SheetDescription>
+                    <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left text-left text-left text-left text-left text-left text-left text-left">Kindness Package</SheetTitle>
+                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left">Review your selections for the harvest.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left">
-                    <div className="p-6 sm:p-8 space-y-10 text-left">
+                <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left text-left text-left text-left text-left text-left">
+                    <div className="p-6 sm:p-8 space-y-10 text-left text-left text-left text-left text-left text-left text-left">
                         {cartItems.length > 0 ? (
-                            <div className="space-y-10 text-left">
-                                <div className="space-y-6 text-left">
+                            <div className="space-y-10 text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <div className="space-y-6 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                     {cartByVendor.map(group => (
-                                        <div key={group.vendorId} className="space-y-3 text-left">
-                                            <div className="flex items-center justify-between px-1 text-left">
-                                                <div className="flex items-center gap-2 max-w-[60%] text-left">
-                                                    <Store className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
-                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate text-left">{group.vendorName}</h4>
+                                        <div key={group.vendorId} className="space-y-3 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                            <div className="flex items-center justify-between px-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                <div className="flex items-center gap-2 max-w-[60%] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                    <Store className="h-3.5 w-3.5 text-primary shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
+                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{group.vendorName}</h4>
                                                 </div>
-                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 shrink-0 text-left">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
+                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
                                             </div>
-                                            <div className="space-y-2 text-left">
+                                            <div className="space-y-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                                 {group.items.map(c => (
-                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group gap-3 text-left text-left">
-                                                        <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left">
-                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left text-left">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary text-left" /> : <Utensils className="h-5 w-5 text-primary text-left" />}</div>
-                                                            <div className="min-w-0 flex-1 text-left text-left">
-                                                                <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left text-left">{c.item.name}</p>
-                                                                <p className="text-[10px] font-bold text-primary uppercase text-left text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
+                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group gap-3 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /> : <Utensils className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />}</div>
+                                                            <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                                <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{c.item.name}</p>
+                                                                <p className="text-[10px] font-bold text-primary uppercase text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center gap-2 shrink-0 text-left text-left text-left">
-                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left text-left">
-                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3 text-left" /></Button>
-                                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center text-left text-left"> {c.quantity}</span>
-                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3 text-left" /></Button>
+                                                        <div className="flex items-center gap-2 shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /></Button>
+                                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"> {c.quantity}</span>
+                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /></Button>
                                                             </div>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left text-left" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4 text-left text-left" /></Button>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /></Button>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -1156,50 +1180,50 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="space-y-6 text-left text-left text-left">
-                                    <div className="space-y-2 text-left text-left">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Recipient Name</Label>
-                                        <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" />
+                                <div className="space-y-6 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                    <div className="space-y-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Recipient Name</Label>
+                                        <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                                     </div>
-                                    <div className="space-y-2 text-left text-left text-left">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Logistical Instructions</Label>
-                                        <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left text-left" />
+                                    <div className="space-y-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Logistical Instructions</Label>
+                                        <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                                     </div>
                                 </div>
-                                <div className="space-y-4 text-left text-left text-left">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left text-left text-left"><CreditCard className="h-3.5 w-3.5 text-left" /> FULFILLMENT GUIDE</Label>
-                                    <div className="space-y-3 text-left text-left text-left">
+                                <div className="space-y-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><CreditCard className="h-3.5 w-3.5 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /> FULFILLMENT GUIDE</Label>
+                                    <div className="space-y-3 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                         {cartByVendor.map(v => (
-                                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left text-left">
-                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left text-left"><Store className="h-10 w-10 text-primary text-left text-left" /></div>
-                                                <div className="flex justify-between items-start mb-2 text-left text-left">
-                                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left">Pay to: {v.vendorName}</p>
-                                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
+                                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><Store className="h-10 w-10 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /></div>
+                                                <div className="flex justify-between items-start mb-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Pay to: {v.vendorName}</p>
+                                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
                                                 </div>
-                                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left text-left">{v.paymentDetails || 'Contact provider for details.'}</p>
-                                                <Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left text-left" /></Button>
+                                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{v.paymentDetails || 'Contact provider for details.'}</p>
+                                                <Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /></Button>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             </div>
                         ) : (
-                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left">
-                                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left text-left" />
-                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left">Empty Hub</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-center text-left text-left">Add items to place an order and bless the Body of Christ.</p>
-                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left" onClick={() => setIsCartOpen(false)}>
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
+                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Empty Hub</h3>
+                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Add items to place an order and bless the Body of Christ.</p>
+                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" onClick={() => setIsCartOpen(false)}>
                                     <Link href="/dashboard/marketplace">GIVE PROVISION</Link>
                                 </Button>
                             </div>
                         )}
-                        <div className="h-24 text-left text-left" />
+                        <div className="h-24 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                     </div>
                 </ScrollArea>
                 {cartItems.length > 0 && (
-                    <SheetFooter className="p-6 sm:p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left text-left">
-                        <Button onClick={handleGiftItems} disabled={isProcessingOrder || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left text-left">
-                            {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                    <SheetFooter className="p-6 sm:p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <Button onClick={handleGiftItems} disabled={isProcessingOrder || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                            {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />}
                             DISPATCH OFFERINGS
                         </Button>
                     </SheetFooter>
@@ -1216,9 +1240,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={
-        <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-left text-left">
-            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
-            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left text-left">Kingdom Network Active</p>
+        <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-left text-left text-left text-left text-left text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left text-left text-left text-left text-left" />
+            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left text-left text-left text-left text-left text-left">Kingdom Network Active</p>
         </div>
     }>
         <ShellInner>{children}</ShellInner>
