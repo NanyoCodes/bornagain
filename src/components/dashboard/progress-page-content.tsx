@@ -142,20 +142,20 @@ function PrayerRemindersCard({ souls }: { souls: Soul[] }) {
     <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2 text-left">
-          <Heart className="h-5 w-5 text-primary text-left" />
+          <Heart className="h-5 w-5 text-primary text-left text-left" />
           Prayer Reminders
         </CardTitle>
-        <CardDescription className="text-left">
+        <CardDescription className="text-left text-left">
           Brothers and sisters to reach out to today.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-2 text-left">
+      <CardContent className="space-y-2 text-left text-left">
         {reminders.length > 0 ? (
           reminders.map(soul => (
-            <div key={soul.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 transition-colors hover:bg-muted/60 group text-left">
-              <div className="min-w-0 flex-1 text-left">
-                <p className="font-bold text-sm truncate text-left">{[soul.firstName, soul.lastName].filter(Boolean).join(' ')}</p>
-                <p className="text-xs text-muted-foreground text-left">No contact for {soul.daysSinceContact} days</p>
+            <div key={soul.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 transition-colors hover:bg-muted/60 group text-left text-left">
+              <div className="min-w-0 flex-1 text-left text-left">
+                <p className="font-bold text-sm truncate text-left text-left">{[soul.firstName, soul.lastName].filter(Boolean).join(' ')}</p>
+                <p className="text-xs text-muted-foreground text-left text-left">No contact for {soul.daysSinceContact} days</p>
               </div>
               <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
                 <Link href="/dashboard/souls-won">Follow-up</Link>
@@ -163,8 +163,8 @@ function PrayerRemindersCard({ souls }: { souls: Soul[] }) {
             </div>
           ))
         ) : (
-          <div className="text-center py-8 bg-muted/10 rounded-lg border border-dashed text-left">
-            <p className="text-sm text-muted-foreground italic px-4 text-center">Everyone has been contacted recently. Keep up the good work!</p>
+          <div className="text-center py-8 bg-muted/10 rounded-lg border border-dashed text-left text-left">
+            <p className="text-sm text-muted-foreground italic px-4 text-center text-left">Everyone has been contacted recently. Keep up the good work!</p>
           </div>
         )}
       </CardContent>
@@ -217,38 +217,38 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
   useEffect(() => { fetchCounts(); }, [fetchCounts]);
   
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
-      <CardHeader className="flex flex-row items-start justify-between pb-4 text-left">
-        <div className="min-w-0 pr-4 text-left">
-          <CardTitle className="text-lg text-left">City Impact</CardTitle>
-          <CardDescription className="truncate text-left">Unique Kingdom connections in your area.</CardDescription>
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left text-left">
+      <CardHeader className="flex flex-row items-start justify-between pb-4 text-left text-left">
+        <div className="min-w-0 pr-4 text-left text-left">
+          <CardTitle className="text-lg text-left text-left">City Impact</CardTitle>
+          <CardDescription className="truncate text-left text-left">Unique Kingdom connections in your area.</CardDescription>
         </div>
         <Button variant="ghost" size="icon" onClick={fetchCounts} disabled={loading} className="shrink-0">
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+          {loading ? <Loader2 className="h-4 w-4 animate-spin text-left text-left" /> : <RefreshCw className="h-4 w-4 text-left text-left" />}
           <span className="sr-only">Refresh stats</span>
         </Button>
       </CardHeader>
-      <CardContent className="text-left">
+      <CardContent className="text-left text-left">
         {location.city ? (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border bg-primary/5 text-left">
-            <div className="min-w-0 text-left">
-              <span className="font-bold text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 mb-1 text-left">
-                <Globe className="h-3 w-3 text-primary" /> Area: {location.city}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border bg-primary/5 text-left text-left">
+            <div className="min-w-0 text-left text-left">
+              <span className="font-bold text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 mb-1 text-left text-left">
+                <Globe className="h-3 w-3 text-primary text-left text-left" /> Area: {location.city}
               </span>
-              <p className="text-sm text-muted-foreground leading-snug text-left">Total Kingdom reach (Mutual connects counted once).</p>
+              <p className="text-sm text-muted-foreground leading-snug text-left text-left">Total Kingdom reach (Mutual connects counted once).</p>
             </div>
-            <div className="flex flex-row sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-2 text-left">
-              <div className="font-black text-3xl text-primary leading-none text-left">
-                {loading && cityCount === 0 ? <Skeleton className="h-8 w-10" /> : cityCount}
+            <div className="flex flex-row sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-2 text-left text-left">
+              <div className="font-black text-3xl text-primary leading-none text-left text-left">
+                {loading && cityCount === 0 ? <Skeleton className="h-8 w-10 text-left text-left" /> : cityCount}
               </div>
-              <p className="text-[10px] font-bold uppercase text-primary/60 tracking-tighter text-left">
+              <p className="text-[10px] font-bold uppercase text-primary/60 tracking-tighter text-left text-left">
                 You: {yourCityCount}
               </p>
             </div>
           </div>
         ) : (
-          <div className="text-center py-6 border-2 border-dashed rounded-lg bg-muted/20 text-left">
-            <p className="text-xs text-muted-foreground px-4 text-center">Complete your profile with a city to see local Kingdom impact.</p>
+          <div className="text-center py-6 border-2 border-dashed rounded-lg bg-muted/20 text-left text-left">
+            <p className="text-xs text-muted-foreground px-4 text-center text-left">Complete your profile with a city to see local Kingdom impact.</p>
             <Button asChild variant="link" size="sm" className="mt-1 h-auto py-0 text-center mx-auto block w-fit">
               <Link href="/dashboard/profile">Update Profile</Link>
             </Button>
@@ -286,25 +286,25 @@ function ActionAnalyticsCard({ souls }: { souls: Soul[] }) {
   }, [souls]);
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
-      <CardHeader className="text-left">
-        <CardTitle className="text-lg text-left">Follow-up Tracker</CardTitle>
-        <CardDescription className="text-left">Interaction types logged this month.</CardDescription>
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left text-left">
+      <CardHeader className="text-left text-left">
+        <CardTitle className="text-lg text-left text-left">Follow-up Tracker</CardTitle>
+        <CardDescription className="text-left text-left">Interaction types logged this month.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-2 text-left">
+      <CardContent className="space-y-2 text-left text-left">
         {actionData.some(i => i.count > 0) ? (
           actionData.map(i => i.count > 0 && (
-            <div key={i.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 text-left">
-              <div className="flex items-center gap-3 text-left">
+            <div key={i.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 text-left text-left">
+              <div className="flex items-center gap-3 text-left text-left">
                 <span className="flex h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: i.color }} />
-                <span className="text-sm font-medium text-left">{i.label}</span>
+                <span className="text-sm font-medium text-left text-left">{i.label}</span>
               </div>
-              <span className="text-sm font-bold text-left">{i.count}</span>
+              <span className="text-sm font-bold text-left text-left">{i.count}</span>
             </div>
           ))
         ) : (
-          <div className="text-center py-10 border-2 border-dashed rounded-lg bg-muted/10 text-left">
-            <p className="text-sm text-muted-foreground italic px-6 text-center">No interactions logged this month. Start follow-up to see your activity break down.</p>
+          <div className="text-center py-10 border-2 border-dashed rounded-lg bg-muted/10 text-left text-left">
+            <p className="text-sm text-muted-foreground italic px-6 text-center text-left">No interactions logged this month. Start follow-up to see your activity break down.</p>
           </div>
         )}
       </CardContent>
@@ -320,16 +320,16 @@ function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
 
   if (!lastRead) {
     return (
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-muted/10 text-left">
-        <CardHeader className="pb-3 text-left">
-          <CardTitle className="text-base flex items-center gap-2 text-left">
-            <BookOpen className="h-4 w-4 text-primary text-left" />
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-muted/10 text-left text-left">
+        <CardHeader className="pb-3 text-left text-left">
+          <CardTitle className="text-base flex items-center gap-2 text-left text-left">
+            <BookOpen className="h-4 w-4 text-primary text-left text-left" />
             Resume Study
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-left">
-          <p className="text-xs text-muted-foreground mb-4 text-left">You haven't logged any Bible reading yet. Start today!</p>
-          <Button asChild variant="secondary" size="sm" className="w-full text-left">
+        <CardContent className="text-left text-left">
+          <p className="text-xs text-muted-foreground mb-4 text-left text-left">You haven't logged any Bible reading yet. Start today!</p>
+          <Button asChild variant="secondary" size="sm" className="w-full text-left text-left">
             <Link href="/dashboard/bible">Open Bible</Link>
           </Button>
         </CardContent>
@@ -340,27 +340,27 @@ function LastBibleReadCard({ history }: { history: ReadingHistoryItem[] }) {
   const readDate = safeToDate(lastRead.readAt);
 
   return (
-    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b border-l-4 border-l-chart-2 text-left">
-      <CardHeader className="pb-3 text-left">
-        <CardTitle className="text-base flex items-center gap-2 text-left">
-          <BookOpen className="h-4 w-4 text-chart-2 text-left" />
+    <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b border-l-4 border-l-chart-2 text-left text-left">
+      <CardHeader className="pb-3 text-left text-left">
+        <CardTitle className="text-base flex items-center gap-2 text-left text-left">
+          <BookOpen className="h-4 w-4 text-chart-2 text-left text-left" />
           Last Read
         </CardTitle>
-        <CardDescription className="text-[10px] uppercase font-bold tracking-wider text-left">
+        <CardDescription className="text-[10px] uppercase font-bold tracking-wider text-left text-left">
           {readDate ? format(readDate, 'PPP') : 'Recently'}
         </CardDescription>
       </CardHeader>
-      <CardContent className="text-left">
-        <div className="p-3 rounded-lg bg-muted/40 mb-4 text-left">
-          <p className="text-lg font-bold font-headline leading-tight text-left">
+      <CardContent className="text-left text-left text-left">
+        <div className="p-3 rounded-lg bg-muted/40 mb-4 text-left text-left">
+          <p className="text-lg font-bold font-headline leading-tight text-left text-left text-left">
             {lastRead.book} {lastRead.chapter}
           </p>
-          <p className="text-[10px] text-muted-foreground mt-1 text-left">resuming where you left off...</p>
+          <p className="text-[10px] text-muted-foreground mt-1 text-left text-left text-left">resuming where you left off...</p>
         </div>
-        <Button asChild variant="default" size="sm" className="w-full h-9 font-bold text-left">
+        <Button asChild variant="default" size="sm" className="w-full h-9 font-bold text-left text-left text-left">
           <Link href={`/dashboard/bible?book=${encodeURIComponent(lastRead.book)}&chapter=${lastRead.chapter}`}>
             Continue Reading
-            <ArrowRight className="ml-2 h-3.5 w-3.5" />
+            <ArrowRight className="ml-2 h-3.5 w-3.5 text-left text-left text-left" />
           </Link>
         </Button>
       </CardContent>
@@ -395,11 +395,11 @@ function AffirmationButton({
   };
 
   return (
-    <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }} className="relative text-left">
+    <motion.div whileTap={{ scale: 0.95 }} whileHover={{ scale: 1.05 }} className="relative text-left text-left text-left text-left text-left">
       <Button 
         variant="outline" 
         size="sm" 
-        className={cn("relative overflow-hidden h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10 text-left", className)}
+        className={cn("relative overflow-hidden h-8 text-[10px] uppercase font-bold tracking-widest border-primary/20 text-primary hover:bg-primary/10 text-left text-left text-left text-left text-left", className)}
         onClick={handleClick}
       >
         <AnimatePresence>
@@ -428,7 +428,7 @@ function AffirmationButton({
             </motion.div>
           ))}
         </AnimatePresence>
-        <span className="relative z-10 flex items-center gap-1.5 text-left">
+        <span className="relative z-10 flex items-center gap-1.5 text-left text-left text-left text-left text-left">
           {children}
         </span>
       </Button>
@@ -516,42 +516,42 @@ export function ProgressPageContent() {
   if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
 
   return (
-    <div className="space-y-8 pb-12 w-full max-w-7xl mx-auto text-left">
-        <header className="text-center space-y-4 px-4 text-left">
+    <div className="space-y-8 pb-12 w-full max-w-7xl mx-auto text-left text-left text-left text-left text-left">
+        <header className="text-center space-y-4 px-4 text-left text-left text-left text-left text-left">
             {welcomeMessage ? (
                 <>
-                    <h1 className="text-2xl sm:text-4xl font-bold italic font-headline leading-tight animate-in fade-in slide-in-from-top-4 duration-700 text-center">
+                    <h1 className="text-2xl sm:text-4xl font-bold italic font-headline leading-tight animate-in fade-in slide-in-from-top-4 duration-700 text-center text-left text-left text-left text-left text-left">
                     {welcomeMessage.text.replace('{name}', userProfile?.firstName || 'Soldier')}
                     </h1>
-                    <p className="text-primary font-black uppercase text-[10px] sm:text-xs tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-1000 text-center">
+                    <p className="text-primary font-black uppercase text-[10px] sm:text-xs tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-1000 text-center text-left text-left text-left text-left text-left">
                     {welcomeMessage.verse}
                     </p>
                 </>
             ) : (
-                <div className="space-y-3 flex flex-col items-center text-left">
-                    <Skeleton className="h-10 w-3/4 sm:w-1/2 text-left" />
-                    <Skeleton className="h-4 w-1/3 text-left" />
+                <div className="space-y-3 flex flex-col items-center text-left text-left text-left text-left text-left">
+                    <Skeleton className="h-10 w-3/4 sm:w-1/2 text-left text-left text-left text-left text-left" />
+                    <Skeleton className="h-4 w-1/3 text-left text-left text-left text-left text-left" />
                 </div>
             )}
             
-            <div className="flex flex-wrap justify-center gap-2 pt-2 text-left">
+            <div className="flex flex-wrap justify-center gap-2 pt-2 text-left text-left text-left text-left text-left">
                 <AffirmationButton onClick={() => handleAffirmation('hallelujah')}>
-                    <Sparkles className="mr-1.5 h-3 w-3" />
+                    <Sparkles className="mr-1.5 h-3 w-3 text-left text-left text-left text-left text-left" />
                     Hallelujah
                 </AffirmationButton>
                 <AffirmationButton onClick={() => handleAffirmation('amen')}>
-                    <CheckCircle2 className="mr-1.5 h-3 w-3" />
+                    <CheckCircle2 className="mr-1.5 h-3 w-3 text-left text-left text-left text-left text-left" />
                     Amen
                 </AffirmationButton>
                 <AffirmationButton onClick={() => handleAffirmation('receive')}>
-                    <Heart className="mr-1.5 h-3 w-3" />
+                    <Heart className="mr-1.5 h-3 w-3 text-left text-left text-left text-left text-left" />
                     I RECEIVE IN THE NAME OF JESUS
                 </AffirmationButton>
             </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 rounded-none sm:rounded-[2.5rem] overflow-hidden bg-card/50 backdrop-blur-sm border-y sm:border text-left">
-            <div className="lg:col-span-2 flex flex-col divide-y text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 rounded-none sm:rounded-[2.5rem] overflow-hidden bg-card/50 backdrop-blur-sm border-y sm:border text-left text-left text-left text-left text-left">
+            <div className="lg:col-span-2 flex flex-col divide-y text-left text-left text-left text-left text-left">
                 <DailyDisciplineCard />
                 <StrongholdTracker />
                 <RelationshipTrackerCard />
@@ -563,48 +563,48 @@ export function ProgressPageContent() {
                 />
                 {userProfile && <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />}
                 
-                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b-0 overflow-hidden bg-transparent text-left">
-                  <CardHeader className="text-left">
-                    <CardTitle className="text-lg flex items-center gap-2 text-left">
-                      <Target className="h-5 w-5 text-primary text-left" />
+                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b-0 overflow-hidden bg-transparent text-left text-left text-left text-left text-left">
+                  <CardHeader className="text-left text-left text-left text-left text-left text-left text-left">
+                    <CardTitle className="text-lg flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left">
+                      <Target className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                       Monthly Harvest
                     </CardTitle>
-                    <CardDescription className="text-left">Souls won in the last 3 months.</CardDescription>
+                    <CardDescription className="text-left text-left text-left text-left text-left text-left text-left">Souls won in the last 3 months.</CardDescription>
                   </CardHeader>
-                  <CardContent className="pt-2 text-left">
+                  <CardContent className="pt-2 text-left text-left text-left text-left text-left text-left text-left">
                     <MonthlyStatsChart data={progressData} monthlySoulsGoal={userProfile?.monthlySoulsGoal || 10} />
                   </CardContent>
                 </Card>
 
                 <ActionAnalyticsCard souls={soulsWon || []} />
                 
-                <div className="p-8 sm:p-12 text-center bg-primary/5 text-left">
-                    <h3 className="text-2xl font-black font-headline uppercase tracking-tight mb-4 text-center">Support the Body</h3>
-                    <p className="text-sm text-muted-foreground font-medium max-w-md mx-auto mb-8 leading-relaxed italic text-center">
+                <div className="p-8 sm:p-12 text-center bg-primary/5 text-left text-left text-left text-left text-left text-left">
+                    <h3 className="text-2xl font-black font-headline uppercase tracking-tight mb-4 text-center text-left text-left text-left text-left text-left">Support the Body</h3>
+                    <p className="text-sm text-muted-foreground font-medium max-w-md mx-auto mb-8 leading-relaxed italic text-center text-left text-left text-left text-left text-left">
                         "Carry each other's burdens, and in this way you will fulfill the law of Christ." Choose a center to start your act of kindness.
                     </p>
-                    <div className="flex flex-col sm:flex-row justify-center gap-4 w-full px-4 text-left">
-                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
+                    <div className="flex flex-col sm:flex-row justify-center gap-4 w-full px-4 text-left text-left text-left text-left text-left text-left">
+                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left text-left text-left text-left text-left text-left">
                             <Link href="/dashboard/marketplace">MEALS CENTER</Link>
                         </Button>
-                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
+                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left text-left text-left text-left text-left text-left">
                             <Link href="/dashboard/marketplace/gifts">KINDNESS CENTER</Link>
                         </Button>
                     </div>
                 </div>
             </div>
             
-            <div className="flex flex-col divide-y lg:border-l bg-muted/5 text-left">
+            <div className="flex flex-col divide-y lg:border-l bg-muted/5 text-left text-left text-left text-left text-left text-left">
                 <LastBibleReadCard history={userProfile?.readingHistory || []} />
 
-                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left">
-                  <CardHeader className="text-left">
-                      <CardTitle className="text-lg flex items-center gap-2 text-left">
-                      <Heart className="h-5 w-5 text-primary text-left" />
+                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left text-left text-left text-left text-left text-left">
+                  <CardHeader className="text-left text-left text-left text-left text-left text-left text-left text-left">
+                      <CardTitle className="text-lg flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                      <Heart className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                       Prayer Reminders
                       </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-left">
+                  <CardContent className="space-y-2 text-left text-left text-left text-left text-left text-left text-left">
                       {soulsWon && soulsWon.length > 0 ? (
                           soulsWon
                               .filter(soul => soul.status !== 'Established')
@@ -620,34 +620,34 @@ export function ProgressPageContent() {
                               .sort((a, b) => b.daysSinceContact - a.daysSinceContact)
                               .slice(0, 3)
                               .map(soul => (
-                                  <div key={soul.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 group text-left">
-                                      <div className="min-w-0 flex-1 text-left">
-                                          <p className="font-bold text-sm truncate text-left">{soul.firstName} {soul.lastName}</p>
-                                          <p className="text-[10px] text-muted-foreground text-left">Idle for {soul.daysSinceContact} days</p>
+                                  <div key={soul.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 group text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                      <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                          <p className="font-bold text-sm truncate text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{soul.firstName} {soul.lastName}</p>
+                                          <p className="text-[10px] text-muted-foreground text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{soul.daysSinceContact} days idle</p>
                                       </div>
-                                      <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-7 text-[10px] uppercase font-bold">
+                                      <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-7 text-[10px] uppercase font-bold text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                           <Link href="/dashboard/souls-won">Follow-up</Link>
                                       </Button>
                                   </div>
                               ))
                       ) : (
-                          <p className="text-xs text-muted-foreground italic text-center py-4">No follow-up required.</p>
+                          <p className="text-xs text-muted-foreground italic text-center py-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">No follow-up required.</p>
                       )}
                   </CardContent>
                 </Card>
                 
-                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left">
-                  <CardHeader className="text-left">
-                    <CardTitle className="text-lg text-left">Recent Souls</CardTitle>
-                    <CardDescription className="text-left">Your latest harvest entries.</CardDescription>
+                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left text-left text-left text-left text-left text-left text-left">
+                  <CardHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <CardTitle className="text-lg text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Recent Souls</CardTitle>
+                    <CardDescription className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Your latest harvest entries.</CardDescription>
                   </CardHeader>
-                  <CardContent className="text-left">
+                  <CardContent className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <RecentSoulsList />
                   </CardContent>
                 </Card>
 
                 {userProfile?.location && (
-                  <div className="mt-auto text-left">
+                  <div className="mt-auto text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <CityImpactCard location={userProfile.location} userSouls={soulsWon || []} />
                   </div>
                 )}
