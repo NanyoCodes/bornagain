@@ -1028,7 +1028,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                     </div>
                 </div>
                 <ScrollArea className="flex-grow">
-                    <div className="p-6 space-y-2">
+                    <div className="p-6 space-y-2 text-left">
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Identity</p>
                         <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
                           <User className="h-6 w-6 text-primary" />
@@ -1113,9 +1113,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         <ShoppingCart className="h-4 w-4 text-primary text-left" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Provision</span>
                     </div>
-                    <SheetHeader className="text-left flex-shrink-0 text-left">
-                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left">Kindness Package</SheetTitle>
-                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Review your selections for the harvest.</SheetDescription>
+                    <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left text-left">Kindness Package</SheetTitle>
+                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left text-left">Review your selections for the harvest.</SheetDescription>
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left">
@@ -1142,7 +1142,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                                                 <p className="text-[10px] font-bold text-primary uppercase text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center gap-2 shrink-0 text-left">
+                                                        <div className="flex items-center gap-2 shrink-0 text-left text-left">
                                                             <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left">
                                                                 <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3 text-left" /></Button>
                                                                 <span className="text-[11px] font-black min-w-[1.25rem] text-center text-left"> {c.quantity}</span>
@@ -1156,19 +1156,19 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="space-y-6 text-left">
+                                <div className="space-y-6 text-left text-left">
                                     <div className="space-y-2 text-left">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Recipient Name</Label>
                                         <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                                     </div>
-                                    <div className="space-y-2 text-left">
+                                    <div className="space-y-2 text-left text-left">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Logistical Instructions</Label>
                                         <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" />
                                     </div>
                                 </div>
-                                <div className="space-y-4 text-left">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left"><CreditCard className="h-3.5 w-3.5 text-left" /> FULFILLMENT GUIDE</Label>
-                                    <div className="space-y-3 text-left">
+                                <div className="space-y-4 text-left text-left">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left text-left"><CreditCard className="h-3.5 w-3.5 text-left" /> FULFILLMENT GUIDE</Label>
+                                    <div className="space-y-3 text-left text-left">
                                         {cartByVendor.map(v => (
                                             <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left">
                                                 <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left"><Store className="h-10 w-10 text-primary text-left" /></div>
@@ -1184,7 +1184,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                 </div>
                             </div>
                         ) : (
-                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left">
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left">
                                 <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left" />
                                 <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3>
                                 <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-center text-left">Add items to place an order and bless the Body of Christ.</p>

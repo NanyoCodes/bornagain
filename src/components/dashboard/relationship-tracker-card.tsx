@@ -349,7 +349,7 @@ function ShareWordDialog({
 
   const body = (
     <ScrollArea className="flex-grow min-h-[300px]">
-        <div className="p-4 sm:p-10">
+        <div className="p-4 sm:p-10 text-left">
             {view === 'hub' && renderHub}
             {view === 'books' && renderBooks}
             {view === 'chapters' && renderChapters}

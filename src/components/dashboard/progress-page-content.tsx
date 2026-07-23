@@ -517,7 +517,7 @@ export function ProgressPageContent() {
 
   return (
     <div className="space-y-8 pb-12 w-full max-w-7xl mx-auto text-left text-left text-left text-left text-left">
-        <header className="text-center space-y-4 px-4 text-left text-left text-left text-left text-left">
+        <header className="text-center space-y-4 px-4 text-left text-left text-left text-left text-left text-left">
             {welcomeMessage ? (
                 <>
                     <h1 className="text-2xl sm:text-4xl font-bold italic font-headline leading-tight animate-in fade-in slide-in-from-top-4 duration-700 text-center text-left text-left text-left text-left text-left">
@@ -528,13 +528,13 @@ export function ProgressPageContent() {
                     </p>
                 </>
             ) : (
-                <div className="space-y-3 flex flex-col items-center text-left text-left text-left text-left text-left">
+                <div className="space-y-3 flex flex-col items-center text-left text-left text-left text-left text-left text-left">
                     <Skeleton className="h-10 w-3/4 sm:w-1/2 text-left text-left text-left text-left text-left" />
                     <Skeleton className="h-4 w-1/3 text-left text-left text-left text-left text-left" />
                 </div>
             )}
             
-            <div className="flex flex-wrap justify-center gap-2 pt-2 text-left text-left text-left text-left text-left">
+            <div className="flex flex-wrap justify-center gap-2 pt-2 text-left text-left text-left text-left text-left text-left">
                 <AffirmationButton onClick={() => handleAffirmation('hallelujah')}>
                     <Sparkles className="mr-1.5 h-3 w-3 text-left text-left text-left text-left text-left" />
                     Hallelujah
@@ -550,8 +550,8 @@ export function ProgressPageContent() {
             </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 rounded-none sm:rounded-[2.5rem] overflow-hidden bg-card/50 backdrop-blur-sm border-y sm:border text-left text-left text-left text-left text-left">
-            <div className="lg:col-span-2 flex flex-col divide-y text-left text-left text-left text-left text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 rounded-none sm:rounded-[2.5rem] overflow-hidden bg-card/50 backdrop-blur-sm border-y sm:border text-left text-left text-left text-left text-left text-left">
+            <div className="lg:col-span-2 flex flex-col divide-y text-left text-left text-left text-left text-left text-left">
                 <DailyDisciplineCard />
                 <StrongholdTracker />
                 <RelationshipTrackerCard />
@@ -563,9 +563,9 @@ export function ProgressPageContent() {
                 />
                 {userProfile && <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />}
                 
-                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b-0 overflow-hidden bg-transparent text-left text-left text-left text-left text-left">
-                  <CardHeader className="text-left text-left text-left text-left text-left text-left text-left">
-                    <CardTitle className="text-lg flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left">
+                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b-0 overflow-hidden bg-transparent text-left text-left text-left text-left text-left text-left">
+                  <CardHeader className="text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <CardTitle className="text-lg flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                       <Target className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                       Monthly Harvest
                     </CardTitle>
@@ -578,28 +578,28 @@ export function ProgressPageContent() {
 
                 <ActionAnalyticsCard souls={soulsWon || []} />
                 
-                <div className="p-8 sm:p-12 text-center bg-primary/5 text-left text-left text-left text-left text-left text-left">
+                <div className="p-8 sm:p-12 text-center bg-primary/5 text-left text-left text-left text-left text-left text-left text-left">
                     <h3 className="text-2xl font-black font-headline uppercase tracking-tight mb-4 text-center text-left text-left text-left text-left text-left">Support the Body</h3>
                     <p className="text-sm text-muted-foreground font-medium max-w-md mx-auto mb-8 leading-relaxed italic text-center text-left text-left text-left text-left text-left">
                         "Carry each other's burdens, and in this way you will fulfill the law of Christ." Choose a center to start your act of kindness.
                     </p>
-                    <div className="flex flex-col sm:flex-row justify-center gap-4 w-full px-4 text-left text-left text-left text-left text-left text-left">
-                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left text-left text-left text-left text-left text-left">
+                    <div className="flex flex-col sm:flex-row justify-center gap-4 w-full px-4 text-left text-left text-left text-left text-left text-left text-left">
+                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left text-left text-left text-left text-left">
                             <Link href="/dashboard/marketplace">MEALS CENTER</Link>
                         </Button>
-                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left text-left text-left text-left text-left text-left">
+                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left text-left text-left text-left text-left">
                             <Link href="/dashboard/marketplace/gifts">KINDNESS CENTER</Link>
                         </Button>
                     </div>
                 </div>
             </div>
             
-            <div className="flex flex-col divide-y lg:border-l bg-muted/5 text-left text-left text-left text-left text-left text-left">
+            <div className="flex flex-col divide-y lg:border-l bg-muted/5 text-left text-left text-left text-left text-left text-left text-left">
                 <LastBibleReadCard history={userProfile?.readingHistory || []} />
 
-                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left text-left text-left text-left text-left text-left">
-                  <CardHeader className="text-left text-left text-left text-left text-left text-left text-left text-left">
-                      <CardTitle className="text-lg flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left text-left text-left text-left text-left text-left text-left">
+                  <CardHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                      <CardTitle className="text-lg flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                       <Heart className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                       Prayer Reminders
                       </CardTitle>
@@ -621,33 +621,33 @@ export function ProgressPageContent() {
                               .slice(0, 3)
                               .map(soul => (
                                   <div key={soul.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 group text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                      <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                          <p className="font-bold text-sm truncate text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{soul.firstName} {soul.lastName}</p>
-                                          <p className="text-[10px] text-muted-foreground text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{soul.daysSinceContact} days idle</p>
+                                      <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                          <p className="font-bold text-sm truncate text-left text-left text-left text-left text-left text-left text-left text-left text-left">{soul.firstName} {soul.lastName}</p>
+                                          <p className="text-[10px] text-muted-foreground text-left text-left text-left text-left text-left text-left text-left text-left text-left">{soul.daysSinceContact} days idle</p>
                                       </div>
-                                      <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-7 text-[10px] uppercase font-bold text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                      <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-7 text-[10px] uppercase font-bold text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                           <Link href="/dashboard/souls-won">Follow-up</Link>
                                       </Button>
                                   </div>
                               ))
                       ) : (
-                          <p className="text-xs text-muted-foreground italic text-center py-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">No follow-up required.</p>
+                          <p className="text-xs text-muted-foreground italic text-center py-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left">No follow-up required.</p>
                       )}
                   </CardContent>
                 </Card>
                 
                 <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left text-left text-left text-left text-left text-left text-left">
                   <CardHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                    <CardTitle className="text-lg text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Recent Souls</CardTitle>
-                    <CardDescription className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Your latest harvest entries.</CardDescription>
+                    <CardTitle className="text-lg text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Recent Souls</CardTitle>
+                    <CardDescription className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Your latest harvest entries.</CardDescription>
                   </CardHeader>
-                  <CardContent className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <CardContent className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <RecentSoulsList />
                   </CardContent>
                 </Card>
 
                 {userProfile?.location && (
-                  <div className="mt-auto text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <div className="mt-auto text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <CityImpactCard location={userProfile.location} userSouls={soulsWon || []} />
                   </div>
                 )}
