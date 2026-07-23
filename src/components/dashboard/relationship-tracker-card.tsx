@@ -65,6 +65,7 @@ import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { bibleData } from "@/lib/bible-data";
 import { useRouter } from 'next/navigation';
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -449,11 +450,11 @@ function SoulSelectionDialog({
                                 >
                                     <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm shrink-0">
                                         <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                                        <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                        <AvatarFallback className="font-bold bg-primary/10 text-primary">{soul.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <div className="text-left min-w-0 flex-1">
                                         <div className="flex items-center gap-2">
-                                            <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                                            <p className="font-black text-sm uppercase tracking-tight truncate">{soul.firstName} {soul.lastName}</p>
                                             {reachedToday && (
                                                 <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-black bg-green-500/10 text-green-600 border-none">
                                                     Reached Today
@@ -665,6 +666,50 @@ export function RelationshipTrackerCard() {
         setIsSoulDialogOpen(false);
         setActiveSoul(soul);
         setIsStudyWordOpen(true);
+        return;
+    }
+
+    if (selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift') {
+        setIsSoulDialogOpen(false);
+        const provisionKey = `testify_pending_provisions_${user.uid}`;
+        const stored = localStorage.getItem(provisionKey);
+        let current = stored ? JSON.parse(stored) : [];
+        if (!Array.isArray(current)) current = [];
+        if (!current.some((p: any) => p.soulId === soul.id && p.actionId === selectedActionId)) {
+            current.push({ soulId: soul.id, soulName: `${soul.firstName} ${soul.lastName}`, actionId: selectedActionId, timestamp: Date.now() });
+            localStorage.setItem(provisionKey, JSON.stringify(current));
+            window.dispatchEvent(new Event('testify_pending_action_update'));
+        }
+        finalizeRelationalLog(soul, 'Initiated provision offering');
+        const mPath = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+        router.push(`${mPath}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
+        return;
+    }
+
+    if (selectedActionId === 'phone_call' && soul.phone) {
+        setIsSoulDialogOpen(false);
+        finalizeRelationalLog(soul, 'Dialer initiated');
+        window.location.href = `tel:${soul.phone}`;
+        return;
+    }
+
+    if (selectedActionId === 'visited_home') {
+        setIsSoulDialogOpen(false);
+        const loc = soul.locationWon;
+        const address = loc ? [loc.street, loc.city, loc.state, loc.country].filter(Boolean).join(', ') : null;
+        if (address) {
+            finalizeRelationalLog(soul, `Navigated to venue: ${address}`);
+            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+        } else {
+            toast({ variant: 'destructive', title: 'Location Undefined', description: 'Please set an address for this soul.' });
+        }
+        return;
+    }
+
+    if (selectedActionId === 'invited_to_event') {
+        setIsSoulDialogOpen(false);
+        finalizeRelationalLog(soul, 'Redirected to Events Hub');
+        router.push('/dashboard/events');
         return;
     }
 
