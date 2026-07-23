@@ -93,7 +93,7 @@ function RecentSoulsList() {
   const { data: souls, loading } = useCollection<Soul>(soulsQuery);
   
   if (loading) return <div className="space-y-4">{[...Array(3)].map((_, i) => (<div key={i} className="flex items-center gap-4"><Skeleton className="h-10 w-10 rounded-full" /><div className="space-y-1 flex-1"><Skeleton className="h-4 w-2/4" /><Skeleton className="h-3 w-1/4" /></div></div>))}</div>;
-  if (!souls || souls.length === 0) return <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30"><div className="mx-auto h-12 w-12 text-muted-foreground"><UserPlus strokeWidth={1.5} /></div><h3 className="mt-4 text-lg font-semibold text-center">Log Your First Soul</h3><p className="mt-1 text-sm text-muted-foreground text-center">Start tracking the lives you impact.</p><Button asChild size="sm" className="mt-4"><Link href="/dashboard/souls-won">Get Started <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></div>;
+  if (!souls || souls.length === 0) return <div className="text-center py-10 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900/30 text-left"><div className="mx-auto h-12 w-12 text-muted-foreground"><UserPlus strokeWidth={1.5} /></div><h3 className="mt-4 text-lg font-semibold text-center">Log Your First Soul</h3><p className="mt-1 text-sm text-muted-foreground text-center">Start tracking the lives you impact.</p><Button asChild size="sm" className="mt-4"><Link href="/dashboard/souls-won">Get Started <ArrowRight className="ml-2 h-4 w-4" /></Link></Button></div>;
   
   return (
     <div className="space-y-1 text-left">
@@ -174,24 +174,24 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
         {location.city ? (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border bg-primary/5 text-left">
             <div className="min-w-0 text-left">
-              <span className="font-bold text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 mb-1">
-                <Globe className="h-3 w-3 text-primary" /> Area: {location.city}
+              <span className="font-bold text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 mb-1 text-left">
+                <Globe className="h-3 w-3 text-primary text-left" /> Area: {location.city}
               </span>
               <p className="text-sm text-muted-foreground leading-snug text-left">Total Kingdom reach (Mutual connects counted once).</p>
             </div>
-            <div className="flex flex-row sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-2">
-              <div className="font-black text-3xl text-primary leading-none">
-                {loading && cityCount === 0 ? <Skeleton className="h-8 w-10" /> : cityCount}
+            <div className="flex flex-row sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-2 text-left">
+              <div className="font-black text-3xl text-primary leading-none text-left">
+                {loading && cityCount === 0 ? <Skeleton className="h-8 w-10 text-left" /> : cityCount}
               </div>
-              <p className="text-[10px] font-bold uppercase text-primary/60 tracking-tighter">
+              <p className="text-[10px] font-bold uppercase text-primary/60 tracking-tighter text-left">
                 You: {yourCityCount}
               </p>
             </div>
           </div>
         ) : (
           <div className="text-center py-6 border-2 border-dashed rounded-lg bg-muted/20 text-left">
-            <p className="text-xs text-muted-foreground px-4 text-center">Complete your profile with a city to see local Kingdom impact.</p>
-            <Button asChild variant="link" size="sm" className="mt-1 h-auto py-0 text-center mx-auto block w-fit">
+            <p className="text-xs text-muted-foreground px-4 text-center text-left">Complete your profile with a city to see local Kingdom impact.</p>
+            <Button asChild variant="link" size="sm" className="mt-1 h-auto py-0 text-center mx-auto block w-fit text-left">
               <Link href="/dashboard/profile">Update Profile</Link>
             </Button>
           </div>
@@ -256,7 +256,7 @@ export function ProgressPageContent() {
     return Object.values(monthlyData);
   }, [soulsWon]);
 
-  if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
+  if (profileLoading || soulsLoading) return <div className="flex justify-center py-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
 
   return (
     <div className="space-y-8 pb-12 w-full max-w-7xl mx-auto text-left">
@@ -294,7 +294,7 @@ export function ProgressPageContent() {
                 <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b-0 overflow-hidden bg-transparent text-left">
                   <CardHeader className="text-left">
                     <CardTitle className="text-lg flex items-center gap-2 text-left">
-                      <Target className="h-5 w-5 text-primary" />
+                      <Target className="h-5 w-5 text-primary text-left" />
                       Monthly Harvest
                     </CardTitle>
                     <CardDescription className="text-left">Souls won in the last 3 months.</CardDescription>
@@ -309,7 +309,7 @@ export function ProgressPageContent() {
                 <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left">
                   <CardHeader className="text-left">
                       <CardTitle className="text-lg flex items-center gap-2 text-left">
-                      <Heart className="h-5 w-5 text-primary" />
+                      <Heart className="h-5 w-5 text-primary text-left" />
                       Prayer Reminders
                       </CardTitle>
                   </CardHeader>
@@ -340,7 +340,7 @@ export function ProgressPageContent() {
                                   </div>
                               ))
                       ) : (
-                          <p className="text-xs text-muted-foreground italic text-center py-4">No follow-up required.</p>
+                          <p className="text-xs text-muted-foreground italic text-center py-4 text-left">No follow-up required.</p>
                       )}
                   </CardContent>
                 </Card>
