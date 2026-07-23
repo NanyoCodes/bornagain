@@ -1,10 +1,11 @@
 'use client';
 
+import * as React from 'react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, getDocs, where, addDoc, getDoc, updateDoc } from 'firebase/firestore';
-import type { UserProfile, Soul, ChatMessage, BibleChapterOutput, Chat, SoulRelationship } from '@/lib/types';
+import type { UserProfile, Soul, BibleChapterOutput, Chat, SoulRelationship } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -429,7 +430,7 @@ function SoulSelectionDialog({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearchTerm(e.target.value)}
+                    onChange={e => setSearch(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
@@ -820,7 +821,7 @@ export function RelationshipTrackerCard() {
       }
   };
 
-  const uniquePartners = useMemo(() => {
+  const uniquePartners = React.useMemo(() => {
     const partners = userProfile?.accountabilityPartners || [];
     const uniqueMap = new Map();
     partners.forEach(p => {
