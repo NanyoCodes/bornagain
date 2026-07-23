@@ -42,9 +42,9 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
   CardFooter
 } from "@/components/ui/card";
 import {
@@ -1086,7 +1086,7 @@ function SoulProfileContent({
           </div>
           <div className="p-8 space-y-6 text-left">
             <div className="space-y-2 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
+                <Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomMessageText(e.target.value)} 
