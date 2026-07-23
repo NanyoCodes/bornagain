@@ -59,7 +59,8 @@ import {
   addDoc, 
   getDoc, 
   getDocs, 
-  where 
+  where,
+  writeBatch
 } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import {
@@ -78,13 +79,13 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
+import { 
+  Dialog, 
   DialogTrigger,
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription 
 } from "@/components/ui/dialog";
 import {
   Sheet,
@@ -116,12 +117,24 @@ import { MutualConnectBadge } from "./mutual-connect-badge";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
-import { Input } from "../ui/input";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+
+const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+};
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
@@ -554,7 +567,7 @@ function SoulProfileContent({
         await batch.commit();
         toast({ title: 'Kingdom Impact Logged' });
     } catch (err) {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `souls/${soul.id}`, operation: 'update' }, user));
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: soulRef.path, operation: 'update' }, user));
     } finally {
         setIsActionSubmitting(false);
         setClickedActionId(null);
@@ -696,6 +709,11 @@ function SoulProfileContent({
       requestAnimationFrame(() => {
           setIsCommChannelDialogOpen(true);
       });
+  };
+
+  const handleHelpNeedConfirm = (note: string) => {
+      finalizeLog('helped_with_need', `Assistance details: ${note}`);
+      setIsHelpNeedDialogOpen(false);
   };
 
   const uniquePartners = React.useMemo(() => {
@@ -1130,7 +1148,7 @@ function SoulProfileContent({
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10 text-left">
-                  <DialogHeader>
+                  <DialogHeader className="text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
@@ -1349,19 +1367,19 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         <Sheet open={!!selectedId && !!selectedSoul && (isMobile || window.innerWidth < 1024)} onOpenChange={(open) => !open && onSelect(null)}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                    <SheetHeader className="text-left flex-shrink-0 text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left">
                             <Sparkles className="h-4 w-4 text-primary text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
                         </div>
-                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
+                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
+                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left">
-                    <div className="p-6 pb-24 text-left">
+                    <div className="p-6 pb-24 text-left text-left">
                         {profileView}
                     </div>
                 </ScrollArea>
@@ -1380,14 +1398,14 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                         className="space-y-6 text-left"
                     >
                         {profileView}
-                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left">
+                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left text-left">
                             {selectedSoul.firstName} {selectedSoul.lastName}
                         </p>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left">Select a record to preview identity</p>
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left">
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>

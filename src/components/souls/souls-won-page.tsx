@@ -722,7 +722,7 @@ export default function SoulsWonPage() {
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px) font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedAgeGroup} Directory</DialogTitle>
