@@ -489,7 +489,7 @@ function SoulSelectionDialog({
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex-shrink-0">
                         <SheetHeader className="text-left flex-shrink-0">
                             <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {actionLabel.toLowerCase()}?</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1 text-left">Select a convert to link this action.</SheetDescription>
@@ -663,7 +663,6 @@ export function RelationshipTrackerCard() {
     setActiveSoul(soul);
     setClickedActionId(selectedActionId);
 
-    // Immediate action handlers that open pop-ups
     if (selectedActionId === 'studied_bible') {
         setIsSoulDialogOpen(false);
         setIsStudyWordOpen(true);
@@ -695,7 +694,6 @@ export function RelationshipTrackerCard() {
         return;
     }
 
-    // Handlers for marketplace
     if (selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift') {
         setIsSoulDialogOpen(false);
         const provisionKey = `testify_pending_provisions_${user.uid}`;
@@ -713,7 +711,6 @@ export function RelationshipTrackerCard() {
         return;
     }
 
-    // Direct handlers
     if (selectedActionId === 'phone_call' && soul.phone) {
         setIsSoulDialogOpen(false);
         finalizeRelationalLog(soul, 'Dialer initiated');
@@ -900,7 +897,7 @@ export function RelationshipTrackerCard() {
                                       <Button
                                           variant="outline"
                                           className={cn(
-                                              "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-500 rounded-3xl border-2 overflow-hidden text-left",
+                                              "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden text-left",
                                               isCompleted 
                                                   ? "bg-primary/5 border-primary/40 shadow-inner ring-1 ring-primary/10 text-left" 
                                                   : "bg-background/40 hover:bg-muted/50 hover:border-primary/20 text-left"
@@ -1046,8 +1043,8 @@ export function RelationshipTrackerCard() {
       </Dialog>
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left">
+          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+              <div className="p-8 border-b bg-muted/10">
                   <DialogHeader className="text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
@@ -1081,22 +1078,22 @@ export function RelationshipTrackerCard() {
 
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
           <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left">
-                  <DialogHeader className="text-left">
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DialogDescription>
+              <div className="p-8 border-b bg-muted/10 text-left text-left">
+                  <DialogHeader className="text-left text-left">
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Kingdom Intercession</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left text-left text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="p-8 space-y-6 text-left">
-                <div className="space-y-3 text-left">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Prayer Focus</label>
-                    <div className="flex flex-wrap gap-2 text-left">
+              <div className="p-8 space-y-6 text-left text-left">
+                <div className="space-y-3 text-left text-left">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Select Prayer Focus</label>
+                    <div className="flex flex-wrap gap-2 text-left text-left text-left">
                         {prayerTemplates.map(t => (
                             <Button 
                                 key={t.id} 
                                 variant="outline" 
                                 size="sm" 
-                                className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary text-left"
+                                className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary text-left text-left"
                                 onClick={() => activeSoul && setCustomPrayerText(resolveTemplate(t.text, activeSoul))}
                             >
                                 {t.label}
@@ -1105,19 +1102,19 @@ export function RelationshipTrackerCard() {
                     </div>
                 </div>
 
-                <div className="space-y-2 text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Your Prayer</Label>
+                <div className="space-y-2 text-left text-left">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Your Prayer</Label>
                     <Textarea 
                         value={customPrayerText}
                         onChange={e => setCustomPrayerText(e.target.value)}
-                        className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left"
+                        className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left text-left"
                     />
                 </div>
 
                 <Button 
                     onClick={() => handlePrayerCustomizationConfirm(customPrayerText)} 
                     disabled={!customPrayerText.trim()} 
-                    className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
+                    className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left"
                 >
                     CONTINUE TO CHANNEL
                 </Button>

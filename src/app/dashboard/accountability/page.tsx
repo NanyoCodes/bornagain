@@ -22,12 +22,10 @@ import {
     BellRing, 
     BookOpen, 
     Edit,
-    ArrowLeft,
     Quote,
     ShieldCheck,
     Zap,
     Users,
-    PlusCircle,
     ArrowRight,
     Sparkles,
     Briefcase,
@@ -89,7 +87,6 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
 
     return (
         <div className="hidden lg:flex flex-col gap-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar pb-10 text-left">
-            {/* Alliance Summary Widget */}
             <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0 text-left">
                 <CardHeader className="p-6 pb-2 text-left">
                     <div className="flex items-center justify-between mb-2 text-left">
@@ -117,7 +114,6 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                 </CardContent>
             </Card>
 
-            {/* Biblical Foundation Widget */}
             <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
                 <CardHeader className="p-5 pb-2 text-left">
                     <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2 text-left">
@@ -135,7 +131,6 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                 </CardContent>
             </Card>
 
-            {/* Partner Ethics Widget */}
             <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
                 <CardHeader className="p-5 pb-2 text-left">
                     <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Kingdom Protocol</CardTitle>
@@ -514,11 +509,11 @@ export default function AccountabilityPage() {
                     ))}
                     {partners.length === 0 && (
                         <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted text-left">
-                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left text-left">
-                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left text-left" />
+                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left">
+                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left" />
                             </div>
-                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center text-left">No Active Alliance</h2>
-                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center text-left">
+                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center">No Active Alliance</h2>
+                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center">
                             "Two are better than one... for if they fall, the one will lift up his fellow." — Eccl 4:9-10
                             </p>
                         </div>
@@ -548,8 +543,8 @@ export default function AccountabilityPage() {
                     </div>
                     <AlertDialogFooter className="gap-3 text-left">
                         <AlertDialogCancel disabled={isRemoving === removalTarget.userId} className="rounded-xl h-11 text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === removalTarget.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left">
-                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <UserX className="mr-2 h-4 w-4 text-left text-left" />}
+                        <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === removalTarget.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">
+                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <UserX className="mr-2 h-4 w-4 text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>
