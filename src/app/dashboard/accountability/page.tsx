@@ -90,72 +90,72 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
     return (
         <div className="hidden lg:flex flex-col gap-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar pb-10 text-left">
             {/* Alliance Summary Widget */}
-            <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0">
-                <CardHeader className="p-6 pb-2">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
+            <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0 text-left">
+                <CardHeader className="p-6 pb-2 text-left">
+                    <div className="flex items-center justify-between mb-2 text-left">
+                        <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center text-left">
                             <HeartHandshake className="h-5 w-5 text-white" />
                         </div>
-                        <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">Active Alliance</Badge>
+                        <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest text-left">Active Alliance</Badge>
                     </div>
-                    <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">Alliance Hub</CardTitle>
+                    <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">Alliance Hub</CardTitle>
                 </CardHeader>
-                <CardContent className="p-6 pt-2 space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10">
-                            <p className="text-2xl font-black">{partnerCount}</p>
-                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70">Partners</p>
+                <CardContent className="p-6 pt-2 space-y-4 text-left">
+                    <div className="grid grid-cols-2 gap-3 text-left">
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left">
+                            <p className="text-2xl font-black text-center">{partnerCount}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center">Partners</p>
                         </div>
-                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10">
-                            <p className="text-2xl font-black">{pendingCount}</p>
-                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70">Requests</p>
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left">
+                            <p className="text-2xl font-black text-center">{pendingCount}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center">Requests</p>
                         </div>
                     </div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance">
+                    <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
                         Strategic spiritual support through mutual observation and prayer.
                     </p>
                 </CardContent>
             </Card>
 
             {/* Biblical Foundation Widget */}
-            <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
-                <CardHeader className="p-5 pb-2">
-                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
+            <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
+                <CardHeader className="p-5 pb-2 text-left">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2 text-left">
                         <BookOpen className="h-4 w-4 text-primary" /> Iron Sharpens Iron
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="p-5 pt-4">
-                    <div className="p-5 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/20 relative group">
-                        <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
-                        <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance">
+                <CardContent className="p-5 pt-4 text-left">
+                    <div className="p-5 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/20 relative group text-left">
+                        <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110 text-left" />
+                        <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance text-left">
                             &ldquo;{verse.text}&rdquo;
                         </p>
-                        <p className="text-[9px] font-black text-primary text-right mt-3 uppercase tracking-widest">— {verse.ref}</p>
+                        <p className="text-[9px] font-black text-primary text-right mt-3 uppercase tracking-widest text-left">— {verse.ref}</p>
                     </div>
                 </CardContent>
             </Card>
 
             {/* Partner Ethics Widget */}
-            <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
-                <CardHeader className="p-5 pb-2">
-                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Protocol</CardTitle>
+            <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
+                <CardHeader className="p-5 pb-2 text-left">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Kingdom Protocol</CardTitle>
                 </CardHeader>
-                <CardContent className="p-4 space-y-2">
+                <CardContent className="p-4 space-y-2 text-left">
                     {[
                         { icon: ShieldCheck, label: "Strict Confidentiality", color: "text-blue-500" },
                         { icon: Zap, label: "Regular Nudges", color: "text-amber-500" },
                         { icon: Sparkles, label: "Prayer Agreement", color: "text-primary" },
                         { icon: Users, label: "Truth with Love", color: "text-indigo-600" },
                     ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/10 border border-transparent">
+                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/10 border border-transparent text-left">
                             <item.icon className={cn("h-4 w-4", item.color)} />
-                            <span className="text-[10px] font-bold uppercase tracking-tight">{item.label}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-tight text-left">{item.label}</span>
                         </div>
                     ))}
                 </CardContent>
-                <CardFooter className="p-5 pt-0">
-                    <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full">
-                        <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic uppercase tracking-widest">
+                <CardFooter className="p-5 pt-0 text-left">
+                    <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full text-left">
+                        <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic uppercase tracking-widest text-center">
                             "Bearing one another's burdens"
                         </p>
                     </div>
@@ -244,8 +244,8 @@ function PartnerCard({
 
     return (
         <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-sm overflow-hidden bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all border-l-4 border-l-primary/10 text-left">
-            <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6 gap-4">
-                 <div className="flex items-center gap-3 min-w-0 flex-1">
+            <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6 gap-4 text-left">
+                 <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                     <Dialog>
                       <DialogTrigger asChild disabled={!livePhotoURL}>
                         <Avatar className={cn("h-11 w-11 sm:h-14 sm:w-14 border shadow-sm shrink-0", livePhotoURL && "cursor-pointer active:scale-95 transition-transform")}>
@@ -264,12 +264,12 @@ function PartnerCard({
                           </DialogContent>
                       )}
                     </Dialog>
-                    <div className="min-w-0">
-                        <Link href={`/dashboard/profile/${partner.userId}`} className="group inline-flex flex-col">
-                            <h2 className="text-sm sm:text-base font-black truncate group-hover:underline leading-none uppercase tracking-tight">{partner.firstName} {partner.lastName}</h2>
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60">Spiritual Partner</span>
+                    <div className="min-w-0 text-left">
+                        <Link href={`/dashboard/profile/${partner.userId}`} className="group inline-flex flex-col text-left">
+                            <h2 className="text-sm sm:text-base font-black truncate group-hover:underline leading-none uppercase tracking-tight text-left">{partner.firstName} {partner.lastName}</h2>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 text-left">Spiritual Partner</span>
                         </Link>
-                        <div className="flex flex-wrap gap-1.5 mt-2">
+                        <div className="flex flex-wrap gap-1.5 mt-2 text-left">
                             {partnerProfile?.maritalStatus && (
                                 <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-bold uppercase tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0">
                                     {partnerProfile.maritalStatus}
@@ -326,10 +326,10 @@ function PartnerCard({
                     </DropdownMenu>
                 </div>
             </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-6">
-                <div className="pt-4 border-t border-dashed space-y-4">
-                    <div className="flex justify-between items-center gap-2">
-                        <div className="flex items-center gap-1.5">
+            <CardContent className="px-4 sm:px-6 pb-6 text-left">
+                <div className="pt-4 border-t border-dashed space-y-4 text-left">
+                    <div className="flex justify-between items-center gap-2 text-left">
+                        <div className="flex items-center gap-1.5 text-left">
                             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                             <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Discipline Records</h4>
                         </div>
@@ -491,49 +491,49 @@ export default function AccountabilityPage() {
     } finally { setIsRemoving(null); setRemovalReason(''); }
   };
 
-  if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20"><Loader2 className="h-12 w-12 animate-spin text-primary" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse">Establishing Connection...</p></div>;
+  if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left">Establishing Connection...</p></div>;
   
   return (
-    <div className="w-full max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-            <div className="lg:col-span-8 space-y-10 pb-32">
-                <header className="px-4 sm:px-0 space-y-1">
-                    <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
-                            <ArrowLeft className="h-6 w-6" />
+    <div className="w-full max-w-7xl mx-auto text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
+            <div className="lg:col-span-8 space-y-10 pb-32 text-left">
+                <header className="px-4 sm:px-0 space-y-1 text-left">
+                    <div className="flex items-center gap-4 text-left">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
+                            <ArrowLeft className="h-6 w-6 text-left" />
                         </Button>
-                        <div className="space-y-1">
+                        <div className="space-y-1 text-left">
                             <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY PARTNERS</h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
-                                <HeartHandshake className="h-4 w-4 text-primary" /> Spiritual Accountability
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
+                                <HeartHandshake className="h-4 w-4 text-primary text-left" /> Spiritual Accountability
                             </p>
                         </div>
                     </div>
                 </header>
 
-                <div className="space-y-4">
+                <div className="space-y-4 text-left">
                     {filteredPartners.map(partner => (
                         <PartnerCard key={partner.userId} partner={partner} onNudge={handleNudgePartner} onChat={handleInitiateChat} onRemove={setRemovalTarget} />
                     ))}
                     {partners.length === 0 && (
-                        <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted">
-                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6">
-                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40" />
+                        <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted text-left">
+                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left">
+                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left" />
                             </div>
-                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center">No Active Alliance</h2>
-                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center">
+                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center text-left">No Active Alliance</h2>
+                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center text-left">
                             "Two are better than one... for if they fall, the one will lift up his fellow." — Eccl 4:9-10
                             </p>
                         </div>
                     )}
                 </div>
 
-                <div className="px-4 sm:px-0">
+                <div className="px-4 sm:px-0 text-left">
                     {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
                 </div>
             </div>
 
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-4 text-left">
                 <AccountabilitySidebar partnerCount={activePartnersCount} pendingCount={pendingRequestsCount} />
             </div>
         </div>
@@ -541,18 +541,18 @@ export default function AccountabilityPage() {
         {removalTarget && (
             <AlertDialog open={!!removalTarget} onOpenChange={(open) => { if (!open) { setRemovalTarget(null); setRemovalReason(''); } }}>
                 <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader>
+                    <AlertDialogHeader className="text-left">
                         <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">End Alliance?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <div className="grid gap-4 py-6 text-left">
-                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Reason for Removal</Label>
-                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left" />
+                    <div className="grid gap-4 py-6 text-left text-left">
+                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Reason for Removal</Label>
+                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left text-left" />
                     </div>
-                    <AlertDialogFooter className="gap-3">
-                        <AlertDialogCancel disabled={isRemoving === removalTarget.userId} className="rounded-xl h-11">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === removalTarget.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
-                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserX className="mr-2 h-4 w-4" />}
+                    <AlertDialogFooter className="gap-3 text-left">
+                        <AlertDialogCancel disabled={isRemoving === removalTarget.userId} className="rounded-xl h-11 text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === removalTarget.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">
+                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <UserX className="mr-2 h-4 w-4 text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>

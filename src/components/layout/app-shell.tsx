@@ -1021,7 +1021,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                           <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
                           <AvatarFallback className="font-black bg-primary/10 text-primary">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0">
+                        <div className="min-w-0 text-left">
                           <p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{user?.displayName || 'User'}</p>
                           <p className="text-[10px] text-muted-foreground truncate font-medium">{user?.email}</p>
                         </div>
@@ -1100,55 +1100,55 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         </button>
                     </div>
                 </ScrollArea>
-                <div className="p-8 border-t bg-muted/5 flex-shrink-0">
+                <div className="p-8 border-t bg-muted/5 flex-shrink-0 text-left">
                     <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">Testify Global • Mobilizing the Body</p>
                 </div>
             </SheetContent>
         </Sheet>
 
         <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                <div className="p-6 sm:p-8 border-b flex-shrink-0 bg-muted/10">
-                    <div className="flex items-center gap-2 mb-2">
-                        <ShoppingCart className="h-4 w-4 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Kingdom Provision</span>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <div className="p-6 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <div className="flex items-center gap-2 mb-2 text-left">
+                        <ShoppingCart className="h-4 w-4 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Provision</span>
                     </div>
-                    <SheetHeader className="text-left flex-shrink-0">
-                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance">Kindness Package</SheetTitle>
-                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1">Review your selections for the harvest.</SheetDescription>
+                    <SheetHeader className="text-left flex-shrink-0 text-left">
+                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left">Kindness Package</SheetTitle>
+                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Review your selections for the harvest.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 overscroll-contain">
-                    <div className="p-6 sm:p-8 space-y-10">
+                <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left">
+                    <div className="p-6 sm:p-8 space-y-10 text-left">
                         {cartItems.length > 0 ? (
-                            <div className="space-y-10">
-                                <div className="space-y-6">
+                            <div className="space-y-10 text-left">
+                                <div className="space-y-6 text-left">
                                     {cartByVendor.map(group => (
-                                        <div key={group.vendorId} className="space-y-3">
-                                            <div className="flex items-center justify-between px-1">
-                                                <div className="flex items-center gap-2 max-w-[60%]">
-                                                    <Store className="h-3.5 w-3.5 text-primary shrink-0" />
-                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate">{group.vendorName}</h4>
+                                        <div key={group.vendorId} className="space-y-3 text-left">
+                                            <div className="flex items-center justify-between px-1 text-left">
+                                                <div className="flex items-center gap-2 max-w-[60%] text-left">
+                                                    <Store className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
+                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate text-left">{group.vendorName}</h4>
                                                 </div>
-                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 shrink-0">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
+                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 shrink-0 text-left">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
                                             </div>
-                                            <div className="space-y-2">
+                                            <div className="space-y-2 text-left">
                                                 {group.items.map(c => (
-                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group gap-3">
-                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}</div>
-                                                            <div className="min-w-0 flex-1">
-                                                                <p className="font-black text-sm uppercase tracking-tight truncate leading-tight">{c.item.name}</p>
-                                                                <p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
+                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group gap-3 text-left">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary text-left" /> : <Utensils className="h-5 w-5 text-primary text-left" />}</div>
+                                                            <div className="min-w-0 flex-1 text-left">
+                                                                <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">{c.item.name}</p>
+                                                                <p className="text-[10px] font-bold text-primary uppercase text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center gap-2 shrink-0">
-                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm">
-                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
-                                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center"> {c.quantity}</span>
-                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                                                        <div className="flex items-center gap-2 shrink-0 text-left">
+                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left">
+                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3 text-left" /></Button>
+                                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center text-left"> {c.quantity}</span>
+                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3 text-left" /></Button>
                                                             </div>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4" /></Button>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4 text-left" /></Button>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -1156,50 +1156,50 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label>
-                                        <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
+                                <div className="space-y-6 text-left">
+                                    <div className="space-y-2 text-left">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Recipient Name</Label>
+                                        <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label>
-                                        <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" />
+                                    <div className="space-y-2 text-left">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Logistical Instructions</Label>
+                                        <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" />
                                     </div>
                                 </div>
-                                <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1"><CreditCard className="h-3.5 w-3.5" /> FULFILLMENT GUIDE</Label>
-                                    <div className="space-y-3">
+                                <div className="space-y-4 text-left">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left"><CreditCard className="h-3.5 w-3.5 text-left" /> FULFILLMENT GUIDE</Label>
+                                    <div className="space-y-3 text-left">
                                         {cartByVendor.map(v => (
-                                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden">
-                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity"><Store className="h-10 w-10 text-primary" /></div>
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Pay to: {v.vendorName}</p>
-                                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px]">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
+                                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left">
+                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left"><Store className="h-10 w-10 text-primary text-left" /></div>
+                                                <div className="flex justify-between items-start mb-2 text-left">
+                                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Pay to: {v.vendorName}</p>
+                                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
                                                 </div>
-                                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words">{v.paymentDetails || 'Contact provider for details.'}</p>
-                                                <Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4" /></Button>
+                                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left">{v.paymentDetails || 'Contact provider for details.'}</p>
+                                                <Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left" /></Button>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             </div>
                         ) : (
-                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center">
-                                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4" />
-                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-center">Add items to place an order and bless the Body of Christ.</p>
-                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => setIsCartOpen(false)}>
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left">
+                                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left" />
+                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3>
+                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-center text-left">Add items to place an order and bless the Body of Christ.</p>
+                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left" onClick={() => setIsCartOpen(false)}>
                                     <Link href="/dashboard/marketplace">GIVE PROVISION</Link>
                                 </Button>
                             </div>
                         )}
-                        <div className="h-24" />
+                        <div className="h-24 text-left" />
                     </div>
                 </ScrollArea>
                 {cartItems.length > 0 && (
-                    <SheetFooter className="p-6 sm:p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
-                        <Button onClick={handleGiftItems} disabled={isProcessingOrder || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
-                            {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    <SheetFooter className="p-6 sm:p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left">
+                        <Button onClick={handleGiftItems} disabled={isProcessingOrder || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left">
+                            {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                             DISPATCH OFFERINGS
                         </Button>
                     </SheetFooter>
@@ -1216,9 +1216,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={
-        <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Kingdom Network Active</p>
+        <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
+            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Kingdom Network Active</p>
         </div>
     }>
         <ShellInner>{children}</ShellInner>

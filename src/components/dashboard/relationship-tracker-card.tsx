@@ -287,7 +287,7 @@ function ShareWordDialog({
   );
 
   const renderVerses = (
-    <div className="space-y-4 pb-12">
+    <div className="space-y-4 pb-12 text-left">
        <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6">
           <p className="text-[10px] font-black uppercase text-primary mb-1">SELECTED FOR SHARING</p>
           <p className="text-xs font-bold text-muted-foreground">
@@ -320,7 +320,7 @@ function ShareWordDialog({
   const desc = view === 'hub' ? `Equip ${soul?.firstName} with the living Word.` : `Browsing ${selectedBook || 'Bible'} for the harvest.`;
 
   const header = (
-    <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0">
+    <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left">
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-3 mb-2">
@@ -347,7 +347,7 @@ function ShareWordDialog({
   );
 
   const body = (
-    <ScrollArea className="flex-grow min-h-[300px]">
+    <ScrollArea className="flex-grow min-h-[300px] text-left">
         <div className="p-4 sm:p-10">
             {view === 'hub' && renderHub}
             {view === 'books' && renderBooks}
@@ -373,7 +373,7 @@ function ShareWordDialog({
   if (isMobile) {
       return (
           <Sheet open={isOpen} onOpenChange={onOpenChange}>
-              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   {header}
                   {body}
                   {footer}
@@ -384,7 +384,7 @@ function ShareWordDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col">
+      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">
         {header}
         {body}
         {footer || (
@@ -422,7 +422,7 @@ function SoulSelectionDialog({
     }, [souls, search]);
 
     const body = (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 text-left">
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                 <Input 
@@ -433,7 +433,7 @@ function SoulSelectionDialog({
                 />
             </div>
             <ScrollArea className={cn("border rounded-3xl bg-muted/5", isMobile ? "h-[50vh]" : "h-[40vh]")}>
-                <div className="p-2 space-y-1.5">
+                <div className="p-2 space-y-1.5 text-left">
                     {filteredSouls.length > 0 ? (
                         filteredSouls.map(soul => {
                             const lastLog = (soul.followUpLog || []).sort((a,b) => (safeToDate(b.date)?.getTime() || 0) - (safeToDate(a.date)?.getTime() || 0))[0];
@@ -447,7 +447,7 @@ function SoulSelectionDialog({
                                     onClick={() => onSelect(soul)}
                                     disabled={isLoading}
                                 >
-                                    <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
+                                    <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm shrink-0">
                                         <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                                         <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
@@ -486,8 +486,8 @@ function SoulSelectionDialog({
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
-                <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b bg-muted/10 shrink-0">
+                <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                         <SheetHeader className="text-left flex-shrink-0">
                             <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Who did you {actionLabel.toLowerCase()}?</SheetTitle>
                             <SheetDescription className="text-sm font-medium">Select a convert to link this action.</SheetDescription>
@@ -501,7 +501,7 @@ function SoulSelectionDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                 <div className="p-8 border-b bg-muted/10">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
@@ -679,11 +679,11 @@ export function RelationshipTrackerCard() {
   if (userLoading || profileLoading || soulsLoading) {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
-        <CardHeader className="p-4 sm:p-6">
+        <CardHeader className="p-4 sm:p-6 text-left">
           <Skeleton className="h-5 w-32 mb-2" />
           <Skeleton className="h-3 w-48" />
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6">
+        <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6 text-left">
           {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="h-20 w-full rounded-2xl" />
           ))}
@@ -699,7 +699,7 @@ export function RelationshipTrackerCard() {
           <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
               <div className="space-y-1">
                   <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
@@ -718,16 +718,16 @@ export function RelationshipTrackerCard() {
           </div>
         </CardHeader>
 
-        <CardContent className="px-4 sm:px-6 pb-2 relative z-10">
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
-              {actionItems.map(action => {
-                  const isCompleted = completedToday.includes(action.id);
-                  const Icon = iconMap[action.id] || Heart;
+        <CardContent className="px-4 sm:px-6 pb-2 relative z-10 text-left">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 text-left">
+              {actionItems.map(item => {
+                  const isCompleted = completedToday.includes(item.id);
+                  const Icon = iconMap[item.id] || Heart;
                   return (
-                      <TooltipProvider key={action.id}>
+                      <TooltipProvider key={item.id}>
                           <Tooltip>
                               <TooltipTrigger asChild>
-                                  <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }}>
+                                  <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }} className="text-left">
                                       <Button
                                           variant="outline"
                                           className={cn(
@@ -736,11 +736,11 @@ export function RelationshipTrackerCard() {
                                                   ? "bg-primary/5 border-primary/40 shadow-inner ring-1 ring-primary/10" 
                                                   : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
                                           )}
-                                          onClick={() => handleActionClick(action.id)}
-                                          disabled={togglingId === action.id}
+                                          onClick={() => handleActionClick(item.id)}
+                                          disabled={togglingId === item.id}
                                       >
                                           <AnimatePresence>
-                                              {isCompleted && togglingId !== action.id && (
+                                              {isCompleted && togglingId !== item.id && (
                                                   <motion.div 
                                                       initial={{ scale: 0, opacity: 0 }}
                                                       animate={{ scale: 1, opacity: 1 }}
@@ -752,7 +752,7 @@ export function RelationshipTrackerCard() {
                                               )}
                                           </AnimatePresence>
 
-                                          {togglingId === action.id ? (
+                                          {togglingId === item.id ? (
                                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
                                           ) : (
                                               <>
@@ -762,7 +762,7 @@ export function RelationshipTrackerCard() {
                                                   )}>
                                                       <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                                   </div>
-                                                  <div className="space-y-0.5 min-w-0 w-full">
+                                                  <div className="space-y-0.5 min-w-0 w-full text-center">
                                                       <span className={cn(
                                                           "text-[9px] font-black uppercase tracking-tight block truncate",
                                                           isCompleted ? "text-primary" : "text-foreground"
@@ -777,7 +777,7 @@ export function RelationshipTrackerCard() {
                               </TooltipTrigger>
                               <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
                                   <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
-                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">{action.label}</p>
+                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">{item.label}</p>
                               </TooltipContent>
                           </Tooltip>
                       </TooltipProvider>
@@ -785,7 +785,7 @@ export function RelationshipTrackerCard() {
               })}
           </div>
         </CardContent>
-        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5">
+        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
               <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm">
                   <Link href="/dashboard/souls-won">
                       <UserPlus className="mr-2 h-4 w-4" />
@@ -815,7 +815,7 @@ export function RelationshipTrackerCard() {
       />
 
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
           <DialogHeader className="text-center space-y-2">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
                   <MessageSquare className="h-7 w-7 text-primary" />
@@ -823,7 +823,7 @@ export function RelationshipTrackerCard() {
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {activeSoul?.firstName}?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6">
+          <div className="flex flex-col gap-3 pt-6 text-left">
             <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
               <WhatsAppIcon className="h-5 w-5" /> WhatsApp
             </Button>
