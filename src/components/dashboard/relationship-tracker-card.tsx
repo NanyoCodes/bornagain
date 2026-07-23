@@ -426,17 +426,17 @@ function SoulSelectionDialog({
 
     const body = (
         <div className="p-6 space-y-6 text-left">
-            <div className="relative text-left">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50 text-left" />
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
                     onChange={e => setSearch(e.target.value)}
-                    className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left"
+                    className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
-            <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[40vh]")}>
-                <div className="p-2 space-y-1.5 text-left">
+            <ScrollArea className={cn("border rounded-3xl bg-muted/5", isMobile ? "h-[50vh]" : "h-[40vh]")}>
+                <div className="p-2 space-y-1.5">
                     {filteredSouls.length > 0 ? (
                         filteredSouls.map(soul => {
                             const lastLog = (soul.followUpLog || []).sort((a,b) => (safeToDate(b.date)?.getTime() || 0) - (safeToDate(a.date)?.getTime() || 0))[0];
@@ -446,32 +446,32 @@ function SoulSelectionDialog({
                                 <Button 
                                     key={soul.id} 
                                     variant="ghost" 
-                                    className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group text-left"
+                                    className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group"
                                     onClick={() => onSelect(soul)}
                                     disabled={isLoading}
                                 >
-                                    <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left">
-                                        <AvatarFallback className="font-black bg-primary/5 text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                    <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
+                                        <AvatarFallback className="font-black bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <div className="text-left min-w-0 flex-1">
-                                        <div className="flex items-center gap-2 text-left">
-                                            <p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="font-black text-sm uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
                                             {reachedToday && (
                                                 <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-black bg-green-500/10 text-green-600 border-none">
                                                     Reached Today
                                                 </Badge>
                                             )}
                                         </div>
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p>
+                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
                                     </div>
-                                    <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-left">
-                                        <PlusCircle className="h-4 w-4 text-left" />
+                                    <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <PlusCircle className="h-4 w-4" />
                                     </div>
                                 </Button>
                             );
                         })
                     ) : (
-                        <div className="text-center py-16 px-8 space-y-3 text-left">
+                        <div className="text-center py-16 px-8 space-y-3">
                             <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
                                 <Users className="h-6 w-6 text-muted-foreground opacity-20" />
                             </div>
@@ -489,10 +489,10 @@ function SoulSelectionDialog({
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left flex-shrink-0">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 flex-shrink-0">
                         <SheetHeader className="text-left flex-shrink-0">
-                            <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {actionLabel.toLowerCase()}?</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left">Select a convert to link this action.</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Who did you {actionLabel.toLowerCase()}?</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Select a convert to link this action.</SheetDescription>
                         </SheetHeader>
                     </div>
                     {body}
@@ -504,10 +504,10 @@ function SoulSelectionDialog({
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 text-left">
+                <div className="p-8 border-b bg-muted/10">
                     <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">Select a convert to link this action to their record.</DialogDescription>
                     </DialogHeader>
                 </div>
                 {body}
@@ -846,12 +846,12 @@ export function RelationshipTrackerCard() {
     return (
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
         <CardHeader className="p-4 sm:p-6 text-left">
-          <Skeleton className="h-5 w-32 mb-2 text-left" />
-          <Skeleton className="h-3 w-48 text-left" />
+          <Skeleton className="h-5 w-32 mb-2" />
+          <Skeleton className="h-3 w-48" />
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6 text-left">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-2xl text-left" />
+            <Skeleton key={i} className="h-20 w-full rounded-2xl" />
           ))}
         </CardContent>
       </Card>
@@ -861,22 +861,22 @@ export function RelationshipTrackerCard() {
   return (
     <>
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card text-left">
-        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity text-left">
-          <Users className="h-32 w-32 text-primary rotate-12 text-left" />
+        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity">
+          <Users className="h-32 w-32 text-primary rotate-12" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
-              <div className="space-y-1 text-left">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
-                      <Sparkles className="h-5 w-5 text-primary text-left" />
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
+              <div className="space-y-1">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-primary" />
                       Kingdom Connections
                   </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Daily Relational Efforts</CardDescription>
               </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end text-left">
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                 {currentDate && (
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
                     {format(currentDate, 'PPPP')}
                   </div>
                 )}
@@ -884,8 +884,8 @@ export function RelationshipTrackerCard() {
           </div>
         </CardHeader>
 
-        <CardContent className="px-4 sm:px-6 pb-2 relative z-10 text-left">
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 text-left">
+        <CardContent className="px-4 sm:px-6 pb-2 relative z-10">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {actionItems.map(item => {
                   const isCompleted = completedToday.includes(item.id);
                   const Icon = iconMap[item.id] || Heart;
@@ -897,10 +897,10 @@ export function RelationshipTrackerCard() {
                                       <Button
                                           variant="outline"
                                           className={cn(
-                                              "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden text-left",
+                                              "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden",
                                               isCompleted 
-                                                  ? "bg-primary/5 border-primary/40 shadow-inner ring-1 ring-primary/10 text-left" 
-                                                  : "bg-background/40 hover:bg-muted/50 hover:border-primary/20 text-left"
+                                                  ? "bg-primary/5 border-primary/40 shadow-inner ring-1 ring-primary/10" 
+                                                  : "bg-background/40 hover:bg-muted/50 hover:border-primary/20"
                                           )}
                                           onClick={() => handleActionClick(item.id)}
                                           disabled={togglingId === item.id}
@@ -911,27 +911,27 @@ export function RelationshipTrackerCard() {
                                                       initial={{ scale: 0, opacity: 0 }}
                                                       animate={{ scale: 1, opacity: 1 }}
                                                       exit={{ scale: 0, opacity: 0 }}
-                                                      className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20 text-left"
+                                                      className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20"
                                                   >
-                                                      <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current text-left" />
+                                                      <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current" />
                                                   </motion.div>
                                               )}
                                           </AnimatePresence>
 
                                           {togglingId === item.id ? (
-                                              <Loader2 className="h-6 w-6 animate-spin text-primary text-left" />
+                                              <Loader2 className="h-6 w-6 animate-spin text-primary" />
                                           ) : (
                                               <>
                                                   <div className={cn(
-                                                      "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500 text-left",
-                                                      isCompleted ? "bg-primary/20 scale-110 shadow-lg text-left" : "bg-muted/30 text-left"
+                                                      "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
+                                                      isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
                                                   )}>
-                                                      <Icon className={cn("h-4 w-4 transition-all text-left", isCompleted ? "text-primary fill-current text-left" : "text-primary/60 text-left")} />
+                                                      <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                                   </div>
-                                                  <div className="space-y-0.5 min-w-0 w-full text-center text-left">
+                                                  <div className="space-y-0.5 min-w-0 w-full text-center">
                                                       <span className={cn(
-                                                          "text-[9px] font-black uppercase tracking-tight block truncate text-left",
-                                                          isCompleted ? "text-primary text-left" : "text-foreground text-left"
+                                                          "text-[9px] font-black uppercase tracking-tight block truncate text-center",
+                                                          isCompleted ? "text-primary" : "text-foreground"
                                                       )}>
                                                           {item.label}
                                                       </span>
@@ -941,9 +941,9 @@ export function RelationshipTrackerCard() {
                                       </Button>
                                   </motion.div>
                               </TooltipTrigger>
-                              <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left" side="bottom">
-                                  <p className="text-[10px] font-bold uppercase text-primary text-left">Kingdom Action</p>
-                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-center text-left">{item.label}</p>
+                              <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
+                                  <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
+                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-center">{item.label}</p>
                               </TooltipContent>
                           </Tooltip>
                       </TooltipProvider>
@@ -951,14 +951,14 @@ export function RelationshipTrackerCard() {
               })}
           </div>
         </CardContent>
-        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
-              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm text-left">
+        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5">
+              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm">
                   <Link href="/dashboard/souls-won">
-                      <UserPlus className="mr-2 h-4 w-4 text-left" />
+                      <UserPlus className="mr-2 h-4 w-4" />
                       MANAGE SOULS WON
                   </Link>
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 text-left">
+              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40">
                   Unity • Growth • Love
               </p>
         </CardFooter>
@@ -982,19 +982,19 @@ export function RelationshipTrackerCard() {
 
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
-          <DialogHeader className="text-center space-y-2 text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
-                  <MessageSquare className="h-7 w-7 text-primary text-left" />
+          <DialogHeader className="text-center space-y-2">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                  <MessageSquare className="h-7 w-7 text-primary" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Message Hub</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left">How would you like to encourage {activeSoul?.firstName}?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {activeSoul?.firstName}?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left">
-            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
-              <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp
+          <div className="flex flex-col gap-3 pt-6">
+            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+              <WhatsAppIcon className="h-5 w-5" /> WhatsApp
             </Button>
-            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
-              <MessageSquare className="h-5 w-5 text-left" /> Standard SMS
+            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+              <MessageSquare className="h-5 w-5" /> Standard SMS
             </Button>
           </div>
         </DialogContent>
@@ -1002,40 +1002,40 @@ export function RelationshipTrackerCard() {
 
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
         <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-          <div className="p-8 border-b bg-muted/10 text-left">
-            <DialogHeader className="text-left">
-              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
-              <DialogDescription className="text-sm font-medium text-left">Describe how you supported {activeSoul?.firstName}.</DialogDescription>
+          <div className="p-8 border-b bg-muted/10">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DialogTitle>
+              <DialogDescription className="text-sm font-medium">Describe how you supported {activeSoul?.firstName}.</DialogDescription>
             </DialogHeader>
           </div>
           <div className="p-8 space-y-6 text-left">
-            <div className="space-y-2 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
+            <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomPrayerText(e.target.value)} 
-                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
+                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
                 />
             </div>
-            <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold text-left">Confirm Service</Button>
+            <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold">Confirm Service</Button>
           </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
-          <DialogHeader className="text-center space-y-2 text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
-                  <Share2 className="h-7 w-7 text-primary text-left" />
+          <DialogHeader className="text-center space-y-2">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                  <Share2 className="h-7 w-7 text-primary" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Share Details</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left">Where would you like to share {activeSoul?.firstName}'s info?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">Where would you like to share {activeSoul?.firstName}'s info?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
-              <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External
+          <div className="flex flex-col gap-3 pt-6">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+              <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
             </Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
               <HeartHandshake className="h-5 w-5" /> Partner on App
             </Button>
           </div>
@@ -1043,32 +1043,32 @@ export function RelationshipTrackerCard() {
       </Dialog>
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10">
-                  <DialogHeader className="text-left">
+                  <DialogHeader>
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="p-6 text-left">
-              <ScrollArea className="h-64 text-left">
-                  <div className="space-y-2 text-left">
+              <div className="p-6">
+              <ScrollArea className="h-64">
+                  <div className="space-y-2">
                       {uniquePartners.map(p => (
                           <Button 
                               key={p.userId} 
                               variant="ghost" 
-                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center text-left"
+                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center"
                               onClick={() => handleShareToPartner(p)}
                           >
-                              <Avatar className="h-8 w-8 border shrink-0 text-left">
-                                  <AvatarImage src={p.photoURL} className="text-left" />
-                                  <AvatarFallback className="font-bold text-[10px] text-left">{p.firstName?.charAt(0)}</AvatarFallback>
+                              <Avatar className="h-8 w-8 border shrink-0">
+                                  <AvatarImage src={p.photoURL} />
+                                  <AvatarFallback className="font-black text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
                           </Button>
                       ))}
                       {uniquePartners.length === 0 && (
-                          <p className="text-center text-xs text-muted-foreground py-12 text-left">No partners found. Connect with some in Settings!</p>
+                          <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
                       )}
                   </div>
               </ScrollArea>
@@ -1078,22 +1078,22 @@ export function RelationshipTrackerCard() {
 
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
           <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left">
-                  <DialogHeader className="text-left text-left">
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Kingdom Intercession</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left text-left text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DialogDescription>
+              <div className="p-8 border-b bg-muted/10">
+                  <DialogHeader>
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kingdom Intercession</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="p-8 space-y-6 text-left text-left">
-                <div className="space-y-3 text-left text-left">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Select Prayer Focus</label>
-                    <div className="flex flex-wrap gap-2 text-left text-left text-left">
+              <div className="p-8 space-y-6">
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Prayer Focus</label>
+                    <div className="flex flex-wrap gap-2 text-left">
                         {prayerTemplates.map(t => (
                             <Button 
                                 key={t.id} 
                                 variant="outline" 
                                 size="sm" 
-                                className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary text-left text-left"
+                                className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary text-left"
                                 onClick={() => activeSoul && setCustomPrayerText(resolveTemplate(t.text, activeSoul))}
                             >
                                 {t.label}
@@ -1102,19 +1102,19 @@ export function RelationshipTrackerCard() {
                     </div>
                 </div>
 
-                <div className="space-y-2 text-left text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Your Prayer</Label>
+                <div className="space-y-2 text-left">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Your Prayer</Label>
                     <Textarea 
                         value={customPrayerText}
                         onChange={e => setCustomPrayerText(e.target.value)}
-                        className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left text-left"
+                        className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left"
                     />
                 </div>
 
                 <Button 
                     onClick={() => handlePrayerCustomizationConfirm(customPrayerText)} 
                     disabled={!customPrayerText.trim()} 
-                    className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left"
+                    className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
                 >
                     CONTINUE TO CHANNEL
                 </Button>
