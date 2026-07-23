@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -45,6 +46,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -84,50 +86,63 @@ function SoulSelectionDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
-                <DialogHeader className="p-8 border-b bg-muted/10 text-left text-left">
-                    <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left text-left text-left text-left">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left text-left">Select a convert to link this action to their record.</DialogDescription>
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                <DialogHeader className="p-8 border-b bg-muted/10 text-left">
+                    <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
                 </DialogHeader>
-                <div className="p-6 space-y-6 text-left text-left">
-                    <div className="relative text-left text-left text-left text-left">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50 text-left text-left text-left text-left" />
+                <div className="p-6 space-y-6">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                         <Input 
                             placeholder="Search by name..." 
                             value={search} 
-                            onChange={e => setSearchTerm(e.target.value)}
-                            className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left text-left text-left text-left"
+                            onChange={e => setSearch(e.target.value)}
+                            className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
-                    <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left text-left">
-                        <div className="p-2 space-y-1.5 text-left text-left">
+                    <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5">
+                        <div className="p-2 space-y-1.5">
                             {filteredSouls.length > 0 ? (
-                                filteredSouls.map(soul => (
-                                    <Button 
-                                        key={soul.id} 
-                                        variant="ghost" 
-                                        className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group text-left text-left text-left text-left"
-                                        onClick={() => onSelect(soul)}
-                                        disabled={isLoading}
-                                    >
-                                        <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm shrink-0 text-left text-left">
-                                            <AvatarFallback className="font-bold bg-primary/5 text-left text-left text-left text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="text-left min-w-0 flex-1 text-left text-left">
-                                            <p className="font-black text-sm uppercase tracking-tight text-left text-left">{soul.firstName} {soul.lastName}</p>
-                                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left text-left">{soul.status}</p>
-                                        </div>
-                                        <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-left text-left">
-                                            <PlusCircle className="h-4 w-4 text-left text-left" />
-                                        </div>
-                                    </Button>
-                                ))
+                                filteredSouls.map(soul => {
+                                    const lastLog = (soul.followUpLog || []).sort((a,b) => (safeToDate(b.date)?.getTime() || 0) - (safeToDate(a.date)?.getTime() || 0))[0];
+                                    const reachedToday = lastLog && isToday(safeToDate(lastLog.date)!);
+
+                                    return (
+                                        <Button 
+                                            key={soul.id} 
+                                            variant="ghost" 
+                                            className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group"
+                                            onClick={() => onSelect(soul)}
+                                            disabled={isLoading}
+                                        >
+                                            <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
+                                                <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                                                <AvatarFallback className="font-bold bg-primary/5">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="text-left min-w-0 flex-1">
+                                                <div className="flex items-center gap-2">
+                                                    <p className="font-black text-sm truncate uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
+                                                    {reachedToday && (
+                                                        <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-black bg-green-500/10 text-green-600 border-none">
+                                                            Reached Today
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
+                                            </div>
+                                            <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <PlusCircle className="h-4 w-4" />
+                                            </div>
+                                        </Button>
+                                    );
+                                })
                             ) : (
-                                <div className="text-center py-16 px-8 space-y-3 text-left text-left">
-                                    <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left text-left text-left text-left">
-                                        <Users className="h-6 w-6 text-muted-foreground opacity-20 text-left text-left text-left text-left" />
+                                <div className="text-center py-16 px-8 space-y-3">
+                                    <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
+                                        <Users className="h-6 w-6 text-muted-foreground opacity-20" />
                                     </div>
-                                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-left text-left text-left text-left text-left">
+                                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60">
                                         {search ? "No matches found" : "Log your first soul to begin tracking"}
                                     </p>
                                 </div>
@@ -266,14 +281,14 @@ export function RelationshipTrackerCard() {
 
   if (userLoading || profileLoading || soulsLoading) {
     return (
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left text-left text-left">
-        <CardHeader className="p-4 sm:p-6 text-left text-left text-left">
-          <Skeleton className="h-5 w-32 mb-2 text-left text-left text-left" />
-          <Skeleton className="h-3 w-48 text-left text-left text-left" />
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
+        <CardHeader className="p-4 sm:p-6 text-left">
+          <Skeleton className="h-5 w-32 mb-2 text-left" />
+          <Skeleton className="h-3 w-48 text-left" />
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6 text-left text-left text-left">
+        <CardContent className="grid grid-cols-2 gap-3 px-4 sm:px-6 pb-6 text-left">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-2xl text-left text-left text-left" />
+            <Skeleton key={i} className="h-20 w-full rounded-2xl text-left" />
           ))}
         </CardContent>
       </Card>
@@ -282,23 +297,23 @@ export function RelationshipTrackerCard() {
 
   return (
     <>
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card text-left text-left text-left">
-        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity text-left text-left text-left">
-          <Users className="h-32 w-32 text-primary rotate-12 text-left text-left text-left" />
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/card text-left">
+        <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/card:opacity-[0.05] transition-opacity text-left">
+          <Users className="h-32 w-32 text-primary rotate-12 text-left" />
         </div>
 
-        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left text-left text-left">
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left text-left text-left">
-              <div className="space-y-1 text-left text-left text-left">
-                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left text-left text-left text-left text-left">
-                      <Sparkles className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left" />
+        <CardHeader className="p-4 sm:p-6 pb-4 relative z-10 text-left">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
+              <div className="space-y-1 text-left">
+                  <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
+                      <Sparkles className="h-5 w-5 text-primary text-left" />
                       Kingdom Connections
                   </CardTitle>
-                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left text-left text-left text-left">Daily Relational Efforts</CardDescription>
+                  <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Daily Relational Efforts</CardDescription>
               </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end text-left text-left text-left text-left">
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end text-left">
                 {currentDate && (
-                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left text-left">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
                     {format(currentDate, 'PPPP')}
                   </div>
                 )}
@@ -306,8 +321,8 @@ export function RelationshipTrackerCard() {
           </div>
         </CardHeader>
 
-        <CardContent className="px-4 sm:px-6 pb-2 relative z-10 text-left text-left text-left">
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 text-left text-left text-left">
+        <CardContent className="px-4 sm:px-6 pb-2 relative z-10 text-left">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 text-left">
               {actionItems.map(action => {
                   const isCompleted = completedToday.includes(action.id);
                   const Icon = iconMap[action.id] || Heart;
@@ -315,9 +330,8 @@ export function RelationshipTrackerCard() {
                       <TooltipProvider key={action.id}>
                           <Tooltip>
                               <TooltipTrigger asChild>
-                                  <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }} className="w-full text-left text-left">
+                                  <motion.div whileTap={{ scale: 0.95 }} whileHover={{ y: -2 }} className="text-left">
                                       <Button
-                                          type="button"
                                           variant="outline"
                                           className={cn(
                                               "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden",
@@ -334,15 +348,15 @@ export function RelationshipTrackerCard() {
                                                       initial={{ scale: 0, opacity: 0 }}
                                                       animate={{ scale: 1, opacity: 1 }}
                                                       exit={{ scale: 0, opacity: 0 }}
-                                                      className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20 text-left text-left text-left"
+                                                      className="absolute top-2 right-2 bg-primary rounded-full p-0.5 shadow-lg z-20 text-left"
                                                   >
-                                                      <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current text-left text-left text-left" />
+                                                      <CheckCircle2 className="h-3 w-3 text-primary-foreground fill-current text-left" />
                                                   </motion.div>
                                               )}
                                           </AnimatePresence>
 
                                           {togglingId === action.id ? (
-                                              <Loader2 className="h-6 w-6 animate-spin text-primary text-left text-left text-left" />
+                                              <Loader2 className="h-6 w-6 animate-spin text-primary text-left" />
                                           ) : (
                                               <>
                                                   <div className={cn(
@@ -351,7 +365,7 @@ export function RelationshipTrackerCard() {
                                                   )}>
                                                       <Icon className={cn("h-5 w-5 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                                   </div>
-                                                  <div className="space-y-0.5 min-w-0 w-full text-center text-left text-left">
+                                                  <div className="space-y-0.5 min-w-0 w-full text-center text-left">
                                                       <span className={cn(
                                                           "text-[9px] font-black uppercase tracking-tight block truncate text-center",
                                                           isCompleted ? "text-primary" : "text-foreground"
@@ -365,8 +379,8 @@ export function RelationshipTrackerCard() {
                                   </motion.div>
                               </TooltipTrigger>
                               <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
-                                  <p className="text-[10px] font-bold uppercase text-primary text-left text-left text-left">Kingdom Action</p>
-                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left text-left text-left">{action.label}</p>
+                                  <p className="text-[10px] font-bold uppercase text-primary text-left">Kingdom Action</p>
+                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left">{action.label}</p>
                               </TooltipContent>
                           </Tooltip>
                       </TooltipProvider>
@@ -374,14 +388,14 @@ export function RelationshipTrackerCard() {
               })}
           </div>
         </CardContent>
-        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left text-left text-left">
-              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm text-left text-left text-left">
+        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
+              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm text-left">
                   <Link href="/dashboard/souls-won">
-                      <UserPlus className="mr-2 h-4 w-4 text-left text-left text-left" />
+                      <UserPlus className="mr-2 h-4 w-4 text-left" />
                       MANAGE SOULS WON
                   </Link>
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 text-center text-left text-left">
+              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 text-center text-left">
                   Unity • Growth • Love
               </p>
         </CardFooter>
