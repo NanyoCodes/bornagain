@@ -31,7 +31,11 @@ import {
     ArrowRight,
     Sparkles,
     Briefcase,
-    Heart
+    Heart,
+    Mail,
+    Phone,
+    MapPin,
+    Globe
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -161,6 +165,13 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
     );
 }
 
+const disciplines = [
+  { id: 'pray', label: 'Pray' },
+  { id: 'read_bible', label: 'Read Bible' },
+  { id: 'attend_church', label: 'Church' },
+  { id: 'take_notes', label: 'Journal' },
+];
+
 function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date: Date }) {
     const firestore = useFirestore();
     const dateStr = useMemo(() => format(date, 'yyyy-MM-dd'), [date]);
@@ -173,13 +184,6 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     const { data: partnerDiscipline, loading } = useDoc<{ completed?: string[] }>(disciplineDocRef);
     const completedOnDate = useMemo(() => partnerDiscipline?.completed || [], [partnerDiscipline]);
 
-    const disciplines = [
-        { id: 'pray', label: 'Pray' },
-        { id: 'read_bible', label: 'Read Bible' },
-        { id: 'attend_church', label: 'Church' },
-        { id: 'take_notes', label: 'Journal' },
-    ];
-    
     if (loading) {
         return (
             <div className="flex justify-around items-center h-12 bg-muted/5 rounded-xl border border-dashed">
@@ -499,7 +503,7 @@ export default function AccountabilityPage() {
                             <ArrowLeft className="h-6 w-6" />
                         </Button>
                         <div className="space-y-1">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">MY PARTNERS</h1>
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY PARTNERS</h1>
                             <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
                                 <HeartHandshake className="h-4 w-4 text-primary" /> Spiritual Accountability
                             </p>
@@ -538,12 +542,12 @@ export default function AccountabilityPage() {
             <AlertDialog open={!!removalTarget} onOpenChange={(open) => { if (!open) { setRemovalTarget(null); setRemovalReason(''); } }}>
                 <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">End Alliance?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
+                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">End Alliance?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <div className="grid gap-4 py-6">
-                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Reason for Removal</Label>
-                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner" />
+                    <div className="grid gap-4 py-6 text-left">
+                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Reason for Removal</Label>
+                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left" />
                     </div>
                     <AlertDialogFooter className="gap-3">
                         <AlertDialogCancel disabled={isRemoving === removalTarget.userId} className="rounded-xl h-11">Cancel</AlertDialogCancel>

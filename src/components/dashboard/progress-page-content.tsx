@@ -219,9 +219,9 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
   return (
     <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
       <CardHeader className="flex flex-row items-start justify-between pb-4">
-        <div className="min-w-0 pr-4 text-left">
-          <CardTitle className="text-lg text-left">City Impact</CardTitle>
-          <CardDescription className="truncate text-left">Unique Kingdom connections in your area.</CardDescription>
+        <div className="min-w-0 pr-4">
+          <CardTitle className="text-lg">City Impact</CardTitle>
+          <CardDescription className="truncate">Unique Kingdom connections in your area.</CardDescription>
         </div>
         <Button variant="ghost" size="icon" onClick={fetchCounts} disabled={loading} className="shrink-0">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
@@ -231,17 +231,17 @@ function CityImpactCard({ location, userSouls }: { location: { city?: string; co
       <CardContent>
         {location.city ? (
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border bg-primary/5">
-            <div className="min-w-0 text-left">
-              <span className="font-bold text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 mb-1 text-left">
-                <Globe className="h-3 w-3 text-left" /> Area: {location.city}
+            <div className="min-w-0">
+              <span className="font-bold text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 mb-1">
+                <Globe className="h-3 w-3" /> Area: {location.city}
               </span>
-              <p className="text-sm text-muted-foreground leading-snug text-left">Total Kingdom reach (Mutual connects counted once).</p>
+              <p className="text-sm text-muted-foreground leading-snug">Total Kingdom reach (Mutual connects counted once).</p>
             </div>
             <div className="flex flex-row sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-2">
-              <div className="font-black text-3xl text-primary leading-none text-left">
-                {loading && cityCount === 0 ? <Skeleton className="h-8 w-10 text-left" /> : cityCount}
+              <div className="font-black text-3xl text-primary leading-none">
+                {loading && cityCount === 0 ? <Skeleton className="h-8 w-10" /> : cityCount}
               </div>
-              <p className="text-[10px] font-bold uppercase text-primary/60 tracking-tighter text-left">
+              <p className="text-[10px] font-bold uppercase text-primary/60 tracking-tighter">
                 You: {yourCityCount}
               </p>
             </div>
@@ -516,42 +516,42 @@ export function ProgressPageContent() {
   if (profileLoading || soulsLoading) return <div className="flex justify-center py-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
 
   return (
-    <div className="space-y-8 pb-12 w-full max-w-7xl mx-auto text-left">
-        <header className="text-center space-y-4 px-4 text-left">
+    <div className="space-y-8 pb-12 w-full max-w-7xl mx-auto">
+        <header className="text-center space-y-4 px-4">
             {welcomeMessage ? (
                 <>
-                    <h1 className="text-2xl sm:text-4xl font-bold italic font-headline leading-tight animate-in fade-in slide-in-from-top-4 duration-700 text-left">
+                    <h1 className="text-2xl sm:text-4xl font-bold italic font-headline leading-tight animate-in fade-in slide-in-from-top-4 duration-700">
                     {welcomeMessage.text.replace('{name}', userProfile?.firstName || 'Soldier')}
                     </h1>
-                    <p className="text-primary font-black uppercase text-[10px] sm:text-xs tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-1000 text-left">
+                    <p className="text-primary font-black uppercase text-[10px] sm:text-xs tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-1000">
                     {welcomeMessage.verse}
                     </p>
                 </>
             ) : (
-                <div className="space-y-3 flex flex-col items-center text-left">
-                    <Skeleton className="h-10 w-3/4 sm:w-1/2 text-left" />
-                    <Skeleton className="h-4 w-1/3 text-left" />
+                <div className="space-y-3 flex flex-col items-center">
+                    <Skeleton className="h-10 w-3/4 sm:w-1/2" />
+                    <Skeleton className="h-4 w-1/3" />
                 </div>
             )}
             
-            <div className="flex flex-wrap justify-center gap-2 pt-2 text-left">
-                <AffirmationButton onClick={() => handleAffirmation('hallelujah')} className="text-left">
-                    <Sparkles className="mr-1.5 h-3 w-3 text-left" />
+            <div className="flex flex-wrap justify-center gap-2 pt-2">
+                <AffirmationButton onClick={() => handleAffirmation('hallelujah')}>
+                    <Sparkles className="mr-1.5 h-3 w-3" />
                     Hallelujah
                 </AffirmationButton>
-                <AffirmationButton onClick={() => handleAffirmation('amen')} className="text-left">
-                    <CheckCircle2 className="mr-1.5 h-3 w-3 text-left" />
+                <AffirmationButton onClick={() => handleAffirmation('amen')}>
+                    <CheckCircle2 className="mr-1.5 h-3 w-3" />
                     Amen
                 </AffirmationButton>
-                <AffirmationButton onClick={() => handleAffirmation('receive')} className="text-left">
-                    <Heart className="mr-1.5 h-3 w-3 text-left" />
+                <AffirmationButton onClick={() => handleAffirmation('receive')}>
+                    <Heart className="mr-1.5 h-3 w-3" />
                     I RECEIVE IN THE NAME OF JESUS
                 </AffirmationButton>
             </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 rounded-none sm:rounded-[2.5rem] overflow-hidden bg-card/50 backdrop-blur-sm border-y sm:border text-left">
-            <div className="lg:col-span-2 flex flex-col divide-y text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 rounded-none sm:rounded-[2.5rem] overflow-hidden bg-card/50 backdrop-blur-sm border-y sm:border">
+            <div className="lg:col-span-2 flex flex-col divide-y">
                 <DailyDisciplineCard />
                 <StrongholdTracker />
                 <RelationshipTrackerCard />
@@ -563,13 +563,13 @@ export function ProgressPageContent() {
                 />
                 {userProfile && <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />}
                 
-                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b-0 overflow-hidden bg-transparent text-left">
-                  <CardHeader className="text-left">
-                    <CardTitle className="text-lg flex items-center gap-2 text-left">
-                      <Target className="h-5 w-5 text-primary text-left" />
+                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b-0 overflow-hidden bg-transparent">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Target className="h-5 w-5 text-primary" />
                       Monthly Harvest
                     </CardTitle>
-                    <CardDescription className="text-left">Souls won in the last 3 months.</CardDescription>
+                    <CardDescription>Souls won in the last 3 months.</CardDescription>
                   </CardHeader>
                   <CardContent className="pt-2 text-left">
                     <MonthlyStatsChart data={progressData} monthlySoulsGoal={userProfile?.monthlySoulsGoal || 10} />
@@ -578,33 +578,33 @@ export function ProgressPageContent() {
 
                 <ActionAnalyticsCard souls={soulsWon || []} />
                 
-                <div className="p-8 sm:p-12 text-center bg-primary/5 text-left">
-                    <h3 className="text-2xl font-black font-headline uppercase tracking-tight mb-4 text-left">Support the Body</h3>
-                    <p className="text-sm text-muted-foreground font-medium max-w-md mx-auto mb-8 leading-relaxed italic text-left">
+                <div className="p-8 sm:p-12 text-center bg-primary/5">
+                    <h3 className="text-2xl font-black font-headline uppercase tracking-tight mb-4">Support the Body</h3>
+                    <p className="text-sm text-muted-foreground font-medium max-w-md mx-auto mb-8 leading-relaxed italic">
                         "Carry each other's burdens, and in this way you will fulfill the law of Christ." Choose a center to start your act of kindness.
                     </p>
-                    <div className="flex flex-col sm:flex-row justify-center gap-4 w-full px-4 text-left">
-                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left">
+                    <div className="flex flex-col sm:flex-row justify-center gap-4 w-full px-4">
+                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
                             <Link href="/dashboard/marketplace">MEALS CENTER</Link>
                         </Button>
-                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left">
+                        <Button variant="outline" asChild className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
                             <Link href="/dashboard/marketplace/gifts">KINDNESS CENTER</Link>
                         </Button>
                     </div>
                 </div>
             </div>
             
-            <div className="flex flex-col divide-y lg:border-l bg-muted/5 text-left">
+            <div className="flex flex-col divide-y lg:border-l bg-muted/5">
                 <LastBibleReadCard history={userProfile?.readingHistory || []} />
 
-                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left">
-                  <CardHeader className="text-left">
-                      <CardTitle className="text-lg flex items-center gap-2 text-left">
-                      <Heart className="h-5 w-5 text-primary text-left" />
+                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent">
+                  <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                      <Heart className="h-5 w-5 text-primary" />
                       Prayer Reminders
                       </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-left">
+                  <CardContent className="space-y-2">
                       {soulsWon && soulsWon.length > 0 ? (
                           soulsWon
                               .filter(soul => soul.status !== 'Established')
@@ -620,34 +620,34 @@ export function ProgressPageContent() {
                               .sort((a, b) => b.daysSinceContact - a.daysSinceContact)
                               .slice(0, 3)
                               .map(soul => (
-                                  <div key={soul.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 group text-left">
-                                      <div className="min-w-0 flex-1 text-left">
-                                          <p className="font-bold text-sm truncate text-left">{soul.firstName} {soul.lastName}</p>
-                                          <p className="text-[10px] text-muted-foreground text-left">Idle for {soul.daysSinceContact} days</p>
+                                  <div key={soul.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 group">
+                                      <div className="min-w-0 flex-1">
+                                          <p className="font-bold text-sm truncate">{soul.firstName} {soul.lastName}</p>
+                                          <p className="text-[10px] text-muted-foreground">Idle for {soul.daysSinceContact} days</p>
                                       </div>
-                                      <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-7 text-[10px] uppercase font-bold text-left">
+                                      <Button asChild variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 h-7 text-[10px] uppercase font-bold">
                                           <Link href="/dashboard/souls-won">Follow-up</Link>
                                       </Button>
                                   </div>
                               ))
                       ) : (
-                          <p className="text-xs text-muted-foreground italic text-center py-4 text-left">No follow-up required.</p>
+                          <p className="text-xs text-muted-foreground italic text-center py-4">No follow-up required.</p>
                       )}
                   </CardContent>
                 </Card>
                 
-                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left">
-                  <CardHeader className="text-left">
-                    <CardTitle className="text-lg text-left">Recent Souls</CardTitle>
-                    <CardDescription className="text-left">Your latest harvest entries.</CardDescription>
+                <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Recent Souls</CardTitle>
+                    <CardDescription>Your latest harvest entries.</CardDescription>
                   </CardHeader>
-                  <CardContent className="text-left">
+                  <CardContent>
                     <RecentSoulsList />
                   </CardContent>
                 </Card>
 
                 {userProfile?.location && (
-                  <div className="mt-auto text-left">
+                  <div className="mt-auto">
                     <CityImpactCard location={userProfile.location} userSouls={soulsWon || []} />
                   </div>
                 )}
