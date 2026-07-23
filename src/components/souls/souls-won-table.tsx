@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { format } from "date-fns";
+import { format, differenceInMinutes, isSameDay } from "date-fns";
 import { 
   MoreHorizontal, 
   Church, 
@@ -18,26 +18,49 @@ import {
   Sparkles,
   ArrowRight,
   ClipboardList,
-  Zap,
-  ShieldCheck,
-  Target,
-  Mail,
-  ArrowLeft,
-  BookOpen,
-  X,
-  Utensils,
-  Home,
-  Gift,
-  Calendar,
-  Send,
-  Share,
-  MessageSquare,
-  Loader2,
-  PlusCircle,
-  BookMarked
+  Zap, 
+  ShieldCheck, 
+  Target, 
+  Mail, 
+  ArrowLeft, 
+  BookOpen, 
+  X, 
+  Utensils, 
+  Home, 
+  Gift, 
+  Calendar, 
+  Send, 
+  Share, 
+  MessageSquare, 
+  Loader2, 
+  PlusCircle, 
+  BookMarked,
+  Check,
+  ChevronDown,
+  Search,
+  XCircle,
+  Award,
+  Newspaper,
+  ImageIcon,
+  PlayCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
+import { useUser, useFirestore, useDoc, useUserProfile, useCollection } from "@/firebase";
+import { 
+  doc, 
+  updateDoc, 
+  arrayUnion, 
+  arrayRemove, 
+  collection, 
+  query, 
+  setDoc, 
+  serverTimestamp, 
+  addDoc, 
+  getDoc, 
+  getDocs, 
+  where 
+} from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -86,10 +109,6 @@ import { Badge } from "@/components/ui/badge";
 import { actionItems, prayerTemplates, kingdomVerses } from "@/lib/follow-up-data";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useUser, useFirestore, useDoc, useUserProfile, useCollection } from "@/firebase";
-import { doc, updateDoc, arrayUnion, collection, query, writeBatch, serverTimestamp, getDocs, where, addDoc, getDoc, setDoc } from "firebase/firestore";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
 import Image from 'next/image';
 import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
@@ -100,18 +119,28 @@ import { Textarea } from "../ui/textarea";
 import { Input } from "../ui/input";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { bibleData } from "@/lib/bible-data";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
-const iconMap: Record<string, any> = {
-    'prayed_together': Sparkles,
-    'studied_bible': BookOpen,
-    'shared_meal': Utensils,
-    'visited_home': Home,
-    'introduced_friend': Users,
-    'gave_gift': Gift,
-    'phone_call': Phone,
-    'text_message': MessageSquare,
-    'helped_with_need': Heart,
-    'invited_to_event': Calendar,
+const getStatusClasses = (status: FollowUpStatus | undefined): string => {
+    if (!status) return 'bg-secondary text-secondary-foreground border-border';
+    switch (status) {
+        case 'New':
+            return 'bg-[hsl(var(--status-new)/0.1)] text-[hsl(var(--status-new))] border-[hsl(var(--status-new)/0.2)]';
+        case 'Contacted':
+            return 'bg-[hsl(var(--status-contacted)/0.1)] text-[hsl(var(--status-contacted))] border-[hsl(var(--status-contacted)/0.2)]';
+        case 'Established':
+            return 'bg-[hsl(var(--status-established)/0.1)] text-[hsl(var(--status-established))] border-[hsl(var(--status-established)/0.2)]';
+        default:
+            return 'bg-secondary text-secondary-foreground border-border';
+    }
+}
+
+const getSoulAddress = (soul: Soul) => {
+  const loc = soul.locationWon;
+  if (!loc) return '';
+  return [loc.street, loc.city, loc.state, loc.country].filter(Boolean).join(', ');
 };
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -431,26 +460,6 @@ function ShareWordDialog({
     </Dialog>
   );
 }
-
-const getStatusClasses = (status: FollowUpStatus | undefined): string => {
-    if (!status) return 'bg-secondary text-secondary-foreground border-border';
-    switch (status) {
-        case 'New':
-            return 'bg-[hsl(var(--status-new)/0.1)] text-[hsl(var(--status-new))] border-[hsl(var(--status-new)/0.2)]';
-        case 'Contacted':
-            return 'bg-[hsl(var(--status-contacted)/0.1)] text-[hsl(var(--status-contacted))] border-[hsl(var(--status-contacted)/0.2)]';
-        case 'Established':
-            return 'bg-[hsl(var(--status-established)/0.1)] text-[hsl(var(--status-established))] border-[hsl(var(--status-established)/0.2)]';
-        default:
-            return 'bg-secondary text-secondary-foreground border-border';
-    }
-}
-
-const getSoulAddress = (soul: Soul) => {
-  const loc = soul.locationWon;
-  if (!loc) return '';
-  return [loc.street, loc.city, loc.state, loc.country].filter(Boolean).join(', ');
-};
 
 function SoulProfileContent({ 
   soul, 
@@ -1086,7 +1095,7 @@ function SoulProfileContent({
           </div>
           <div className="p-8 space-y-6 text-left">
             <div className="space-y-2 text-left">
-                <Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomMessageText(e.target.value)} 
