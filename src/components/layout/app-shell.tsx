@@ -321,7 +321,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-64 rounded-2xl shadow-xl text-left" align="end">
-                <DropdownMenuLabel className="font-normal p-4">
+                <DropdownMenuLabel className="font-normal p-4 text-left">
                   <div className="flex flex-col space-y-1 text-left">
                     <p className="text-sm font-bold leading-none">{user.displayName || 'User'}</p>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
@@ -668,18 +668,17 @@ function PendingProvisionReminder() {
                   <div className="p-4 space-y-3 text-left">
                       {provisions.map((p) => {
                           const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
-                          const Icon = p.actionId === 'shared_meal' ? Utensils : Gift;
                           return (
                               <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group text-left">
-                                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left text-left">{p.actionId === 'shared_meal' ? <Utensils className="h-5 w-5 text-primary text-left" /> : <Gift className="h-5 w-5 text-primary text-left" />}</div>
-                                  <div className="min-w-0 flex-1 text-left text-left">
-                                      <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left text-left text-left">{p.soulName}</p>
-                                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left">
+                                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">{p.actionId === 'shared_meal' ? <Utensils className="h-5 w-5 text-primary text-left" /> : <Gift className="h-5 w-5 text-primary text-left" />}</div>
+                                  <div className="min-w-0 flex-1 text-left">
+                                      <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{p.soulName}</p>
+                                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                                           {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
                                       </p>
                                   </div>
-                                  <div className="flex items-center gap-2 text-left text-left text-left text-left">
-                                      <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md text-left text-left text-left">
+                                  <div className="flex items-center gap-2 text-left">
+                                      <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md text-left">
                                           <Link href={`${path}?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`}>
                                               GO
                                           </Link>
@@ -687,10 +686,10 @@ function PendingProvisionReminder() {
                                       <Button 
                                           variant="ghost" 
                                           size="icon" 
-                                          className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left text-left text-left"
+                                          className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left"
                                           onClick={() => removeOne(p.soulId, p.actionId)}
                                       >
-                                          <X className="h-3.5 w-3.5 text-left text-left text-left" />
+                                          <X className="h-3.5 w-3.5 text-left" />
                                       </Button>
                                   </div>
                               </div>
@@ -698,8 +697,8 @@ function PendingProvisionReminder() {
                       })}
                   </div>
               </ScrollArea>
-              <CardFooter className="p-4 border-t bg-muted/5 justify-center text-left text-left">
-                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 text-left text-left" onClick={() => {
+              <CardFooter className="p-4 border-t bg-muted/5 justify-center text-left">
+                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 text-left" onClick={() => {
                        if(user?.uid) {
                            const key = `testify_pending_provisions_${user.uid}`;
                            localStorage.removeItem(key);
