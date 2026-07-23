@@ -71,7 +71,7 @@ import {
 } from "@/components/ui/dialog";
 import { format } from 'date-fns';
 import { useSearch } from '@/context/search-context';
-import { cn } from '@/lib/utils';
+import { cn, safeToDate } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -248,7 +248,7 @@ function PartnerCard({
                  <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                     <Dialog>
                       <DialogTrigger asChild disabled={!livePhotoURL}>
-                        <Avatar className={cn("h-11 w-11 sm:h-14 sm:w-14 border shadow-sm shrink-0 text-left", livePhotoURL && "cursor-pointer active:scale-95 transition-transform")}>
+                        <Avatar className={cn("h-11 w-11 sm:h-14 sm:w-14 border shadow-sm shrink-0 text-left", livePhotoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
                             <AvatarImage src={livePhotoURL} className="object-cover" />
                             <AvatarFallback className="font-black text-lg bg-primary/10 text-primary text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
@@ -264,7 +264,7 @@ function PartnerCard({
                           </DialogContent>
                       )}
                     </Dialog>
-                    <div className="min-w-0 text-left">
+                    <div className="min-w-0 text-left text-left">
                         <Link href={`/dashboard/profile/${partner.userId}`} className="group inline-flex flex-col text-left">
                             <h2 className="text-sm sm:text-base font-black truncate group-hover:underline leading-none uppercase tracking-tight text-left">{partner.firstName} {partner.lastName}</h2>
                             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 text-left">Spiritual Partner</span>
@@ -491,7 +491,7 @@ export default function AccountabilityPage() {
     } finally { setIsRemoving(null); setRemovalReason(''); }
   };
 
-  if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse">Establishing Connection...</p></div>;
+  if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left">Establishing Connection...</p></div>;
   
   return (
     <div className="w-full max-w-7xl mx-auto text-left">
@@ -499,7 +499,7 @@ export default function AccountabilityPage() {
             <div className="lg:col-span-8 space-y-10 pb-32 text-left">
                 <header className="px-4 sm:px-0 space-y-1 text-left">
                     <div className="flex items-center gap-4 text-left">
-                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
+                        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
                             <ArrowLeft className="h-6 w-6" />
                         </Button>
                         <div className="space-y-1 text-left">

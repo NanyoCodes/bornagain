@@ -176,7 +176,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <form className="w-full" onSubmit={(e) => e.preventDefault()}>
-            <div className="relative">
+            <div className="relative text-left">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
               <Input
                 type="search"
@@ -319,9 +319,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 rounded-2xl shadow-xl" align="end">
+              <DropdownMenuContent className="w-64 rounded-2xl shadow-xl text-left" align="end">
                 <DropdownMenuLabel className="font-normal p-4">
-                  <div className="flex flex-col space-y-1">
+                  <div className="flex flex-col space-y-1 text-left">
                     <p className="text-sm font-bold leading-none">{user.displayName || 'User'}</p>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
@@ -590,27 +590,27 @@ function PendingProvisionReminder() {
                   className="rounded-[2rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col group cursor-pointer"
                   onClick={() => isMultiple && setShowList(true)}
               >
-                  <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none text-left">
                       <ShoppingCart className="h-16 w-16 text-primary" />
                   </div>
-                  <CardContent className="p-4 sm:p-5 flex items-center gap-4">
+                  <CardContent className="p-4 sm:p-5 flex items-center gap-4 text-left">
                       <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform">
                           {isMultiple ? <PlusCircle className="h-6 w-6 text-white" /> : <Icon className="h-6 w-6 text-white" />}
                       </div>
-                      <div className="min-w-0 flex-1">
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5">
+                      <div className="min-w-0 flex-1 text-left">
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5 text-left">
                               {isMultiple ? `${provisions.length} Acts of Kindness` : 'Finish Provision'}
                           </p>
-                          <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight">
+                          <p className="text-sm font-bold truncate leading-tight uppercase tracking-tight text-left">
                               {isMultiple 
                                   ? `Click to view pending gifts` 
                                   : `Complete ${displayItem.actionId === 'shared_meal' ? 'meal' : 'gift'} for ${displayItem.soulName}`
                               }
                           </p>
                       </div>
-                      <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+                      <div className="flex items-center gap-1 text-left" onClick={e => e.stopPropagation()}>
                           {!isMultiple && (
-                              <Button asChild size="icon" className="h-10 w-10 rounded-full shadow-lg shrink-0">
+                              <Button asChild size="icon" className="h-10 w-10 rounded-full shadow-lg shrink-0 text-left">
                                   <Link href={`${path}?soulId=${displayItem.soulId}&soulName=${encodeURIComponent(displayItem.soulName)}&actionId=${displayItem.actionId}`}>
                                       <ArrowRight className="h-5 w-5" />
                                   </Link>
@@ -619,7 +619,7 @@ function PendingProvisionReminder() {
                           <Button 
                               variant="ghost" 
                               size="icon" 
-                              className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive shrink-0"
+                              className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive shrink-0 text-left"
                               onClick={() => {
                                   if (isMultiple) {
                                       setShowList(true);
@@ -647,34 +647,34 @@ function PendingProvisionReminder() {
               isMobile ? "bottom-24" : "bottom-8"
           )}
       >
-          <Card className="rounded-[2.5rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col max-h-[60vh]">
-              <CardHeader className="p-6 pb-2 border-b bg-muted/5 flex flex-row items-center justify-between shrink-0">
-                  <div className="space-y-0.5">
+          <Card className="rounded-[2.5rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col max-h-[60vh] text-left">
+              <CardHeader className="p-6 pb-2 border-b bg-muted/5 flex flex-row items-center justify-between shrink-0 text-left">
+                  <div className="space-y-0.5 text-left">
                       <CardTitle className="text-lg font-black font-headline uppercase tracking-tight text-left">Kindness Tasks</CardTitle>
                       <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-primary text-left">Pending acts for the harvest</CardDescription>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => setShowList(false)} className="rounded-full">
+                  <Button variant="ghost" size="icon" onClick={() => setShowList(false)} className="rounded-full text-left">
                       <X className="h-5 w-5" />
                   </Button>
               </CardHeader>
-              <ScrollArea className="flex-1 min-h-0 overscroll-contain">
-                  <div className="p-4 space-y-3">
+              <ScrollArea className="flex-1 min-h-0 overscroll-contain text-left">
+                  <div className="p-4 space-y-3 text-left">
                       {provisions.map((p) => {
                           const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
                           const Icon = p.actionId === 'shared_meal' ? Utensils : Gift;
                           return (
-                              <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group">
-                                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
-                                      <Icon className="h-5 w-5 text-primary" />
+                              <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group text-left">
+                                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">
+                                      <Icon className="h-5 w-5 text-primary text-left" />
                                   </div>
-                                  <div className="min-w-0 flex-1">
+                                  <div className="min-w-0 flex-1 text-left">
                                       <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{p.soulName}</p>
                                       <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                                           {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
                                       </p>
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                      <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md">
+                                  <div className="flex items-center gap-2 text-left">
+                                      <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md text-left">
                                           <Link href={`${path}?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`}>
                                               GO
                                           </Link>
@@ -682,7 +682,7 @@ function PendingProvisionReminder() {
                                       <Button 
                                           variant="ghost" 
                                           size="icon" 
-                                          className="h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive"
+                                          className="h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive text-left"
                                           onClick={() => removeOne(p.soulId, p.actionId)}
                                       >
                                           <X className="h-3.5 w-3.5" />
@@ -693,8 +693,8 @@ function PendingProvisionReminder() {
                       })}
                   </div>
               </ScrollArea>
-              <CardFooter className="p-4 border-t bg-muted/5 justify-center">
-                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100" onClick={() => {
+              <CardFooter className="p-4 border-t bg-muted/5 justify-center text-left">
+                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 text-left" onClick={() => {
                        if(user?.uid) {
                            const key = `testify_pending_provisions_${user.uid}`;
                            localStorage.removeItem(key);
@@ -942,10 +942,10 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   if (authLoading || (profileLoading && !userProfile && !isPublicRoute) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
-        <div className="relative mb-8"><Loader2 className="h-12 w-12 animate-spin text-primary" /><div className="absolute inset-0 flex items-center justify-center"><div className="h-2 w-2 rounded-full bg-primary animate-pulse" /></div></div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">{loadingMessage || "GOD FIRST"}</p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">Kingdom Network Active</p>
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
+        <div className="relative mb-8 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><div className="absolute inset-0 flex items-center justify-center text-left text-left"><div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left text-left" /></div></div>
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 text-left text-left text-left">{loadingMessage || "GOD FIRST"}</p>
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left text-left text-left">Kingdom Network Active</p>
       </div>
     );
   }
@@ -957,7 +957,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     <SearchProvider>
       <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
         <AnimatePresence>{showSplash && <SplashScreen onDismiss={handleDismissSplash} />}</AnimatePresence>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0 text-left">
             {!isTakeoverPage && (
                 <AppHeader 
                     unreadChatCount={unreadChatNotifications?.length || 0} 
@@ -967,9 +967,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                     onOpenMenu={() => setIsMenuOpen(true)} 
                 />
             )}
-            <div className="flex-1 relative min-h-0">
-            <main ref={scrollContainerRef} className={cn("absolute inset-0", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
-                <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
+            <div className="flex-1 relative min-h-0 text-left">
+            <main ref={scrollContainerRef} className={cn("absolute inset-0 text-left", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
+                <div className={cn("mx-auto h-full text-left", !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
                     <PageTransition>{children}</PageTransition>
                 </div>
             </main>
@@ -982,28 +982,28 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         
         {user && mounted && isMobile ? (
           <Sheet open={!!isProfileIncomplete}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-              <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
-                <SheetHeader className="text-left">
-                  <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                  <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
+              <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
+                <SheetHeader className="text-left text-left">
+                  <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
+                  <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
                 </SheetHeader>
               </div>
-              <div className="flex-grow overflow-y-auto p-6">
+              <div className="flex-grow overflow-y-auto p-6 text-left">
                 {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
               </div>
             </SheetContent>
           </Sheet>
         ) : user ? (
           <Dialog open={!!isProfileIncomplete}>
-            <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
-              <div className="p-6 border-b bg-muted/10">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
-                    <DialogDescription className="text-sm">Please provide your name and photo to continue.</DialogDescription>
+            <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
+              <div className="p-6 border-b bg-muted/10 text-left">
+                <DialogHeader className="text-left text-left">
+                    <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
+                    <DialogDescription className="text-sm text-left">Please provide your name and photo to continue.</DialogDescription>
                 </DialogHeader>
               </div>
-              <div className="p-6 max-h-[70vh] overflow-y-auto">
+              <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
                 {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
               </div>
             </DialogContent>
@@ -1011,97 +1011,97 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         ) : null}
 
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-            <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                    <SheetHeader className="text-left flex-shrink-0">
-                        <SheetTitle className="text-xs font-black uppercase tracking-widest text-primary mb-2">Kingdom Menu</SheetTitle>
+            <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col text-left">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left">
+                        <SheetTitle className="text-xs font-black uppercase tracking-widest text-primary mb-2 text-left">Kingdom Menu</SheetTitle>
                     </SheetHeader>
-                    <div className="flex items-center gap-3 mb-4">
-                        <Avatar className="h-12 w-12 border-2 border-primary/20 shrink-0">
-                          <AvatarImage src={user?.photoURL ?? undefined} className="object-cover" />
-                          <AvatarFallback className="font-black bg-primary/10 text-primary">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                    <div className="flex items-center gap-3 mb-4 text-left">
+                        <Avatar className="h-12 w-12 border-2 border-primary/20 shrink-0 text-left">
+                          <AvatarImage src={user?.photoURL ?? undefined} className="object-cover text-left" />
+                          <AvatarFallback className="font-black bg-primary/10 text-primary text-left">{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0 text-left">
-                          <p className="text-sm font-black truncate uppercase tracking-tight leading-tight">{user?.displayName || 'User'}</p>
-                          <p className="text-[10px] text-muted-foreground truncate font-medium">{user?.email}</p>
+                        <div className="min-w-0 text-left text-left">
+                          <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{user?.displayName || 'User'}</p>
+                          <p className="text-[10px] text-muted-foreground truncate font-medium text-left">{user?.email}</p>
                         </div>
                     </div>
                 </div>
-                <ScrollArea className="flex-grow">
-                    <div className="p-6 space-y-2 text-left">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Identity</p>
-                        <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                          <User className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Profile</span>
+                <ScrollArea className="flex-grow text-left">
+                    <div className="p-6 space-y-2 text-left text-left">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">My Identity</p>
+                        <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                          <User className="h-6 w-6 text-primary text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Profile</span>
                         </Link>
-                        <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                          <Settings className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Settings</span>
+                        <Link href="/settings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                          <Settings className="h-6 w-6 text-primary text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Settings</span>
                         </Link>
-                        <Link href="/accountability" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                          <HeartHandshake className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Partners</span>
+                        <Link href="/accountability" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                          <HeartHandshake className="h-6 w-6 text-primary text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Partners</span>
                         </Link>
                         
-                        <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Core Sectors</p>
+                        <Separator className="my-6 opacity-50 text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Core Sectors</p>
                         {navItems.filter(item => item.href !== '/dashboard/victory-hub' && item.href !== '/accountability').map((item) => (
-                          <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                            <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110", item.color)} />
-                            <span className="font-black uppercase tracking-widest text-sm">{item.label}</span>
+                          <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                            <item.icon className={cn("h-6 w-6 transition-transform group-hover:scale-110 text-left", item.color)} />
+                            <span className="font-black uppercase tracking-widest text-sm text-left">{item.label}</span>
                           </Link>
                         ))}
 
-                        <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Recovery & Provision</p>
-                        <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                          <ShieldCheck className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Victory Hub</span>
+                        <Separator className="my-6 opacity-50 text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Recovery & Provision</p>
+                        <Link href="/dashboard/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left">
+                          <ShieldCheck className="h-6 w-6 text-primary text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Victory Hub</span>
                         </Link>
-                        <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                          <Store className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Meals Center</span>
+                        <Link href="/dashboard/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left">
+                          <Store className="h-6 w-6 text-primary text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Meals Center</span>
                         </Link>
-                        <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                          <Gift className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Kindness Center</span>
+                        <Link href="/dashboard/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left">
+                          <Gift className="h-6 w-6 text-primary text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Kindness Center</span>
                         </Link>
-                        <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                          <Package className="mr-2 h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Order Tracker</span>
-                        </Link>
-
-                        <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Study Tools</p>
-                        <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                          <BookOpen className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Bible Reader</span>
-                        </Link>
-                        <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                          <Edit className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Journal</span>
+                        <Link href="/dashboard/marketplace/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left text-left">
+                          <Package className="mr-2 h-6 w-6 text-primary text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left text-left">Order Tracker</span>
                         </Link>
 
-                        <Separator className="my-6 opacity-50" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Resources</p>
-                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                          <BookMarked className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">App Guide</span>
+                        <Separator className="my-6 opacity-50 text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Study Tools</p>
+                        <Link href="/dashboard/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                          <BookOpen className="h-6 w-6 text-primary text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Bible Reader</span>
                         </Link>
-                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
-                          <BookOpen className="h-6 w-6 text-primary" />
-                          <span className="font-black uppercase tracking-widest text-sm">Resources</span>
+                        <Link href="/dashboard/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                          <Edit className="h-6 w-6 text-primary text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Journal</span>
                         </Link>
 
-                        <Separator className="my-6 opacity-50" />
-                        <button onClick={() => { signOut(getAuth()).then(() => router.push("/login")); setIsMenuOpen(false); }} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive">
-                          <LogOut className="h-6 w-6" />
-                          <span className="font-black uppercase tracking-widest text-sm">Logout</span>
+                        <Separator className="my-6 opacity-50 text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">Resources</p>
+                        <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                          <BookMarked className="h-6 w-6 text-primary text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left">App Guide</span>
+                        </Link>
+                        <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                          <BookOpen className="h-6 w-6 text-primary text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Resources</span>
+                        </Link>
+
+                        <Separator className="my-6 opacity-50 text-left" />
+                        <button onClick={() => { signOut(getAuth()).then(() => router.push("/login")); setIsMenuOpen(false); }} className="flex w-full items-center gap-4 p-4 rounded-2xl hover:bg-destructive/10 group text-destructive text-left">
+                          <LogOut className="h-6 w-6 text-left" />
+                          <span className="font-black uppercase tracking-widest text-sm text-left">Logout</span>
                         </button>
                     </div>
                 </ScrollArea>
-                <div className="p-8 border-t bg-muted/5 flex-shrink-0 text-left">
-                    <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40">Testify Global • Mobilizing the Body</p>
+                <div className="p-8 border-t bg-muted/5 flex-shrink-0 text-left text-left">
+                    <p className="text-[9px] font-black text-center text-muted-foreground uppercase tracking-[0.2em] opacity-40 text-center">Testify Global • Mobilizing the Body</p>
                 </div>
             </SheetContent>
         </Sheet>
@@ -1134,21 +1134,21 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                             </div>
                                             <div className="space-y-2 text-left">
                                                 {group.items.map(c => (
-                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group gap-3 text-left">
-                                                        <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary text-left" /> : <Utensils className="h-5 w-5 text-primary text-left" />}</div>
-                                                            <div className="min-w-0 flex-1 text-left">
-                                                                <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">{c.item.name}</p>
-                                                                <p className="text-[10px] font-bold text-primary uppercase text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
+                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group gap-3 text-left text-left">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left">
+                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left text-left">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary text-left" /> : <Utensils className="h-5 w-5 text-primary text-left" />}</div>
+                                                            <div className="min-w-0 flex-1 text-left text-left">
+                                                                <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left text-left">{c.item.name}</p>
+                                                                <p className="text-[10px] font-bold text-primary uppercase text-left text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center gap-2 shrink-0 text-left text-left">
-                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left">
+                                                        <div className="flex items-center gap-2 shrink-0 text-left text-left text-left">
+                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left text-left">
                                                                 <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3 text-left" /></Button>
-                                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center text-left"> {c.quantity}</span>
+                                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center text-left text-left"> {c.quantity}</span>
                                                                 <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3 text-left" /></Button>
                                                             </div>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4 text-left" /></Button>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left text-left" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4 text-left text-left" /></Button>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -1156,50 +1156,50 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="space-y-6 text-left text-left">
-                                    <div className="space-y-2 text-left">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Recipient Name</Label>
-                                        <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
-                                    </div>
+                                <div className="space-y-6 text-left text-left text-left">
                                     <div className="space-y-2 text-left text-left">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Logistical Instructions</Label>
-                                        <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" />
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Recipient Name</Label>
+                                        <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" />
+                                    </div>
+                                    <div className="space-y-2 text-left text-left text-left">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Logistical Instructions</Label>
+                                        <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left text-left" />
                                     </div>
                                 </div>
-                                <div className="space-y-4 text-left text-left">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left text-left"><CreditCard className="h-3.5 w-3.5 text-left" /> FULFILLMENT GUIDE</Label>
-                                    <div className="space-y-3 text-left text-left">
+                                <div className="space-y-4 text-left text-left text-left">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left text-left text-left"><CreditCard className="h-3.5 w-3.5 text-left" /> FULFILLMENT GUIDE</Label>
+                                    <div className="space-y-3 text-left text-left text-left">
                                         {cartByVendor.map(v => (
-                                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left">
-                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left"><Store className="h-10 w-10 text-primary text-left" /></div>
-                                                <div className="flex justify-between items-start mb-2 text-left">
-                                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Pay to: {v.vendorName}</p>
-                                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
+                                            <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left text-left">
+                                                <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left text-left"><Store className="h-10 w-10 text-primary text-left text-left" /></div>
+                                                <div className="flex justify-between items-start mb-2 text-left text-left">
+                                                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left">Pay to: {v.vendorName}</p>
+                                                    <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
                                                 </div>
-                                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left">{v.paymentDetails || 'Contact provider for details.'}</p>
-                                                <Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left" /></Button>
+                                                <p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left text-left">{v.paymentDetails || 'Contact provider for details.'}</p>
+                                                <Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left text-left" /></Button>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             </div>
                         ) : (
-                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left">
-                                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left" />
-                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-center text-left">Add items to place an order and bless the Body of Christ.</p>
-                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left" onClick={() => setIsCartOpen(false)}>
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left">
+                                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left text-left" />
+                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left">Empty Hub</h3>
+                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-center text-left text-left">Add items to place an order and bless the Body of Christ.</p>
+                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left" onClick={() => setIsCartOpen(false)}>
                                     <Link href="/dashboard/marketplace">GIVE PROVISION</Link>
                                 </Button>
                             </div>
                         )}
-                        <div className="h-24 text-left" />
+                        <div className="h-24 text-left text-left" />
                     </div>
                 </ScrollArea>
                 {cartItems.length > 0 && (
-                    <SheetFooter className="p-6 sm:p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left">
-                        <Button onClick={handleGiftItems} disabled={isProcessingOrder || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left">
-                            {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+                    <SheetFooter className="p-6 sm:p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left text-left">
+                        <Button onClick={handleGiftItems} disabled={isProcessingOrder || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left text-left">
+                            {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
                             DISPATCH OFFERINGS
                         </Button>
                     </SheetFooter>
@@ -1216,9 +1216,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={
-        <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-left">
-            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
-            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Kingdom Network Active</p>
+        <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-left text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
+            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left text-left">Kingdom Network Active</p>
         </div>
     }>
         <ShellInner>{children}</ShellInner>
