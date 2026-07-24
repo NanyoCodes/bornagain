@@ -249,10 +249,10 @@ function PartnerCard({
                         </Avatar>
                       </DialogTrigger>
                       {livePhotoURL && (
-                          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
-                              <DialogHeader className="sr-only text-left"><DialogTitle className="text-left">Profile photo</DialogTitle></DialogHeader>
-                              <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
+                          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                              <DialogHeader className="sr-only"><DialogTitle>Profile photo</DialogTitle></DialogHeader>
+                              <div className="relative h-full w-full flex items-center justify-center p-4">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                                     <Image src={livePhotoURL} alt="partner" fill className="object-contain shadow-2xl ring-4 ring-white/10 text-left" unoptimized />
                                 </div>
                               </div>
@@ -264,19 +264,6 @@ function PartnerCard({
                             <h2 className="text-sm sm:text-base font-black truncate group-hover:underline leading-none uppercase tracking-tight text-left">{partner.firstName} {partner.lastName}</h2>
                             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 text-left">Spiritual Partner</span>
                         </Link>
-                        <div className="flex flex-wrap gap-1.5 mt-2 text-left">
-                            {partnerProfile?.maritalStatus && (
-                                <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-bold uppercase tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0 text-left">
-                                    {partnerProfile.maritalStatus}
-                                </Badge>
-                            )}
-                            {partnerProfile?.workStatus && (
-                                <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-bold uppercase tracking-tighter bg-blue-500/5 text-blue-600 border-blue-500/20 shrink-0 text-left">
-                                    {partnerProfile.roleInOrganization ? `${partnerProfile.roleInOrganization}${partnerProfile.organizationName ? ' @ ' : ''}` : ''}
-                                    {partnerProfile.organizationName || partnerProfile.workStatus}
-                                </Badge>
-                            )}
-                        </div>
                     </div>
                 </div>
                 <div className="flex items-center gap-1 sm:gap-2 shrink-0 text-left">

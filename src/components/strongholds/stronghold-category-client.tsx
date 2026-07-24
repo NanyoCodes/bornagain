@@ -100,7 +100,7 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
   ],
   anger: [
     { verse: "James 1:19-20", text: "Everyone should be quick to listen, slow to speak and slow to become angry, because human anger does not produce the righteousness that God desires.", prayer: "Lord, put a guard over my mouth and a peace in my spirit. Let Your righteousness be my response. Amen." },
-    { verse: "Ephesians 4:26-27", text: "In your anger do not sin: Do not let the sun go down while you are still angry, and do not give the devil a foothold.", prayer: "I refuse to give the enemy space in my heart through bitterness. I release all anger to You before I sleep. Amen." },
+    { verse: "Ephesians 4:26-27", text: "In your anger do not sin: Do let the sun go down while you are still angry, and do not give the devil a foothold.", prayer: "I refuse to give the enemy space in my heart through bitterness. I release all anger to You before I sleep. Amen." },
     { verse: "Proverbs 14:29", text: "Whoever is patient has great understanding, but one who is quick-tempered displays folly.", prayer: "Father, grant me Your patience and a heart of understanding for those who provoke me. Amen." },
     { verse: "Proverbs 15:1", text: "A gentle answer turns away wrath, but a harsh word stirs up anger.", prayer: "Holy Spirit, season my speech with grace. Let my gentle responses diffuse every storm. Amen." },
     { verse: "Colossians 3:8", text: "But now you must also rid yourselves of all such things as these: anger, rage, malice, slander, and filthy language.", prayer: "I take off the old self and its rage. I put on Christ, who is my peace. Amen." },
@@ -771,7 +771,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     </div>
                 </TabsContent>
 
-                <TabsContent value="discussion" className="space-y-6 outline-none px-4 sm:px-0 text-left">
+                <TabsContent value="discussion" className="space-y-6 outline-none px-4 sm:px-0 text-left text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner text-left">

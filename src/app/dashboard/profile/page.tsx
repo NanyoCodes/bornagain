@@ -253,7 +253,6 @@ export default function ProfilePage() {
 
   const filteredTestimonies = useMemo(() => {
     if (!testimonies) return [];
-    // Optimization: Sorting on client-side to avoid composite index requirements
     const sorted = [...testimonies].sort((a, b) => {
         const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
         const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
@@ -462,7 +461,7 @@ export default function ProfilePage() {
                         </div>
                     </div>
                     <div className="w-full sm:w-auto shrink-0">
-                        <Dialog open={isEditModalOpen} onOpenChange={isEditModalOpen => setIsEditModalOpen(isEditModalOpen)}>
+                        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                             <DialogTrigger asChild>
                               <Button className="w-full sm:w-auto font-bold h-10 px-6 rounded-full shadow-md transition-transform active:scale-95">
                                 <Edit className="mr-2 h-4 w-4" />
@@ -568,7 +567,7 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setPrayerFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
