@@ -468,12 +468,12 @@ export default function ProfilePage() {
                                 Edit Profile
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="sm:max-w-lg text-left">
-                                <DialogHeader className="text-left">
-                                    <DialogTitle className="text-left">Edit Profile</DialogTitle>
-                                    <DialogDescription className="text-left">Make changes to your public profile.</DialogDescription>
+                            <DialogContent className="sm:max-w-lg text-left text-left">
+                                <DialogHeader className="text-left text-left">
+                                    <DialogTitle className="text-left text-left">Edit Profile</DialogTitle>
+                                    <DialogDescription className="text-left text-left">Make changes to your public profile.</DialogDescription>
                                 </DialogHeader>
-                                <div className="max-h-[70vh] overflow-y-auto pr-2 text-left">
+                                <div className="max-h-[70vh] overflow-y-auto pr-2 text-left text-left">
                                   {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />}
                                 </div>
                             </DialogContent>

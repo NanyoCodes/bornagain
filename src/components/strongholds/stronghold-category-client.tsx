@@ -942,10 +942,11 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             </Tabs>
             
             <footer className="text-center pt-12 border-t mt-12 px-8 text-left">
-                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed max-w-md mx-auto text-balance text-center text-left">
+                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed font-serif text-balance text-center text-left">
                     "Confess your faults one to another, and pray one for another, that ye may be healed. The effectual fervent prayer of a righteous man availeth much." — James 5:16
                 </p>
             </footer>
         </div>
     );
 }
+
