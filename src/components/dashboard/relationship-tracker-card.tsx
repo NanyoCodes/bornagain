@@ -429,7 +429,7 @@ function SoulSelectionDialog({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
@@ -514,7 +514,7 @@ function SoulSelectionDialog({
     );
 }
 
-export function RelationshipTrackerCard() {
+function RelationshipTrackerCardComponent() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -1006,32 +1006,32 @@ export function RelationshipTrackerCard() {
               <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Describe how you supported {activeSoul?.firstName}.</DialogDescription>
             </DialogHeader>
           </div>
-          <div className="p-8 space-y-6 text-left text-left text-left text-left">
-            <div className="space-y-2 text-left text-left text-left text-left text-left">
+          <div className="p-8 space-y-6 text-left text-left text-left text-left text-left">
+            <div className="space-y-2 text-left text-left text-left text-left text-left text-left text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomPrayerText(e.target.value)} 
-                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left text-left text-left"
+                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left text-left text-left text-left"
                 />
             </div>
-            <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold text-left text-left text-left text-left">Confirm Service</Button>
+            <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold text-left text-left text-left text-left text-left">Confirm Service</Button>
           </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left text-left text-left">
-          <DialogHeader className="text-center space-y-2 text-left text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left text-left">
-                  <Share2 className="h-7 w-7 text-primary text-left text-left" />
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left text-left text-left text-left">
+          <DialogHeader className="text-center space-y-2 text-left text-left text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left text-left text-left">
+                  <Share2 className="h-7 w-7 text-primary text-left text-left text-left" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left text-left">Share Details</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left text-left">Where would you like to share {activeSoul?.firstName}'s info?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left text-left text-left">Share Details</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center text-left text-left text-left">Where would you like to share {activeSoul?.firstName}'s info?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left text-left">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left">
-              <WhatsAppIcon className="h-5 w-5 text-left text-left" /> WhatsApp External
+          <div className="flex flex-col gap-3 pt-6 text-left text-left text-left">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left text-left">
+              <WhatsAppIcon className="h-5 w-5 text-left text-left text-left" /> WhatsApp External
             </Button>
             <Button onClick={() => { setIsShareTargetDialogOpen(false); setIsPartnerSelectionDialogOpen(true); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left text-left text-left">
               <HeartHandshake className="h-5 w-5 text-left text-left text-left text-left" /> Partner on App
@@ -1041,32 +1041,32 @@ export function RelationshipTrackerCard() {
       </Dialog>
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
-                  <DialogHeader className="text-left text-left text-left text-left text-left">
+          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left">
+              <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left">
+                  <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="p-6 text-left text-left text-left">
-              <ScrollArea className="h-64 text-left text-left text-left">
-                  <div className="space-y-2 text-left text-left text-left">
+              <div className="p-6 text-left text-left text-left text-left">
+              <ScrollArea className="h-64 text-left text-left text-left text-left">
+                  <div className="space-y-2 text-left text-left text-left text-left">
                       {uniquePartners.map(p => (
                           <Button 
                               key={p.userId} 
                               variant="ghost" 
-                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center text-left text-left text-left"
+                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center text-left text-left text-left text-left"
                               onClick={() => handleShareToPartner(p)}
                           >
-                              <Avatar className="h-8 w-8 border shrink-0 text-left text-left text-left">
-                                  <AvatarImage src={p.photoURL} className="text-left text-left" />
-                                  <AvatarFallback className="font-black text-[10px] text-left text-left text-left">{p.firstName?.charAt(0)}</AvatarFallback>
+                              <Avatar className="h-8 w-8 border shrink-0 text-left text-left text-left text-left">
+                                  <AvatarImage src={p.photoURL} className="text-left text-left text-left text-left" />
+                                  <AvatarFallback className="font-black text-[10px] text-left text-left text-left text-left">{p.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <span className="font-bold text-sm group-hover:text-primary transition-colors text-left text-left text-left">{p.firstName} {p.lastName}</span>
+                              <span className="font-bold text-sm group-hover:text-primary transition-colors text-left text-left text-left text-left">{p.firstName} {p.lastName}</span>
                           </Button>
                       ))}
                       {uniquePartners.length === 0 && (
-                          <p className="text-center text-xs text-muted-foreground py-12 text-left text-left text-left">No partners found. Connect with some in Settings!</p>
+                          <p className="text-center text-xs text-muted-foreground py-12 text-left text-left text-left text-left">No partners found. Connect with some in Settings!</p>
                       )}
                   </div>
               </ScrollArea>
@@ -1077,7 +1077,7 @@ export function RelationshipTrackerCard() {
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
           <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
               <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
-                  <DialogHeader className="text-left text-left text-left text-left text-left">
+                  <DialogHeader className="text-left text-left text-left text-left text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Kingdom Intercession</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DialogDescription>
                   </DialogHeader>
@@ -1122,3 +1122,5 @@ export function RelationshipTrackerCard() {
     </>
   );
 }
+
+export const RelationshipTrackerCard = React.memo(RelationshipTrackerCardComponent);

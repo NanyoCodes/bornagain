@@ -29,6 +29,8 @@ import {
   Users,
   Home,
   PlusCircle,
+  Newspaper,
+  Droplets
 } from 'lucide-react';
 import { useCollection, useFirestore, useUser, useDoc } from '@/firebase';
 import {
@@ -63,14 +65,12 @@ import { Progress } from '@/components/ui/progress';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
@@ -205,7 +205,11 @@ export function ProgressPageContent() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
+  
   const [welcomeMessage, setWelcomeMessage] = useState<{text: string, verse: string} | null>(null);
+  const [hasAmened, setHasAmened] = useState(false);
+  const [hasHallelujah, setHasHallelujah] = useState(false);
 
   const userDocRef = useMemo(() => user?.uid ? doc(firestore, 'users', user.uid) : null, [user?.uid, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
@@ -260,7 +264,7 @@ export function ProgressPageContent() {
 
   return (
     <div className="space-y-8 pb-12 w-full max-w-7xl mx-auto text-left">
-        <header className="text-center space-y-4 px-4 text-left">
+        <header className="text-center space-y-4 px-4">
             {welcomeMessage ? (
                 <>
                     <h1 className="text-2xl sm:text-4xl font-bold italic font-headline leading-tight animate-in fade-in slide-in-from-top-4 duration-700 text-center">
@@ -269,9 +273,34 @@ export function ProgressPageContent() {
                     <p className="text-primary font-black uppercase text-[10px] sm:text-xs tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-1000 text-center">
                     {welcomeMessage.verse}
                     </p>
+                    
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-3 pt-4">
+                        <Button 
+                            variant="outline" 
+                            onClick={() => { setHasAmened(true); toast({ title: 'Amen!', description: 'The Word is established in your life.' }); }}
+                            className={cn(
+                                "rounded-full h-11 px-6 font-black uppercase text-[10px] tracking-widest transition-all",
+                                hasAmened ? "bg-red-500/10 border-red-500 text-red-600 shadow-[0_0_15px_rgba(239,68,68,0.3)]" : "border-primary/20 text-primary hover:bg-primary/5"
+                            )}
+                        >
+                            {hasAmened && <Droplets className="mr-2 h-4 w-4 fill-current text-red-600 animate-pulse" />}
+                            Amen, I receive in Jesus name.
+                        </Button>
+                        <Button 
+                            variant="outline" 
+                            onClick={() => { setHasHallelujah(true); toast({ title: 'Hallelujah!', description: 'Glory be to the Most High!' }); }}
+                            className={cn(
+                                "rounded-full h-11 px-6 font-black uppercase text-[10px] tracking-widest transition-all",
+                                hasHallelujah ? "bg-red-500/10 border-red-500 text-red-600 shadow-[0_0_15px_rgba(239,68,68,0.3)]" : "border-primary/20 text-primary hover:bg-primary/5"
+                            )}
+                        >
+                            {hasHallelujah && <Droplets className="mr-2 h-4 w-4 fill-current text-red-600 animate-pulse" />}
+                            Hallelujah
+                        </Button>
+                    </div>
                 </>
             ) : (
-                <div className="space-y-3 flex flex-col items-center text-left">
+                <div className="space-y-3 flex flex-col items-center">
                     <Skeleton className="h-10 w-3/4 sm:w-1/2" />
                     <Skeleton className="h-4 w-1/3" />
                 </div>
@@ -353,13 +382,13 @@ export function ProgressPageContent() {
                   <CardContent className="text-left">
                     <RecentSoulsList />
                   </CardContent>
-                </Card>
 
-                {userProfile?.location && (
-                  <div className="mt-auto text-left">
-                    <CityImpactCard location={userProfile.location} userSouls={soulsWon || []} />
-                  </div>
-                )}
+                  {userProfile?.location && (
+                    <div className="mt-auto text-left">
+                      <CityImpactCard location={userProfile.location} userSouls={soulsWon || []} />
+                    </div>
+                  )}
+                </Card>
             </div>
         </div>
     </div>
