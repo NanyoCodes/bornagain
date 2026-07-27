@@ -233,10 +233,14 @@ function TestimoniesContent() {
   
   const handleConfirmDelete = async () => {
     if (!itemToDelete || !firestore || !user) return;
-    setIsDeleting(true);
     
     const { type, data } = itemToDelete;
     const docRef = doc(firestore, type === 'testimony' ? 'testimonies' : 'prayerRequests', data.id);
+    
+    // Reset selection immediately to close the AlertDialog
+    // This prevents the "freeze" caused by focus returning to a deleted element.
+    setItemToDelete(null);
+    setIsDeleting(true);
     
     try {
         if (type === 'testimony') {
@@ -281,7 +285,6 @@ function TestimoniesContent() {
                 }
             }
         } else {
-            // Hard delete for prayer requests
             await deleteDoc(docRef);
         }
 
@@ -305,7 +308,6 @@ function TestimoniesContent() {
             });
         }
     } finally {
-        setItemToDelete(null);
         setIsDeleting(false);
     }
   };

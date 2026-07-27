@@ -8,7 +8,7 @@ import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Zap, BookOpen, Loader2, Church, CheckCircle2, Edit, HeartHandshake, Book } from 'lucide-react';
+import { Zap, BookOpen, Loader2, Church, CheckCircle2, Edit, HeartHandshake } from 'lucide-react';
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
 import { useRouter } from 'next/navigation';
@@ -48,19 +48,19 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
     const completedOnDate = partnerDiscipline?.completed || [];
 
     return (
-        <div className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-transparent hover:border-primary/20 transition-all group">
-            <Link href={`/dashboard/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity">
-                <Avatar className="h-8 w-8 border shadow-sm shrink-0">
-                    <AvatarImage src={livePhotoURL} className="object-cover" />
-                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold">{partner.firstName?.charAt(0)}</AvatarFallback>
+        <div className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-transparent hover:border-primary/20 transition-all group text-left">
+            <Link href={`/dashboard/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity text-left">
+                <Avatar className="h-8 w-8 border shadow-sm shrink-0 text-left">
+                    <AvatarImage src={livePhotoURL} className="object-cover text-left" />
+                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold text-center flex items-center justify-center h-full w-full">{partner.firstName?.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <div className="min-w-0">
-                    <p className="text-xs font-bold truncate leading-tight group-hover:text-primary transition-colors">{partner.firstName}</p>
-                    <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter">Partner</p>
+                <div className="min-w-0 text-left">
+                    <p className="text-xs font-bold truncate leading-tight group-hover:text-primary transition-colors text-left">{partner.firstName}</p>
+                    <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-tighter text-left">Partner</p>
                 </div>
             </Link>
             
-            <div className="flex gap-1.5 shrink-0">
+            <div className="flex gap-1.5 shrink-0 text-left">
                 {disciplines.map(d => (
                     <TooltipProvider key={d.id}>
                         <Tooltip>
@@ -76,8 +76,8 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
                                     )}
                                 </div>
                             </TooltipTrigger>
-                            <TooltipContent>
-                                <p className="text-[10px] font-bold uppercase tracking-wider">{d.label}: {completedOnDate.includes(d.id) ? 'Completed' : 'Pending'}</p>
+                            <TooltipContent className="text-left">
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-left">{d.label}: {completedOnDate.includes(d.id) ? 'Completed' : 'Pending'}</p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -272,14 +272,14 @@ export function DailyDisciplineCard() {
 
   if (loading) {
     return (
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold tracking-tight">Daily Discipline</CardTitle>
-          <CardDescription className="text-sm font-medium">Your spiritual checklist for today.</CardDescription>
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
+        <CardHeader className="text-left">
+          <CardTitle className="text-xl font-semibold tracking-tight text-left">Daily Discipline</CardTitle>
+          <CardDescription className="text-sm font-medium text-left">Your spiritual checklist for today.</CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-28 w-full rounded-2xl" />
+            <Skeleton key={i} className="h-28 w-full rounded-2xl text-left" />
           ))}
         </CardContent>
       </Card>
@@ -288,20 +288,20 @@ export function DailyDisciplineCard() {
 
   return (
     <>
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
-        <CardHeader>
-          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between">
-            <div className="space-y-1">
-              <CardTitle className="text-xl font-semibold tracking-tight">Daily Discipline</CardTitle>
-              <CardDescription className="text-sm font-medium">Your spiritual checklist for today.</CardDescription>
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
+        <CardHeader className="text-left">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:justify-between text-left">
+            <div className="space-y-1 text-left">
+              <CardTitle className="text-xl font-semibold tracking-tight text-left">Daily Discipline</CardTitle>
+              <CardDescription className="text-sm font-medium text-left">Your spiritual checklist for today.</CardDescription>
             </div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
               {format(new Date(), 'PPPP')}
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <CardContent className="space-y-8 text-left">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
             {disciplines.map(discipline => {
                 const isCompleted = completedToday.includes(discipline.id);
                 const { Icon, color } = discipline;
@@ -310,23 +310,23 @@ export function DailyDisciplineCard() {
                         key={discipline.id}
                         variant="outline"
                         className={cn(
-                            "relative flex flex-col items-center justify-center gap-3 p-4 h-28 text-center transition-all duration-300 rounded-3xl border-2",
+                            "relative flex flex-col items-center justify-center gap-3 p-4 h-28 text-center transition-all duration-300 rounded-3xl border-2 text-left",
                             isCompleted ? "bg-primary/5 border-primary/40 shadow-inner" : "hover:bg-muted/50 hover:border-primary/20 hover:-translate-y-1"
                         )}
                         onClick={() => handleDisciplineClick(discipline.id)}
                         disabled={togglingId === discipline.id}
                     >
                     {isCompleted && togglingId !== discipline.id && (
-                        <div className="absolute top-3 right-3 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in">
-                            <CheckCircle2 className="h-4 w-4 text-primary-foreground fill-current" />
+                        <div className="absolute top-3 right-3 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in text-left">
+                            <CheckCircle2 className="h-4 w-4 text-primary-foreground fill-current text-left" />
                         </div>
                     )}
                         {togglingId === discipline.id ? (
-                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            <Loader2 className="h-8 w-8 animate-spin text-primary text-left" />
                         ) : (
                             <>
-                                <Icon className={cn("h-8 w-8 transition-transform duration-300 group-hover:scale-110", isCompleted ? "text-primary fill-current opacity-40" : color)} />
-                                <span className={cn("xs:text-xs text-[10px] font-semibold", isCompleted ? "text-primary" : "text-foreground")}>{discipline.label}</span>
+                                <Icon className={cn("h-8 w-8 transition-transform duration-300 group-hover:scale-110 text-left", isCompleted ? "text-primary fill-current opacity-40" : color)} />
+                                <span className={cn("xs:text-xs text-[10px] font-semibold text-left", isCompleted ? "text-primary" : "text-foreground")}>{discipline.label}</span>
                             </>
                         )}
                     </Button>
@@ -335,19 +335,19 @@ export function DailyDisciplineCard() {
             </div>
 
             {uniquePartners.length > 0 && (
-                <div className="space-y-4">
-                    <Separator className="opacity-50" />
-                    <div className="flex items-center justify-between px-1">
-                        <div className="flex items-center gap-2">
-                            <HeartHandshake className="h-4 w-4 text-primary" />
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em]">Partner Activity</h4>
+                <div className="space-y-4 text-left">
+                    <Separator className="opacity-50 text-left" />
+                    <div className="flex items-center justify-between px-1 text-left">
+                        <div className="flex items-center gap-2 text-left">
+                            <HeartHandshake className="h-4 w-4 text-primary text-left" />
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-left">Partner Activity</h4>
                         </div>
-                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2">
-                            <Link href="/dashboard/accountability">Full View</Link>
+                        <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left">
+                            <Link href="/dashboard/accountability" className="text-left">Full View</Link>
                         </Button>
                     </div>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
                         {uniquePartners.slice(0, 4).map(partner => (
                             <PartnerCompactStatus key={partner.userId} partner={partner} date={new Date()} />
                         ))}
