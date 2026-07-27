@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -423,11 +424,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
 function BottomNavBar() {
     const pathname = usePathname();
-    const mobileNavItems = navItems.filter(item => item.href !== '/fellowships' && item.href !== '/dashboard/events');
+    const mobileNavItems = navItems.filter(item => item.href !== '/fellowships' && item.href !== '/dashboard/events' && item.href !== '/accountability');
     
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)] text-left">
-        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-3 py-1">
+        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-3 py-1 text-left">
           {mobileNavItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -435,17 +436,17 @@ function BottomNavBar() {
                 key={item.href}
                 href={item.href}
                 prefetch={true}
-                className="relative flex flex-1 flex-col items-center justify-center min-w-0"
+                className="relative flex flex-1 flex-col items-center justify-center min-w-0 text-left"
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex items-center justify-center p-1.5 rounded-xl w-full"
+                  className="relative flex items-center justify-center p-1.5 rounded-xl w-full text-left"
                   whileTap={{ scale: 0.85 }}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="nav-active-pill"
-                      className="absolute inset-0 bg-primary/10 rounded-xl"
+                      className="absolute inset-0 bg-primary/10 rounded-xl text-left"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -456,11 +457,11 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10 flex flex-col items-center gap-0.5",
+                      "relative z-10 flex flex-col items-center gap-0.5 text-left",
                       isActive ? "text-primary" : "text-muted-foreground"
                     )}
                   >
-                    <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
+                    <item.icon className={cn("h-5 w-5 text-left", !isActive && item.color)} />
                     <span className={cn(
                         "text-[8px] font-black uppercase tracking-tighter transition-all leading-none mt-0.5 text-center px-0.5",
                         isActive ? "opacity-100" : "opacity-60"
@@ -594,15 +595,15 @@ function PendingProvisionReminder() {
               )}
           >
               <Card 
-                  className="rounded-[2rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col group cursor-pointer"
+                  className="rounded-[2rem] border-primary/20 bg-background shadow-2xl border-4 overflow-hidden flex flex-col group cursor-pointer text-left"
                   onClick={() => isMultiple && setShowList(true)}
               >
                   <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none text-left">
-                      <ShoppingCart className="h-16 w-16 text-primary" />
+                      <ShoppingCart className="h-16 w-16 text-primary text-left" />
                   </div>
                   <CardContent className="p-4 sm:p-5 flex items-center gap-4 text-left">
-                      <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform">
-                          {isMultiple ? <PlusCircle className="h-6 w-6 text-white" /> : <Icon className="h-6 w-6 text-white" />}
+                      <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 group-hover:scale-110 transition-transform text-left">
+                          {isMultiple ? <PlusCircle className="h-6 w-6 text-white text-left" /> : <Icon className="h-6 w-6 text-white text-left" />}
                       </div>
                       <div className="min-w-0 flex-1 text-left">
                           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-0.5 text-left">
@@ -618,8 +619,8 @@ function PendingProvisionReminder() {
                       <div className="flex items-center gap-1 text-left" onClick={e => e.stopPropagation()}>
                           {!isMultiple && (
                               <Button asChild size="icon" className="h-10 w-10 rounded-full shadow-lg shrink-0 text-left">
-                                  <Link href={`${path}?soulId=${displayItem.soulId}&soulName=${encodeURIComponent(displayItem.soulName)}&actionId=${displayItem.actionId}`}>
-                                      <ArrowRight className="h-5 w-5" />
+                                  <Link href={`${path}?soulId=${displayItem.soulId}&soulName=${encodeURIComponent(displayItem.soulName)}&actionId=${displayItem.actionId}`} className="text-left">
+                                      <ArrowRight className="h-5 w-5 text-left" />
                                   </Link>
                               </Button>
                           )}
@@ -635,7 +636,7 @@ function PendingProvisionReminder() {
                                   }
                               }}
                           >
-                              <X className="h-4 w-4" />
+                              <X className="h-4 w-4 text-left" />
                           </Button>
                       </div>
                   </CardContent>
@@ -661,7 +662,7 @@ function PendingProvisionReminder() {
                       <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-primary text-left">Pending acts for the harvest</CardDescription>
                   </div>
                   <Button variant="ghost" size="icon" onClick={() => setShowList(false)} className="rounded-full text-left">
-                      <X className="h-5 w-5" />
+                      <X className="h-5 w-5 text-left" />
                   </Button>
               </CardHeader>
               <ScrollArea className="flex-1 min-h-0 overscroll-contain text-left">
@@ -670,26 +671,26 @@ function PendingProvisionReminder() {
                           const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
                           return (
                               <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group text-left">
-                                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">{p.actionId === 'shared_meal' ? <Utensils className="h-5 w-5 text-primary text-left" /> : <Gift className="h-5 w-5 text-primary text-left" />}</div>
-                                  <div className="min-w-0 flex-1 text-left">
+                                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left text-left">{p.actionId === 'shared_meal' ? <Utensils className="h-5 w-5 text-primary text-left" /> : <Gift className="h-5 w-5 text-primary text-left" />}</div>
+                                  <div className="min-w-0 flex-1 text-left text-left">
                                       <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{p.soulName}</p>
                                       <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                                           {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
                                       </p>
                                   </div>
-                                  <div className="flex items-center gap-2 text-left">
-                                      <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md text-left">
-                                          <Link href={`${path}?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`}>
+                                  <div className="flex items-center gap-2 text-left text-left">
+                                      <Button asChild size="sm" className="rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest shadow-md text-left text-left">
+                                          <Link href={`${path}?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`} className="text-left text-left text-left">
                                               GO
                                           </Link>
                                       </Button>
                                       <Button 
                                           variant="ghost" 
                                           size="icon" 
-                                          className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left"
+                                          className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left text-left"
                                           onClick={() => removeOne(p.soulId, p.actionId)}
                                       >
-                                          <X className="h-3.5 w-3.5 text-left" />
+                                          <X className="h-3.5 w-3.5 text-left text-left" />
                                       </Button>
                                   </div>
                               </div>
@@ -698,7 +699,7 @@ function PendingProvisionReminder() {
                   </div>
               </ScrollArea>
               <CardFooter className="p-4 border-t bg-muted/5 justify-center text-left text-left">
-                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 text-left text-left" onClick={() => {
+                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 text-left text-left text-left" onClick={() => {
                        if(user?.uid) {
                            const key = `testify_pending_provisions_${user.uid}`;
                            localStorage.removeItem(key);
@@ -947,7 +948,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   if (authLoading || (profileLoading && !userProfile && !isPublicRoute) || (!user && !isPublicRoute)) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
-        <div className="relative mb-8 text-left text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" /><div className="absolute inset-0 flex items-center justify-center text-left text-left"><div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left" /></div></div>
+        <div className="relative mb-8 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><div className="absolute inset-0 flex items-center justify-center text-left"><div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" /></div></div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 text-left">{loadingMessage || "GOD FIRST"}</p>
         <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left">Kingdom Network Active</p>
       </div>
@@ -988,7 +989,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           <Sheet open={!!isProfileIncomplete}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
               <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
-                <SheetHeader className="text-left text-left">
+                <SheetHeader className="text-left">
                   <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
                   <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
                 </SheetHeader>
@@ -1016,8 +1017,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col text-left">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                    <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left">
                         <SheetTitle className="text-xs font-black uppercase tracking-widest text-primary mb-2 text-left">Kingdom Menu</SheetTitle>
                     </SheetHeader>
                     <div className="flex items-center gap-3 mb-4 text-left">
@@ -1032,7 +1033,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                     </div>
                 </div>
                 <ScrollArea className="flex-grow text-left">
-                    <div className="p-6 space-y-2 text-left text-left">
+                    <div className="p-6 space-y-2 text-left">
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2 text-left">My Identity</p>
                         <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                           <User className="h-6 w-6 text-primary text-left" />
@@ -1129,27 +1130,27 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         </Sheet>
 
         <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-6 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                     <div className="flex items-center gap-2 mb-2 text-left">
                         <ShoppingCart className="h-4 w-4 text-primary text-left" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Provision</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Kingdom Provision</span>
                     </div>
                     <SheetHeader className="text-left flex-shrink-0 text-left">
-                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left">Kindness Package</SheetTitle>
-                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Review your selections for the harvest.</SheetDescription>
+                      <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left text-left">Kindness Package</SheetTitle>
+                      <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left text-left">Review your selections for the harvest.</SheetDescription>
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left">
                     <div className="p-6 sm:p-8 space-y-10 text-left">
                         {cartItems.length > 0 ? (
-                            <div className="space-y-10 text-left text-left">
+                            <div className="space-y-10 text-left">
                                 <div className="space-y-6 text-left">
                                     {cartByVendor.map(group => (
                                         <div key={group.vendorId} className="space-y-3 text-left">
-                                            <div className="flex items-center justify-between px-1 text-left text-left">
-                                                <div className="flex items-center gap-2 max-w-[60%] text-left text-left">
-                                                    <Store className="h-3.5 w-3.5 text-primary shrink-0 text-left text-left" />
+                                            <div className="flex items-center justify-between px-1 text-left">
+                                                <div className="flex items-center gap-2 max-w-[60%] text-left">
+                                                    <Store className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
                                                     <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate text-left">{group.vendorName}</h4>
                                                 </div>
                                                 <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 shrink-0 text-left">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
@@ -1164,10 +1165,10 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                                                 <p className="text-[10px] font-bold text-primary uppercase text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center gap-2 shrink-0 text-left text-left">
-                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left text-left">
+                                                        <div className="flex items-center gap-2 shrink-0 text-left">
+                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left">
                                                                 <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3 text-left" /></Button>
-                                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center text-left text-left"> {c.quantity}</span>
+                                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center text-left"> {c.quantity}</span>
                                                                 <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3 text-left" /></Button>
                                                             </div>
                                                             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4 text-left" /></Button>
@@ -1183,18 +1184,18 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Recipient Name</Label>
                                         <Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                                     </div>
-                                    <div className="space-y-2 text-left text-left">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Logistical Instructions</Label>
-                                        <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left text-left" />
+                                    <div className="space-y-2 text-left">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Logistical Instructions</Label>
+                                        <Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" />
                                     </div>
                                 </div>
-                                <div className="space-y-4 text-left text-left">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left text-left text-left"><CreditCard className="h-3.5 w-3.5 text-left text-left" /> FULFILLMENT GUIDE</Label>
-                                    <div className="space-y-3 text-left text-left">
+                                <div className="space-y-4 text-left">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left"><CreditCard className="h-3.5 w-3.5 text-left" /> FULFILLMENT GUIDE</Label>
+                                    <div className="space-y-3 text-left">
                                         {cartByVendor.map(v => (
                                             <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left">
                                                 <div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left"><Store className="h-10 w-10 text-primary text-left" /></div>
-                                                <div className="flex justify-between items-start mb-2 text-left text-left">
+                                                <div className="flex justify-between items-start mb-2 text-left">
                                                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Pay to: {v.vendorName}</p>
                                                     <Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge>
                                                 </div>
@@ -1206,16 +1207,16 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                 </div>
                             </div>
                         ) : (
-                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left">
-                                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left text-left" />
-                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left">Empty Hub</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-center text-left text-left">Add items to place an order and bless the Body of Christ.</p>
-                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left" onClick={() => setIsCartOpen(false)}>
-                                    <Link href="/dashboard/marketplace" className="text-left text-left">GIVE PROVISION</Link>
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left">
+                                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left" />
+                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3>
+                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-center text-left">Add items to place an order and bless the Body of Christ.</p>
+                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left" onClick={() => setIsCartOpen(false)}>
+                                    <Link href="/dashboard/marketplace" className="text-left">GIVE PROVISION</Link>
                                 </Button>
                             </div>
                         )}
-                        <div className="h-24 text-left text-left" />
+                        <div className="h-24 text-left" />
                     </div>
                 </ScrollArea>
                 {cartItems.length > 0 && (
@@ -1239,7 +1240,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={
         <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-left">
-            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
             <p className="mt-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-left">Kingdom Network Active</p>
         </div>
     }>

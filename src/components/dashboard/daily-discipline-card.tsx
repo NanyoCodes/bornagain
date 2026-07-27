@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -7,7 +8,7 @@ import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
-import { Zap, BookOpen, Loader2, Church, CheckCircle2, Edit, HeartHandshake } from 'lucide-react';
+import { Zap, BookOpen, Loader2, Church, CheckCircle2, Edit, HeartHandshake, Book } from 'lucide-react';
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
 import { useRouter } from 'next/navigation';
@@ -26,7 +27,7 @@ const disciplines = [
   { id: 'pray', label: 'Pray', Icon: Zap, color: 'text-chart-5' },
   { id: 'read_bible', label: 'Read Bible', Icon: BookOpen, color: 'text-chart-2' },
   { id: 'attend_church', label: 'Attend Church', Icon: Church, color: 'text-chart-4' },
-  { id: 'take_notes', label: 'Take Notes', Icon: Edit, color: 'text-chart-1' },
+  { id: 'take_notes', label: 'Journal', Icon: Edit, color: 'text-chart-1' },
 ];
 
 function PartnerCompactStatus({ partner, date }: { partner: UserProfile['accountabilityPartners'][0]; date: Date }) {
@@ -108,7 +109,7 @@ export function DailyDisciplineCard() {
 
   useEffect(() => {
     if (userProfile?.dailyDiscipline) {
-      const lastUpdatedDate = userProfile.dailyDiscipline.lastUpdated?.toDate();
+      const lastUpdatedDate = safeToDate(userProfile.dailyDiscipline.lastUpdated);
       if (lastUpdatedDate && isToday(lastUpdatedDate)) {
         setCompletedToday(userProfile.dailyDiscipline.completed || []);
       } else {
@@ -310,7 +311,7 @@ export function DailyDisciplineCard() {
                         variant="outline"
                         className={cn(
                             "relative flex flex-col items-center justify-center gap-3 p-4 h-28 text-center transition-all duration-300 rounded-3xl border-2",
-                            isCompleted ? "bg-primary/5 border-primary/30 shadow-inner" : "hover:bg-muted/50 hover:border-primary/20 hover:-translate-y-1"
+                            isCompleted ? "bg-primary/5 border-primary/40 shadow-inner" : "hover:bg-muted/50 hover:border-primary/20 hover:-translate-y-1"
                         )}
                         onClick={() => handleDisciplineClick(discipline.id)}
                         disabled={togglingId === discipline.id}
@@ -325,7 +326,7 @@ export function DailyDisciplineCard() {
                         ) : (
                             <>
                                 <Icon className={cn("h-8 w-8 transition-transform duration-300 group-hover:scale-110", isCompleted ? "text-primary fill-current opacity-40" : color)} />
-                                <span className={cn("text-xs font-semibold", isCompleted ? "text-primary" : "text-foreground")}>{discipline.label}</span>
+                                <span className={cn("xs:text-xs text-[10px] font-semibold", isCompleted ? "text-primary" : "text-foreground")}>{discipline.label}</span>
                             </>
                         )}
                     </Button>

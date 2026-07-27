@@ -242,20 +242,33 @@
         "email"
       ]
     },
-    "CircleResource": {
-      "title": "Circle Resource",
-      "description": "A shared resource (link, video, book) to help overcome a stronghold.",
+    "SharedBook": {
+      "title": "Shared Book",
+      "description": "A spiritual resource shared with an accountability alliance.",
       "type": "object",
       "properties": {
         "title": { "type": "string" },
-        "description": { "type": "string" },
+        "author": { "type": "string" },
         "url": { "type": "string", "format": "uri" },
-        "type": { "type": "string", "enum": ["Video", "Article", "Book", "Sermon", "Other"] },
-        "authorId": { "type": "string" },
-        "authorName": { "type": "string" },
+        "uploaderId": { "type": "string" },
+        "partnerIds": { "type": "array", "items": { "type": "string" } },
         "createdAt": { "type": "object" }
       },
-      "required": ["title", "url", "type", "authorId", "authorName"]
+      "required": ["title", "url", "uploaderId"]
+    },
+    "BookReadingProgress": {
+      "title": "Book Reading Progress",
+      "description": "Tracks progress through a shared book.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "bookId": { "type": "string" },
+        "bookTitle": { "type": "string" },
+        "bookUrl": { "type": "string" },
+        "lastPageRead": { "type": "number" },
+        "updatedAt": { "type": "object" }
+      },
+      "required": ["userId", "bookId", "lastPageRead"]
     }
   },
   "auth": {
@@ -272,13 +285,13 @@
       },
       "description": "Stores public user profile data, keyed by user ID."
     },
-    "/victoryCircles/{category}/posts/{postId}": {
-      "schema": { "type": "object" },
-      "description": "Community discussions within specific victory circles."
+    "/sharedBooks/{bookId}": {
+      "schema": { "$ref": "#/entities/SharedBook" },
+      "description": "Books shared between partners."
     },
-    "/victoryCircles/{category}/resources/{resourceId}": {
-      "schema": { "$ref": "#/entities/CircleResource" },
-      "description": "Community-shared resources for a specific victory circle."
+    "/bookReadingProgress/{progressId}": {
+      "schema": { "$ref": "#/entities/BookReadingProgress" },
+      "description": "Reading progress logs."
     }
   }
 }

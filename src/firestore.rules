@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refine testimony and comment deletion - 2025-06-20T10:00:00Z
+    // Deployment trigger: Library & Reading Progress Permissions - 2025-06-25T14:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -119,6 +119,18 @@ service cloud.firestore {
       match /joinedEvents/{eventId} {
         allow get, list, write: if isOwner(userId);
       }
+    }
+
+    match /sharedBooks/{bookId} {
+      allow get, list: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.uploaderId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.uploaderId == request.auth.uid;
+    }
+
+    match /bookReadingProgress/{progressId} {
+      allow get, list: if isAuthenticated();
+      allow create, update: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
     match /events/{eventId} {
@@ -265,10 +277,10 @@ service cloud.firestore {
     }
 
     match /accountabilityRequests/{requestId} {
-      allow read: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+      allow read: if isAuthenticated();
       allow create: if isAuthenticated() && request.resource.data.fromUserId == request.auth.uid;
       allow update: if isAuthenticated() && (request.auth.uid == resource.data.toUserId || request.auth.uid == request.resource.data.fromUserId);
-      allow delete: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+      allow delete: if isAuthenticated();
     }
     
     match /fellowships/{fellowshipId} {

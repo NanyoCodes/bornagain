@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -62,22 +63,6 @@ import { ProgressOverview } from '@/components/dashboard/progress-overview';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { LogSoulForm } from '@/components/souls/log-soul-form';
 
 const MonthlyStatsChart = dynamic(() => import('@/components/dashboard/monthly-stats-chart'), {
   loading: () => <Skeleton className="h-[300px] w-full" />,
@@ -205,7 +190,6 @@ export function ProgressPageContent() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const isMobile = useIsMobile();
   
   const [welcomeMessage, setWelcomeMessage] = useState<{text: string, verse: string} | null>(null);
   const [hasAmened, setHasAmened] = useState(false);
@@ -264,7 +248,7 @@ export function ProgressPageContent() {
 
   return (
     <div className="space-y-8 pb-12 w-full max-w-7xl mx-auto text-left">
-        <header className="text-center space-y-4 px-4">
+        <header className="text-center space-y-4 px-4 text-left">
             {welcomeMessage ? (
                 <>
                     <h1 className="text-2xl sm:text-4xl font-bold italic font-headline leading-tight animate-in fade-in slide-in-from-top-4 duration-700 text-center">
@@ -308,7 +292,7 @@ export function ProgressPageContent() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 rounded-none sm:rounded-[2.5rem] overflow-hidden bg-card/50 backdrop-blur-sm border-y sm:border text-left">
-            <div className="lg:col-span-2 flex flex-col divide-y text-left">
+            <div className="lg:col-span-2 flex flex-col divide-y text-left text-left">
                 <DailyDisciplineCard />
                 <StrongholdTracker />
                 <RelationshipTrackerCard />
@@ -316,17 +300,17 @@ export function ProgressPageContent() {
                     souls={soulsWon || []} 
                     campaigns={activeCampaigns || []} 
                     fellowships={activeFellowships || []} 
-                    className="rounded-none"
+                    className="rounded-none text-left"
                 />
                 {userProfile && <ProgressOverview souls={soulsWon || []} userProfile={userProfile} testimonies={userTestimonies || []} />}
                 
                 <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b-0 overflow-hidden bg-transparent text-left">
-                  <CardHeader className="text-left">
-                    <CardTitle className="text-lg flex items-center gap-2 text-left">
-                      <Target className="h-5 w-5 text-primary text-left" />
+                  <CardHeader className="text-left text-left">
+                    <CardTitle className="text-lg flex items-center gap-2 text-left text-left">
+                      <Target className="h-5 w-5 text-primary text-left text-left" />
                       Monthly Harvest
                     </CardTitle>
-                    <CardDescription className="text-left">Souls won in the last 3 months.</CardDescription>
+                    <CardDescription className="text-left text-left">Souls won in the last 3 months.</CardDescription>
                   </CardHeader>
                   <CardContent className="pt-2 text-left">
                     <MonthlyStatsChart data={progressData} monthlySoulsGoal={userProfile?.monthlySoulsGoal || 10} />
@@ -334,15 +318,15 @@ export function ProgressPageContent() {
                 </Card>
             </div>
             
-            <div className="flex flex-col divide-y lg:border-l bg-muted/5 text-left">
+            <div className="flex flex-col divide-y lg:border-l bg-muted/5 text-left text-left">
                 <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left">
-                  <CardHeader className="text-left">
-                      <CardTitle className="text-lg flex items-center gap-2 text-left">
-                      <Heart className="h-5 w-5 text-primary text-left" />
+                  <CardHeader className="text-left text-left">
+                      <CardTitle className="text-lg flex items-center gap-2 text-left text-left">
+                      <Heart className="h-5 w-5 text-primary text-left text-left" />
                       Prayer Reminders
                       </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-left">
+                  <CardContent className="space-y-2 text-left text-left">
                       {soulsWon && soulsWon.length > 0 ? (
                           soulsWon
                               .filter(soul => soul.status !== 'Established')
@@ -375,11 +359,11 @@ export function ProgressPageContent() {
                 </Card>
                 
                 <Card className="rounded-none border-x-0 shadow-none border-b-2 sm:border-b bg-transparent text-left">
-                  <CardHeader className="text-left">
-                    <CardTitle className="text-lg text-left">Recent Souls</CardTitle>
-                    <CardDescription className="text-left">Your latest harvest entries.</CardDescription>
+                  <CardHeader className="text-left text-left">
+                    <CardTitle className="text-lg text-left text-left">Recent Souls</CardTitle>
+                    <CardDescription className="text-left text-left">Your latest harvest entries.</CardDescription>
                   </CardHeader>
-                  <CardContent className="text-left">
+                  <CardContent className="text-left text-left">
                     <RecentSoulsList />
                   </CardContent>
 
