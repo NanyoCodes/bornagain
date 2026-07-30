@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
@@ -44,10 +45,10 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
      * Optimized to ensure 'Large' and 'XL' are readable but not intrusive on mobile.
      */
     const sizeMap: Record<FontSize, { mobile: string; desktop: string }> = {
-      sm: { mobile: '13px', desktop: '14px' },
-      base: { mobile: '15px', desktop: '16px' },
-      lg: { mobile: '16.5px', desktop: '18px' },
-      xl: { mobile: '18px', desktop: '21px' },
+      sm: { mobile: '13.5px', desktop: '15px' },
+      base: { mobile: '15px', desktop: '17px' },
+      lg: { mobile: '17px', desktop: '19px' },
+      xl: { mobile: '19px', desktop: '22px' },
     };
     
     const targetSize = isMobile ? sizeMap[fontSize].mobile : sizeMap[fontSize].desktop;

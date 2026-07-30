@@ -485,7 +485,7 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
             <DialogTrigger asChild disabled={!photoURL}>
                 <Avatar className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
                     <AvatarImage src={photoURL} className="object-cover" />
-                    <AvatarFallback className="font-bold bg-primary/10 text-primary text-center flex items-center justify-center h-full w-full">{fallbackInitials || 'U'}</AvatarFallback>
+                    <AvatarFallback className="font-bold bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{fallbackInitials || 'U'}</AvatarFallback>
                 </Avatar>
             </DialogTrigger>
             {photoURL && (
@@ -1393,7 +1393,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         {/* Tablet/Mobile Pop-up */}
         <Sheet open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                     <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left">
                             <Sparkles className="h-4 w-4 text-primary text-left" />
