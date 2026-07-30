@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Fixed deletion freeze and duplicate exports - 2025-07-04T22:00:00Z
+    // Deployment trigger: Accountability Permissions & Shared Resources - 2025-07-05T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -72,7 +72,7 @@ service cloud.firestore {
         isOwner(userId) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline']) && (
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
-          (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
+          (request.auth.uid in resource.data.get('partnerIds', []))
         ))
       );
 
@@ -195,7 +195,7 @@ service cloud.firestore {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
         allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
-        allow update: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', '')));
+        allow update: if isAuthenticated() && resource.data.authorId == request.auth.uid;
       }
     }
     
@@ -277,10 +277,10 @@ service cloud.firestore {
     }
 
     match /accountabilityRequests/{requestId} {
-      allow read: if isAuthenticated();
+      allow read: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
       allow create: if isAuthenticated() && request.resource.data.fromUserId == request.auth.uid;
       allow update: if isAuthenticated() && (request.auth.uid == resource.data.toUserId || request.auth.uid == request.resource.data.fromUserId);
-      allow delete: if isAuthenticated();
+      allow delete: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
     }
     
     match /fellowships/{fellowshipId} {
@@ -306,7 +306,6 @@ service cloud.firestore {
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
             allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/fellowships/$(fellowshipId)/devotionals/$(date)).data.authorId == request.auth.uid);
             allow update: if isAuthenticated() && (
-              (resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }

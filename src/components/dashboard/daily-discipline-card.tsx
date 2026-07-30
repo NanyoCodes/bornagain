@@ -317,12 +317,12 @@ export function DailyDisciplineCard() {
                         disabled={togglingId === discipline.id}
                     >
                     {isCompleted && togglingId !== discipline.id && (
-                        <div className="absolute top-3 right-3 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in text-left">
+                        <div className="absolute top-3 right-3 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in text-left text-left">
                             <CheckCircle2 className="h-4 w-4 text-primary-foreground fill-current text-left" />
                         </div>
                     )}
                         {togglingId === discipline.id ? (
-                            <Loader2 className="h-8 w-8 animate-spin text-primary text-left" />
+                            <Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left" />
                         ) : (
                             <>
                                 <Icon className={cn("h-8 w-8 transition-transform duration-300 group-hover:scale-110 text-left", isCompleted ? "text-primary fill-current opacity-40" : color)} />
