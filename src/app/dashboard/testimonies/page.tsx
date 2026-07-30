@@ -1,8 +1,7 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Newspaper, HandHeart, Loader2, Trash2, Edit } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
@@ -57,6 +56,7 @@ function TestimoniesContent() {
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
   const [activeTab, setActiveTab] = useState("testimonies");
   const [highlightedTestimonyId, setHighlightedTestimonyId] = React.useState<string | null>(null);
@@ -231,85 +231,100 @@ function TestimoniesContent() {
     setIsTestimonyDialogOpen(true);
   };
   
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (!itemToDelete || !firestore || !user) return;
     
     const { type, data } = itemToDelete;
-    const docRef = doc(firestore, type === 'testimony' ? 'testimonies' : 'prayerRequests', data.id);
+    const docId = data.id;
+    const docRef = doc(firestore, type === 'testimony' ? 'testimonies' : 'prayerRequests', docId);
     
+    // Capture state to local variables for safe async use
+    const typeValue = type;
+    const dataValue = data;
+
     // Reset selection immediately to close the AlertDialog
     // This prevents the "freeze" caused by focus returning to a deleted element.
     setItemToDelete(null);
     setIsDeleting(true);
     
-    try {
-        if (type === 'testimony') {
-            const testimonyData = data as Testimony;
-            
-            // 1. Fetch all comments in subcollection for deletion
-            const commentsRef = collection(firestore, 'testimonies', data.id, 'comments');
-            const commentsSnap = await getDocs(commentsRef);
-            
-            await runTransaction(firestore, async (transaction) => {
-                const testimonySnap = await transaction.get(docRef);
-                if (!testimonySnap.exists()) return;
+    // Non-async wrapper to prevent event loop hanging during Radix UI unmount
+    const performDeletion = async () => {
+        try {
+            if (typeValue === 'testimony') {
+                const testimonyData = dataValue as Testimony;
                 
-                // 2. Handle linked prayer request if exists
-                if (testimonyData.answeredPrayerId) {
-                    const prayerRef = doc(firestore, 'prayerRequests', testimonyData.answeredPrayerId);
-                    const prayerSnap = await transaction.get(prayerRef);
-                    if (prayerSnap.exists()) {
-                        transaction.update(prayerRef, {
-                            status: 'pending',
-                            answeredTestimonyId: deleteField()
-                        });
+                // 1. Fetch all comments in subcollection for deletion
+                const commentsRef = collection(firestore, 'testimonies', docId, 'comments');
+                const commentsSnap = await getDocs(commentsRef);
+                
+                await runTransaction(firestore, async (transaction) => {
+                    const testimonySnap = await transaction.get(docRef);
+                    if (!testimonySnap.exists()) return;
+                    
+                    // 2. Handle linked prayer request if exists
+                    if (testimonyData.answeredPrayerId) {
+                        const prayerRef = doc(firestore, 'prayerRequests', testimonyData.answeredPrayerId);
+                        const prayerSnap = await transaction.get(prayerRef);
+                        if (prayerSnap.exists()) {
+                            transaction.update(prayerRef, {
+                                status: 'pending',
+                                answeredTestimonyId: deleteField()
+                            });
+                        }
                     }
-                }
-                
-                // 3. Delete all comments
-                commentsSnap.forEach(commentDoc => {
-                    transaction.delete(commentDoc.ref);
+                    
+                    // 3. Delete all comments
+                    commentsSnap.forEach(commentDoc => {
+                        transaction.delete(commentDoc.ref);
+                    });
+
+                    // 4. Delete the main testimony document
+                    transaction.delete(docRef);
                 });
 
-                // 4. Delete the main testimony document
-                transaction.delete(docRef);
-            });
-
-            // 5. Cleanup media from Storage if applicable
-            if (testimonyData.mediaUrl && storage) {
-                try {
-                    const mediaRef = ref(storage, testimonyData.mediaUrl);
-                    await deleteObject(mediaRef);
-                } catch (e) {
-                    console.error("Failed to delete testimony media:", e);
+                // 5. Cleanup media from Storage if applicable
+                if (testimonyData.mediaUrl && storage) {
+                    try {
+                        const mediaRef = ref(storage, testimonyData.mediaUrl);
+                        await deleteObject(mediaRef);
+                    } catch (e) {
+                        console.error("Failed to delete testimony media:", e);
+                    }
                 }
+            } else {
+                await deleteDoc(docRef);
             }
-        } else {
-            await deleteDoc(docRef);
-        }
 
-        toast({
-            title: `${type === 'testimony' ? 'Story' : 'Prayer Request'} Removed`,
-            description: "The record has been permanently removed from the global feed.",
-        });
-        
-    } catch (error: any) {
-        console.error("Deletion failed:", error);
-        if (error.code === 'permission-denied') {
-          errorEmitter.emit('permission-error', new FirestorePermissionError({
-            path: docRef.path,
-            operation: 'delete',
-          }, user));
-        } else {
             toast({
-                variant: "destructive",
-                title: "Deletion Failed",
-                description: "There was a problem removing this record. Please try again.",
+                title: `${typeValue === 'testimony' ? 'Story' : 'Prayer Request'} Removed`,
+                description: "The record has been permanently removed from the global feed.",
             });
+            
+            // Mandatory refresh to sync state
+            router.refresh();
+
+        } catch (error: any) {
+            console.error("Deletion failed:", error);
+            if (error.code === 'permission-denied') {
+              errorEmitter.emit('permission-error', new FirestorePermissionError({
+                path: docRef.path,
+                operation: 'delete',
+              }, user));
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Deletion Failed",
+                    description: "There was a problem removing this record. Please try again.",
+                });
+            }
+        } finally {
+            // Signal completion
+            setIsDeleting(false);
         }
-    } finally {
-        setIsDeleting(false);
-    }
+    };
+
+    performDeletion();
+    return true; // Return true to signal async intent
   };
 
   const testimonyFormContent = userProfile ? (
@@ -367,8 +382,8 @@ function TestimoniesContent() {
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
                 <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8">
-                    <TabsTrigger value="testimonies" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Testimonies</TabsTrigger>
-                    <TabsTrigger value="prayers" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Prayer Requests</TabsTrigger>
+                    <TabsTrigger value="testimonies" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">Testimonies</TabsTrigger>
+                    <TabsTrigger value="prayers" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">Prayer Requests</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="testimonies" className="outline-none text-left">
@@ -400,8 +415,8 @@ function TestimoniesContent() {
                     </div>
                 </TabsContent>
                 
-                <TabsContent value="prayers" className="outline-none text-left">
-                    <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
+                <TabsContent value="prayers" className="outline-none text-left text-left">
+                    <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full text-left">
                         {loading ? (
                         [...Array(3)].map((_, i) => (
                             <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
@@ -436,13 +451,13 @@ function TestimoniesContent() {
       
       <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
           <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
-          <AlertDialogHeader className="text-left">
+          <AlertDialogHeader className="text-left text-left">
               <AlertDialogTitle className="font-black text-2xl font-headline tracking-tight text-left">Remove from Feed?</AlertDialogTitle>
               <AlertDialogDescription className="text-left text-sm font-medium text-left">
               This will permanently delete this {itemToDelete?.type}. This action cannot be undone.
               </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="gap-3 mt-6 text-left">
+          <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
               <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
               {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
@@ -523,15 +538,15 @@ function TestimoniesContent() {
           ) : (
             <>
               <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Make changes to your testimony here.</DialogDescription>
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                    <DialogHeader className="text-left text-left">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Edit Testimony</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="max-h-[70vh] text-left">
-                    <div className="p-8 text-left">
+                  <ScrollArea className="max-h-[70vh] text-left text-left">
+                    <div className="p-8 text-left text-left">
                         {testimonyToEdit && <EditTestimonyForm testimony={testimonyToEdit} onTestimonyUpdated={() => setTestimonyToEdit(null)} />}
                     </div>
                   </ScrollArea>
@@ -539,15 +554,15 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Update the details of your request.</DialogDescription>
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                    <DialogHeader className="text-left text-left">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Edit Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="max-h-[70vh] text-left">
-                    <div className="p-8 text-left">
+                  <ScrollArea className="max-h-[70vh] text-left text-left text-left">
+                    <div className="p-8 text-left text-left text-left">
                         {prayerToEdit && <EditPrayerRequestForm prayerRequest={prayerToEdit} onPrayerRequestUpdated={() => setPrayerToEdit(null)} />}
                     </div>
                   </ScrollArea>
@@ -555,15 +570,15 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
+                <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                    <DialogHeader className="text-left text-left">
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left">Share Testimony</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="max-h-[70vh] text-left">
-                    <div className="p-8 text-left">
+                  <ScrollArea className="max-h-[70vh] text-left text-left">
+                    <div className="p-8 text-left text-left">
                         {testimonyFormContent}
                     </div>
                   </ScrollArea>
@@ -571,15 +586,15 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Share your request with the Body of Christ.</DialogDescription>
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                    <DialogHeader className="text-left text-left">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Share Prayer Request</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="max-h-[70vh] text-left">
-                    <div className="p-8 text-left">
+                  <ScrollArea className="max-h-[70vh] text-left text-left">
+                    <div className="p-8 text-left text-left">
                         {prayerFormContent}
                     </div>
                   </ScrollArea>
@@ -595,7 +610,7 @@ function TestimoniesContent() {
 
 export default function TestimoniesPage() {
     return (
-        <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+        <Suspense fallback={<div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>}>
             <TestimoniesContent />
         </Suspense>
     );

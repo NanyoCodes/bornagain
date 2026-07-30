@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -60,7 +59,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest, SoulRelationship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
-import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment, deleteDoc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -88,7 +87,7 @@ import Link from 'next/link';
 
 // Correctly importing the SoulsWonTable from the barrel file and fixing dynamic promise resolution
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
-  loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,
+  loading: () => <div className="flex justify-center p-12 text-left"><Loader2 className="h-8 w-8 animate-spin text-left" /></div>,
   ssr: false
 });
 
@@ -102,7 +101,7 @@ const SoulAssessmentDialog = dynamic(() => import('@/components/souls/soul-asses
 function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul: (soul: Soul) => void }) {
   if (!souls || souls.length === 0) {
     return (
-      <div className="text-center py-10">
+      <div className="text-center py-10 text-left">
         <p className="text-sm text-muted-foreground italic text-left">No souls found in this age group.</p>
       </div>
     );
@@ -117,23 +116,23 @@ function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
             key={soul.id} 
             variant="ghost"
             onClick={() => onSelectSoul(soul)}
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98]"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98] text-left"
           >
-            <div className="flex items-center gap-3 min-w-0 text-left">
-                <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
+            <div className="flex items-center gap-3 min-w-0 text-left text-left">
+                <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left text-left">
                 <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
-                <div className="min-w-0 text-left">
-                    <div className="flex items-center gap-2 text-left flex-wrap">
-                        <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
-                        <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left">{soul.status}</Badge>
+                <div className="min-w-0 text-left text-left">
+                    <div className="flex items-center gap-2 text-left flex-wrap text-left">
+                        <p className="font-black text-sm truncate uppercase tracking-tight text-left text-left">{soul.firstName} {soul.lastName}</p>
+                        <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left text-left">{soul.status}</Badge>
                     </div>
-                    <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
+                    <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left text-left">
                         Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
                     </p>
                 </div>
             </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 text-left" />
           </Button>
         );
       })}
@@ -429,23 +428,33 @@ export default function SoulsWonPage() {
 
   const handleDeleteSoul = () => {
     if (!soulToDelete || !user || !firestore) return;
-    setIsDeleting(true);
-
+    
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
     const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
 
-    const batch = writeBatch(firestore);
-    batch.delete(soulRef);
-    batch.delete(globalSoulRef);
-    
-    batch.commit().then(() => {
-        toast({ title: "Record Removed" });
-        setIsDeleting(false);
-        setDeleteSoulId(null);
-    }).catch(() => {
-        toast({ variant: 'destructive', title: "Delete Failed" });
-        setIsDeleting(false);
-    });
+    // Reset selection immediately to prevent unmount freeze
+    setDeleteSoulId(null);
+    setIsDeleting(true);
+
+    const performDeletion = async () => {
+        try {
+            const batch = writeBatch(firestore);
+            batch.delete(soulRef);
+            batch.delete(globalSoulRef);
+            
+            await batch.commit();
+            toast({ title: "Record Removed" });
+            router.refresh();
+        } catch (err: any) {
+            console.error("Delete Soul Error:", err);
+            toast({ variant: 'destructive', title: "Delete Failed" });
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    performDeletion();
+    return true; // Signal async intent
   };
 
   const handleAssignGroup = (soul: Soul, fellowshipId: string, groupType: 'Fellowship' | 'Association') => {
@@ -758,7 +767,7 @@ export default function SoulsWonPage() {
         <SoulAssessmentDialog soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left">
                 <AlertDialogHeader className="text-left text-left text-left text-left text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left text-left">Delete Record?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left">
@@ -766,7 +775,7 @@ export default function SoulsWonPage() {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left text-left text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left text-left">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" />}
                         Confirm Removal

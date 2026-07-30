@@ -1,9 +1,8 @@
-
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Target, Loader2 } from "lucide-react";
+import { Target, Loader2 } from "lucide-material";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
@@ -210,31 +209,41 @@ export default function CampaignsPage() {
     router.refresh();
   };
 
-  const handleDeleteCampaign = async () => {
+  const handleDeleteCampaign = () => {
     if (!campaignToDelete || !user || !firestore) return;
-    setIsDeleting(true);
+    
     const campaignRef = doc(firestore, 'campaigns', campaignToDelete.id);
     const deleteData = {
         status: 'deleted',
         deletionReason: 'Campaign deleted by organizer.',
         deletedAt: serverTimestamp(),
     };
-    
-    try {
-        await updateDoc(campaignRef, deleteData);
-        toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
-        setCampaignToDelete(null);
-        router.refresh();
-    } catch (error) {
-        const permissionError = new FirestorePermissionError({
-            path: campaignRef.path,
-            operation: 'update',
-            requestResourceData: deleteData,
-        }, user);
-        errorEmitter.emit('permission-error', permissionError);
-    } finally {
-      setIsDeleting(false);
-    }
+
+    // Reset state immediately to prevent Radix UI unmount hang
+    setCampaignToDelete(null);
+    setIsDeleting(true);
+
+    const performDeletion = async () => {
+        try {
+            await updateDoc(campaignRef, deleteData);
+            toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
+            router.refresh();
+        } catch (error) {
+            console.error("Delete Campaign Error:", error);
+            if (error.code === 'permission-denied') {
+                errorEmitter.emit('permission-error', new FirestorePermissionError({
+                    path: campaignRef.path,
+                    operation: 'update',
+                    requestResourceData: deleteData,
+                }, user));
+            }
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    performDeletion();
+    return true; // Signal async intent
   };
 
   const processedCampaigns = useMemo(() => {
@@ -264,9 +273,9 @@ export default function CampaignsPage() {
   }, [campaigns, now, userProfile]);
 
   const sortedAndFilteredCampaigns = useMemo(() => {
-    const activeCampaigns = processedCampaigns.filter(c => c.status !== 'deleted');
+    const activeCampaignsList = processedCampaigns.filter(c => c.status !== 'deleted');
 
-    const tabFilteredCampaigns = activeCampaigns.filter(c => {
+    const tabFilteredCampaigns = activeCampaignsList.filter(c => {
         if (!user?.uid) return true;
         if (filter === 'created') return c.organizerId === user.uid;
         if (filter === 'joined') return joinedCampaignIds.has(c.id) && c.organizerId !== user.uid;
@@ -350,12 +359,12 @@ export default function CampaignsPage() {
 
   }, [processedCampaigns, searchTerm, mounted, filter, user?.uid, statusFilter, joinedCampaignIds]);
   
-  const activeCampaignsList = useMemo(() => {
+  const activeCampaignsListOnly = useMemo(() => {
     if (!campaigns) return [];
     return campaigns.filter(c => c.status !== 'deleted');
   }, [campaigns]);
 
-  const formContent = userProfile ? <CreateCampaignForm onCampaignCreated={handleCampaignCreated} userProfile={userProfile} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
+  const formContent = userProfile ? <CreateCampaignForm onCampaignCreated={handleCampaignCreated} userProfile={userProfile} /> : <div className="flex justify-center p-8 text-left"><Loader2 className="h-8 w-8 animate-spin text-left" /></div>;
 
   let noResultsMessage = "No campaigns found.";
     if (filter === 'created') {
@@ -366,37 +375,37 @@ export default function CampaignsPage() {
 
   return (
     <div 
-        className="w-full max-w-7xl mx-auto"
+        className="w-full max-w-7xl mx-auto text-left"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8 space-y-8 pb-32">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 text-left">
+        <div className="lg:col-span-8 space-y-8 pb-32 text-left">
             {/* Interaction Box */}
-            <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden">
-            <CardContent className="p-3 sm:p-6">
-                <div className="flex flex-row items-center gap-2 sm:gap-4 w-full">
+            <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
+            <CardContent className="p-3 sm:p-6 text-left">
+                <div className="flex flex-row items-center gap-2 sm:gap-4 w-full text-left text-left">
                 <Button 
                     variant="outline" 
-                    className="flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
+                    className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed text-left"
                     onClick={() => setIsCreateOpen(true)}
                     disabled={!user || profileLoading}
                 >
-                    <span className="truncate">
+                    <span className="truncate text-left">
                     {profileLoading ? "Preparing mission field..." : "Launch a mission for the Kingdom?"}
                     </span>
                 </Button>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 text-left">
                     <Button 
                     variant="secondary" 
                     size="icon" 
-                    className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg"
+                    className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg text-left"
                     onClick={() => setIsCreateOpen(true)}
                     disabled={!user || profileLoading}
                     title="New Campaign"
                     >
                     {profileLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-4 w-4 animate-spin text-left" />
                     ) : (
-                        <Target className="h-4 w-4" />
+                        <Target className="h-4 w-4 text-left" />
                     )}
                     </Button>
                 </div>
@@ -404,30 +413,30 @@ export default function CampaignsPage() {
             </CardContent>
             </Card>
 
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-0">
-                <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
-                    <TabsList className="grid w-full grid-cols-3 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl">
-                        <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">All</TabsTrigger>
-                        <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Mine</TabsTrigger>
-                        <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl">Joined</TabsTrigger>
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-0 text-left text-left text-left">
+                <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto text-left">
+                    <TabsList className="grid w-full grid-cols-3 h-12 sm:h-14 bg-muted/40 p-1 rounded-2xl text-left text-left text-left">
+                        <TabsTrigger value="all" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-left">All</TabsTrigger>
+                        <TabsTrigger value="created" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-left text-left">Mine</TabsTrigger>
+                        <TabsTrigger value="joined" className="font-black text-[10px] sm:text-xs uppercase tracking-widest rounded-xl text-left text-left">Joined</TabsTrigger>
                     </TabsList>
                 </Tabs>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-full sm:w-[150px] h-12 sm:h-14 rounded-2xl border-2 font-bold uppercase tracking-widest text-[10px]">
-                        <SelectValue placeholder="Status" />
+                    <SelectTrigger className="w-full sm:w-[150px] h-12 sm:h-14 rounded-2xl border-2 font-bold uppercase tracking-widest text-[10px] text-left text-left">
+                        <SelectValue placeholder="Status" className="text-left" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-2xl shadow-xl">
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="ongoing">Ongoing</SelectItem>
-                        <SelectItem value="upcoming">Upcoming</SelectItem>
-                        <SelectItem value="past">Past</SelectItem>
+                    <SelectContent className="rounded-2xl shadow-xl text-left">
+                        <SelectItem value="all" className="text-left">All Status</SelectItem>
+                        <SelectItem value="ongoing" className="text-left">Ongoing</SelectItem>
+                        <SelectItem value="upcoming" className="text-left">Upcoming</SelectItem>
+                        <SelectItem value="past" className="text-left">Past</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
 
 
             {/* Campaign List */}
-            <div className="flex flex-col gap-6 w-full">
+            <div className="flex flex-col gap-6 w-full text-left">
             {loading && <CampaignSkeletons />}
             {!loading && sortedAndFilteredCampaigns?.map((campaign) => (
                 <CampaignCard 
@@ -444,10 +453,10 @@ export default function CampaignsPage() {
                 />
             ))}
             {!loading && sortedAndFilteredCampaigns?.length === 0 && (
-                <div className="col-span-full text-center py-32 px-8 flex flex-col items-center">
-                <Target className="h-16 w-16 text-muted-foreground opacity-10 mb-6" />
-                <h3 className="text-xl font-bold font-headline uppercase tracking-tight">{noResultsMessage}</h3>
-                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm">
+                <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left text-left text-left">
+                <Target className="h-16 w-16 text-muted-foreground opacity-10 mb-6 text-left" />
+                <h3 className="text-xl font-bold font-headline uppercase tracking-tight text-left">{noResultsMessage}</h3>
+                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-left text-left text-left text-left">
                     {filter === 'created'
                     ? 'Why not start a new one to reach your community?'
                     : filter === 'joined' ? 'Explore all campaigns and join one!' : 'Try a different search term or create a new campaign.'}
@@ -458,7 +467,7 @@ export default function CampaignsPage() {
         </div>
 
         {/* Desktop Sidebar Column */}
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-4 text-left">
             <FeedSidebar mode="campaigns" />
         </div>
       </div>
@@ -466,15 +475,15 @@ export default function CampaignsPage() {
       {/* Creation Modal */}
       {mounted && isMobile ? (
         <Sheet open={isCreateOpen} onOpenChange={(open) => { setIsCreateOpen(open); if(!open) router.refresh(); }}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-              <SheetHeader className="text-left">
-                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Launch New Mission</SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-1">Mobilize for the harvest by setting clear mission goals.</SheetDescription>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+              <SheetHeader className="text-left text-left">
+                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Launch New Mission</SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1 text-left">Mobilize for the harvest by setting clear mission goals.</SheetDescription>
               </SheetHeader>
             </div>
-            <ScrollArea className="flex-grow">
-              <div className="p-8">
+            <ScrollArea className="flex-grow text-left">
+              <div className="p-8 text-left">
                 {formContent}
               </div>
             </ScrollArea>
@@ -482,17 +491,17 @@ export default function CampaignsPage() {
         </Sheet>
       ) : (
         <Dialog open={isCreateOpen} onOpenChange={(open) => { setIsCreateOpen(open); if(!open) router.refresh(); }}>
-          <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-            <div className="p-8 border-b bg-muted/10">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">Create a New Mission</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">
+          <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
+            <div className="p-8 border-b bg-muted/10 text-left">
+                <DialogHeader className="text-left">
+                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left">Create a New Mission</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left text-left text-left">
                         Fill in the details below to organize your soul-winning efforts.
                     </DialogDescription>
                 </DialogHeader>
             </div>
-            <ScrollArea className="max-h-[70vh]">
-                <div className="p-8">
+            <ScrollArea className="max-h-[70vh] text-left">
+                <div className="p-8 text-left text-left">
                     {formContent}
                 </div>
             </ScrollArea>
@@ -503,15 +512,15 @@ export default function CampaignsPage() {
       {/* Management Modal */}
       {mounted && isMobile ? (
         <Sheet open={!!campaignToManage} onOpenChange={(open) => { if (!open) setCampaignToManage(null); router.refresh(); }}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-              <SheetHeader className="text-left">
-                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Mission</SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-1">Update mission progress and logistical details.</SheetDescription>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+              <SheetHeader className="text-left text-left text-left">
+                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Manage Mission</SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1 text-left">Update mission progress and logistical details.</SheetDescription>
               </SheetHeader>
             </div>
-            <ScrollArea className="flex-grow">
-              <div className="p-8">
+            <ScrollArea className="flex-grow text-left">
+              <div className="p-8 text-left">
                 {campaignToManage && (
                   <ManageCampaignForm 
                     campaign={campaignToManage} 
@@ -529,15 +538,15 @@ export default function CampaignsPage() {
         </Sheet>
       ) : (
         <Dialog open={!!campaignToManage} onOpenChange={(open) => { if (!open) setCampaignToManage(null); router.refresh(); }}>
-          <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-             <div className="p-8 border-b bg-muted/10">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Manage Mission</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">Update the details or status of your campaign.</DialogDescription>
+          <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
+             <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                <DialogHeader className="text-left text-left text-left">
+                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">Manage Mission</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left text-left text-left">Update the details or status of your campaign.</DialogDescription>
                 </DialogHeader>
             </div>
-            <ScrollArea className="max-h-[80vh]">
-                <div className="p-8">
+            <ScrollArea className="max-h-[80vh] text-left text-left">
+                <div className="p-8 text-left text-left text-left">
                     {campaignToManage && (
                         <ManageCampaignForm 
                         campaign={campaignToManage} 
@@ -557,17 +566,17 @@ export default function CampaignsPage() {
 
       {/* Action Dialogs */}
       <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => { if (!open) setCampaignToDelete(null); router.refresh(); }}>
-        <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
-          <AlertDialogHeader>
-              <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Mission?</AlertDialogTitle>
-              <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
+        <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
+          <AlertDialogHeader className="text-left">
+              <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left">Delete Mission?</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left">
                   This will permanently remove the campaign and all associated data. This action cannot be undone.
               </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="gap-3 mt-6">
-              <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12">Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
-                  {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <AlertDialogFooter className="gap-3 mt-6 text-left">
+              <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 text-left">Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">
+                  {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                   Confirm Deletion
               </AlertDialogAction>
           </AlertDialogFooter>
@@ -577,15 +586,15 @@ export default function CampaignsPage() {
       {/* Logging & Testimony Sheets */}
       {mounted && isMobile ? (
         <Sheet open={!!campaignForTestimony} onOpenChange={(open) => { if (!open) setCampaignForTestimony(null); router.refresh(); }}>
-          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-              <SheetHeader className="text-left">
-                <SheetTitle className="text-2xl font-black font-headline">Share Victory</SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-1">What has God done during "{campaignForTestimony?.title}"?</SheetDescription>
+          <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+              <SheetHeader className="text-left text-left">
+                <SheetTitle className="text-2xl font-black font-headline text-left">Share Victory</SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1 text-left text-left">What has God done during "{campaignForTestimony?.title}"?</SheetDescription>
               </SheetHeader>
             </div>
-            <ScrollArea className="flex-grow">
-              <div className="p-8">
+            <ScrollArea className="flex-grow text-left">
+              <div className="p-8 text-left">
                  {campaignForTestimony && userProfile && (
                     <CreateTestimonyForm
                           userProfile={userProfile}
@@ -599,17 +608,17 @@ export default function CampaignsPage() {
         </Sheet>
       ) : (
         <Dialog open={!!campaignForTestimony} onOpenChange={(open) => { if (!open) setCampaignForTestimony(null); router.refresh(); }}>
-            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-                 <div className="p-8 border-b bg-muted/10">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Share Victory</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">
+            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                 <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                    <DialogHeader className="text-left text-left">
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">Share Victory</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left text-left">
                             Encourage others by sharing what God has done during this mission.
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="max-h-[70vh]">
-                    <div className="p-8">
+                <ScrollArea className="max-h-[70vh] text-left text-left">
+                    <div className="p-8 text-left text-left">
                         {campaignForTestimony && userProfile && (
                         <CreateTestimonyForm
                                 userProfile={userProfile}
@@ -625,21 +634,21 @@ export default function CampaignsPage() {
 
       {mounted && isMobile ? (
         <Sheet open={!!campaignForSoul} onOpenChange={(open) => { if (!open) setCampaignForSoul(null); router.refresh(); }}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-              <SheetHeader className="text-left">
-                <SheetTitle className="text-2xl font-black font-headline">Log Harvest</SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-1">Record a soul won in "{campaignForSoul?.title}".</SheetDescription>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+              <SheetHeader className="text-left text-left">
+                <SheetTitle className="text-2xl font-black font-headline text-left">Log Harvest</SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Record a soul won in "{campaignForSoul?.title}".</SheetDescription>
               </SheetHeader>
             </div>
-            <ScrollArea className="flex-grow">
-              <div className="p-8">
+            <ScrollArea className="flex-grow text-left">
+              <div className="p-8 text-left">
                 {campaignForSoul && (
                   <LogSoulForm
                         onSoulLogged={handleSoulLogged}
                         defaultCampaign={campaignForSoul}
                         fellowships={[]}
-                        campaigns={activeCampaignsList || []}
+                        campaigns={activeCampaignsListOnly || []}
                     />
                 )}
               </div>
@@ -648,23 +657,23 @@ export default function CampaignsPage() {
         </Sheet>
       ) : (
         <Dialog open={!!campaignForSoul} onOpenChange={(open) => { if (!open) setCampaignForSoul(null); router.refresh(); }}>
-            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-                <div className="p-8 border-b bg-muted/10">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Log Harvest</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">
+            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                    <DialogHeader className="text-left text-left">
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">Log Harvest</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left text-left">
                             Record the details of the person won during this mission.
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="max-h-[70vh]">
-                    <div className="p-8">
+                <ScrollArea className="max-h-[70vh] text-left text-left">
+                    <div className="p-8 text-left text-left">
                         {campaignForSoul && (
                         <LogSoulForm
                                 onSoulLogged={handleSoulLogged}
                                 defaultCampaign={campaignForSoul}
                                 fellowships={[]}
-                                campaigns={activeCampaignsList || []}
+                                campaigns={activeCampaignsListOnly || []}
                             />
                         )}
                     </div>

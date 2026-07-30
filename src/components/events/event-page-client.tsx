@@ -113,30 +113,40 @@ export default function EventPageClient() {
     );
   }, [rawEvents, searchTerm, activeTab, user?.uid, joinedIds]);
 
-  const handleCancelEvent = async () => {
+  const handleCancelEvent = () => {
     if (!eventToDelete || !user || !firestore) return;
-    setIsDeleting(true);
+    
     const eventRef = doc(firestore, 'events', eventToDelete.id);
     const updateData = { status: 'cancelled', deletedAt: serverTimestamp() };
     
-    try {
-        await updateDoc(eventRef, updateData);
-        toast({ title: 'Event Cancelled' });
-        setEventToDelete(null);
-    } catch (error: any) {
-        if (error.code === 'permission-denied') {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: eventRef.path, operation: 'update' }, user));
+    // Reset state immediately to prevent unmount freeze
+    setEventToDelete(null);
+    setIsDeleting(true);
+
+    const performCancel = async () => {
+        try {
+            await updateDoc(eventRef, updateData);
+            toast({ title: 'Event Cancelled' });
+            router.refresh();
+        } catch (error: any) {
+            console.error("Cancel Event Error:", error);
+            if (error.code === 'permission-denied') {
+                errorEmitter.emit('permission-error', new FirestorePermissionError({ path: eventRef.path, operation: 'update' }, user));
+            }
+        } finally {
+            setIsDeleting(false);
         }
-    } finally {
-        setIsDeleting(false);
-    }
+    };
+
+    performCancel();
+    return true; // Signal async intent
   };
 
   return (
     <div className="space-y-8 md:space-y-12 max-w-3xl mx-auto pb-32 w-full text-left">
-        <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left text-left text-left">
-                <div className="flex items-center gap-4 text-left text-left text-left text-left">
+        <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left text-left text-left text-left text-left text-left">
+                <div className="flex items-center gap-4 text-left text-left text-left text-left text-left text-left">
                     <div className="space-y-1 text-left text-left text-left text-left">
                         <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left text-left text-left">EVENTS HUB</h1>
                         <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left text-left text-left">
@@ -203,13 +213,13 @@ export default function EventPageClient() {
                 <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                            <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
-                                <SheetTitle className="text-2xl font-black font-headline text-left text-left text-left">Host for the Kingdom</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Organize a gathering to strengthen and equip the saints.</SheetDescription>
+                            <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
+                                <SheetTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Host for the Kingdom</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Organize a gathering to strengthen and equip the saints.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left text-left text-left">
-                            <div className="p-8 text-left text-left text-left">
+                            <div className="p-8 text-left text-left text-left text-left">
                                 {userProfile && <CreateEventForm onEventCreated={() => setIsCreateOpen(false)} userProfile={userProfile} />}
                             </div>
                         </ScrollArea>
@@ -219,13 +229,13 @@ export default function EventPageClient() {
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                            <DialogHeader className="text-left text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left">Host for the Kingdom</DialogTitle>
-                                <DialogDescription className="text-base font-medium text-left text-left text-left">Organize a gathering to strengthen and equip the saints.</DialogDescription>
+                            <DialogHeader className="text-left text-left text-left text-left text-left">
+                                <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Host for the Kingdom</DialogTitle>
+                                <DialogDescription className="text-base font-medium text-left text-left text-left text-left">Organize a gathering to strengthen and equip the saints.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left text-left text-left">
-                            <div className="p-8 text-left text-left text-left text-left">
+                            <div className="p-8 text-left text-left text-left text-left text-left">
                                 {userProfile && <CreateEventForm onEventCreated={() => setIsCreateOpen(false)} userProfile={userProfile} />}
                             </div>
                         </ScrollArea>
@@ -239,13 +249,13 @@ export default function EventPageClient() {
                 <Sheet open={!!eventToEdit} onOpenChange={(open) => !open && setEventToEdit(null)}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                            <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
-                                <SheetTitle className="text-2xl font-black font-headline text-left text-left text-left">Manage Hub</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Refine the vision for your gathering.</SheetDescription>
+                            <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
+                                <SheetTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Manage Hub</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Refine the vision for your gathering.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left text-left text-left">
-                            <div className="p-8 text-left text-left text-left">
+                            <div className="p-8 text-left text-left text-left text-left">
                                 <ManageEventForm 
                                     event={eventToEdit} 
                                     onEventUpdated={() => setEventToEdit(null)} 
@@ -263,13 +273,13 @@ export default function EventPageClient() {
                 <Dialog open={!!eventToEdit} onOpenChange={(open) => !open && setEventToEdit(null)}>
                     <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                            <DialogHeader className="text-left text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left">Manage Hub</DialogTitle>
-                                <DialogDescription className="text-base font-medium text-left text-left text-left">Update event logistics and details.</DialogDescription>
+                            <DialogHeader className="text-left text-left text-left text-left text-left">
+                                <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Manage Hub</DialogTitle>
+                                <DialogDescription className="text-base font-medium text-left text-left text-left text-left">Update event logistics and details.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left text-left text-left">
-                            <div className="p-8 text-left text-left text-left text-left">
+                            <div className="p-8 text-left text-left text-left text-left text-left">
                                 <ManageEventForm 
                                     event={eventToEdit} 
                                     onEventUpdated={() => setEventToEdit(null)} 
@@ -287,17 +297,17 @@ export default function EventPageClient() {
         )}
 
         <AlertDialog open={!!eventToDelete} onOpenChange={(open) => !open && setEventToDelete(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left">
-                <AlertDialogHeader className="text-left text-left text-left text-left">
-                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left text-left text-left">Cancel Gathering?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left">
+                <AlertDialogHeader className="text-left text-left text-left text-left text-left">
+                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left text-left text-left text-left">Cancel Gathering?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left">
                         This will mark "{eventToDelete?.title}" as cancelled and remove it from the global directory. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left text-left text-left">Close</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleCancelEvent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left text-left">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" />}
+                <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left text-left text-left text-left">Close</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleCancelEvent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left text-left text-left">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left" />}
                         Confirm Cancellation
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -306,4 +316,3 @@ export default function EventPageClient() {
     </div>
   );
 }
-
