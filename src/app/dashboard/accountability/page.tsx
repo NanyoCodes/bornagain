@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -239,7 +240,7 @@ function PartnerCard({
     return (
         <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-sm overflow-hidden bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all border-l-4 border-l-primary/10 text-left">
             <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6 gap-4 text-left">
-                 <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left">
+                 <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                     <Dialog>
                       <DialogTrigger asChild disabled={!livePhotoURL}>
                         <Avatar className={cn("h-11 w-11 sm:h-14 sm:w-14 border shadow-sm shrink-0 text-left", livePhotoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
@@ -258,7 +259,7 @@ function PartnerCard({
                           </DialogContent>
                       )}
                     </Dialog>
-                    <div className="min-w-0 flex-1 text-left text-left">
+                    <div className="min-w-0 flex-1 text-left">
                         <Link href={`/dashboard/profile/${partner.userId}`} className="group inline-flex flex-col text-left">
                             <h2 className="text-sm sm:text-base font-black truncate group-hover:underline leading-none uppercase tracking-tight text-left">{partner.firstName} {partner.lastName}</h2>
                             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 text-left">Spiritual Partner</span>
@@ -442,7 +443,11 @@ export default function AccountabilityPage() {
   };
 
   const handleRemovePartner = () => {
-    if (!user || !firestore || !userProfile?.accountabilityPartners || !removalTarget || !removalReason.trim()) return;
+    const sendResponse = (res: any) => console.log('Removal process result:', res);
+    if (!user || !firestore || !userProfile?.accountabilityPartners || !removalTarget || !removalReason.trim()) {
+        sendResponse({ success: false, reason: 'Invalid input' });
+        return;
+    }
     
     const partnerId = removalTarget.userId;
     setIsRemoving(partnerId);
@@ -488,10 +493,12 @@ export default function AccountabilityPage() {
 
             await batch.commit();
             toast({ title: 'Partner Removed' });
+            sendResponse({ success: true });
             router.refresh();
         } catch (error) {
-            // Detailed error context for security rule debugging
+            console.error("Partner removal failed:", error);
             errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `users/${partnerId}`, operation: 'write' }, user));
+            sendResponse({ success: false, error });
         } finally { 
             setIsRemoving(null); 
             setRemovalReason(''); 
@@ -500,7 +507,7 @@ export default function AccountabilityPage() {
     };
 
     performRemoval();
-    return true; // Signal async intent
+    return true; // Signal asynchronous intent
   };
 
   if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left">Establishing Connection...</p></div>;

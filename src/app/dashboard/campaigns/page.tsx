@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
@@ -210,7 +211,11 @@ export default function CampaignsPage() {
   };
 
   const handleDeleteCampaign = () => {
-    if (!campaignToDelete || !user || !firestore) return;
+    const sendResponse = (res: any) => console.log('Campaign deletion confirmed:', res);
+    if (!campaignToDelete || !user || !firestore) {
+        sendResponse({ success: false });
+        return;
+    }
     
     const campaignRef = doc(firestore, 'campaigns', campaignToDelete.id);
     const deleteData = {
@@ -227,6 +232,7 @@ export default function CampaignsPage() {
         try {
             await updateDoc(campaignRef, deleteData);
             toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
+            sendResponse({ success: true });
             router.refresh();
         } catch (error: any) {
             console.error("Delete Campaign Error:", error);
@@ -237,13 +243,14 @@ export default function CampaignsPage() {
                     requestResourceData: deleteData,
                 }, user));
             }
+            sendResponse({ success: false, error });
         } finally {
             setIsDeleting(false);
         }
     };
 
     performDeletion();
-    return true; // Signal async intent
+    return true; // Signal asynchronous intent
   };
 
   const processedCampaigns = useMemo(() => {
@@ -374,9 +381,7 @@ export default function CampaignsPage() {
     }
 
   return (
-    <div 
-        className="w-full max-w-7xl mx-auto text-left"
-    >
+    <div className="w-full max-w-7xl mx-auto text-left">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 text-left">
         <div className="lg:col-span-8 space-y-8 pb-32 text-left">
             {/* Interaction Box */}
@@ -385,7 +390,7 @@ export default function CampaignsPage() {
                 <div className="flex flex-row items-center gap-2 sm:gap-4 w-full text-left">
                 <Button 
                     variant="outline" 
-                    className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 h-11 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed text-left"
+                    className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed text-left"
                     onClick={() => setIsCreateOpen(true)}
                     disabled={!user || profileLoading}
                 >
@@ -684,3 +689,4 @@ export default function CampaignsPage() {
     </div>
   );
 }
+

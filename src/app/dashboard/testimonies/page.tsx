@@ -233,11 +233,14 @@ function TestimoniesContent() {
   };
   
   const handleConfirmDelete = () => {
-    if (!itemToDelete || !firestore || !user) return;
+    const sendResponse = (res: any) => console.log('Deletion confirmed:', res);
+    if (!itemToDelete || !firestore || !user) {
+        sendResponse({ success: false });
+        return;
+    }
     
     const { type, data } = itemToDelete;
-    const docId = data.id;
-    const docRef = doc(firestore, type === 'testimony' ? 'testimonies' : 'prayerRequests', docId);
+    const docRef = doc(firestore, type === 'testimony' ? 'testimonies' : 'prayerRequests', data.id);
     
     const typeValue = type;
     const dataValue = data;
@@ -251,7 +254,7 @@ function TestimoniesContent() {
             if (typeValue === 'testimony') {
                 const testimonyData = dataValue as Testimony;
                 
-                const commentsRef = collection(firestore, 'testimonies', docId, 'comments');
+                const commentsRef = collection(firestore, 'testimonies', dataValue.id, 'comments');
                 const commentsSnap = await getDocs(commentsRef);
                 
                 await runTransaction(firestore, async (transaction) => {
@@ -293,6 +296,7 @@ function TestimoniesContent() {
                 description: "The record has been permanently removed from the global feed.",
             });
             
+            sendResponse({ success: true });
             router.refresh();
 
         } catch (error: any) {
@@ -309,13 +313,14 @@ function TestimoniesContent() {
                     description: "There was a problem removing this record. Please try again.",
                 });
             }
+            sendResponse({ success: false, error });
         } finally {
             setIsDeleting(false);
         }
     };
 
     performDeletion();
-    return true; // Signal async intent
+    return true; // Signal asynchronous intent
   };
 
   const testimonyFormContent = userProfile ? (
@@ -564,7 +569,7 @@ function TestimoniesContent() {
                 <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
                   <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left">
-                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">Share Testimony</DialogTitle>
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left text-left text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
                   </div>
@@ -601,7 +606,7 @@ function TestimoniesContent() {
 
 export default function TestimoniesPage() {
     return (
-        <Suspense fallback={<div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>}>
+        <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>}>
             <TestimoniesContent />
         </Suspense>
     );
