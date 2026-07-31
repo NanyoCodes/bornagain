@@ -2,21 +2,20 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Target, Loader2 } from "lucide-material";
+import { Target, Loader2 } from "lucide-react";
 import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import {
   AlertDialog,
@@ -228,7 +227,7 @@ export default function CampaignsPage() {
             await updateDoc(campaignRef, deleteData);
             toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
             router.refresh();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Delete Campaign Error:", error);
             if (error.code === 'permission-denied') {
                 errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -574,7 +573,7 @@ export default function CampaignsPage() {
               </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3 mt-6 text-left">
-              <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 text-left">Cancel</AlertDialogCancel>
+              <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 text-left">Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">
                   {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                   Confirm Deletion
@@ -658,7 +657,7 @@ export default function CampaignsPage() {
       ) : (
         <Dialog open={!!campaignForSoul} onOpenChange={(open) => { if (!open) setCampaignForSoul(null); router.refresh(); }}>
             <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
-                <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left">
                         <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left text-left">Log Harvest</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left text-left text-left">

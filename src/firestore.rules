@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Robust Reciprocal Partner Removal - 2025-07-25T10:00:00Z
+    // Deployment trigger: Robust Reciprocal Partner Removal & Library Querying - 2025-07-25T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
