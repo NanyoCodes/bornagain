@@ -6,7 +6,7 @@ import { useUser, useFirestore, useDoc } from '@/firebase';
 import { doc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { isToday, format } from 'date-fns';
-import { Skeleton } from '../ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Zap, BookOpen, Loader2, Church, CheckCircle2, Edit, HeartHandshake } from 'lucide-react';
 import { PrayerDialog } from './prayer-dialog';
 import { AttendChurchDialog } from './attend-church-dialog';
@@ -51,7 +51,7 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
             <Link href={`/dashboard/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity text-left">
                 <Avatar className="h-8 w-8 border shadow-sm shrink-0 text-left">
                     <AvatarImage src={livePhotoURL} className="object-cover text-left" />
-                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold text-center flex items-center justify-center h-full w-full">{partner.firstName?.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold text-center flex items-center justify-center w-full h-full text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 text-left">
                     <p className="text-xs font-bold truncate leading-tight group-hover:text-primary transition-colors text-left">{partner.firstName}</p>
@@ -300,7 +300,7 @@ export function DailyDisciplineCard() {
           </div>
         </CardHeader>
         <CardContent className="space-y-8 text-left">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-left text-left">
             {disciplines.map(discipline => {
                 const isCompleted = completedToday.includes(discipline.id);
                 const { Icon, color } = discipline;
@@ -309,19 +309,19 @@ export function DailyDisciplineCard() {
                         key={discipline.id}
                         variant="outline"
                         className={cn(
-                            "relative flex flex-col items-center justify-center gap-3 p-4 h-28 text-center transition-all duration-300 rounded-3xl border-2 text-left",
+                            "relative flex flex-col items-center justify-center gap-3 p-4 h-28 text-center transition-all duration-300 rounded-3xl border-2 text-left text-left",
                             isCompleted ? "bg-primary/5 border-primary/40 shadow-inner" : "hover:bg-muted/50 hover:border-primary/20 hover:-translate-y-1"
                         )}
                         onClick={() => handleDisciplineClick(discipline.id)}
                         disabled={togglingId === discipline.id}
                     >
                     {isCompleted && togglingId !== discipline.id && (
-                        <div className="absolute top-3 right-3 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in text-left text-left">
-                            <CheckCircle2 className="h-4 w-4 text-primary-foreground fill-current text-left text-left" />
+                        <div className="absolute top-3 right-3 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in text-left">
+                            <CheckCircle2 className="h-4 w-4 text-primary-foreground fill-current text-left" />
                         </div>
                     )}
                         {togglingId === discipline.id ? (
-                            <Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left" />
+                            <Loader2 className="h-8 w-8 animate-spin text-primary text-left" />
                         ) : (
                             <>
                                 <Icon className={cn("h-8 w-8 transition-transform duration-300 group-hover:scale-110 text-left", isCompleted ? "text-primary fill-current opacity-40" : color)} />
