@@ -160,7 +160,7 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
           {soul && (
             <>
               <div className="p-8 border-b flex-shrink-0 bg-muted/10">

@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import * as React from "react";
 import { useState, useMemo, useCallback, useEffect } from "react";
@@ -415,7 +414,7 @@ function ShareWordDialog({
           </DialogHeader>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}>
-            <X className="h-5 w-5 sm:h-6 w-6" />
+            <X className="h-5 w-5 sm:h-6 sm:w-6" />
         </Button>
       </div>
     </div>
@@ -1441,4 +1440,3 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
     </div>
   );
 }
-

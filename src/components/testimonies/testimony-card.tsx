@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Testimony, TestimonyComment, UserProfile } from "@/lib/types";
+import { Testimony, UserProfile } from "@/lib/types";
 import { format } from "date-fns";
 import { 
   Share2, 
@@ -22,7 +22,7 @@ import {
   PartyPopper,
   ImageIcon,
   PlayCircle,
-  X
+  Users
 } from "lucide-react";
 import { useUser, useDoc, useCollection, useFirestore } from "@/firebase";
 import { useState, useMemo } from "react";
@@ -47,6 +47,39 @@ import { CommentSection } from "./comment-section";
 import { Separator } from "../ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import Image from 'next/image';
+
+/**
+ * Ensures the profile photo displayed in the card is always the most recent version.
+ */
+function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
+    const firestore = useFirestore();
+    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    const photoURL = profile?.photoURL;
+    
+    return (
+        <Dialog>
+            <DialogTrigger asChild disabled={!photoURL}>
+                <div className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
+                    <Avatar className="h-full w-full border shadow-sm">
+                        <AvatarImage src={photoURL} className="object-contain" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{fallbackInitials || 'U'}</AvatarFallback>
+                    </Avatar>
+                </div>
+            </DialogTrigger>
+            {photoURL && (
+                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
+                    <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
+                    <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
+                            <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
+                        </div>
+                    </div>
+                </DialogContent>
+            )}
+        </Dialog>
+    );
+}
 
 export const TestimonyCard = React.memo(function TestimonyCard({ 
   testimony, 
@@ -79,15 +112,12 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const [showFullPrayer, setShowFullPrayer] = React.useState(false);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
-  const authorProfileRef = useMemo(() => testimony.authorId ? doc(firestore, 'users', String(testimony.authorId)) : null, [firestore, testimony.authorId]);
-  const { data: authorProfile } = useDoc<UserProfile>(authorProfileRef);
-
   const isAuthor = user?.uid === testimony.authorId;
   
-  const authorFirstName = authorProfile?.firstName || testimony.authorFirstName;
-  const authorLastName = authorProfile?.lastName || testimony.authorLastName;
+  const authorFirstName = testimony.authorFirstName;
+  const authorLastName = testimony.authorLastName;
   const authorFullName = [authorFirstName, authorLastName].filter(Boolean).join(' ').trim() || 'Anonymous';
-  const authorAvatarUrl = authorProfile?.photoURL || testimony.authorAvatarUrl;
+  const authorAvatarUrl = testimony.authorAvatarUrl;
   
   const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${testimony.authorId}`;
   const initials = (authorFirstName?.charAt(0) || '') + (authorLastName?.charAt(0) || '');
@@ -108,20 +138,17 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   }, [testimony.createdAt]);
   
   const locationString = useMemo(() => {
-    const profileLoc = authorProfile?.location;
     const testimonyLoc = testimony.authorLocation;
-    
-    const city = profileLoc?.city || testimonyLoc?.city;
-    const country = profileLoc?.country || testimonyLoc?.country;
-    
+    const city = testimonyLoc?.city;
+    const country = testimonyLoc?.country;
     return [city, country].filter(Boolean).join(', ') || 'Global Community';
-  }, [authorProfile, testimony.authorLocation]);
+  }, [testimony.authorLocation]);
 
   const commentsQuery = useMemo(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'testimonies', testimony.id, 'comments'));
   }, [firestore, testimony.id]);
-  const { data: comments } = useCollection<TestimonyComment>(commentsQuery);
+  const { data: comments } = useCollection<{id: string}>(commentsQuery);
   const commentCount = comments?.length || 0;
 
   React.useEffect(() => {
@@ -183,7 +210,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     const requestId = participantIds.join('_');
     const requestRef = doc(firestore, 'accountabilityRequests', requestId);
     const newRequestData = { fromUserId: user.uid, fromUserFirstName: currentUserProfile.firstName || '', fromUserLastName: currentUserProfile.lastName || '', fromUserPhotoURL: currentUserProfile.photoURL || '', toUserId: testimony.authorId, toUserFirstName: authorFirstName || '', toUserLastName: authorLastName || '', toUserPhotoURL: authorAvatarUrl || '', status: 'pending' as const, createdAt: serverTimestamp(), participantIds };
-    const notificationData = { userId: testimony.authorId, type: 'accountability_request' as const, title: 'New Accountability Request', message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} wants to be your partner after seeing your testimony!`, link: '/dashboard/accountability', isRead: false, createdAt: serverTimestamp() };
+    const notificationData = { userId: testimony.authorId, type: 'accountability_request' as const, title: 'New Accountability Request', message: `${currentUserProfile.firstName} ${userProfile?.lastName || ''} wants to be your partner!`, link: '/dashboard/accountability', isRead: false, createdAt: serverTimestamp() };
     try {
         await setDoc(requestRef, newRequestData);
         await addDoc(collection(firestore, 'users', testimony.authorId, 'notifications'), notificationData);
