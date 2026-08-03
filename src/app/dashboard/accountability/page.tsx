@@ -67,7 +67,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { format } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import { useSearch } from '@/context/search-context';
 import { cn, safeToDate } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -454,12 +454,13 @@ export default function AccountabilityPage() {
     const partnerId = removalTarget.userId;
     const partnerName = removalTarget.firstName;
     
-    // UI Logic: Close dialog and set loading state immediately
+    // Non-blocking UI reset pattern
     setIsRemoving(partnerId);
     const targetToRemove = removalTarget;
     setRemovalTarget(null);
 
-    const performRemoval = async () => {
+    // Immediate background logic with sendResponse calls in every path
+    (async () => {
         try {
             const batch = writeBatch(firestore);
             const requestId = [user.uid, partnerId].sort().join('_');
@@ -512,10 +513,9 @@ export default function AccountabilityPage() {
             setIsRemoving(null); 
             setRemovalReason(''); 
         }
-    };
+    })();
 
-    performRemoval();
-    return true; 
+    return true; // Asynchronous intent signaled
   };
 
   if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left">Establishing Connection...</p></div>;

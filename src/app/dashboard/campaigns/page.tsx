@@ -228,7 +228,7 @@ export default function CampaignsPage() {
     setCampaignToDelete(null);
     setIsDeleting(true);
 
-    const performDeletion = async () => {
+    (async () => {
         try {
             await updateDoc(campaignRef, deleteData);
             toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
@@ -247,9 +247,8 @@ export default function CampaignsPage() {
         } finally {
             setIsDeleting(false);
         }
-    };
+    })();
 
-    performDeletion();
     return true; // Signal asynchronous intent
   };
 
@@ -483,8 +482,8 @@ export default function CampaignsPage() {
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Launch New Mission</SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-1 text-left">Mobilize for the harvest by setting clear mission goals.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Launch New Mission</SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Mobilize for the harvest by setting clear mission goals.</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow text-left">
@@ -498,15 +497,15 @@ export default function CampaignsPage() {
         <Dialog open={isCreateOpen} onOpenChange={(open) => { setIsCreateOpen(open); if(!open) router.refresh(); }}>
           <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
             <div className="p-8 border-b bg-muted/10 text-left">
-                <DialogHeader className="text-left">
-                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Create a New Mission</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">
+                <DialogHeader className="text-left text-left">
+                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left">Create a New Mission</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left text-left">
                         Fill in the details below to organize your soul-winning efforts.
                     </DialogDescription>
                 </DialogHeader>
             </div>
             <ScrollArea className="max-h-[70vh] text-left">
-                <div className="p-8 text-left">
+                <div className="p-8 text-left text-left">
                     {formContent}
                 </div>
             </ScrollArea>
@@ -518,10 +517,10 @@ export default function CampaignsPage() {
       {mounted && isMobile ? (
         <Sheet open={!!campaignToManage} onOpenChange={(open) => { if (!open) setCampaignToManage(null); router.refresh(); }}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Manage Mission</SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-1 text-left">Update mission progress and logistical details.</SheetDescription>
+                <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Manage Mission</SheetTitle>
+                <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Update mission progress and logistical details.</SheetDescription>
               </SheetHeader>
             </div>
             <ScrollArea className="flex-grow text-left">
@@ -543,11 +542,11 @@ export default function CampaignsPage() {
         </Sheet>
       ) : (
         <Dialog open={!!campaignToManage} onOpenChange={(open) => { if (!open) setCampaignToManage(null); router.refresh(); }}>
-          <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-             <div className="p-8 border-b bg-muted/10 text-left">
-                <DialogHeader className="text-left">
-                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Manage Mission</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">Update the details or status of your campaign.</DialogDescription>
+          <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+             <div className="p-8 border-b bg-muted/10 text-left text-left">
+                <DialogHeader className="text-left text-left">
+                    <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left">Manage Mission</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left text-left">Update the details or status of your campaign.</DialogDescription>
                 </DialogHeader>
             </div>
             <ScrollArea className="max-h-[80vh] text-left">
@@ -572,9 +571,9 @@ export default function CampaignsPage() {
       {/* Action Dialogs */}
       <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => { if (!open) setCampaignToDelete(null); router.refresh(); }}>
         <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
-          <AlertDialogHeader className="text-left">
+          <AlertDialogHeader className="text-left text-left">
               <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Mission?</AlertDialogTitle>
-              <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
+              <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">
                   This will permanently remove the campaign and all associated data. This action cannot be undone.
               </AlertDialogDescription>
           </AlertDialogHeader>
@@ -593,8 +592,8 @@ export default function CampaignsPage() {
         <Sheet open={!!campaignForTestimony} onOpenChange={(open) => { if (!open) setCampaignForTestimony(null); router.refresh(); }}>
           <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-              <SheetHeader className="text-left">
-                <SheetTitle className="text-2xl font-black font-headline text-left">Share Victory</SheetTitle>
+              <SheetHeader className="text-left text-left">
+                <SheetTitle className="text-2xl font-black font-headline text-left text-left">Share Victory</SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-1 text-left">What has God done during "{campaignForTestimony?.title}"?</SheetDescription>
               </SheetHeader>
             </div>
@@ -615,9 +614,9 @@ export default function CampaignsPage() {
         <Dialog open={!!campaignForTestimony} onOpenChange={(open) => { if (!open) setCampaignForTestimony(null); router.refresh(); }}>
             <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
                  <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Share Victory</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">
+                    <DialogHeader className="text-left text-left text-left">
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left">Share Victory</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left">
                             Encourage others by sharing what God has done during this mission.
                         </DialogDescription>
                     </DialogHeader>
@@ -640,9 +639,9 @@ export default function CampaignsPage() {
       {mounted && isMobile ? (
         <Sheet open={!!campaignForSoul} onOpenChange={(open) => { if (!open) setCampaignForSoul(null); router.refresh(); }}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-2xl font-black font-headline text-left">Log Harvest</SheetTitle>
+                <SheetTitle className="text-2xl font-black font-headline text-left text-left">Log Harvest</SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-1 text-left">Record a soul won in "{campaignForSoul?.title}".</SheetDescription>
               </SheetHeader>
             </div>
@@ -665,8 +664,8 @@ export default function CampaignsPage() {
             <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
                 <div className="p-8 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Log Harvest</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">
+                        <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left text-left">Log Harvest</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left">
                             Record the details of the person won during this mission.
                         </DialogDescription>
                     </DialogHeader>
@@ -689,4 +688,3 @@ export default function CampaignsPage() {
     </div>
   );
 }
-

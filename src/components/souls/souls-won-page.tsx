@@ -86,9 +86,8 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Papa from 'papaparse';
 import Link from 'next/link';
 
-// Correctly importing the SoulsWonTable from the barrel file and fixing dynamic promise resolution
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
-  loading: () => <div className="flex justify-center p-12 text-left"><Loader2 className="h-8 w-8 animate-spin text-left" /></div>,
+  loading: () => <div className="flex justify-center p-12 text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-left text-left text-left" /></div>,
   ssr: false
 });
 
@@ -102,14 +101,14 @@ const SoulAssessmentDialog = dynamic(() => import('@/components/souls/soul-asses
 function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul: (soul: Soul) => void }) {
   if (!souls || souls.length === 0) {
     return (
-      <div className="text-center py-10 text-left">
-        <p className="text-sm text-muted-foreground italic text-left">No souls found in this age group.</p>
+      <div className="text-center py-10 text-left text-left text-left">
+        <p className="text-sm text-muted-foreground italic text-left text-left text-left">No souls found in this age group.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2 pb-4 text-left">
+    <div className="space-y-2 pb-4 text-left text-left text-left">
       {souls.map((soul) => {
         const wonAt = safeToDate(soul.wonAt);
         return (
@@ -117,24 +116,23 @@ function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
             key={soul.id} 
             variant="ghost"
             onClick={() => onSelectSoul(soul)}
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98] text-left"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98] text-left text-left text-left"
           >
-            <div className="flex items-center gap-3 min-w-0 text-left text-left">
-                <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left text-left">
-                <AvatarImage src={soul.photoURL || undefined} className="object-contain" />
-                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+            <div className="flex items-center gap-3 min-w-0 text-left text-left text-left text-left">
+                <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left text-left text-left text-left">
+                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left text-left text-left text-left text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
-                <div className="min-w-0 text-left text-left">
-                    <div className="flex items-center gap-2 text-left flex-wrap text-left">
-                        <p className="font-black text-sm truncate uppercase tracking-tight text-left text-left">{soul.firstName} {soul.lastName}</p>
-                        <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left text-left">{soul.status}</Badge>
+                <div className="min-w-0 text-left text-left text-left text-left">
+                    <div className="flex items-center gap-2 text-left flex-wrap text-left text-left text-left text-left">
+                        <p className="font-black text-sm truncate uppercase tracking-tight text-left text-left text-left text-left text-left text-left">{soul.firstName} {soul.lastName}</p>
+                        <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left text-left text-left text-left text-left text-left">{soul.status}</Badge>
                     </div>
-                    <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left text-left">
+                    <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left text-left text-left text-left text-left text-left">
                         Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
                     </p>
                 </div>
             </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 text-left" />
+            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 text-left text-left text-left" />
           </Button>
         );
       })}
@@ -443,7 +441,7 @@ export default function SoulsWonPage() {
     setDeleteSoulId(null);
     setIsDeleting(true);
 
-    const performDeletion = async () => {
+    (async () => {
         try {
             const batch = writeBatch(firestore);
             batch.delete(soulRef);
@@ -460,9 +458,8 @@ export default function SoulsWonPage() {
         } finally {
             setIsDeleting(false);
         }
-    };
+    })();
 
-    performDeletion();
     return true; // Signal async intent
   };
 
@@ -522,7 +519,7 @@ export default function SoulsWonPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left text-left text-left text-left text-left text-left text-left">
                         <div className="space-y-1 text-left text-left text-left text-left">
                             <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left text-left text-left">MY HARVEST</h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left text-left text-left">
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left text-left text-left text-left">
                                 <ClipboardList className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" /> Logged Records
                             </p>
                         </div>
@@ -741,7 +738,7 @@ export default function SoulsWonPage() {
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
-                                <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left text-left">
+                                <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left text-left text-left text-left text-left text-left">

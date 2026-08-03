@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -317,7 +318,7 @@ export function DailyDisciplineCard() {
                     >
                     {isCompleted && togglingId !== discipline.id && (
                         <div className="absolute top-3 right-3 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in text-left">
-                            <CheckCircle2 className="h-4 w-4 text-primary-foreground fill-current text-left" />
+                            <CheckCircle2 className="h-4 w-4 text-primary-foreground fill-current text-left text-left" />
                         </div>
                     )}
                         {togglingId === discipline.id ? (
