@@ -223,7 +223,7 @@ export default function CampaignsPage() {
         deletedAt: serverTimestamp(),
     };
 
-    // Reset state immediately to prevent Radix UI unmount hang
+    // Reset state immediately to prevent focus lock
     setCampaignToDelete(null);
     setIsDeleting(true);
 
@@ -248,7 +248,7 @@ export default function CampaignsPage() {
         }
     })();
 
-    return true; // Signal asynchronous intent
+    return true; 
   };
 
   const processedCampaigns = useMemo(() => {

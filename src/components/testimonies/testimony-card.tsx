@@ -117,7 +117,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   
   const authorFirstName = testimony.authorFirstName;
   const authorLastName = testimony.authorLastName;
-  const authorFullName = [authorFirstName, authorLastName].filter(Boolean).join(' ').trim() || 'Anonymous';
+  const authorFullName = [authorFirstName, authorLastName].filter(Boolean).join(' ').trim() || 'Kingdom Believer';
   const authorAvatarUrl = testimony.authorAvatarUrl;
   
   const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${testimony.authorId}`;
@@ -295,9 +295,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                     <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14" />
                 )}
                 <div className="min-w-0 flex-1 text-left">
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap text-left">
                         <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
-                            <h3 className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize leading-none">{authorFullName}</h3>
+                            <h3 className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize leading-none text-left">{authorFullName}</h3>
                         </Link>
                         {isPartner && <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20 shrink-0">Partner</Badge>}
                         {!isAuthor && !isPartner && currentUserProfile && (
@@ -313,10 +313,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                             </TooltipProvider>
                         )}
                     </div>
-                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5">
-                        <div className="truncate text-[10px] sm:text-xs opacity-70">{displayDate}</div>
-                        <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
-                        <div className="mt-1.5 flex gap-2">
+                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left">
+                        <div className="truncate text-[10px] sm:text-xs opacity-70 text-left">{displayDate}</div>
+                        <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium text-left"><Globe className="h-3 w-3 text-primary shrink-0" /> {locationString}</div>
+                        <div className="mt-1.5 flex gap-2 text-left">
                             <Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">
                                 {testimony.category}
                             </Badge>
@@ -331,17 +331,17 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 {isAuthor && (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={(e) => {e.stopPropagation();}}><MoreVertical className="h-4 w-4" /><span className="sr-only">Options</span></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-xl"><DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Manage Story</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onClick={handleSafeEdit} className="rounded-lg"><Edit className="mr-2 h-4 w-4 text-primary" /><span>Edit Testimony</span></DropdownMenuItem><DropdownMenuItem onClick={handleSafeDelete} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg"><Trash2 className="mr-2 h-4 w-4" /><span>Delete Permanently</span></DropdownMenuItem></DropdownMenuContent>
+                    <DropdownMenuContent align="end" className="w-48 rounded-xl"><DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Manage Story</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onClick={handleSafeEdit} className="rounded-lg text-left"><Edit className="mr-2 h-4 w-4 text-primary" /><span>Edit Testimony</span></DropdownMenuItem><DropdownMenuItem onClick={handleSafeDelete} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg text-left"><Trash2 className="mr-2 h-4 w-4" /><span>Delete Permanently</span></DropdownMenuItem></DropdownMenuContent>
                 </DropdownMenu>
                 )}
             </div>
           </div>
         </div>
         
-        <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4">
+        <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4 text-left">
           <div className="text-sm sm:text-base text-muted-foreground leading-relaxed text-left">
             <div className={cn("leading-relaxed text-left max-w-full", (testimony.mediaUrl || testimony.mediaUrl2) ? "line-clamp-3" : "line-clamp-6")}>
-                <div ref={contentRef}>{testimony.content}</div>
+                <div ref={contentRef} className="text-left">{testimony.content}</div>
             </div>
             {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1 text-left" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
           </div>
@@ -374,18 +374,18 @@ export const TestimonyCard = React.memo(function TestimonyCard({
 
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
             <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden text-left">
-                <div className="p-4">
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1">Answer to Prayer Request:</div>
+                <div className="p-4 text-left">
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1 text-left">Answer to Prayer Request:</div>
                     <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground text-left">
-                        <div className="line-clamp-2">
-                           <div ref={prayerRef}>{testimony.answeredPrayerContent}</div>
+                        <div className="line-clamp-2 text-left">
+                           <div ref={prayerRef} className="text-left">{testimony.answeredPrayerContent}</div>
                         </div>
                     </div>
                     {isPrayerTruncated && (
                         <Button 
                             variant="link" 
                             size="sm" 
-                            className="p-0 h-auto self-start text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 mt-2 hover:no-underline"
+                            className="p-0 h-auto self-start text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 mt-2 hover:no-underline text-left"
                             onClick={(e) => { e.stopPropagation(); setShowFullPrayer(true); }}
                         >
                             Read Full Request
@@ -433,13 +433,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <>
                     <Sheet open={showFullText} onOpenChange={setShowFullText}>
                         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline">Kingdom Testimony</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
+                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Kingdom Testimony</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
                             <div className="flex-grow min-h-0 pt-8 px-6 text-left">{fullTextContent}</div>
                         </SheetContent>
                     </Sheet>
                     <Sheet open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <SheetContent side="bottom" className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-amber-500/10"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline uppercase text-amber-600">Answered Prayer</SheetTitle><SheetDescription className="text-sm font-medium mt-1">The specific request that God has fulfilled.</SheetDescription></SheetHeader></div>
+                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline uppercase text-amber-600">Answered Prayer</SheetTitle><SheetDescription className="text-sm font-medium mt-1">The specific request that God has fulfilled.</SheetDescription></SheetHeader></div>
                             <ScrollArea className="flex-grow px-8 py-10 text-left">
                                 {fullPrayerContent}
                             </ScrollArea>

@@ -325,7 +325,7 @@ function TestimoniesContent() {
         }
     })();
 
-    return true; // Signal asynchronous intent
+    return true; 
   };
 
   const testimonyFormContent = userProfile ? (
@@ -349,7 +349,7 @@ function TestimoniesContent() {
                 <div className="flex flex-row items-center gap-2 sm:gap-4 w-full text-left">
                     <Button 
                     variant="outline" 
-                    className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed"
+                    className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed text-left"
                     onClick={() => setIsTestimonyDialogOpen(true)}
                     disabled={loading}
                     >

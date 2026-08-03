@@ -59,7 +59,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest, SoulRelationship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
-import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment, deleteDoc } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
@@ -118,10 +118,10 @@ function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
             className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98]"
           >
             <div className="flex items-center gap-3 min-w-0 text-left">
-                <Avatar className="h-10 w-10 border shadow-sm shrink-0">
-                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+                <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
+                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
-                <div className="min-w-0">
+                <div className="min-w-0 text-left">
                     <div className="flex items-center gap-2 text-left flex-wrap">
                         <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                         <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left">{soul.status}</Badge>
@@ -597,10 +597,10 @@ export default function SoulsWonPage() {
                                                     </div>
                                                 </div>
                                             </DialogTrigger>
-                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
+                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                                                 <DialogHeader className="sr-only text-left"><DialogTitle className="text-left">Soul Photo</DialogTitle></DialogHeader>
-                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
-                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
+                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
                                                         <Image 
                                                             src={s.photoURL!} 
                                                             alt={s.firstName} 
@@ -673,7 +673,7 @@ export default function SoulsWonPage() {
                     </Card>
                 </div>
 
-                <div className="px-4 sm:px-0 text-left text-left text-left">
+                <div className="px-4 sm:px-0 text-left text-left text-left text-left">
                     <RelationshipCircleTracker 
                         souls={souls || []}
                         campaigns={campaigns || []}
@@ -713,7 +713,7 @@ export default function SoulsWonPage() {
                                 <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Harvest Demographic</span>
                             </div>
-                            <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left">
+                            <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left text-left text-left text-left">{selectedAgeGroup} Directory</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
                             </SheetHeader>
@@ -736,15 +736,15 @@ export default function SoulsWonPage() {
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
-                                <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
+                                <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Demographic View</span>
                             </div>
-                            <DialogHeader className="text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedAgeGroup} Directory</DialogTitle>
-                                <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this age group.</DialogDescription>
+                            <DialogHeader className="text-left text-left text-left text-left text-left text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">{selectedAgeGroup} Directory</DialogTitle>
+                                <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Viewing all souls within this age group.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="max-h-[60vh] text-left text-left text-left text-left text-left">
+                        <ScrollArea className="max-h-[60vh] text-left text-left">
                             <div className="p-4 sm:p-8 text-left">
                                 <AgeGroupSoulList 
                                   souls={activeAgeGroupSouls} 
@@ -773,7 +773,7 @@ export default function SoulsWonPage() {
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
             <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left">
                 <AlertDialogHeader className="text-left text-left text-left text-left text-left">
-                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left text-left text-left">Delete Record?</AlertDialogTitle>
+                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left text-left text-left text-left">Delete Record?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left">
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
                     </AlertDialogDescription>
@@ -793,8 +793,8 @@ export default function SoulsWonPage() {
                 <>
                     <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
-                                <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm text-left text-left text-left text-left text-left text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
+                                <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm text-left text-left text-left text-left text-left text-left text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left text-left text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
@@ -803,8 +803,8 @@ export default function SoulsWonPage() {
                     </Sheet>
                     <Sheet open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
-                                <SheetHeader className="text-left text-left text-left text-left text-left text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left text-left text-left text-left text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
+                                <SheetHeader className="text-left text-left text-left text-left text-left text-left text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left text-left text-left text-left text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left text-left text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
@@ -846,4 +846,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-
