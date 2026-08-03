@@ -82,6 +82,21 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
     );
 }
 
+/**
+ * Robustly fetches and identifies the author's name, falling back to Google display names.
+ */
+function LiveAuthorName({ userId, fallbackFirstName, fallbackLastName }: { userId: string, fallbackFirstName: string, fallbackLastName: string }) {
+    const firestore = useFirestore();
+    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
+    
+    const firstName = profile?.firstName || fallbackFirstName;
+    const lastName = profile?.lastName || fallbackLastName;
+    const fullName = [firstName, lastName].filter(Boolean).join(' ').trim() || 'Kingdom Believer';
+    
+    return <h3 className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize leading-none text-left">{fullName}</h3>;
+}
+
 export const TestimonyCard = React.memo(function TestimonyCard({ 
   testimony, 
   onDelete, 
@@ -117,7 +132,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   
   const authorFirstName = testimony.authorFirstName;
   const authorLastName = testimony.authorLastName;
-  const authorFullName = [authorFirstName, authorLastName].filter(Boolean).join(' ').trim() || 'Kingdom Believer';
   const authorAvatarUrl = testimony.authorAvatarUrl;
   
   const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${testimony.authorId}`;
@@ -173,16 +187,14 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const handleShare = async (e?: React.MouseEvent) => {
     if (e) { e.preventDefault(); e.stopPropagation(); }
     const shareUrl = `${window.location.origin}/testimonies#${testimony.id}`;
-    const titleText = `Testimony from ${authorFullName} on Testify!`;
-    const text = `Read what God has done! "${testimony.content.substring(0, 150)}..."`;
-    const shareData = { title: titleText, text, url: shareUrl };
+    const shareData = { title: 'Glory Feed Story', text: testimony.content.substring(0, 150) + '...', url: shareUrl };
     try {
       if (navigator && navigator.share) await navigator.share(shareData);
       else throw new Error();
     } catch (err: any) {
         if (err.name === 'AbortError') return;
         try {
-          await navigator.clipboard.writeText(`${titleText} ${shareUrl}`);
+          await navigator.clipboard.writeText(shareUrl);
           toast({ title: "Link Copied!" });
         } catch (clipErr) {}
     }
@@ -297,7 +309,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <div className="min-w-0 flex-1 text-left">
                     <div className="flex items-center gap-2 flex-wrap text-left">
                         <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
-                            <h3 className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize leading-none text-left">{authorFullName}</h3>
+                            <LiveAuthorName userId={String(testimony.authorId)} fallbackFirstName={authorFirstName} fallbackLastName={authorLastName} />
                         </Link>
                         {isPartner && <Badge variant="secondary" className="h-4 px-1.5 text-[9px] uppercase font-bold tracking-tighter bg-primary/10 text-primary border-primary/20 shrink-0">Partner</Badge>}
                         {!isAuthor && !isPartner && currentUserProfile && (
@@ -305,7 +317,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <Button variant="ghost" size="icon" className={cn("h-6 w-6 rounded-full transition-colors", hasPendingRequest ? "text-muted-foreground" : "text-primary hover:bg-primary/10")} onClick={handleSendPartnerRequest} disabled={isRequestingPartner || hasPendingRequest}>
-                                            {isRequestingPartner ? <Loader2 className="h-3 w-3 animate-spin" /> : hasPendingRequest ? <Hourglass className="h-3 w-3" /> : <UserPlus className="h-3 w-3" />}
+                                            {isRequestingPartner ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : hasPendingRequest ? <Hourglass className="h-3.5 w-3.5" /> : <UserPlus className="h-3.5 w-3.5" />}
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className={cn("text-[10px] uppercase font-black tracking-widest")}>{hasPendingRequest ? "Request Pending" : "Add Accountability Partner"}</p></TooltipContent>
@@ -433,7 +445,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 <>
                     <Sheet open={showFullText} onOpenChange={setShowFullText}>
                         <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Kingdom Testimony</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
+                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Kingdom Testimony</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left">BY {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
                             <div className="flex-grow min-h-0 pt-8 px-6 text-left">{fullTextContent}</div>
                         </SheetContent>
                     </Sheet>

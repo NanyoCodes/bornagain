@@ -210,27 +210,27 @@ export default function CampaignsPage() {
   };
 
   const handleDeleteCampaign = () => {
-    const sendResponse = (res: any) => console.log('Campaign deletion confirmed:', res);
+    const sendResponse = (res: any) => console.log('Campaign deletion result:', res);
     if (!campaignToDelete || !user || !firestore) {
         sendResponse({ success: false });
         return;
     }
     
-    const campaignRef = doc(firestore, 'campaigns', campaignToDelete.id);
+    const campaignId = campaignToDelete.id;
+    const campaignRef = doc(firestore, 'campaigns', campaignId);
     const deleteData = {
         status: 'deleted',
         deletionReason: 'Campaign deleted by organizer.',
         deletedAt: serverTimestamp(),
     };
 
-    // Reset state immediately to prevent focus lock
     setCampaignToDelete(null);
     setIsDeleting(true);
 
     (async () => {
         try {
             await updateDoc(campaignRef, deleteData);
-            toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
+            toast({ title: 'Campaign Deleted' });
             sendResponse({ success: true });
             router.refresh();
         } catch (error: any) {
@@ -383,8 +383,8 @@ export default function CampaignsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 text-left">
         <div className="lg:col-span-8 space-y-8 pb-32 text-left">
             {/* Interaction Box */}
-            <Card className="border shadow-sm sm:shadow-md rounded-2xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
-            <CardContent className="p-3 sm:p-6 text-left">
+            <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-3xl border-x-0 sm:border-x -mx-3 sm:mx-0 text-left bg-card/50 backdrop-blur-sm overflow-hidden">
+                <CardContent className="p-3 sm:p-6 text-left">
                 <div className="flex flex-row items-center gap-2 sm:gap-4 w-full text-left">
                 <Button 
                     variant="outline" 
@@ -413,7 +413,7 @@ export default function CampaignsPage() {
                     </Button>
                 </div>
                 </div>
-            </CardContent>
+                </CardContent>
             </Card>
 
             <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between px-0 text-left">
