@@ -86,7 +86,7 @@ import Papa from 'papaparse';
 import Link from 'next/link';
 
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
-  loading: () => <div className="flex justify-center p-12 text-left text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-left text-left text-left" /></div>,
+  loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,
   ssr: false
 });
 
@@ -100,7 +100,7 @@ const SoulAssessmentDialog = dynamic(() => import('@/components/souls/soul-asses
 function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul: (soul: Soul) => void }) {
   if (!souls || souls.length === 0) {
     return (
-      <div className="text-center py-10 text-left">
+      <div className="text-center py-10">
         <p className="text-sm text-muted-foreground italic text-left">No souls found in this age group.</p>
       </div>
     );
@@ -115,14 +115,14 @@ function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
             key={soul.id} 
             variant="ghost"
             onClick={() => onSelectSoul(soul)}
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98] text-left"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98]"
           >
             <div className="flex items-center gap-3 min-w-0 text-left">
-                <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
-                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+                <Avatar className="h-10 w-10 border shadow-sm shrink-0">
+                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
-                <div className="min-w-0 text-left">
-                    <div className="flex items-center gap-2 text-left flex-wrap text-left">
+                <div className="min-w-0">
+                    <div className="flex items-center gap-2 text-left flex-wrap">
                         <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
                         <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left">{soul.status}</Badge>
                     </div>
@@ -131,7 +131,7 @@ function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
                     </p>
                 </div>
             </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 text-left" />
+            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
           </Button>
         );
       })}
@@ -436,7 +436,6 @@ export default function SoulsWonPage() {
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
     const globalSoulRef = doc(firestore, 'souls', soulId);
 
-    // Reset selection immediately to prevent unmount freeze
     setDeleteSoulId(null);
     setIsDeleting(true);
 
@@ -459,7 +458,7 @@ export default function SoulsWonPage() {
         }
     })();
 
-    return true; // Signal async intent
+    return true; 
   };
 
   const handleAssignGroup = (soul: Soul, fellowshipId: string, groupType: 'Fellowship' | 'Association') => {
