@@ -533,7 +533,9 @@ export default function ProfilePage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left text-left text-left text-left">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left text-left text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left text-left"><CardTitle className="text-base sm:text-lg text-left text-left text-left">Testimonies ({testimonies?.length ?? 0})</CardTitle></CardHeader>
+                    <CardHeader className="p-5 sm:p-6 text-left text-left text-left">
+                        <CardTitle className="text-base sm:text-lg text-left text-left text-left">Testimonies ({testimonies?.length ?? 0})</CardTitle>
+                    </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0 text-left text-left text-left">
                         <FilterControls 
                             searchTerm={testimonySearchTerm}
@@ -560,7 +562,9 @@ export default function ProfilePage() {
                 </Card>
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left text-left"><CardTitle className="text-base sm:text-lg text-left text-left text-left">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle></CardHeader>
+                    <CardHeader className="p-5 sm:p-6 text-left text-left text-left">
+                        <CardTitle className="text-base sm:text-lg text-left text-left text-left">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle>
+                    </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0 text-left text-left text-left">
                          <FilterControls 
                             searchTerm={prayerSearchTerm}
@@ -587,9 +591,11 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left text-left text-left text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left text-left text-left text-left text-left">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left text-left text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left text-left text-left text-left"><CardTitle className="text-base sm:text-lg text-left text-left text-left text-left">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle></CardHeader>
+                    <CardHeader className="p-5 sm:p-6 text-left text-left text-left text-left">
+                        <CardTitle className="text-base sm:text-lg text-left text-left text-left text-left">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle>
+                    </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0 text-left text-left text-left text-left">
                          <FilterControls 
                             searchTerm={createdCampaignSearchTerm}
@@ -616,7 +622,9 @@ export default function ProfilePage() {
                 </Card>
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left text-left text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left text-left text-left text-left"><CardTitle className="text-base sm:text-lg text-left text-left text-left text-left">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle></CardHeader>
+                    <CardHeader className="p-5 sm:p-6 text-left text-left text-left text-left">
+                        <CardTitle className="text-base sm:text-lg text-left text-left text-left text-left">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle>
+                    </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0 text-left text-left text-left text-left">
                          <FilterControls 
                             searchTerm={joinedCampaignSearchTerm}
@@ -644,7 +652,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left text-left text-left text-left text-left">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left text-left text-left">
                     <CardHeader className="p-5 sm:p-6 text-left text-left text-left text-left">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left text-left text-left text-left">
+                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left text-left text-left text-left text-left">
                             <Users className="h-5 w-5 text-primary text-left text-left text-left text-left" />
                             Fellowships Joined ({joinedFellowships.length})
                         </CardTitle>
@@ -674,7 +682,7 @@ export default function ProfilePage() {
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left text-left text-left">
                     <CardHeader className="p-5 sm:p-6 text-left text-left text-left text-left">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left text-left text-left text-left">
+                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left text-left text-left text-left text-left">
                             <Group className="h-5 w-5 text-primary text-left text-left text-left text-left" />
                             Associations Joined ({joinedAssociations.length})
                         </CardTitle>
@@ -736,7 +744,7 @@ export default function ProfilePage() {
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left text-left text-left">
                     <CardHeader className="p-5 sm:p-6 text-left text-left text-left text-left">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left text-left text-left text-left text-left">
-                            <HeartHandshake className="h-5 w-5 text-primary text-left text-left text-left text-left" />
+                            <HeartHandshake className="h-5 w-5 text-primary text-left text-left text-left text-left text-left" />
                             Partners ({userProfile?.accountabilityPartners?.length ?? 0})
                         </CardTitle>
                     </CardHeader>

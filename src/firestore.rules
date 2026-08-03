@@ -71,8 +71,7 @@ service cloud.firestore {
         isOwner(userId) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline']) && (
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
-          (resource.data.get('partnerIds', []) is list && request.auth.uid in resource.data.get('partnerIds', [])) ||
-          (resource.data.get('partnerIds', []) is list && request.auth.uid in resource.data.partnerIds)
+          (resource.data.get('partnerIds', []) is list && request.auth.uid in resource.data.get('partnerIds', []))
         ))
       );
 
@@ -310,6 +309,18 @@ service cloud.firestore {
         allow get, list: if true;
         allow create, update, delete: if isAuthenticated() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid;
       }
+    }
+
+    match /mealGifts/{giftId} {
+      allow create: if isAuthenticated();
+      allow get, list: if isAuthenticated() && (
+        request.auth.uid == resource.data.get('senderId', '') || 
+        request.auth.uid == resource.data.get('vendorOwnerId', '')
+      );
+      allow update: if isAuthenticated() && (
+        (request.auth.uid == request.resource.data.senderId && request.resource.data.status == 'cancelled' && resource.data.status == 'ordered') ||
+        (request.auth.uid == request.resource.data.vendorOwnerId && request.resource.data.status in ['preparing', 'delivering', 'delivered'] && resource.data.status != 'cancelled')
+      );
     }
 
     match /mealGifts/{giftId} {

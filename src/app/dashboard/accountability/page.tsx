@@ -455,7 +455,6 @@ export default function AccountabilityPage() {
     
     // Non-blocking UI reset pattern
     setIsRemoving(partnerId);
-    const targetToRemove = removalTarget;
     setRemovalTarget(null);
 
     // Immediate background logic
