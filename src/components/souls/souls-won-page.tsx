@@ -577,7 +577,7 @@ export default function SoulsWonPage() {
                                     <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0 text-left text-left text-left text-left text-left">
                                         <Dialog>
                                             <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                                <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-95 transition-all text-left text-left text-left text-left text-left">
+                                                <div className="relative aspect-square rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-95 transition-all text-left text-left text-left text-left text-left bg-muted">
                                                     <Image 
                                                         src={s.photoURL!} 
                                                         alt={s.firstName} 
@@ -781,7 +781,7 @@ export default function SoulsWonPage() {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left text-left text-left">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left" />}
                         Confirm Removal

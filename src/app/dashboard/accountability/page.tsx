@@ -445,7 +445,7 @@ export default function AccountabilityPage() {
   };
 
   const handleRemovePartner = () => {
-    const sendResponse = (res: any) => console.log('Removal process initiated:', res);
+    const sendResponse = (res: any) => console.log('Reciprocal removal initiated:', res);
     if (!user || !firestore || !userProfile?.accountabilityPartners || !removalTarget || !removalReason.trim()) {
         sendResponse({ success: false });
         return;
@@ -459,7 +459,7 @@ export default function AccountabilityPage() {
     const targetToRemove = removalTarget;
     setRemovalTarget(null);
 
-    // Immediate background logic with sendResponse calls in every path
+    // Immediate background logic
     (async () => {
         try {
             const batch = writeBatch(firestore);
@@ -515,7 +515,7 @@ export default function AccountabilityPage() {
         }
     })();
 
-    return true; // Asynchronous intent signaled
+    return true; // Signal async intent
   };
 
   if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left">Establishing Connection...</p></div>;
@@ -574,8 +574,8 @@ export default function AccountabilityPage() {
                         <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left" />
                     </div>
                     <AlertDialogFooter className="gap-3 text-left">
-                        <AlertDialogCancel disabled={isRemoving === removalTarget.userId} className="rounded-xl h-11 text-left">Close</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemovePartner} disabled={isRemoving === removalTarget.userId || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">
+                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left">Close</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">
                             {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <UserX className="mr-2 h-4 w-4 text-left" />}
                             Confirm Removal
                         </AlertDialogAction>

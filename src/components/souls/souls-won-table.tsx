@@ -297,10 +297,10 @@ function ShareWordDialog({
                         onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference, `${window.location.origin}/dashboard/bible`))}
                     >
                         <div className="flex items-center justify-between w-full">
-                            <span className="font-black text-[9px] sm:text-xs uppercase tracking-widest text-primary">{res.reference}</span>
+                            <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{res.reference}</span>
                             <Send className="h-3.5 w-3.5 sm:h-4 w-4 text-primary opacity-40" />
                         </div>
-                        <p className="text-xs sm:text-base text-muted-foreground leading-relaxed italic line-clamp-4">"{res.text.trim()}"</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic line-clamp-4">"{res.text.trim()}"</p>
                     </Button>
                 ))}
             </div>
@@ -415,7 +415,7 @@ function ShareWordDialog({
           </DialogHeader>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}>
-            <X className="h-5 w-5 sm:h-6 sm:w-6" />
+            <X className="h-5 w-5 sm:h-6 w-6" />
         </Button>
       </div>
     </div>
@@ -481,23 +481,19 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
     return (
         <Dialog>
             <DialogTrigger asChild disabled={!photoURL}>
-                <Avatar className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
-                    <AvatarImage src={photoURL} className="object-contain" />
-                    <AvatarFallback className="font-bold bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{fallbackInitials || 'U'}</AvatarFallback>
-                </Avatar>
+                <div className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
+                    <Avatar className="h-full w-full border shadow-sm">
+                        <AvatarImage src={photoURL} className="object-contain" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{fallbackInitials || 'U'}</AvatarFallback>
+                    </Avatar>
+                </div>
             </DialogTrigger>
             {photoURL && (
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                    <DialogHeader className="sr-only text-center"><DialogTitle className="text-center">Profile Photo</DialogTitle></DialogHeader>
+                    <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
                     <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
-                            <Image 
-                                src={photoURL} 
-                                alt="Author" 
-                                fill 
-                                className="object-contain shadow-2xl ring-4 ring-white/10 text-center" 
-                                unoptimized 
-                            />
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
+                            <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                         </div>
                     </div>
                 </DialogContent>
@@ -765,16 +761,21 @@ function SoulProfileContent({
             <div className="relative inline-block mx-auto mb-4 text-center">
                 <Dialog>
                     <DialogTrigger asChild disabled={!soul.photoURL}>
-                        <Avatar className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95 text-center mx-auto", soul.photoURL && "cursor-pointer hover:scale-105")}>
-                            <AvatarImage src={soul.photoURL || undefined} className="object-contain" />
-                            <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0)}</AvatarFallback>
-                        </Avatar>
+                        <div className={cn("h-48 w-48 rounded-square border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95 text-center mx-auto overflow-hidden relative", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                            {soul.photoURL ? (
+                                <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain" unoptimized />
+                            ) : (
+                                <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                                    <span className="text-3xl font-black text-primary">{soul.firstName?.charAt(0)}</span>
+                                </div>
+                            )}
+                        </div>
                     </DialogTrigger>
                     {soul.photoURL && (
                         <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                             <DialogHeader className="sr-only text-center"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
                             <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
@@ -792,11 +793,11 @@ function SoulProfileContent({
                     </Button>
                 )}
             </div>
-            <div className="flex flex-col items-center gap-2 text-center">
-                <CardTitle className="text-xl sm:text-2xl font-black uppercase tracking-tight text-center break-words [overflow-wrap:anywhere] text-balance w-full">
+            <div className="flex flex-col items-center gap-2 text-center text-left text-left">
+                <CardTitle className="text-xl sm:text-2xl font-black uppercase tracking-tight text-center break-words [overflow-wrap:anywhere] text-balance w-full text-left text-left">
                   {soul.firstName} {soul.lastName}
                 </CardTitle>
-                <div className="flex gap-2 justify-center items-center">
+                <div className="flex gap-2 justify-center items-center text-left text-left text-left text-left text-left text-left">
                     <Badge className={cn("h-5 px-2 text-[9px] uppercase font-black tracking-widest justify-center", getStatusClasses(soul.status))} variant="outline">
                         {soul.status}
                     </Badge>
@@ -804,13 +805,13 @@ function SoulProfileContent({
                 </div>
             </div>
         </CardHeader>
-        <CardContent className="p-8 pt-0 space-y-6 text-center">
+        <CardContent className="p-8 pt-0 space-y-6 text-center text-left text-left text-left text-left">
             <Separator className="opacity-50 text-center" />
             
-            <div className="space-y-4 text-center">
-                <div className="flex items-center justify-between">
+            <div className="space-y-4 text-center text-left text-left text-left text-left">
+                <div className="flex items-center justify-between text-left text-left text-left text-left text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Identity</p>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 text-left text-left text-left text-left text-left">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-center">
@@ -1130,13 +1131,13 @@ function SoulProfileContent({
 
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
         <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-          <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+          <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
             <DialogHeader className="text-left text-left text-left text-left text-left">
               <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Support Provided</DialogTitle>
               <DialogDescription className="text-sm font-medium text-left text-left text-left">Describe how you supported {soul.firstName}.</DialogDescription>
             </DialogHeader>
           </div>
-          <div className="p-8 space-y-6 text-left text-left text-left">
+          <div className="p-8 space-y-6 text-left text-left text-left text-left">
             <div className="space-y-2 text-left text-left text-left text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Support Details</Label>
                 <Textarea 
@@ -1440,3 +1441,4 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
     </div>
   );
 }
+
