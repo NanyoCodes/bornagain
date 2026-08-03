@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -391,7 +390,6 @@ export default function ProfilePage() {
     personalMessage, 
     location, 
     phone, 
-    accountabilityPartners,
     maritalStatus,
     workStatus,
     organizationName,
@@ -510,7 +508,7 @@ export default function ProfilePage() {
             <CardContent className="px-6 pb-6 text-left">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
                     {videoTestimonies.map((video, idx) => (
-                        <div key={idx} className="space-y-2 text-left text-left">
+                        <div key={idx} className="space-y-2 text-left text-left text-left">
                             {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate ml-1 text-left">{video.title}</p>}
                             <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-white/5 transition-transform hover:scale-[1.01] text-left">
                                 <iframe
@@ -541,7 +539,7 @@ export default function ProfilePage() {
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
                             filterDate={testimonyFilterDate}
-                            setFilterDate={setTestimonyFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search testimonies..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left">
@@ -706,7 +704,10 @@ export default function ProfilePage() {
             </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left text-left"><CardTitle className="text-base sm:text-lg text-left text-left">Souls Won ({soulsWon?.length ?? 0})</CardTitle></CardHeader>
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
+                    <CardHeader className="p-5 sm:p-6 text-left text-left">
+                        <CardTitle className="text-base sm:text-lg text-left">Souls Won ({soulsWon?.length ?? 0})</CardTitle>
+                    </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0 text-left text-left">
                          <FilterControls 
                             searchTerm={soulSearchTerm}
@@ -725,7 +726,7 @@ export default function ProfilePage() {
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left text-left">{soulsWon?.length === 0 ? 'No souls won yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{soulsWon?.length === 0 ? 'No souls won yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
