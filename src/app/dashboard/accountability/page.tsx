@@ -245,7 +245,7 @@ function PartnerCard({
                       <DialogTrigger asChild disabled={!livePhotoURL}>
                         <div className="relative cursor-pointer active:scale-95 transition-transform hover:scale-105 shrink-0">
                             <Avatar className="h-11 w-11 sm:h-14 sm:w-14 border shadow-sm">
-                                <AvatarImage src={livePhotoURL} className="object-contain" />
+                                <AvatarImage src={livePhotoURL} className="object-cover" />
                                 <AvatarFallback className="font-black text-lg bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         </div>
@@ -445,7 +445,7 @@ export default function AccountabilityPage() {
   };
 
   const handleRemovePartner = () => {
-    const sendResponse = (res: any) => console.log('Removal result:', res);
+    const sendResponse = (res: any) => console.log('Removal process initiated:', res);
     if (!user || !firestore || !userProfile?.accountabilityPartners || !removalTarget || !removalReason.trim()) {
         sendResponse({ success: false });
         return;

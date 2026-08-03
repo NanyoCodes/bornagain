@@ -47,7 +47,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
-import { useUser, useFirestore, useDoc, useUserProfile, useCollection } from "@/firebase";
+import { useUser, useDoc, useUserProfile, useCollection, useFirestore } from "@/firebase";
 import { 
   doc, 
   updateDoc, 
