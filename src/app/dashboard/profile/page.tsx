@@ -539,7 +539,7 @@ export default function ProfilePage() {
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
                             filterDate={testimonyFilterDate}
-                            setFilterDate={setTestimonyFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search testimonies..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left">
@@ -566,7 +566,7 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setPrayerFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left">
@@ -595,14 +595,14 @@ export default function ProfilePage() {
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setCreatedCampaignFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left">
                             <div className="p-1 space-y-px text-left text-left">
                                 {filteredCreatedCampaigns.length > 0 ? (
                                     filteredCreatedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left text-left">
+                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left text-left text-left text-left">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left text-left text-left text-left">{c.title}</p>
                                             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter text-left text-left text-left text-left">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
