@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refined Partner Security Rules - 2025-10-15T14:45:00Z
+    // Deployment trigger: Final Partner Security Fix - 2025-10-25T16:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
