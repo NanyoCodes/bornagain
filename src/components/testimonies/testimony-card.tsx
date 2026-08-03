@@ -209,21 +209,36 @@ export const TestimonyCard = React.memo(function TestimonyCard({
 
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="space-y-8 pb-8 px-2 text-left">
-        {testimony.mediaUrl && (
-          <div className="rounded-[2.5rem] overflow-hidden border-2 shadow-xl bg-black aspect-square relative group/full">
-            {testimony.mediaType === 'image' ? (
-                <Image src={testimony.mediaUrl} alt="Miracle proof" fill className="object-contain" unoptimized />
-            ) : (
-                <video src={testimony.mediaUrl} className="w-full h-full object-contain" controls autoPlay />
+      <div className="space-y-8 pb-8 px-2 text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {testimony.mediaUrl && (
+              <div className="rounded-[2.5rem] overflow-hidden border-2 shadow-xl bg-black aspect-square relative group/full">
+                {testimony.mediaType === 'image' ? (
+                    <Image src={testimony.mediaUrl} alt="Miracle proof 1" fill className="object-contain" unoptimized />
+                ) : (
+                    <video src={testimony.mediaUrl} className="w-full h-full object-contain" controls autoPlay />
+                )}
+                <div className="absolute top-6 left-6 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
+                   <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+                   <span className="text-[10px] font-black text-white uppercase tracking-widest">Evidence 1</span>
+                </div>
+              </div>
             )}
-            <div className="absolute top-6 left-6 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
-               <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-               <span className="text-[10px] font-black text-white uppercase tracking-widest">Miracle Record</span>
-            </div>
-          </div>
-        )}
-        <div className="text-base sm:text-xl text-muted-foreground whitespace-pre-wrap leading-relaxed text-left capitalize font-medium">
+            {testimony.mediaUrl2 && (
+              <div className="rounded-[2.5rem] overflow-hidden border-2 shadow-xl bg-black aspect-square relative group/full">
+                {testimony.mediaType2 === 'image' ? (
+                    <Image src={testimony.mediaUrl2} alt="Miracle proof 2" fill className="object-contain" unoptimized />
+                ) : (
+                    <video src={testimony.mediaUrl2} className="w-full h-full object-contain" controls />
+                )}
+                <div className="absolute top-6 left-6 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 flex items-center gap-2">
+                   <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+                   <span className="text-[10px] font-black text-white uppercase tracking-widest">Evidence 2</span>
+                </div>
+              </div>
+            )}
+        </div>
+        <div className="text-base sm:text-xl text-muted-foreground whitespace-pre-wrap leading-relaxed text-center capitalize font-medium max-w-2xl mx-auto">
             {testimony.content}
         </div>
       </div>
@@ -232,11 +247,13 @@ export const TestimonyCard = React.memo(function TestimonyCard({
 
   const fullPrayerContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed p-2 text-left italic">
+      <div className="text-base text-muted-foreground whitespace-pre-wrap leading-relaxed p-2 text-center italic">
         {testimony.answeredPrayerContent}
       </div>
     </ScrollArea>
   );
+
+  const hasMultipleMedia = testimony.mediaUrl && testimony.mediaUrl2;
 
   return (
     <>
@@ -255,35 +272,10 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         <AvatarFallback className="bg-primary/10 text-primary font-bold"><Users className="h-5 w-5" /></AvatarFallback>
                     </Avatar>
                 ) : (
-                <Dialog>
-                    <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
-                    <div className="relative cursor-pointer hover:opacity-90 transition-opacity active:scale-95 shrink-0">
-                        <Avatar className="h-11 w-11 sm:h-14 sm:w-14 border shadow-sm">
-                            <AvatarImage src={authorAvatarUrl} className="object-contain" />
-                            <AvatarFallback className="bg-primary/10 text-primary font-bold">{initials || 'U'}</AvatarFallback>
-                        </Avatar>
-                    </div>
-                    </DialogTrigger>
-                    {authorAvatarUrl && (
-                    <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                        <DialogHeader className="sr-only text-center"><DialogTitle className="text-center">Profile photo of {authorFullName}</DialogTitle></DialogHeader>
-                        <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                            <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
-                                <Image 
-                                    src={authorAvatarUrl} 
-                                    alt={authorFullName} 
-                                    fill 
-                                    className="object-contain shadow-2xl ring-4 ring-white/10 text-center" 
-                                    unoptimized 
-                                />
-                            </div>
-                        </div>
-                    </DialogContent>
-                    )}
-                </Dialog>
+                    <LiveAuthorAvatar userId={String(testimony.authorId)} fallbackInitials={initials} className="h-11 w-11 sm:h-14 sm:w-14" />
                 )}
                 <div className="min-w-0 flex-1 text-left">
-                    <div className="flex items-center gap-2 flex-wrap text-left text-left">
+                    <div className="flex items-center gap-2 flex-wrap text-left">
                         <Link href={profileLink} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30 underline-offset-2 shrink-0">
                             <h3 className="text-base sm:text-lg font-bold truncate max-w-[150px] sm:max-w-[200px] capitalize leading-none text-left">{authorFullName}</h3>
                         </Link>
@@ -301,7 +293,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                             </TooltipProvider>
                         )}
                     </div>
-                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left text-left">
+                    <div className="text-muted-foreground text-sm mt-1 flex flex-col gap-0.5 text-left">
                         <div className="truncate text-[10px] sm:text-xs opacity-70 text-left">{displayDate}</div>
                         <div className="flex items-center gap-1 mt-0.5 opacity-80 text-[10px] sm:text-xs font-medium text-left"><Globe className="h-3 w-3 text-primary shrink-0 text-left" /> {locationString}</div>
                         <div className="mt-1.5 flex gap-2 text-left">
@@ -326,42 +318,57 @@ export const TestimonyCard = React.memo(function TestimonyCard({
           </div>
         </div>
         
-        <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4 text-left text-left">
-          <div className="text-sm sm:text-base text-muted-foreground leading-relaxed text-left text-left">
-            <div className={cn("leading-relaxed capitalize text-left", testimony.mediaUrl ? "line-clamp-3" : "line-clamp-6")}>
+        <div className="flex-grow pt-2 px-4 sm:px-6 space-y-4 text-center">
+          <div className="text-sm sm:text-base text-muted-foreground leading-relaxed text-center">
+            <div className={cn("leading-relaxed capitalize text-center mx-auto max-w-2xl", (testimony.mediaUrl || testimony.mediaUrl2) ? "line-clamp-3" : "line-clamp-6")}>
                 <div ref={contentRef}>{testimony.content}</div>
             </div>
-            {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1 text-left" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
+            {isTruncated && <Button variant="link" className="p-0 h-auto text-sm text-primary font-bold mt-1" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>Read Full Story</Button>}
           </div>
 
-          {testimony.mediaUrl && (
-              <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted aspect-square group/media text-left text-left">
-                 {testimony.mediaType === 'image' ? (
-                     <div className="w-full h-full cursor-pointer relative" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>
-                        <Image src={testimony.mediaUrl} alt="Miracle proof" fill className="object-contain transition-transform group/media:scale-105" unoptimized />
-                     </div>
-                 ) : (
-                     <video 
-                        src={testimony.mediaUrl} 
-                        className="w-full h-full object-contain bg-zinc-950 text-left" 
-                        controls 
-                        onClick={(e) => e.stopPropagation()}
-                    />
+          {(testimony.mediaUrl || testimony.mediaUrl2) && (
+              <div className={cn(
+                  "grid gap-3 text-center",
+                  hasMultipleMedia ? "grid-cols-2" : "grid-cols-1"
+              )}>
+                 {testimony.mediaUrl && (
+                    <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted aspect-square group/media cursor-pointer" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>
+                        {testimony.mediaType === 'image' ? (
+                            <Image src={testimony.mediaUrl} alt="Miracle proof" fill className="object-contain transition-transform group/media:scale-105" unoptimized />
+                        ) : (
+                            <video src={testimony.mediaUrl} className="w-full h-full object-contain bg-zinc-950" muted />
+                        )}
+                        <div className="absolute top-2 right-2">
+                            <Badge className="bg-black/40 backdrop-blur-md border-none h-5 px-1.5 text-[7px] font-black uppercase tracking-widest text-white">
+                                {testimony.mediaType === 'image' ? <ImageIcon className="h-2.5 w-2.5 mr-1" /> : <PlayCircle className="h-2.5 w-2.5 mr-1" />}
+                                Slot 1
+                            </Badge>
+                        </div>
+                    </div>
                  )}
-                 <div className="absolute top-3 right-3 text-left">
-                    <Badge className="bg-black/40 backdrop-blur-md border-none h-6 px-2 text-[8px] font-black uppercase tracking-widest text-white text-left">
-                        {testimony.mediaType === 'image' ? <ImageIcon className="h-3 w-3 mr-1 text-left" /> : <PlayCircle className="h-3 w-3 mr-1 text-left" />}
-                        Evidence
-                    </Badge>
-                 </div>
+                 {testimony.mediaUrl2 && (
+                    <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border shadow-inner bg-muted aspect-square group/media cursor-pointer" onClick={(e) => { e.stopPropagation(); setShowFullText(true); }}>
+                        {testimony.mediaType2 === 'image' ? (
+                            <Image src={testimony.mediaUrl2} alt="Miracle proof 2" fill className="object-contain transition-transform group/media:scale-105" unoptimized />
+                        ) : (
+                            <video src={testimony.mediaUrl2} className="w-full h-full object-contain bg-zinc-950" muted />
+                        )}
+                        <div className="absolute top-2 right-2">
+                            <Badge className="bg-black/40 backdrop-blur-md border-none h-5 px-1.5 text-[7px] font-black uppercase tracking-widest text-white">
+                                {testimony.mediaType2 === 'image' ? <ImageIcon className="h-2.5 w-2.5 mr-1" /> : <PlayCircle className="h-2.5 w-2.5 mr-1" />}
+                                Slot 2
+                            </Badge>
+                        </div>
+                    </div>
+                 )}
               </div>
           )}
 
           {testimony.answeredPrayerId && testimony.answeredPrayerContent && (
-            <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden text-left text-left">
-                <div className="p-4 text-left text-left">
+            <div className="rounded-2xl border-amber-500/40 bg-amber-500/5 dark:bg-amber-500/10 shadow-inner overflow-hidden text-left">
+                <div className="p-4 text-left">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 font-black mb-1 text-left">Answer to Prayer Request:</div>
-                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground text-left text-left">
+                    <div className="border-l-2 border-amber-500/30 pl-4 italic text-sm text-muted-foreground text-left">
                         <div className="line-clamp-2 text-left">
                            <div ref={prayerRef}>{testimony.answeredPrayerContent}</div>
                         </div>
@@ -370,7 +377,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         <Button 
                             variant="link" 
                             size="sm" 
-                            className="p-0 h-auto self-start text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 mt-2 hover:no-underline text-left text-left"
+                            className="p-0 h-auto self-start text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 mt-2 hover:no-underline text-left"
                             onClick={(e) => { e.stopPropagation(); setShowFullPrayer(true); }}
                         >
                             Read Full Request
@@ -381,9 +388,9 @@ export const TestimonyCard = React.memo(function TestimonyCard({
            )}
 
            {totalReactions > 0 && (
-             <div className="flex items-center justify-between pt-2 text-left text-left">
-                <div className="flex items-center gap-1.5 text-left text-left">
-                    <div className="flex items-center -space-x-1.5 text-left text-left">
+             <div className="flex items-center justify-between pt-2 text-left">
+                <div className="flex items-center gap-1.5 text-left">
+                    <div className="flex items-center -space-x-1.5 text-left">
                         {supporters.length > 0 && <div className="bg-primary rounded-full p-1 border-2 border-background z-30 shadow-sm text-left"><HandHeart className="h-2.5 w-2.5 text-primary-foreground fill-current text-left" /></div>}
                         {inspiredBy.length > 0 && <div className="bg-chart-3 rounded-full p-1 border-2 border-background z-20 shadow-sm text-left"><Sparkles className="h-2.5 w-2.5 text-white fill-current text-left" /></div>}
                         {connectedBy.length > 0 && <div className="bg-blue-500 rounded-full p-1 border-2 border-background z-10 shadow-sm text-left"><PartyPopper className="h-2.5 w-2.5 text-white text-left" /></div>}
@@ -396,7 +403,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
         </div>
 
         <Separator className="mx-4 sm:mx-6 w-auto opacity-50 text-left" />
-        <div className="py-2 sm:py-3 px-2 sm:px-6 grid grid-cols-4 gap-1 sm:gap-2 text-left text-left">
+        <div className="py-2 sm:py-3 px-2 sm:px-6 grid grid-cols-4 gap-1 sm:gap-2 text-left">
             <Button onClick={(e) => { e.stopPropagation(); handleReaction('amen'); }} disabled={isProcessingReaction !== null || !user} variant="ghost" size="sm" className={cn("flex flex-col items-center justify-center h-auto sm:h-10 py-2 sm:py-0 gap-0.5 sm:gap-2 text-[9px] sm:text-sm font-bold uppercase sm:capitalize tracking-tight text-muted-foreground hover:bg-muted/50 rounded-xl transition-all text-left", hasAmened && "text-primary hover:text-primary bg-primary/5")}>
                 {isProcessingReaction === 'amen' ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin text-left" /> : <HandHeart className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", hasAmened && "fill-current text-left")} />}<span>Amen</span>
             </Button>
@@ -417,43 +424,43 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             {isMobile ? (
                 <>
                     <Sheet open={showFullText} onOpenChange={setShowFullText}>
-                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left"><SheetHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left">Kingdom Testimony</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left text-left text-left text-left">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
-                            <div className="flex-grow min-h-0 pt-8 px-6 text-left text-left">{fullTextContent}</div>
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/20 text-left"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Kingdom Testimony</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left">Shared by {authorFullName} • {displayDate}</SheetDescription></SheetHeader></div>
+                            <div className="flex-grow min-h-0 pt-8 px-6 text-left">{fullTextContent}</div>
                         </SheetContent>
                     </Sheet>
                     <Sheet open={showFullPrayer} onOpenChange={setShowFullPrayer}>
-                        <SheetContent side="bottom" className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left text-left"><SheetHeader className="text-left text-left text-left text-left"><SheetTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left text-left text-left">Answered Prayer</SheetTitle><SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">The specific request that God has fulfilled.</SheetDescription></SheetHeader></div>
-                            <ScrollArea className="flex-grow px-8 py-10 text-left text-left">
+                        <SheetContent side="bottom" className="h-auto max-h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                            <div className="p-8 border-b shrink-0 bg-amber-500/10 text-left"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline uppercase text-amber-600 text-left">Answered Prayer</SheetTitle><SheetDescription className="text-sm font-medium mt-1 text-left">The specific request that God has fulfilled.</SheetDescription></SheetHeader></div>
+                            <ScrollArea className="flex-grow px-8 py-10 text-left">
                                 {fullPrayerContent}
                             </ScrollArea>
                         </SheetContent>
                     </Sheet>
                     <Sheet open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left"><SheetHeader className="text-left text-left text-left text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left text-left text-left">Responses</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left text-left text-left">GATHERED JOY FOR {authorFullName}</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0 text-left text-left text-left"><CommentSection testimonyId={testimony.id} /></div></SheetContent>
+                        <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left"><SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Responses</SheetTitle><SheetDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left">GATHERED JOY FOR {authorFullName}</SheetDescription></SheetHeader></div><div className="flex-grow min-h-0 text-left"><CommentSection testimonyId={testimony.id} /></div></SheetContent>
                     </Sheet>
                 </>
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={showFullText => { setShowFullText(showFullText); if(!showFullText) setIsCommentsOpen(false); }}>
-                        <DialogContent className="sm:max-w-3xl rounded-3xl overflow-hidden p-0 text-left text-left text-left text-left"><div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left"><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase text-left text-left text-left text-left">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest capitalize text-left text-left text-left text-left">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8 text-left text-left text-left">{fullTextContent}</div></DialogContent>
+                        <DialogContent className="sm:max-w-4xl rounded-3xl overflow-hidden p-0 text-left"><div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase text-left">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest capitalize text-left">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8 text-left">{fullTextContent}</div></DialogContent>
                     </Dialog>
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
-                        <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
-                             <div className="p-8 border-b bg-amber-500/10 text-left text-left text-left text-left text-left">
-                                <DialogHeader className="text-left text-left text-left text-left text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-amber-600 text-left text-left text-left text-left">Answered Prayer Request</DialogTitle>
-                                    <DialogDescription className="text-left text-left text-left text-left text-left">The original request shared with the body.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                             <div className="p-8 border-b bg-amber-500/10 text-left">
+                                <DialogHeader className="text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-amber-600 text-left">Answered Prayer Request</DialogTitle>
+                                    <DialogDescription className="text-left">The original request shared with the body.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <div className="p-8 text-left text-left text-left">
+                            <div className="p-8 text-left">
                                 {fullPrayerContent}
                             </div>
                         </DialogContent>
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left text-left text-left text-left text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left text-left text-left text-left text-left text-left">Gathered Responses</DialogTitle><DialogDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left text-left text-left text-left text-left text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription></DialogHeader></div><div className="flex-1 min-h-0 text-left text-left text-left text-left text-left"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Gathered Responses</DialogTitle><DialogDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription></DialogHeader></div><div className="flex-1 min-h-0 text-left"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
                     </Dialog>
                 </>
             )}

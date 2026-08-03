@@ -847,4 +847,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-

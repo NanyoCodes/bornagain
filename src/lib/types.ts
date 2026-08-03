@@ -185,6 +185,8 @@ export type Testimony = {
   answeredPrayerContent?: string;
   mediaUrl?: string;
   mediaType?: 'image' | 'video' | 'audio';
+  mediaUrl2?: string;
+  mediaType2?: 'image' | 'video' | 'audio';
 };
 
 export type TestimonyComment = {

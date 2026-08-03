@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -51,6 +50,8 @@ const formSchema = z.object({
   content: z.string().min(50, "Testimony must be at least 50 characters.").max(5000, "Testimony is too long."),
   mediaUrl: z.string().optional(),
   mediaType: z.enum(['image', 'video']).optional(),
+  mediaUrl2: z.string().optional(),
+  mediaType2: z.enum(['image', 'video']).optional(),
 });
 
 type CreateTestimonyFormProps = {
@@ -63,9 +64,12 @@ type CreateTestimonyFormProps = {
 export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign, prayerRequest }: CreateTestimonyFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUploadingMedia, setIsUploadingMedia] = useState(false);
-  const [mediaPreview, setMediaPreview] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingMedia, setIsUploadingMedia] = useState<number | null>(null);
+  const [mediaPreview1, setMediaPreview1] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
+  const [mediaPreview2, setMediaPreview2] = useState<{ url: string, type: 'image' | 'video' } | null>(null);
+  
+  const fileInputRef1 = useRef<HTMLInputElement>(null);
+  const fileInputRef2 = useRef<HTMLInputElement>(null);
   
   const { user } = useUser();
   const firestore = useFirestore();
@@ -87,7 +91,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
     }
   }, [prayerRequest, campaign, form]);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, slot: 1 | 2) => {
     const file = e.target.files?.[0];
     if (!file || !user || !storage) return;
 
@@ -99,7 +103,7 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
       return;
     }
 
-    setIsUploadingMedia(true);
+    setIsUploadingMedia(slot);
 
     const processAndUpload = async () => {
       try {
@@ -110,21 +114,27 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           fileToUpload = await compressImage(file);
         }
 
-        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_${file.name}`);
+        const fileRef = ref(storage, `testimonies/${user.uid}/${Date.now()}_slot${slot}_${file.name}`);
         const uploadResult = await uploadBytes(fileRef, fileToUpload);
         const url = await getDownloadURL(uploadResult.ref);
 
         const type = isImage ? 'image' : 'video';
-        setMediaPreview({ url, type });
-        form.setValue('mediaUrl', url);
-        form.setValue('mediaType', type);
+        if (slot === 1) {
+            setMediaPreview1({ url, type });
+            form.setValue('mediaUrl', url);
+            form.setValue('mediaType', type);
+        } else {
+            setMediaPreview2({ url, type });
+            form.setValue('mediaUrl2', url);
+            form.setValue('mediaType2', type);
+        }
         
-        toast({ title: 'Media Ready', description: 'Your file has been optimized for the harvest.' });
+        toast({ title: 'Media Ready', description: `Proof ${slot} optimized for the harvest.` });
       } catch (err: any) {
         console.error("Media upload error:", err);
         toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not transmit media.' });
       } finally {
-        setIsUploadingMedia(false);
+        setIsUploadingMedia(null);
       }
     };
 
@@ -184,6 +194,8 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
           connectedBy: [],
           mediaUrl: values.mediaUrl || null,
           mediaType: values.mediaType || null,
+          mediaUrl2: values.mediaUrl2 || null,
+          mediaType2: values.mediaType2 || null,
       };
 
       if (campaign) { testimonyData.campaignId = campaign.id; testimonyData.campaignTitle = campaign.title; }
@@ -221,6 +233,58 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
         }
     } finally { setIsSubmitting(false); }
   }
+
+  const renderMediaSlot = (slot: 1 | 2, preview: typeof mediaPreview1, setPreview: typeof setMediaPreview1, inputRef: React.RefObject<HTMLInputElement>, urlField: 'mediaUrl' | 'mediaUrl2', typeField: 'mediaType' | 'mediaType2') => {
+      return (
+        <div className="space-y-3 flex-1">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+                <Camera className="h-3.5 w-3.5" /> Proof {slot} {slot === 2 && "(Optional)"}
+            </Label>
+            
+            {!preview ? (
+                <div 
+                    className={cn(
+                        "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group h-[120px]",
+                        isUploadingMedia === slot ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
+                    )}
+                    onClick={() => inputRef.current?.click()}
+                >
+                    {isUploadingMedia === slot ? (
+                        <div className="flex flex-col items-center gap-2">
+                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                            <p className="text-[9px] font-black uppercase tracking-widest text-primary text-center">Optimizing...</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                <FileUp className="h-4 w-4 text-primary" />
+                            </div>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Select Evidence</p>
+                        </>
+                    )}
+                </div>
+            ) : (
+                <div className="relative rounded-2xl overflow-hidden border-2 bg-muted aspect-square shadow-inner">
+                    {preview.type === 'image' ? (
+                        <Image src={preview.url} alt={`Evidence ${slot}`} fill className="object-contain" unoptimized />
+                    ) : (
+                        <video src={preview.url} className="w-full h-full object-contain" controls />
+                    )}
+                    <Button 
+                        type="button" 
+                        variant="destructive" 
+                        size="icon" 
+                        className="absolute top-2 right-2 h-7 w-7 rounded-full shadow-lg" 
+                        onClick={() => { setPreview(null); form.setValue(urlField, undefined); form.setValue(typeField, undefined); }}
+                    >
+                        <X className="h-3.5 w-3.5" />
+                    </Button>
+                </div>
+            )}
+            <input type="file" ref={inputRef} className="hidden" accept="image/*,video/*" onChange={(e) => handleFileSelect(e, slot)} />
+        </div>
+      );
+  };
 
   return (
     <div className="space-y-6">
@@ -263,60 +327,12 @@ export function CreateTestimonyForm({ onTestimonyCreated, userProfile, campaign,
             )}
           />
 
-          <div className="space-y-3">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-               <Camera className="h-3.5 w-3.5" /> Media Proof (Optional)
-            </Label>
-            
-            {!mediaPreview ? (
-              <div 
-                className={cn(
-                  "border-2 border-dashed rounded-2xl p-4 flex flex-col items-center justify-center bg-muted/10 transition-colors cursor-pointer group",
-                  isUploadingMedia ? "opacity-50 pointer-events-none" : "hover:bg-muted/20"
-                )}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {isUploadingMedia ? (
-                  <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">Optimizing...</p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                      <FileUp className="h-4 w-4 text-primary" />
-                    </div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Select Image or Video</p>
-                    <p className="text-[8px] text-muted-foreground/60 mt-0.5 uppercase tracking-tighter">Files {'>'} 5MB are auto-resized</p>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className="relative rounded-2xl overflow-hidden border-2 bg-muted aspect-video shadow-inner">
-                {mediaPreview.type === 'image' ? (
-                  <Image src={mediaPreview.url} alt="Testimony Media" fill className="object-contain" unoptimized />
-                ) : (
-                  <video src={mediaPreview.url} className="w-full h-full object-contain" controls />
-                )}
-                <Button 
-                  type="button" 
-                  variant="destructive" 
-                  size="icon" 
-                  className="absolute top-4 right-4 h-8 w-8 rounded-full shadow-lg" 
-                  onClick={() => { setMediaPreview(null); form.setValue('mediaUrl', undefined); form.setValue('mediaType', undefined); }}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-                <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 flex items-center gap-1.5">
-                   <Sparkles className="h-3 w-3 text-primary animate-pulse" />
-                   <span className="text-[9px] font-black text-white uppercase tracking-widest">Optimized</span>
-                </div>
-              </div>
-            )}
-            <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*" onChange={handleFileSelect} />
+          <div className="flex gap-4">
+             {renderMediaSlot(1, mediaPreview1, setMediaPreview1, fileInputRef1, 'mediaUrl', 'mediaType')}
+             {renderMediaSlot(2, mediaPreview2, setMediaPreview2, fileInputRef2, 'mediaUrl2', 'mediaType2')}
           </div>
 
-          <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia}>
+          <Button type="submit" className="w-full h-14 rounded-2xl font-black shadow-xl tracking-widest uppercase" disabled={isSubmitting || isUploadingMedia !== null}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSubmitting ? 'PUBLISHING...' : 'PUBLISH TESTIMONY'}
           </Button>
