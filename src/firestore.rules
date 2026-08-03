@@ -71,7 +71,8 @@ service cloud.firestore {
         isOwner(userId) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline']) && (
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
-          request.auth.uid in resource.data.get('partnerIds', [])
+          (resource.data.get('partnerIds', []) is list && request.auth.uid in resource.data.get('partnerIds', [])) ||
+          (resource.data.get('partnerIds', []) is list && request.auth.uid in resource.data.partnerIds)
         ))
       );
 
