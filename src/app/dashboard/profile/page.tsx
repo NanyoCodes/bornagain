@@ -469,10 +469,10 @@ export default function ProfilePage() {
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-lg text-left">
                                 <DialogHeader className="text-left">
-                                    <DialogTitle className="text-left">Edit Profile</DialogTitle>
-                                    <DialogDescription className="text-left">Make changes to your public profile.</DialogDescription>
+                                    <DialogTitle className="text-left text-left text-left text-left">Edit Profile</DialogTitle>
+                                    <DialogDescription className="text-left text-left text-left text-left text-left">Make changes to your public profile.</DialogDescription>
                                 </DialogHeader>
-                                <div className="max-h-[70vh] overflow-y-auto pr-2 text-left">
+                                <div className="max-h-[70vh] overflow-y-auto pr-2 text-left text-left">
                                   {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />}
                                 </div>
                             </DialogContent>
@@ -489,7 +489,7 @@ export default function ProfilePage() {
                     </div>
                 )}
 
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl text-left">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl text-left text-left">
                     {bio || "You haven't set a bio yet. Share a brief summary of your spiritual journey to encourage others."}
                 </p>
             </div>
@@ -498,18 +498,18 @@ export default function ProfilePage() {
       </Card>
 
       {videoTestimonies.length > 0 && (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none overflow-hidden border-t-4 border-t-red-600 border-b-2 sm:border-b text-left">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none overflow-hidden border-t-4 border-t-red-600 border-b-2 sm:border-b text-left text-left">
             <CardHeader className="pb-4 pt-6 px-6 text-left">
-                <CardTitle className="flex items-center gap-2 text-lg font-bold text-left">
-                    <Youtube className="h-5 w-5 text-red-600 text-left" />
+                <CardTitle className="flex items-center gap-2 text-lg font-bold text-left text-left">
+                    <Youtube className="h-5 w-5 text-red-600 text-left text-left" />
                     My Video Testimonies
                 </CardTitle>
             </CardHeader>
             <CardContent className="px-6 pb-6 text-left">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
                     {videoTestimonies.map((video, idx) => (
-                        <div key={idx} className="space-y-2 text-left">
-                            {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate ml-1 text-left">{video.title}</p>}
+                        <div key={idx} className="space-y-2 text-left text-left">
+                            {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate ml-1 text-left text-left">{video.title}</p>}
                             <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-white/5 transition-transform hover:scale-[1.01] text-left">
                                 <iframe
                                     src={video.embedUrl!}
@@ -526,60 +526,60 @@ export default function ProfilePage() {
         </Card>
       )}
 
-      <div className="space-y-6 text-left">
-            <h2 className="text-xl font-bold tracking-tight px-4 sm:px-0 uppercase text-muted-foreground flex items-center gap-2 text-left">
-                <Activity className="h-5 w-5 text-left" /> Your Kingdom Activity
+      <div className="space-y-6 text-left text-left">
+            <h2 className="text-xl font-bold tracking-tight px-4 sm:px-0 uppercase text-muted-foreground flex items-center gap-2 text-left text-left">
+                <Activity className="h-5 w-5 text-left text-left" /> Your Kingdom Activity
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left"><CardTitle className="text-base sm:text-lg text-left">Testimonies ({testimonies?.length ?? 0})</CardTitle></CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left text-left">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left">
+                    <CardHeader className="p-5 sm:p-6 text-left text-left"><CardTitle className="text-base sm:text-lg text-left text-left text-left">Testimonies ({testimonies?.length ?? 0})</CardTitle></CardHeader>
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left text-left">
                         <FilterControls 
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
                             filterDate={testimonyFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setTestimonyFilterDate}
                             searchPlaceholder="Search testimonies..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left text-left">
+                            <div className="p-1 space-y-px text-left text-left text-left">
                                 {filteredTestimonies.length > 0 ? (
                                     filteredTestimonies.map(t => (
-                                        <Link key={t.id} href="/dashboard/testimonies" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1 text-left">{t.category}</p>
-                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed text-left">{t.content}</p>
+                                        <Link key={t.id} href="/dashboard/testimonies" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left text-left">
+                                            <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1 text-left text-left">{t.category}</p>
+                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed text-left text-left">{t.content}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{testimonies?.length === 0 ? 'No testimonies shared yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left text-left">{testimonies?.length === 0 ? 'No testimonies shared yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left"><CardTitle className="text-base sm:text-lg text-left">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle></CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left">
+                    <CardHeader className="p-5 sm:p-6 text-left text-left"><CardTitle className="text-base sm:text-lg text-left text-left text-left">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle></CardHeader>
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left text-left">
                          <FilterControls 
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setPrayerFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left text-left">
+                            <div className="p-1 space-y-px text-left text-left text-left">
                                 {filteredPrayerRequests.length > 0 ? (
                                     filteredPrayerRequests.map(p => (
-                                        <Link key={p.id} href="/dashboard/testimonies" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1 text-left">{p.category}</p>
-                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed text-left">{p.content}</p>
+                                        <Link key={p.id} href="/dashboard/testimonies" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left text-left">
+                                            <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1 text-left text-left">{p.category}</p>
+                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed text-left text-left">{p.content}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{prayerRequests?.length === 0 ? 'No prayer requests submitted yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left text-left">{prayerRequests?.length === 0 ? 'No prayer requests submitted yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
@@ -587,53 +587,53 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left"><CardTitle className="text-base sm:text-lg text-left">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle></CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left text-left text-left">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left">
+                    <CardHeader className="p-5 sm:p-6 text-left text-left"><CardTitle className="text-base sm:text-lg text-left text-left text-left">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle></CardHeader>
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left text-left">
                          <FilterControls 
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setCreatedCampaignFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left text-left">
+                            <div className="p-1 space-y-px text-left text-left text-left">
                                 {filteredCreatedCampaigns.length > 0 ? (
                                     filteredCreatedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left">{c.title}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter text-left">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
+                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left text-left">
+                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left text-left">{c.title}</p>
+                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter text-left text-left">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{createdCampaigns?.length === 0 ? 'No campaigns created yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left text-left">{createdCampaigns?.length === 0 ? 'No campaigns created yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left"><CardTitle className="text-base sm:text-lg text-left">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle></CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left">
+                    <CardHeader className="p-5 sm:p-6 text-left text-left"><CardTitle className="text-base sm:text-lg text-left text-left text-left">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle></CardHeader>
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left text-left">
                          <FilterControls 
                             searchTerm={joinedCampaignSearchTerm}
                             setSearchTerm={setJoinedCampaignSearchTerm}
                             searchPlaceholder="Search joined campaigns..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left text-left">
+                            <div className="p-1 space-y-px text-left text-left text-left">
                                 {filteredJoinedCampaigns.length > 0 ? (
                                     filteredJoinedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left">{c.title}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter text-left">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
+                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left text-left">
+                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left text-left">{c.title}</p>
+                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter text-left text-left">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{activeJoinedCampaigns.length === 0 ? 'No other campaigns joined yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left text-left">{activeJoinedCampaigns.length === 0 ? 'No other campaigns joined yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
@@ -641,61 +641,61 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left">
-                            <Users className="h-5 w-5 text-primary text-left" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left text-left text-left">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left">
+                    <CardHeader className="p-5 sm:p-6 text-left text-left">
+                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left text-left">
+                            <Users className="h-5 w-5 text-primary text-left text-left" />
                             Fellowships Joined ({joinedFellowships.length})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left text-left">
                         <FilterControls 
                             searchTerm={joinedFellowshipSearchTerm}
                             setSearchTerm={setJoinedFellowshipSearchTerm}
                             searchPlaceholder="Search joined fellowships..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left text-left">
+                            <div className="p-1 space-y-px text-left text-left text-left">
                                 {filteredJoinedFellowships.length > 0 ? (
                                     filteredJoinedFellowships.map(f => (
-                                        <Link key={f.id} href={`/dashboard/fellowship/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left">{f.name}</p>
-                                            <p className="text-xs text-muted-foreground mt-1 truncate text-left">{f.location || 'Global'}</p>
+                                        <Link key={f.id} href={`/dashboard/fellowship/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left text-left">
+                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left text-left">{f.name}</p>
+                                            <p className="text-xs text-muted-foreground mt-1 truncate text-left text-left">{f.location || 'Global'}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{joinedFellowships.length === 0 ? 'No fellowships joined yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left text-left">{joinedFellowships.length === 0 ? 'No fellowships joined yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left">
-                            <Group className="h-5 w-5 text-primary text-left" />
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left">
+                    <CardHeader className="p-5 sm:p-6 text-left text-left">
+                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left text-left">
+                            <Group className="h-5 w-5 text-primary text-left text-left" />
                             Associations Joined ({joinedAssociations.length})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left text-left">
                         <FilterControls 
                             searchTerm={joinedAssociationSearchTerm}
                             setSearchTerm={setJoinedAssociationSearchTerm}
                             searchPlaceholder="Search joined associations..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left text-left">
+                            <div className="p-1 space-y-px text-left text-left text-left">
                                 {filteredJoinedAssociations.length > 0 ? (
                                     filteredJoinedAssociations.map(a => (
-                                        <Link key={a.id} href={`/dashboard/fellowship/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left">{a.name}</p>
-                                            <p className="text-xs text-muted-foreground mt-1 truncate text-left">{a.location || 'Global'}</p>
+                                        <Link key={a.id} href={`/dashboard/fellowship/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left text-left">
+                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left text-left">{a.name}</p>
+                                            <p className="text-xs text-muted-foreground mt-1 truncate text-left text-left">{a.location || 'Global'}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{joinedAssociations.length === 0 ? 'No associations joined yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left text-left">{joinedAssociations.length === 0 ? 'No associations joined yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
@@ -703,71 +703,71 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="text-base sm:text-lg text-left">Souls Won ({soulsWon?.length ?? 0})</CardTitle>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left text-left text-left">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left">
+                    <CardHeader className="p-5 sm:p-6 text-left text-left">
+                        <CardTitle className="text-base sm:text-lg text-left text-left text-left text-left">Souls Won ({soulsWon?.length ?? 0})</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left text-left">
                          <FilterControls 
                             searchTerm={soulSearchTerm}
                             setSearchTerm={setSoulSearchTerm}
                             filterDate={soulFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setSoulFilterDate}
                             searchPlaceholder="Search souls by name..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left text-left">
+                            <div className="p-1 space-y-px text-left text-left text-left">
                                 {filteredSoulsWon.length > 0 ? (
                                     filteredSoulsWon.map(s => (
-                                        <Link key={s.id} href="/dashboard/souls-won" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left">{s.firstName} {s.lastName}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter text-left">Won on {s.wonAt ? format(safeToDate(s.wonAt)!, "PPP") : 'N/A'}</p>
+                                        <Link key={s.id} href="/dashboard/souls-won" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left text-left">
+                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left text-left">{s.firstName} {s.lastName}</p>
+                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter text-left text-left">Won on {s.wonAt ? format(safeToDate(s.wonAt)!, "PPP") : 'N/A'}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{soulsWon?.length === 0 ? 'No souls won yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left text-left">{soulsWon?.length === 0 ? 'No souls won yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left">
-                            <HeartHandshake className="h-5 w-5 text-primary text-left" />
-                            Partners ({accountabilityPartners?.length ?? 0})
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left">
+                    <CardHeader className="p-5 sm:p-6 text-left text-left">
+                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left text-left">
+                            <HeartHandshake className="h-5 w-5 text-primary text-left text-left" />
+                            Partners ({userProfile?.accountabilityPartners?.length ?? 0})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left text-left">
                          <FilterControls 
                             searchTerm={partnerSearchTerm}
                             setSearchTerm={setPartnerSearchTerm}
                             searchPlaceholder="Search partners..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left text-left">
+                            <div className="p-1 space-y-px text-left text-left text-left">
                                 {filteredAccountabilityPartners.length > 0 ? (
                                     filteredAccountabilityPartners.map(p => (
-                                        <Link key={p.userId} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <Avatar className="h-10 w-10 sm:h-9 sm:w-9 border shrink-0 text-left">
-                                                <AvatarImage src={p.photoURL} className="text-left" />
-                                                <AvatarFallback className="text-xs font-bold text-left">{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
+                                        <Link key={p.userId} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left text-left">
+                                            <Avatar className="h-10 w-10 sm:h-9 sm:w-9 border shrink-0 text-left text-left">
+                                                <AvatarImage src={p.photoURL} className="text-left text-left" />
+                                                <AvatarFallback className="text-xs font-bold text-left text-left">{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
                                             </Avatar>
-                                            <div className="min-w-0 flex-1 text-left">
-                                                <p className="font-bold text-sm truncate leading-tight group-hover:underline text-left">{p.firstName} {p.lastName}</p>
+                                            <div className="min-w-0 flex-1 text-left text-left text-left">
+                                                <p className="font-bold text-sm truncate leading-tight group-hover:underline text-left text-left">{p.firstName} {p.lastName}</p>
                                             </div>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{accountabilityPartners?.length === 0 ? 'No accountability partners yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left text-left">{userProfile?.accountabilityPartners?.length === 0 ? 'No accountability partners yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
-                        <div className="pt-6 flex justify-end text-left">
-                            <Button asChild variant="outline" size="sm" className="text-[10px] font-black uppercase tracking-widest h-9 sm:h-8 px-6 rounded-full shadow-sm text-left">
-                                <Link href="/dashboard/accountability" className="text-left">Find Partners</Link>
+                        <div className="pt-6 flex justify-end text-left text-left">
+                            <Button asChild variant="outline" size="sm" className="text-[10px] font-black uppercase tracking-widest h-9 sm:h-8 px-6 rounded-full shadow-sm text-left text-left">
+                                <Link href="/dashboard/accountability" className="text-left text-left">Find Partners</Link>
                             </Button>
                         </div>
                     </CardContent>

@@ -707,19 +707,19 @@ export default function SoulsWonPage() {
         {mounted && (
             isMobile ? (
                 <Sheet open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
-                    <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left">
+                    <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Harvest Demographic</span>
                             </div>
-                            <SheetHeader className="text-left flex-shrink-0 text-left">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedAgeGroup} Directory</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
+                            <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+                                <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left">{selectedAgeGroup} Directory</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
                             </SheetHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left">
-                            <div className="p-4 sm:p-8 text-left">
+                        <ScrollArea className="flex-grow text-left text-left">
+                            <div className="p-4 sm:p-8 text-left text-left">
                                 <AgeGroupSoulList 
                                   souls={activeAgeGroupSouls} 
                                   onSelectSoul={(soul) => {
@@ -829,7 +829,7 @@ export default function SoulsWonPage() {
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <DialogHeader className="text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-left text-left">Update soul identity and mission details.</DialogDescription>
@@ -846,4 +846,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-
