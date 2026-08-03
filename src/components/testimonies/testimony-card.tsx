@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -194,6 +193,20 @@ export const TestimonyCard = React.memo(function TestimonyCard({
     } finally { setIsRequestingPartner(false); }
   };
 
+  const handleSafeEdit = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      requestAnimationFrame(() => {
+          onEdit();
+      });
+  };
+
+  const handleSafeDelete = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      requestAnimationFrame(() => {
+          onDelete();
+      });
+  };
+
   const fullTextContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
       <div className="space-y-8 pb-8 px-2 text-left">
@@ -306,7 +319,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                 {isAuthor && (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={(e) => {e.stopPropagation();}}><MoreVertical className="h-4 w-4" /><span className="sr-only">Options</span></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-xl"><DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Manage Story</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onSelect={() => onEdit()} className="rounded-lg"><Edit className="mr-2 h-4 w-4 text-primary" /><span>Edit Testimony</span></DropdownMenuItem><DropdownMenuItem onSelect={() => onDelete()} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg"><Trash2 className="mr-2 h-4 w-4" /><span>Delete Permanently</span></DropdownMenuItem></DropdownMenuContent>
+                    <DropdownMenuContent align="end" className="w-48 rounded-xl"><DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground font-black">Manage Story</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onClick={handleSafeEdit} className="rounded-lg"><Edit className="mr-2 h-4 w-4 text-primary" /><span>Edit Testimony</span></DropdownMenuItem><DropdownMenuItem onClick={handleSafeDelete} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg"><Trash2 className="mr-2 h-4 w-4" /><span>Delete Permanently</span></DropdownMenuItem></DropdownMenuContent>
                 </DropdownMenu>
                 )}
             </div>
@@ -424,11 +437,11 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={showFullText => { setShowFullText(showFullText); if(!showFullText) setIsCommentsOpen(false); }}>
-                        <DialogContent className="sm:max-w-3xl rounded-3xl overflow-hidden p-0 text-left text-left text-left"><div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left"><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase text-left text-left text-left text-left">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest capitalize text-left text-left text-left text-left">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8 text-left text-left text-left">{fullTextContent}</div></DialogContent>
+                        <DialogContent className="sm:max-w-3xl rounded-3xl overflow-hidden p-0 text-left text-left text-left text-left"><div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left"><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase text-left text-left text-left text-left">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest capitalize text-left text-left text-left text-left">BY {authorFullName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8 text-left text-left text-left">{fullTextContent}</div></DialogContent>
                     </Dialog>
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
-                             <div className="p-8 border-b bg-amber-500/10 text-left text-left text-left text-left">
+                             <div className="p-8 border-b bg-amber-500/10 text-left text-left text-left text-left text-left">
                                 <DialogHeader className="text-left text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-amber-600 text-left text-left text-left text-left">Answered Prayer Request</DialogTitle>
                                     <DialogDescription className="text-left text-left text-left text-left text-left">The original request shared with the body.</DialogDescription>
@@ -440,7 +453,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
                         </DialogContent>
                     </Dialog>
                     <Dialog open={isCommentsOpen} onOpenChange={setIsCommentsOpen}>
-                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left text-left text-left text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left text-left text-left text-left text-left">Gathered Responses</DialogTitle><DialogDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left text-left text-left text-left text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription></DialogHeader></div><div className="flex-1 min-h-0 text-left text-left text-left text-left"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
+                        <DialogContent className="sm:max-w-lg flex flex-col max-h-[85vh] p-0 overflow-hidden rounded-3xl text-left text-left text-left text-left text-left"><div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left text-left text-left text-left text-left text-left">Gathered Responses</DialogTitle><DialogDescription className="text-[10px] font-bold uppercase tracking-widest capitalize text-left text-left text-left text-left text-left text-left">COMMUNITY RESPONSES TO THIS MIRACLE</DialogDescription></DialogHeader></div><div className="flex-1 min-h-0 text-left text-left text-left text-left text-left"><CommentSection testimonyId={testimony.id} /></div></DialogContent>
                     </Dialog>
                 </>
             )}
@@ -450,4 +463,3 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   );
 });
 TestimonyCard.displayName = "TestimonyCard";
-

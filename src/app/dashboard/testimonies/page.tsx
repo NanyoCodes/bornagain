@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
@@ -233,7 +232,7 @@ function TestimoniesContent() {
   };
   
   const handleConfirmDelete = () => {
-    const sendResponse = (res: any) => console.log('Deletion confirmed:', res);
+    const sendResponse = (res: any) => console.log('Confirm Delete result:', res);
     if (!itemToDelete || !firestore || !user) {
         sendResponse({ success: false });
         return;
@@ -249,7 +248,7 @@ function TestimoniesContent() {
     setItemToDelete(null);
     setIsDeleting(true);
     
-    const performDeletion = async () => {
+    (async () => {
         try {
             if (typeValue === 'testimony') {
                 const testimonyData = dataValue as Testimony;
@@ -284,7 +283,7 @@ function TestimoniesContent() {
                         const mediaRef = ref(storage, testimonyData.mediaUrl);
                         await deleteObject(mediaRef);
                     } catch (e) {
-                        console.error("Failed to delete testimony media:", e);
+                        console.warn("Failed to delete testimony media:", e);
                     }
                 }
             } else {
@@ -317,9 +316,8 @@ function TestimoniesContent() {
         } finally {
             setIsDeleting(false);
         }
-    };
+    })();
 
-    performDeletion();
     return true; // Signal asynchronous intent
   };
 

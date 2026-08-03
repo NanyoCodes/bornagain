@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -87,7 +86,7 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
 
     return (
         <div className="hidden lg:flex flex-col gap-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar pb-10 text-left">
-            <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0">
+            <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0 text-left">
                 <CardHeader className="p-6 pb-2 text-left">
                     <div className="flex items-center justify-between mb-2 text-left">
                         <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center text-left">
@@ -189,9 +188,9 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     }
 
     return (
-        <div className="grid grid-cols-4 gap-1 items-center h-14 text-left">
+        <div className="grid grid-cols-4 gap-1 items-center h-14 text-left text-left">
             {disciplines.map(d => (
-                <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0 text-left">
+                <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0 text-left text-left">
                     {completedOnDate.includes(d.id) ? (
                         <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center text-left">
                             <CheckCircle2 className="h-4 w-4 text-green-500 text-left" />
@@ -202,7 +201,7 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
                         </div>
                     )}
                     <span className={cn(
-                        "leading-tight uppercase font-black tracking-tighter truncate w-full px-1 text-center text-left",
+                        "leading-tight uppercase font-black tracking-tighter truncate w-full px-1 text-center text-left text-left",
                         completedOnDate.includes(d.id) ? 'text-foreground' : 'text-muted-foreground/60'
                     )}>
                         {d.label}
@@ -243,9 +242,9 @@ function PartnerCard({
                  <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                     <Dialog>
                       <DialogTrigger asChild disabled={!livePhotoURL}>
-                        <div className="relative cursor-pointer active:scale-95 transition-transform hover:scale-105 shrink-0">
-                            <Avatar className="h-11 w-11 sm:h-14 sm:w-14 border shadow-sm">
-                                <AvatarImage src={livePhotoURL} className="object-cover" />
+                        <div className="relative cursor-pointer active:scale-95 transition-transform hover:scale-105 shrink-0 text-left">
+                            <Avatar className="h-11 w-11 sm:h-14 sm:w-14 border shadow-sm text-left">
+                                <AvatarImage src={livePhotoURL} className="object-contain text-left" />
                                 <AvatarFallback className="font-black text-lg bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         </div>
@@ -254,8 +253,8 @@ function PartnerCard({
                           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
                               <DialogHeader className="sr-only text-center text-left"><DialogTitle className="text-center text-left">Profile photo</DialogTitle></DialogHeader>
                               <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left">
-                                    <Image src={livePhotoURL} alt="partner" fill className="object-contain shadow-2xl ring-4 ring-white/10 text-center" unoptimized />
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
+                                    <Image src={livePhotoURL} alt="partner" fill className="object-contain shadow-2xl ring-4 ring-white/10 text-center text-left" unoptimized />
                                 </div>
                               </div>
                           </DialogContent>
@@ -540,12 +539,12 @@ export default function AccountabilityPage() {
                         <PartnerCard key={partner.userId} partner={partner} onNudge={handleNudgePartner} onChat={handleInitiateChat} onRemove={setRemovalTarget} />
                     ))}
                     {partners.length === 0 && (
-                        <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted text-left">
-                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left">
-                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left" />
+                        <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted text-left text-left">
+                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left text-left">
+                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left text-left" />
                             </div>
-                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center text-left">No Active Alliance</h2>
-                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center text-left">
+                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center text-left text-left text-left">No Active Alliance</h2>
+                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center text-left text-left text-left text-left">
                             "Two are better than one... for if they fall, the one will lift up his fellow." — Eccl 4:9-10
                             </p>
                         </div>
@@ -565,18 +564,18 @@ export default function AccountabilityPage() {
         {removalTarget && (
             <AlertDialog open={!!removalTarget} onOpenChange={(open) => { if (!open) { setRemovalTarget(null); setRemovalReason(''); } }}>
                 <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left">
-                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">End Alliance?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
+                    <AlertDialogHeader className="text-left text-left text-left">
+                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left text-left">End Alliance?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="grid gap-4 py-6 text-left">
-                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Reason for Removal</Label>
-                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left" />
+                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Reason for Removal</Label>
+                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left text-left" />
                     </div>
                     <AlertDialogFooter className="gap-3 text-left">
-                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left">Close</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">
-                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <UserX className="mr-2 h-4 w-4 text-left" />}
+                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left text-left text-left">Close</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left">
+                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" /> : <UserX className="mr-2 h-4 w-4 text-left text-left text-left text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>
