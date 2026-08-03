@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -481,7 +482,7 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
         <Dialog>
             <DialogTrigger asChild disabled={!photoURL}>
                 <Avatar className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
-                    <AvatarImage src={photoURL} className="object-cover" />
+                    <AvatarImage src={photoURL} className="object-contain" />
                     <AvatarFallback className="font-bold bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{fallbackInitials || 'U'}</AvatarFallback>
                 </Avatar>
             </DialogTrigger>
@@ -494,7 +495,7 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
                                 src={photoURL} 
                                 alt="Author" 
                                 fill 
-                                className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                className="object-contain shadow-2xl ring-4 ring-white/10 text-center" 
                                 unoptimized 
                             />
                         </div>
@@ -576,7 +577,7 @@ function SoulProfileContent({
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    const memberName = `${currentUserProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
+    const memberName = `${currentUserProfile?.firstName || ''} ${currentUserProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(), 
         note: `Logged via Identity Hub: ${action?.label}${noteAddendum ? ` - ${noteAddendum}` : ''}`,
@@ -765,7 +766,7 @@ function SoulProfileContent({
                 <Dialog>
                     <DialogTrigger asChild disabled={!soul.photoURL}>
                         <Avatar className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95 text-center mx-auto", soul.photoURL && "cursor-pointer hover:scale-105")}>
-                            <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                            <AvatarImage src={soul.photoURL || undefined} className="object-contain" />
                             <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                     </DialogTrigger>
@@ -820,7 +821,7 @@ function SoulProfileContent({
                                 <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Select Format</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')} className="text-left">CSV Export</DropdownMenuItem>
-                                <DropdownMenuItem onExportSingle={(soul: any, type: any) => onExportSingle(soul, type)} className="text-left">PDF Report</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')} className="text-left">PDF Report</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-center" onClick={() => onEdit(soul)}>
@@ -1222,7 +1223,7 @@ const SoulCard = React.memo(({ soul, onClick }: {
             <div className="flex items-center justify-between p-4 gap-4 text-left">
                 <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                     <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 text-left")}>
-                        <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
+                        <AvatarImage src={soul.photoURL || undefined} className="object-contain" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-center flex items-center justify-center w-full h-full">
                             {soul.firstName?.charAt(0) || 'S'}
                         </AvatarFallback>
@@ -1259,7 +1260,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
             <TableCell className="font-medium p-4 text-left text-left">
                 <div className="flex items-center gap-4 text-left text-left">
                     <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 text-left text-left")}>
-                        <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
+                        <AvatarImage src={soul.photoURL || undefined} className="object-contain" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-center flex items-center justify-center w-full h-full">
                             {soul.firstName?.charAt(0) || 'S'}
                         </AvatarFallback>
@@ -1396,10 +1397,10 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                             <Sparkles className="h-4 w-4 text-primary text-left text-left text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span>
                         </div>
-                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
+                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
+                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
@@ -1423,15 +1424,15 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                     >
                         <div className="flex flex-col items-center gap-4 text-center text-left text-left">
                             {profileView}
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left text-left">
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left text-left text-left">
                                 {selectedSoul.firstName} {selectedSoul.lastName}
                             </p>
                         </div>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left text-left">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left text-left">Select a record to preview identity</p>
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left text-left text-left">
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left text-left text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left text-left text-left">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>

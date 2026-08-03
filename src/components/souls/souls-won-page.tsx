@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -120,6 +121,7 @@ function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
           >
             <div className="flex items-center gap-3 min-w-0 text-left text-left">
                 <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left text-left">
+                <AvatarImage src={soul.photoURL || undefined} className="object-contain" />
                 <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 text-left text-left">
@@ -427,10 +429,15 @@ export default function SoulsWonPage() {
   }, [toast, getBase64Logo]);
 
   const handleDeleteSoul = () => {
-    if (!soulToDelete || !user || !firestore) return;
+    const sendResponse = (res: any) => console.log('Delete Soul result:', res);
+    if (!soulToDelete || !user || !firestore) {
+        sendResponse({ success: false });
+        return;
+    }
     
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
-    const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
+    const soulId = soulToDelete.id;
+    const soulRef = doc(firestore, `users/${user.uid}/souls`, soulId);
+    const globalSoulRef = doc(firestore, 'souls', soulId);
 
     // Reset selection immediately to prevent unmount freeze
     setDeleteSoulId(null);
@@ -444,9 +451,11 @@ export default function SoulsWonPage() {
             
             await batch.commit();
             toast({ title: "Record Removed" });
+            sendResponse({ success: true });
             router.refresh();
         } catch (err: any) {
             console.error("Delete Soul Error:", err);
+            sendResponse({ success: false, error: err });
             toast({ variant: 'destructive', title: "Delete Failed" });
         } finally {
             setIsDeleting(false);
@@ -527,10 +536,10 @@ export default function SoulsWonPage() {
                                 <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl text-left text-left text-left text-left">
                                     <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">Select Format</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left text-left text-left text-left">
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="text-left text-left text-left text-left">
                                         <Download className="mr-2 h-4 w-4 opacity-40 text-left text-left text-left text-left" /> CSV (Excel)
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5 text-left text-left text-left text-left text-left">
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="text-left text-left text-left text-left text-left">
                                         <Download className="mr-2 h-4 w-4 text-primary text-left text-left text-left text-left text-left" /> PDF Report
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -576,7 +585,7 @@ export default function SoulsWonPage() {
                                                         src={s.photoURL!} 
                                                         alt={s.firstName} 
                                                         fill 
-                                                        className="object-cover transition-transform group-hover:scale-110 duration-500 text-left text-left text-left text-left" 
+                                                        className="object-contain transition-transform group-hover:scale-110 duration-500 text-left text-left text-left text-left" 
                                                         unoptimized 
                                                     />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left text-left text-left text-left" />

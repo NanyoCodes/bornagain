@@ -243,10 +243,12 @@ function PartnerCard({
                  <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                     <Dialog>
                       <DialogTrigger asChild disabled={!livePhotoURL}>
-                        <Avatar className={cn("h-11 w-11 sm:h-14 sm:w-14 border shadow-sm shrink-0 text-left", livePhotoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
-                            <AvatarImage src={livePhotoURL} className="object-cover text-left" />
-                            <AvatarFallback className="font-black text-lg bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
-                        </Avatar>
+                        <div className="relative cursor-pointer active:scale-95 transition-transform hover:scale-105 shrink-0">
+                            <Avatar className="h-11 w-11 sm:h-14 sm:w-14 border shadow-sm">
+                                <AvatarImage src={livePhotoURL} className="object-contain" />
+                                <AvatarFallback className="font-black text-lg bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                        </div>
                       </DialogTrigger>
                       {livePhotoURL && (
                           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
@@ -443,15 +445,20 @@ export default function AccountabilityPage() {
   };
 
   const handleRemovePartner = () => {
-    const sendResponse = (res: any) => console.log('Removal process result:', res);
+    const sendResponse = (res: any) => console.log('Removal result:', res);
     if (!user || !firestore || !userProfile?.accountabilityPartners || !removalTarget || !removalReason.trim()) {
-        sendResponse({ success: false, reason: 'Invalid input' });
+        sendResponse({ success: false });
         return;
     }
     
     const partnerId = removalTarget.userId;
-    setIsRemoving(partnerId);
+    const partnerName = removalTarget.firstName;
     
+    // UI Logic: Close dialog and set loading state immediately
+    setIsRemoving(partnerId);
+    const targetToRemove = removalTarget;
+    setRemovalTarget(null);
+
     const performRemoval = async () => {
         try {
             const batch = writeBatch(firestore);
@@ -463,25 +470,27 @@ export default function AccountabilityPage() {
 
             if (partnerDoc.exists()) {
                  const pData = partnerDoc.data() as UserProfile;
-                const myEntry = pData.accountabilityPartners?.find(p => p.userId === user.uid);
-                if (myEntry) {
+                const myEntryInPartnerList = pData.accountabilityPartners?.find(p => p.userId === user.uid);
+                if (myEntryInPartnerList) {
                     batch.update(partnerUserRef, { 
-                        accountabilityPartners: arrayRemove(myEntry), 
+                        accountabilityPartners: arrayRemove(myEntryInPartnerList), 
                         partnerIds: arrayRemove(user.uid) 
                     });
                 }
             }
 
-            const myPartnerObj = userProfile.accountabilityPartners.find(p => p.userId === partnerId);
-            if (myPartnerObj) {
+            const myEntryForPartner = userProfile.accountabilityPartners?.find(p => p.userId === partnerId);
+            if (myEntryForPartner) {
                 batch.update(doc(firestore, 'users', user.uid), { 
-                    accountabilityPartners: arrayRemove(myPartnerObj), 
+                    accountabilityPartners: arrayRemove(myEntryForPartner), 
                     partnerIds: arrayRemove(partnerId) 
                 });
             }
             
             batch.delete(requestRef);
-            batch.set(doc(collection(firestore, 'users', partnerId, 'notifications')), { 
+            
+            const notificationRef = doc(collection(firestore, `users/${partnerId}/notifications`));
+            batch.set(notificationRef, { 
                 userId: partnerId, 
                 type: 'accountability_partner_removed', 
                 title: 'Alliance Ended', 
@@ -492,22 +501,21 @@ export default function AccountabilityPage() {
             });
 
             await batch.commit();
-            toast({ title: 'Partner Removed' });
+            toast({ title: 'Partner Removed', description: `Alliance with ${partnerName} has ended.` });
             sendResponse({ success: true });
             router.refresh();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Partner removal failed:", error);
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `users/${partnerId}`, operation: 'write' }, user));
             sendResponse({ success: false, error });
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `users/${partnerId}`, operation: 'write' }, user));
         } finally { 
             setIsRemoving(null); 
             setRemovalReason(''); 
-            setRemovalTarget(null);
         }
     };
 
     performRemoval();
-    return true; // Signal asynchronous intent
+    return true; 
   };
 
   if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left">Establishing Connection...</p></div>;

@@ -409,7 +409,7 @@ export default function ProfilePage() {
               <Dialog>
                   <DialogTrigger asChild disabled={!photoURL}>
                       <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0 shadow-lg text-left", photoURL && "cursor-pointer")}>
-                          <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} className="text-left" />
+                          <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} className="object-contain" />
                           <AvatarFallback className="text-3xl sm:text-4xl text-left">
                               {firstName?.charAt(0) || email?.charAt(0) || 'U'}
                           </AvatarFallback>
@@ -568,7 +568,7 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setPrayerFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left">
@@ -597,7 +597,7 @@ export default function ProfilePage() {
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setCreatedCampaignFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left">
@@ -619,7 +619,7 @@ export default function ProfilePage() {
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
                     <CardHeader className="p-5 sm:p-6 text-left"><CardTitle className="text-base sm:text-lg text-left">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle></CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left text-left text-left">
                          <FilterControls 
                             searchTerm={joinedCampaignSearchTerm}
                             setSearchTerm={setJoinedCampaignSearchTerm}
@@ -706,14 +706,13 @@ export default function ProfilePage() {
             </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left text-left text-left text-left"><CardTitle className="text-base sm:text-lg text-left text-left">Souls Won ({soulsWon?.length ?? 0})</CardTitle></CardHeader>
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left text-left text-left text-left"><CardTitle className="text-base sm:text-lg text-left text-left">Souls Won ({soulsWon?.length ?? 0})</CardTitle></CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0 text-left text-left">
                          <FilterControls 
                             searchTerm={soulSearchTerm}
                             setSearchTerm={setSoulSearchTerm}
                             filterDate={soulFilterDate}
-                            setFilterDate={setSoulFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search souls by name..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left text-left">
@@ -755,13 +754,13 @@ export default function ProfilePage() {
                                                 <AvatarImage src={p.photoURL} className="text-left text-left text-left text-left" />
                                                 <AvatarFallback className="text-xs font-bold text-left text-left text-left text-left">{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
                                             </Avatar>
-                                            <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left">
-                                                <p className="font-bold text-sm truncate leading-tight group-hover:underline text-left text-left text-left text-left text-left">{p.firstName} {p.lastName}</p>
+                                            <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left">
+                                                <p className="font-bold text-sm truncate leading-tight group-hover:underline text-left text-left text-left text-left text-left text-left">{p.firstName} {p.lastName}</p>
                                             </div>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left text-left text-left text-left text-left">{accountabilityPartners?.length === 0 ? 'No accountability partners yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left text-left text-left text-left text-left text-left">{accountabilityPartners?.length === 0 ? 'No accountability partners yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
