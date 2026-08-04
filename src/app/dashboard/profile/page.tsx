@@ -58,27 +58,27 @@ function FilterControls({
   return (
     <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center text-left">
       <div className="relative flex-grow text-left">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground text-left" />
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder={searchPlaceholder}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full text-sm h-11 sm:h-10 bg-muted/20 pl-8 text-left"
+          className="w-full text-sm h-11 sm:h-10 bg-muted/20 pl-8"
         />
       </div>
       {setFilterDate && (
-        <div className="flex items-center gap-2 w-full sm:w-auto text-left">
-          <div className="relative flex-grow sm:w-[180px] text-left">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-grow sm:w-[180px]">
             <Input
               type="date"
               value={dateValue}
               onChange={handleDateChange}
-              className="text-sm h-11 sm:h-10 w-full bg-muted/20 text-left"
+              className="text-sm h-11 sm:h-10 w-full bg-muted/20"
             />
           </div>
           {filterDate && (
-            <Button variant="ghost" size="icon" onClick={() => setFilterDate(undefined)} className="h-10 w-10 shrink-0 text-left">
-              <XCircle className="h-4 w-4 text-muted-foreground text-left" />
+            <Button variant="ghost" size="icon" onClick={() => setFilterDate(undefined)} className="h-10 w-10 shrink-0">
+              <XCircle className="h-4 w-4 text-muted-foreground" />
               <span className="sr-only">Clear date filter</span>
             </Button>
           )}
@@ -93,7 +93,6 @@ export default function ProfilePage() {
   const firestore = useFirestore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const isMobile = useIsMobile();
   
   const [activeJoinedCampaigns, setActiveJoinedCampaigns] = useState<Campaign[]>([]);
   const [activeJoinedGroups, setActiveJoinedGroups] = useState<Fellowship[]>([]);
@@ -376,10 +375,10 @@ export default function ProfilePage() {
   const loading = profileLoading || userLoading || testimoniesLoading || soulsLoading || campaignsLoading || createdCampaignsLoading || campaignsListLoading || prayerRequestsLoading || groupsListLoading;
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-[400px] text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>;
+    return <div className="flex items-center justify-center min-h-[400px]"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
   
-  if (!userProfile) return <div className="text-center py-12 text-left"><p className="text-left">User profile not found.</p></div>;
+  if (!userProfile) return <div className="text-center py-12"><p>User profile not found.</p></div>;
   
   const { 
     firstName, 
@@ -399,80 +398,80 @@ export default function ProfilePage() {
   const { city, state, country } = location || {};
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto px-0 sm:px-0 pb-32 text-left">
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b text-left">
-        <CardContent className="p-6 sm:p-8 text-left">
-          <div className="flex flex-col items-center sm:items-start sm:flex-row gap-6 text-left">
-            <div className="relative text-left">
+    <div className="space-y-6 max-w-5xl mx-auto pb-32">
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
+        <CardContent className="p-6 sm:p-8">
+          <div className="flex flex-col items-center sm:items-start sm:flex-row gap-6">
+            <div className="relative">
               <Dialog>
                   <DialogTrigger asChild disabled={!photoURL}>
-                      <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0 shadow-lg text-left", photoURL && "cursor-pointer")}>
+                      <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0 shadow-lg", photoURL && "cursor-pointer")}>
                           <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} className="object-contain" />
-                          <AvatarFallback className="text-3xl sm:text-4xl text-left text-left">
+                          <AvatarFallback className="text-3xl sm:text-4xl">
                               {firstName?.charAt(0) || email?.charAt(0) || 'U'}
                           </AvatarFallback>
                       </Avatar>
                   </DialogTrigger>
                   {photoURL && (
-                      <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg text-left">
-                          <DialogHeader className="sr-only text-left">
-                              <DialogTitle className="text-left">Profile photo of {displayName}</DialogTitle>
-                              <DialogDescription className="text-left">A larger view of your profile photo.</DialogDescription>
+                      <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
+                          <DialogHeader className="sr-only">
+                              <DialogTitle>Profile photo of {displayName}</DialogTitle>
+                              <DialogDescription>A larger view of your profile photo.</DialogDescription>
                           </DialogHeader>
-                          <Image src={photoURL} alt={displayName} width={600} height={600} className="rounded-lg object-contain text-left" unoptimized />
+                          <Image src={photoURL} alt={displayName} width={600} height={600} className="rounded-lg object-contain" unoptimized />
                       </DialogContent>
                   )}
               </Dialog>
               {isProfileIncomplete && (
-                <div className="absolute -top-1 -right-1 flex h-4 w-4 text-left">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 text-left"></span>
-                    <span className="relative inline-flex rounded-full h-4 w-4 bg-red-600 border-2 border-background text-left"></span>
+                <div className="absolute -top-1 -right-1 flex h-4 w-4">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-4 w-4 bg-red-600 border-2 border-background"></span>
                 </div>
               )}
             </div>
-            <div className="flex-grow w-full text-center sm:text-left space-y-4 text-left">
+            <div className="flex-grow w-full text-center sm:text-left space-y-4">
                 <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4 text-left">
-                    <div className="flex-grow min-w-0 text-left">
-                        <h1 className="text-2xl sm:text-3xl font-bold truncate leading-tight capitalize text-left">{displayName}</h1>
-                        <div className="mt-3 flex flex-wrap justify-center sm:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium text-left">
+                    <div className="flex-grow min-w-0">
+                        <h1 className="text-2xl sm:text-3xl font-bold truncate leading-tight capitalize">{displayName}</h1>
+                        <div className="mt-3 flex flex-wrap justify-center sm:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
                             {(city || state || country) && (
-                                <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider text-left text-left">
-                                    <MapPin className="h-4 w-4 text-left text-left" /> 
+                                <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider">
+                                    <MapPin className="h-4 w-4" /> 
                                     {[city, state].filter(Boolean).join(', ') || country}
                                 </div>
                             )}
                             {maritalStatus && (
-                                <div className="flex items-center gap-1.5 text-left text-left">
-                                    <Heart className="h-3.5 w-3.5 text-primary text-left text-left" />
+                                <div className="flex items-center gap-1.5">
+                                    <Heart className="h-3.5 w-3.5 text-primary" />
                                     {maritalStatus}
                                 </div>
                             )}
                             {workStatus && (
-                                <div className="flex items-center gap-1.5 text-left text-left">
-                                    <Briefcase className="h-3.5 w-3.5 text-primary text-left text-left" />
-                                    <span className="text-left text-left">
+                                <div className="flex items-center gap-1.5">
+                                    <Briefcase className="h-3.5 w-3.5 text-primary" />
+                                    <span>
                                         {roleInOrganization && `${roleInOrganization}${organizationName ? ' @ ' : ''}`}
                                         {organizationName || workStatus}
                                     </span>
                                 </div>
                             )}
-                            {phone && <div className="flex items-center gap-1.5 text-left text-left"><Phone className="h-3.5 w-3.5 text-primary text-left text-left" /> {phone}</div>}
+                            {phone && <div className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-primary" /> {phone}</div>}
                         </div>
                     </div>
-                    <div className="w-full sm:w-auto shrink-0 text-left">
+                    <div className="w-full sm:w-auto shrink-0">
                         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                             <DialogTrigger asChild>
-                              <Button className="w-full sm:w-auto font-bold h-10 px-6 rounded-full shadow-md transition-transform active:scale-95 text-left">
-                                <Edit className="mr-2 h-4 w-4 text-left" />
+                              <Button className="w-full sm:w-auto font-bold h-10 px-6 rounded-full shadow-md transition-transform active:scale-95">
+                                <Edit className="mr-2 h-4 w-4" />
                                 Edit Profile
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="sm:max-w-lg text-left">
+                            <DialogContent className="sm:max-w-lg">
                                 <DialogHeader className="text-left">
-                                    <DialogTitle className="text-left">Edit Profile</DialogTitle>
-                                    <DialogDescription className="text-left">Make changes to your public profile.</DialogDescription>
+                                    <DialogTitle>Edit Profile</DialogTitle>
+                                    <DialogDescription>Make changes to your public profile.</DialogDescription>
                                 </DialogHeader>
-                                <div className="max-h-[70vh] overflow-y-auto pr-2 text-left">
+                                <div className="max-h-[70vh] overflow-y-auto pr-2">
                                   {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />}
                                 </div>
                             </DialogContent>
@@ -481,15 +480,15 @@ export default function ProfilePage() {
                 </div>
 
                 {personalMessage && (
-                    <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 inline-flex items-center gap-3 text-left max-w-xl mx-auto sm:mx-0 text-left">
-                        <Sparkles className="h-5 w-5 text-primary shrink-0 text-left" />
-                        <p className="text-sm sm:text-base font-bold text-foreground leading-snug italic text-left text-left">
+                    <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 inline-flex items-center gap-3 text-left max-w-xl mx-auto sm:mx-0">
+                        <Sparkles className="h-5 w-5 text-primary shrink-0" />
+                        <p className="text-sm sm:text-base font-bold text-foreground leading-snug italic">
                           &ldquo;{personalMessage}&rdquo;
                         </p>
                     </div>
                 )}
 
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl text-left text-left">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl text-left">
                     {bio || "You haven't set a bio yet. Share a brief summary of your spiritual journey to encourage others."}
                 </p>
             </div>
@@ -498,25 +497,25 @@ export default function ProfilePage() {
       </Card>
 
       {videoTestimonies.length > 0 && (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none overflow-hidden border-t-4 border-t-red-600 border-b-2 sm:border-b text-left">
-            <CardHeader className="pb-4 pt-6 px-6 text-left">
-                <CardTitle className="flex items-center gap-2 text-lg font-bold text-left text-left">
-                    <Youtube className="h-5 w-5 text-red-600 text-left text-left" />
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none overflow-hidden border-t-4 border-t-red-600 border-b-2 sm:border-b">
+            <CardHeader className="pb-4 pt-6 px-6">
+                <CardTitle className="flex items-center gap-2 text-lg font-bold">
+                    <Youtube className="h-5 w-5 text-red-600" />
                     My Video Testimonies
                 </CardTitle>
             </CardHeader>
-            <CardContent className="px-6 pb-6 text-left">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+            <CardContent className="px-6 pb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {videoTestimonies.map((video, idx) => (
-                        <div key={idx} className="space-y-2 text-left">
-                            {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate ml-1 text-left">{video.title}</p>}
-                            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-white/5 transition-transform hover:scale-[1.01] text-left">
+                        <div key={idx} className="space-y-2">
+                            {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate ml-1">{video.title}</p>}
+                            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-white/5 transition-transform hover:scale-[1.01]">
                                 <iframe
                                     src={video.embedUrl!}
                                     title={video.title || "Video Testimony"}
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen
-                                    className="absolute inset-0 w-full h-full border-0 text-left text-left"
+                                    className="absolute inset-0 w-full h-full border-0"
                                 />
                             </div>
                         </div>
@@ -526,64 +525,64 @@ export default function ProfilePage() {
         </Card>
       )}
 
-      <div className="space-y-6 text-left">
-            <h2 className="text-xl font-bold tracking-tight px-4 sm:px-0 uppercase text-muted-foreground flex items-center gap-2 text-left">
-                <Activity className="h-5 w-5 text-left" /> Your Kingdom Activity
+      <div className="space-y-6">
+            <h2 className="text-xl font-bold tracking-tight px-4 sm:px-0 uppercase text-muted-foreground flex items-center gap-2">
+                <Activity className="h-5 w-5" /> Your Kingdom Activity
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="text-base sm:text-lg text-left">Testimonies ({testimonies?.length ?? 0})</CardTitle>
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6">
+                        <CardTitle className="text-base sm:text-lg">Testimonies ({testimonies?.length ?? 0})</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0">
                         <FilterControls 
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
                             filterDate={testimonyFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setTestimonyFilterDate}
                             searchPlaceholder="Search testimonies..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
+                            <div className="p-1 space-y-px">
                                 {filteredTestimonies.length > 0 ? (
                                     filteredTestimonies.map(t => (
                                         <Link key={t.id} href="/dashboard/testimonies" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1 text-left">{t.category}</p>
-                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed text-left">{t.content}</p>
+                                            <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1">{t.category}</p>
+                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed">{t.content}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{testimonies?.length === 0 ? 'No testimonies shared yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{testimonies?.length === 0 ? 'No testimonies shared yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="text-base sm:text-lg text-left">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle>
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6">
+                        <CardTitle className="text-base sm:text-lg">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0">
                          <FilterControls 
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setPrayerFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
+                            <div className="p-1 space-y-px">
                                 {filteredPrayerRequests.length > 0 ? (
                                     filteredPrayerRequests.map(p => (
                                         <Link key={p.id} href="/dashboard/testimonies" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1 text-left">{p.category}</p>
-                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed text-left">{p.content}</p>
+                                            <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1">{p.category}</p>
+                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed">{p.content}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{prayerRequests?.length === 0 ? 'No prayer requests submitted yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{prayerRequests?.length === 0 ? 'No prayer requests submitted yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
@@ -592,56 +591,56 @@ export default function ProfilePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="text-base sm:text-lg text-left">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle>
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6">
+                        <CardTitle className="text-base sm:text-lg">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0">
                          <FilterControls 
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setCreatedCampaignFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
+                            <div className="p-1 space-y-px">
                                 {filteredCreatedCampaigns.length > 0 ? (
                                     filteredCreatedCampaigns.map(c => (
                                         <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left">{c.title}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter text-left">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
+                                            <p className="font-bold text-sm group-hover:underline line-clamp-1">{c.title}</p>
+                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{createdCampaigns?.length === 0 ? 'No campaigns created yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{createdCampaigns?.length === 0 ? 'No campaigns created yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="text-base sm:text-lg text-left">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle>
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6">
+                        <CardTitle className="text-base sm:text-lg">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0">
                          <FilterControls 
                             searchTerm={joinedCampaignSearchTerm}
                             setSearchTerm={setJoinedCampaignSearchTerm}
                             searchPlaceholder="Search joined campaigns..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
+                            <div className="p-1 space-y-px">
                                 {filteredJoinedCampaigns.length > 0 ? (
                                     filteredJoinedCampaigns.map(c => (
                                         <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left">{c.title}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter text-left">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
+                                            <p className="font-bold text-sm group-hover:underline line-clamp-1">{c.title}</p>
+                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{activeJoinedCampaigns.length === 0 ? 'No other campaigns joined yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{activeJoinedCampaigns.length === 0 ? 'No other campaigns joined yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
@@ -650,60 +649,60 @@ export default function ProfilePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left">
-                            <Users className="h-5 w-5 text-primary text-left" />
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6">
+                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                            <Users className="h-5 w-5 text-primary" />
                             Fellowships Joined ({joinedFellowships.length})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0">
                         <FilterControls 
                             searchTerm={joinedFellowshipSearchTerm}
                             setSearchTerm={setJoinedFellowshipSearchTerm}
                             searchPlaceholder="Search joined fellowships..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
+                            <div className="p-1 space-y-px">
                                 {filteredJoinedFellowships.length > 0 ? (
                                     filteredJoinedFellowships.map(f => (
                                         <Link key={f.id} href={`/dashboard/fellowship/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left">{f.name}</p>
-                                            <p className="text-xs text-muted-foreground mt-1 truncate text-left">{f.location || 'Global'}</p>
+                                            <p className="font-bold text-sm group-hover:underline line-clamp-1">{f.name}</p>
+                                            <p className="text-xs text-muted-foreground mt-1 truncate">{f.location || 'Global'}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{joinedFellowships.length === 0 ? 'No fellowships joined yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{joinedFellowships.length === 0 ? 'No fellowships joined yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left">
-                            <Group className="h-5 w-5 text-primary text-left" />
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6">
+                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                            <Group className="h-5 w-5 text-primary" />
                             Associations Joined ({joinedAssociations.length})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0">
                         <FilterControls 
                             searchTerm={joinedAssociationSearchTerm}
                             setSearchTerm={setJoinedAssociationSearchTerm}
                             searchPlaceholder="Search joined associations..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
+                            <div className="p-1 space-y-px">
                                 {filteredJoinedAssociations.length > 0 ? (
                                     filteredJoinedAssociations.map(a => (
                                         <Link key={a.id} href={`/dashboard/fellowship/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left">{a.name}</p>
-                                            <p className="text-xs text-muted-foreground mt-1 truncate text-left">{a.location || 'Global'}</p>
+                                            <p className="font-bold text-sm group-hover:underline line-clamp-1">{a.name}</p>
+                                            <p className="text-xs text-muted-foreground mt-1 truncate">{a.location || 'Global'}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{joinedAssociations.length === 0 ? 'No associations joined yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{joinedAssociations.length === 0 ? 'No associations joined yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
@@ -712,70 +711,70 @@ export default function ProfilePage() {
             </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="text-base sm:text-lg text-left">Souls Won ({soulsWon?.length ?? 0})</CardTitle>
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6">
+                        <CardTitle className="text-base sm:text-lg">Souls Won ({soulsWon?.length ?? 0})</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0">
                          <FilterControls 
                             searchTerm={soulSearchTerm}
                             setSearchTerm={setSoulSearchTerm}
                             filterDate={soulFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setSoulFilterDate}
                             searchPlaceholder="Search souls by name..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
+                            <div className="p-1 space-y-px">
                                 {filteredSoulsWon.length > 0 ? (
                                     filteredSoulsWon.map(s => (
                                         <Link key={s.id} href="/dashboard/souls-won" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1 text-left">{s.firstName} {s.lastName}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter text-left">Won on {s.wonAt ? format(safeToDate(s.wonAt)!, "PPP") : 'N/A'}</p>
+                                            <p className="font-bold text-sm group-hover:underline line-clamp-1">{s.firstName} {s.lastName}</p>
+                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Won on {s.wonAt ? format(safeToDate(s.wonAt)!, "PPP") : 'N/A'}</p>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{soulsWon?.length === 0 ? 'No souls won yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{soulsWon?.length === 0 ? 'No souls won yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b text-left">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left">
-                            <HeartHandshake className="h-5 w-5 text-primary text-left" />
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
+                    <CardHeader className="p-5 sm:p-6">
+                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                            <HeartHandshake className="h-5 w-5 text-primary" />
                             Partners ({userProfile?.accountabilityPartners?.length ?? 0})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
+                    <CardContent className="p-5 sm:p-6 pt-0">
                          <FilterControls 
                             searchTerm={partnerSearchTerm}
                             setSearchTerm={setPartnerSearchTerm}
                             searchPlaceholder="Search partners..."
                         />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5 text-left">
-                            <div className="p-1 space-y-px text-left">
+                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
+                            <div className="p-1 space-y-px">
                                 {filteredAccountabilityPartners.length > 0 ? (
                                     filteredAccountabilityPartners.map(p => (
                                         <Link key={p.userId} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <Avatar className="h-10 w-10 sm:h-9 sm:w-9 border shrink-0 text-left">
-                                                <AvatarImage src={p.photoURL} className="text-left" />
-                                                <AvatarFallback className="text-xs font-bold text-left">{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
+                                            <Avatar className="h-10 w-10 sm:h-9 sm:w-9 border shrink-0">
+                                                <AvatarImage src={p.photoURL} />
+                                                <AvatarFallback className="text-xs font-bold">{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
                                             </Avatar>
-                                            <div className="min-w-0 flex-1 text-left">
-                                                <p className="font-bold text-sm truncate leading-tight group-hover:underline text-left">{p.firstName} {p.lastName}</p>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-bold text-sm truncate leading-tight group-hover:underline">{p.firstName} {p.lastName}</p>
                                             </div>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic text-left">{userProfile?.accountabilityPartners?.length === 0 ? 'No accountability partners yet.' : 'No results found.'}</p>
+                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{userProfile?.accountabilityPartners?.length === 0 ? 'No accountability partners yet.' : 'No results found.'}</p>
                                 )}
                             </div>
                         </ScrollArea>
-                        <div className="pt-6 flex justify-end text-left">
-                            <Button asChild variant="outline" size="sm" className="text-[10px] font-black uppercase tracking-widest h-9 sm:h-8 px-6 rounded-full shadow-sm text-left">
-                                <Link href="/dashboard/accountability" className="text-left">Find Partners</Link>
+                        <div className="pt-6 flex justify-end">
+                            <Button asChild variant="outline" size="sm" className="text-[10px] font-black uppercase tracking-widest h-9 sm:h-8 px-6 rounded-full shadow-sm">
+                                <Link href="/dashboard/accountability">Find Partners</Link>
                             </Button>
                         </div>
                     </CardContent>
