@@ -518,75 +518,69 @@ export default function AccountabilityPage() {
     } finally { setIsChatLoading(null); }
   };
 
-  const handleRemovePartner = () => {
-    const sendResponse = (res: any) => console.log('Reciprocal removal initiated:', res);
+  const handleRemovePartner = async (e: React.MouseEvent) => {
     if (!user || !firestore || !userProfile?.accountabilityPartners || !removalTarget || !removalReason.trim()) {
-        sendResponse({ success: false });
         return;
     }
+    
+    e.preventDefault(); // Keep dialog open for loading state
     
     const partnerId = removalTarget.userId;
     const partnerName = removalTarget.firstName;
     
     setIsRemoving(partnerId);
-    setRemovalTarget(null);
 
-    (async () => {
-        try {
-            const batch = writeBatch(firestore);
-            const requestId = [user.uid, partnerId].sort().join('_');
-            const requestRef = doc(firestore, 'accountabilityRequests', requestId);
-            
-            const partnerUserRef = doc(firestore, 'users', partnerId);
-            const partnerDoc = await getDoc(partnerUserRef);
+    try {
+        const batch = writeBatch(firestore);
+        const requestId = [user.uid, partnerId].sort().join('_');
+        const requestRef = doc(firestore, 'accountabilityRequests', requestId);
+        
+        const partnerUserRef = doc(firestore, 'users', partnerId);
+        const partnerDoc = await getDoc(partnerUserRef);
 
-            if (partnerDoc.exists()) {
-                 const pData = partnerDoc.data() as UserProfile;
-                const myEntryInPartnerList = pData.accountabilityPartners?.find(p => p.userId === user.uid);
-                if (myEntryInPartnerList) {
-                    batch.update(partnerUserRef, { 
-                        accountabilityPartners: arrayRemove(myEntryInPartnerList), 
-                        partnerIds: arrayRemove(user.uid) 
-                    });
-                }
-            }
-
-            const myEntryForPartner = userProfile.accountabilityPartners?.find(p => p.userId === partnerId);
-            if (myEntryForPartner) {
-                batch.update(doc(firestore, 'users', user.uid), { 
-                    accountabilityPartners: arrayRemove(myEntryForPartner), 
-                    partnerIds: arrayRemove(partnerId) 
+        if (partnerDoc.exists()) {
+             const pData = partnerDoc.data() as UserProfile;
+            const myEntryInPartnerList = pData.accountabilityPartners?.find(p => p.userId === user.uid);
+            if (myEntryInPartnerList) {
+                batch.update(partnerUserRef, { 
+                    accountabilityPartners: arrayRemove(myEntryInPartnerList), 
+                    partnerIds: arrayRemove(user.uid) 
                 });
             }
-            
-            batch.delete(requestRef);
-            
-            const notificationRef = doc(collection(firestore, `users/${partnerId}/notifications`));
-            batch.set(notificationRef, { 
-                userId: partnerId, 
-                type: 'accountability_partner_removed', 
-                title: 'Alliance Ended', 
-                message: `${userProfile.firstName} ${userProfile.lastName} has ended your accountability partnership. Reason: ${removalReason}`, 
-                link: '/accountability', 
-                isRead: false, 
-                createdAt: serverTimestamp() 
-            });
-
-            await batch.commit();
-            toast({ title: 'Partner Removed', description: `Alliance with ${partnerName} has ended.` });
-            sendResponse({ success: true });
-            router.refresh();
-        } catch (error: any) {
-            console.error("Partner removal failed:", error);
-            sendResponse({ success: false, error });
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `users/${partnerId}`, operation: 'write' }, user));
-        } finally { 
-            setIsRemoving(null); 
-            setRemovalReason(''); 
         }
-    })();
 
-    return true; 
+        const myEntryForPartner = userProfile.accountabilityPartners?.find(p => p.userId === partnerId);
+        if (myEntryForPartner) {
+            batch.update(doc(firestore, 'users', user.uid), { 
+                accountabilityPartners: arrayRemove(myEntryForPartner), 
+                partnerIds: arrayRemove(partnerId) 
+            });
+        }
+        
+        batch.delete(requestRef);
+        
+        const notificationRef = doc(collection(firestore, `users/${partnerId}/notifications`));
+        batch.set(notificationRef, { 
+            userId: partnerId, 
+            type: 'accountability_partner_removed', 
+            title: 'Alliance Ended', 
+            message: `${userProfile.firstName} ${userProfile.lastName} has ended your accountability partnership. Reason: ${removalReason}`, 
+            link: '/accountability', 
+            isRead: false, 
+            createdAt: serverTimestamp() 
+        });
+
+        await batch.commit();
+        toast({ title: 'Partner Removed', description: `Alliance with ${partnerName} has ended.` });
+        router.refresh();
+        setRemovalTarget(null); // Close dialog on success
+    } catch (error: any) {
+        console.error("Partner removal failed:", error);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `users/${partnerId}`, operation: 'write' }, user));
+    } finally { 
+        setIsRemoving(null); 
+        setRemovalReason(''); 
+    }
   };
 
   if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left">Establishing Connection...</p></div>;
@@ -647,7 +641,7 @@ export default function AccountabilityPage() {
                     <AlertDialogFooter className="gap-3 text-left text-left">
                         <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left text-left">Close</AlertDialogCancel>
                         <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left">
-                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <UserX className="mr-2 h-4 w-4 text-left text-left" />}
+                            {isRemoving ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <UserX className="mr-2 h-4 w-4 text-left text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>
