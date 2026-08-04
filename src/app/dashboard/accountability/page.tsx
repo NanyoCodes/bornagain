@@ -98,11 +98,11 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                 </CardHeader>
                 <CardContent className="p-6 pt-2 space-y-4 text-left">
                     <div className="grid grid-cols-2 gap-3 text-left">
-                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left">
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left text-left">
                             <p className="text-2xl font-black text-center">{partnerCount}</p>
                             <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center text-left">Partners</p>
                         </div>
-                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left">
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left text-left">
                             <p className="text-2xl font-black text-center">{pendingCount}</p>
                             <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center text-left">Requests</p>
                         </div>
@@ -141,7 +141,7 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                         { icon: Sparkles, label: "Prayer Agreement", color: "text-primary" },
                         { icon: Users, label: "Truth with Love", color: "text-indigo-600" },
                     ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/10 border border-transparent text-left">
+                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/10 border border-transparent text-left text-left">
                             <item.icon className={cn("h-4 w-4", item.color)} />
                             <span className="text-[10px] font-bold uppercase tracking-tight text-left">{item.label}</span>
                         </div>
@@ -190,13 +190,13 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     return (
         <div className="grid grid-cols-4 gap-1 items-center h-14 text-left">
             {disciplines.map(d => (
-                <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0 text-left">
+                <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0 text-left text-left">
                     {completedOnDate.includes(d.id) ? (
-                        <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center text-left">
+                        <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center text-left text-left">
                             <CheckCircle2 className="h-4 w-4 text-green-500 text-left" />
                         </div>
                     ) : (
-                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-left">
+                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-left text-left">
                             <XCircle className="h-4 w-4 text-muted-foreground/30 text-left" />
                         </div>
                     )}
@@ -253,8 +253,8 @@ function PartnerCard({
                           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                               <DialogHeader className="sr-only text-center"><DialogTitle className="text-center">Profile photo</DialogTitle></DialogHeader>
                               <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
-                                    <Image src={livePhotoURL} alt="partner" fill className="object-contain shadow-2xl ring-4 ring-white/10 text-center" unoptimized />
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left text-left">
+                                    <Image src={livePhotoURL} alt="partner" fill className="object-contain shadow-2xl ring-4 ring-white/10 text-center text-left" unoptimized />
                                 </div>
                               </div>
                           </DialogContent>
@@ -290,7 +290,7 @@ function PartnerCard({
                     </TooltipProvider>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full text-left">
+                            <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full text-left text-left">
                                 <MoreVertical className="h-4 w-4 text-left" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -310,17 +310,17 @@ function PartnerCard({
                 </div>
             </CardHeader>
             <CardContent className="px-4 sm:px-6 pb-6 text-left">
-                <div className="pt-4 border-t border-dashed space-y-4 text-left">
-                    <div className="flex justify-between items-center gap-2 text-left">
-                        <div className="flex items-center gap-1.5 text-left">
-                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
+                <div className="pt-4 border-t border-dashed space-y-4 text-left text-left">
+                    <div className="flex justify-between items-center gap-2 text-left text-left">
+                        <div className="flex items-center gap-1.5 text-left text-left">
+                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left text-left" />
                             <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] text-left">Discipline Records</h4>
                         </div>
                         <Input 
                             type="date" 
                             value={dateStr} 
                             onChange={(e) => setDateStr(e.target.value)} 
-                            className="w-[140px] h-8 text-[10px] sm:text-xs font-bold uppercase tracking-tighter bg-muted/20 border-none rounded-lg text-left"
+                            className="w-[140px] h-8 text-[10px] sm:text-xs font-bold uppercase tracking-tighter bg-muted/20 border-none rounded-lg text-left text-left"
                         />
                     </div>
                     <PartnerDisciplineStatus partnerId={partner.userId} date={selectedDate} />
@@ -453,11 +453,11 @@ export default function AccountabilityPage() {
     const partnerId = removalTarget.userId;
     const partnerName = removalTarget.firstName;
     
-    // Non-blocking UI reset pattern
+    // UI RESET: Close dialog and reset selection to prevent unmount deadlock
     setIsRemoving(partnerId);
     setRemovalTarget(null);
 
-    // Immediate background logic
+    // Immediate background logic execution
     (async () => {
         try {
             const batch = writeBatch(firestore);
@@ -513,68 +513,68 @@ export default function AccountabilityPage() {
         }
     })();
 
-    return true; // Signal async intent
+    return true; 
   };
 
-  if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left">Establishing Connection...</p></div>;
+  if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left text-left">Establishing Connection...</p></div>;
   
   return (
-    <div className="w-full max-w-7xl mx-auto text-left">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
-            <div className="lg:col-span-8 space-y-10 pb-32 text-left">
-                <header className="px-4 sm:px-0 space-y-1 text-left">
-                    <div className="flex items-center gap-4 text-left">
-                        <div className="space-y-1 text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY PARTNERS</h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
-                                <HeartHandshake className="h-4 w-4 text-primary text-left" /> Spiritual Accountability
+    <div className="w-full max-w-7xl mx-auto text-left text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left text-left">
+            <div className="lg:col-span-8 space-y-10 pb-32 text-left text-left">
+                <header className="px-4 sm:px-0 space-y-1 text-left text-left">
+                    <div className="flex items-center gap-4 text-left text-left">
+                        <div className="space-y-1 text-left text-left">
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left">MY PARTNERS</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left">
+                                <HeartHandshake className="h-4 w-4 text-primary text-left text-left" /> Spiritual Accountability
                             </p>
                         </div>
                     </div>
                 </header>
 
-                <div className="space-y-4 text-left">
+                <div className="space-y-4 text-left text-left">
                     {filteredPartners.map(partner => (
                         <PartnerCard key={partner.userId} partner={partner} onNudge={handleNudgePartner} onChat={handleInitiateChat} onRemove={setRemovalTarget} />
                     ))}
                     {partners.length === 0 && (
-                        <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted text-left">
-                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left">
-                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left" />
+                        <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted text-left text-left">
+                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left text-left">
+                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left text-left" />
                             </div>
-                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center text-left">No Active Alliance</h2>
-                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center text-left">
+                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center text-left text-left">No Active Alliance</h2>
+                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center text-left text-left">
                             "Two are better than one... for if they fall, the one will lift up his fellow." — Eccl 4:9-10
                             </p>
                         </div>
                     )}
                 </div>
 
-                <div className="px-4 sm:px-0 text-left">
+                <div className="px-4 sm:px-0 text-left text-left">
                     {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
                 </div>
             </div>
 
-            <div className="lg:col-span-4 text-left">
+            <div className="lg:col-span-4 text-left text-left">
                 <AccountabilitySidebar partnerCount={activePartnersCount} pendingCount={pendingRequestsCount} />
             </div>
         </div>
 
         {removalTarget && (
             <AlertDialog open={!!removalTarget} onOpenChange={(open) => { if (!open) { setRemovalTarget(null); setRemovalReason(''); } }}>
-                <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left text-left">
-                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">End Alliance?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
+                <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left">
+                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left">End Alliance?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <div className="grid gap-4 py-6 text-left">
-                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Reason for Removal</Label>
-                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left" />
+                    <div className="grid gap-4 py-6 text-left text-left">
+                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Reason for Removal</Label>
+                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left text-left" />
                     </div>
-                    <AlertDialogFooter className="gap-3 text-left">
-                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left">Close</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">
-                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <UserX className="mr-2 h-4 w-4 text-left" />}
+                    <AlertDialogFooter className="gap-3 text-left text-left">
+                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left text-left">Close</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left">
+                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <UserX className="mr-2 h-4 w-4 text-left text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>

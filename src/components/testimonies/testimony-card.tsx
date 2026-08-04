@@ -72,7 +72,7 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
                     <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
                     <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
                         <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
-                            <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10 text-center" unoptimized />
+                            <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                         </div>
                     </div>
                 </DialogContent>
@@ -175,16 +175,42 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const handleShare = async (e?: React.MouseEvent) => {
     if (e) { e.preventDefault(); e.stopPropagation(); }
     const shareUrl = `${window.location.origin}/testimonies#${testimony.id}`;
-    const shareData = { title: 'Glory Feed Story', text: testimony.content.substring(0, 150) + '...', url: shareUrl };
+    const textContent = `${testimony.content.substring(0, 200)}${testimony.content.length > 200 ? '...' : ''}\n\nRead more on Testify:`;
+    
+    const shareData: any = { 
+        title: 'Kingdom Testimony | Testify', 
+        text: textContent, 
+        url: shareUrl 
+    };
+
     try {
-      if (navigator && navigator.share) await navigator.share(shareData);
-      else throw new Error();
+      if (navigator && navigator.share) {
+        // Attempt to attach the first image if it exists to show it in the share sheet
+        if (testimony.mediaUrl && testimony.mediaType === 'image') {
+            try {
+                const response = await fetch(testimony.mediaUrl);
+                const blob = await response.blob();
+                const file = new File([blob], 'testimony-proof.jpg', { type: 'image/jpeg' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    shareData.files = [file];
+                }
+            } catch (mediaErr) {
+                console.warn("Could not attach image to share", mediaErr);
+            }
+        }
+        await navigator.share(shareData);
+      } else {
+        throw new Error('Share API not supported');
+      }
     } catch (err: any) {
         if (err.name === 'AbortError') return;
         try {
-          await navigator.clipboard.writeText(shareUrl);
-          toast({ title: "Link Copied!" });
-        } catch (clipErr) {}
+          await navigator.clipboard.writeText(`${textContent} ${shareUrl}`);
+          toast({ title: "Link & Details Copied!" });
+        } catch (clipErr) {
+            await navigator.clipboard.writeText(shareUrl);
+            toast({ title: "Link Copied!" });
+        }
     }
   };
 
