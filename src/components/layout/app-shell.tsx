@@ -73,7 +73,7 @@ import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "../ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
@@ -972,7 +972,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                 />
             )}
             <div className="flex-1 min-h-0 relative">
-              <main ref={scrollContainerRef} className={cn("absolute inset-0 overscroll-contain", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
+              <main ref={scrollContainerRef} className={cn("absolute inset-0 overflow-x-hidden", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
                   <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-7xl p-3 md:p-6" : "w-full flex flex-col")}>
                       <PageTransition>{children}</PageTransition>
                       <div className="h-28 md:h-12 shrink-0" />
