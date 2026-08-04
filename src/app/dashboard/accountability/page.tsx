@@ -32,7 +32,10 @@ import {
     Mail,
     Phone,
     MapPin,
-    Globe
+    Globe,
+    Smartphone,
+    MessageSquare,
+    X
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -81,6 +84,14 @@ const accountabilityVerses = [
     { text: "Bear one another's burdens, and so fulfill the law of Christ.", ref: "Galatians 6:2" },
 ];
 
+function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+    </svg>
+  );
+}
+
 function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partnerCount?: number, pendingCount?: number }) {
     const verse = useMemo(() => accountabilityVerses[Math.floor(Math.random() * accountabilityVerses.length)], []);
 
@@ -98,11 +109,11 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                 </CardHeader>
                 <CardContent className="p-6 pt-2 space-y-4 text-left">
                     <div className="grid grid-cols-2 gap-3 text-left">
-                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left text-left">
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left">
                             <p className="text-2xl font-black text-center">{partnerCount}</p>
                             <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center text-left">Partners</p>
                         </div>
-                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left text-left">
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left">
                             <p className="text-2xl font-black text-center">{pendingCount}</p>
                             <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center text-left">Requests</p>
                         </div>
@@ -141,7 +152,7 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                         { icon: Sparkles, label: "Prayer Agreement", color: "text-primary" },
                         { icon: Users, label: "Truth with Love", color: "text-indigo-600" },
                     ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/10 border border-transparent text-left text-left">
+                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/10 border border-transparent text-left">
                             <item.icon className={cn("h-4 w-4", item.color)} />
                             <span className="text-[10px] font-bold uppercase tracking-tight text-left">{item.label}</span>
                         </div>
@@ -149,7 +160,7 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                 </CardContent>
                 <CardFooter className="p-5 pt-0 text-left">
                     <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full text-left">
-                        <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic uppercase tracking-widest text-center text-left text-left">
+                        <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic uppercase tracking-widest text-center text-left">
                             "Bearing one another's burdens"
                         </p>
                     </div>
@@ -190,13 +201,13 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
     return (
         <div className="grid grid-cols-4 gap-1 items-center h-14 text-left">
             {disciplines.map(d => (
-                <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0 text-left text-left">
+                <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0 text-left">
                     {completedOnDate.includes(d.id) ? (
-                        <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center text-left text-left">
+                        <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center text-left">
                             <CheckCircle2 className="h-4 w-4 text-green-500 text-left" />
                         </div>
                     ) : (
-                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-left text-left">
+                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-left">
                             <XCircle className="h-4 w-4 text-muted-foreground/30 text-left" />
                         </div>
                     )}
@@ -225,11 +236,14 @@ function PartnerCard({
 }) {
     const router = useRouter();
     const firestore = useFirestore();
+    const { toast } = useToast();
     const [dateStr, setDateStr] = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [isMessageOpen, setIsMessageOpen] = useState(false);
     
     const partnerDocRef = useMemo(() => partner.userId ? doc(firestore, 'users', partner.userId) : null, [firestore, partner.userId]);
     const { data: partnerProfile } = useDoc<UserProfile>(partnerDocRef);
     const livePhotoURL = partnerProfile?.photoURL || partner.photoURL;
+    const phone = partnerProfile?.phone;
     
     const selectedDate = useMemo(() => {
         const [year, month, day] = dateStr.split('-').map(Number);
@@ -253,8 +267,8 @@ function PartnerCard({
                           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                               <DialogHeader className="sr-only text-center"><DialogTitle className="text-center">Profile photo</DialogTitle></DialogHeader>
                               <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left text-left">
-                                    <Image src={livePhotoURL} alt="partner" fill className="object-contain shadow-2xl ring-4 ring-white/10 text-center text-left" unoptimized />
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                                    <Image src={livePhotoURL} alt="partner" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                               </div>
                           </DialogContent>
@@ -278,6 +292,23 @@ function PartnerCard({
                             <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase text-left">Nudge {partner.firstName}</p></TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
+
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button 
+                                    variant="outline" 
+                                    size="icon" 
+                                    className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" 
+                                    onClick={() => setIsMessageOpen(true)}
+                                >
+                                    <Smartphone className="h-4 w-4 sm:h-5 w-5 text-left" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase text-left">Connect Externally</p></TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -290,7 +321,7 @@ function PartnerCard({
                     </TooltipProvider>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full text-left text-left">
+                            <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full text-left">
                                 <MoreVertical className="h-4 w-4 text-left" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -310,22 +341,66 @@ function PartnerCard({
                 </div>
             </CardHeader>
             <CardContent className="px-4 sm:px-6 pb-6 text-left">
-                <div className="pt-4 border-t border-dashed space-y-4 text-left text-left">
-                    <div className="flex justify-between items-center gap-2 text-left text-left">
-                        <div className="flex items-center gap-1.5 text-left text-left">
-                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left text-left" />
+                <div className="pt-4 border-t border-dashed space-y-4 text-left">
+                    <div className="flex justify-between items-center gap-2 text-left">
+                        <div className="flex items-center gap-1.5 text-left">
+                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
                             <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] text-left">Discipline Records</h4>
                         </div>
                         <Input 
                             type="date" 
                             value={dateStr} 
                             onChange={(e) => setDateStr(e.target.value)} 
-                            className="w-[140px] h-8 text-[10px] sm:text-xs font-bold uppercase tracking-tighter bg-muted/20 border-none rounded-lg text-left text-left"
+                            className="w-[140px] h-8 text-[10px] sm:text-xs font-bold uppercase tracking-tighter bg-muted/20 border-none rounded-lg text-left"
                         />
                     </div>
                     <PartnerDisciplineStatus partnerId={partner.userId} date={selectedDate} />
                 </div>
             </CardContent>
+
+            <Dialog open={isMessageOpen} onOpenChange={setIsMessageOpen}>
+                <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
+                    <DialogHeader className="text-center space-y-2">
+                        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
+                            <MessageSquare className="h-7 w-7 text-primary text-center" />
+                        </div>
+                        <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-balance">Message {partner.firstName}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-center text-balance">Choose how to encourage your partner externally.</DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-3 pt-6">
+                        <Button 
+                            onClick={() => {
+                                if (!phone) {
+                                    toast({ variant: 'destructive', title: 'Phone Missing', description: `${partner.firstName} hasn't provided a phone number.` });
+                                    return;
+                                }
+                                const cleanPhone = phone.replace(/\+/g, '').replace(/\D/g, '');
+                                const msg = encodeURIComponent(`Hi ${partner.firstName}, just checking in to see how you're doing with your daily disciplines. God bless you!`);
+                                window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
+                                setIsMessageOpen(false);
+                            }} 
+                            className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center"
+                        >
+                            <WhatsAppIcon className="h-5 w-5 text-center" /> WhatsApp
+                        </Button>
+                        <Button 
+                            onClick={() => {
+                                if (!phone) {
+                                    toast({ variant: 'destructive', title: 'Phone Missing', description: `${partner.firstName} hasn't provided a phone number.` });
+                                    return;
+                                }
+                                const msg = encodeURIComponent(`Hi ${partner.firstName}, just checking in to see how you're doing with your daily disciplines. God bless you!`);
+                                window.location.href = `sms:${phone}?body=${msg}`;
+                                setIsMessageOpen(false);
+                            }} 
+                            variant="outline" 
+                            className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center"
+                        >
+                            <MessageSquare className="h-5 w-5 text-center" /> Standard SMS
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </Card>
     );
 }
@@ -453,11 +528,9 @@ export default function AccountabilityPage() {
     const partnerId = removalTarget.userId;
     const partnerName = removalTarget.firstName;
     
-    // UI RESET: Close dialog and reset selection to prevent unmount deadlock
     setIsRemoving(partnerId);
     setRemovalTarget(null);
 
-    // Immediate background logic execution
     (async () => {
         try {
             const batch = writeBatch(firestore);
@@ -516,65 +589,65 @@ export default function AccountabilityPage() {
     return true; 
   };
 
-  if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left text-left">Establishing Connection...</p></div>;
+  if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left">Establishing Connection...</p></div>;
   
   return (
-    <div className="w-full max-w-7xl mx-auto text-left text-left">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left text-left">
-            <div className="lg:col-span-8 space-y-10 pb-32 text-left text-left">
-                <header className="px-4 sm:px-0 space-y-1 text-left text-left">
-                    <div className="flex items-center gap-4 text-left text-left">
-                        <div className="space-y-1 text-left text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left">MY PARTNERS</h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left">
-                                <HeartHandshake className="h-4 w-4 text-primary text-left text-left" /> Spiritual Accountability
+    <div className="w-full max-w-7xl mx-auto text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
+            <div className="lg:col-span-8 space-y-10 pb-32 text-left">
+                <header className="px-4 sm:px-0 space-y-1 text-left">
+                    <div className="flex items-center gap-4 text-left">
+                        <div className="space-y-1 text-left">
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY PARTNERS</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
+                                <HeartHandshake className="h-4 w-4 text-primary text-left" /> Spiritual Accountability
                             </p>
                         </div>
                     </div>
                 </header>
 
-                <div className="space-y-4 text-left text-left">
+                <div className="space-y-4 text-left">
                     {filteredPartners.map(partner => (
                         <PartnerCard key={partner.userId} partner={partner} onNudge={handleNudgePartner} onChat={handleInitiateChat} onRemove={setRemovalTarget} />
                     ))}
                     {partners.length === 0 && (
-                        <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted text-left text-left">
-                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left text-left">
-                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left text-left" />
+                        <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted text-left">
+                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left">
+                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left" />
                             </div>
-                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center text-left text-left">No Active Alliance</h2>
-                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center text-left text-left">
+                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center text-left">No Active Alliance</h2>
+                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center text-left">
                             "Two are better than one... for if they fall, the one will lift up his fellow." — Eccl 4:9-10
                             </p>
                         </div>
                     )}
                 </div>
 
-                <div className="px-4 sm:px-0 text-left text-left">
+                <div className="px-4 sm:px-0 text-left">
                     {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
                 </div>
             </div>
 
-            <div className="lg:col-span-4 text-left text-left">
+            <div className="lg:col-span-4 text-left">
                 <AccountabilitySidebar partnerCount={activePartnersCount} pendingCount={pendingRequestsCount} />
             </div>
         </div>
 
         {removalTarget && (
             <AlertDialog open={!!removalTarget} onOpenChange={(open) => { if (!open) { setRemovalTarget(null); setRemovalReason(''); } }}>
-                <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left">
-                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left">End Alliance?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
+                <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                    <AlertDialogHeader className="text-left text-left">
+                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">End Alliance?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <div className="grid gap-4 py-6 text-left text-left">
-                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Reason for Removal</Label>
-                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left text-left" />
+                    <div className="grid gap-4 py-6 text-left">
+                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Reason for Removal</Label>
+                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left" />
                     </div>
-                    <AlertDialogFooter className="gap-3 text-left text-left">
-                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left text-left">Close</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left">
-                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <UserX className="mr-2 h-4 w-4 text-left text-left" />}
+                    <AlertDialogFooter className="gap-3 text-left">
+                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left">Close</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">
+                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <UserX className="mr-2 h-4 w-4 text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -584,3 +657,4 @@ export default function AccountabilityPage() {
     </div>
   );
 }
+
