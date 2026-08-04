@@ -285,7 +285,7 @@ function PartnerCard({
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" onClick={() => onNudge(partner)}>
+                                <Button variant="outline" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" onClick={() => onNudge({...partner, phone})}>
                                     <BellRing className="h-4 w-4 sm:h-5 w-5 text-left" />
                                 </Button>
                             </TooltipTrigger>
@@ -375,7 +375,7 @@ function PartnerCard({
                                     return;
                                 }
                                 const cleanPhone = phone.replace(/\+/g, '').replace(/\D/g, '');
-                                const msg = encodeURIComponent(`Hi ${partner.firstName}, just checking in to see how you're doing with your daily disciplines. God bless you!`);
+                                const msg = encodeURIComponent(`Hi ${partner.firstName}, just checking in to see how you're doing with your daily disciplines. Let's keep growing together on Testify! ${window.location.origin}\n\nGod bless you!`);
                                 window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
                                 setIsMessageOpen(false);
                             }} 
@@ -389,7 +389,7 @@ function PartnerCard({
                                     toast({ variant: 'destructive', title: 'Phone Missing', description: `${partner.firstName} hasn't provided a phone number.` });
                                     return;
                                 }
-                                const msg = encodeURIComponent(`Hi ${partner.firstName}, just checking in to see how you're doing with your daily disciplines. God bless you!`);
+                                const msg = encodeURIComponent(`Hi ${partner.firstName}, just checking in to see how you're doing with your daily disciplines. Let's keep growing together on Testify! ${window.location.origin}\n\nGod bless you!`);
                                 window.location.href = `sms:${phone}?body=${msg}`;
                                 setIsMessageOpen(false);
                             }} 
@@ -455,7 +455,7 @@ export default function AccountabilityPage() {
     return uniquePartners.filter(partner => `${partner.firstName} ${partner.lastName}`.toLowerCase().includes(lowercasedTerm));
   }, [partners, searchTerm]);
 
-  const handleNudgePartner = async (partner: { userId: string, firstName: string, lastName: string }) => {
+  const handleNudgePartner = async (partner: { userId: string, firstName: string, lastName: string, phone?: string }) => {
     if (!user || !firestore || !userProfile) return;
     try {
         await addDoc(collection(firestore, 'users', partner.userId, 'notifications'), {
@@ -468,6 +468,13 @@ export default function AccountabilityPage() {
             createdAt: serverTimestamp(),
         });
         toast({ title: 'Nudge Sent!', description: `You've sent encouragement to ${partner.firstName}.` });
+
+        // WhatsApp Nudge
+        if (partner.phone) {
+            const cleanPhone = partner.phone.replace(/\+/g, '').replace(/\D/g, '');
+            const msg = encodeURIComponent(`Hi ${partner.firstName}, just sending you a Kingdom nudge to stay sharp in your daily disciplines! Let's keep growing together on Testify: ${window.location.origin}/growth\n\nGod bless you!`);
+            window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
+        }
     } catch (error) {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `users/${partner.userId}/notifications`, operation: 'create' }, user));
     }
@@ -657,4 +664,3 @@ export default function AccountabilityPage() {
     </div>
   );
 }
-

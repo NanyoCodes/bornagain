@@ -171,7 +171,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
 
   if (showMobileSearch) {
     return (
-      <header className="fixed top-0 left-0 right-0 z-50 flex min-h-[4rem] h-16 py-2 items-center border-b bg-background/95 backdrop-blur-md px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
+      <header className="shrink-0 z-50 flex min-h-[4rem] h-16 py-2 items-center border-b bg-background/95 backdrop-blur-md px-4 md:px-6 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
         <div className="flex w-full items-center gap-3 text-left">
           <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-10 w-10 rounded-full hover:bg-muted/50 transition-colors">
             <ArrowLeft className="h-5 w-5" />
@@ -197,7 +197,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
   const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex min-h-[4rem] h-16 md:min-h-[4.5rem] md:h-20 py-1 items-center justify-between border-b bg-background/95 backdrop-blur-md px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)]">
+    <header className="shrink-0 z-50 flex min-h-[4rem] h-16 md:min-h-[4.5rem] md:h-20 py-1 items-center justify-between border-b bg-background/95 backdrop-blur-md px-3 md:px-6 pt-[env(safe-area-inset-top)]">
       <div className="flex items-center shrink-0">
         <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
@@ -426,7 +426,7 @@ function BottomNavBar() {
     const mobileNavItems = navItems.filter(item => item.href !== '/fellowships' && item.href !== '/dashboard/events' && item.href !== '/accountability');
     
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)] text-left">
+      <nav className="shrink-0 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)] text-left">
         <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-3 py-1 text-left">
           {mobileNavItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
@@ -946,8 +946,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   if (authLoading || (profileLoading && !userProfile && !isPublicRoute) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
-        <div className="relative mb-8 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><div className="absolute inset-0 flex items-center justify-center text-left"><div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" /></div></div>
+      <div className="h-dvh w-full flex flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left overflow-hidden">
+        <div className="relative mb-8 text-left text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><div className="absolute inset-0 flex items-center justify-center text-left"><div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" /></div></div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 text-left">{loadingMessage || "GOD FIRST"}</p>
         <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left">Kingdom Network Active</p>
       </div>
@@ -959,7 +959,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   return (
     <SearchProvider>
-      <div className={cn("fixed inset-0 flex flex-col bg-background overflow-hidden", isTakeoverPage ? "z-50" : "z-0")}>
+      <div className={cn("h-dvh flex flex-col bg-background overflow-hidden relative", isTakeoverPage ? "z-50" : "z-0")}>
         <AnimatePresence>{showSplash && <SplashScreen onDismiss={handleDismissSplash} />}</AnimatePresence>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: contentVisible ? 1 : 0 }} transition={{ duration: 1 }} className="flex-1 flex flex-col min-h-0 relative">
             {!isTakeoverPage && (
@@ -971,12 +971,13 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                     onOpenMenu={() => setIsMenuOpen(true)} 
                 />
             )}
-            <div className="flex-1 relative min-h-0">
-            <main ref={scrollContainerRef} className={cn("absolute inset-0", !isTakeoverPage ? "overflow-y-auto overscroll-contain pt-16 md:pt-20 pb-[env(safe-area-inset-bottom)]" : "overflow-hidden")}>
-                <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col")}>
-                    <PageTransition>{children}</PageTransition>
-                </div>
-            </main>
+            <div className="flex-1 min-h-0 relative">
+              <main ref={scrollContainerRef} className={cn("absolute inset-0 overscroll-contain", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
+                  <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-7xl p-3 md:p-6" : "w-full flex flex-col")}>
+                      <PageTransition>{children}</PageTransition>
+                      <div className="h-28 md:h-12 shrink-0" />
+                  </div>
+              </main>
             </div>
             {user && showBottomNav && <BottomNavBar />}
         </motion.div>
