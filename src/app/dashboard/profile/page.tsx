@@ -398,10 +398,10 @@ export default function ProfilePage() {
   const { city, state, country } = location || {};
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-32">
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b">
+    <div className="space-y-6 max-w-5xl mx-auto pb-32 text-center">
+      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
         <CardContent className="p-6 sm:p-8">
-          <div className="flex flex-col items-center sm:items-start sm:flex-row gap-6">
+          <div className="flex flex-col items-center gap-6">
             <div className="relative">
               <Dialog>
                   <DialogTrigger asChild disabled={!photoURL}>
@@ -429,11 +429,11 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
-            <div className="flex-grow w-full text-center sm:text-left space-y-4">
-                <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4 text-left">
-                    <div className="flex-grow min-w-0">
-                        <h1 className="text-2xl sm:text-3xl font-bold truncate leading-tight capitalize">{displayName}</h1>
-                        <div className="mt-3 flex flex-wrap justify-center sm:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
+            <div className="flex-grow w-full text-center space-y-4">
+                <div className="flex flex-col items-center gap-4 text-center">
+                    <div className="flex-grow min-w-0 w-full text-center">
+                        <h1 className="text-2xl sm:text-3xl font-bold truncate leading-tight capitalize text-center w-full">{displayName}</h1>
+                        <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium text-center">
                             {(city || state || country) && (
                                 <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider">
                                     <MapPin className="h-4 w-4" /> 
@@ -458,7 +458,7 @@ export default function ProfilePage() {
                             {phone && <div className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-primary" /> {phone}</div>}
                         </div>
                     </div>
-                    <div className="w-full sm:w-auto shrink-0">
+                    <div className="w-full sm:w-auto shrink-0 flex justify-center">
                         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                             <DialogTrigger asChild>
                               <Button className="w-full sm:w-auto font-bold h-10 px-6 rounded-full shadow-md transition-transform active:scale-95">
@@ -480,7 +480,7 @@ export default function ProfilePage() {
                 </div>
 
                 {personalMessage && (
-                    <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 inline-flex items-center gap-3 text-left max-w-xl mx-auto sm:mx-0">
+                    <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 inline-flex items-center gap-3 text-center max-w-xl mx-auto">
                         <Sparkles className="h-5 w-5 text-primary shrink-0" />
                         <p className="text-sm sm:text-base font-bold text-foreground leading-snug italic">
                           &ldquo;{personalMessage}&rdquo;
@@ -488,7 +488,7 @@ export default function ProfilePage() {
                     </div>
                 )}
 
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl text-left">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl text-center mx-auto">
                     {bio || "You haven't set a bio yet. Share a brief summary of your spiritual journey to encourage others."}
                 </p>
             </div>
@@ -497,9 +497,9 @@ export default function ProfilePage() {
       </Card>
 
       {videoTestimonies.length > 0 && (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none overflow-hidden border-t-4 border-t-red-600 border-b-2 sm:border-b">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none overflow-hidden border-t-4 border-t-red-600 border-b-2 sm:border-b bg-card/50">
             <CardHeader className="pb-4 pt-6 px-6">
-                <CardTitle className="flex items-center gap-2 text-lg font-bold">
+                <CardTitle className="flex items-center justify-center gap-2 text-lg font-bold">
                     <Youtube className="h-5 w-5 text-red-600" />
                     My Video Testimonies
                 </CardTitle>
@@ -508,7 +508,7 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {videoTestimonies.map((video, idx) => (
                         <div key={idx} className="space-y-2">
-                            {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate ml-1">{video.title}</p>}
+                            {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate">{video.title}</p>}
                             <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-white/5 transition-transform hover:scale-[1.01]">
                                 <iframe
                                     src={video.embedUrl!}
@@ -526,13 +526,13 @@ export default function ProfilePage() {
       )}
 
       <div className="space-y-6">
-            <h2 className="text-xl font-bold tracking-tight px-4 sm:px-0 uppercase text-muted-foreground flex items-center gap-2">
+            <h2 className="text-xl font-bold tracking-tight px-4 sm:px-0 uppercase text-muted-foreground flex items-center justify-center gap-2">
                 <Activity className="h-5 w-5" /> Your Kingdom Activity
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
-                    <CardHeader className="p-5 sm:p-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="text-base sm:text-lg">Testimonies ({testimonies?.length ?? 0})</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -560,8 +560,8 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
-                    <CardHeader className="p-5 sm:p-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="text-base sm:text-lg">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -591,8 +591,8 @@ export default function ProfilePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
-                    <CardHeader className="p-5 sm:p-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="text-base sm:text-lg">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -620,8 +620,8 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
-                    <CardHeader className="p-5 sm:p-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="text-base sm:text-lg">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -649,8 +649,8 @@ export default function ProfilePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
-                    <CardHeader className="p-5 sm:p-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <Users className="h-5 w-5 text-primary" />
                             Fellowships Joined ({joinedFellowships.length})
@@ -679,8 +679,8 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
-                    <CardHeader className="p-5 sm:p-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <Group className="h-5 w-5 text-primary" />
                             Associations Joined ({joinedAssociations.length})
@@ -711,8 +711,8 @@ export default function ProfilePage() {
             </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
-                    <CardHeader className="p-5 sm:p-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="text-base sm:text-lg">Souls Won ({soulsWon?.length ?? 0})</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -740,8 +740,8 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b">
-                    <CardHeader className="p-5 sm:p-6">
+                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <HeartHandshake className="h-5 w-5 text-primary" />
                             Partners ({userProfile?.accountabilityPartners?.length ?? 0})

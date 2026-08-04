@@ -426,36 +426,24 @@ export default function SoulsWonPage() {
   }, [toast, getBase64Logo]);
 
   const handleDeleteSoul = () => {
-    const sendResponse = (res: any) => console.log('Delete Soul result:', res);
-    if (!soulToDelete || !user || !firestore) {
-        sendResponse({ success: false });
-        return;
-    }
-    
+    if (!soulToDelete || !user || !firestore) return;
+    setIsDeleting(true);
+
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
     const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
 
-    setDeleteSoulId(null);
-    setIsDeleting(true);
-
-    (async () => {
-        try {
-            const batch = writeBatch(firestore);
-            batch.delete(soulRef);
-            batch.delete(globalSoulRef);
-            await batch.commit();
-            toast({ title: "Record Removed" });
-            sendResponse({ success: true });
-            router.refresh();
-        } catch (error) {
-            console.error("Delete failed:", error);
-            sendResponse({ success: false, error });
-        } finally {
-            setIsDeleting(false);
-        }
-    })();
-
-    return true; 
+    const batch = writeBatch(firestore);
+    batch.delete(soulRef);
+    batch.delete(globalSoulRef);
+    
+    batch.commit().then(() => {
+        toast({ title: "Record Removed" });
+        setIsDeleting(false);
+        setDeleteSoulId(null);
+    }).catch(() => {
+        toast({ variant: 'destructive', title: "Delete Failed" });
+        setIsDeleting(false);
+    });
   };
 
   const handleAssignGroup = (soul: Soul, fellowshipId: string, groupType: 'Fellowship' | 'Association') => {
@@ -515,7 +503,7 @@ export default function SoulsWonPage() {
                         <div className="space-y-1 text-left">
                             <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY HARVEST</h1>
                             <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
-                                <ClipboardList className="h-4 w-4 text-primary" /> Logged Records
+                                <ClipboardList className="h-4 w-4 text-primary text-left" /> Logged Records
                             </p>
                         </div>
                         <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap text-left w-full sm:w-auto">
@@ -577,13 +565,13 @@ export default function SoulsWonPage() {
                                                         src={s.photoURL!} 
                                                         alt={s.firstName} 
                                                         fill 
-                                                        className="object-contain transition-transform group-hover:scale-110 duration-500" 
+                                                        className="object-contain transition-transform group-hover:scale-110 duration-500 text-left" 
                                                         unoptimized 
                                                     />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
                                                     <div className="absolute bottom-3 left-3 right-3 text-white text-left">
                                                         <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight text-left">
-                                                            {s.nickname || s.firstName} {s.age && <span className="opacity-60 ml-1">({s.age})</span>}
+                                                            {s.nickname || s.firstName} {s.age && <span className="opacity-60 ml-1 text-left">({s.age})</span>}
                                                         </p>
                                                         <Badge className={cn(
                                                             "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1 shadow-sm text-left",
@@ -602,7 +590,7 @@ export default function SoulsWonPage() {
                                                             src={s.photoURL!} 
                                                             alt={s.firstName} 
                                                             fill 
-                                                            className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                                            className="object-contain shadow-2xl ring-4 ring-white/10 text-left" 
                                                             unoptimized 
                                                         />
                                                     </div>
@@ -656,11 +644,11 @@ export default function SoulsWonPage() {
                                                 <span className="font-black text-lg text-primary tracking-tighter">{group.count}</span>
                                             </div>
                                             <div className="space-y-1 text-left">
-                                                <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-                                                    <span className="text-left">{group.label}</span>
-                                                    <span className="text-left">{Math.round(percent)}%</span>
+                                                <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">
+                                                    <span className="text-left text-left">{group.label}</span>
+                                                    <span className="text-left text-left">{Math.round(percent)}%</span>
                                                 </div>
-                                                <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} />
+                                                <Progress value={percent} className="h-1.5 bg-muted text-left" indicatorClassName={group.color} />
                                             </div>
                                         </div>
                                     );
@@ -707,10 +695,10 @@ export default function SoulsWonPage() {
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
-                                <BarChart3 className="h-4 w-4 text-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Harvest Demographic</span>
+                                <BarChart3 className="h-4 w-4 text-primary text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
                             </div>
-                            <SheetHeader className="text-left flex-shrink-0">
+                            <SheetHeader className="text-left flex-shrink-0 text-left">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedAgeGroup} Directory</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
                             </SheetHeader>
@@ -733,8 +721,8 @@ export default function SoulsWonPage() {
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
-                                <BarChart3 className="h-4 w-4 text-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Demographic View</span>
+                                <BarChart3 className="h-4 w-4 text-primary text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedAgeGroup} Directory</DialogTitle>
@@ -776,9 +764,9 @@ export default function SoulsWonPage() {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                         Confirm Removal
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -801,7 +789,7 @@ export default function SoulsWonPage() {
                     <Sheet open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
+                                <SheetHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
@@ -843,3 +831,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+
