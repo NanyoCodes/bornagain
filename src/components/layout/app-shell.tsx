@@ -73,7 +73,7 @@ import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "../ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
@@ -247,7 +247,23 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, onOpenCar
         
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
+          <div className="hidden sm:block">
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder={searchPlaceholder}
+                  className="pl-8 sm:w-[150px] md:w-[200px] lg:w-[250px] h-9"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </form>
+          </div>
+        )}
+        {isSearchVisible && (
+          <Button variant="ghost" size="icon" className="sm:hidden h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-5 w-5 md:h-6 md:w-6" />
             <span className="sr-only">Search</span>
           </Button>
@@ -669,11 +685,11 @@ function PendingProvisionReminder() {
                       {provisions.map((p) => {
                           const path = p.actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
                           return (
-                              <div key={`${p.soulId}-${p.actionId}`} className="flex items-center gap-4 p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group text-left">
+                              <div key={`${p.soulId}-${p.actionId}`} className="flex items-center justify-between p-4 rounded-[1.5rem] border bg-muted/10 hover:bg-muted/20 transition-colors group text-left">
                                   <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left text-left">{p.actionId === 'shared_meal' ? <Utensils className="h-5 w-5 text-primary text-left" /> : <Gift className="h-5 w-5 text-primary text-left" />}</div>
                                   <div className="min-w-0 flex-1 text-left text-left">
-                                      <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left">{p.soulName}</p>
-                                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left">
+                                      <p className="text-sm font-black truncate uppercase tracking-tight leading-tight text-left ml-3">{p.soulName}</p>
+                                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left ml-3">
                                           {p.actionId === 'shared_meal' ? 'Meal Provision' : 'Send Gift'}
                                       </p>
                                   </div>
@@ -973,9 +989,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
             )}
             <div className="flex-1 min-h-0 relative">
               <main ref={scrollContainerRef} className={cn("absolute inset-0 overflow-x-hidden", !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden")}>
-                  <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-7xl p-3 md:p-6" : "w-full flex flex-col")}>
+                  <div className={cn("mx-auto h-full", !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col")}>
                       <PageTransition>{children}</PageTransition>
-                      <div className="h-28 md:h-12 shrink-0" />
                   </div>
               </main>
             </div>
@@ -1135,7 +1150,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         <ShoppingCart className="h-4 w-4 text-primary text-left" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Kingdom Provision</span>
                     </div>
-                    <SheetHeader className="text-left flex-shrink-0 text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                       <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left text-left">Kindness Package</SheetTitle>
                       <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left text-left">Review your selections for the harvest.</SheetDescription>
                     </SheetHeader>
