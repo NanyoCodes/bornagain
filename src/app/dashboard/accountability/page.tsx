@@ -109,16 +109,16 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                 </CardHeader>
                 <CardContent className="p-6 pt-2 space-y-4 text-left">
                     <div className="grid grid-cols-2 gap-3 text-left">
-                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left">
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10">
                             <p className="text-2xl font-black text-center">{partnerCount}</p>
-                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center text-left">Partners</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center">Partners</p>
                         </div>
-                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left">
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10">
                             <p className="text-2xl font-black text-center">{pendingCount}</p>
-                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center text-left">Requests</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center">Requests</p>
                         </div>
                     </div>
-                    <p className="text-10 font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
+                    <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
                         Strategic spiritual support through mutual observation and prayer.
                     </p>
                 </CardContent>
@@ -159,8 +159,8 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                     ))}
                 </CardContent>
                 <CardFooter className="p-5 pt-0 text-left">
-                    <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full text-left">
-                        <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic uppercase tracking-widest text-center text-left">
+                    <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full">
+                        <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic uppercase tracking-widest text-center">
                             "Bearing one another's burdens"
                         </p>
                     </div>
@@ -203,16 +203,16 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
             {disciplines.map(d => (
                 <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0 text-left">
                     {completedOnDate.includes(d.id) ? (
-                        <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center text-left">
-                            <CheckCircle2 className="h-4 w-4 text-green-500 text-left" />
+                        <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center">
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
                         </div>
                     ) : (
-                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-left">
-                            <XCircle className="h-4 w-4 text-muted-foreground/30 text-left" />
+                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
+                            <XCircle className="h-4 w-4 text-muted-foreground/30" />
                         </div>
                     )}
                     <span className={cn(
-                        "leading-tight uppercase font-black tracking-tighter truncate w-full px-1 text-center text-left",
+                        "leading-tight uppercase font-black tracking-tighter truncate w-full px-1 text-center",
                         completedOnDate.includes(d.id) ? 'text-foreground' : 'text-muted-foreground/60'
                     )}>
                         {d.label}
@@ -275,9 +275,9 @@ function PartnerCard({
                       )}
                     </Dialog>
                     <div className="min-w-0 flex-1 text-left">
-                        <Link href={`/dashboard/profile/${partner.userId}`} className="group inline-flex flex-col text-left">
-                            <h2 className="text-sm sm:text-base font-black truncate group-hover:underline leading-none uppercase tracking-tight text-left">{partner.firstName} {partner.lastName}</h2>
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 text-left">Spiritual Partner</span>
+                        <Link href={`/dashboard/profile/${partner.userId}`} className="group inline-flex flex-col text-left max-w-full">
+                            <h2 className="text-sm sm:text-base font-black truncate group-hover:underline leading-none uppercase tracking-tight text-left max-w-[140px] sm:max-w-[200px]">{partner.firstName} {partner.lastName}</h2>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 text-left truncate">Spiritual Partner</span>
                         </Link>
                     </div>
                 </div>
@@ -342,8 +342,8 @@ function PartnerCard({
             </CardHeader>
             <CardContent className="px-4 sm:px-6 pb-6 text-left">
                 <div className="pt-4 border-t border-dashed space-y-4 text-left">
-                    <div className="flex justify-between items-center gap-2 text-left">
-                        <div className="flex items-center gap-1.5 text-left">
+                    <div className="flex justify-between items-center gap-2 text-left text-left">
+                        <div className="flex items-center gap-1.5 text-left text-left">
                             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
                             <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] text-left">Discipline Records</h4>
                         </div>
@@ -462,19 +462,12 @@ export default function AccountabilityPage() {
             userId: partner.userId,
             type: 'accountability_nudge',
             title: 'Kingdom Nudge!',
-            message: `${userProfile.firstName} is encouraging you to complete your daily disciplines.`,
+            message: `${userProfile.firstName} is encouraging you to complete your daily disciplines. Check your progress on Testify!`,
             link: '/growth',
             isRead: false,
             createdAt: serverTimestamp(),
         });
-        toast({ title: 'Nudge Sent!', description: `You've sent encouragement to ${partner.firstName}.` });
-
-        // WhatsApp Nudge
-        if (partner.phone) {
-            const cleanPhone = partner.phone.replace(/\+/g, '').replace(/\D/g, '');
-            const msg = encodeURIComponent(`Hi ${partner.firstName}, just sending you a Kingdom nudge to stay sharp in your daily disciplines! Let's keep growing together on Testify: ${window.location.origin}/growth\n\nGod bless you!`);
-            window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
-        }
+        toast({ title: 'Nudge Sent!', description: `You've sent an internal encouragement notification to ${partner.firstName}.` });
     } catch (error) {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `users/${partner.userId}/notifications`, operation: 'create' }, user));
     }
@@ -603,11 +596,11 @@ export default function AccountabilityPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
             <div className="lg:col-span-8 space-y-10 pb-32 text-left">
                 <header className="px-4 sm:px-0 space-y-1 text-left">
-                    <div className="flex items-center gap-4 text-left">
-                        <div className="space-y-1 text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY PARTNERS</h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
-                                <HeartHandshake className="h-4 w-4 text-primary text-left" /> Spiritual Accountability
+                    <div className="flex items-center gap-4 text-left text-left">
+                        <div className="space-y-1 text-left text-left">
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left">MY PARTNERS</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left">
+                                <HeartHandshake className="h-4 w-4 text-primary text-left text-left" /> Spiritual Accountability
                             </p>
                         </div>
                     </div>
@@ -635,7 +628,7 @@ export default function AccountabilityPage() {
                 </div>
             </div>
 
-            <div className="lg:col-span-4 text-left">
+            <div className="lg:col-span-4 text-left text-left">
                 <AccountabilitySidebar partnerCount={activePartnersCount} pendingCount={pendingRequestsCount} />
             </div>
         </div>
@@ -643,18 +636,18 @@ export default function AccountabilityPage() {
         {removalTarget && (
             <AlertDialog open={!!removalTarget} onOpenChange={(open) => { if (!open) { setRemovalTarget(null); setRemovalReason(''); } }}>
                 <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left text-left">
-                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">End Alliance?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
+                    <AlertDialogHeader className="text-left text-left text-left">
+                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left">End Alliance?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left">You're about to end your accountability partnership with {removalTarget.firstName}.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <div className="grid gap-4 py-6 text-left">
-                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Reason for Removal</Label>
-                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left" />
+                    <div className="grid gap-4 py-6 text-left text-left">
+                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Reason for Removal</Label>
+                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left text-left" />
                     </div>
-                    <AlertDialogFooter className="gap-3 text-left">
-                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left">Close</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">
-                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <UserX className="mr-2 h-4 w-4 text-left" />}
+                    <AlertDialogFooter className="gap-3 text-left text-left">
+                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left text-left">Close</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left">
+                            {isRemoving === removalTarget.userId ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <UserX className="mr-2 h-4 w-4 text-left text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>

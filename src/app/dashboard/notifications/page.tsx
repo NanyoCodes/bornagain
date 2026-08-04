@@ -20,7 +20,8 @@ const NOTIFICATION_TYPES = [
   'new_chat_message', 
   'accountability_nudge', 
   'accountability_request', 
-  'request_accepted', 'request_declined', 
+  'request_accepted', 
+  'request_declined', 
   'accountability_partner_removed',
   'new_soul_in_fellowship',
   'soul_unassigned_from_fellowship',
@@ -219,19 +220,19 @@ export default function NotificationsPage() {
   const unreadCount = useMemo(() => notifications?.filter(n => !n.isRead).length ?? 0, [notifications]);
 
   return (
-    <div className="flex flex-col h-full w-full bg-background overflow-hidden">
-      <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 min-w-0">
-            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0">
-                <ArrowLeft className="h-6 w-6" />
-                <span className="sr-only">Back</span>
+    <div className="flex flex-col h-full w-full bg-background overflow-hidden text-left">
+      <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4 text-left">
+        <div className="flex items-center justify-between gap-4 text-left text-left">
+          <div className="flex items-center gap-4 min-w-0 text-left text-left text-left">
+            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
+                <ArrowLeft className="h-6 w-6 text-left" />
+                <span className="sr-only text-left">Back</span>
             </Button>
-            <div className="space-y-0.5 sm:space-y-1 min-w-0">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight uppercase truncate">
+            <div className="space-y-0.5 sm:space-y-1 min-w-0 text-left text-left">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight uppercase truncate text-left text-left">
                 Notifications
                 </h1>
-                <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] truncate">
+                <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] truncate text-left text-left">
                 Kingdom Alerts
                 </p>
             </div>
@@ -241,7 +242,7 @@ export default function NotificationsPage() {
                   variant="ghost" 
                   size="sm" 
                   onClick={handleMarkAllAsRead} 
-                  className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary hover:bg-primary/5 h-8 rounded-full px-3 sm:px-4 shrink-0 shadow-sm border border-primary/10 sm:border-none"
+                  className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary hover:bg-primary/5 h-8 rounded-full px-3 sm:px-4 shrink-0 shadow-sm border border-primary/10 sm:border-none text-left"
               >
                   Mark all as read
               </Button>
@@ -249,80 +250,80 @@ export default function NotificationsPage() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 px-0 sm:px-6 md:px-8 pb-4">
-        <Card className="h-full flex flex-col overflow-hidden border-x-0 sm:border-x rounded-none sm:rounded-3xl shadow-xl bg-card border-y sm:border-y-0">
-            <ScrollArea className="flex-1 w-full">
-                <div className="flex flex-col">
+      <div className="flex-1 min-h-0 px-0 sm:px-6 md:px-8 pb-4 text-left">
+        <Card className="h-full flex flex-col overflow-hidden border-x-0 sm:border-x rounded-none sm:rounded-3xl shadow-xl bg-card border-y sm:border-y-0 text-left">
+            <ScrollArea className="flex-1 w-full text-left">
+                <div className="flex flex-col text-left">
                     {loading && (
-                        <div className="divide-y p-4">
+                        <div className="divide-y p-4 text-left">
                         {[...Array(5)].map((_, i) => (
-                            <div key={i} className="py-6 flex items-start gap-4">
-                                <Skeleton className="h-10 w-10 rounded-full shrink-0" />
-                                <div className="flex-1 space-y-2">
-                                    <Skeleton className="h-4 w-3/4" />
-                                    <Skeleton className="h-3 w-1/2" />
+                            <div key={i} className="py-6 flex items-start gap-4 text-left">
+                                <Skeleton className="h-10 w-10 rounded-full shrink-0 text-left" />
+                                <div className="flex-1 space-y-2 text-left">
+                                    <Skeleton className="h-4 w-3/4 text-left" />
+                                    <Skeleton className="h-3 w-1/2 text-left" />
                                 </div>
                             </div>
                         ))}
                         </div>
                     )}
                     {!loading && allDisplayItems.length === 0 && (
-                        <div className="py-24 text-center px-8 flex flex-col items-center justify-center flex-1">
-                            <div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6">
-                                <Bell className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20" />
+                        <div className="py-24 text-center px-8 flex flex-col items-center justify-center flex-1 text-left">
+                            <div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
+                                <Bell className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left" />
                             </div>
-                            <h3 className="text-lg sm:text-xl font-bold font-headline uppercase tracking-tight">No Alerts Yet</h3>
-                            <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed">
+                            <h3 className="text-lg sm:text-xl font-bold font-headline uppercase tracking-tight text-left">No Alerts Yet</h3>
+                            <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed text-left">
                                 Stay focused on the harvest. We'll notify you here about campaign activity and partner requests.
                             </p>
                         </div>
                     )}
-                    <div className="divide-y">
+                    <div className="divide-y text-left">
                         {!loading && user && allDisplayItems.map(notification => {
                             const createdAt = safeToDate(notification.createdAt);
                             const isVirtual = (notification as any).isVirtual;
                             
                             return (
-                                <div key={notification.id} className="relative">
+                                <div key={notification.id} className="relative text-left">
                                     <button
                                         onClick={() => handleNotificationClick(notification)}
                                         className={cn(
-                                            "w-full text-left p-3.5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden",
+                                            "w-full text-left p-3.5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden text-left",
                                             isVirtual ? "bg-primary/[0.05] border-l-primary shadow-inner" : (!notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent")
                                         )}
                                     >
-                                        <div className="flex items-start gap-2.5 sm:gap-5">
+                                        <div className="flex items-start gap-2.5 sm:gap-5 text-left">
                                             <div className={cn(
-                                                "mt-0.5 shrink-0 p-2 sm:p-2.5 rounded-xl border shadow-sm",
+                                                "mt-0.5 shrink-0 p-2 sm:p-2.5 rounded-xl border shadow-sm text-left",
                                                 isVirtual ? "bg-primary text-white border-none scale-110 shadow-lg" : "bg-background"
                                             )}>
                                                 {getNotificationIcon(notification.type, (notification as any).actionId)}
                                             </div>
-                                            <div className="flex-1 min-w-0 space-y-1">
-                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1">
+                                            <div className="flex-1 min-w-0 space-y-1 text-left">
+                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1 text-left">
                                                     <p className={cn(
-                                                        "font-bold text-sm sm:text-base leading-snug break-words pr-8 sm:pr-0", 
+                                                        "font-bold text-sm sm:text-base leading-snug break-words pr-8 sm:pr-0 text-left", 
                                                         isVirtual ? "text-primary" : (!notification.isRead ? "text-foreground" : "text-muted-foreground")
                                                     )}>
                                                         {notification.title}
                                                     </p>
-                                                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap shrink-0">
+                                                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap shrink-0 text-left">
                                                         {isVirtual ? 'ACTION REQUIRED' : (createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : '')}
                                                     </span>
                                                 </div>
-                                                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance">
+                                                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance text-left">
                                                     {notification.message}
                                                 </p>
                                                 {createdAt && (
-                                                    <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1.5">
+                                                    <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1.5 text-left">
                                                         {format(createdAt, 'PPP')}
                                                     </p>
                                                 )}
                                             </div>
                                             {(!notification.isRead || isVirtual) && (
-                                                <div className="shrink-0 flex items-center h-full pt-1.5 sm:pt-2">
+                                                <div className="shrink-0 flex items-center h-full pt-1.5 sm:pt-2 text-left">
                                                     <div className={cn(
-                                                        "h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)]",
+                                                        "h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)] text-left",
                                                         isVirtual ? "bg-primary scale-125" : "bg-primary"
                                                     )} />
                                                 </div>
@@ -334,10 +335,10 @@ export default function NotificationsPage() {
                                         <Button 
                                             variant="ghost" 
                                             size="icon" 
-                                            className="absolute top-2 right-2 sm:top-4 sm:right-4 h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive hover:bg-destructive/10 z-10"
+                                            className="absolute top-2 right-2 sm:top-4 sm:right-4 h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive hover:bg-destructive/10 z-10 text-left"
                                             onClick={(e) => handleRemovePending(e, (notification as any).soulId, (notification as any).actionId)}
                                         >
-                                            <X className="h-4 w-4" />
+                                            <X className="h-4 w-4 text-left text-left" />
                                         </Button>
                                     )}
                                 </div>
@@ -345,11 +346,9 @@ export default function NotificationsPage() {
                         })}
                     </div>
                     
-                    <div className="h-20 md:hidden shrink-0" />
-                    
-                    <footer className="p-8 text-center space-y-2 border-t mt-auto">
-                        <p className="text-[9px] sm:text-[10px] text-muted-foreground/40 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2">
-                          <CircleAlert className="h-3 w-3" /> Notifications are purged after 30 days of inactivity
+                    <footer className="p-8 text-center space-y-2 border-t mt-auto text-left">
+                        <p className="text-[9px] sm:text-[10px] text-muted-foreground/40 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 text-left">
+                          <CircleAlert className="h-3 w-3 text-left" /> Notifications are purged after 30 days of inactivity
                         </p>
                     </footer>
                 </div>

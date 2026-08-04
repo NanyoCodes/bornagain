@@ -1032,7 +1032,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetContent side="right" className="w-[300px] p-0 rounded-l-[2rem] border-l-4 border-primary/20 flex flex-col text-left">
                 <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                    <SheetHeader className="text-left flex-shrink-0 text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                         <SheetTitle className="text-xs font-black uppercase tracking-widest text-primary mb-2 text-left">Kingdom Menu</SheetTitle>
                     </SheetHeader>
                     <div className="flex items-center gap-3 mb-4 text-left">
@@ -1163,9 +1163,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                                     {cartByVendor.map(group => (
                                         <div key={group.vendorId} className="space-y-3 text-left">
                                             <div className="flex items-center justify-between px-1 text-left">
-                                                <div className="flex items-center gap-2 max-w-[60%] text-left">
+                                                <div className="flex items-center gap-2 max-w-[60%] text-left text-left">
                                                     <Store className="h-3.5 w-3.5 text-primary shrink-0 text-left" />
-                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate text-left">{group.vendorName}</h4>
+                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate text-left text-left">{group.vendorName}</h4>
                                                 </div>
                                                 <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 shrink-0 text-left">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()}</Badge>
                                             </div>
