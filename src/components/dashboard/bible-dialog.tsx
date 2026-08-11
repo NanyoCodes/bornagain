@@ -395,7 +395,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                   <>
                     <div className={cn("space-y-1 font-serif text-left text-left text-left", fontSizeClasses[fontSize])}>
                         {chapterContent.verses.map(v => (
-                                <p key={v.verse} id={`verse-${v.verse}`} className={cn('rounded-sm transition-colors -mx-1 px-1 py-0.5 sm:leading-relaxed cursor-pointer text-left text-left text-left', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-destructive/30', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
+                                <p key={v.verse} id={`verse-${v.verse}`} className={cn('rounded-sm transition-colors -mx-1 px-1 py-0.5 sm:leading-relaxed cursor-pointer text-left text-left text-left', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-primary/20', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
                                     <sup className={cn("font-sans text-muted-foreground mr-1 text-left text-left text-left", subFontSizeClasses[fontSize])}>{v.verse}</sup>{v.text}
                                 </p>
                         ))}

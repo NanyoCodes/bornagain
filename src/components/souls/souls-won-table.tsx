@@ -1122,7 +1122,7 @@ function SoulProfileContent({
           </div>
           <div className="p-8 space-y-6">
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomMessageText(e.target.value)} 
@@ -1137,18 +1137,18 @@ function SoulProfileContent({
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
           <DialogHeader className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
-                  <Share2 className="h-7 w-7 text-primary text-center" />
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                  <Share2 className="h-7 w-7 text-primary" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center">
-              <WhatsAppIcon className="h-5 w-5 text-center" /> WhatsApp External
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+              <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
             </Button>
             <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center">
-              <HeartHandshake className="h-5 w-5 text-center" /> Partner on App
+              <HeartHandshake className="h-5 w-5" /> Partner on App
             </Button>
           </div>
         </DialogContent>
@@ -1238,7 +1238,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
 }) => {
     return (
         <TableRow 
-            className={cn("border-b hover:bg-muted/30 transition-colors cursor-pointer", isSelected && "bg-primary/[0.03]")}
+            className={cn("border-b transition-colors cursor-pointer", isSelected ? "bg-primary/[0.03] hover:bg-primary/[0.05]" : "hover:bg-muted/30")}
             onClick={() => onSelect()}
         >
             <TableCell className="font-medium p-4">
