@@ -1,8 +1,14 @@
 'use client';
 
+/**
+ * @fileOverview This file provides the primary application layout.
+ * It handles global navigation, state sync (cart, notifications), 
+ * and mandatory authentication guards.
+ */
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useState, useRef, Suspense } from "react";
+import React, { useEffect, useMemo, useState, useRef, useCallback, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -32,7 +38,8 @@ import {
   ShieldCheck,
   CalendarDays,
   Edit,
-  Info
+  Info,
+  Globe
 } from "lucide-react";
 
 import {
@@ -52,7 +59,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
-import type { Notification, UserProfile, VendorProfile } from "@/lib/types";
+import type { Notification, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -62,6 +69,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 
 const navItems = [
   { href: "/growth", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
@@ -72,7 +80,7 @@ const navItems = [
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
 
-const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship', 'soul_unassigned_from_fellowship'];
+const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship', 'soul_unassigned_from_fellowship', 'new_order', 'order_update'];
 
 const inspirationalMessages = [
   "GOD FIRST",
@@ -86,12 +94,23 @@ const inspirationalMessages = [
   "REJOICE ALWAYS"
 ];
 
-function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendors }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, userVendors: VendorProfile[] | null }) {
-  const { user, loading: authLoading } = useUser();
+function AppHeader({ 
+  unreadChatCount, 
+  unreadNotifCount, 
+  cartCount,
+  isPublicRoute, 
+  userVendors 
+}: { 
+  unreadChatCount: number, 
+  unreadNotifCount: number, 
+  cartCount: number,
+  isPublicRoute: boolean, 
+  userVendors: VendorProfile[] | null 
+}) {
+  const { user } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
@@ -108,7 +127,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
   if (showMobileSearch) {
     return (
       <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
-        <div className="flex w-full items-center gap-3 text-left">
+        <div className="flex w-full items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-10 w-10 rounded-full hover:bg-muted/50 transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -130,11 +149,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
     );
   }
 
-  const showGuestButtons = isPublicRoute && !authLoading && !user;
+  const showGuestButtons = isPublicRoute && !user;
 
   return (
     <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
-      <div className="flex items-center shrink-0 text-left">
+      <div className="flex items-center shrink-0">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
             <Avatar className="h-10 w-10 md:h-11 md:w-11 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
@@ -147,7 +166,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
       </div>
 
       <nav className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
-        <div className="flex items-center gap-1.5 lg:gap-3 h-full text-left">
+        <div className="flex items-center gap-1.5 lg:gap-3 h-full">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -172,8 +191,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
         </div>
       </nav>
         
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 text-left">
-        <div className="hidden lg:block text-left">
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
+        <div className="hidden lg:block">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
@@ -197,6 +216,18 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
         
         {user ? (
           <>
+            <Link href="/marketplace">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-11 md:w-11 rounded-full">
+                      <ShoppingCart className="h-5 w-5 transition-transform group-hover:scale-110" />
+                      {cartCount > 0 && (
+                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
+                          {cartCount}
+                        </div>
+                      )}
+                    </Button>
+                </motion.div>
+            </Link>
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                     <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-11 md:w-11 rounded-full">
@@ -237,7 +268,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none" align="end">
-                <DropdownMenuLabel className="font-normal p-4 text-left">
+                <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-black leading-tight truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
                     <p className="text-[10px] text-muted-foreground truncate font-bold uppercase tracking-wider">{user.email}</p>
@@ -247,7 +278,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1">
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                     <Link href="/profile" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                         <User className="h-3.5 w-3.5" />
@@ -255,7 +286,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest">Profile Identity</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                     <Link href="/settings" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                         <Settings className="h-3.5 w-3.5" />
@@ -269,7 +300,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 
                 <div className="p-1 space-y-1">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-2 tracking-[0.2em]">Kingdom Hubs</p>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <ShieldCheck className="h-3.5 w-3.5 text-primary" />
@@ -277,7 +308,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest">Victory Sanctuary</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                     <Link href="/marketplace" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
                         <Store className="h-3.5 w-3.5 text-blue-600" />
@@ -285,7 +316,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                     <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                         <Gift className="h-3.5 w-3.5 text-indigo-600" />
@@ -301,7 +332,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                     <div className="p-1 space-y-1">
                       <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-2 tracking-[0.2em]">My Storefronts</p>
                       {userVendors.map(v => (
-                        <DropdownMenuItem key={v.id} asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                        <DropdownMenuItem key={v.id} asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                           <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full">
                             <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                               <Package className="h-3.5 w-3.5 text-primary" />
@@ -317,7 +348,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1">
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                       <Link href="/guide" className="flex items-center gap-3 w-full">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                           <BookOpen className="h-3.5 w-3.5" />
@@ -325,7 +356,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                         <span className="text-xs font-bold uppercase tracking-widest">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                       <Link href="/resources" className="flex items-center gap-3 w-full">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                           <BookMarked className="h-3.5 w-3.5" />
@@ -338,7 +369,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <DropdownMenuSeparator />
                 
                 <div className="p-1">
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-11 px-3 cursor-pointer text-left">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-11 px-3 cursor-pointer">
                     <LogOut className="mr-3 h-4 w-4" />
                     <span className="text-xs font-black uppercase tracking-[0.2em]">Sign Out</span>
                   </DropdownMenuItem>
@@ -347,7 +378,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
             </DropdownMenu>
           </>
         ) : showGuestButtons ? (
-          <div className="flex items-center gap-2 text-left">
+          <div className="flex items-center gap-2">
             <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-9 px-4 rounded-full font-bold">
               <Link href="/login">Sign In</Link>
             </Button>
@@ -365,12 +396,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
 
 function BottomNavBar() {
     const pathname = usePathname();
-    const filteredItems = navItems.filter(item => item.href !== '/fellowships');
-
+  
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
         <div className="flex min-h-[4rem] h-auto items-stretch justify-around px-1 py-1">
-          {filteredItems.map((item) => {
+          {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
               <Link
@@ -414,212 +444,243 @@ function BottomNavBar() {
 }
 
 function ShellInner({ children }: { children: React.ReactNode }) {
-    const { user, loading: authLoading } = useUser();
-    const { userProfile, loading: profileLoading } = useUserProfile();
-    const firestore = useFirestore();
-    const router = useRouter();
-    const pathname = usePathname();
-    const isMobile = useIsMobile();
-    
-    const [showWelcomePopup, setShowWelcomePopup] = useState(false);
-    const [loadingMessage, setLoadingMessage] = useState("");
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
-    
-    const [showSplash, setShowSplash] = useState(false);
-    const [contentVisible, setContentVisible] = useState(false);
+  const { user, loading: authLoading } = useUser();
+  const { userProfile, loading: profileLoading } = useUserProfile();
+  const firestore = useFirestore();
+  const router = useRouter();
+  const pathname = usePathname();
+  const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
+  const [cartCount, setCartCount] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  const [showSplash, setShowSplash] = useState(false);
+  const [contentVisible, setContentVisible] = useState(false);
 
-    useEffect(() => { 
-        setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
+  const checkCart = useCallback(() => {
+    if (typeof window === 'undefined' || !user?.uid) return;
+    const key = `testify_marketplace_cart_${user.uid}`;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      try {
+        const cartData = JSON.parse(stored);
+        const count = Object.values(cartData).reduce((acc: number, c: any) => acc + c.quantity, 0);
+        setCartCount(count);
+      } catch (e) { setCartCount(0); }
+    } else { setCartCount(0); }
+  }, [user?.uid]);
 
-        const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
-        const lastShown = localStorage.getItem('testify_splash_last_shown');
-        const forceSplash = sessionStorage.getItem('testify_force_splash') === 'true';
-        const now = Date.now();
+  useEffect(() => { 
+    setMounted(true); 
+    setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
 
-        if (forceSplash || !lastShown || now - parseInt(lastShown, 10) > SPLASH_COOLDOWN) {
-            if (forceSplash) sessionStorage.removeItem('testify_force_splash');
-            setShowSplash(true);
-            const timer = setTimeout(() => {
-                setShowSplash(false);
-                localStorage.setItem('testify_splash_last_shown', now.toString());
-                setContentVisible(true);
-            }, 10000);
-            return () => clearTimeout(timer);
-        } else {
+    const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
+    const lastShown = localStorage.getItem('testify_splash_last_shown');
+    const forceSplash = sessionStorage.getItem('testify_force_splash') === 'true';
+    const now = Date.now();
+
+    if (forceSplash || !lastShown || now - parseInt(lastShown, 10) > SPLASH_COOLDOWN) {
+        if (forceSplash) sessionStorage.removeItem('testify_force_splash');
+        setShowSplash(true);
+        const timer = setTimeout(() => {
+            setShowSplash(false);
+            localStorage.setItem('testify_splash_last_shown', now.toString());
             setContentVisible(true);
-        }
-    }, [pathname]);
-
-    const handleDismissSplash = () => {
-        setShowSplash(false);
-        localStorage.setItem('testify_splash_last_shown', Date.now().toString());
+        }, 10000);
+        return () => clearTimeout(timer);
+    } else {
         setContentVisible(true);
-    };
-
-    useEffect(() => {
-        if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
-        window.scrollTo(0, 0);
-    }, [pathname]);
-
-    useEffect(() => {
-        if (!contentVisible) return;
-        const root = document.documentElement;
-        if (userProfile?.backgroundImage) {
-            const isGradient = userProfile.backgroundImage.startsWith('linear-gradient');
-            const bgValue = isGradient ? userProfile.backgroundImage : `url('${userProfile.backgroundImage}')`;
-            root.style.setProperty('--app-bg-image', bgValue);
-        }
-        if (userProfile?.backgroundOverlayOpacity != null) {
-            root.style.setProperty('--app-bg-overlay', userProfile.backgroundOverlayOpacity.toString());
-        }
-    }, [userProfile, contentVisible]);
-
-    const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships'];
-    const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
-
-    const isTakeoverPage = useMemo(() => {
-        return pathname.startsWith('/chats') || pathname.startsWith('/notes') || pathname.startsWith('/bible') || pathname.startsWith('/notifications');
-    }, [pathname]);
-
-    const unreadChatNotifsQuery = useMemo(() => {
-        if (!user?.uid || !firestore) return null;
-        return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
-    }, [user?.uid, firestore]);
-    const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
-
-    const unreadOtherNotifsQuery = useMemo(() => {
-        if (!user?.uid || !firestore) return null;
-        return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', NOTIFICATION_TYPES), where('isRead', '==', false));
-    }, [user?.uid, firestore]);
-    const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
-
-    const userVendorsQuery = useMemo(() => {
-        if (!user?.uid || !firestore) return null;
-        return query(collection(firestore, 'vendors'), where('userId', '==', user.uid));
-    }, [user?.uid, firestore]);
-    const { data: userVendors } = useCollection<VendorProfile>(userVendorsQuery);
-
-    useEffect(() => {
-        if (!authLoading && !user && !isPublicRoute) router.push('/login');
-    }, [authLoading, user, router, isPublicRoute]);
-
-    useEffect(() => {
-        if (!profileLoading && userProfile) {
-            const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
-            const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
-            if (isNewUserSession && userProfile.firstName && !welcomePopupShown) {
-                const timer = setTimeout(() => {
-                    setShowWelcomePopup(true);
-                    sessionStorage.setItem('welcomePopupShown', 'true');
-                }, 500);
-                return () => clearTimeout(timer);
-            }
-        }
-    }, [profileLoading, userProfile]);
-
-    if (authLoading || (profileLoading && !isPublicRoute) || (!user && !isPublicRoute)) {
-        return (
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
-                <div className="relative mb-8 text-left">
-                    <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
-                    <div className="absolute inset-0 flex items-center justify-center text-left">
-                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
-                    </div>
-                </div>
-                <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
-                    {loadingMessage || "GOD FIRST"}
-                </p>
-                <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left">
-                    Kingdom Network Active
-                </p>
-            </div>
-        );
     }
+  }, [pathname]);
 
-    const isProfileIncomplete = user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
-    const showBottomNav = !isTakeoverPage;
+  useEffect(() => {
+    checkCart();
+    window.addEventListener('testify_marketplace_cart_update', checkCart);
+    window.addEventListener('storage', checkCart);
+    return () => {
+      window.removeEventListener('testify_marketplace_cart_update', checkCart);
+      window.removeEventListener('storage', checkCart);
+    };
+  }, [checkCart]);
 
+  const handleDismissSplash = () => {
+    setShowSplash(false);
+    localStorage.setItem('testify_splash_last_shown', Date.now().toString());
+    setContentVisible(true);
+  };
+
+  useEffect(() => {
+    if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const root = document.documentElement;
+    if (userProfile?.backgroundImage) {
+      const isGradient = userProfile.backgroundImage.startsWith('linear-gradient');
+      const bgValue = isGradient ? userProfile.backgroundImage : `url('${userProfile.backgroundImage}')`;
+      root.style.setProperty('--app-bg-image', bgValue);
+    }
+    if (userProfile?.backgroundOverlayOpacity != null) {
+      root.style.setProperty('--app-bg-overlay', userProfile.backgroundOverlayOpacity.toString());
+    }
+  }, [userProfile, mounted]);
+
+  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships'];
+  const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
+
+  const isTakeoverPage = useMemo(() => {
     return (
-        <div className={cn("flex w-full flex-col overflow-x-hidden text-left", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
-            <AnimatePresence>
-                {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
-            </AnimatePresence>
-
-            <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: contentVisible ? 1 : 0 }}
-                transition={{ duration: 1 }}
-                className="flex-1 flex flex-col min-h-0 text-left"
-            >
-                {!isTakeoverPage && (
-                    <AppHeader 
-                        unreadChatCount={unreadChatNotifications?.length || 0} 
-                        unreadNotifCount={unreadOtherNotifications?.length || 0}
-                        isPublicRoute={isPublicRoute}
-                        userVendors={userVendors}
-                    />
-                )}
-                <div className="flex-1 relative min-h-0 text-left">
-                    <main 
-                        ref={scrollContainerRef}
-                        className={cn(
-                            "absolute inset-0 overflow-x-hidden text-left", 
-                            !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
-                        )}
-                    >
-                        <div className={cn(
-                            "mx-auto h-full text-left", 
-                            !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
-                        )}>
-                            <PageTransition>{children}</PageTransition>
-                        </div>
-                    </main>
-                </div>
-            </motion.div>
-
-            {user && showBottomNav && <BottomNavBar />}
-            
-            {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
-            
-            {user && contentVisible && isMobile ? (
-                <Sheet open={!!isProfileIncomplete}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-                    <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
-                        <SheetHeader className="text-left">
-                        <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
-                        <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
-                        </SheetHeader>
-                    </div>
-                    <div className="flex-grow overflow-y-auto p-6 text-left">
-                        {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
-                    </div>
-                    </SheetContent>
-                </Sheet>
-            ) : user && contentVisible ? (
-                <Dialog open={!!isProfileIncomplete}>
-                    <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
-                    <div className="p-6 border-b bg-muted/10 text-left">
-                        <DialogHeader className="text-left">
-                            <DialogTitle className="text-left">Complete Your Profile</DialogTitle>
-                            <DialogDescription className="text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
-                        </DialogHeader>
-                    </div>
-                    <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
-                        {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
-                    </div>
-                    </DialogContent>
-                </Dialog>
-            ) : null}
-        </div>
+      pathname.startsWith('/chats') ||
+      pathname.startsWith('/notes') ||
+      pathname.startsWith('/bible') ||
+      pathname.startsWith('/notifications')
     );
+  }, [pathname]);
+
+  const unreadChatNotifsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
+  }, [user?.uid, firestore]);
+  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
+
+  const unreadOtherNotifsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', NOTIFICATION_TYPES), where('isRead', '==', false));
+  }, [user?.uid, firestore]);
+  const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
+
+  const userVendorsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, 'vendors'), where('userId', '==', user.uid));
+  }, [user?.uid, firestore]);
+  const { data: userVendors } = useCollection<VendorProfile>(userVendorsQuery);
+
+  useEffect(() => {
+    if (!authLoading && !user && !isPublicRoute) router.push('/login');
+  }, [authLoading, user, router, isPublicRoute]);
+
+  useEffect(() => {
+    if (!profileLoading && userProfile) {
+        const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
+        const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
+        if (isNewUserSession && userProfile.firstName && !welcomePopupShown) {
+            const timer = setTimeout(() => {
+                setShowWelcomePopup(true);
+                sessionStorage.setItem('welcomePopupShown', 'true');
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }
+  }, [profileLoading, userProfile]);
+
+  if (authLoading || (profileLoading && !isPublicRoute) || (!user && !isPublicRoute)) {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
+        <div className="relative mb-8">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            </div>
+        </div>
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
+          {loadingMessage || "GOD FIRST"}
+        </p>
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
+            Kingdom Network Active
+        </p>
+      </div>
+    );
+  }
+
+  const isProfileIncomplete = user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
+  const showBottomNav = !isTakeoverPage;
+
+  return (
+    <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+      <AnimatePresence>
+          {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
+      </AnimatePresence>
+
+      <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: contentVisible ? 1 : 0 }}
+          transition={{ duration: 1 }}
+          className="flex-1 flex flex-col min-h-0"
+      >
+          {!isTakeoverPage && (
+          <AppHeader 
+              unreadChatCount={unreadChatNotifications?.length || 0} 
+              unreadNotifCount={unreadOtherNotifications?.length || 0}
+              cartCount={cartCount}
+              isPublicRoute={isPublicRoute}
+              userVendors={userVendors}
+          />
+          )}
+          <div className="flex-1 relative min-h-0">
+          <main 
+              ref={scrollContainerRef}
+              className={cn(
+                  "absolute inset-0", 
+                  !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
+              )}
+          >
+              <div className={cn(
+              "mx-auto h-full", 
+              !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
+              )}>
+                  <PageTransition>{children}</PageTransition>
+              </div>
+          </main>
+          </div>
+      </motion.div>
+
+      {user && showBottomNav && <BottomNavBar />}
+      
+      {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
+      
+      {user && mounted && isMobile ? (
+        <Sheet open={!!isProfileIncomplete}>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
+              <SheetHeader className="text-left">
+                <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <div className="flex-grow overflow-y-auto p-6 text-left">
+              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : user ? (
+        <Dialog open={!!isProfileIncomplete}>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
+            <div className="p-6 border-b bg-muted/10">
+              <DialogHeader>
+                  <DialogTitle>Complete Your Profile</DialogTitle>
+                  <DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+              </DialogHeader>
+            </div>
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
+              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+            </div>
+          </DialogContent>
+        </Dialog>
+      ) : null}
+    </div>
+  );
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-left">
-                <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
             </div>
         }>
             <ShellInner>{children}</ShellInner>
