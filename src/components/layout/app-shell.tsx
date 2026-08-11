@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useState, useRef, Suspense } from "react";
+import React, { useEffect, useMemo, useState, useRef, Suspense, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -62,6 +62,7 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const navItems = [
   { href: "/growth", label: "GROWTH", icon: TrendingUp, color: "text-chart-1" },
@@ -98,6 +99,65 @@ const inspirationalMessages = [
   "REJOICE ALWAYS"
 ];
 
+function CartButton() {
+  const { user } = useUser();
+  const [count, setCount] = useState(0);
+
+  const updateCount = useCallback(() => {
+    if (!user?.uid) {
+      setCount(0);
+      return;
+    }
+    const key = `testify_marketplace_cart_${user.uid}`;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      try {
+        const cart = JSON.parse(stored);
+        const total = Object.values(cart).reduce((acc: number, c: any) => acc + c.quantity, 0);
+        setCount(total);
+      } catch (e) {
+        setCount(0);
+      }
+    } else {
+      setCount(0);
+    }
+  }, [user?.uid]);
+
+  useEffect(() => {
+    updateCount();
+    window.addEventListener('testify_marketplace_cart_update', updateCount);
+    window.addEventListener('storage', updateCount);
+    return () => {
+      window.removeEventListener('testify_marketplace_cart_update', updateCount);
+      window.removeEventListener('storage', updateCount);
+    };
+  }, [updateCount]);
+
+  if (!user) return null;
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full" asChild>
+            <Link href="/marketplace/orders">
+              <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
+              {count > 0 && (
+                <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-black text-primary-foreground border-2 border-background animate-in zoom-in">
+                  {count}
+                </div>
+              )}
+            </Link>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
+          <p className="text-[10px] font-black uppercase tracking-widest">Kindness Package</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
 function AppHeader({ 
   unreadChatCount, 
   unreadNotifCount, 
@@ -113,6 +173,7 @@ function AppHeader({
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
@@ -219,6 +280,7 @@ function AppHeader({
         
         {user ? (
           <>
+            <CartButton />
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                     <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
