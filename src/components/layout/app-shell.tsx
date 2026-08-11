@@ -72,6 +72,7 @@ import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { Label } from "../ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const navItems = [
   { href: "/growth", label: "GROWTH", icon: TrendingUp, color: "text-chart-1" },
@@ -961,14 +962,14 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
             <div className="p-6 border-b bg-muted/10">
               <DialogHeader>
                   <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
-                  <DialogDescription className="text-sm text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                  <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -982,7 +983,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
                 <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
             </div>
         }>
