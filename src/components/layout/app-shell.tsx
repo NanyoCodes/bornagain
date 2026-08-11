@@ -1,11 +1,5 @@
 'use client';
 
-/**
- * @fileOverview This file provides the primary application layout.
- * It handles global navigation, state sync (cart, notifications), 
- * and mandatory authentication guards.
- */
-
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState, useRef, useCallback, Suspense } from "react";
@@ -96,13 +90,11 @@ const inspirationalMessages = [
 function AppHeader({ 
   unreadChatCount, 
   unreadNotifCount, 
-  cartCount,
   isPublicRoute, 
   userVendors 
 }: { 
   unreadChatCount: number, 
   unreadNotifCount: number, 
-  cartCount: number,
   isPublicRoute: boolean, 
   userVendors: VendorProfile[] | null 
 }) {
@@ -215,18 +207,6 @@ function AppHeader({
         
         {user ? (
           <>
-            <Link href="/marketplace">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-11 md:w-11 rounded-full">
-                      <ShoppingCart className="h-5 w-5 transition-transform group-hover:scale-110" />
-                      {cartCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
-                          {cartCount}
-                        </div>
-                      )}
-                    </Button>
-                </motion.div>
-            </Link>
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                     <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-11 md:w-11 rounded-full">
@@ -312,7 +292,7 @@ function AppHeader({
                       <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
                         <Store className="h-3.5 w-3.5 text-blue-600" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Meals Center</span>
+                      <span className="text-xs font-bold uppercase tracking-widest">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
@@ -468,24 +448,10 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
-  const [cartCount, setCartCount] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   const [showSplash, setShowSplash] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
-
-  const checkCart = useCallback(() => {
-    if (typeof window === 'undefined' || !user?.uid) return;
-    const key = `testify_marketplace_cart_${user.uid}`;
-    const stored = localStorage.getItem(key);
-    if (stored) {
-      try {
-        const cartData = JSON.parse(stored);
-        const count = Object.values(cartData).reduce((acc: number, c: any) => acc + c.quantity, 0);
-        setCartCount(count);
-      } catch (e) { setCartCount(0); }
-    } else { setCartCount(0); }
-  }, [user?.uid]);
 
   useEffect(() => { 
     setMounted(true); 
@@ -509,16 +475,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         setContentVisible(true);
     }
   }, [pathname]);
-
-  useEffect(() => {
-    checkCart();
-    window.addEventListener('testify_marketplace_cart_update', checkCart);
-    window.addEventListener('storage', checkCart);
-    return () => {
-      window.removeEventListener('testify_marketplace_cart_update', checkCart);
-      window.removeEventListener('storage', checkCart);
-    };
-  }, [checkCart]);
 
   const handleDismissSplash = () => {
     setShowSplash(false);
@@ -544,7 +500,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     }
   }, [userProfile, mounted]);
 
-  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships', '/events', '/marketplace'];
+  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships', '/events'];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
   const isTakeoverPage = useMemo(() => {
@@ -560,17 +516,17 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     );
   }, [pathname]);
 
-  const unreadChatNotifsQuery = useMemo(() => {
+  const unreadChatNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
   }, [user?.uid, firestore]);
-  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
+  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotificationsQuery);
 
-  const unreadOtherNotifsQuery = useMemo(() => {
+  const unreadOtherNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
     return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', NOTIFICATION_TYPES), where('isRead', '==', false));
   }, [user?.uid, firestore]);
-  const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
+  const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotificationsQuery);
 
   const userVendorsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -634,7 +590,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           <AppHeader 
               unreadChatCount={unreadChatNotifications?.length || 0} 
               unreadNotifCount={unreadOtherNotifications?.length || 0}
-              cartCount={cartCount}
               isPublicRoute={isPublicRoute}
               userVendors={userVendors}
           />
