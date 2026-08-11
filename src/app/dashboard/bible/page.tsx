@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/alert-dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -514,7 +514,7 @@ export default function BibleReaderPage() {
             {view === 'read' ? (
                 <div className="flex-grow flex flex-col min-h-0 text-left text-left">
                     <div className="flex items-center justify-between gap-3 p-2 sm:px-6 bg-muted/20 border-b sticky top-0 z-20 backdrop-blur-sm text-left text-left">
-                        <div className="flex items-center gap-1.5 min-w-0 text-left text-left">
+                        <div className="flex items-center gap-1.5 min-w-0 text-left text-left text-left">
                             <Select value={selectedBookName} onValueChange={setSelectedBookName}>
                                 <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-black text-xs sm:text-sm rounded-full hover:bg-accent transition-colors text-left text-left">
                                   <SelectValue />

@@ -463,7 +463,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     );
 
     return (
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <any open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl max-h-[90dvh] grid grid-rows-[auto_1fr] gap-4 p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Bible Reader</DialogTitle>
@@ -471,6 +471,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
           </DialogHeader>
           {DialogBody}
         </DialogContent>
-      </Dialog>
+      </any>
     );
 }
+
