@@ -201,7 +201,7 @@ function ShareWordDialog({
   }, [isOpen]);
 
   const constructInvitationMessage = useCallback((verseText: string, reference: string, link: string) => {
-    return `"${verseText.trim()}" — ${reference}\n\nJoin the harvest at Testify! Share your miracles, win souls for Christ, and glorify God. Visit: ${window.location.origin}/bible`;
+    return `"${verseText.trim()}" — ${reference}\n\nJoin the harvest at Testify! Share your miracles, win souls for Christ, and glorify God. Visit: https://testifyglobal.com/bible`;
   }, []);
 
   const handleSearch = async () => {
@@ -293,7 +293,7 @@ function ShareWordDialog({
                         key={idx}
                         variant="outline"
                         className="w-full h-auto p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left hover:bg-primary/10 transition-all border-2 border-dashed"
-                        onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference, `${window.location.origin}/bible`))}
+                        onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference, `https://testifyglobal.com/bible`))}
                     >
                         <div className="flex items-center justify-between w-full">
                             <span className="font-black text-[9px] sm:text-xs uppercase tracking-widest text-primary">{res.reference}</span>
@@ -330,7 +330,7 @@ function ShareWordDialog({
               key={idx} 
               variant="ghost" 
               className="w-full justify-start h-auto py-4 sm:py-6 px-4 sm:px-6 rounded-2xl sm:rounded-[2rem] hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all text-left block relative overflow-hidden bg-muted/5 shadow-sm"
-              onClick={() => onSelectVerse(constructInvitationMessage(v.text, v.reference, `${window.location.origin}/bible`))}
+              onClick={() => onSelectVerse(constructInvitationMessage(v.text, v.reference, `https://testifyglobal.com/bible`))}
             >
               <div className="flex items-center justify-between w-full mb-1.5 text-left">
                   <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{v.reference}</span>
@@ -667,7 +667,7 @@ function SoulProfileContent({
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
       if (!soul?.phone || !clickedActionId) return;
       const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
-      const message = customMessageText || `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
+      const message = customMessageText || `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you! Visit: https://testifyglobal.com`;
       const messageText = encodeURIComponent(message);
       
       if (channel === 'whatsapp') {
@@ -690,7 +690,7 @@ function SoulProfileContent({
   const handleShareToWhatsApp = () => {
     if (!soul) return;
     const wonAt = safeToDate(soul.wonAt);
-    const details = `Introduction to ${soul.firstName}, a new soul won for the Kingdom! 🎊\n\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nSupport their growth on Testify: ${window.location.origin}`;
+    const details = `Introduction to ${soul.firstName}, a new soul won for the Kingdom! 🎊\n\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nSupport their growth on Testify: https://testifyglobal.com`;
     window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
     finalizeLog('introduced_friend', 'Shared via WhatsApp External');
     setIsShareTargetDialogOpen(false);
@@ -699,7 +699,7 @@ function SoulProfileContent({
   const handleShareToPartner = async (partner: UserProfile['accountabilityPartners'][0]) => {
       if (!user || !firestore || !soul || !currentUserProfile) return;
       const wonAt = safeToDate(soul.wonAt);
-      const text = `SHARING SOUL DATA: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nLet's coordinate follow-up on Testify.`;
+      const text = `SHARING SOUL DATA: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nLet's coordinate follow-up on Testify: https://testifyglobal.com`;
       try {
           const participantIds = [user.uid, partner.userId].sort();
           const chatsRef = collection(firestore, 'chats');

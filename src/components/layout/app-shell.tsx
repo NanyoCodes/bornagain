@@ -91,6 +91,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
@@ -455,6 +456,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     const firestore = useFirestore();
     const router = useRouter();
     const pathname = usePathname();
+    const isMobile = useIsMobile();
     
     const [showWelcomePopup, setShowWelcomePopup] = useState(false);
     const [loadingMessage, setLoadingMessage] = useState("");
