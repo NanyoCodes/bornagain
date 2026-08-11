@@ -104,17 +104,34 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         if (!firestore || !campaignId) return null;
         return query(
             collection(firestore, 'testimonies'), 
-            where('campaignId', '==', campaignId),
-            orderBy('createdAt', 'desc')
+            where('campaignId', '==', campaignId)
         );
     }, [firestore, campaignId]);
-    const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+    const { data: rawTestimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+
+    const testimonies = useMemo(() => {
+        if (!rawTestimonies) return [];
+        return [...rawTestimonies].sort((a, b) => {
+            const dateA = safeToDate(a.createdAt)?.getTime() ?? 0;
+            const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
+            return dateB - dateA;
+        });
+    }, [rawTestimonies]);
 
     const campaignSoulsQuery = useMemo(() => {
         if (!firestore || !campaignId) return null;
-        return query(collection(firestore, 'souls'), where('campaignId', '==', campaignId), orderBy('wonAt', 'desc'));
+        return query(collection(firestore, 'souls'), where('campaignId', '==', campaignId));
     }, [firestore, campaignId]);
-    const { data: campaignSouls, loading: soulsLoading } = useCollection<Soul>(campaignSoulsQuery);
+    const { data: rawCampaignSouls, loading: soulsLoading } = useCollection<Soul>(campaignSoulsQuery);
+
+    const campaignSouls = useMemo(() => {
+        if (!rawCampaignSouls) return [];
+        return [...rawCampaignSouls].sort((a, b) => {
+            const dateA = safeToDate(a.wonAt)?.getTime() ?? 0;
+            const dateB = safeToDate(b.wonAt)?.getTime() ?? 0;
+            return dateB - dateA;
+        });
+    }, [rawCampaignSouls]);
 
     // Insights Analysis
     const demographics = useMemo(() => {
@@ -226,7 +243,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         {demographics ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-indigo-500/10">
-                                    <CardHeader className="p-6 pb-3">
+                                    <CardHeader className="p-6 pb-3 text-left">
                                         <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                             <Users className="h-3.5 w-3.5" /> Gender Distribution
                                         </CardTitle>
@@ -249,7 +266,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 </Card>
 
                                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-indigo-500/10">
-                                    <CardHeader className="p-6 pb-3">
+                                    <CardHeader className="p-6 pb-3 text-left">
                                         <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                             <Activity className="h-3.5 w-3.5" /> Age Groups
                                         </CardTitle>
@@ -325,7 +342,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <div className="space-y-6 px-4 sm:px-0 text-left">
                         <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-2"><Newspaper className="h-5 w-5 text-primary" /> Campaign Testimonies</h3>
                         <div className="flex flex-col gap-4 text-left">
-                            {testimonies?.map(t => (
+                            {testimonies.map(t => (
                                 <TestimonyCard 
                                     key={t.id} 
                                     testimony={t} 
@@ -336,7 +353,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                     currentUserProfile={userProfile} 
                                 />
                             ))}
-                            {testimonies?.length === 0 && (
+                            {testimonies.length === 0 && (
                                 <div className="text-center py-20 bg-muted/10 rounded-[2rem] border-2 border-dashed">
                                     <Newspaper className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3" />
                                     <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">No shared victories yet</p>
@@ -426,3 +443,4 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         </div>
     );
 }
+

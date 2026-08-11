@@ -511,7 +511,7 @@ export default function BibleReaderPage() {
                 </div>
             </div>
 
-            {view === 'read' ? (
+            {view === 'read' && (
                 <div className="flex-grow flex flex-col min-h-0 text-left">
                     <div className="flex items-center justify-between gap-3 p-2 sm:px-6 bg-muted/20 border-b sticky top-0 z-20 backdrop-blur-sm text-left">
                         <div className="flex items-center gap-1.5 min-w-0 text-left">
@@ -600,7 +600,8 @@ export default function BibleReaderPage() {
                       </Sheet>
                     )}
                 </div>
-            ) : (
+            )}
+            {view === 'history' && (
                 <div className="flex-grow flex flex-col min-h-0 bg-muted/5 overflow-hidden text-left">
                     <div className="max-w-3xl mx-auto w-full flex-grow flex flex-col p-4 md:p-8 min-h-0 text-left">
                         <div className="flex items-center gap-3 mb-8 shrink-0 text-left">
@@ -664,4 +665,3 @@ export default function BibleReaderPage() {
         </div>
     );
 }
-

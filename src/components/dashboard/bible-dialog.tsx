@@ -474,4 +474,3 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       </Dialog>
     );
 }
-
