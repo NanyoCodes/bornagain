@@ -65,7 +65,7 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const navItems = [
-  { href: "/growth", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
+  { href: "/growth", label: "Growth", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "Feed", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
