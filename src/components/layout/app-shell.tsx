@@ -71,6 +71,7 @@ import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { Label } from "../ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 const navItems = [
   { href: "/growth", label: "GROWTH", icon: TrendingUp, color: "text-chart-1" },

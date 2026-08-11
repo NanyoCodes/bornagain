@@ -163,7 +163,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
     const partnerIds = useMemo(() => new Set(userProfile?.partnerIds || []), [userProfile?.partnerIds]);
 
     const requestsQuery = useMemo(() => {
-      if (!user || !firestore) return null;
+      if (!currentUser || !firestore) return null;
       return query(
         collection(firestore, 'accountabilityRequests'),
         where('participantIds', 'array-contains', user.uid),
@@ -197,147 +197,147 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     return (
         <div className="space-y-8 pb-32 max-w-6xl mx-auto text-left">
-            <div className="flex items-center gap-4 px-4 sm:px-0 pt-4">
-                <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm">
-                    <ArrowLeft className="h-5 w-5"/>
+            <div className="flex items-center gap-4 px-4 sm:px-0 pt-4 text-left">
+                <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm text-left">
+                    <ArrowLeft className="h-5 w-5 text-left"/>
                 </Button>
                 <div className="min-w-0 flex-1 text-left">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight truncate uppercase text-balance">{campaign.title}</h1>
-                    <div className="flex items-center gap-2 mt-1">
-                        <Badge variant={status === 'Ongoing' ? 'default' : 'outline'} className="uppercase font-bold tracking-widest text-[10px]">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight leading-tight truncate uppercase text-balance text-left">{campaign.title}</h1>
+                    <div className="flex items-center gap-2 mt-1 text-left">
+                        <Badge variant={status === 'Ongoing' ? 'default' : 'outline'} className="uppercase font-bold tracking-widest text-[10px] text-left">
                             {status}
                         </Badge>
-                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 truncate">• {campaign.goal}</span>
+                        <span className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60 truncate text-left">• {campaign.goal}</span>
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-8">
-                    <Card className="rounded-none sm:rounded-[2rem] border-none shadow-sm bg-muted/20">
-                        <CardHeader className="p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
+                <div className="lg:col-span-2 space-y-8 text-left">
+                    <Card className="rounded-none sm:rounded-[2rem] border-none shadow-sm bg-muted/20 text-left">
+                        <CardHeader className="p-8 text-left">
                             <CardTitle className="text-lg font-black uppercase tracking-widest text-muted-foreground text-left">About this Mission</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-8 pb-8">
+                        <CardContent className="px-8 pb-8 text-left">
                             <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap font-medium text-left">{campaign.description}</p>
                             {campaign.scripture && (
-                                <div className="mt-8 p-6 bg-primary/5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative">
-                                    <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5" />
-                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-left text-balance">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
-                                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest">— {campaign.scripture}</p>
+                                <div className="mt-8 p-6 bg-primary/5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative text-left">
+                                    <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 text-left" />
+                                    <p className="italic text-base sm:text-lg text-primary font-serif leading-relaxed text-left text-balance text-left">&ldquo;{campaign.scriptureTestimony || campaign.scripture}&rdquo;</p>
+                                    <p className="text-[10px] font-black uppercase text-primary/60 text-right mt-3 tracking-widest text-left">— {campaign.scripture}</p>
                                 </div>
                             )}
                         </CardContent>
                     </Card>
 
-                    <div className="space-y-6 px-4 sm:px-0">
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner">
-                                <BarChart3 className="h-5 w-5 text-indigo-600" />
+                    <div className="space-y-6 px-4 sm:px-0 text-left">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner text-left text-left">
+                                <BarChart3 className="h-5 w-5 text-indigo-600 text-left" />
                             </div>
-                            <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Kingdom Insights</h3>
+                            <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left text-left">Kingdom Insights</h3>
                         </div>
 
                         {demographics ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-indigo-500/10">
-                                    <CardHeader className="p-6 pb-3">
-                                        <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                                            <Users className="h-3.5 w-3.5" /> Gender Distribution
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+                                <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-indigo-500/10 text-left">
+                                    <CardHeader className="p-6 pb-3 text-left">
+                                        <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
+                                            <Users className="h-3.5 w-3.5 text-left" /> Gender Distribution
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="p-6 pt-0 space-y-4">
+                                    <CardContent className="p-6 pt-0 space-y-4 text-left">
                                         {[
                                             { label: 'Male', count: demographics.gender.male, color: 'bg-blue-500' },
                                             { label: 'Female', count: demographics.gender.female, color: 'bg-rose-500' }
                                         ].map(g => (
-                                            <div key={g.label} className="space-y-1.5 text-left">
-                                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight">
-                                                    <span>{g.label}</span>
-                                                    <span className="text-foreground">{g.count}</span>
+                                            <div key={g.label} className="space-y-1.5 text-left text-left">
+                                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight text-left text-left">
+                                                    <span className="text-left">{g.label}</span>
+                                                    <span className="text-foreground text-left">{g.count}</span>
                                                 </div>
-                                                <Progress value={(g.count / (demographics.total || 1)) * 100} className="h-1.5" indicatorClassName={g.color} />
+                                                <Progress value={(g.count / (demographics.total || 1)) * 100} className="h-1.5 text-left" indicatorClassName={g.color} />
                                             </div>
                                         ))}
                                     </CardContent>
                                 </Card>
 
-                                <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-indigo-500/10">
-                                    <CardHeader className="p-6 pb-3">
-                                        <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                                            <Activity className="h-3.5 w-3.5" /> Age Groups
+                                <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-indigo-500/10 text-left">
+                                    <CardHeader className="p-6 pb-3 text-left">
+                                        <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
+                                            <Activity className="h-3.5 w-3.5 text-left" /> Age Groups
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="p-6 pt-0 space-y-4">
+                                    <CardContent className="p-6 pt-0 space-y-4 text-left">
                                         {[
                                             { label: 'Young Adults', count: demographics.age.youngAdults, color: 'bg-primary' },
                                             { label: 'Adults', count: demographics.age.adults, color: 'bg-indigo-600' },
                                             { label: 'Others', count: demographics.total - demographics.age.youngAdults - demographics.age.adults, color: 'bg-muted' }
                                         ].map(a => (
-                                            <div key={a.label} className="space-y-1.5 text-left">
-                                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight">
-                                                    <span>{a.label}</span>
-                                                    <span className="text-foreground">{a.count}</span>
+                                            <div key={a.label} className="space-y-1.5 text-left text-left">
+                                                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight text-left text-left">
+                                                    <span className="text-left">{a.label}</span>
+                                                    <span className="text-foreground text-left">{a.count}</span>
                                                 </div>
-                                                <Progress value={(a.count / (demographics.total || 1)) * 100} className="h-1.5" indicatorClassName={a.color} />
+                                                <Progress value={(a.count / (demographics.total || 1)) * 100} className="h-1.5 text-left" indicatorClassName={a.color} />
                                             </div>
                                         ))}
                                     </CardContent>
                                 </Card>
                             </div>
                         ) : (
-                            <div className="py-20 text-center bg-muted/10 rounded-[2rem] border-2 border-dashed">
-                                <Loader2 className="h-8 w-8 animate-spin text-primary/20 mx-auto mb-3" />
-                                <p className="text-xs text-muted-foreground uppercase font-black tracking-widest text-center">Crunching Harvest Data...</p>
+                            <div className="py-20 text-center bg-muted/10 rounded-[2rem] border-2 border-dashed text-left">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary/20 mx-auto mb-3 text-left" />
+                                <p className="text-xs text-muted-foreground uppercase font-black tracking-widest text-center text-left">Crunching Harvest Data...</p>
                             </div>
                         )}
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4 sm:px-0">
-                        <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 text-left">
-                            <CardHeader className="pb-3 text-left text-left">
-                                <CardTitle className="text-sm font-bold flex items-center gap-2 uppercase tracking-widest text-muted-foreground text-left">
-                                    <MapPin className="h-4 w-4 text-primary text-left" /> Location
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4 sm:px-0 text-left">
+                        <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 text-left text-left">
+                            <CardHeader className="pb-3 text-left text-left text-left text-left">
+                                <CardTitle className="text-sm font-bold flex items-center gap-2 uppercase tracking-widest text-muted-foreground text-left text-left">
+                                    <MapPin className="h-4 w-4 text-primary text-left text-left" /> Location
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="text-left">
                                 <p className="text-sm font-bold truncate uppercase text-left">{campaign.location}</p>
                             </CardContent>
                         </Card>
-                        <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 text-left">
-                            <CardHeader className="pb-3 text-left text-left">
-                                <CardTitle className="text-sm font-bold flex items-center gap-2 uppercase tracking-widest text-muted-foreground text-left">
-                                    <CalendarDays className="h-4 w-4 text-primary text-left" /> Schedule
+                        <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 text-left text-left">
+                            <CardHeader className="pb-3 text-left text-left text-left text-left">
+                                <CardTitle className="text-sm font-bold flex items-center gap-2 uppercase tracking-widest text-muted-foreground text-left text-left">
+                                    <CalendarDays className="h-4 w-4 text-primary text-left text-left" /> Schedule
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="text-left">
                                 <p className="text-sm font-bold text-left">Starts {format(safeToDate(campaign.startDate)!, 'PPP')}</p>
                                 <p className="text-[10px] font-black uppercase text-muted-foreground mt-1 text-left">{campaign.startTime} - {campaign.endTime}</p>
                             </CardContent>
                         </Card>
                     </div>
 
-                    <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden mx-4 sm:mx-0">
-                        <CardHeader className="p-8 border-b bg-muted/5">
-                            <CardTitle className="flex items-center justify-between text-lg font-black uppercase tracking-tight text-left">
-                                <span className="flex items-center gap-2 text-left"><Users className="h-5 w-5 text-primary text-left" /> Participants</span>
+                    <Card className="rounded-none sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 overflow-hidden mx-4 sm:mx-0 text-left">
+                        <CardHeader className="p-8 border-b bg-muted/5 text-left">
+                            <CardTitle className="flex items-center justify-between text-lg font-black uppercase tracking-tight text-left text-left">
+                                <span className="flex items-center gap-2 text-left text-left"><Users className="h-5 w-5 text-primary text-left text-left" /> Participants</span>
                                 <Badge variant="secondary" className="rounded-full px-3 h-6 font-bold text-left">{(participants?.length || 0)}</Badge>
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="p-8">
+                        <CardContent className="p-8 text-left">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                                 {participants?.map(p => (
-                                    <Link key={p.id} href={`/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-all text-left">
-                                        <Avatar className="h-9 w-9 border shadow-sm text-left"><AvatarImage src={p.photoURL} /><AvatarFallback className="font-bold text-xs"> {p.firstName?.charAt(0)}</AvatarFallback></Avatar>
-                                        <div className="min-w-0 flex-1 text-left text-left"><p className="font-bold text-sm truncate uppercase tracking-tight text-left">{p.firstName} {p.lastName}</p></div>
+                                    <Link key={p.id} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-all text-left">
+                                        <Avatar className="h-9 w-9 border shadow-sm text-left"><AvatarImage src={p.photoURL} className="text-left" /><AvatarFallback className="font-bold text-xs text-left"> {p.firstName?.charAt(0)}</AvatarFallback></Avatar>
+                                        <div className="min-w-0 flex-1 text-left text-left text-left text-left"><p className="font-bold text-sm truncate uppercase tracking-tight text-left text-left">{p.firstName} {p.lastName}</p></div>
                                     </Link>
                                 ))}
                             </div>
                         </CardContent>
                     </Card>
 
-                    <div className="space-y-6 px-4 sm:px-0">
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left"><Newspaper className="h-5 w-5 text-primary text-left" /> Campaign Testimonies</h3>
+                    <div className="space-y-6 px-4 sm:px-0 text-left">
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left"><Newspaper className="h-5 w-5 text-primary text-left text-left" /> Campaign Testimonies</h3>
                         <div className="flex flex-col gap-4 text-left">
                             {testimonies.map(t => (
                                 <TestimonyCard 
@@ -351,66 +351,66 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                 />
                             ))}
                             {testimonies.length === 0 && (
-                                <div className="text-center py-20 bg-muted/10 rounded-[2rem] border-2 border-dashed">
-                                    <Newspaper className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3" />
-                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest text-center">No shared victories yet</p>
+                                <div className="text-center py-20 bg-muted/10 rounded-[2rem] border-2 border-dashed text-left">
+                                    <Newspaper className="h-10 w-10 text-muted-foreground/10 mx-auto mb-3 text-left" />
+                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest text-center text-left">No shared victories yet</p>
                                 </div>
                             )}
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-8 flex flex-col px-4 sm:px-0 text-left">
-                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-indigo-600 text-white overflow-hidden">
-                        <CardHeader className="pb-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
-                                    <Target className="h-5 w-5 text-white" />
+                <div className="space-y-8 flex flex-col px-4 sm:px-0 text-left text-left">
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-indigo-600 text-white overflow-hidden text-left">
+                        <CardHeader className="pb-4 text-left">
+                            <div className="flex items-center justify-between mb-2 text-left">
+                                <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center text-left">
+                                    <Target className="h-5 w-5 text-white text-left" />
                                 </div>
-                                <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">Live Stats</Badge>
+                                <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest text-left">Live Stats</Badge>
                             </div>
-                            <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">Harvest Impact</CardTitle>
+                            <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left text-left">Harvest Impact</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between p-4 rounded-2xl bg-white/10 border border-white/10">
-                                <div className="space-y-1 text-left text-left text-left">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Souls Won</p>
-                                    <p className="text-3xl font-black">{campaign.soulsLogged || 0}</p>
+                        <CardContent className="space-y-4 text-left">
+                            <div className="flex items-center justify-between p-4 rounded-2xl bg-white/10 border border-white/10 text-left">
+                                <div className="space-y-1 text-left text-left text-left text-left text-left">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-70 text-left">Souls Won</p>
+                                    <p className="text-3xl font-black text-left">{campaign.soulsLogged || 0}</p>
                                 </div>
-                                <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-left">
-                                    <UserPlus className="h-5 w-5 text-white text-left" />
+                                <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-left text-left">
+                                    <UserPlus className="h-5 w-5 text-white text-left text-left" />
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-primary text-primary-foreground">
-                        <CardHeader className="pb-4 text-left"><CardTitle className="text-base font-black uppercase tracking-[0.2em] opacity-80 text-left">Mission Hub</CardTitle></CardHeader>
-                        <CardContent className="flex flex-col gap-3">
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-primary text-primary-foreground text-left">
+                        <CardHeader className="pb-4 text-left text-left text-left"><CardTitle className="text-base font-black uppercase tracking-[0.2em] opacity-80 text-left text-left text-left">Mission Hub</CardTitle></CardHeader>
+                        <CardContent className="flex flex-col gap-3 text-left">
                             {isJoined && status === 'Ongoing' && (
-                                <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20" onClick={() => setIsLogSoulOpen(true)}>
-                                    <UserCheck className="mr-2 h-5 w-5" /> LOG SOUL WON
+                                <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20 text-left" onClick={() => setIsLogSoulOpen(true)}>
+                                    <UserCheck className="mr-2 h-5 w-5 text-left" /> LOG SOUL WON
                                 </Button>
                             )}
                             {isJoined && (status === 'Ongoing' || status === 'Past') && (
-                                <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20" onClick={() => setIsTestimonyOpen(true)}>
-                                    <Newspaper className="mr-2 h-5 w-5" /> SHARE VICTORY
+                                <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-white/20 text-white hover:bg-white/30 border-white/20 text-left" onClick={() => setIsTestimonyOpen(true)}>
+                                    <Newspaper className="mr-2 h-5 w-5 text-left" /> SHARE VICTORY
                                 </Button>
                             )}
                             {isOwner && (
-                                <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-black/10 text-white hover:bg-black/20 border-white/10" onClick={() => setIsManageOpen(true)}>
-                                    <Edit className="mr-2 h-5 w-5" /> MANAGE MISSION
+                                <Button variant="secondary" className="w-full h-12 font-black rounded-2xl bg-black/10 text-white hover:bg-black/20 border-white/10 text-left" onClick={() => setIsManageOpen(true)}>
+                                    <Edit className="mr-2 h-5 w-5 text-left" /> MANAGE MISSION
                                 </Button>
                             )}
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 text-left">
-                        <CardHeader className="pb-3 text-left text-left"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-left">Organizer</CardTitle></CardHeader>
-                        <CardContent>
-                            <Link href={isOwner ? '/profile' : `/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-all text-left">
-                                <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-xl text-left"><AvatarFallback className="font-black text-left"> {campaign.organizerFirstName?.charAt(0)}</AvatarFallback></Avatar>
-                                <div className="min-w-0 flex-1 text-left text-left text-left"><span className="font-black text-base group-hover:text-primary transition-colors block truncate uppercase text-left">{campaign.organizerFirstName} {campaign.organizerLastName}</span><span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-left">Mission Leader</span></div>
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 text-left text-left">
+                        <CardHeader className="pb-3 text-left text-left text-left text-left"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-left text-left text-left">Organizer</CardTitle></CardHeader>
+                        <CardContent className="text-left">
+                            <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-all text-left text-left">
+                                <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-xl text-left text-left"><AvatarFallback className="font-black text-left text-left"> {campaign.organizerFirstName?.charAt(0)}</AvatarFallback></Avatar>
+                                <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left"><span className="font-black text-base group-hover:text-primary transition-colors block truncate uppercase text-left text-left">{campaign.organizerFirstName} {campaign.organizerLastName}</span><span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-left text-left">Mission Leader</span></div>
                             </Link>
                         </CardContent>
                     </Card>
@@ -418,23 +418,23 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             </div>
 
             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                    <div className="p-8 border-b bg-muted/10 text-left text-left"><DialogHeader><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Log Harvest</DialogTitle></DialogHeader></div>
-                    <ScrollArea className="max-h-[70vh] p-8 text-left text-left"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultCampaign={campaign} /></ScrollArea>
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left text-left">Log Harvest</DialogTitle></DialogHeader></div>
+                    <ScrollArea className="max-h-[70vh] p-8 text-left text-left text-left text-left text-left"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultCampaign={campaign} /></ScrollArea>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={isTestimonyOpen} onOpenChange={setIsTestimonyOpen}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                    <div className="p-8 border-b bg-muted/10 text-left text-left"><DialogHeader><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Share Victory</DialogTitle></DialogHeader></div>
-                    <ScrollArea className="max-h-[70vh] p-8 text-left text-left">{userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={() => setIsTestimonyOpen(false)} campaign={campaign} />}</ScrollArea>
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left text-left">Share Victory</DialogTitle></DialogHeader></div>
+                    <ScrollArea className="max-h-[70vh] p-8 text-left text-left text-left text-left text-left text-left">{userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={() => setIsTestimonyOpen(false)} campaign={campaign} />}</ScrollArea>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-                <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                    <div className="p-8 border-b bg-muted/10 text-left text-left text-left"><DialogHeader><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Manage Mission</DialogTitle></DialogHeader></div>
-                    <ScrollArea className="max-h-[80vh] p-8 text-left text-left text-left"><ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { }} /></ScrollArea>
+                <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left text-left text-left">Manage Mission</DialogTitle></DialogHeader></div>
+                    <ScrollArea className="max-h-[80vh] p-8 text-left text-left text-left text-left text-left text-left text-left text-left"><ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { }} /></ScrollArea>
                 </DialogContent>
             </Dialog>
         </div>
