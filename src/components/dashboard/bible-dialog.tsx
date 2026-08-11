@@ -88,35 +88,35 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
 
   return (
     <Card className={cn("bg-card border shadow-lg", getNoteCardClass(highlight.color))}>
-      <CardHeader className="p-3">
-        <CardTitle className="text-base">Editing Note</CardTitle>
-        <CardDescription>{getVerseReference(highlight)}</CardDescription>
+      <CardHeader className="p-3 text-left">
+        <CardTitle className="text-base text-left">Editing Note</CardTitle>
+        <CardDescription className="text-left">{getVerseReference(highlight)}</CardDescription>
       </CardHeader>
-      <CardContent className="p-3 pt-0">
+      <CardContent className="p-3 pt-0 text-left">
         <Textarea 
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Add your meditation note..."
             rows={4}
-            className="text-sm"
+            className="text-sm text-left"
         />
       </CardContent>
-      <CardFooter className="p-3 pt-0 flex flex-wrap items-center justify-between gap-y-2">
+      <CardFooter className="p-3 pt-0 flex flex-wrap items-center justify-between gap-y-2 text-left">
           <AlertDialog>
              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" disabled={isDeleting}>
-                    {isDeleting ? <Loader2 className="mr-1 h-4 w-4 animate-spin"/> : <Trash2 className="mr-1 h-4 w-4"/>}
+                <Button variant="destructive" size="sm" disabled={isDeleting} className="text-left">
+                    {isDeleting ? <Loader2 className="mr-1 h-4 w-4 animate-spin text-left"/> : <Trash2 className="mr-1 h-4 w-4 text-left"/>}
                     Delete
                 </Button>
              </AlertDialogTrigger>
-             <AlertDialogContent>
-                <AlertDialogHeader><AlertDialogTitle>Delete highlight?</AlertDialogTitle><AlertDialogDescription>This action cannot be undone.</AlertDialogDescription></AlertDialogHeader>
-                <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDelete} className="bg-destructive">Confirm</AlertDialogAction></AlertDialogFooter>
+             <AlertDialogContent className="text-left">
+                <AlertDialogHeader className="text-left"><AlertDialogTitle className="text-left">Delete highlight?</AlertDialogTitle><AlertDialogDescription className="text-left">This action cannot be undone.</AlertDialogDescription></AlertDialogHeader>
+                <AlertDialogFooter className="text-left"><AlertDialogCancel className="text-left">Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDelete} className="bg-destructive text-left">Confirm</AlertDialogAction></AlertDialogFooter>
              </AlertDialogContent>
           </AlertDialog>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
-            <Button size="sm" onClick={handleSave} disabled={isSaving}>Save</Button>
+          <div className="flex gap-2 text-left">
+            <Button variant="ghost" size="sm" onClick={onCancel} className="text-left">Cancel</Button>
+            <Button size="sm" onClick={handleSave} disabled={isSaving} className="text-left">Save</Button>
           </div>
       </CardFooter>
     </Card>
@@ -367,15 +367,15 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     const handleSelectVersion = (version: string) => { setSelectedVersion(version); setIsVersionSheetOpen(false); }
     
     const NotesList = (
-        <div className="space-y-2 p-1">
+        <div className="space-y-2 p-1 text-left">
             {highlights?.sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0)).map(h => h.id === activeHighlightId ? (
-                <div key={h.id} ref={activeNoteRef}>
+                <div key={h.id} ref={activeNoteRef} className="text-left">
                     <NoteEditor highlight={h} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
                 </div>
             ) : (
-                <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:shadow-lg transition-all", getNoteCardClass(h.color))}>
-                     <CardHeader className="p-2 flex flex-row items-center justify-between">
-                        <CardTitle className="text-sm font-medium truncate pr-2">{getVerseReference(h)}</CardTitle>
+                <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:shadow-lg transition-all text-left", getNoteCardClass(h.color))}>
+                     <CardHeader className="p-2 flex flex-row items-center justify-between text-left">
+                        <CardTitle className="text-sm font-medium truncate pr-2 text-left">{getVerseReference(h)}</CardTitle>
                     </CardHeader>
                 </Card>
             ))}
@@ -383,27 +383,27 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     );
     
     const ReaderContent = (
-      <div className="flex flex-col gap-2 sm:gap-4 flex-grow min-h-0">
-          <div className="relative flex-grow min-h-0">
-               <div className="absolute top-2 right-2 z-10 flex items-center justify-end gap-2 px-2 sm:px-0">
-                 <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : fontSizes[fontSizes.indexOf(f)-1] as any)}><Minus className="h-4 w-4" /></Button>
-                 <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : fontSizes[fontSizes.indexOf(f)+1] as any)}><Plus className="h-4 w-4" /></Button>
+      <div className="flex flex-col gap-2 sm:gap-4 flex-grow min-h-0 text-left">
+          <div className="relative flex-grow min-h-0 text-left">
+               <div className="absolute top-2 right-2 z-10 flex items-center justify-end gap-2 px-2 sm:px-0 text-left">
+                 <Button variant="outline" size="icon" className="h-7 w-7 text-left" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : fontSizes[fontSizes.indexOf(f)-1] as any)}><Minus className="h-4 w-4 text-left" /></Button>
+                 <Button variant="outline" size="icon" className="h-7 w-7 text-left" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : fontSizes[fontSizes.indexOf(f)+1] as any)}><Plus className="h-4 w-4 text-left" /></Button>
                </div>
-              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4 pt-12 relative">
-                  {(isLoadingChapter || !isInitialized) && <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}
+              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4 pt-12 relative text-left">
+                  {(isLoadingChapter || !isInitialized) && <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>}
                   {!isLoadingChapter && isInitialized && !chapterError && chapterContent && (
                   <>
-                    <div className={cn("space-y-1 font-serif", fontSizeClasses[fontSize])}>
+                    <div className={cn("space-y-1 font-serif text-left", fontSizeClasses[fontSize])}>
                         {chapterContent.verses.map(v => (
-                                <p key={v.verse} id={`verse-${v.verse}`} className={cn('rounded-sm transition-colors -mx-1 px-1 py-0.5 sm:leading-relaxed cursor-pointer', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-destructive/30', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
-                                    <sup className={cn("font-sans text-muted-foreground mr-1", subFontSizeClasses[fontSize])}>{v.verse}</sup>{v.text}
+                                <p key={v.verse} id={`verse-${v.verse}`} className={cn('rounded-sm transition-colors -mx-1 px-1 py-0.5 sm:leading-relaxed cursor-pointer text-left', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-destructive/30', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
+                                    <sup className={cn("font-sans text-muted-foreground mr-1 text-left", subFontSizeClasses[fontSize])}>{v.verse}</sup>{v.text}
                                 </p>
                         ))}
                     </div>
                     {selectedVerses.length > 0 && !unfinishedHighlight && toolbarPos && (
-                        <div className="absolute z-30 transition-all pointer-events-none" style={{ top: `${toolbarPos.top}px`, left: `${toolbarPos.left}px`, transform: 'translate(-50%, -120%)' }}>
-                            <Button size="default" className="shadow-xl pointer-events-auto" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
-                                {isProcessingHighlight ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Highlighter className="mr-2 h-4 w-4" />}Highlight & Note
+                        <div className="absolute z-30 transition-all pointer-events-none text-left" style={{ top: `${toolbarPos.top}px`, left: `${toolbarPos.left}px`, transform: 'translate(-50%, -120%)' }}>
+                            <Button size="default" className="shadow-xl pointer-events-auto text-left" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
+                                {isProcessingHighlight ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Highlighter className="mr-2 h-4 w-4 text-left" />}Highlight & Note
                             </Button>
                         </div>
                     )}
@@ -411,67 +411,66 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                   )}
               </ScrollArea>
           </div>
-           <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-2 items-center justify-between">
+           <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-2 items-center justify-between text-left">
             {unfinishedHighlight && (
-                <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full max-w-md"><div className="flex items-center justify-between gap-4"><p className="font-semibold text-sm">Note Required</p><Button size="sm" variant="outline" onClick={() => { setActiveHighlightId(unfinishedHighlight.id); if (isMobile) setMobileTab('notes'); }}>Go to Note</Button></div></Card>
+                <Card className="border-amber-500/50 bg-amber-500/10 p-3 w-full max-w-md text-left"><div className="flex items-center justify-between gap-4 text-left"><p className="font-semibold text-sm text-left">Note Required</p><Button size="sm" variant="outline" className="text-left" onClick={() => { setActiveHighlightId(unfinishedHighlight.id); if (isMobile) setMobileTab('notes'); }}>Go to Note</Button></div></Card>
             )}
-            <div className="flex gap-2 items-center">
-                <div className="flex items-center gap-2">
-                    <Input type="number" placeholder="Verse" value={goToVerse} onChange={(e) => setGoToVerse(e.target.value)} className="w-20 h-9" onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()} />
-                    <Button onClick={handleGoToVerse} size="sm" variant="secondary">Go</Button>
+            <div className="flex gap-2 items-center text-left">
+                <div className="flex items-center gap-2 text-left">
+                    <Input type="number" placeholder="Verse" value={goToVerse} onChange={(e) => setGoToVerse(e.target.value)} className="w-20 h-9 text-left" onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()} />
+                    <Button onClick={handleGoToVerse} size="sm" variant="secondary" className="text-left">Go</Button>
                 </div>
-                <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !isScrolledToEnd}>Mark as Read & Next</Button>
+                <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !isScrolledToEnd} className="text-left">Mark as Read & Next</Button>
             </div>
           </div>
       </div>
     );
     
     const DialogBody = (
-       <Tabs defaultValue="read" className="row-start-2 flex flex-col min-h-0">
-          <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="read">Read</TabsTrigger><TabsTrigger value="history">History</TabsTrigger></TabsList>
-          <TabsContent value="read" className="flex-grow flex flex-col min-h-0 mt-4 gap-4">
-              <div className="shrink-0">
+       <Tabs defaultValue="read" className="row-start-2 flex flex-col min-h-0 text-left">
+          <TabsList className="grid w-full grid-cols-2 text-left"><TabsTrigger value="read" className="text-left">Read</TabsTrigger><TabsTrigger value="history" className="text-left">History</TabsTrigger></TabsList>
+          <TabsContent value="read" className="flex-grow flex flex-col min-h-0 mt-4 gap-4 text-left">
+              <div className="shrink-0 text-left">
                 {!mounted || !isMobile ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <Select value={selectedBookName} onValueChange={setSelectedBookName}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{bibleData.map(book => (<SelectItem key={book.name} value={book.name}>{book.name}</SelectItem>))}</SelectContent></Select>
-                        <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}><PopoverTrigger asChild><Button variant="outline" className="w-full justify-between">Chapter {selectedChapterNumber} <ChevronDown className="h-4 w-4 opacity-50" /></Button></PopoverTrigger><PopoverContent className="w-[300px] p-0"><ScrollArea className="h-72"><div className="grid grid-cols-8 gap-1 p-2">{selectedBook?.chapters.map(chapter => (<Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? "default" : "outline"} size="sm" onClick={() => handleSelectChapter(chapter.chapter)}>{chapter.chapter}</Button>))}</div></ScrollArea></PopoverContent></Popover>
-                        <Select value={selectedVersion} onValueChange={setSelectedVersion}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{bibleVersions.map(v => (<SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>))}</SelectContent></Select>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+                        <Select value={selectedBookName} onValueChange={setSelectedBookName}><SelectTrigger className="text-left"><SelectValue className="text-left"/></SelectTrigger><SelectContent className="text-left">{bibleData.map(book => (<SelectItem key={book.name} value={book.name} className="text-left">{book.name}</SelectItem>))}</SelectContent></Select>
+                        <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}><PopoverTrigger asChild className="text-left"><Button variant="outline" className="w-full justify-between text-left">Chapter {selectedChapterNumber} <ChevronDown className="h-4 w-4 opacity-50 text-left" /></Button></PopoverTrigger><PopoverContent className="w-[300px] p-0 text-left"><ScrollArea className="h-72 text-left"><div className="grid grid-cols-8 gap-1 p-2 text-left">{selectedBook?.chapters.map(chapter => (<Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? "default" : "outline"} size="sm" className="text-left" onClick={() => handleSelectChapter(chapter.chapter)}>{chapter.chapter}</Button>))}</div></ScrollArea></PopoverContent></Popover>
+                        <Select value={selectedVersion} onValueChange={setSelectedVersion}><SelectTrigger className="text-left"><SelectValue className="text-left"/></SelectTrigger><SelectContent className="text-left">{bibleVersions.map(v => (<SelectItem key={v.id} value={v.id} className="text-left">{v.name}</SelectItem>))}</SelectContent></Select>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-3 gap-2">
-                        <Sheet open={isBookSheetOpen} onOpenChange={setIsBookSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between"><span className="truncate">{selectedBookName}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50" /></Button></SheetTrigger><SheetContent side="bottom" className="h-[90vh] flex flex-col"><SheetHeader><SheetTitle>Select Book</SheetTitle></SheetHeader><Input placeholder="Search..." value={bookSearchTerm} onChange={(e) => setBookSearchTerm(e.target.value)} /><ScrollArea className="flex-grow">{filteredBibleData.map(book => (<Button key={book.name} variant="ghost" size="lg" className="w-full justify-start" onClick={() => handleSelectBook(book.name)}>{book.name}</Button>))}</ScrollArea></SheetContent></Sheet>
-                        <Sheet open={isChapterSheetOpen} onOpenChange={setIsChapterSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between"><span className="truncate">Chapter {selectedChapterNumber}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50" /></Button></SheetTrigger><SheetContent side="bottom" className="h-[90vh] flex flex-col"><SheetHeader><SheetTitle>Select Chapter</SheetTitle></SheetHeader><ScrollArea className="flex-grow"><div className="grid grid-cols-5 gap-2 p-4">{selectedBook?.chapters.map(chapter => (<Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? 'default' : 'outline'} size="icon" onClick={() => handleSelectChapter(chapter.chapter)}>{chapter.chapter}</Button>))}</div></ScrollArea></SheetContent></Sheet>
-                        <Sheet open={isVersionSheetOpen} onOpenChange={setIsVersionSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between"><span className="truncate">{selectedVersion.toUpperCase()}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50" /></Button></SheetTrigger><SheetContent side="bottom" className="h-auto"><SheetHeader><SheetTitle>Version</SheetTitle></SheetHeader><div className="grid gap-2 py-4">{bibleVersions.map(v => (<Button key={v.id} variant={v.id === selectedVersion ? 'default' : 'ghost'} size="lg" className="w-full justify-start" onClick={() => handleSelectVersion(v.id)}>{v.name}</Button>))}</div></SheetContent></Sheet>
+                    <div className="grid grid-cols-3 gap-2 text-left">
+                        <Sheet open={isBookSheetOpen} onOpenChange={setIsBookSheetOpen}><SheetTrigger asChild className="text-left"><Button variant="outline" className="truncate justify-between text-left"><span className="truncate text-left">{selectedBookName}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50 text-left" /></Button></SheetTrigger><SheetContent side="bottom" className="h-[90vh] flex flex-col text-left"><SheetHeader className="text-left"><SheetTitle className="text-left">Select Book</SheetTitle></SheetHeader><Input placeholder="Search..." value={bookSearchTerm} className="text-left" onChange={(e) => setBookSearchTerm(e.target.value)} /><ScrollArea className="flex-grow text-left">{filteredBibleData.map(book => (<Button key={book.name} variant="ghost" size="lg" className="w-full justify-start text-left" onClick={() => handleSelectBook(book.name)}>{book.name}</Button>))}</ScrollArea></SheetContent></Sheet>
+                        <Sheet open={isChapterSheetOpen} onOpenChange={setIsChapterSheetOpen}><SheetTrigger asChild className="text-left"><Button variant="outline" className="truncate justify-between text-left"><span className="truncate text-left">Chapter {selectedChapterNumber}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50 text-left" /></Button></SheetTrigger><SheetContent side="bottom" className="h-[90vh] flex flex-col text-left"><SheetHeader className="text-left"><SheetTitle className="text-left">Select Chapter</SheetTitle></SheetHeader><ScrollArea className="flex-grow text-left"><div className="grid grid-cols-5 gap-2 p-4 text-left">{selectedBook?.chapters.map(chapter => (<Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? 'default' : 'outline'} size="icon" className="text-left" onClick={() => handleSelectChapter(chapter.chapter)}>{chapter.chapter}</Button>))}</div></ScrollArea></SheetContent></Sheet>
+                        <Sheet open={isVersionSheetOpen} onOpenChange={setIsVersionSheetOpen}><SheetTrigger asChild className="text-left"><Button variant="outline" className="truncate justify-between text-left"><span className="truncate text-left">{selectedVersion.toUpperCase()}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50 text-left" /></Button></SheetTrigger><SheetContent side="bottom" className="h-auto text-left"><SheetHeader className="text-left"><SheetTitle className="text-left">Version</SheetTitle></SheetHeader><div className="grid gap-2 py-4 text-left">{bibleVersions.map(v => (<Button key={v.id} variant={v.id === selectedVersion ? 'default' : 'ghost'} size="lg" className="w-full justify-start text-left" onClick={() => handleSelectVersion(v.id)}>{v.name}</Button>))}</div></SheetContent></Sheet>
                     </div>
                 )}
               </div>
             {!mounted || !isMobile ? (
-                <div className="flex flex-col md:flex-row gap-6 flex-grow min-h-0">
-                    <div className="flex flex-col md:w-2/3 min-h-0">{ReaderContent}</div>
-                    <div className="hidden md:flex md:w-1/3 flex-col border rounded-md bg-muted/30 p-4"><h3 className="font-semibold mb-2">Notes</h3><ScrollArea className="flex-grow">{NotesList}</ScrollArea></div>
+                <div className="flex flex-col md:flex-row gap-6 flex-grow min-h-0 text-left">
+                    <div className="flex flex-col md:w-2/3 min-h-0 text-left">{ReaderContent}</div>
+                    <div className="hidden md:flex md:w-1/3 flex-col border rounded-md bg-muted/30 p-4 text-left"><h3 className="font-semibold mb-2 text-left">Notes</h3><ScrollArea className="flex-grow text-left">{NotesList}</ScrollArea></div>
                 </div>
             ) : (
-                <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0">
-                    <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="reader">Read</TabsTrigger><TabsTrigger value="notes">Notes</TabsTrigger></TabsList>
-                    <TabsContent value="reader" className="flex-grow flex flex-col min-h-0 mt-2">{ReaderContent}</TabsContent>
-                    <TabsContent value="notes" className="flex-grow min-h-0 mt-2"><ScrollArea className="h-full border rounded-md p-2 bg-muted/30">{NotesList}</ScrollArea></TabsContent>
+                <Tabs value={mobileTab} onValueChange={setMobileTab} className="flex-grow flex flex-col min-h-0 text-left">
+                    <TabsList className="grid w-full grid-cols-2 text-left"><TabsTrigger value="reader" className="text-left">Read</TabsTrigger><TabsTrigger value="notes" className="text-left">Notes</TabsTrigger></TabsList>
+                    <TabsContent value="reader" className="flex-grow flex flex-col min-h-0 mt-2 text-left">{ReaderContent}</TabsContent>
+                    <TabsContent value="notes" className="flex-grow min-h-0 mt-2 text-left"><ScrollArea className="h-full border rounded-md p-2 bg-muted/30 text-left">{NotesList}</ScrollArea></TabsContent>
                 </Tabs>
             )}
           </TabsContent>
-          <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4"><ScrollArea className="h-full"><div className="p-4 space-y-6">{(userProfile?.readingHistory || []).map((item, idx) => (<div key={idx} className="flex items-center justify-between text-sm"><p>Read <span className="font-medium">{item.book} {item.chapter}</span></p><span className="text-muted-foreground">{item.readAt ? format(safeToDate(item.readAt)!, 'p') : 'N/A'}</span></div>))}</div></ScrollArea></TabsContent>
+          <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4 text-left"><ScrollArea className="h-full text-left"><div className="p-4 space-y-6 text-left">{(userProfile?.readingHistory || []).map((item, idx) => (<div key={idx} className="flex items-center justify-between text-sm text-left"><p className="text-left">Read <span className="font-medium text-left">{item.book} {item.chapter}</span></p><span className="text-muted-foreground text-left">{item.readAt ? format(safeToDate(item.readAt)!, 'p') : 'N/A'}</span></div>))}</div></ScrollArea></TabsContent>
         </Tabs>
     );
 
     return (
-      <any open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl max-h-[90dvh] grid grid-rows-[auto_1fr] gap-4 p-4 sm:p-6">
-          <DialogHeader>
-            <DialogTitle>Bible Reader</DialogTitle>
-            <DialogDescription>Read and meditate on the Word.</DialogDescription>
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl max-h-[90dvh] grid grid-rows-[auto_1fr] gap-4 p-4 sm:p-6 text-left">
+          <DialogHeader className="text-left">
+            <DialogTitle className="text-left">Bible Reader</DialogTitle>
+            <DialogDescription className="text-left">Read and meditate on the Word.</DialogDescription>
           </DialogHeader>
           {DialogBody}
         </DialogContent>
-      </any>
+      </Dialog>
     );
 }
-
