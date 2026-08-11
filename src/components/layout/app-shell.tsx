@@ -91,12 +91,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
 
@@ -135,10 +133,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
 
   return (
     <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
-      <div className="flex items-center gap-4 shrink-0 text-left">
-        <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(true)}>
-            <Menu className="h-5 w-5" />
-        </Button>
+      <div className="flex items-center shrink-0 text-left">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
             <Avatar className="h-10 w-10 md:h-11 md:w-11 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
@@ -329,73 +324,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
           <div className="h-10 w-10 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
         )}
       </div>
-
-      <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <SheetContent side="left" className="w-[300px] sm:w-[350px] p-0 flex flex-col h-full rounded-r-[2.5rem] text-left">
-            <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                <SheetHeader className="text-left">
-                    <div className="flex items-center gap-3 mb-2">
-                        <Target className="h-5 w-5 text-primary" />
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Navigation</span>
-                    </div>
-                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Main Hub</SheetTitle>
-                    <SheetDescription className="text-sm font-medium">Access all sectors of the harvest field.</SheetDescription>
-                </SheetHeader>
-            </div>
-            <ScrollArea className="flex-grow text-left">
-                <div className="p-6 space-y-2 text-left">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Navigation</p>
-                    {navItems.map(item => (
-                        <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className={cn(
-                            "flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group transition-all text-left",
-                            pathname === item.href && "bg-primary/5 text-primary ring-1 ring-primary/10"
-                        )}>
-                            <item.icon className={cn("h-6 w-6 shrink-0", pathname === item.href ? "text-primary" : item.color)} />
-                            <span className="font-black uppercase tracking-widest text-sm">{item.label}</span>
-                            <ChevronRight className="ml-auto h-4 w-4 opacity-20" />
-                        </Link>
-                    ))}
-                    
-                    <Separator className="my-6 opacity-50" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Kingdom Hubs</p>
-                    <Link href="/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                      <ShieldCheck className="h-6 w-6 text-primary" />
-                      <span className="font-black uppercase tracking-widest text-sm">Victory Hub</span>
-                    </Link>
-                    <Link href="/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                      <Store className="h-6 w-6 text-blue-500" />
-                      <span className="font-black uppercase tracking-widest text-sm">Provision Hub</span>
-                    </Link>
-                    <Link href="/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                      <Gift className="h-6 w-6 text-indigo-600" />
-                      <span className="font-black uppercase tracking-widest text-sm">Kindness Center</span>
-                    </Link>
-
-                    <Separator className="my-6 opacity-50" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Tools</p>
-                    <Link href="/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                      <BookOpen className="h-6 w-6 text-primary shrink-0" />
-                      <span className="font-black uppercase tracking-widest text-sm">Bible Study</span>
-                    </Link>
-                    <Link href="/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                      <Edit className="h-6 w-6 text-primary shrink-0" />
-                      <span className="font-black uppercase tracking-widest text-sm">Journal</span>
-                    </Link>
-
-                    <Separator className="my-6 opacity-50" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Platform</p>
-                    <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                      <Info className="h-6 w-6 text-primary shrink-0" />
-                      <span className="font-black uppercase tracking-widest text-sm">App Guide</span>
-                    </Link>
-                    <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
-                      <BookMarked className="h-6 w-6 text-primary shrink-0" />
-                      <span className="font-black uppercase tracking-widest text-sm">Library</span>
-                    </Link>
-                </div>
-            </ScrollArea>
-        </SheetContent>
-      </Sheet>
     </header>
   );
 }
@@ -596,7 +524,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         userVendors={userVendors}
                     />
                 )}
-                <div className="flex-1 relative min-h-0 text-left text-left">
+                <div className="flex-1 relative min-h-0 text-left">
                     <main 
                         ref={scrollContainerRef}
                         className={cn(
@@ -627,7 +555,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <div className="flex-grow overflow-y-auto p-6 text-left text-left">
+                    <div className="flex-grow overflow-y-auto p-6 text-left">
                         {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
                     </div>
                     </SheetContent>
