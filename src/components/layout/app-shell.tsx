@@ -1,4 +1,3 @@
-
 'use client';
 
 /**
@@ -323,14 +322,6 @@ function AppHeader({
                         <Gift className="h-3.5 w-3.5 text-indigo-600" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest">Kindness Gifts</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/events" className="flex items-center gap-3 w-full text-left">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                        <CalendarDays className="h-3.5 w-3.5 text-primary" />
-                      </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Events Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">

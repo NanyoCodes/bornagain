@@ -4,10 +4,9 @@ import OrdersListClient from "@/components/marketplace/orders-list-client";
 import { AppShell } from "@/components/layout/app-shell";
 
 /**
- * @fileOverview Standalone route for the Kingdom Order Tracker.
- * Accessible at /marketplace/orders.
+ * @fileOverview Root-level page for the Kingdom Order Tracker.
  */
-export default function PersonalOrdersPage() {
+export default function OrderTrackerPage() {
     return (
         <AppShell>
             <OrdersListClient />
