@@ -91,6 +91,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
@@ -235,79 +236,113 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 rounded-2xl shadow-xl" align="end">
+              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none" align="end">
                 <DropdownMenuLabel className="font-normal p-4 text-left">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-bold leading-tight truncate">{user.displayName || 'User'}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    <p className="text-sm font-black leading-tight truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
+                    <p className="text-[10px] text-muted-foreground truncate font-bold uppercase tracking-wider">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
-                  <Link href="/profile">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
-                  <Link href="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
+                
                 <DropdownMenuSeparator />
                 
-                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
-                  <Link href="/victory-hub">
-                    <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
-                    <span>Victory Hub</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
-                  <Link href="/marketplace">
-                    <Store className="mr-2 h-4 w-4 text-blue-500" />
-                    <span>Meals Center</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
-                  <Link href="/marketplace/gifts">
-                    <Gift className="mr-2 h-4 w-4 text-indigo-600" />
-                    <span>Kindness Center</span>
-                  </Link>
-                </DropdownMenuItem>
+                <div className="p-1 space-y-1">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/profile" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                        <User className="h-3.5 w-3.5" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-widest">Profile Identity</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/settings" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                        <Settings className="h-3.5 w-3.5" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-widest">System Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </div>
+
+                <DropdownMenuSeparator />
+                
+                <div className="p-1 space-y-1">
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-2 tracking-[0.2em]">Kingdom Hubs</p>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/victory-hub" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-widest">Victory Sanctuary</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/marketplace" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                        <Store className="h-3.5 w-3.5 text-blue-600" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-widest">Meals Provision</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                        <Gift className="h-3.5 w-3.5 text-indigo-600" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-widest">Kindness Gifts</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </div>
 
                 {userVendors && userVendors.length > 0 && (
                    <>
                     <DropdownMenuSeparator />
-                    {userVendors.map(v => (
-                      <DropdownMenuItem key={v.id} asChild className="rounded-lg mx-1 text-left">
-                        <Link href={`/marketplace/vendors/${v.id}`}>
-                          <Store className="mr-2 h-4 w-4 text-primary" />
-                          <span>{v.vendorType === 'meal' ? 'Meals' : 'Gifts'} Storefront</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
+                    <div className="p-1 space-y-1">
+                      <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-2 tracking-[0.2em]">My Storefronts</p>
+                      {userVendors.map(v => (
+                        <DropdownMenuItem key={v.id} asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                          <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full">
+                            <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                              <Package className="h-3.5 w-3.5 text-primary" />
+                            </div>
+                            <span className="text-xs font-black uppercase tracking-tight truncate">{v.businessName}</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </div>
                    </>
                 )}
 
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
-                    <Link href="/guide" className="cursor-pointer">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    <span>App Guide</span>
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
-                    <Link href="/resources" className="cursor-pointer">
-                    <BookMarked className="mr-2 h-4 w-4" />
-                    <span>Kingdom Library</span>
-                    </Link>
-                </DropdownMenuItem>
+                
+                <div className="p-1 space-y-1">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                      <Link href="/guide" className="flex items-center gap-3 w-full">
+                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                          <BookOpen className="h-3.5 w-3.5" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-widest">App Guide</span>
+                      </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                      <Link href="/resources" className="flex items-center gap-3 w-full">
+                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                          <BookMarked className="h-3.5 w-3.5" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-widest">Kingdom Library</span>
+                      </Link>
+                  </DropdownMenuItem>
+                </div>
+
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg mx-1 text-left">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Logout</span>
-                </DropdownMenuItem>
+                
+                <div className="p-1">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-11 px-3 cursor-pointer text-left">
+                    <LogOut className="mr-3 h-4 w-4" />
+                    <span className="text-xs font-black uppercase tracking-[0.2em]">Sign Out</span>
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </>
