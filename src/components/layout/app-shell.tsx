@@ -214,6 +214,7 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
         const senderName = `${userProfile.firstName} ${userProfile.lastName}`;
 
         cartItems.forEach(cartItem => {
+            const vendorOwnerId = cartItem.item.vendorOwnerId;
             for(let i = 0; i < cartItem.quantity; i++) {
                 const giftRef = doc(giftsRef);
                 batch.set(giftRef, {
@@ -233,6 +234,20 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                     currency: cartItem.item.currency || 'NGN',
                     status: 'ordered' as MealGiftStatus,
                     instructions: giftInstructions,
+                    createdAt: serverTimestamp(),
+                });
+            }
+
+            // Create notification for vendor
+            if (vendorOwnerId && vendorOwnerId !== user.uid) {
+                const notifRef = doc(collection(firestore, `users/${vendorOwnerId}/notifications`));
+                batch.set(notifRef, {
+                    userId: vendorOwnerId,
+                    type: 'new_order',
+                    title: 'New Offering Order!',
+                    message: `${senderName} ordered "${cartItem.item.name}" for ${manualRecipientName}.`,
+                    link: `/dashboard/marketplace/orders`,
+                    isRead: false,
                     createdAt: serverTimestamp(),
                 });
             }
@@ -571,75 +586,75 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1 text-left">
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                <div className="p-1 space-y-1 text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                     <Link href="/profile" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                         <User className="h-4 w-4" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left">Profile Identity</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left">Profile Identity</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                     <Link href="/settings" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                         <Settings className="h-4 w-4" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left">System Settings</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left">System Settings</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1 text-left">
+                <div className="p-1 space-y-1 text-left text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-2 tracking-[0.2em]">Kingdom Hubs</p>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full">
-                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left">
                         <ShieldCheck className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left">Victory Hub</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
                     <Link href="/marketplace" className="flex items-center gap-3 w-full">
-                      <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                      <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-left text-left">
                         <Store className="h-4 w-4 text-blue-600" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left">Meals Provision</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
                     <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
-                      <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                      <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-left text-left">
                         <Gift className="h-4 w-4 text-indigo-600" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left">Kindness Gifts</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
                     <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
-                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left text-left">
                         <Package className="h-4 w-4" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left">Order Tracker</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
                     <Link href="/events" className="flex items-center gap-3 w-full">
-                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left">
                         <CalendarDays className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left">Event Hub</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Event Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
                     <Link href="/fellowships" className="flex items-center gap-3 w-full">
-                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left text-left">
                         <Users className="h-4 w-4" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left">Fellowships</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Fellowships</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
@@ -647,15 +662,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 {userVendors && userVendors.length > 0 && (
                    <>
                     <DropdownMenuSeparator />
-                    <div className="p-1 space-y-1 text-left">
+                    <div className="p-1 space-y-1 text-left text-left text-left">
                       <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-2 tracking-[0.2em]">My Storefronts</p>
                       {userVendors.map(v => (
-                        <DropdownMenuItem key={v.id} asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                        <DropdownMenuItem key={v.id} asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                           <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full">
                             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                               <Package className="h-4 w-4 text-primary" />
                             </div>
-                            <span className="text-xs font-black uppercase tracking-tight truncate text-left">{v.businessName}</span>
+                            <span className="text-xs font-black uppercase tracking-tight truncate text-left text-left">{v.businessName}</span>
                           </Link>
                         </DropdownMenuItem>
                       ))}
@@ -665,31 +680,31 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1 text-left">
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                <div className="p-1 space-y-1 text-left text-left text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left">
                       <Link href="/guide" className="flex items-center gap-3 w-full">
                         <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                           <Info className="h-4 w-4" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest text-left">App Guide</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left text-left">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left">
                       <Link href="/resources" className="flex items-center gap-3 w-full">
                         <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                           <BookMarked className="h-4 w-4" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest text-left">Kingdom Library</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left text-left">Kingdom Library</span>
                       </Link>
                   </DropdownMenuItem>
                 </div>
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 text-left">
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-12 px-3 cursor-pointer text-left">
+                <div className="p-1 text-left text-left text-left">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-12 px-3 cursor-pointer text-left text-left text-left">
                     <LogOut className="mr-3 h-5 w-5" />
-                    <span className="text-xs font-black uppercase tracking-[0.2em] text-left">Sign Out</span>
+                    <span className="text-xs font-black uppercase tracking-[0.2em] text-left text-left text-left">Sign Out</span>
                   </DropdownMenuItem>
                 </div>
               </DropdownMenuContent>
@@ -884,17 +899,17 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center text-left">
-        <div className="relative mb-8 mx-auto w-fit">
-            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
-            <div className="absolute inset-0 flex items-center justify-center text-left">
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center text-left text-left">
+        <div className="relative mb-8 mx-auto w-fit text-left text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left text-left" />
+            <div className="absolute inset-0 flex items-center justify-center text-left text-left text-left">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left text-left" />
             </div>
         </div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 text-left">
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 text-left text-left">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left text-left">
             Kingdom Network Active
         </p>
       </div>
@@ -914,7 +929,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: contentVisible ? 1 : 0 }}
           transition={{ duration: 1 }}
-          className="flex-1 flex flex-col min-h-0 text-left"
+          className="flex-1 flex flex-col min-h-0 text-left text-left"
       >
           {!isTakeoverPage && (
           <AppHeader 
@@ -924,7 +939,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
               userVendors={userVendors || null}
           />
           )}
-          <div className="flex-1 relative min-h-0 text-left">
+          <div className="flex-1 relative min-h-0 text-left text-left">
           <main 
               ref={scrollContainerRef}
               className={cn(
@@ -948,28 +963,28 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left text-left text-left text-left">
-              <SheetHeader className="text-left text-left text-left text-left">
-                <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left text-left text-left text-left text-left">
+              <SheetHeader className="text-left text-left text-left text-left text-left text-left">
+                <SheetTitle className="text-xl font-bold text-left text-left text-left text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left text-left text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6 text-left">
+            <div className="flex-grow overflow-y-auto p-6 text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </SheetContent>
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
-            <div className="p-6 border-b bg-muted/10 text-left text-left text-left text-left text-left">
-              <DialogHeader className="text-left text-left text-left text-left">
-                  <DialogTitle className="text-2xl font-bold text-left text-left text-left text-left">Complete Your Profile</DialogTitle>
-                  <DialogDescription className="text-sm text-left text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left">
+              <DialogHeader className="text-left text-left text-left text-left text-left text-left">
+                  <DialogTitle className="text-2xl font-bold text-left text-left text-left text-left text-left text-left">Complete Your Profile</DialogTitle>
+                  <DialogDescription className="text-sm text-left text-left text-left text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left text-left text-left text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left text-left text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -983,8 +998,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
-                <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left">
+                <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left text-left" />
             </div>
         }>
             <ShellInner>{children}</ShellInner>
