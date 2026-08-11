@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -58,10 +57,10 @@ import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, query, where, doc, writeBatch, serverTimestamp, arrayUnion } from "firebase/firestore";
-import type { Notification, VendorProfile, Meal, MealGiftStatus } from "@/lib/types";
+import { collection, doc, query, where, updateDoc, serverTimestamp, writeBatch } from "firebase/firestore";
+import type { Notification, UserProfile, VendorProfile, MealGiftStatus } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
@@ -70,6 +69,8 @@ import { SplashScreen } from "../common/splash-screen";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea";
+import { Badge } from "../ui/badge";
+import { Label } from "../ui/label";
 
 const navItems = [
   { href: "/growth", label: "GROWTH", icon: TrendingUp, color: "text-chart-1" },
@@ -246,7 +247,7 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
         } catch (e) {
             toast({ variant: 'destructive', title: 'Dispatch Failed' });
         } finally {
-            setIsProcessing(true);
+            setIsProcessing(false);
         }
     };
 
@@ -406,17 +407,7 @@ function CartButton() {
   );
 }
 
-function AppHeader({ 
-  unreadChatCount, 
-  unreadNotifCount, 
-  isPublicRoute, 
-  userVendors 
-}: { 
-  unreadChatCount: number, 
-  unreadNotifCount: number, 
-  isPublicRoute: boolean, 
-  userVendors: VendorProfile[] | null 
-}) {
+function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendors }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, userVendors: VendorProfile[] | null }) {
   const { user } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
@@ -568,7 +559,7 @@ function AppHeader({
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar" align="end">
+              <DropdownMenuContent className="z-50 min-w-[8rem] overflow-hidden border bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-black leading-tight truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
@@ -976,7 +967,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                   <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
