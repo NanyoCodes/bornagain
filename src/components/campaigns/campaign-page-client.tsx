@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Campaign, UserProfile, CampaignParticipant, Testimony, Fellowship, AccountabilityRequest, Soul } from '@/lib/types';
 import {
@@ -166,7 +166,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
       if (!user || !firestore) return null;
       return query(
         collection(firestore, 'accountabilityRequests'),
-        where('participantIds', 'array-contains', currentUser?.uid),
+        where('participantIds', 'array-contains', user.uid),
         where('status', '==', 'pending')
       );
     }, [user, firestore]);
@@ -440,4 +440,3 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         </div>
     );
 }
-
