@@ -52,7 +52,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
-import type { Notification } from "@/lib/types";
+import type { Notification, UserProfile, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -86,7 +86,7 @@ const inspirationalMessages = [
   "REJOICE ALWAYS"
 ];
 
-function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean }) {
+function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendors }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, userVendors: VendorProfile[] | null }) {
   const { user, loading: authLoading } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
@@ -260,6 +260,41 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
+                  <Link href="/victory-hub">
+                    <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
+                    <span>Victory Hub</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
+                  <Link href="/marketplace">
+                    <Store className="mr-2 h-4 w-4 text-blue-500" />
+                    <span>Meals Center</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
+                  <Link href="/marketplace/gifts">
+                    <Gift className="mr-2 h-4 w-4 text-indigo-600" />
+                    <span>Kindness Center</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                {userVendors && userVendors.length > 0 && (
+                   <>
+                    <DropdownMenuSeparator />
+                    {userVendors.map(v => (
+                      <DropdownMenuItem key={v.id} asChild className="rounded-lg mx-1 text-left">
+                        <Link href={`/marketplace/vendors/${v.id}`}>
+                          <Store className="mr-2 h-4 w-4 text-primary" />
+                          <span>{v.vendorType === 'meal' ? 'Meals' : 'Gifts'} Storefront</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                   </>
+                )}
+
+                <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                     <Link href="/guide" className="cursor-pointer">
                     <BookOpen className="mr-2 h-4 w-4" />
@@ -420,7 +455,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     const firestore = useFirestore();
     const router = useRouter();
     const pathname = usePathname();
-    const isMobile = useIsMobile();
     
     const [showWelcomePopup, setShowWelcomePopup] = useState(false);
     const [loadingMessage, setLoadingMessage] = useState("");
@@ -494,6 +528,12 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     }, [user?.uid, firestore]);
     const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
 
+    const userVendorsQuery = useMemo(() => {
+        if (!user?.uid || !firestore) return null;
+        return query(collection(firestore, 'vendors'), where('userId', '==', user.uid));
+    }, [user?.uid, firestore]);
+    const { data: userVendors } = useCollection<VendorProfile>(userVendorsQuery);
+
     useEffect(() => {
         if (!authLoading && !user && !isPublicRoute) router.push('/login');
     }, [authLoading, user, router, isPublicRoute]);
@@ -551,6 +591,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         unreadChatCount={unreadChatNotifications?.length || 0} 
                         unreadNotifCount={unreadOtherNotifications?.length || 0}
                         isPublicRoute={isPublicRoute}
+                        userVendors={userVendors}
                     />
                 )}
                 <div className="flex-1 relative min-h-0 text-left text-left">
