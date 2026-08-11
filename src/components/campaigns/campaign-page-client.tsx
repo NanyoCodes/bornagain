@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
+import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Campaign, UserProfile, CampaignParticipant, Testimony, Fellowship, AccountabilityRequest, Soul } from '@/lib/types';
 import {
   Dialog,
@@ -379,7 +379,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                     <p className="text-3xl font-black text-left">{campaign.soulsLogged || 0}</p>
                                 </div>
                                 <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-left">
-                                    UserPlus className="h-5 w-5 text-white text-left" />
+                                    <UserPlus className="h-5 w-5 text-white text-left" />
                                 </div>
                             </div>
                         </CardContent>
