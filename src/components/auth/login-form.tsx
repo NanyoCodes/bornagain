@@ -76,20 +76,20 @@ function EmailVerificationDialog({ user, isOpen, onOpenChange }: { user: User | 
 
     return (
         <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl">
+            <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl text-left">
                 <AlertDialogHeader className="text-left">
-                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight">Verification Required</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium">
+                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">Verification Required</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium text-left">
                         Please verify your email address to join the global movement. A link was sent to <strong>{user?.email}</strong>.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <p className="text-sm text-muted-foreground font-medium italic py-4">
+                <p className="text-sm text-muted-foreground font-medium italic py-4 text-left">
                     Check your inbox and spam folder. Verification is necessary to ensure the integrity of shared testimonies.
                 </p>
-                <AlertDialogFooter className="flex-col sm:flex-row gap-3">
-                    <AlertDialogCancel disabled={isLoading} onClick={handleClose} className="rounded-xl h-11 font-bold">Close</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleResend} disabled={isLoading} className="rounded-xl h-11 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <AlertDialogFooter className="flex-col sm:flex-row gap-3 text-left">
+                    <AlertDialogCancel disabled={isLoading} onClick={handleClose} className="rounded-xl h-11 font-bold text-left">Close</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleResend} disabled={isLoading} className="rounded-xl h-11 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left">
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                         RESEND LINK
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -209,20 +209,20 @@ export function LoginForm() {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 text-left">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email Address</FormLabel>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <FormControl>
-                    <Input placeholder="name@example.com" {...field} className="pl-10 h-11 rounded-xl" />
+              <FormItem className="text-left">
+                <FormLabel className="text-left">Email Address</FormLabel>
+                <div className="relative text-left">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground text-left" />
+                  <FormControl className="text-left">
+                    <Input placeholder="name@example.com" {...field} className="pl-10 h-11 rounded-xl text-left" />
                   </FormControl>
                 </div>
-                <FormMessage />
+                <FormMessage className="text-left" />
               </FormItem>
             )}
           />
@@ -230,25 +230,25 @@ export function LoginForm() {
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem>
-                  <div className="flex items-center justify-between">
-                      <FormLabel>Password</FormLabel>
-                      <Link href="/forgot-password" size="sm" className="text-sm text-primary hover:underline font-medium">
+              <FormItem className="text-left">
+                  <div className="flex items-center justify-between text-left">
+                      <FormLabel className="text-left">Password</FormLabel>
+                      <Link href="/forgot-password" size="sm" className="text-sm text-primary hover:underline font-medium text-left">
                         Forgot password?
                       </Link>
                   </div>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <FormControl>
-                    <Input type="password" placeholder="********" {...field} className="pl-10 h-11 rounded-xl" />
+                <div className="relative text-left">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground text-left" />
+                  <FormControl className="text-left">
+                    <Input type="password" placeholder="********" {...field} className="pl-10 h-11 rounded-xl text-left" />
                   </FormControl>
                 </div>
-                <FormMessage />
+                <FormMessage className="text-left" />
               </FormItem>
             )}
           />
-          <Button type="submit" variant="default" className="w-full h-11 font-bold shadow-md rounded-xl" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type="submit" variant="default" className="w-full h-11 font-bold shadow-md rounded-xl text-left" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
             Sign In
           </Button>
         </form>

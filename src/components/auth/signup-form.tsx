@@ -147,18 +147,18 @@ export function SignUpForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-        <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 text-left">
+        <div className="grid grid-cols-2 gap-4 text-left">
           <FormField
             control={form.control}
             name="firstName"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                    <Input placeholder="John" {...field} className="pl-3 rounded-xl h-11" />
+              <FormItem className="text-left">
+                <FormLabel className="text-left">First Name</FormLabel>
+                <FormControl className="text-left">
+                    <Input placeholder="John" {...field} className="pl-3 rounded-xl h-11 text-left" />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-left" />
               </FormItem>
             )}
           />
@@ -166,12 +166,12 @@ export function SignUpForm() {
             control={form.control}
             name="lastName"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                    <Input placeholder="Doe" {...field} className="pl-3 rounded-xl h-11" />
+              <FormItem className="text-left">
+                <FormLabel className="text-left">Last Name</FormLabel>
+                <FormControl className="text-left">
+                    <Input placeholder="Doe" {...field} className="pl-3 rounded-xl h-11 text-left" />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-left" />
               </FormItem>
             )}
           />
@@ -180,15 +180,15 @@ export function SignUpForm() {
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email Address</FormLabel>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <FormControl>
-                    <Input placeholder="name@example.com" {...field} className="pl-10 rounded-xl h-11" />
+            <FormItem className="text-left">
+              <FormLabel className="text-left">Email Address</FormLabel>
+              <div className="relative text-left">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground text-left" />
+                <FormControl className="text-left">
+                    <Input placeholder="name@example.com" {...field} className="pl-10 rounded-xl h-11 text-left" />
                 </FormControl>
               </div>
-              <FormMessage />
+              <FormMessage className="text-left" />
             </FormItem>
           )}
         />
@@ -196,15 +196,15 @@ export function SignUpForm() {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <FormControl>
-                    <Input type="password" placeholder="********" {...field} className="pl-10 rounded-xl h-11" />
+            <FormItem className="text-left">
+              <FormLabel className="text-left">Password</FormLabel>
+              <div className="relative text-left">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground text-left" />
+                <FormControl className="text-left">
+                    <Input type="password" placeholder="********" {...field} className="pl-10 rounded-xl h-11 text-left" />
                 </FormControl>
               </div>
-              <FormMessage />
+              <FormMessage className="text-left" />
             </FormItem>
           )}
         />
@@ -213,28 +213,28 @@ export function SignUpForm() {
           control={form.control}
           name="acceptTerms"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-2xl border p-4 bg-muted/20">
-              <FormControl>
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-2xl border p-4 bg-muted/20 text-left">
+              <FormControl className="text-left">
                 <Checkbox
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel className="text-xs leading-normal cursor-pointer font-medium">
+              <div className="space-y-1 leading-none text-left">
+                <FormLabel className="text-xs leading-normal cursor-pointer font-medium text-left">
                   I agree to respect all users and abide by the Testify guidelines.
                 </FormLabel>
-                <FormDescription className="text-[10px]">
+                <FormDescription className="text-[10px] text-left">
                    Read our <Link href="/terms-of-service" className="underline hover:text-primary">Terms of Service</Link> for details.
                 </FormDescription>
-                <FormMessage />
+                <FormMessage className="text-left" />
               </div>
             </FormItem>
           )}
         />
 
-        <Button type="submit" variant="destructive" className="w-full h-11 rounded-xl font-bold shadow-md" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <Button type="submit" variant="destructive" className="w-full h-11 rounded-xl font-bold shadow-md text-left" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
           Create account
         </Button>
       </form>

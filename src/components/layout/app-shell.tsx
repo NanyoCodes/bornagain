@@ -58,7 +58,7 @@ import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, where } from "firebase/firestore";
 import type { Notification, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -110,7 +110,6 @@ function AppHeader({
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
@@ -165,7 +164,7 @@ function AppHeader({
         </Link>
       </div>
 
-      <nav className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
+      <nav className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 h-full pt-1">
         <div className="flex items-center gap-1.5 lg:gap-3 h-full">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -298,8 +297,8 @@ function AppHeader({
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-2 tracking-[0.2em] text-left">Kingdom Hubs</p>
+                <div className="p-1 space-y-1 text-left">
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-2 tracking-[0.2em]">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -332,13 +331,21 @@ function AppHeader({
                       <span className="text-xs font-bold uppercase tracking-widest">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/events" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <CalendarDays className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-widest">Gathering Directory</span>
+                    </Link>
+                  </DropdownMenuItem>
                 </div>
 
                 {userVendors && userVendors.length > 0 && (
                    <>
                     <DropdownMenuSeparator />
-                    <div className="p-1 space-y-1">
-                      <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-2 tracking-[0.2em] text-left">My Storefronts</p>
+                    <div className="p-1 space-y-1 text-left">
+                      <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-2 tracking-[0.2em]">My Storefronts</p>
                       {userVendors.map(v => (
                         <DropdownMenuItem key={v.id} asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                           <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full text-left">
@@ -355,7 +362,7 @@ function AppHeader({
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1">
+                <div className="p-1 space-y-1 text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                       <Link href="/guide" className="flex items-center gap-3 w-full text-left">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
@@ -537,7 +544,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     }
   }, [userProfile, mounted]);
 
-  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships'];
+  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships', '/events', '/marketplace'];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
   const isTakeoverPage = useMemo(() => {
