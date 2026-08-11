@@ -35,7 +35,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { Badge } from "../ui/badge";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import { cn, safeToDate, haversineDistance } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { JoinCampaignDialog } from "./join-campaign-dialog";
 import { ScrollArea } from "../ui/scroll-area";
@@ -117,14 +117,14 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
           <Skeleton className="h-10 w-full rounded-2xl" />
         </div>
       ) : participants ? (
-         <div className="space-y-6 pb-6 px-1">
+         <div className="space-y-6 pb-6 px-1 text-left">
             {organizer && (
                 <div className="space-y-3">
                     <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Organizer</h3>
                     <div className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed hover:bg-muted/40 transition-colors group relative">
                         <LiveParticipantAvatar userId={organizer.userId} fallbackUrl={organizer.photoURL} fallbackInitials={organizer.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm group-hover:scale-105 transition-transform" />
                         <Link 
-                            href={organizer.userId === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${organizer.userId}`}
+                            href={organizer.userId === user?.uid ? '/profile' : `/profile/${organizer.userId}`}
                             className='font-bold text-sm sm:text-base hover:underline uppercase tracking-tight'
                             onClick={stopPropagation}
                         >
@@ -143,7 +143,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
                       <div className="flex items-center gap-3 group relative">
                         <LiveParticipantAvatar userId={p.userId} fallbackUrl={p.photoURL} fallbackInitials={p.firstName?.charAt(0)} className="h-9 w-9 text-xs border group-hover:scale-105 transition-transform" />
                         <Link 
-                            href={p.userId === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${p.userId}`}
+                            href={p.userId === user?.uid ? '/profile' : `/profile/${p.userId}`}
                             className='font-bold text-sm hover:underline uppercase tracking-tight'
                             onClick={stopPropagation}
                         >
@@ -177,7 +177,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+        <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
           <div className="p-8 border-b flex-shrink-0 bg-muted/10">
             <SheetHeader className="text-left flex-shrink-0">
                 <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance">Participants Directory</SheetTitle>
@@ -197,12 +197,12 @@ function ParticipantsDialog({ campaign, children }: { campaign: Campaign; childr
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl">
+      <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl text-left">
         <div className="p-8 border-b bg-muted/10">
             <DialogHeader>
                 <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance">Participants for "{campaign.title}"</DialogTitle>
                 <DialogDescription className="text-sm font-medium">
-                    {campaign.participantCount || 0} people have joined this mission.
+                    {campaign.participants || 0} people have joined this mission.
                 </DialogDescription>
             </DialogHeader>
         </div>
@@ -235,7 +235,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
     };
 
     const dialogContent = (
-        <div className="space-y-6">
+        <div className="space-y-6 text-left">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="p-3.5 rounded-2xl bg-muted/30 border border-dashed flex items-start gap-3">
                     <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
@@ -278,7 +278,7 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b bg-muted/10 flex-shrink-0">
                         <div className="flex items-center gap-3 mb-2">
                             <Target className="h-5 w-5 text-primary" />
@@ -301,10 +301,10 @@ function FullDescriptionDialog({ campaign, children }: { campaign: Campaign, chi
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
+            <DialogTrigger asChild onClick={stopPropagation}>
                 {children}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+            <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                 <div className="p-8 border-b bg-muted/10">
                     <div className="flex items-center gap-3 mb-2">
                         <Target className="h-5 w-5 text-primary" />
@@ -362,7 +362,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
     ) {
       return;
     }
-    router.push(`/dashboard/campaigns/${campaign.id}`);
+    router.push(`/campaigns/${campaign.id}`);
   };
 
   const stopPropagation = (e: React.MouseEvent) => {
@@ -478,7 +478,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
           const chatDocRef = await addDoc(chatsRef, newChatData);
           chatId = chatDocRef.id;
       }
-      router.push(`/dashboard/chats/${chatId}`);
+      router.push(`/chats/${chatId}`);
 
     } catch (error) {
        console.error("Error initiating chat:", error);
@@ -610,14 +610,14 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
         )}
         onClick={handleCardClick}
       >
-        <CardHeader className="p-4 sm:p-6 flex flex-col sm:flex-row items-start justify-between gap-4 pb-3 sm:pb-6">
-            <div className="flex-1 min-w-0 w-full">
-                <CardTitle className="font-bold text-lg md:text-xl leading-tight break-words [overflow-wrap:anywhere] text-balance">
+        <CardHeader className="p-4 sm:p-6 flex flex-col sm:flex-row items-start justify-between gap-4 pb-3 sm:pb-6 text-left">
+            <div className="flex-1 min-w-0 w-full text-left">
+                <CardTitle className="font-bold text-lg md:text-xl leading-tight break-words [overflow-wrap:anywhere] text-balance text-left">
                   {campaign.title}
                 </CardTitle>
-                <CardDescription className="text-sm mt-1 line-clamp-2 font-medium break-words [overflow-wrap:anywhere]">{campaign.goal}</CardDescription>
+                <CardDescription className="text-sm mt-1 line-clamp-2 font-medium break-words [overflow-wrap:anywhere] text-left">{campaign.goal}</CardDescription>
                 {distance != null && (
-                    <CardDescription className="text-xs text-primary font-black mt-2 flex items-center gap-1 uppercase tracking-widest">
+                    <CardDescription className="text-xs text-primary font-black mt-2 flex items-center gap-1 uppercase tracking-widest text-left">
                         <MapPin className="h-3 w-3" />
                         {distance.toFixed(1)} km away
                     </CardDescription>
@@ -632,7 +632,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                         variant="outline" 
                         size="icon" 
                         className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" 
-                        onClick={(e) => { e.stopPropagation(); router.push(`/dashboard/campaigns/${campaign.id}`); }}
+                        onClick={(e) => { e.stopPropagation(); router.push(`/campaigns/${campaign.id}`); }}
                       >
                         <BarChart3 className="h-4 w-4 sm:h-5 w-5" />
                         <span className="sr-only">View Insights</span>
@@ -655,7 +655,7 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 <p ref={descriptionRef} className="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-medium break-words [overflow-wrap:anywhere] text-left">{campaign.description}</p>
                 {isDescriptionTruncated && (
                     <FullDescriptionDialog campaign={campaign}>
-                        <Button variant="link" className="p-0 h-auto text-sm font-bold text-primary">Read More</Button>
+                        <Button variant="link" className="p-0 h-auto text-sm font-bold text-primary text-left">Read More</Button>
                     </FullDescriptionDialog>
                 )}
             </div>
@@ -670,36 +670,36 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 </div>
                 <div className="rounded-2xl border-2 border-dashed p-3.5 flex items-start gap-3 bg-background/30 min-h-[6rem] h-auto">
                     <CalendarDays className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-1 text-left">
                         <p className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Schedule</p>
-                        <p className="font-bold text-foreground leading-snug line-clamp-2">{dateString}</p>
-                        <p className="text-[10px] font-black uppercase text-primary/70 mt-1 truncate">{timeString}</p>
+                        <p className="font-bold text-foreground leading-snug line-clamp-2 text-left">{dateString}</p>
+                        <p className="text-[10px] font-black uppercase text-primary/70 mt-1 truncate text-left">{timeString}</p>
                     </div>
                 </div>
             </div>
 
         </CardContent>
-        <CardFooter className="p-4 sm:p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm">
-            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-tighter text-muted-foreground">
+        <CardFooter className="p-4 sm:p-6 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-auto border-t bg-background/20 backdrop-blur-sm text-left">
+            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-tighter text-muted-foreground text-left">
                 <ParticipantsDialog campaign={campaign}>
-                    <Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors" onClick={stopPropagation}>
-                        <Users className="h-4 w-4" />
-                        <span className="ml-1.5">
+                    <Button variant="ghost" className="h-auto p-0 justify-start text-xs font-bold text-muted-foreground hover:bg-transparent hover:text-primary transition-colors text-left" onClick={stopPropagation}>
+                        <Users className="h-4 w-4 text-left" />
+                        <span className="ml-1.5 text-left">
                             {campaign.participants} {campaign.participants === 1 ? 'MEMBER' : 'MEMBERS'}
                         </span>
                     </Button>
                 </ParticipantsDialog>
                 {(status === "Ongoing") && (
-                    <div className="flex items-center gap-1.5 text-primary">
-                        <UserCheck className="h-4 w-4" />
-                        <span>{campaign.soulsLogged || 0} SOULS WON</span>
+                    <div className="flex items-center gap-1.5 text-primary text-left">
+                        <UserCheck className="h-4 w-4 text-left" />
+                        <span className="text-left">{campaign.soulsLogged || 0} SOULS WON</span>
                     </div>
                 )}
             </div>
 
-            <div className="w-full sm:w-auto flex items-center flex-wrap justify-end gap-2" onClick={stopPropagation}>
+            <div className="w-full sm:w-auto flex items-center flex-wrap justify-end gap-2 text-left" onClick={stopPropagation}>
                 {status === 'Ongoing' && campaign.streamUrl && (
-                    <Button asChild className="w-full sm:w-auto font-black rounded-xl shadow-lg h-9">
+                    <Button asChild className="w-full sm:w-auto font-black rounded-xl shadow-lg h-9 text-left">
                         <Link href={campaign.streamUrl} target="_blank" rel="noopener noreferrer">
                             <PlayCircle className="mr-2 h-4 w-4" />
                             WATCH LIVE
@@ -759,14 +759,14 @@ export function CampaignCard({ campaign, userId, userProfile, distance, onManage
                 )}
             </div>
         </CardFooter>
-        <CardFooter className="p-3 bg-black/5 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 flex justify-between">
-            <span className="truncate min-w-0 flex-1 mr-4">
+        <CardFooter className="p-3 bg-black/5 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 flex justify-between text-left">
+            <span className="truncate min-w-0 flex-1 mr-4 text-left">
                 BY{" "}
-                <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} onClick={stopPropagation} className="text-primary hover:underline truncate">
+                <Link href={isOwner ? '/profile' : `/profile/${campaign.organizerId}`} onClick={stopPropagation} className="text-primary hover:underline truncate text-left">
                     {campaign.organizerFirstName} {campaign.organizerLastName}
                 </Link>
             </span>
-            <span className="flex-shrink-0 opacity-60">{footerDateText}</span>
+            <span className="flex-shrink-0 opacity-60 text-left">{footerDateText}</span>
         </CardFooter>
       </Card>
       {userProfile && !isOwner && (

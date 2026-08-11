@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection } from '@/firebase';
-import type { Campaign, UserProfile, CampaignParticipant, Testimony, Fellowship } from '@/lib/types';
+import type { Campaign, UserProfile, CampaignParticipant, Testimony, Fellowship, AccountabilityRequest } from '@/lib/types';
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,7 @@ import {
 import { doc, updateDoc, serverTimestamp, collection, query, where, orderBy } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ArrowLeft, MapPin, CalendarDays, Edit, UserCheck, PlayCircle, Users, Newspaper, Quote } from 'lucide-react';
+import { Loader2, ArrowLeft, MapPin, CalendarDays, Edit, UserCheck, PlayCircle, Users, Newspaper, Quote, Target, UserPlus, Sparkles, BarChart3 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -82,9 +82,35 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
     const testimoniesQuery = useMemo(() => {
         if (!firestore || !campaignId) return null;
-        return query(collection(firestore, 'testimonies'), where('campaignId', '==', campaignId));
+        return query(
+            collection(firestore, 'testimonies'), 
+            where('campaignId', '==', campaignId),
+            orderBy('createdAt', 'desc')
+        );
     }, [firestore, campaignId]);
     const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
+
+    // Context for TestimonyCard badges
+    const partnerIds = useMemo(() => new Set(userProfile?.partnerIds || []), [userProfile?.partnerIds]);
+
+    const requestsQuery = useMemo(() => {
+      if (!user || !firestore) return null;
+      return query(
+        collection(firestore, 'accountabilityRequests'),
+        where('participantIds', 'array-contains', user.uid),
+        where('status', '==', 'pending')
+      );
+    }, [user, firestore]);
+    const { data: accountabilityRequests } = useCollection<AccountabilityRequest>(requestsQuery);
+
+    const pendingRequestIds = useMemo(() => {
+      if (!accountabilityRequests) return new Set<string>();
+      return new Set(
+          accountabilityRequests
+              .flatMap(r => r.participantIds)
+              .filter(id => id !== user?.uid)
+      );
+    }, [accountabilityRequests, user?.uid]);
 
     const loading = campaignLoading || profileLoading || participantsLoading || testimoniesLoading;
 
@@ -97,26 +123,11 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         return start > now ? "Upcoming" : "Ongoing";
     }, [campaign]);
 
-    const handleDeleteCampaign = async () => {
-        if (!campaignToDelete || !user || !firestore) return;
-        setIsDeleting(true);
-        const campaignRef = doc(firestore, 'campaigns', campaignToDelete.id);
-        const deleteData = { status: 'deleted', deletedAt: serverTimestamp() };
-        try {
-            await updateDoc(campaignRef, deleteData);
-            toast({ title: 'Campaign Deleted' });
-            setCampaignToDelete(null);
-            router.push('/dashboard/campaigns');
-        } catch (error) {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({ path: campaignRef.path, operation: 'update' }, user));
-        } finally { setIsDeleting(false); }
-    };
-
     if (loading || !mounted) return <div className="flex items-center justify-center h-full py-20"><Loader2 className="animate-spin text-primary" /></div>;
-    if (campaignError || !campaign || campaign.status === 'deleted') return <div className="text-center p-12"><h2 className="text-xl font-bold text-left">Campaign Not Found</h2><Button asChild variant="outline" className="mt-4"><Link href="/dashboard/campaigns">Return to Campaigns</Link></Button></div>;
+    if (campaignError || !campaign || campaign.status === 'deleted') return <div className="text-center p-12"><h2 className="text-xl font-bold text-left">Campaign Not Found</h2><Button asChild variant="outline" className="mt-4"><Link href="/campaigns">Return to Campaigns</Link></Button></div>;
 
     return (
-        <div className="space-y-8 pb-32">
+        <div className="space-y-8 pb-32 max-w-6xl mx-auto">
             <div className="flex items-center gap-4 px-4 sm:px-0">
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border bg-background shadow-sm">
                     <ArrowLeft className="h-5 w-5"/>
@@ -184,7 +195,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         <CardContent className="p-8">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {participants?.map(p => (
-                                    <Link key={p.id} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-all">
+                                    <Link key={p.id} href={`/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-all">
                                         <Avatar className="h-9 w-9 border shadow-sm"><AvatarImage src={p.photoURL} /><AvatarFallback className="font-bold text-xs">{p.firstName?.charAt(0)}</AvatarFallback></Avatar>
                                         <div className="min-w-0 flex-1 text-left"><p className="font-bold text-sm truncate uppercase tracking-tight">{p.firstName} {p.lastName}</p></div>
                                     </Link>
@@ -196,13 +207,46 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <div className="space-y-6 px-4 sm:px-0 text-left">
                         <h3 className="text-xl font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left"><Newspaper className="h-5 w-5 text-primary" /> Campaign Testimonies</h3>
                         <div className="flex flex-col gap-4 text-left">
-                            {testimonies?.map(t => <TestimonyCard key={t.id} testimony={t} onDelete={() => {}} onEdit={() => {}} currentUserProfile={userProfile} />)}
+                            {testimonies?.map(t => (
+                                <TestimonyCard 
+                                    key={t.id} 
+                                    testimony={t} 
+                                    onDelete={() => {}} 
+                                    onEdit={() => {}} 
+                                    isPartner={partnerIds.has(t.authorId)}
+                                    hasPendingRequest={pendingRequestIds.has(t.authorId)}
+                                    currentUserProfile={userProfile} 
+                                />
+                            ))}
                         </div>
                     </div>
                 </div>
 
                 <div className="space-y-8 flex flex-col px-4 sm:px-0 text-left">
-                    <Card className="rounded-[2rem] sm:rounded-3xl shadow-xl border-none bg-primary text-primary-foreground">
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-indigo-600 text-white overflow-hidden">
+                        <CardHeader className="pb-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
+                                    <Target className="h-5 w-5 text-white" />
+                                </div>
+                                <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest">Live Stats</Badge>
+                            </div>
+                            <CardTitle className="text-xl font-black font-headline uppercase tracking-tight">Harvest Impact</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center justify-between p-4 rounded-2xl bg-white/10 border border-white/10">
+                                <div className="space-y-1 text-left">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-70">Souls Won</p>
+                                    <p className="text-3xl font-black">{campaign.soulsLogged || 0}</p>
+                                </div>
+                                <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+                                    <UserPlus className="h-5 w-5 text-white" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-xl border-none bg-primary text-primary-foreground">
                         <CardHeader className="pb-4"><CardTitle className="text-base font-black uppercase tracking-[0.2em] opacity-80 text-left">Mission Hub</CardTitle></CardHeader>
                         <CardContent className="flex flex-col gap-3">
                             {isJoined && status === 'Ongoing' && (
@@ -226,7 +270,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10">
                         <CardHeader className="pb-3 text-left"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-left">Organizer</CardTitle></CardHeader>
                         <CardContent>
-                            <Link href={isOwner ? '/dashboard/profile' : `/dashboard/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-all text-left">
+                            <Link href={isOwner ? '/profile' : `/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-all text-left">
                                 <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-xl"><AvatarFallback className="font-black">{campaign.organizerFirstName?.charAt(0)}</AvatarFallback></Avatar>
                                 <div className="min-w-0 flex-1 text-left"><span className="font-black text-base group-hover:text-primary transition-colors block truncate uppercase">{campaign.organizerFirstName} {campaign.organizerLastName}</span><span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Mission Leader</span></div>
                             </Link>
@@ -237,21 +281,21 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
 
             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                    <div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Log Harvest</DialogTitle></DialogHeader></div>
+                    <div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Log Harvest</DialogTitle></DialogHeader></div>
                     <ScrollArea className="max-h-[70vh] p-8 text-left"><LogSoulForm onSoulLogged={() => setIsLogSoulOpen(false)} fellowships={activeFellowships || []} campaigns={[]} defaultCampaign={campaign} /></ScrollArea>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={isTestimonyOpen} onOpenChange={setIsTestimonyOpen}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                    <div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Share Victory</DialogTitle></DialogHeader></div>
+                    <div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Share Victory</DialogTitle></DialogHeader></div>
                     <ScrollArea className="max-h-[70vh] p-8 text-left">{userProfile && <CreateTestimonyForm userProfile={userProfile} onTestimonyCreated={() => setIsTestimonyOpen(false)} campaign={campaign} />}</ScrollArea>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
                 <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                    <div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Manage Mission</DialogTitle></DialogHeader></div>
+                    <div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left text-left"><DialogTitle className="text-2xl font-black uppercase tracking-tight text-left">Manage Mission</DialogTitle></DialogHeader></div>
                     <ScrollArea className="max-h-[80vh] p-8 text-left"><ManageCampaignForm campaign={campaign} onCampaignUpdated={() => setIsManageOpen(false)} onDelete={() => { }} /></ScrollArea>
                 </DialogContent>
             </Dialog>
