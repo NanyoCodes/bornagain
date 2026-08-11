@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -34,7 +35,11 @@ import {
   Edit,
   Globe,
   X,
-  Sparkles
+  Sparkles,
+  Utensils,
+  Trash2,
+  Minus,
+  Plus
 } from "lucide-react";
 
 import {
@@ -48,21 +53,23 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn, safeToDate } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, query, where } from "firebase/firestore";
-import type { Notification, VendorProfile } from "@/lib/types";
+import { collection, query, where, doc, writeBatch, serverTimestamp, arrayUnion } from "firebase/firestore";
+import type { Notification, VendorProfile, Meal, MealGiftStatus } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Separator } from "../ui/separator";
+import { Textarea } from "../ui/textarea";
 
 const navItems = [
   { href: "/growth", label: "GROWTH", icon: TrendingUp, color: "text-chart-1" },
@@ -99,9 +106,249 @@ const inspirationalMessages = [
   "REJOICE ALWAYS"
 ];
 
+const currencyOptions = [
+    { value: 'NGN', symbol: '₦' },
+    { value: 'USD', symbol: '$' },
+    { value: 'EUR', symbol: '€' },
+    { value: 'GBP', symbol: '£' },
+    { value: 'GHS', symbol: '₵' },
+    { value: 'KES', symbol: 'KSh' },
+];
+
+const getCurrencySymbol = (code?: string) => {
+    return currencyOptions.find(opt => opt.value === code)?.symbol || '₦';
+};
+
+function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChange: (open: boolean) => void }) {
+    const { user } = useUser();
+    const { userProfile } = useUserProfile();
+    const firestore = useFirestore();
+    const router = useRouter();
+    const { toast } = useToast();
+    
+    const [cart, setCart] = useState<{ [mealId: string]: { item: any, quantity: number } }>({});
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [manualRecipientName, setManualRecipientName] = useState('');
+    const [giftInstructions, setGiftInstructions] = useState('');
+
+    const cartKey = useMemo(() => user?.uid ? `testify_marketplace_cart_${user.uid}` : null, [user?.uid]);
+
+    const loadCart = useCallback(() => {
+        if (!cartKey) return;
+        const stored = localStorage.getItem(cartKey);
+        if (stored) {
+            try { setCart(JSON.parse(stored)); } catch (e) { setCart({}); }
+        } else {
+            setCart({});
+        }
+    }, [cartKey]);
+
+    useEffect(() => {
+        if (isOpen) loadCart();
+        const handler = () => loadCart();
+        window.addEventListener('testify_marketplace_cart_update', handler);
+        return () => window.removeEventListener('testify_marketplace_cart_update', handler);
+    }, [isOpen, loadCart]);
+
+    const cartItems = useMemo(() => Object.values(cart), [cart]);
+    
+    const cartByVendor = useMemo(() => {
+        const groups: { [vId: string]: any } = {};
+        cartItems.forEach(c => {
+            const vId = c.item.vendorId;
+            if (!groups[vId]) {
+                groups[vId] = {
+                    vendorId: vId,
+                    vendorName: c.item.vendorName || 'Kingdom Provider',
+                    vendorOwnerId: c.item.vendorOwnerId || '',
+                    paymentDetails: c.item.vendorPaymentDetails || '',
+                    currency: c.item.currency || 'NGN',
+                    items: [],
+                    deliveryFee: 0,
+                    subtotal: 0
+                };
+            }
+            groups[vId].items.push(c);
+            groups[vId].subtotal += (c.item.price * c.quantity);
+            groups[vId].deliveryFee = Math.max(groups[vId].deliveryFee, c.item.deliveryFee || 0);
+        });
+        return Object.values(groups);
+    }, [cartItems]);
+
+    const handleUpdateQty = (id: string, delta: number) => {
+        const next = { ...cart };
+        const item = next[id];
+        if (!item) return;
+        item.quantity += delta;
+        if (item.quantity <= 0) delete next[id];
+        setCart(next);
+        if (cartKey) localStorage.setItem(cartKey, JSON.stringify(next));
+        window.dispatchEvent(new Event('testify_marketplace_cart_update'));
+    };
+
+    const handleRemove = (id: string) => {
+        const next = { ...cart };
+        delete next[id];
+        setCart(next);
+        if (cartKey) localStorage.setItem(cartKey, JSON.stringify(next));
+        window.dispatchEvent(new Event('testify_marketplace_cart_update'));
+    };
+
+    const handleDispatch = async () => {
+        if (!user || !firestore || !userProfile || cartItems.length === 0) return;
+        if (!manualRecipientName.trim()) {
+            toast({ variant: 'destructive', title: 'Recipient Required' });
+            return;
+        }
+        if (!giftInstructions.trim()) {
+            toast({ variant: 'destructive', title: 'Instructions Required' });
+            return;
+        }
+
+        setIsProcessing(true);
+        const batch = writeBatch(firestore);
+        const giftsRef = collection(firestore, 'mealGifts');
+        const senderName = `${userProfile.firstName} ${userProfile.lastName}`;
+
+        cartItems.forEach(cartItem => {
+            for(let i = 0; i < cartItem.quantity; i++) {
+                const giftRef = doc(giftsRef);
+                batch.set(giftRef, {
+                    senderId: user.uid,
+                    senderName,
+                    recipientSoulId: null,
+                    recipientName: manualRecipientName,
+                    vendorId: cartItem.item.vendorId,
+                    vendorName: cartItem.item.vendorName,
+                    vendorOwnerId: cartItem.item.vendorOwnerId, 
+                    vendorPhotoURL: cartItem.item.vendorPhotoURL || null,
+                    vendorType: cartItem.item.vendorType || 'meal',
+                    mealId: cartItem.item.id,
+                    mealName: cartItem.item.name,
+                    price: cartItem.item.price,
+                    deliveryFee: cartItem.item.deliveryFee || 0,
+                    currency: cartItem.item.currency || 'NGN',
+                    status: 'ordered' as MealGiftStatus,
+                    instructions: giftInstructions,
+                    createdAt: serverTimestamp(),
+                });
+            }
+        });
+
+        try {
+            await batch.commit();
+            if (cartKey) localStorage.removeItem(cartKey);
+            setCart({});
+            window.dispatchEvent(new Event('testify_marketplace_cart_update'));
+            toast({ title: 'Offering Confirmed!', description: `Act of kindness for ${manualRecipientName} recorded.` });
+            onOpenChange(false);
+            router.push('/marketplace/orders');
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Dispatch Failed' });
+        } finally {
+            setIsProcessing(true);
+        }
+    };
+
+    return (
+        <Sheet open={isOpen} onOpenChange={onOpenChange}>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                    <div className="flex items-center gap-2 mb-2">
+                        <ShoppingCart className="h-4 w-4 text-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Provision Hub</span>
+                    </div>
+                    <SheetHeader className="text-left flex-shrink-0">
+                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle>
+                        <SheetDescription className="text-sm font-medium mt-1">Review your active offerings for the brethren.</SheetDescription>
+                    </SheetHeader>
+                </div>
+                
+                <ScrollArea className="flex-grow min-h-0 overscroll-contain">
+                    <div className="p-8 space-y-10">
+                        {cartItems.length > 0 ? (
+                            <div className="space-y-10">
+                                <div className="space-y-6">
+                                    {cartByVendor.map(group => (
+                                        <div key={group.vendorId} className="space-y-3">
+                                            <div className="flex items-center justify-between px-1">
+                                                <div className="flex items-center gap-2">
+                                                    <Store className="h-3.5 w-3.5 text-primary" />
+                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[200px]">{group.vendorName}</h4>
+                                                </div>
+                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
+                                            </div>
+                                            <div className="space-y-2">
+                                                {group.items.map((c: any) => (
+                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
+                                                                {c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}
+                                                            </div>
+                                                            <div className="min-w-0 flex-1">
+                                                                <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
+                                                                <p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 ml-2">
+                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm">
+                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQty(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
+                                                                <span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span>
+                                                                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQty(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
+                                                            </div>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive" onClick={() => handleRemove(c.item.id)}><Trash2 className="h-4 w-4" /></Button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label>
+                                        <Input placeholder="Who is this for?" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label>
+                                        <Textarea placeholder="Delivery details, contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" />
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center">
+                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
+                                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10" />
+                                </div>
+                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3>
+                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed">Add items from the marketplace to build your package.</p>
+                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => onOpenChange(false)}>
+                                    <Link href="/marketplace">VISIT HUB</Link>
+                                </Button>
+                            </div>
+                        )}
+                        <div className="h-24" />
+                    </div>
+                </ScrollArea>
+
+                {cartItems.length > 0 && (
+                    <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
+                        <Button onClick={handleDispatch} disabled={isProcessing || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
+                            {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            DISPATCH PACKAGE
+                        </Button>
+                    </SheetFooter>
+                )}
+            </SheetContent>
+        </Sheet>
+    );
+}
+
 function CartButton() {
   const { user } = useUser();
   const [count, setCount] = useState(0);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const updateCount = useCallback(() => {
     if (!user?.uid) {
@@ -136,25 +383,26 @@ function CartButton() {
   if (!user) return null;
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full" asChild>
-            <Link href="/marketplace/orders">
-              <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
-              {count > 0 && (
-                <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-black text-primary-foreground border-2 border-background animate-in zoom-in">
-                  {count}
-                </div>
-              )}
-            </Link>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
-          <p className="text-[10px] font-black uppercase tracking-widest">Kindness Package</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <>
+        <TooltipProvider>
+        <Tooltip>
+            <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full" onClick={() => setIsSheetOpen(true)}>
+                <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
+                {count > 0 && (
+                    <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-black text-primary-foreground border-2 border-background animate-in zoom-in">
+                    {count}
+                    </div>
+                )}
+            </Button>
+            </TooltipTrigger>
+            <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
+            <p className="text-[10px] font-black uppercase tracking-widest">Kindness Package</p>
+            </TooltipContent>
+        </Tooltip>
+        </TooltipProvider>
+        <GlobalCartSheet isOpen={isSheetOpen} onOpenChange={setIsSheetOpen} />
+    </>
   );
 }
 
@@ -330,13 +578,13 @@ function AppHeader({
                 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1">
+                <div className="p-1 space-y-1 text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                     <Link href="/profile" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                         <User className="h-4 w-4" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Profile Identity</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left">Profile Identity</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
@@ -344,61 +592,61 @@ function AppHeader({
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                         <Settings className="h-4 w-4" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">System Settings</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left">System Settings</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1">
+                <div className="p-1 space-y-1 text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-2 tracking-[0.2em]">Kingdom Hubs</p>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                         <ShieldCheck className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Victory Hub</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/marketplace" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
                         <Store className="h-4 w-4 text-blue-600" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Meals Provision</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                         <Gift className="h-4 w-4 text-indigo-600" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Kindness Gifts</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                         <Package className="h-4 w-4" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Order Tracker</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/events" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                         <CalendarDays className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Event Hub</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left">Event Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/fellowships" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                         <Users className="h-4 w-4" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Fellowships</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left">Fellowships</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
@@ -406,15 +654,15 @@ function AppHeader({
                 {userVendors && userVendors.length > 0 && (
                    <>
                     <DropdownMenuSeparator />
-                    <div className="p-1 space-y-1">
+                    <div className="p-1 space-y-1 text-left">
                       <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-2 tracking-[0.2em]">My Storefronts</p>
                       {userVendors.map(v => (
-                        <DropdownMenuItem key={v.id} asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
+                        <DropdownMenuItem key={v.id} asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
                           <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full">
                             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                               <Package className="h-4 w-4 text-primary" />
                             </div>
-                            <span className="text-xs font-black uppercase tracking-tight truncate">{v.businessName}</span>
+                            <span className="text-xs font-black uppercase tracking-tight truncate text-left">{v.businessName}</span>
                           </Link>
                         </DropdownMenuItem>
                       ))}
@@ -424,31 +672,31 @@ function AppHeader({
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1">
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
+                <div className="p-1 space-y-1 text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
                       <Link href="/guide" className="flex items-center gap-3 w-full">
                         <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                           <Info className="h-4 w-4" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest">App Guide</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-left">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
                       <Link href="/resources" className="flex items-center gap-3 w-full">
                         <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                           <BookMarked className="h-4 w-4" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest">Kingdom Library</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-left">Kingdom Library</span>
                       </Link>
                   </DropdownMenuItem>
                 </div>
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1">
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-12 px-3 cursor-pointer">
+                <div className="p-1 text-left">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-12 px-3 cursor-pointer text-left">
                     <LogOut className="mr-3 h-5 w-5" />
-                    <span className="text-xs font-black uppercase tracking-[0.2em]">Sign Out</span>
+                    <span className="text-xs font-black uppercase tracking-[0.2em] text-left">Sign Out</span>
                   </DropdownMenuItem>
                 </div>
               </DropdownMenuContent>
@@ -707,28 +955,28 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
             <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
               <SheetHeader className="text-left">
                 <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
                 <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6">
+            <div className="flex-grow overflow-y-auto p-6 text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </SheetContent>
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
             <div className="p-6 border-b bg-muted/10">
               <DialogHeader>
                   <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
                   <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -742,7 +990,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
             </div>
         }>
