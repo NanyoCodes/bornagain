@@ -31,7 +31,8 @@ import {
   Package,
   ShieldCheck,
   CalendarDays,
-  Edit
+  Edit,
+  Info
 } from "lucide-react";
 
 import {
@@ -107,7 +108,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   if (showMobileSearch) {
     return (
       <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
-        <div className="flex w-full items-center gap-3">
+        <div className="flex w-full items-center gap-3 text-left">
           <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-10 w-10 rounded-full hover:bg-muted/50 transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -133,7 +134,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 
   return (
     <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
-      <div className="flex items-center gap-4 shrink-0">
+      <div className="flex items-center gap-4 shrink-0 text-left">
         <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(true)}>
             <Menu className="h-5 w-5" />
         </Button>
@@ -149,7 +150,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
       </div>
 
       <nav className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
-        <div className="flex items-center gap-1.5 lg:gap-3 h-full">
+        <div className="flex items-center gap-1.5 lg:gap-3 h-full text-left">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -174,8 +175,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         </div>
       </nav>
         
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
-        <div className="hidden lg:block">
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 text-left">
+        <div className="hidden lg:block text-left">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
@@ -239,40 +240,40 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56 rounded-2xl shadow-xl" align="end">
-                <DropdownMenuLabel className="font-normal p-4">
+                <DropdownMenuLabel className="font-normal p-4 text-left">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-bold leading-tight truncate">{user.displayName || 'User'}</p>
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                   <Link href="/profile">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                   <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                     <Link href="/guide" className="cursor-pointer">
                     <BookOpen className="mr-2 h-4 w-4" />
                     <span>App Guide</span>
                     </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
+                <DropdownMenuItem asChild className="rounded-lg mx-1 text-left">
                     <Link href="/resources" className="cursor-pointer">
                     <BookMarked className="mr-2 h-4 w-4" />
                     <span>Kingdom Library</span>
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg mx-1">
+                <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg mx-1 text-left">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
                 </DropdownMenuItem>
@@ -280,7 +281,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </DropdownMenu>
           </>
         ) : showGuestButtons ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-left">
             <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-9 px-4 rounded-full font-bold">
               <Link href="/login">Sign In</Link>
             </Button>
@@ -294,8 +295,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
       </div>
 
       <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <SheetContent side="left" className="w-[300px] sm:w-[350px] p-0 flex flex-col h-full rounded-r-[2.5rem]">
-            <div className="p-8 border-b bg-muted/10 shrink-0">
+        <SheetContent side="left" className="w-[300px] sm:w-[350px] p-0 flex flex-col h-full rounded-r-[2.5rem] text-left">
+            <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                 <SheetHeader className="text-left">
                     <div className="flex items-center gap-3 mb-2">
                         <Target className="h-5 w-5 text-primary" />
@@ -305,12 +306,12 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                     <SheetDescription className="text-sm font-medium">Access all sectors of the harvest field.</SheetDescription>
                 </SheetHeader>
             </div>
-            <ScrollArea className="flex-grow">
-                <div className="p-6 space-y-2">
+            <ScrollArea className="flex-grow text-left">
+                <div className="p-6 space-y-2 text-left">
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Navigation</p>
                     {navItems.map(item => (
                         <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className={cn(
-                            "flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group transition-all",
+                            "flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group transition-all text-left",
                             pathname === item.href && "bg-primary/5 text-primary ring-1 ring-primary/10"
                         )}>
                             <item.icon className={cn("h-6 w-6 shrink-0", pathname === item.href ? "text-primary" : item.color)} />
@@ -321,15 +322,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                     
                     <Separator className="my-6 opacity-50" />
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Kingdom Hubs</p>
-                    <Link href="/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                    <Link href="/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                       <ShieldCheck className="h-6 w-6 text-primary" />
                       <span className="font-black uppercase tracking-widest text-sm">Victory Hub</span>
                     </Link>
-                    <Link href="/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                    <Link href="/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                       <Store className="h-6 w-6 text-blue-500" />
                       <span className="font-black uppercase tracking-widest text-sm">Provision Hub</span>
                     </Link>
-                    <Link href="/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                    <Link href="/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
                       <Gift className="h-6 w-6 text-indigo-600" />
                       <span className="font-black uppercase tracking-widest text-sm">Kindness Center</span>
                     </Link>
@@ -513,17 +514,17 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
     if (authLoading || (profileLoading && !isPublicRoute) || (!user && !isPublicRoute)) {
         return (
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
                 <div className="relative mb-8 text-left">
-                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                    <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
+                    <div className="absolute inset-0 flex items-center justify-center text-left">
+                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
                     </div>
                 </div>
                 <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
                     {loadingMessage || "GOD FIRST"}
                 </p>
-                <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
+                <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left">
                     Kingdom Network Active
                 </p>
             </div>
@@ -534,7 +535,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     const showBottomNav = !isTakeoverPage;
 
     return (
-        <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+        <div className={cn("flex w-full flex-col overflow-x-hidden text-left", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
             <AnimatePresence>
                 {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
             </AnimatePresence>
@@ -543,7 +544,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: contentVisible ? 1 : 0 }}
                 transition={{ duration: 1 }}
-                className="flex-1 flex flex-col min-h-0"
+                className="flex-1 flex flex-col min-h-0 text-left"
             >
                 {!isTakeoverPage && (
                     <AppHeader 
@@ -552,16 +553,16 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                         isPublicRoute={isPublicRoute}
                     />
                 )}
-                <div className="flex-1 relative min-h-0">
+                <div className="flex-1 relative min-h-0 text-left text-left">
                     <main 
                         ref={scrollContainerRef}
                         className={cn(
-                            "absolute inset-0 overflow-x-hidden", 
+                            "absolute inset-0 overflow-x-hidden text-left", 
                             !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
                         )}
                     >
                         <div className={cn(
-                            "mx-auto h-full", 
+                            "mx-auto h-full text-left", 
                             !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
                         )}>
                             <PageTransition>{children}</PageTransition>
@@ -576,28 +577,28 @@ function ShellInner({ children }: { children: React.ReactNode }) {
             
             {user && contentVisible && isMobile ? (
                 <Sheet open={!!isProfileIncomplete}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-                    <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
+                    <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
                         <SheetHeader className="text-left">
-                        <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                        <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+                        <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
+                        <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <div className="flex-grow overflow-y-auto p-6">
+                    <div className="flex-grow overflow-y-auto p-6 text-left text-left">
                         {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
                     </div>
                     </SheetContent>
                 </Sheet>
             ) : user && contentVisible ? (
                 <Dialog open={!!isProfileIncomplete}>
-                    <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
-                    <div className="p-6 border-b bg-muted/10">
-                        <DialogHeader>
-                            <DialogTitle>Complete Your Profile</DialogTitle>
-                            <DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                    <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
+                    <div className="p-6 border-b bg-muted/10 text-left">
+                        <DialogHeader className="text-left">
+                            <DialogTitle className="text-left">Complete Your Profile</DialogTitle>
+                            <DialogDescription className="text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
                         </DialogHeader>
                     </div>
-                    <div className="p-6 max-h-[70vh] overflow-y-auto">
+                    <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
                         {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
                     </div>
                     </DialogContent>
@@ -611,8 +612,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-left">
+                <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
             </div>
         }>
             <ShellInner>{children}</ShellInner>
