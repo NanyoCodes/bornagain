@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -457,7 +458,7 @@ function ShareWordDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[90vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
         {header}
         {body}
         {footer || (
@@ -666,7 +667,7 @@ function SoulProfileContent({
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
       if (!soul?.phone || !clickedActionId) return;
       const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
-      const message = customPrayerText || `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you! Visit: https://testifyglobal.com`;
+      const message = customMessageText || `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you! Visit: https://testifyglobal.com`;
       const messageText = encodeURIComponent(message);
       
       if (channel === 'whatsapp') {
@@ -766,7 +767,7 @@ function SoulProfileContent({
                     </DialogTrigger>
                     {soul.photoURL && (
                         <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left text-left text-left">
-                            <DialogHeader className="sr-only text-center text-left text-left text-left text-left"><DialogTitle className="text-left text-left">Soul Photo</DialogTitle><DialogDescription className="text-left">Visual identification of convert.</DialogDescription></DialogHeader>
+                            <DialogHeader className="sr-only text-center text-left text-left text-left text-left"><DialogTitle className="text-left text-left text-left">Soul Photo</DialogTitle><DialogDescription className="text-left">Visual identification of convert.</DialogDescription></DialogHeader>
                             <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left text-left text-left">
                                 <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left text-left text-left">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10 text-center text-left text-left text-left text-left" unoptimized />
@@ -811,11 +812,11 @@ function SoulProfileContent({
                             <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-xl text-left text-left text-left">
                                 <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">Select Format</DropdownMenuLabel>
                                 <DropdownMenuSeparator className="text-left text-left text-left" />
-                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')} className="text-left text-left text-left">CSV Export</DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')} className="text-left text-left text-left">PDF Report</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>CSV Export</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left" onClick={() => onEdit(soul)}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left" onClick={() => onEdit(soul)}>
                             <Edit className="h-4 w-4 text-left text-left text-left text-left" />
                         </Button>
                     </div>
@@ -916,7 +917,7 @@ function SoulProfileContent({
             <div className="space-y-4 text-left text-left text-left">
                 <div className="flex items-center justify-between text-left text-left text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left">Kingdom Placement</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left" onClick={() => onOpenAssignDialog(soul)}>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left" onClick={() => onOpenAssignDialog(soul)}>
                         <Edit className="h-4 w-4 text-left text-left text-left text-left" />
                     </Button>
                 </div>
@@ -999,7 +1000,7 @@ function SoulProfileContent({
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left text-left text-left text-left">
                         <ClipboardList className="h-3.5 w-3.5 text-left text-left text-left text-left" /> Assessed Needs
                     </p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left" onClick={() => onAssess(soul)}>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left text-left" onClick={() => onAssess(soul)}>
                         <Edit className="h-4 w-4 text-left text-left text-left text-left text-left" />
                     </Button>
                 </div>
@@ -1028,8 +1029,7 @@ function SoulProfileContent({
                             )}
                             {needs.socialNeeds && (
                                 <div className="space-y-1 text-left text-left text-left text-left">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left text-left text-left">Social</Badge>
-                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left text-left text-left">{needs.socialNeeds}</p>
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left text-left text-left">{needs.socialNeeds}</p>
                                 </div>
                             )}
                         </div>
@@ -1057,7 +1057,7 @@ function SoulProfileContent({
                     LOG FOLLOW-UP
                 </Button>
                 <Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px] text-left text-left text-left" onClick={() => onDelete(soul)}>
-                    <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left" /> DELETE RECORD
+                    <Trash2 className="mr-2 h-4 w-4" /> DELETE RECORD
                 </Button>
             </div>
         </CardContent>
@@ -1436,4 +1436,3 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
     </div>
   );
 }
-

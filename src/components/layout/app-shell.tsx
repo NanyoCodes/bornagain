@@ -1,3 +1,4 @@
+
 'use client';
 
 /**
@@ -269,7 +270,7 @@ function AppHeader({
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none" align="end">
                 <DropdownMenuLabel className="font-normal p-4">
-                  <div className="flex flex-col space-y-1">
+                  <div className="flex flex-col space-y-1 text-left">
                     <p className="text-sm font-black leading-tight truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
                     <p className="text-[10px] text-muted-foreground truncate font-bold uppercase tracking-wider">{user.email}</p>
                   </div>
@@ -299,9 +300,9 @@ function AppHeader({
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-2 tracking-[0.2em]">Kingdom Hubs</p>
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-2 tracking-[0.2em] text-left">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/victory-hub" className="flex items-center gap-3 w-full">
+                    <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <ShieldCheck className="h-3.5 w-3.5 text-primary" />
                       </div>
@@ -309,7 +310,7 @@ function AppHeader({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/marketplace" className="flex items-center gap-3 w-full">
+                    <Link href="/marketplace" className="flex items-center gap-3 w-full text-left">
                       <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
                         <Store className="h-3.5 w-3.5 text-blue-600" />
                       </div>
@@ -317,7 +318,7 @@ function AppHeader({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
+                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full text-left">
                       <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                         <Gift className="h-3.5 w-3.5 text-indigo-600" />
                       </div>
@@ -325,7 +326,7 @@ function AppHeader({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/events" className="flex items-center gap-3 w-full">
+                    <Link href="/events" className="flex items-center gap-3 w-full text-left">
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                         <CalendarDays className="h-3.5 w-3.5 text-primary" />
                       </div>
@@ -333,7 +334,7 @@ function AppHeader({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
+                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full text-left">
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                         <Package className="h-3.5 w-3.5" />
                       </div>
@@ -346,10 +347,10 @@ function AppHeader({
                    <>
                     <DropdownMenuSeparator />
                     <div className="p-1 space-y-1">
-                      <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-2 tracking-[0.2em]">My Storefronts</p>
+                      <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-2 tracking-[0.2em] text-left">My Storefronts</p>
                       {userVendors.map(v => (
                         <DropdownMenuItem key={v.id} asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                          <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full">
+                          <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full text-left">
                             <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                               <Package className="h-3.5 w-3.5 text-primary" />
                             </div>
@@ -365,7 +366,7 @@ function AppHeader({
                 
                 <div className="p-1 space-y-1">
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                      <Link href="/guide" className="flex items-center gap-3 w-full">
+                      <Link href="/guide" className="flex items-center gap-3 w-full text-left">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                           <Info className="h-3.5 w-3.5" />
                         </div>
@@ -373,7 +374,7 @@ function AppHeader({
                       </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                      <Link href="/resources" className="flex items-center gap-3 w-full">
+                      <Link href="/resources" className="flex items-center gap-3 w-full text-left">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                           <BookMarked className="h-3.5 w-3.5" />
                         </div>
@@ -385,7 +386,7 @@ function AppHeader({
                 <DropdownMenuSeparator />
                 
                 <div className="p-1">
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-11 px-3 cursor-pointer">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-11 px-3 cursor-pointer text-left">
                     <LogOut className="mr-3 h-4 w-4" />
                     <span className="text-xs font-black uppercase tracking-[0.2em]">Sign Out</span>
                   </DropdownMenuItem>
@@ -551,9 +552,13 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const isTakeoverPage = useMemo(() => {
     return (
       pathname.startsWith('/chats') ||
+      pathname.startsWith('/dashboard/chats') ||
       pathname.startsWith('/notes') ||
+      pathname.startsWith('/dashboard/notes') ||
       pathname.startsWith('/bible') ||
-      pathname.startsWith('/notifications')
+      pathname.startsWith('/dashboard/bible') ||
+      pathname.startsWith('/notifications') ||
+      pathname.startsWith('/dashboard/notifications')
     );
   }, [pathname]);
 
