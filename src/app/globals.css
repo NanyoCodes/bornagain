@@ -37,10 +37,6 @@
     --status-established: 25 95% 53%;
     --app-bg-image: linear-gradient(135deg, #09090b 0%, #18181b 100%);
     --app-bg-overlay: 0.95;
-    --safe-area-inset-top: env(safe-area-inset-top);
-    --safe-area-inset-bottom: env(safe-area-inset-bottom);
-    --safe-area-inset-left: env(safe-area-inset-left);
-    --safe-area-inset-right: env(safe-area-inset-right);
   }
 
   .dark {
@@ -79,6 +75,7 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-foreground;
@@ -91,10 +88,6 @@
     background-attachment: fixed;
     transition: background-image 0.5s ease-in-out;
     cursor: default;
-    padding-top: var(--safe-area-inset-top);
-    padding-bottom: var(--safe-area-inset-bottom);
-    padding-left: var(--safe-area-inset-left);
-    padding-right: var(--safe-area-inset-right);
   }
 
   .dark body {

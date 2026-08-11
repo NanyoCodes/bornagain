@@ -33,7 +33,8 @@ import {
   Menu,
   Edit,
   Globe,
-  X
+  X,
+  Sparkles
 } from "lucide-react";
 
 import {
@@ -71,7 +72,19 @@ const navItems = [
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
 
-const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship', 'soul_unassigned_from_fellowship', 'new_order', 'order_update'];
+const NOTIFICATION_TYPES = [
+  'campaign_join', 
+  'new_chat_message', 
+  'accountability_nudge', 
+  'accountability_request', 
+  'request_accepted', 
+  'request_declined', 
+  'accountability_partner_removed', 
+  'new_soul_in_fellowship', 
+  'soul_unassigned_from_fellowship', 
+  'new_order', 
+  'order_update'
+];
 
 const inspirationalMessages = [
   "GOD FIRST",
@@ -117,12 +130,12 @@ function AppHeader({
     return (
       <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
         <div className="flex w-full items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-10 w-10 rounded-full hover:bg-muted/50 transition-colors">
-            <ArrowLeft className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors">
+            <ArrowLeft className="h-6 w-6" />
           </Button>
           <form className="w-full" onSubmit={(e) => e.preventDefault()}>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50" />
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
@@ -142,10 +155,10 @@ function AppHeader({
 
   return (
     <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4">
-      <div className="flex shrink-0 w-[120px] md:w-[180px]">
+      <div className="flex shrink-0 w-[44px] md:w-[180px]">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
-            <Avatar className="h-10 w-10 md:h-11 md:w-11 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
+            <Avatar className="h-11 w-11 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
               <AvatarFallback className="font-bold">T</AvatarFallback>
             </Avatar>
@@ -162,7 +175,7 @@ function AppHeader({
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "transition-all px-2 lg:px-4 h-10 rounded-2xl whitespace-nowrap flex items-center gap-2 group relative",
+                    "transition-all px-2 lg:px-4 h-11 rounded-2xl whitespace-nowrap flex items-center gap-2 group relative",
                     isActive 
                       ? "bg-primary text-white shadow-xl shadow-primary/40 ring-2 ring-primary/20 scale-105" 
                       : "text-muted-foreground hover:bg-muted/50"
@@ -189,7 +202,7 @@ function AppHeader({
                 <Input
                   type="search"
                   placeholder={searchPlaceholder}
-                  className="pl-8 w-[140px] xl:w-[200px] h-9 rounded-xl bg-muted/20 border-none text-[10px] transition-all focus:w-[180px] xl:focus:w-[260px]"
+                  className="pl-8 w-[140px] xl:w-[200px] h-10 rounded-xl bg-muted/20 border-none text-[12px] transition-all focus:w-[180px] xl:focus:w-[260px]"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -198,8 +211,8 @@ function AppHeader({
         </div>
         
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="lg:hidden h-10 w-10 md:h-11 md:w-11 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="lg:hidden h-11 w-11 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-6 w-6" />
             <span className="sr-only">Search</span>
           </Button>
         )}
@@ -208,10 +221,10 @@ function AppHeader({
           <>
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-11 md:w-11 rounded-full">
-                      <MessagesSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
+                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
+                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
                           {unreadChatCount}
                         </div>
                       )}
@@ -220,10 +233,10 @@ function AppHeader({
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-11 md:w-11 rounded-full">
-                      <Bell className="h-5 w-5 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
+                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
+                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
                           {unreadNotifCount}
                         </div>
                       )}
@@ -232,8 +245,8 @@ function AppHeader({
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-11 md:w-11 shrink-0">
-                  <Avatar className="h-9 w-9 border shadow-sm">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 shrink-0">
+                  <Avatar className="h-10 w-10 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
                     <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
@@ -256,18 +269,18 @@ function AppHeader({
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1">
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                     <Link href="/profile" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                        <User className="h-3.5 w-3.5" />
+                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                        <User className="h-4 w-4" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest">Profile Identity</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                     <Link href="/settings" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                        <Settings className="h-3.5 w-3.5" />
+                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                        <Settings className="h-4 w-4" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest">System Settings</span>
                     </Link>
@@ -278,50 +291,50 @@ function AppHeader({
                 
                 <div className="p-1 space-y-1">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-2 tracking-[0.2em]">Kingdom Hubs</p>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <ShieldCheck className="h-4 w-4 text-primary" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                     <Link href="/marketplace" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                        <Store className="h-3.5 w-3.5 text-blue-600" />
+                      <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                        <Store className="h-4 w-4 text-blue-600" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                     <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-                        <Gift className="h-3.5 w-3.5 text-indigo-600" />
+                      <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                        <Gift className="h-4 w-4 text-indigo-600" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                     <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                        <Package className="h-3.5 w-3.5" />
+                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                        <Package className="h-4 w-4" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                     <Link href="/events" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <CalendarDays className="h-3.5 w-3.5 text-primary" />
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <CalendarDays className="h-4 w-4 text-primary" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest">Event Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                     <Link href="/fellowships" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                        <Users className="h-3.5 w-3.5" />
+                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                        <Users className="h-4 w-4" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest">Fellowships</span>
                     </Link>
@@ -334,10 +347,10 @@ function AppHeader({
                     <div className="p-1 space-y-1">
                       <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-2 tracking-[0.2em]">My Storefronts</p>
                       {userVendors.map(v => (
-                        <DropdownMenuItem key={v.id} asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                        <DropdownMenuItem key={v.id} asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                           <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full">
-                            <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
-                              <Package className="h-3.5 w-3.5 text-primary" />
+                            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                              <Package className="h-4 w-4 text-primary" />
                             </div>
                             <span className="text-xs font-black uppercase tracking-tight truncate">{v.businessName}</span>
                           </Link>
@@ -350,18 +363,18 @@ function AppHeader({
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1">
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                       <Link href="/guide" className="flex items-center gap-3 w-full">
-                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                          <Info className="h-3.5 w-3.5" />
+                        <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                          <Info className="h-4 w-4" />
                         </div>
                         <span className="text-xs font-bold uppercase tracking-widest">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
                       <Link href="/resources" className="flex items-center gap-3 w-full">
-                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                          <BookMarked className="h-3.5 w-3.5" />
+                        <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                          <BookMarked className="h-4 w-4" />
                         </div>
                         <span className="text-xs font-bold uppercase tracking-widest">Kingdom Library</span>
                       </Link>
@@ -371,8 +384,8 @@ function AppHeader({
                 <DropdownMenuSeparator />
                 
                 <div className="p-1">
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-11 px-3 cursor-pointer">
-                    <LogOut className="mr-3 h-4 w-4" />
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-12 px-3 cursor-pointer">
+                    <LogOut className="mr-3 h-5 w-5" />
                     <span className="text-xs font-black uppercase tracking-[0.2em]">Sign Out</span>
                   </DropdownMenuItem>
                 </div>
@@ -381,15 +394,15 @@ function AppHeader({
           </>
         ) : showGuestButtons ? (
           <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-9 px-4 rounded-full font-bold">
+            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold">
               <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-9 px-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20">
+            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20">
               <Link href="/">Get Started</Link>
             </Button>
           </div>
         ) : (
-          <div className="h-10 w-10 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
+          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
         )}
       </div>
     </header>
@@ -402,7 +415,7 @@ function BottomNavBar() {
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4rem] h-auto items-stretch justify-around px-1 py-1">
+        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
           {mobileNavItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -414,7 +427,7 @@ function BottomNavBar() {
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex flex-col items-center justify-center rounded-xl px-1"
+                  className="relative flex flex-col items-center justify-center rounded-xl px-1 py-1 min-h-[56px]"
                   whileTap={{ scale: 0.85 }}
                 >
                   {isActive && (
@@ -431,11 +444,11 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10 flex flex-col items-center gap-0.5",
+                      "relative z-10 flex flex-col items-center gap-1",
                       isActive ? "text-primary" : "text-muted-foreground"
                     )}
                   >
-                    <item.icon className={cn("h-5 w-5", !isActive && item.color)} />
+                    <item.icon className={cn("h-6 w-6", !isActive && item.color)} />
                     <span className={cn(
                         "text-[8px] font-black uppercase tracking-tighter transition-all leading-none",
                         isActive ? "opacity-100" : "opacity-60"
@@ -649,8 +662,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
             <div className="p-6 border-b bg-muted/10">
               <DialogHeader>
-                  <DialogTitle>Complete Your Profile</DialogTitle>
-                  <DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                  <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
+                  <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
             <div className="p-6 max-h-[70vh] overflow-y-auto">
