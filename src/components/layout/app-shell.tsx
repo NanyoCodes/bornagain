@@ -67,9 +67,6 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 
 const navItems = [
   { href: "/growth", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
@@ -111,6 +108,7 @@ function AppHeader({
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
@@ -324,6 +322,14 @@ function AppHeader({
                       <span className="text-xs font-bold uppercase tracking-widest">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                        <Package className="h-3.5 w-3.5" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-widest">Order Tracker</span>
+                    </Link>
+                  </DropdownMenuItem>
                 </div>
 
                 {userVendors && userVendors.length > 0 && (
@@ -351,7 +357,7 @@ function AppHeader({
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                       <Link href="/guide" className="flex items-center gap-3 w-full">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                          <BookOpen className="h-3.5 w-3.5" />
+                          <Info className="h-3.5 w-3.5" />
                         </div>
                         <span className="text-xs font-bold uppercase tracking-widest">App Guide</span>
                       </Link>
@@ -581,7 +587,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
         <div className="relative mb-8">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
             <div className="absolute inset-0 flex items-center justify-center">
                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
             </div>
