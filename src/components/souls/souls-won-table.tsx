@@ -116,6 +116,7 @@ import { MutualConnectBadge } from "./mutual-connect-badge";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
@@ -262,7 +263,7 @@ function ShareWordDialog({
   };
 
   const renderHub = (
-    <div className="space-y-8 sm:space-y-10 text-left">
+    <div className="space-y-8 sm:space-y-10">
       <div className="space-y-4">
         <div className="relative">
             <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-50" />
@@ -735,7 +736,7 @@ function SoulProfileContent({
   };
 
   const handlePrayerCustomizationConfirm = (text: string) => {
-      setCustomPrayerText(text);
+      setCustomMessageText(text);
       setIsPrayerCustomizationOpen(false);
       requestAnimationFrame(() => {
           setIsCommChannelDialogOpen(true);
@@ -754,7 +755,7 @@ function SoulProfileContent({
   }, [currentUserProfile?.accountabilityPartners]);
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-6">
       <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-4 border-t-primary/20 text-left">
         <CardHeader className="p-8 pb-4 text-center">
             <div className="relative inline-block mx-auto mb-4">
@@ -1065,7 +1066,7 @@ function SoulProfileContent({
       </Card>
 
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
-          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10">
                   <DialogHeader>
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
