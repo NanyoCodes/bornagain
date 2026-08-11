@@ -69,7 +69,7 @@ const navItems = [
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
-  { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
+  { href: "/victory-hub", label: "VICTORY", icon: ShieldCheck, color: "text-primary" },
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
 
@@ -506,7 +506,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     }
   }, [userProfile, mounted]);
 
-  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships', '/events', '/marketplace', '/marketplace/gifts', '/marketplace/orders'];
+  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships', '/events', '/marketplace', '/marketplace/gifts', '/marketplace/orders', '/victory-hub'];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
   const isTakeoverPage = useMemo(() => {
