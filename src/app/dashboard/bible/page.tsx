@@ -11,7 +11,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -594,7 +593,7 @@ export default function BibleReaderPage() {
                             <SheetDescription className="text-xs font-bold text-primary uppercase tracking-widest text-left">{getVerseReference(activeHighlight)}</SheetDescription>
                           </SheetHeader>
                           <div className="flex-grow overflow-y-auto p-6 text-left">
-                            <NoteEditor highlight={activeHighlight} onSave={handleUpdateNote} onDelete={(id) => deleteDoc(doc(firestore!, 'users', user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} onCancel={() => setActiveHighlightId(null)} />
+                            <NoteEditor highlight={activeHighlight} onSave={handleUpdateNote} onDelete={(id) => deleteDoc(doc(firestore, user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} onCancel={() => setActiveHighlightId(null)} />
                           </div>
                         </SheetContent>
                       </Sheet>
