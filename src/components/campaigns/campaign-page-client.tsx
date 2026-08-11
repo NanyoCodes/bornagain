@@ -114,7 +114,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         return [...rawTestimonies].sort((a, b) => {
             const dateA = safeToDate(a.createdAt)?.getTime() ?? 0;
             const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
-            return dateB - dateA;
+            return dateB - timeA;
         });
     }, [rawTestimonies]);
 
@@ -129,7 +129,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         return [...rawCampaignSouls].sort((a, b) => {
             const dateA = safeToDate(a.wonAt)?.getTime() ?? 0;
             const dateB = safeToDate(b.wonAt)?.getTime() ?? 0;
-            return dateB - dateA;
+            return dateB - timeA;
         });
     }, [rawCampaignSouls]);
 

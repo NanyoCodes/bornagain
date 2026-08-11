@@ -25,7 +25,7 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 25 95% 53%;
-    --radius: 0.5rem;
+    --radius: 1rem;
     --chart-1: 25 95% 53%;
     --chart-2: 45 93% 47%;
     --chart-3: 16.4 91.6% 57.3%;
@@ -88,6 +88,8 @@
     background-attachment: fixed;
     transition: background-image 0.5s ease-in-out;
     cursor: default;
+    min-height: 100dvh;
+    /* Removed padding to allow AppShell control */
   }
 
   .dark body {

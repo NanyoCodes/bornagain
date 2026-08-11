@@ -160,7 +160,7 @@ function AppHeader({
           {logo && (
             <Avatar className="h-11 w-11 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
-              <AvatarFallback className="font-bold">T</AvatarFallback>
+              <AvatarFallback>T</AvatarFallback>
             </Avatar>
           )}
         </Link>

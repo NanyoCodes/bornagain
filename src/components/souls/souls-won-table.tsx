@@ -323,7 +323,7 @@ function ShareWordDialog({
             <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Browse Bible</span>
         </Button>
         <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
-            <Link href="/dashboard/bible" className="flex flex-col items-center justify-center">
+            <Link href="/bible" className="flex flex-col items-center justify-center">
                 <BookMarked className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
                 <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Open Reader</span>
             </Link>
@@ -624,7 +624,7 @@ function SoulProfileContent({
             return;
         case 'invited_to_event':
             await finalizeLog(actionId, 'Redirected to Events Hub');
-            router.push('/dashboard/events');
+            router.push('/events');
             return;
         case 'shared_meal':
         case 'gave_gift':
@@ -637,7 +637,7 @@ function SoulProfileContent({
                 localStorage.setItem(provisionKey, JSON.stringify(current));
                 window.dispatchEvent(new Event('testify_pending_action_update'));
             }
-            const mPath = actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
+            const mPath = actionId === 'shared_meal' ? '/marketplace' : '/marketplace/gifts';
             router.push(`${mPath}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${actionId}`);
             return;
         default:
@@ -711,7 +711,7 @@ function SoulProfileContent({
           finalizeLog('introduced_friend', `Shared with partner: ${partner.firstName}`);
           setIsPartnerSelectionDialogOpen(false);
           setIsShareTargetDialogOpen(false);
-          router.push(`/dashboard/chats/${chatId}`);
+          router.push(`/chats/${chatId}`);
       } catch (e) {
           toast({ variant: 'destructive', title: 'Share Failed' });
       }
@@ -1137,18 +1137,18 @@ function SoulProfileContent({
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
           <DialogHeader className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
-                  <Share2 className="h-7 w-7 text-primary" />
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
+                  <Share2 className="h-7 w-7 text-primary text-center" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
-              <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center">
+              <WhatsAppIcon className="h-5 w-5 text-center" /> WhatsApp External
             </Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
-              <HeartHandshake className="h-5 w-5" /> Partner on App
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center">
+              <HeartHandshake className="h-5 w-5 text-center" /> Partner on App
             </Button>
           </div>
         </DialogContent>
@@ -1331,7 +1331,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start">
-        <div className="flex-1 w-full">
+        <div className="flex-1 w-full text-left">
             {isMobile ? (
                 <div className="space-y-px">
                     {souls.map((soul) => (
@@ -1345,10 +1345,10 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                             <Heart className="h-6 w-6 text-primary fill-current" />
                             Harvest Dashboard
                         </CardTitle>
-                        <CardDescription className="text-base font-medium">Keep track of spiritual development and community integration.</CardDescription>
+                        <CardDescription className="text-base font-medium text-left">Keep track of spiritual development and community integration.</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
+                    <CardContent className="p-0 text-left">
+                        <div className="overflow-x-auto text-left">
                             <Table>
                                 <TableHeader className="bg-muted/10">
                                     <TableRow className="hover:bg-transparent">
@@ -1396,7 +1396,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         </Sheet>
 
         {/* Desktop Detailed Preview Panel (Large screens only) */}
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left">
             <AnimatePresence mode="wait">
                 {selectedSoul ? (
                     <motion.div
