@@ -201,7 +201,7 @@ function ShareWordDialog({
   }, [isOpen]);
 
   const constructInvitationMessage = useCallback((verseText: string, reference: string, link: string) => {
-    return `"${verseText.trim()}" — ${reference}\n\nJoin the harvest at Testify! Share your miracles, win souls for Christ, and glorify God. Visit: https://testifyglobal.com/bible`;
+    return `"${verseText.trim()}" — ${reference}\n\nJoin the harvest at Testify! Share your miracles, win souls for Christ, and glorify God. Visit: ${window.location.origin}/bible`;
   }, []);
 
   const handleSearch = async () => {
@@ -258,7 +258,7 @@ function ShareWordDialog({
       .join(' ');
       
     const reference = `${chapterContent.book} ${chapterContent.chapter}:${selectedVerses.join(', ')}`;
-    const link = `https://testifyglobal.com/bible?book=${encodeURIComponent(chapterContent.book)}&chapter=${chapterContent.chapter}`;
+    const link = `${window.location.origin}/bible?book=${encodeURIComponent(chapterContent.book)}&chapter=${chapterContent.chapter}`;
     
     onSelectVerse(constructInvitationMessage(selectedTexts, reference, link));
   };
@@ -293,7 +293,7 @@ function ShareWordDialog({
                         key={idx}
                         variant="outline"
                         className="w-full h-auto p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left hover:bg-primary/10 transition-all border-2 border-dashed"
-                        onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference, `https://testifyglobal.com/bible`))}
+                        onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference, `${window.location.origin}/bible`))}
                     >
                         <div className="flex items-center justify-between w-full">
                             <span className="font-black text-[9px] sm:text-xs uppercase tracking-widest text-primary">{res.reference}</span>
@@ -312,7 +312,7 @@ function ShareWordDialog({
             <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Browse Bible</span>
         </Button>
         <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
-            <Link href="/bible" className="flex flex-col items-center justify-center">
+            <Link href="/bible">
                 <BookMarked className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
                 <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Open Reader</span>
             </Link>
@@ -330,7 +330,7 @@ function ShareWordDialog({
               key={idx} 
               variant="ghost" 
               className="w-full justify-start h-auto py-4 sm:py-6 px-4 sm:px-6 rounded-2xl sm:rounded-[2rem] hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all text-left block relative overflow-hidden bg-muted/5 shadow-sm"
-              onClick={() => onSelectVerse(constructInvitationMessage(v.text, v.reference, `https://testifyglobal.com/bible`))}
+              onClick={() => onSelectVerse(constructInvitationMessage(v.text, v.reference, `${window.location.origin}/bible`))}
             >
               <div className="flex items-center justify-between w-full mb-1.5">
                   <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{v.reference}</span>
@@ -345,7 +345,7 @@ function ShareWordDialog({
   );
 
   const renderBooks = (
-    <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2 text-left">
+    <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
       {bibleData.map(book => (
         <Button key={book.name} variant="outline" className="h-12 sm:h-14 rounded-xl font-bold uppercase text-[9px] sm:text-xs" onClick={() => handleSelectBook(book.name)}>
           {book.name}
@@ -355,7 +355,7 @@ function ShareWordDialog({
   );
 
   const renderChapters = (
-    <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2 text-left">
+    <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2">
        {selectedBookName && bibleData.find(b => b.name === selectedBookName)?.chapters.map(ch => (
          <Button key={ch.chapter} variant="outline" className="h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-lg font-black text-xs sm:text-sm" onClick={() => handleSelectChapter(ch.chapter)}>
            {ch.chapter}
@@ -542,7 +542,7 @@ function SoulProfileContent({
     const soulRef = doc(firestore, `users/${soul.userId}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
 
-    const memberName = `${currentUserProfile?.firstName || ''} ${userProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
+    const memberName = `${currentUserProfile?.firstName || ''} ${currentUserProfile?.lastName || ''}`.trim() || user.displayName || 'Member';
     const logEntry = {
         date: new Date(), 
         note: `Logged via Identity Hub: ${action?.label}${noteAddendum ? ` - ${noteAddendum}` : ''}`,
