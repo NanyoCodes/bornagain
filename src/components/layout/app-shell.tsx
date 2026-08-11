@@ -304,7 +304,7 @@ function AppHeader({
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <ShieldCheck className="h-3.5 w-3.5 text-primary" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Victory Sanctuary</span>
+                      <span className="text-xs font-bold uppercase tracking-widest">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
@@ -312,7 +312,7 @@ function AppHeader({
                       <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
                         <Store className="h-3.5 w-3.5 text-blue-600" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Meals Provision</span>
+                      <span className="text-xs font-bold uppercase tracking-widest">Meals Center</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
@@ -336,7 +336,7 @@ function AppHeader({
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <CalendarDays className="h-3.5 w-3.5 text-primary" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest">Gathering Directory</span>
+                      <span className="text-xs font-bold uppercase tracking-widest">Event Hub</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
