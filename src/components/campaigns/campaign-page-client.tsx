@@ -138,7 +138,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         if (!campaignSouls) return null;
         const stats = {
             total: campaignSouls.length,
-            gender: { male: 0, female: 0, other: 0 },
+            gender: { male: 0, female: 0 },
             age: { children: 0, teens: 0, youngAdults: 0, adults: 0, seniors: 0, unknown: 0 }
         };
 
@@ -146,7 +146,6 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
             // Gender
             if (s.gender === 'Male') stats.gender.male++;
             else if (s.gender === 'Female') stats.gender.female++;
-            else stats.gender.other++;
 
             // Age
             const age = s.age;
@@ -329,7 +328,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         <CardContent className="p-8 text-left text-left">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                                 {participants?.map(p => (
-                                    <Link key={p.id} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-all text-left">
+                                    <Link key={p.id} href={`/profile/${p.userId}`} className="flex items-center gap-3 p-3 rounded-2xl border bg-muted/5 hover:bg-muted/10 transition-all text-left">
                                         <Avatar className="h-9 w-9 border shadow-sm text-left"><AvatarImage src={p.photoURL} className="text-left"/><AvatarFallback className="font-bold text-xs text-left">{p.firstName?.charAt(0)}</AvatarFallback></Avatar>
                                         <div className="min-w-0 flex-1 text-left"><p className="font-bold text-sm truncate uppercase tracking-tight text-left">{p.firstName} {p.lastName}</p></div>
                                     </Link>
@@ -380,7 +379,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                                     <p className="text-3xl font-black text-left">{campaign.soulsLogged || 0}</p>
                                 </div>
                                 <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-left">
-                                    <UserPlus className="h-5 w-5 text-white text-left" />
+                                    UserPlus className="h-5 w-5 text-white text-left" />
                                 </div>
                             </div>
                         </CardContent>
@@ -410,7 +409,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                     <Card className="rounded-[1.5rem] sm:rounded-3xl shadow-sm border-none bg-background border border-muted-foreground/10 text-left">
                         <CardHeader className="pb-3 text-left text-left"><CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-left">Organizer</CardTitle></CardHeader>
                         <CardContent className="text-left text-left">
-                            <Link href={isOwner ? '/profile' : `/dashboard/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-all text-left text-left">
+                            <Link href={isOwner ? '/profile' : `/profile/${campaign.organizerId}`} className="flex items-center gap-4 group p-3 -mx-3 rounded-2xl hover:bg-muted/50 transition-all text-left text-left">
                                 <Avatar className="h-12 w-12 border-2 border-primary/20 shadow-xl text-left"><AvatarFallback className="font-black text-left">{campaign.organizerFirstName?.charAt(0)}</AvatarFallback></Avatar>
                                 <div className="min-w-0 flex-1 text-left"><span className="font-black text-base group-hover:text-primary transition-colors block truncate uppercase text-left">{campaign.organizerFirstName} {campaign.organizerLastName}</span><span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-left text-left">Mission Leader</span></div>
                             </Link>

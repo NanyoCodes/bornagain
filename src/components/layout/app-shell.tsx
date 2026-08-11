@@ -61,8 +61,6 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const navItems = [
   { href: "/growth", label: "GROWTH", icon: TrendingUp, color: "text-chart-1" },
@@ -102,7 +100,6 @@ function AppHeader({
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
@@ -118,7 +115,7 @@ function AppHeader({
   
   if (showMobileSearch) {
     return (
-      <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
+      <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
         <div className="flex w-full items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-10 w-10 rounded-full hover:bg-muted/50 transition-colors">
             <ArrowLeft className="h-5 w-5" />
@@ -165,8 +162,10 @@ function AppHeader({
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "transition-all px-2 lg:px-3 h-10 rounded-2xl whitespace-nowrap flex items-center gap-2 group relative",
-                    isActive ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted/50"
+                    "transition-all px-2 lg:px-4 h-10 rounded-2xl whitespace-nowrap flex items-center gap-2 group relative",
+                    isActive 
+                      ? "bg-primary text-white shadow-xl shadow-primary/40 ring-2 ring-primary/20 scale-105" 
+                      : "text-muted-foreground hover:bg-muted/50"
                   )}
               >
                 <item.icon className={cn("h-4 w-4 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
@@ -421,13 +420,13 @@ function BottomNavBar() {
                   {isActive && (
                     <motion.div
                       layoutId="nav-active-pill"
-                      className="absolute inset-0 bg-primary/10 rounded-xl"
+                      className="absolute inset-0 bg-primary/20 rounded-xl"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
                   <motion.div
                     animate={{ 
-                      scale: isActive ? 1.1 : 1,
+                      scale: isActive ? 1.15 : 1,
                       color: isActive ? "var(--primary)" : "var(--muted-foreground)"
                     }}
                     transition={{ duration: 0.2 }}

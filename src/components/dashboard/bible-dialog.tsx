@@ -28,11 +28,11 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { cn, safeToDate } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover';
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James Version' },
