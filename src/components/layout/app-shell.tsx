@@ -27,19 +27,19 @@ import {
   TrendingUp,
   BookMarked,
   Users,
-  Menu,
-  X,
-  PlusCircle,
-  ShoppingCart,
-  ChevronRight,
+  Info,
+  CalendarDays,
   Store,
   Gift,
   Package,
   ShieldCheck,
-  CalendarDays,
+  PlusCircle,
+  ShoppingCart,
+  ChevronRight,
+  Menu,
   Edit,
-  Info,
-  Globe
+  Globe,
+  X
 } from "lucide-react";
 
 import {
@@ -322,6 +322,14 @@ function AppHeader({
                         <Gift className="h-3.5 w-3.5 text-indigo-600" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest">Kindness Gifts</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/events" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                        <CalendarDays className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-widest">Events Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
@@ -652,7 +660,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
             <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
               <SheetHeader className="text-left">
                 <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
