@@ -102,7 +102,6 @@ function AppHeader({
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
@@ -144,8 +143,8 @@ function AppHeader({
   const showGuestButtons = isPublicRoute && !user;
 
   return (
-    <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
-      <div className="flex items-center shrink-0">
+    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4">
+      <div className="flex shrink-0 w-[120px] md:w-[200px]">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
             <Avatar className="h-10 w-10 md:h-11 md:w-11 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
@@ -153,12 +152,11 @@ function AppHeader({
               <AvatarFallback className="font-bold">T</AvatarFallback>
             </Avatar>
           )}
-          <span className="sr-only">Testify</span>
         </Link>
       </div>
 
-      <nav className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 h-full pt-1">
-        <div className="flex items-center gap-1.5 lg:gap-3 h-full">
+      <nav className="hidden md:flex flex-1 justify-center items-center h-full min-w-0">
+        <div className="flex items-center gap-1.5 lg:gap-3 h-full max-w-full overflow-x-auto no-scrollbar">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -166,7 +164,7 @@ function AppHeader({
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "transition-all px-3 lg:px-4 h-[90%] rounded-2xl whitespace-nowrap flex items-center gap-2 group relative",
+                    "transition-all px-3 lg:px-4 h-10 rounded-2xl whitespace-nowrap flex items-center gap-2 group relative",
                     isActive ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted/50"
                   )}
               >
@@ -183,15 +181,15 @@ function AppHeader({
         </div>
       </nav>
         
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
-        <div className="hidden lg:block">
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0">
+        <div className="hidden lg:block min-w-0">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
                 <Input
                   type="search"
                   placeholder={searchPlaceholder}
-                  className="pl-8 sm:w-[150px] md:w-[200px] h-9 rounded-xl bg-muted/20 border-none text-xs"
+                  className="pl-8 w-[150px] xl:w-[220px] h-9 rounded-xl bg-muted/20 border-none text-xs transition-all focus:w-[200px] xl:focus:w-[280px]"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
