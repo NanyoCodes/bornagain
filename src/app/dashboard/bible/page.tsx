@@ -571,16 +571,16 @@ export default function BibleReaderPage() {
                     </div>
                     
                     <Sheet open={isJournalSheetOpen} onOpenChange={setIsJournalSheetOpen}>
-                      <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0 rounded-l-[2rem] text-left text-left">
-                        <SheetHeader className="p-8 border-b shrink-0 bg-muted/20 text-left text-left text-left">
-                            <div className="flex items-center gap-2.5 mb-1 text-left text-left">
+                      <SheetContent side="right" className="w-full sm:max-w-md flex flex-col p-0 rounded-l-[2rem] text-left text-left text-left">
+                        <SheetHeader className="p-8 border-b shrink-0 bg-muted/20 text-left text-left text-left text-left">
+                            <div className="flex items-center gap-2.5 mb-1 text-left text-left text-left">
                                 <Highlighter className="h-5 w-5 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Kingdom Revelation</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Kingdom Revelation</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">My Journal</SheetTitle>
-                            <SheetDescription className="text-xs font-medium text-left text-left">Capture the living Word as it's revealed to you.</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">My Journal</SheetTitle>
+                            <SheetDescription className="text-xs font-medium text-left text-left text-left">Capture the living Word as it's revealed to you.</SheetDescription>
                         </SheetHeader>
-                        <div className="flex-grow overflow-y-auto p-4 sm:p-6 bg-muted/5 text-left text-left text-left">
+                        <div className="flex-grow overflow-y-auto p-4 sm:p-6 bg-muted/5 text-left text-left text-left text-left">
                           {NotesList}
                         </div>
                       </SheetContent>
@@ -588,12 +588,12 @@ export default function BibleReaderPage() {
 
                     {isMobile && activeHighlight && (
                       <Sheet open={!!activeHighlight} onOpenChange={(open) => !open && setActiveHighlightId(null)}>
-                        <SheetContent side="bottom" className="h-[90dvh] p-0 flex flex-col rounded-t-[2.5rem] border-t-8 border-t-primary/20 text-left text-left">
-                          <SheetHeader className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                            <SheetTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left">Reflect & Journal</SheetTitle>
-                            <SheetDescription className="text-xs font-bold text-primary uppercase tracking-widest text-left text-left text-left text-left">{getVerseReference(activeHighlight)}</SheetDescription>
+                        <SheetContent side="bottom" className="h-[90dvh] p-0 flex flex-col rounded-t-[2.5rem] border-t-8 border-t-primary/20 text-left text-left text-left">
+                          <SheetHeader className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                            <SheetTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left text-left">Reflect & Journal</SheetTitle>
+                            <SheetDescription className="text-xs font-bold text-primary uppercase tracking-widest text-left text-left text-left text-left text-left">{getVerseReference(activeHighlight)}</SheetDescription>
                           </SheetHeader>
-                          <div className="flex-grow overflow-y-auto p-6 text-left text-left text-left text-left text-left">
+                          <div className="flex-grow overflow-y-auto p-6 text-left text-left text-left text-left text-left text-left">
                             <NoteEditor highlight={activeHighlight} onSave={handleUpdateNote} onDelete={(id) => deleteDoc(doc(firestore, user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} onCancel={() => setActiveHighlightId(null)} />
                           </div>
                         </SheetContent>
@@ -631,13 +631,13 @@ export default function BibleReaderPage() {
                                             return (
                                               <Card key={idx} className="border-none shadow-sm hover:shadow-md transition-all rounded-[1.5rem] bg-background/50 backdrop-blur-sm group text-left">
                                                 <CardHeader className="p-5 flex flex-row items-center justify-between space-y-0 text-left">
-                                                    <div className="flex items-center gap-4 min-w-0 text-left text-left">
+                                                    <div className="flex items-center gap-4 min-w-0 text-left text-left text-left">
                                                       <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 shrink-0 group-hover:scale-110 transition-transform text-left">
                                                         <BookOpen className="h-5 w-5 text-primary text-left" />
                                                       </div>
-                                                      <div className="min-w-0 text-left text-left">
-                                                        <p className="font-black text-base uppercase tracking-tight truncate text-left">{i.book} {i.chapter}</p>
-                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{readAt ? format(readAt, 'p') : 'N/A'}</p>
+                                                      <div className="min-w-0 text-left text-left text-left">
+                                                        <p className="font-black text-base uppercase tracking-tight truncate text-left text-left">{i.book} {i.chapter}</p>
+                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">{readAt ? format(readAt, 'p') : 'N/A'}</p>
                                                       </div>
                                                     </div>
                                                     <Button variant="ghost" size="icon" onClick={() => { setSelectedBookName(i.book); setSelectedChapterNumber(i.chapter); setView('read'); }} className="rounded-full h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors text-left">

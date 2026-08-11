@@ -261,7 +261,7 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Provision Hub</span>
                     </div>
                     <SheetHeader className="text-left flex-shrink-0">
-                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</SheetTitle>
+                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</SheetTitle>
                         <SheetDescription className="text-sm font-medium mt-1">Review your active offerings for the brethren.</SheetDescription>
                     </SheetHeader>
                 </div>
@@ -287,7 +287,7 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                                                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
                                                                 {c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}
                                                             </div>
-                                                            <div className="min-w-0 flex-1">
+                                                            <div className="min-w-0 flex-1 text-left">
                                                                 <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
                                                                 <p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
                                                             </div>
@@ -392,7 +392,7 @@ function CartButton() {
             <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full" onClick={() => setIsSheetOpen(true)}>
                 <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
                 {count > 0 && (
-                    <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-black text-primary-foreground border-2 border-background animate-in zoom-in">
+                    <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-black text-white border-2 border-background animate-in zoom-in">
                     {count}
                     </div>
                 )}
@@ -476,7 +476,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "transition-all px-2 lg:px-4 h-11 rounded-2xl whitespace-nowrap flex items-center gap-2 group relative",
+                    "transition-all px-2 lg:px-4 h-11 rounded-2xl whitespace-nowrap flex items-center gap-2 group relative text-left",
                     isActive 
                       ? "bg-primary text-white shadow-xl shadow-primary/40 ring-2 ring-primary/20 scale-105" 
                       : "text-muted-foreground hover:bg-muted/50"
@@ -484,7 +484,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
               >
                 <item.icon className={cn("h-4 w-4 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
                 <span className={cn(
-                    "text-[10px] lg:text-[11px] font-black uppercase tracking-tight transition-all leading-none",
+                    "text-[10px] lg:text-[11px] font-black uppercase tracking-tight transition-all leading-none text-left",
                     isActive ? "opacity-100" : "opacity-60 group-hover:opacity-100"
                 )}>
                 {item.label}
@@ -503,7 +503,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <Input
                   type="search"
                   placeholder={searchPlaceholder}
-                  className="pl-8 w-[140px] xl:w-[200px] h-10 rounded-xl bg-muted/20 border-none text-[12px] transition-all focus:w-[180px] xl:focus:w-[260px]"
+                  className="pl-8 w-[140px] xl:w-[200px] h-10 rounded-xl bg-muted/20 border-none text-[12px] transition-all focus:w-[180px] xl:focus:w-[260px] text-left"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -571,7 +571,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1 text-left">
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/profile" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                         <User className="h-4 w-4" />
@@ -579,7 +579,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Profile Identity</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/settings" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                         <Settings className="h-4 w-4" />
@@ -593,7 +593,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 
                 <div className="p-1 space-y-1 text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-2 tracking-[0.2em]">Kingdom Hubs</p>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                         <ShieldCheck className="h-4 w-4 text-primary" />
@@ -601,7 +601,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                     <Link href="/marketplace" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
                         <Store className="h-4 w-4 text-blue-600" />
@@ -609,7 +609,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                     <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                         <Gift className="h-4 w-4 text-indigo-600" />
@@ -617,7 +617,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                     <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                         <Package className="h-4 w-4" />
@@ -625,7 +625,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                     <Link href="/events" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                         <CalendarDays className="h-4 w-4 text-primary" />
@@ -633,7 +633,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Event Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                     <Link href="/fellowships" className="flex items-center gap-3 w-full">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                         <Users className="h-4 w-4" />
@@ -665,7 +665,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1 text-left">
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                       <Link href="/guide" className="flex items-center gap-3 w-full">
                         <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                           <Info className="h-4 w-4" />
@@ -673,7 +673,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                         <span className="text-xs font-bold uppercase tracking-widest text-left">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                       <Link href="/resources" className="flex items-center gap-3 w-full">
                         <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                           <BookMarked className="h-4 w-4" />
@@ -961,14 +961,14 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
             <div className="p-6 border-b bg-muted/10">
               <DialogHeader>
-                  <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
-                  <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                  <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
+                  <DialogDescription className="text-sm text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -982,8 +982,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
+                <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
             </div>
         }>
             <ShellInner>{children}</ShellInner>

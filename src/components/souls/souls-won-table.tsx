@@ -103,7 +103,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Table,
@@ -323,7 +322,7 @@ function ShareWordDialog({
             <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Browse Bible</span>
         </Button>
         <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
-            <Link href="/bible">
+            <Link href="/bible" className="flex flex-col items-center justify-center">
                 <BookMarked className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
                 <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Open Reader</span>
             </Link>
@@ -347,7 +346,7 @@ function ShareWordDialog({
                   <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{v.reference}</span>
                   <PlusCircle className="h-3.5 w-3.5 sm:h-4 w-4 opacity-0 group-hover:opacity-40 transition-opacity" />
               </div>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic line-clamp-2">{v.text}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic line-clamp-2 text-left">{v.text}</p>
             </Button>
           ))}
         </div>
@@ -805,7 +804,7 @@ function SoulProfileContent({
                         </Button>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-left text-left">
+                <div className="grid grid-cols-2 gap-4 text-left">
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Full Name</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.firstName} {soul.lastName}</p>
@@ -980,7 +979,7 @@ function SoulProfileContent({
             </div>
 
             <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left">
-                <div className="flex items-center justify-between text-left text-left">
+                <div className="flex items-center justify-between text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left">
                         <ClipboardList className="h-3.5 w-3.5 text-left" /> Assessed Needs
                     </p>
@@ -1058,7 +1057,7 @@ function SoulProfileContent({
               </div>
               <div className="p-8 space-y-6 text-left">
                 <div className="space-y-3 text-left">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Focus</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Focus</label>
                     <div className="flex flex-wrap gap-2 text-left">
                         {prayerTemplates.map(t => (
                             <Button 
@@ -1078,13 +1077,13 @@ function SoulProfileContent({
                       <Textarea 
                           value={customMessageText}
                           onChange={e => setCustomMessageText(e.target.value)}
-                          className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left"
+                          className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6"
                       />
                   </div>
                   <Button 
                       onClick={() => handlePrayerCustomizationConfirm(customMessageText)} 
                       disabled={!customMessageText.trim()} 
-                      className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
+                      className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
                   >
                       CONTINUE TO CHANNEL
                   </Button>
@@ -1093,19 +1092,19 @@ function SoulProfileContent({
       </Dialog>
 
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
-          <DialogHeader className="text-center space-y-2 text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
+          <DialogHeader className="text-center space-y-2">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
                   <MessageSquare className="h-7 w-7 text-primary" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Message Hub</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left">How would you like to encourage {soul.firstName}?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left">
-            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
+          <div className="flex flex-col gap-3 pt-6">
+            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
               <WhatsAppIcon className="h-5 w-5" /> WhatsApp
             </Button>
-            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
+            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
               <MessageSquare className="h-5 w-5" /> Standard SMS
             </Button>
           </div>
@@ -1115,7 +1114,7 @@ function SoulProfileContent({
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
         <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
           <div className="p-8 border-b bg-muted/10 text-left">
-            <DialogHeader className="text-left">
+            <DialogHeader>
               <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
               <DialogDescription className="text-sm font-medium text-left">Describe how you supported {soul.firstName}.</DialogDescription>
             </DialogHeader>
@@ -1126,28 +1125,28 @@ function SoulProfileContent({
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomMessageText(e.target.value)} 
-                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
+                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
                 />
             </div>
-            <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-12 rounded-xl font-bold text-left">Confirm Service</Button>
+            <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-12 rounded-xl font-bold">Confirm Service</Button>
           </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
-          <DialogHeader className="text-center space-y-2 text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
+          <DialogHeader className="text-center space-y-2">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
                   <Share2 className="h-7 w-7 text-primary" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Share Details</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left">Where would you like to share {soul.firstName}'s info?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
+          <div className="flex flex-col gap-3 pt-6">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
               <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
             </Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
               <HeartHandshake className="h-5 w-5" /> Partner on App
             </Button>
           </div>
@@ -1169,18 +1168,18 @@ function SoulProfileContent({
                           <Button 
                               key={p.userId} 
                               variant="ghost" 
-                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center text-left"
+                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center"
                               onClick={() => handleShareToPartner(p)}
                           >
-                              <Avatar className="h-8 w-8 border shrink-0 text-left">
+                              <Avatar className="h-8 w-8 border shrink-0">
                                   <AvatarImage src={p.photoURL} />
-                                  <AvatarFallback className="font-bold text-[10px]"> {p.firstName?.charAt(0)}</AvatarFallback>
+                                  <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
+                              <span className="font-bold text-sm group-hover:text-primary transition-colors">{p.firstName} {p.lastName}</span>
                           </Button>
                       ))}
                       {uniquePartners.length === 0 && (
-                          <p className="text-center text-xs text-muted-foreground py-12 text-left">No partners found. Connect with some in Settings!</p>
+                          <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
                       )}
                   </div>
               </ScrollArea>
@@ -1205,9 +1204,9 @@ const SoulCard = React.memo(({ soul, onClick }: {
     return (
         <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left">
             <div className="flex items-center justify-between p-4 gap-4 text-left">
-                <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left">
-                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 text-left text-left")}>
-                        <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
+                <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 text-left")}>
+                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">
                             {soul.firstName?.charAt(0) || 'S'}
                         </AvatarFallback>
@@ -1220,7 +1219,7 @@ const SoulCard = React.memo(({ soul, onClick }: {
                         </div>
                         <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left">
                             <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
-                            {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0 text-left text-left">Fellowship</Badge>}
+                            {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0 text-left">Fellowship</Badge>}
                         </div>
                     </div>
                 </div>
@@ -1244,12 +1243,12 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
             <TableCell className="font-medium p-4 text-left">
                 <div className="flex items-center gap-4 text-left">
                     <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 text-left")}>
-                        <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
+                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">
                             {soul.firstName?.charAt(0) || 'S'}
                         </AvatarFallback>
                     </Avatar>
-                    <div className="min-w-0 text-left text-left">
+                    <div className="min-w-0 text-left">
                         <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left">
                             {soul.firstName} {soul.lastName}
                         </div>
@@ -1277,6 +1276,8 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
 }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
+  const [itemToDelete, setItemToDelete] = useState<Soul | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   React.useEffect(() => { 
     setMounted(true); 
@@ -1374,21 +1375,21 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
 
         {/* Tablet/Mobile Pop-up */}
         <Sheet open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                    <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left text-left text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                            <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity Hub</span>
                         </div>
-                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
+                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
+                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
-                    <div className="p-6 pb-24 text-left text-left text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left text-left text-left">
                         {profileView}
                     </div>
                 </ScrollArea>
@@ -1404,31 +1405,31 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="space-y-6 text-left text-left"
+                        className="space-y-6 text-left text-left text-left"
                     >
                         {profileView}
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left">Select a record to preview identity</p>
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left">
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>
         </div>
         
         <AlertDialog open={!!itemToDelete} onOpenChange={open => !open && setItemToDelete(null)}>
-            <AlertDialogContent className="rounded-3xl p-8 border-none shadow-2xl text-left text-left">
-                <AlertDialogHeader className="text-left text-left text-left">
-                <AlertDialogTitle className="text-xl font-bold font-headline text-left text-left">Delete highlight?</AlertDialogTitle>
-                <AlertDialogDescription className="text-sm text-left text-left text-left">
-                    This will permanently remove your revelation from the journal.
+            <AlertDialogContent className="rounded-3xl p-8 border-none shadow-2xl text-left text-left text-left">
+                <AlertDialogHeader className="text-left text-left text-left text-left">
+                <AlertDialogTitle className="text-xl font-bold font-headline text-left text-left text-left">Delete Record?</AlertDialogTitle>
+                <AlertDialogDescription className="text-sm text-left text-left text-left text-left">
+                    This will permanently remove the record from your Kingdom journal.
                 </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="mt-6 gap-3 text-left text-left">
-                <AlertDialogCancel className="rounded-2xl h-11 text-left text-left" disabled={isDeleting}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold text-left text-left" disabled={isDeleting}>
-                    {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                <AlertDialogFooter className="mt-6 gap-3 text-left text-left text-left">
+                <AlertDialogCancel className="rounded-2xl h-11 text-left text-left text-left" disabled={isDeleting}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => {}} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-11 font-bold text-left text-left text-left" disabled={isDeleting}>
+                    {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
                     Confirm Delete
                 </AlertDialogAction>
                 </AlertDialogFooter>
