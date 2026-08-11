@@ -58,7 +58,7 @@ export const kingdomVerses = [
     { reference: "Romans 10:9", text: "If you declare with your mouth, 'Jesus is Lord,' and believe in your heart that God raised him from the dead, you will be saved." },
     { reference: "2 Corinthians 5:17", text: "Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!" },
     { reference: "Ephesians 2:8-9", text: "For it is by grace you have been saved, through faith—and this is not from yourselves, it is the gift of God—not by works, so that no one can boast." },
-    { reference: "Psalm 23:1", text: "The Lord is my shepherd, I lack nothing." },
+    { reference: "Psalm 23:1", text: "The Lord is shepherd, I lack nothing." },
     { reference: "Matthew 11:28", text: "Come to me, all you who are weary and burdened, and I will give you rest." },
     { reference: "Joshua 1:9", text: "Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go." },
     { reference: "Jeremiah 29:11", text: "'For I know the plans I have for you,' declares the Lord, 'plans to prosper you and not to harm you, plans to give you hope and a future.'" }

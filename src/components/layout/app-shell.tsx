@@ -67,6 +67,8 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
+import { Separator } from "../ui/separator";
+import { ScrollArea } from "../ui/scroll-area";
 
 const navItems = [
   { href: "/growth", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
@@ -651,7 +653,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
               <SheetHeader className="text-left">
                 <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
                 <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
