@@ -98,7 +98,7 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
     return (
         <div className="hidden lg:flex flex-col gap-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar pb-10">
             <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0">
-                <CardHeader className="p-6 pb-2">
+                <CardHeader className="p-6 pb-2 text-left">
                     <div className="flex items-center justify-between mb-2">
                         <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
                             <HeartHandshake className="h-5 w-5 text-white" />
@@ -118,20 +118,20 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                             <p className="text-[9px] font-bold uppercase tracking-widest opacity-70">Requests</p>
                         </div>
                     </div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance">
+                    <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
                         Strategic spiritual support through mutual observation and prayer.
                     </p>
                 </CardContent>
             </Card>
 
             <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
-                <CardHeader className="p-5 pb-2">
+                <CardHeader className="p-5 pb-2 text-left">
                     <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
                         <BookOpen className="h-4 w-4 text-primary" /> Iron Sharpens Iron
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="p-5 pt-4">
-                    <div className="p-5 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/20 relative group">
+                <CardContent className="p-5 pt-4 text-left">
+                    <div className="p-5 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/20 relative group text-left">
                         <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
                         <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance">
                             &ldquo;{verse.text}&rdquo;
@@ -142,7 +142,7 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
             </Card>
 
             <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0">
-                <CardHeader className="p-5 pb-2">
+                <CardHeader className="p-5 pb-2 text-left">
                     <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Protocol</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-2">
@@ -252,8 +252,8 @@ function PartnerCard({
 
     return (
         <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-sm overflow-hidden bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all border-l-4 border-l-primary/10">
-            <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6 gap-4">
-                 <div className="flex items-center gap-3 min-w-0 flex-1">
+            <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6 gap-4 text-left">
+                 <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                     <Dialog>
                       <DialogTrigger asChild disabled={!livePhotoURL}>
                         <div className="relative cursor-pointer active:scale-95 transition-transform hover:scale-105 shrink-0">
@@ -267,15 +267,15 @@ function PartnerCard({
                           <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                               <DialogHeader className="sr-only text-center"><DialogTitle className="text-center">Profile photo</DialogTitle></DialogHeader>
                               <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
                                     <Image src={livePhotoURL} alt="partner" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                               </div>
                           </DialogContent>
                       )}
                     </Dialog>
-                    <div className="min-w-0 flex-1">
-                        <Link href={`/dashboard/profile/${partner.userId}`} className="group inline-flex flex-col text-left max-w-full">
+                    <div className="min-w-0 flex-1 text-left">
+                        <Link href={`/profile/${partner.userId}`} className="group inline-flex flex-col text-left max-w-full">
                             <h2 className="text-sm sm:text-base font-black truncate group-hover:underline leading-none uppercase tracking-tight max-w-[140px] sm:max-w-[200px]">{partner.firstName} {partner.lastName}</h2>
                             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 truncate">Spiritual Partner</span>
                         </Link>
@@ -326,10 +326,10 @@ function PartnerCard({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
-                            <DropdownMenuItem onSelect={() => router.push(`/dashboard/profile/${partner.userId}`)} className="rounded-lg">
+                            <DropdownMenuItem onSelect={() => router.push(`/profile/${partner.userId}`)} className="rounded-lg">
                               <User className="mr-2 h-4 w-4" /> View Identity
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => router.push('/dashboard/bible')} className="rounded-lg">
+                            <DropdownMenuItem onSelect={() => router.push('/bible')} className="rounded-lg">
                               <BookOpen className="mr-2 h-4 w-4" /> Word Study
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
@@ -340,8 +340,8 @@ function PartnerCard({
                     </DropdownMenu>
                 </div>
             </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-6">
-                <div className="pt-4 border-t border-dashed space-y-4">
+            <CardContent className="px-4 sm:px-6 pb-6 text-left">
+                <div className="pt-4 border-t border-dashed space-y-4 text-left">
                     <div className="flex justify-between items-center gap-2">
                         <div className="flex items-center gap-1.5">
                             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
@@ -512,7 +512,7 @@ export default function AccountabilityPage() {
             const chatDocRef = await addDoc(chatsRef, chatPayload);
             chatId = chatDocRef.id;
         }
-        router.push(`/dashboard/chats/${chatId}`);
+        router.push(`/chats/${chatId}`);
     } catch (error) {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `chats`, operation: 'create' }, user));
     } finally { setIsChatLoading(null); }
@@ -523,18 +523,15 @@ export default function AccountabilityPage() {
         return;
     }
     
-    e.preventDefault(); // Keep dialog open for loading state
-    
+    e.preventDefault();
     const partnerId = removalTarget.userId;
     const partnerName = removalTarget.firstName;
-    
     setIsRemoving(partnerId);
 
     try {
         const batch = writeBatch(firestore);
         const requestId = [user.uid, partnerId].sort().join('_');
         const requestRef = doc(firestore, 'accountabilityRequests', requestId);
-        
         const partnerUserRef = doc(firestore, 'users', partnerId);
         const partnerDoc = await getDoc(partnerUserRef);
 
@@ -558,7 +555,6 @@ export default function AccountabilityPage() {
         }
         
         batch.delete(requestRef);
-        
         const notificationRef = doc(collection(firestore, `users/${partnerId}/notifications`));
         batch.set(notificationRef, { 
             userId: partnerId, 
@@ -572,10 +568,8 @@ export default function AccountabilityPage() {
 
         await batch.commit();
         toast({ title: 'Partner Removed', description: `Alliance with ${partnerName} has ended.` });
-        router.refresh();
-        setRemovalTarget(null); // Close dialog on success
+        setRemovalTarget(null);
     } catch (error: any) {
-        console.error("Partner removal failed:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: `users/${partnerId}`, operation: 'write' }, user));
     } finally { 
         setIsRemoving(null); 
@@ -634,7 +628,7 @@ export default function AccountabilityPage() {
                         <AlertDialogTitle className="text-2xl font-black font-headline leading-tight">End Alliance?</AlertDialogTitle>
                         <AlertDialogDescription className="text-sm font-medium leading-relaxed">You're about to end your accountability partnership with {removalTarget?.firstName || 'this partner'}.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <div className="grid gap-4 py-6">
+                    <div className="grid gap-4 py-6 text-left">
                         <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Reason for Removal</Label>
                         <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner" />
                     </div>

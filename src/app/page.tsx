@@ -75,8 +75,8 @@ export default function LandingPage() {
 
   // Redirect authenticated users
   useEffect(() => {
-    if (!authLoading && user) {
-      router.replace('/dashboard/testimonies');
+    if (!authLoading && user && user.emailVerified) {
+      router.replace('/testimonies');
     }
   }, [user, authLoading, router]);
 
@@ -86,7 +86,7 @@ export default function LandingPage() {
   
   const { data: testimonies, loading: loadingTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
-  if (authLoading || (user && !authLoading)) {
+  if (authLoading || (user && user.emailVerified && !authLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -222,7 +222,7 @@ export default function LandingPage() {
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left">Founder's Story</h2>
                 </div>
-                <Card className="rounded-[2.5rem] border-l-8 border-l-primary bg-muted/20 border-none shadow-sm relative overflow-hidden">
+                <Card className="rounded-[2.5rem] border-l-8 border-l-primary bg-muted/20 border-none shadow-sm relative overflow-hidden text-left">
                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none">
                       <Quote className="h-24 w-24 text-primary" />
                    </div>

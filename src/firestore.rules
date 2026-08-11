@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Reciprocal Partner Removal Fix - 2025-06-28T14:30:00Z
+    // Deployment trigger: Public profile visibility & cascading deletes fix - 2025-06-30T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -64,7 +64,7 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read: if isAuthenticated();
+      allow read: if true; // Public profiles are necessary for the testimony feed
       allow create, delete: if isOwner(userId);
 
       allow update: if isAuthenticated() && (

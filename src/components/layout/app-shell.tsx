@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -21,6 +21,17 @@ import {
   TrendingUp,
   BookMarked,
   Users,
+  Menu,
+  X,
+  PlusCircle,
+  ShoppingCart,
+  ChevronRight,
+  Store,
+  Gift,
+  Package,
+  ShieldCheck,
+  CalendarDays,
+  Edit
 } from "lucide-react";
 
 import {
@@ -48,9 +59,11 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 const navItems = [
-  { href: "/growth", label: "Growth", icon: TrendingUp, color: "text-chart-1" },
+  { href: "/growth", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
   { href: "/testimonies", label: "Feed", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
@@ -77,23 +90,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-
-  const otherNotificationsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(
-      collection(firestore, `users/${user.uid}/notifications`),
-      where('type', 'in', NOTIFICATION_TYPES),
-      where('isRead', '==', false)
-    );
-  }, [user?.uid, firestore]);
-
-  const { data: unreadOtherNotifications } = useCollection<Notification>(otherNotificationsQuery);
-  const unreadCount = unreadOtherNotifications?.length ?? 0;
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
 
@@ -131,11 +132,14 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const showGuestButtons = isPublicRoute && !authLoading && !user;
 
   return (
-    <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
-      <div className="flex items-center shrink-0">
-        <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+    <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
+      <div className="flex items-center gap-4 shrink-0">
+        <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(true)}>
+            <Menu className="h-5 w-5" />
+        </Button>
+        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
-            <Avatar className="h-10 w-10 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
+            <Avatar className="h-10 w-10 md:h-11 md:w-11 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
               <AvatarFallback className="font-bold">T</AvatarFallback>
             </Avatar>
@@ -144,35 +148,26 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         </Link>
       </div>
 
-      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 md:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
+      <nav className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
         <div className="flex items-center gap-1.5 lg:gap-3 h-full">
           {navItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
               <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "transition-all hover:bg-muted/50 px-2 lg:px-4 h-[90%] rounded-2xl whitespace-nowrap flex flex-col items-center justify-center group relative",
-                    isActive ? "text-primary" : "text-muted-foreground"
+                    "transition-all px-3 lg:px-4 h-[90%] rounded-2xl whitespace-nowrap flex items-center gap-2 group relative",
+                    isActive ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-muted/50"
                   )}
               >
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
-                  <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
-                  <span className={cn(
-                    "text-[8px] font-black uppercase tracking-tighter transition-all leading-none",
+                <item.icon className={cn("h-4 w-4 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
+                <span className={cn(
+                    "text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all leading-none",
                     isActive ? "opacity-100" : "opacity-60 group-hover:opacity-100"
-                  )}>
-                    {item.label}
-                  </span>
-                </motion.div>
-                {isActive && (
-                    <motion.div
-                      layoutId="header-nav-active-bar"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                )}
+                )}>
+                {item.label}
+                </span>
               </Link>
             );
           })}
@@ -180,14 +175,14 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
       </nav>
         
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
-        <div className="hidden sm:block">
+        <div className="hidden lg:block">
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
                 <Input
                   type="search"
                   placeholder={searchPlaceholder}
-                  className="pl-8 sm:w-[150px] md:w-[200px] lg:w-[250px] h-9 rounded-xl bg-muted/20 border-none"
+                  className="pl-8 sm:w-[150px] md:w-[200px] h-9 rounded-xl bg-muted/20 border-none text-xs"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -196,8 +191,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         </div>
         
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="sm:hidden h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-5 w-5 md:h-6 md:w-6" />
+          <Button variant="ghost" size="icon" className="lg:hidden h-10 w-10 md:h-11 md:w-11 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-5 w-5" />
             <span className="sr-only">Search</span>
           </Button>
         )}
@@ -206,10 +201,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           <>
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
-                      <MessagesSquare className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-11 md:w-11 rounded-full">
+                      <MessagesSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
+                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
                           {unreadChatCount}
                         </div>
                       )}
@@ -218,10 +213,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
-                      <Bell className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-11 md:w-11 rounded-full">
+                      <Bell className="h-5 w-5 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
+                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
                           {unreadNotifCount}
                         </div>
                       )}
@@ -230,8 +225,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0">
-                  <Avatar className="h-9 w-9 md:h-11 md:w-11 border shadow-sm">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-11 md:w-11 shrink-0">
+                  <Avatar className="h-9 w-9 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
                     <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
@@ -273,7 +268,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                 <DropdownMenuItem asChild className="rounded-lg mx-1">
                     <Link href="/resources" className="cursor-pointer">
                     <BookMarked className="mr-2 h-4 w-4" />
-                    <span>Spiritual Resources</span>
+                    <span>Kingdom Library</span>
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -297,6 +292,73 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           <div className="h-10 w-10 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
         )}
       </div>
+
+      <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+        <SheetContent side="left" className="w-[300px] sm:w-[350px] p-0 flex flex-col h-full rounded-r-[2.5rem]">
+            <div className="p-8 border-b bg-muted/10 shrink-0">
+                <SheetHeader className="text-left">
+                    <div className="flex items-center gap-3 mb-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Navigation</span>
+                    </div>
+                    <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">Main Hub</SheetTitle>
+                    <SheetDescription className="text-sm font-medium">Access all sectors of the harvest field.</SheetDescription>
+                </SheetHeader>
+            </div>
+            <ScrollArea className="flex-grow">
+                <div className="p-6 space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Navigation</p>
+                    {navItems.map(item => (
+                        <Link key={item.href} href={item.href} onClick={() => setIsMenuOpen(false)} className={cn(
+                            "flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group transition-all",
+                            pathname === item.href && "bg-primary/5 text-primary ring-1 ring-primary/10"
+                        )}>
+                            <item.icon className={cn("h-6 w-6 shrink-0", pathname === item.href ? "text-primary" : item.color)} />
+                            <span className="font-black uppercase tracking-widest text-sm">{item.label}</span>
+                            <ChevronRight className="ml-auto h-4 w-4 opacity-20" />
+                        </Link>
+                    ))}
+                    
+                    <Separator className="my-6 opacity-50" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Kingdom Hubs</p>
+                    <Link href="/victory-hub" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                      <ShieldCheck className="h-6 w-6 text-primary" />
+                      <span className="font-black uppercase tracking-widest text-sm">Victory Hub</span>
+                    </Link>
+                    <Link href="/marketplace" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                      <Store className="h-6 w-6 text-blue-500" />
+                      <span className="font-black uppercase tracking-widest text-sm">Provision Hub</span>
+                    </Link>
+                    <Link href="/marketplace/gifts" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group">
+                      <Gift className="h-6 w-6 text-indigo-600" />
+                      <span className="font-black uppercase tracking-widest text-sm">Kindness Center</span>
+                    </Link>
+
+                    <Separator className="my-6 opacity-50" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">My Tools</p>
+                    <Link href="/bible" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                      <BookOpen className="h-6 w-6 text-primary shrink-0" />
+                      <span className="font-black uppercase tracking-widest text-sm">Bible Study</span>
+                    </Link>
+                    <Link href="/notes" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                      <Edit className="h-6 w-6 text-primary shrink-0" />
+                      <span className="font-black uppercase tracking-widest text-sm">Journal</span>
+                    </Link>
+
+                    <Separator className="my-6 opacity-50" />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2 mb-2">Platform</p>
+                    <Link href="/guide" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                      <Info className="h-6 w-6 text-primary shrink-0" />
+                      <span className="font-black uppercase tracking-widest text-sm">App Guide</span>
+                    </Link>
+                    <Link href="/resources" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted group text-left">
+                      <BookMarked className="h-6 w-6 text-primary shrink-0" />
+                      <span className="font-black uppercase tracking-widest text-sm">Library</span>
+                    </Link>
+                </div>
+            </ScrollArea>
+        </SheetContent>
+      </Sheet>
     </header>
   );
 }
@@ -307,7 +369,7 @@ function BottomNavBar() {
 
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
+        <div className="flex min-h-[4rem] h-auto items-stretch justify-around px-1 py-1">
           {filteredItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
@@ -351,215 +413,210 @@ function BottomNavBar() {
     );
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
-  const { user, loading: authLoading } = useUser();
-  const { userProfile, loading: profileLoading } = useUserProfile();
-  const firestore = useFirestore();
-  const router = useRouter();
-  const pathname = usePathname();
-  const isMobile = useIsMobile();
-  const [mounted, setMounted] = useState(false);
-  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState("");
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  
-  const [showSplash, setShowSplash] = useState(false);
-  const [contentVisible, setContentVisible] = useState(false);
+function ShellInner({ children }: { children: React.ReactNode }) {
+    const { user, loading: authLoading } = useUser();
+    const { userProfile, loading: profileLoading } = useUserProfile();
+    const firestore = useFirestore();
+    const router = useRouter();
+    const pathname = usePathname();
+    const isMobile = useIsMobile();
+    
+    const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState("");
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    
+    const [showSplash, setShowSplash] = useState(false);
+    const [contentVisible, setContentVisible] = useState(false);
 
-  useEffect(() => { 
-    setMounted(true); 
-    setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
+    useEffect(() => { 
+        setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
 
-    const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
-    const lastShown = localStorage.getItem('testify_splash_last_shown');
-    const forceSplash = sessionStorage.getItem('testify_force_splash') === 'true';
-    const now = Date.now();
+        const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
+        const lastShown = localStorage.getItem('testify_splash_last_shown');
+        const forceSplash = sessionStorage.getItem('testify_force_splash') === 'true';
+        const now = Date.now();
 
-    if (forceSplash || !lastShown || now - parseInt(lastShown, 10) > SPLASH_COOLDOWN) {
-        if (forceSplash) {
-          sessionStorage.removeItem('testify_force_splash');
-        }
-        setShowSplash(true);
-        const timer = setTimeout(() => {
-            setShowSplash(false);
-            localStorage.setItem('testify_splash_last_shown', now.toString());
-            setContentVisible(true);
-        }, 10000);
-        return () => {
-            clearTimeout(timer);
-        };
-    } else {
-        setContentVisible(true);
-    }
-  }, [pathname]);
-
-  const handleDismissSplash = () => {
-    setShowSplash(false);
-    localStorage.setItem('testify_splash_last_shown', Date.now().toString());
-    setContentVisible(true);
-  };
-
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop = 0;
-    }
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  useEffect(() => {
-    if (!mounted) return;
-    const root = document.documentElement;
-    if (userProfile?.backgroundImage) {
-      const isGradient = userProfile.backgroundImage.startsWith('linear-gradient');
-      const bgValue = isGradient ? userProfile.backgroundImage : `url('${userProfile.backgroundImage}')`;
-      root.style.setProperty('--app-bg-image', bgValue);
-    }
-    if (userProfile?.backgroundOverlayOpacity != null) {
-      root.style.setProperty('--app-bg-overlay', userProfile.backgroundOverlayOpacity.toString());
-    }
-  }, [userProfile, mounted]);
-
-  const publicRoutes = [
-    '/testimonies', 
-    '/campaigns', 
-    '/about', 
-    '/contact', 
-    '/resources', 
-    '/guide', 
-    '/terms-of-service', 
-    '/privacy-policy',
-    '/growth',
-    '/fellowships'
-  ];
-  const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
-
-  const isTakeoverPage = useMemo(() => {
-    return (
-      pathname.startsWith('/chats') ||
-      pathname.startsWith('/dashboard/chats') ||
-      pathname.startsWith('/notes') ||
-      pathname.startsWith('/dashboard/notes') ||
-      pathname.startsWith('/bible') ||
-      pathname.startsWith('/dashboard/bible') ||
-      pathname.startsWith('/notifications') ||
-      pathname.startsWith('/dashboard/notifications')
-    );
-  }, [pathname]);
-
-  useEffect(() => {
-    if (!authLoading && !user && !isPublicRoute) {
-      router.push('/login');
-    }
-  }, [authLoading, user, router, isPublicRoute]);
-
-  useEffect(() => {
-    if (!profileLoading && userProfile) {
-        const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
-        const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
-        if (isNewUserSession && userProfile.firstName && !welcomePopupShown) {
+        if (forceSplash || !lastShown || now - parseInt(lastShown, 10) > SPLASH_COOLDOWN) {
+            if (forceSplash) sessionStorage.removeItem('testify_force_splash');
+            setShowSplash(true);
             const timer = setTimeout(() => {
-                setShowWelcomePopup(true);
-                sessionStorage.setItem('welcomePopupShown', 'true');
-            }, 500);
+                setShowSplash(false);
+                localStorage.setItem('testify_splash_last_shown', now.toString());
+                setContentVisible(true);
+            }, 10000);
             return () => clearTimeout(timer);
+        } else {
+            setContentVisible(true);
         }
-    }
-  }, [profileLoading, userProfile]);
+    }, [pathname]);
 
-  if (authLoading || (profileLoading && !isPublicRoute) || (!user && !isPublicRoute)) {
-    return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
-        <div className="relative mb-8">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+    const handleDismissSplash = () => {
+        setShowSplash(false);
+        localStorage.setItem('testify_splash_last_shown', Date.now().toString());
+        setContentVisible(true);
+    };
+
+    useEffect(() => {
+        if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    useEffect(() => {
+        if (!contentVisible) return;
+        const root = document.documentElement;
+        if (userProfile?.backgroundImage) {
+            const isGradient = userProfile.backgroundImage.startsWith('linear-gradient');
+            const bgValue = isGradient ? userProfile.backgroundImage : `url('${userProfile.backgroundImage}')`;
+            root.style.setProperty('--app-bg-image', bgValue);
+        }
+        if (userProfile?.backgroundOverlayOpacity != null) {
+            root.style.setProperty('--app-bg-overlay', userProfile.backgroundOverlayOpacity.toString());
+        }
+    }, [userProfile, contentVisible]);
+
+    const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships'];
+    const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
+
+    const isTakeoverPage = useMemo(() => {
+        return pathname.startsWith('/chats') || pathname.startsWith('/notes') || pathname.startsWith('/bible') || pathname.startsWith('/notifications');
+    }, [pathname]);
+
+    const unreadChatNotifsQuery = useMemo(() => {
+        if (!user?.uid || !firestore) return null;
+        return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
+    }, [user?.uid, firestore]);
+    const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
+
+    const unreadOtherNotifsQuery = useMemo(() => {
+        if (!user?.uid || !firestore) return null;
+        return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', NOTIFICATION_TYPES), where('isRead', '==', false));
+    }, [user?.uid, firestore]);
+    const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
+
+    useEffect(() => {
+        if (!authLoading && !user && !isPublicRoute) router.push('/login');
+    }, [authLoading, user, router, isPublicRoute]);
+
+    useEffect(() => {
+        if (!profileLoading && userProfile) {
+            const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
+            const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
+            if (isNewUserSession && userProfile.firstName && !welcomePopupShown) {
+                const timer = setTimeout(() => {
+                    setShowWelcomePopup(true);
+                    sessionStorage.setItem('welcomePopupShown', 'true');
+                }, 500);
+                return () => clearTimeout(timer);
+            }
+        }
+    }, [profileLoading, userProfile]);
+
+    if (authLoading || (profileLoading && !isPublicRoute) || (!user && !isPublicRoute)) {
+        return (
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
+                <div className="relative mb-8 text-left">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                    </div>
+                </div>
+                <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
+                    {loadingMessage || "GOD FIRST"}
+                </p>
+                <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
+                    Kingdom Network Active
+                </p>
             </div>
+        );
+    }
+
+    const isProfileIncomplete = user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
+    const showBottomNav = !isTakeoverPage;
+
+    return (
+        <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+            <AnimatePresence>
+                {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
+            </AnimatePresence>
+
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: contentVisible ? 1 : 0 }}
+                transition={{ duration: 1 }}
+                className="flex-1 flex flex-col min-h-0"
+            >
+                {!isTakeoverPage && (
+                    <AppHeader 
+                        unreadChatCount={unreadChatNotifications?.length || 0} 
+                        unreadNotifCount={unreadOtherNotifications?.length || 0}
+                        isPublicRoute={isPublicRoute}
+                    />
+                )}
+                <div className="flex-1 relative min-h-0">
+                    <main 
+                        ref={scrollContainerRef}
+                        className={cn(
+                            "absolute inset-0 overflow-x-hidden", 
+                            !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
+                        )}
+                    >
+                        <div className={cn(
+                            "mx-auto h-full", 
+                            !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
+                        )}>
+                            <PageTransition>{children}</PageTransition>
+                        </div>
+                    </main>
+                </div>
+            </motion.div>
+
+            {user && showBottomNav && <BottomNavBar />}
+            
+            {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
+            
+            {user && contentVisible && isMobile ? (
+                <Sheet open={!!isProfileIncomplete}>
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+                    <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
+                        <SheetHeader className="text-left">
+                        <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
+                        <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+                        </SheetHeader>
+                    </div>
+                    <div className="flex-grow overflow-y-auto p-6">
+                        {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+                    </div>
+                    </SheetContent>
+                </Sheet>
+            ) : user && contentVisible ? (
+                <Dialog open={!!isProfileIncomplete}>
+                    <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
+                    <div className="p-6 border-b bg-muted/10">
+                        <DialogHeader>
+                            <DialogTitle>Complete Your Profile</DialogTitle>
+                            <DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                        </DialogHeader>
+                    </div>
+                    <div className="p-6 max-h-[70vh] overflow-y-auto">
+                        {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+                    </div>
+                    </DialogContent>
+                </Dialog>
+            ) : null}
         </div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
-          {loadingMessage || "GOD FIRST"}
-        </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
-            Kingdom Network Active
-        </p>
-      </div>
     );
-  }
+}
 
-  const isProfileIncomplete = user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
-  const showBottomNav = !isTakeoverPage;
-
+export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
-      <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
-        <AnimatePresence>
-            {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
-        </AnimatePresence>
-
-        <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: contentVisible ? 1 : 0 }}
-            transition={{ duration: 1 }}
-            className="flex-1 flex flex-col min-h-0"
-        >
-            {!isTakeoverPage && (
-            <AppHeader 
-                unreadChatCount={unreadChatNotifications?.length || 0} 
-                unreadNotifCount={unreadOtherNotifications?.length || 0}
-                isPublicRoute={isPublicRoute}
-            />
-            )}
-            <div className="flex-1 relative min-h-0">
-            <main 
-                ref={scrollContainerRef}
-                className={cn(
-                    "absolute inset-0 overflow-x-hidden", 
-                    !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
-                )}
-            >
-                <div className={cn(
-                "mx-auto h-full", 
-                !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
-                )}>
-                    <PageTransition>{children}</PageTransition>
-                </div>
-            </main>
+        <Suspense fallback={
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
             </div>
-        </motion.div>
-
-        {user && showBottomNav && <BottomNavBar />}
-        
-        {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
-        
-        {user && mounted && isMobile ? (
-          <Sheet open={!!isProfileIncomplete}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-              <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
-                <SheetHeader className="text-left">
-                  <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                  <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
-                </SheetHeader>
-              </div>
-              <div className="flex-grow overflow-y-auto p-6">
-                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
-              </div>
-            </SheetContent>
-          </Sheet>
-        ) : user ? (
-          <Dialog open={!!isProfileIncomplete}>
-            <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
-              <div className="p-6 border-b bg-muted/10">
-                <DialogHeader>
-                    <DialogTitle>Complete Your Profile</DialogTitle>
-                    <DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
-                </DialogHeader>
-              </div>
-              <div className="p-6 max-h-[70vh] overflow-y-auto">
-                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
-              </div>
-            </DialogContent>
-          </Dialog>
-        ) : null}
-      </div>
+        }>
+            <ShellInner>{children}</ShellInner>
+        </Suspense>
     </SearchProvider>
   );
 }

@@ -36,7 +36,7 @@
     --status-contacted: 221 83% 53%;
     --status-established: 25 95% 53%;
     --app-bg-image: linear-gradient(135deg, #09090b 0%, #18181b 100%);
-    --app-bg-overlay: 0.7;
+    --app-bg-overlay: 0.95;
     --safe-area-inset-top: env(safe-area-inset-top);
     --safe-area-inset-bottom: env(safe-area-inset-bottom);
     --safe-area-inset-left: env(safe-area-inset-left);

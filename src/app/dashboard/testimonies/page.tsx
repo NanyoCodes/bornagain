@@ -150,12 +150,12 @@ function TestimoniesContent() {
       if (element) {
         setTimeout(() => {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          element.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'transition-shadow', 'duration-1000');
+          element.classList.add('ring-4', 'ring-primary', 'ring-offset-4', 'transition-all', 'duration-1000');
           setTimeout(() => {
-            element.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
-          }, 2500);
+            element.classList.remove('ring-4', 'ring-primary', 'ring-offset-4');
+          }, 3000);
           setHighlightedTestimonyId(null);
-        }, 300);
+        }, 500);
       }
     }
   }, [highlightedTestimonyId, activeTab, loadingTestimonies]);
@@ -231,101 +231,52 @@ function TestimoniesContent() {
     setIsTestimonyDialogOpen(true);
   };
   
-  const handleConfirmDelete = () => {
-    const sendResponse = (res: any) => console.log('Confirm Delete result:', res);
-    if (!itemToDelete || !firestore || !user) {
-        sendResponse({ success: false });
-        return;
-    }
+  const handleConfirmDelete = async () => {
+    if (!itemToDelete || !firestore || !user) return;
+    setIsDeleting(true);
     
     const { type, data } = itemToDelete;
     const docRef = doc(firestore, type === 'testimony' ? 'testimonies' : 'prayerRequests', data.id);
     
-    const typeValue = type;
-    const dataValue = data;
-
-    // Reset selection immediately to prevent unmount freeze
-    setItemToDelete(null);
-    setIsDeleting(true);
-    
-    (async () => {
-        try {
-            if (typeValue === 'testimony') {
-                const testimonyData = dataValue as Testimony;
+    try {
+        if (type === 'testimony') {
+            await runTransaction(firestore, async (transaction) => {
+                const testimonySnap = await transaction.get(docRef);
+                if (!testimonySnap.exists()) return;
                 
-                const commentsRef = collection(firestore, 'testimonies', dataValue.id, 'comments');
-                const commentsSnap = await getDocs(commentsRef);
+                const testimonyData = testimonySnap.data() as Testimony;
                 
-                await runTransaction(firestore, async (transaction) => {
-                    const testimonySnap = await transaction.get(docRef);
-                    if (!testimonySnap.exists()) return;
-                    
-                    if (testimonyData.answeredPrayerId) {
-                        const prayerRef = doc(firestore, 'prayerRequests', testimonyData.answeredPrayerId);
-                        const prayerSnap = await transaction.get(prayerRef);
-                        if (prayerSnap.exists()) {
-                            transaction.update(prayerRef, {
-                                status: 'pending',
-                                answeredTestimonyId: deleteField()
-                            });
-                        }
-                    }
-                    
-                    commentsSnap.forEach(commentDoc => {
-                        transaction.delete(commentDoc.ref);
-                    });
-
-                    transaction.delete(docRef);
-                });
-
-                // Cleanup storage
-                if (storage) {
-                    if (testimonyData.mediaUrl) {
-                        try {
-                            const mediaRef = ref(storage, testimonyData.mediaUrl);
-                            await deleteObject(mediaRef);
-                        } catch (e) { console.warn("Media 1 cleanup skip", e); }
-                    }
-                    if (testimonyData.mediaUrl2) {
-                        try {
-                            const mediaRef2 = ref(storage, testimonyData.mediaUrl2);
-                            await deleteObject(mediaRef2);
-                        } catch (e) { console.warn("Media 2 cleanup skip", e); }
+                if (testimonyData.answeredPrayerId) {
+                    const prayerRef = doc(firestore, 'prayerRequests', testimonyData.answeredPrayerId);
+                    const prayerSnap = await transaction.get(prayerRef);
+                    if (prayerSnap.exists()) {
+                        transaction.update(prayerRef, {
+                            status: 'pending',
+                            answeredTestimonyId: deleteField()
+                        });
                     }
                 }
-            } else {
-                await deleteDoc(docRef);
-            }
-
-            toast({
-                title: `${typeValue === 'testimony' ? 'Story' : 'Prayer Request'} Removed`,
-                description: "The record has been permanently removed from the global feed.",
+                transaction.delete(docRef);
             });
-            
-            sendResponse({ success: true });
-            router.refresh();
-
-        } catch (error: any) {
-            console.error("Deletion failed:", error);
-            if (error.code === 'permission-denied') {
-              errorEmitter.emit('permission-error', new FirestorePermissionError({
-                path: docRef.path,
-                operation: 'delete',
-              }, user));
-            } else {
-                toast({
-                    variant: "destructive",
-                    title: "Deletion Failed",
-                    description: "There was a problem removing this record. Please try again.",
-                });
-            }
-            sendResponse({ success: false, error });
-        } finally {
-            setIsDeleting(false);
+        } else {
+            await deleteDoc(docRef);
         }
-    })();
 
-    return true; 
+        toast({
+            title: `${type === 'testimony' ? 'Story' : 'Prayer Request'} Removed`,
+        });
+        
+    } catch (error: any) {
+        console.error("Deletion failed:", error);
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'delete',
+        }, user);
+        errorEmitter.emit('permission-error', permissionError);
+    } finally {
+        setItemToDelete(null);
+        setIsDeleting(false);
+    }
   };
 
   const testimonyFormContent = userProfile ? (
@@ -539,7 +490,7 @@ function TestimoniesContent() {
           ) : (
             <>
               <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-8 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</DialogTitle>
@@ -555,7 +506,7 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                   <div className="p-8 border-b bg-muted/10 text-left">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Prayer Request</DialogTitle>
@@ -571,14 +522,14 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
+                <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left flex flex-col max-h-[90vh]">
+                  <div className="p-8 border-b bg-muted/10 shrink-0">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="max-h-[70vh] text-left">
+                  <ScrollArea className="flex-grow text-left">
                     <div className="p-8 text-left">
                         {testimonyFormContent}
                     </div>
@@ -587,14 +538,14 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
+                <DialogContent className="sm:max-w-xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left flex flex-col max-h-[90vh]">
+                  <div className="p-8 border-b bg-muted/10 shrink-0">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Share Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="max-h-[70vh] text-left">
+                  <ScrollArea className="flex-grow text-left">
                     <div className="p-8 text-left">
                         {prayerFormContent}
                     </div>

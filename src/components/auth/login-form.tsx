@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
 import { Loader2, Mail, Lock } from "lucide-react";
-import { signInWithEmailAndPassword, AuthError, sendEmailVerification, type User, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { signInWithEmailAndPassword, AuthError, sendEmailVerification, type User, setPersistence, browserLocalPersistence, signOut } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -42,6 +42,7 @@ const formSchema = z.object({
 
 function EmailVerificationDialog({ user, isOpen, onOpenChange }: { user: User | null; isOpen: boolean; onOpenChange: (open: boolean) => void; }) {
     const { toast } = useToast();
+    const auth = useAuth();
     const [isLoading, setIsLoading] = useState(false);
 
     const handleResend = async () => {
@@ -68,23 +69,28 @@ function EmailVerificationDialog({ user, isOpen, onOpenChange }: { user: User | 
         }
     };
 
+    const handleClose = async () => {
+        if (auth) await signOut(auth);
+        onOpenChange(false);
+    }
+
     return (
         <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="w-[90vw] max-w-md rounded-lg">
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Email Verification Required</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        You must verify your email address before you can sign in. A verification link was sent to <strong>{user?.email}</strong>.
+            <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl">
+                <AlertDialogHeader className="text-left">
+                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight">Verification Required</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium">
+                        Please verify your email address to join the global movement. A link was sent to <strong>{user?.email}</strong>.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <p className="text-sm text-muted-foreground">
-                    Please check your inbox (and spam folder). If you don&apos;t see it, you can request a new one.
+                <p className="text-sm text-muted-foreground font-medium italic py-4">
+                    Check your inbox and spam folder. Verification is necessary to ensure the integrity of shared testimonies.
                 </p>
-                <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-                    <AlertDialogCancel disabled={isLoading} onClick={() => onOpenChange(false)}>Close</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleResend} disabled={isLoading} className="bg-primary text-primary-foreground">
+                <AlertDialogFooter className="flex-col sm:flex-row gap-3">
+                    <AlertDialogCancel disabled={isLoading} onClick={handleClose} className="rounded-xl h-11 font-bold">Close</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleResend} disabled={isLoading} className="rounded-xl h-11 font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Resend Verification Email
+                        RESEND LINK
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
@@ -123,20 +129,17 @@ export function LoginForm() {
       return;
     }
     try {
-      // Explicitly reinforce persistence to local for consistent behavior
       await setPersistence(auth, browserLocalPersistence);
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
-      // Check for email verification if using standard password login
-      if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
+      if (!user.emailVerified) {
         setUserForVerification(user);
         setIsVerificationDialogOpen(true);
         setIsLoading(false);
         return;
       }
 
-      // Background sync profile
       const userDocRef = doc(firestore, "users", user.uid);
       const nameParts = user.displayName?.split(' ') || [];
       const firstName = nameParts[0] || '';
@@ -167,7 +170,7 @@ export function LoginForm() {
         description: "You have been successfully signed in.",
       });
       
-      router.push("/dashboard/testimonies");
+      router.push("/testimonies");
     } catch (error) {
       const authError = error as AuthError;
       console.error('Email sign in error:', authError);
@@ -216,7 +219,7 @@ export function LoginForm() {
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} className="pl-10 h-11" />
+                    <Input placeholder="name@example.com" {...field} className="pl-10 h-11 rounded-xl" />
                   </FormControl>
                 </div>
                 <FormMessage />
@@ -237,14 +240,14 @@ export function LoginForm() {
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <FormControl>
-                    <Input type="password" placeholder="********" {...field} className="pl-10 h-11" />
+                    <Input type="password" placeholder="********" {...field} className="pl-10 h-11 rounded-xl" />
                   </FormControl>
                 </div>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" variant="default" className="w-full h-11 font-bold shadow-md" disabled={isLoading}>
+          <Button type="submit" variant="default" className="w-full h-11 font-bold shadow-md rounded-xl" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Sign In
           </Button>

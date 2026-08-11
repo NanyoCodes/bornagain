@@ -1,9 +1,14 @@
 'use client';
 
-export default function BibleLayout({ children }: { children: React.ReactNode }) {
+/**
+ * @fileOverview This layout wrapper removed unnecessary legacy dashboard structure
+ * to provide a clean takeover view for the Bible module.
+ */
+
+export default function BibleTakeoverLayout({ children }: { children: React.ReactNode }) {
   return (
-        <div className="h-dvh">
-            {children}
-        </div>
-    );
+    <div className="h-dvh w-full">
+        {children}
+    </div>
+  );
 }

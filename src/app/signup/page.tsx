@@ -34,10 +34,10 @@ export default function SignUpPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { user, loading: authLoading } = useUser();
 
-  // Redirect away if already logged in
+  // Redirect away if already logged in AND verified
   useEffect(() => {
-    if (!authLoading && user) {
-      router.replace('/dashboard/testimonies');
+    if (!authLoading && user && (user.emailVerified || user.providerData.some(p => p.providerId === 'google.com'))) {
+      router.replace('/testimonies');
     }
   }, [user, authLoading, router]);
 
@@ -77,7 +77,7 @@ export default function SignUpPage() {
       await setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
           path: userDocRef.path,
-          operation: 'write',
+          operation: 'create',
           requestResourceData: userData,
         }, user);
         errorEmitter.emit('permission-error', permissionError);
@@ -89,7 +89,7 @@ export default function SignUpPage() {
       });
 
       sessionStorage.setItem('testify_force_splash', 'true');
-      router.push('/dashboard/testimonies');
+      router.push('/testimonies');
     } catch (error) {
       const authError = error as AuthError;
       if (authError.code !== 'auth/popup-closed-by-user') {
@@ -104,7 +104,7 @@ export default function SignUpPage() {
     }
   };
 
-  if (authLoading || user) {
+  if (authLoading || (user && (user.emailVerified || user.providerData.some(p => p.providerId === 'google.com')))) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />

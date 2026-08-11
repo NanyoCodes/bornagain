@@ -63,7 +63,7 @@ function FilterControls({
           placeholder={searchPlaceholder}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full text-sm h-11 sm:h-10 bg-muted/20 pl-8"
+          className="w-full text-sm h-11 sm:h-10 bg-muted/20 pl-8 border-none rounded-xl"
         />
       </div>
       {setFilterDate && (
@@ -73,7 +73,7 @@ function FilterControls({
               type="date"
               value={dateValue}
               onChange={handleDateChange}
-              className="text-sm h-11 sm:h-10 w-full bg-muted/20"
+              className="text-sm h-11 sm:h-10 w-full bg-muted/20 border-none rounded-xl"
             />
           </div>
           {filterDate && (
@@ -547,7 +547,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredTestimonies.length > 0 ? (
                                     filteredTestimonies.map(t => (
-                                        <Link key={t.id} href="/dashboard/testimonies" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={t.id} href={`/testimonies#${t.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1">{t.category}</p>
                                             <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed">{t.content}</p>
                                         </Link>
@@ -576,7 +576,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredPrayerRequests.length > 0 ? (
                                     filteredPrayerRequests.map(p => (
-                                        <Link key={p.id} href="/dashboard/testimonies" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={p.id} href="/testimonies?tab=prayers" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1">{p.category}</p>
                                             <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed">{p.content}</p>
                                         </Link>
@@ -607,7 +607,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredCreatedCampaigns.length > 0 ? (
                                     filteredCreatedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{c.title}</p>
                                             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
@@ -634,7 +634,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredJoinedCampaigns.length > 0 ? (
                                     filteredJoinedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/dashboard/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{c.title}</p>
                                             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
@@ -666,7 +666,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredJoinedFellowships.length > 0 ? (
                                     filteredJoinedFellowships.map(f => (
-                                        <Link key={f.id} href={`/dashboard/fellowship/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={f.id} href={`/fellowships/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{f.name}</p>
                                             <p className="text-xs text-muted-foreground mt-1 truncate">{f.location || 'Global'}</p>
                                         </Link>
@@ -696,7 +696,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredJoinedAssociations.length > 0 ? (
                                     filteredJoinedAssociations.map(a => (
-                                        <Link key={a.id} href={`/dashboard/fellowship/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={a.id} href={`/fellowships/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{a.name}</p>
                                             <p className="text-xs text-muted-foreground mt-1 truncate">{a.location || 'Global'}</p>
                                         </Link>
@@ -727,7 +727,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredSoulsWon.length > 0 ? (
                                     filteredSoulsWon.map(s => (
-                                        <Link key={s.id} href="/dashboard/souls-won" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={s.id} href="/souls-won" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{s.firstName} {s.lastName}</p>
                                             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Won on {s.wonAt ? format(safeToDate(s.wonAt)!, "PPP") : 'N/A'}</p>
                                         </Link>
@@ -757,7 +757,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredAccountabilityPartners.length > 0 ? (
                                     filteredAccountabilityPartners.map(p => (
-                                        <Link key={p.userId} href={`/dashboard/profile/${p.userId}`} className="flex items-center gap-3 p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={p.userId} href={`/profile/${p.userId}`} className="flex items-center gap-3 p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <Avatar className="h-10 w-10 sm:h-9 sm:w-9 border shrink-0">
                                                 <AvatarImage src={p.photoURL} />
                                                 <AvatarFallback className="text-xs font-bold">{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
@@ -774,7 +774,7 @@ export default function ProfilePage() {
                         </ScrollArea>
                         <div className="pt-6 flex justify-end">
                             <Button asChild variant="outline" size="sm" className="text-[10px] font-black uppercase tracking-widest h-9 sm:h-8 px-6 rounded-full shadow-sm">
-                                <Link href="/dashboard/accountability">Find Partners</Link>
+                                <Link href="/accountability">Find Partners</Link>
                             </Button>
                         </div>
                     </CardContent>

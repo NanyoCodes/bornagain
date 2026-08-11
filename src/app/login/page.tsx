@@ -35,10 +35,10 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { user, loading: authLoading } = useUser();
 
-  // Redirect away if already logged in to prevent double-login
+  // Redirect away if already logged in AND verified
   useEffect(() => {
-    if (!authLoading && user) {
-      router.replace('/dashboard/testimonies');
+    if (!authLoading && user && (user.emailVerified || user.providerData.some(p => p.providerId === 'google.com'))) {
+      router.replace('/testimonies');
     }
   }, [user, authLoading, router]);
 
@@ -96,7 +96,7 @@ export default function LoginPage() {
       
       // Force splash screen on dashboard mount
       sessionStorage.setItem('testify_force_splash', 'true');
-      router.push('/dashboard/testimonies');
+      router.push('/testimonies');
     } catch (error) {
       const authError = error as AuthError;
       
@@ -126,8 +126,8 @@ export default function LoginPage() {
     }
   };
 
-  // STRIKE: If user is truthy, we are about to redirect. Return the loader to prevent the login form from flickering.
-  if (authLoading || user) {
+  // If user is truthy and verified, we are about to redirect.
+  if (authLoading || (user && (user.emailVerified || user.providerData.some(p => p.providerId === 'google.com')))) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -166,7 +166,7 @@ export default function LoginPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-2">
-              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-11">
+              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-11 rounded-xl">
                   {isGoogleLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (

@@ -17,8 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2, User, Mail, Lock } from "lucide-react";
-import { createUserWithEmailAndPassword, updateProfile, AuthError, sendEmailVerification, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { Loader2, Mail, Lock } from "lucide-react";
+import { createUserWithEmailAndPassword, updateProfile, AuthError, sendEmailVerification, setPersistence, browserLocalPersistence, signOut } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -63,7 +63,6 @@ export function SignUpForm() {
       return;
     }
     try {
-      // Ensure persistence is set
       await setPersistence(auth, browserLocalPersistence);
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
@@ -88,7 +87,7 @@ export function SignUpForm() {
         photoURL: user.photoURL,
       };
 
-      setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
+      await setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
         const permissionError = new FirestorePermissionError({
           path: userDocRef.path,
           operation: 'create',
@@ -97,13 +96,14 @@ export function SignUpForm() {
         errorEmitter.emit('permission-error', permissionError);
       });
 
+      // Force signout to prevent entering the app unverified
+      await signOut(auth);
+
       toast({
         title: "Account Created!",
-        description: "A verification email has been sent. Please verify your account before logging in.",
+        description: "Verification sent! Check your email to activate your identity before signing in.",
       });
       
-      // Force splash screen on next entry
-      sessionStorage.setItem('testify_force_splash', 'true');
       router.push("/login");
 
     } catch (error) {
@@ -156,7 +156,7 @@ export function SignUpForm() {
               <FormItem>
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
-                    <Input placeholder="John" {...field} className="pl-3" />
+                    <Input placeholder="John" {...field} className="pl-3 rounded-xl h-11" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -169,7 +169,7 @@ export function SignUpForm() {
               <FormItem>
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                    <Input placeholder="Doe" {...field} className="pl-3" />
+                    <Input placeholder="Doe" {...field} className="pl-3 rounded-xl h-11" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -185,7 +185,7 @@ export function SignUpForm() {
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <FormControl>
-                    <Input placeholder="name@example.com" {...field} className="pl-10" />
+                    <Input placeholder="name@example.com" {...field} className="pl-10 rounded-xl h-11" />
                 </FormControl>
               </div>
               <FormMessage />
@@ -201,7 +201,7 @@ export function SignUpForm() {
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <FormControl>
-                    <Input type="password" placeholder="********" {...field} className="pl-10" />
+                    <Input type="password" placeholder="********" {...field} className="pl-10 rounded-xl h-11" />
                 </FormControl>
               </div>
               <FormMessage />
@@ -213,7 +213,7 @@ export function SignUpForm() {
           control={form.control}
           name="acceptTerms"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 bg-muted/20">
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-2xl border p-4 bg-muted/20">
               <FormControl>
                 <Checkbox
                   checked={field.value}
@@ -221,7 +221,7 @@ export function SignUpForm() {
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel className="text-xs leading-normal cursor-pointer">
+                <FormLabel className="text-xs leading-normal cursor-pointer font-medium">
                   I agree to respect all users and abide by the Testify guidelines.
                 </FormLabel>
                 <FormDescription className="text-[10px]">
@@ -233,7 +233,7 @@ export function SignUpForm() {
           )}
         />
 
-        <Button type="submit" variant="destructive" className="w-full" disabled={isLoading}>
+        <Button type="submit" variant="destructive" className="w-full h-11 rounded-xl font-bold shadow-md" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Create account
         </Button>
