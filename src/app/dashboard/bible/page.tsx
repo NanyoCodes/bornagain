@@ -378,6 +378,17 @@ export default function BibleReaderPage() {
         await updateDoc(doc(firestore, 'users', user.uid, 'bibleHighlights', highlightId), { note: noteText, updatedAt: serverTimestamp() });
     };
 
+    const handleDeleteHighlight = async (id: string) => {
+        if (!user || !firestore) return;
+        const highlightRef = doc(firestore, 'users', user.uid, 'bibleHighlights', id);
+        try {
+            await deleteDoc(highlightRef);
+            setActiveHighlightId(null);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     const readingHistoryList = userProfile?.readingHistory || [];
     const historyGroups = useMemo(() => {
         const groups: { date: Date; items: ReadingHistoryItem[] }[] = [];
@@ -398,7 +409,7 @@ export default function BibleReaderPage() {
     const NotesList = (
         <div className="space-y-4 p-1 text-left">
             {highlights?.sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0)).map(h => h.id === activeHighlightId ? (
-                <NoteEditor key={h.id} highlight={h} onSave={handleUpdateNote} onDelete={(id) => deleteDoc(doc(firestore, user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} onCancel={() => setActiveHighlightId(null)} />
+                <NoteEditor key={h.id} highlight={h} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
             ) : (
                 <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50 border-l-4 rounded-xl shadow-sm border-l-primary text-left", getNoteCardClass(h.color))}>
                     <CardHeader className="p-4 text-left">
@@ -593,7 +604,7 @@ export default function BibleReaderPage() {
                             <SheetDescription className="text-xs font-bold text-primary uppercase tracking-widest text-left">{getVerseReference(activeHighlight)}</SheetDescription>
                           </SheetHeader>
                           <div className="flex-grow overflow-y-auto p-6 text-left">
-                            <NoteEditor highlight={activeHighlight} onSave={handleUpdateNote} onDelete={(id) => deleteDoc(doc(firestore, user!.uid, 'bibleHighlights', id)).then(() => setActiveHighlightId(null))} onCancel={() => setActiveHighlightId(null)} />
+                            <NoteEditor highlight={activeHighlight} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
                           </div>
                         </SheetContent>
                       </Sheet>

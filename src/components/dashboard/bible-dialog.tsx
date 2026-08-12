@@ -195,7 +195,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       return;
     }
 
-    if (isOpen && !loadingProfile && !isInitialized) {
+    if (isOpen && !profileLoading && !isInitialized) {
       const savedBook = typeof window !== 'undefined' ? localStorage.getItem('last_bible_book') : null;
       const savedChapter = typeof window !== 'undefined' ? localStorage.getItem('last_bible_chapter') : null;
       const savedVersion = typeof window !== 'undefined' ? localStorage.getItem('last_bible_version') : null;
@@ -219,7 +219,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       }
       setIsInitialized(true);
     }
-  }, [isOpen, userProfile, loadingProfile, isInitialized]);
+  }, [isOpen, userProfile, profileLoading, isInitialized]);
 
   // Viewing Persistence
   useEffect(() => {
@@ -321,7 +321,8 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   
     const handleDeleteHighlight = async (highlightId: string) => {
         if (!user || !firestore) return;
-        deleteDoc(doc(firestore, 'users', user.uid, 'bibleHighlights', highlightId)).then(() => {
+        const highlightRef = doc(firestore, 'users', user.uid, 'bibleHighlights', highlightId);
+        deleteDoc(highlightRef).then(() => {
             if (activeHighlightId === highlightId) setActiveHighlightId(null);
         });
     };
@@ -382,7 +383,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     const handleSelectVersion = (version: string) => { setSelectedVersion(version); setIsVersionSheetOpen(false); }
     
     const NotesList = (
-        <div className="space-y-2 p-1 text-left">
+        <div className="space-y-2 p-1 text-left text-left">
             {highlights?.sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0)).map(h => h.id === activeHighlightId ? (
                 <div key={h.id} ref={activeNoteRef} className="text-left">
                     <NoteEditor highlight={h} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
@@ -428,9 +429,9 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
           </div>
            <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-2 items-center justify-between text-left">
             {unfinishedHighlight && (
-                <Card className="border-amber-500/50 bg-amber-500/5 p-3 w-full max-w-md text-left"><div className="flex items-center justify-between gap-4 text-left"><p className="font-semibold text-sm text-left">Note Required</p><Button size="sm" variant="outline" onClick={() => { setActiveHighlightId(unfinishedHighlight.id); if (isMobile) setMobileTab('notes'); }} className="text-left">Go to Note</Button></div></Card>
+                <Card className="border-amber-500/50 bg-amber-500/5 p-3 w-full max-w-md text-left text-left text-left"><div className="flex items-center justify-between gap-4 text-left"><p className="font-semibold text-sm text-left">Note Required</p><Button size="sm" variant="outline" onClick={() => { setActiveHighlightId(unfinishedHighlight.id); if (isMobile) setMobileTab('notes'); }} className="text-left">Go to Note</Button></div></Card>
             )}
-            <div className="flex gap-2 items-center text-left">
+            <div className="flex gap-2 items-center text-left text-left">
                 <div className="flex items-center gap-2 text-left">
                     <Input type="number" placeholder="Verse" value={goToVerse} onChange={(e) => setGoToVerse(e.target.value)} className="w-20 h-9 text-left" onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()} />
                     <Button onClick={handleGoToVerse} size="sm" variant="secondary" className="text-left">Go</Button>
@@ -448,15 +449,15 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
               <div className="shrink-0 text-left">
                 {!mounted || !isMobile ? (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
-                        <Select value={selectedBookName} onValueChange={setSelectedBookName}><SelectTrigger className="text-left"><SelectValue className="text-left" /></SelectTrigger><SelectContent className="text-left">{bibleData.map(book => (<SelectItem key={book.name} value={book.name} className="text-left">{book.name}</SelectItem>))}</SelectContent></Select>
-                        <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}><PopoverTrigger asChild><Button variant="outline" className="w-full justify-between text-left">Chapter {selectedChapterNumber} <ChevronDown className="h-4 w-4 opacity-50 text-left" /></Button></PopoverTrigger><PopoverContent className="w-[300px] p-0 text-left"><ScrollArea className="h-72 text-left"><div className="grid grid-cols-8 gap-1 p-2 text-left">{selectedBook?.chapters.map(chapter => (<Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? "default" : "outline"} size="sm" onClick={() => handleSelectChapter(chapter.chapter)} className="text-left">{chapter.chapter}</Button>))}</div></ScrollArea></PopoverContent></Popover>
+                        <Select value={selectedBookName} onValueChange={setSelectedBookName}><SelectTrigger className="text-left"><SelectValue className="text-left" /></SelectTrigger><SelectContent className="text-left">{bibleData.map(book => (<SelectItem key={book.name} value={book.name} className="text-left text-left">{book.name}</SelectItem>))}</SelectContent></Select>
+                        <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}><PopoverTrigger asChild><Button variant="outline" className="w-full justify-between text-left">Chapter {selectedChapterNumber} <ChevronDown className="h-4 w-4 opacity-50 text-left" /></Button></PopoverTrigger><PopoverContent className="w-[300px] p-0 text-left"><ScrollArea className="h-72 text-left"><div className="grid grid-cols-8 gap-1 p-2 text-left text-left">{selectedBook?.chapters.map(chapter => (<Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? "default" : "outline"} size="sm" onClick={() => handleSelectChapter(chapter.chapter)} className="text-left">{chapter.chapter}</Button>))}</div></ScrollArea></PopoverContent></Popover>
                         <Select value={selectedVersion} onValueChange={setSelectedVersion}><SelectTrigger className="text-left"><SelectValue className="text-left" /></SelectTrigger><SelectContent className="text-left">{bibleVersions.map(v => (<SelectItem key={v.id} value={v.id} className="text-left">{v.name}</SelectItem>))}</SelectContent></Select>
                     </div>
                 ) : (
                     <div className="grid grid-cols-3 gap-2 text-left">
-                        <Sheet open={isBookSheetOpen} onOpenChange={setIsBookSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between text-left"><span className="truncate text-left">{selectedBookName}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50 text-left" /></Button></SheetTrigger><SheetContent side="bottom" className="h-[90vh] flex flex-col text-left"><SheetHeader className="text-left"><SheetTitle className="text-left">Select Book</SheetTitle></SheetHeader><Input placeholder="Search..." value={bookSearchTerm} onChange={(e) => setBookSearchTerm(e.target.value)} className="text-left" /><ScrollArea className="flex-grow text-left">{filteredBibleData.map(book => (<Button key={book.name} variant="ghost" size="lg" className="w-full justify-start text-left" onClick={() => handleSelectBook(book.name)}>{book.name}</Button>))}</ScrollArea></SheetContent></Sheet>
-                        <Sheet open={isChapterSheetOpen} onOpenChange={setIsChapterSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between text-left"><span className="truncate text-left">Chapter {selectedChapterNumber}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50 text-left" /></Button></SheetTrigger><SheetContent side="bottom" className="h-[90vh] flex flex-col text-left"><SheetHeader className="text-left"><SheetTitle className="text-left">Select Chapter</SheetTitle></SheetHeader><ScrollArea className="flex-grow text-left"><div className="grid grid-cols-5 gap-2 p-4 text-left">{selectedBook?.chapters.map(chapter => (<Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? 'default' : 'outline'} size="icon" onClick={() => handleSelectChapter(chapter.chapter)} className="text-left">{chapter.chapter}</Button>))}</div></ScrollArea></SheetContent></Sheet>
-                        <Sheet open={isVersionSheetOpen} onOpenChange={setIsVersionSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between text-left"><span className="truncate text-left">{selectedVersion.toUpperCase()}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50 text-left" /></Button></SheetTrigger><SheetContent side="bottom" className="h-auto text-left"><SheetHeader className="text-left"><SheetTitle className="text-left">Version</SheetTitle></SheetHeader><div className="grid gap-2 py-4 text-left">{bibleVersions.map(v => (<Button key={v.id} variant={v.id === selectedVersion ? 'default' : 'ghost'} size="lg" className="w-full justify-start text-left" onClick={() => handleSelectVersion(v.id)}>{v.name}</Button>))}</div></SheetContent></Sheet>
+                        <Sheet open={isBookSheetOpen} onOpenChange={setIsBookSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between text-left"><span className="truncate text-left">{selectedBookName}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50 text-left" /></Button></SheetTrigger><SheetContent side="bottom" className="h-[90vh] flex flex-col text-left"><SheetHeader className="text-left"><SheetTitle className="text-left">Select Book</SheetTitle></SheetHeader><Input placeholder="Search..." value={bookSearchTerm} onChange={(e) => setBookSearchTerm(e.target.value)} className="text-left" /><ScrollArea className="flex-grow text-left text-left">{filteredBibleData.map(book => (<Button key={book.name} variant="ghost" size="lg" className="w-full justify-start text-left" onClick={() => handleSelectBook(book.name)}>{book.name}</Button>))}</ScrollArea></SheetContent></Sheet>
+                        <Sheet open={isChapterSheetOpen} onOpenChange={setIsChapterSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between text-left text-left"><span className="truncate text-left">{selectedChapterNumber}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50 text-left" /></Button></SheetTrigger><SheetContent side="bottom" className="h-[90vh] flex flex-col text-left"><SheetHeader className="text-left"><SheetTitle className="text-left">Select Chapter</SheetTitle></SheetHeader><ScrollArea className="flex-grow text-left"><div className="grid grid-cols-5 gap-2 p-4 text-left">{selectedBook?.chapters.map(chapter => (<Button key={chapter.chapter} variant={chapter.chapter === selectedChapterNumber ? 'default' : 'outline'} size="icon" onClick={() => handleSelectChapter(chapter.chapter)} className="text-left">{chapter.chapter}</Button>))}</div></ScrollArea></SheetContent></Sheet>
+                        <Sheet open={isVersionSheetOpen} onOpenChange={setIsVersionSheetOpen}><SheetTrigger asChild><Button variant="outline" className="truncate justify-between text-left text-left"><span className="truncate text-left">{selectedVersion.toUpperCase()}</span><ChevronRight className="h-4 w-4 shrink-0 opacity-50 text-left" /></Button></SheetTrigger><SheetContent side="bottom" className="h-auto text-left"><SheetHeader className="text-left"><SheetTitle className="text-left">Version</SheetTitle></SheetHeader><div className="grid gap-2 py-4 text-left">{bibleVersions.map(v => (<Button key={v.id} variant={v.id === selectedVersion ? 'default' : 'ghost'} size="lg" className="w-full justify-start text-left" onClick={() => handleSelectVersion(v.id)}>{v.name}</Button>))}</div></SheetContent></Sheet>
                     </div>
                 )}
               </div>
@@ -473,7 +474,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                 </Tabs>
             )}
           </TabsContent>
-          <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4 text-left"><ScrollArea className="h-full text-left"><div className="p-4 space-y-6 text-sm text-left">{(userProfile?.readingHistory || []).map((item, idx) => (<div key={idx} className="flex items-center justify-between text-left"><p className="text-left">Read <span className="font-medium text-left">{item.book} {item.chapter}</span></p><span className="text-muted-foreground text-left">{item.readAt ? format(safeToDate(item.readAt)!, 'p') : 'N/A'}</span></div>))}</div></ScrollArea></TabsContent>
+          <TabsContent value="history" className="flex-grow flex flex-col min-h-0 mt-4 text-left text-left"><ScrollArea className="h-full text-left text-left"><div className="p-4 space-y-6 text-sm text-left">{(userProfile?.readingHistory || []).map((item, idx) => (<div key={idx} className="flex items-center justify-between text-left"><p className="text-left">Read <span className="font-medium text-left">{item.book} {item.chapter}</span></p><span className="text-muted-foreground text-left">{item.readAt ? format(safeToDate(item.readAt)!, 'p') : 'N/A'}</span></div>))}</div></ScrollArea></TabsContent>
        </Tabs>
     );
 

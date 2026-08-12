@@ -270,12 +270,12 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
     return (
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                    <div className="flex items-center gap-2 mb-2">
+                <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                    <div className="flex items-center gap-2 mb-2 text-left">
                         <ShoppingCart className="h-4 w-4 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Provision Hub</span>
                     </div>
-                    <SheetHeader className="text-left flex-shrink-0">
+                    <SheetHeader className="text-left flex-shrink-0 text-left">
                         <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</SheetTitle>
                         <SheetDescription className="text-sm font-medium mt-1 text-left">Review selection for {manualRecipientName || 'the brethren'}.</SheetDescription>
                     </SheetHeader>
@@ -288,27 +288,27 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                                 <div className="space-y-6 text-left">
                                     {cartByVendor.map(group => (
                                         <div key={group.vendorId} className="space-y-3 text-left">
-                                            <div className="flex items-center justify-between px-1">
-                                                <div className="flex items-center gap-2">
+                                            <div className="flex items-center justify-between px-1 text-left">
+                                                <div className="flex items-center gap-2 text-left">
                                                     <Store className="h-3.5 w-3.5 text-primary" />
-                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[200px]">{group.vendorName}</h4>
+                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[200px] text-left">{group.vendorName}</h4>
                                                 </div>
-                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
+                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 text-left">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
                                             </div>
-                                            <div className="space-y-2 text-left">
+                                            <div className="space-y-2 text-left text-left">
                                                 {group.items.map((c: any) => (
-                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group">
-                                                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border">
+                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group text-left text-left">
+                                                        <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">
                                                                 {c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}
                                                             </div>
-                                                            <div className="min-w-0 flex-1 text-left">
-                                                                <p className="font-black text-sm uppercase tracking-tight truncate">{c.item.name}</p>
-                                                                <p className="text-[10px] font-bold text-primary uppercase">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
+                                                            <div className="min-w-0 flex-1 text-left text-left">
+                                                                <p className="font-black text-sm uppercase tracking-tight truncate text-left">{c.item.name}</p>
+                                                                <p className="text-[10px] font-bold text-primary uppercase text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center gap-2 ml-2">
-                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm">
+                                                        <div className="flex items-center gap-2 ml-2 text-left text-left">
+                                                            <div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left">
                                                                 <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQty(c.item.id, -1)}><Minus className="h-3 w-3" /></Button>
                                                                 <span className="text-[11px] font-black min-w-[1.25rem] text-center">{c.quantity}</span>
                                                                 <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full" onClick={() => handleUpdateQty(c.item.id, 1)}><Plus className="h-3 w-3" /></Button>
@@ -322,26 +322,26 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                                     ))}
                                 </div>
 
-                                <div className="space-y-6 text-left">
-                                    <div className="space-y-2">
+                                <div className="space-y-6 text-left text-left text-left">
+                                    <div className="space-y-2 text-left">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Recipient Name</Label>
-                                        <Input placeholder="Who is this for?" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
+                                        <Input placeholder="Who is this for?" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                                     </div>
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 text-left text-left">
                                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Logistical Instructions</Label>
-                                        <Textarea placeholder="Delivery details, contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base" />
+                                        <Textarea placeholder="Delivery details, contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" />
                                     </div>
                                 </div>
                             </div>
                         ) : (
-                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center">
-                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6">
-                                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10" />
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left">
+                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
+                                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
                                 </div>
-                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40">Empty Hub</h3>
-                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed">Add items from the marketplace to build your package.</p>
-                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg" onClick={() => onOpenChange(false)}>
-                                    <Link href="/marketplace">VISIT HUB</Link>
+                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3>
+                                <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-left text-left">Add items from the marketplace to build your package.</p>
+                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left" onClick={() => onOpenChange(false)}>
+                                    <Link href="/marketplace" className="text-left text-left">VISIT HUB</Link>
                                 </Button>
                             </div>
                         )}
@@ -350,9 +350,9 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                 </ScrollArea>
 
                 {cartItems.length > 0 && (
-                    <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
-                        <Button onClick={handleDispatch} disabled={isProcessing || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
-                            {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    <SheetFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left">
+                        <Button onClick={handleDispatch} disabled={isProcessing || !manualRecipientName.trim() || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left text-left">
+                            {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
                             DISPATCH PACKAGE
                         </Button>
                     </SheetFooter>
@@ -404,17 +404,17 @@ function CartButton() {
         <TooltipProvider>
         <Tooltip>
             <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full" onClick={() => setIsSheetOpen(true)}>
-                <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
+            <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left" onClick={() => setIsSheetOpen(true)}>
+                <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110 text-left" />
                 {count > 0 && (
-                    <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-black text-white border-2 border-background animate-in zoom-in">
+                    <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-black text-white border-2 border-background animate-in zoom-in text-left">
                     {count}
                     </div>
                 )}
             </Button>
             </TooltipTrigger>
-            <TooltipContent className="rounded-xl border-primary/20 shadow-xl">
-            <p className="text-[10px] font-black uppercase tracking-widest">Kindness Package</p>
+            <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left">
+            <p className="text-[10px] font-black uppercase tracking-widest text-left">Kindness Package</p>
             </TooltipContent>
         </Tooltip>
         </TooltipProvider>
@@ -444,17 +444,17 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
   if (showMobileSearch) {
     return (
       <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
-        <div className="flex w-full items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors">
-            <ArrowLeft className="h-6 w-6" />
+        <div className="flex w-full items-center gap-3 text-left">
+          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors text-left">
+            <ArrowLeft className="h-6 w-6 text-left" />
           </Button>
-          <form className="w-full" onSubmit={(e) => e.preventDefault()}>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50" />
+          <form className="w-full text-left" onSubmit={(e) => e.preventDefault()}>
+            <div className="relative text-left">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50 text-left" />
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="w-full pl-10 h-11 rounded-2xl bg-muted/20 border-none shadow-inner text-base"
+                className="w-full pl-10 h-11 rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 autoFocus
@@ -470,19 +470,19 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
 
   return (
     <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4">
-      <div className="flex shrink-0 w-[56px] md:w-[220px]">
+      <div className="flex shrink-0 w-[56px] md:w-[220px] text-left">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
-            <Avatar className="h-14 w-14 md:h-16 md:w-16 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
-              <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
-              <AvatarFallback>T</AvatarFallback>
+            <Avatar className="h-14 w-14 md:h-16 md:w-16 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent text-left">
+              <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left" />
+              <AvatarFallback className="text-left">T</AvatarFallback>
             </Avatar>
           )}
         </Link>
       </div>
 
-      <nav className="hidden md:flex flex-1 justify-center items-center h-full min-w-0">
-        <div className="flex items-center gap-1 lg:gap-2 h-full max-w-full overflow-x-auto no-scrollbar">
+      <nav className="hidden md:flex flex-1 justify-center items-center h-full min-w-0 text-left">
+        <div className="flex items-center gap-1 lg:gap-2 h-full max-w-full overflow-x-auto no-scrollbar text-left">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -509,11 +509,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
         </div>
       </nav>
         
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0">
-        <div className="hidden lg:block min-w-0">
-            <form onSubmit={(e) => e.preventDefault()}>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left">
+        <div className="hidden lg:block min-w-0 text-left">
+            <form onSubmit={(e) => e.preventDefault()} className="text-left">
+              <div className="relative text-left">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                 <Input
                   type="search"
                   placeholder={searchPlaceholder}
@@ -526,33 +526,33 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
         </div>
         
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="lg:hidden h-11 w-11 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-6 w-6" />
-            <span className="sr-only">Search</span>
+          <Button variant="ghost" size="icon" className="lg:hidden h-11 w-11 rounded-full transition-transform active:scale-95 text-left" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-6 w-6 text-left" />
+            <span className="sr-only text-left">Search</span>
           </Button>
         )}
         
         {user ? (
           <>
             <CartButton />
-            <Link href="/chats">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
-                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110" />
+            <Link href="/chats" className="text-left">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
+                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110 text-left" />
                       {unreadChatCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
+                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-left">
                           {unreadChatCount}
                         </div>
                       )}
                     </Button>
                 </motion.div>
             </Link>
-            <Link href="/notifications">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
-                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110" />
+            <Link href="/notifications" className="text-left">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
+                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110 text-left" />
                       {unreadNotifCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
+                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-left">
                           {unreadNotifCount}
                         </div>
                       )}
@@ -561,44 +561,44 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 shrink-0">
-                  <Avatar className="h-10 w-10 border shadow-sm">
-                    <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
-                    <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 shrink-0 text-left">
+                  <Avatar className="h-10 w-10 border shadow-sm text-left">
+                    <AvatarImage src={user.photoURL ?? undefined} className="object-cover text-left" />
+                    <AvatarFallback className="text-xs font-bold text-left">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
-                    <span className="absolute top-0 right-0 flex h-3 w-3">
+                    <span className="absolute top-0 right-0 flex h-3 w-3 text-left">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background"></span>
                     </span>
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="z-50 min-w-[8rem] overflow-hidden border bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar" align="end" forceMount>
+              <DropdownMenuContent className="z-50 min-w-[8rem] overflow-hidden border bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar text-left" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal p-4 text-left">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-black leading-tight truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
-                    <p className="text-[10px] text-muted-foreground truncate font-bold uppercase tracking-wider">{user.email}</p>
+                  <div className="flex flex-col space-y-1 text-left">
+                    <p className="text-sm font-black leading-tight truncate uppercase tracking-tight text-left">{user.displayName || 'User'}</p>
+                    <p className="text-[10px] text-muted-foreground truncate font-bold uppercase tracking-wider text-left">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
                 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1 text-left">
+                <div className="p-1 space-y-1 text-left text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/profile" className="flex items-center gap-3 w-full">
-                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
-                        <User className="h-4 w-4" />
+                    <Link href="/profile" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left">
+                        <User className="h-4 w-4 text-left" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left">Profile Identity</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left">Profile Identity</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/settings" className="flex items-center gap-3 w-full">
-                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
-                        <Settings className="h-4 w-4" />
+                    <Link href="/settings" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left">
+                        <Settings className="h-4 w-4 text-left" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left">System Settings</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left">System Settings</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
@@ -608,49 +608,49 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <div className="p-1 space-y-1 text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-2 tracking-[0.2em] text-left">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/victory-hub" className="flex items-center gap-3 w-full">
+                    <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left">
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-left">
-                        <ShieldCheck className="h-4 w-4 text-primary" />
+                        <ShieldCheck className="h-4 w-4 text-primary text-left" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/marketplace" className="flex items-center gap-3 w-full">
+                    <Link href="/marketplace" className="flex items-center gap-3 w-full text-left">
                       <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-left">
-                        <Store className="h-4 w-4 text-blue-600" />
+                        <Store className="h-4 w-4 text-blue-600 text-left" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
+                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full text-left">
                       <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-left">
-                        <Gift className="h-4 w-4 text-indigo-600" />
+                        <Gift className="h-4 w-4 text-indigo-600 text-left" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
+                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full text-left">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left">
-                        <Package className="h-4 w-4" />
+                        <Package className="h-4 w-4 text-left" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/events" className="flex items-center gap-3 w-full">
+                    <Link href="/events" className="flex items-center gap-3 w-full text-left">
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-left">
-                        <CalendarDays className="h-4 w-4 text-primary" />
+                        <CalendarDays className="h-4 w-4 text-primary text-left" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Event Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/fellowships" className="flex items-center gap-3 w-full">
+                    <Link href="/fellowships" className="flex items-center gap-3 w-full text-left">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left">
-                        <Users className="h-4 w-4" />
+                        <Users className="h-4 w-4 text-left" />
                       </div>
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Fellowships</span>
                     </Link>
@@ -664,9 +664,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-2 tracking-[0.2em] text-left">My Storefronts</p>
                       {userVendors.map(v => (
                         <DropdownMenuItem key={v.id} asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
-                          <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full">
-                            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
-                              <Package className="h-4 w-4 text-primary" />
+                          <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full text-left">
+                            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 text-left">
+                              <Package className="h-4 w-4 text-primary text-left" />
                             </div>
                             <span className="text-xs font-black uppercase tracking-tight truncate text-left">{v.businessName}</span>
                           </Link>
@@ -680,17 +680,17 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 
                 <div className="p-1 space-y-1 text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
-                      <Link href="/guide" className="flex items-center gap-3 w-full">
-                        <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
-                          <Info className="h-4 w-4" />
+                      <Link href="/guide" className="flex items-center gap-3 w-full text-left text-left">
+                        <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left">
+                          <Info className="h-4 w-4 text-left" />
                         </div>
                         <span className="text-xs font-bold uppercase tracking-widest text-left">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
-                      <Link href="/resources" className="flex items-center gap-3 w-full">
-                        <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
-                          <BookMarked className="h-4 w-4" />
+                      <Link href="/resources" className="flex items-center gap-3 w-full text-left text-left">
+                        <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left">
+                          <BookMarked className="h-4 w-4 text-left" />
                         </div>
                         <span className="text-xs font-bold uppercase tracking-widest text-left">Kingdom Library</span>
                       </Link>
@@ -699,9 +699,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 text-left">
+                <div className="p-1 text-left text-left">
                   <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-12 px-3 cursor-pointer text-left">
-                    <LogOut className="mr-3 h-5 w-5" />
+                    <LogOut className="mr-3 h-5 w-5 text-left" />
                     <span className="text-xs font-black uppercase tracking-[0.2em] text-left">Sign Out</span>
                   </DropdownMenuItem>
                 </div>
@@ -709,16 +709,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
             </DropdownMenu>
           </>
         ) : showGuestButtons ? (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold">
-              <Link href="/login">Sign In</Link>
+          <div className="flex items-center gap-2 text-left">
+            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold text-left">
+              <Link href="/login" className="text-left">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20">
-              <Link href="/">Get Started</Link>
+            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
+              <Link href="/" className="text-left">Get Started</Link>
             </Button>
           </div>
         ) : (
-          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
+          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted text-left" />
         )}
       </div>
     </header>
@@ -805,7 +805,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     const forceSplash = sessionStorage.getItem('testify_force_splash') === 'true';
     const now = Date.now();
 
-    if (forceSplash || !lastShown || now - parseInt(lastShown, 10) > SPLASH_COOLDOWN) {
+    if (forceSplash || !lastShown || now - parseInt(lastShown || '0', 10) > SPLASH_COOLDOWN) {
         if (forceSplash) sessionStorage.removeItem('testify_force_splash');
         setShowSplash(true);
         const timer = setTimeout(() => {
@@ -897,17 +897,17 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center">
-        <div className="relative mb-8 mx-auto w-fit">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center text-left">
+        <div className="relative mb-8 mx-auto w-fit text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
+            <div className="absolute inset-0 flex items-center justify-center text-left">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
             </div>
         </div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 text-left">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left">
             Kingdom Network Active
         </p>
       </div>
@@ -937,7 +937,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
               userVendors={userVendors || null}
           />
           )}
-          <div className="flex-1 relative min-h-0">
+          <div className="flex-1 relative min-h-0 text-left">
           <main 
               ref={scrollContainerRef}
               className={cn(
@@ -962,27 +962,27 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
-              <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
+              <SheetHeader className="text-left text-left">
+                <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6">
+            <div className="flex-grow overflow-y-auto p-6 text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </SheetContent>
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
-            <div className="p-6 border-b bg-muted/10">
-              <DialogHeader className="text-left">
-                  <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
-                  <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
+            <div className="p-6 border-b bg-muted/10 text-left">
+              <DialogHeader className="text-left text-left">
+                  <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
+                  <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -996,8 +996,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
+                <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
             </div>
         }>
             <ShellInner>{children}</ShellInner>
