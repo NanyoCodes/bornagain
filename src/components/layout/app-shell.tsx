@@ -238,7 +238,6 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                 });
             }
 
-            // Create notification for vendor
             if (vendorOwnerId && vendorOwnerId !== user.uid) {
                 const notifRef = doc(collection(firestore, `users/${vendorOwnerId}/notifications`));
                 batch.set(notifRef, {
@@ -277,8 +276,8 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Provision Hub</span>
                     </div>
                     <SheetHeader className="text-left flex-shrink-0">
-                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1">Review your active offerings for the brethren.</SheetDescription>
+                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kindness Package</SheetTitle>
+                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Review selection for {manualRecipientName || 'the brethren'}.</SheetDescription>
                     </SheetHeader>
                 </div>
                 
@@ -429,7 +428,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
@@ -614,7 +612,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left">
                         <ShieldCheck className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Victory Hub</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left text-left">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
@@ -622,7 +620,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-left text-left">
                         <Store className="h-4 w-4 text-blue-600" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Meals Provision</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left text-left">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
@@ -630,7 +628,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-left text-left">
                         <Gift className="h-4 w-4 text-indigo-600" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Kindness Gifts</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left text-left">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
@@ -638,7 +636,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left text-left">
                         <Package className="h-4 w-4" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Order Tracker</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left text-left">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
@@ -646,7 +644,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left">
                         <CalendarDays className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Event Hub</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left text-left">Event Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
@@ -654,7 +652,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left text-left">
                         <Users className="h-4 w-4" />
                       </div>
-                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Fellowships</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left text-left">Fellowships</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
@@ -694,7 +692,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                         <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
                           <BookMarked className="h-4 w-4" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left text-left">Kingdom Library</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left text-left text-left">Kingdom Library</span>
                       </Link>
                   </DropdownMenuItem>
                 </div>
@@ -845,7 +843,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     }
   }, [userProfile, mounted]);
 
-  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships', '/events', '/marketplace', '/marketplace/gifts', '/marketplace/orders', '/victory-hub'];
+  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships', '/events', '/marketplace', '/marketplace/gifts', '/marketplace/orders', '/victory-hub', '/strongholds'];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
   const isTakeoverPage = useMemo(() => {
@@ -964,27 +962,27 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left text-left text-left text-left text-left">
-              <SheetHeader className="text-left text-left text-left text-left text-left text-left">
-                <SheetTitle className="text-xl font-bold text-left text-left text-left text-left">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs text-left text-left text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left text-left text-left text-left text-left text-left">
+              <SheetHeader className="text-left text-left text-left text-left text-left text-left text-left">
+                <SheetTitle className="text-xl font-bold text-left text-left text-left text-left text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left text-left text-left text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6 text-left text-left">
+            <div className="flex-grow overflow-y-auto p-6 text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </SheetContent>
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
-            <div className="p-6 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left">
-              <DialogHeader className="text-left text-left text-left text-left text-left text-left">
-                  <DialogTitle className="text-2xl font-bold text-left text-left text-left text-left text-left text-left">Complete Your Profile</DialogTitle>
-                  <DialogDescription className="text-sm text-left text-left text-left text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
+              <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
+                  <DialogTitle className="text-2xl font-bold text-left text-left text-left text-left text-left text-left text-left">Complete Your Profile</DialogTitle>
+                  <DialogDescription className="text-sm text-left text-left text-left text-left text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left text-left text-left text-left text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left text-left text-left text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -998,8 +996,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left">
-                <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left text-left" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left text-left">
+                <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left text-left text-left" />
             </div>
         }>
             <ShellInner>{children}</ShellInner>
