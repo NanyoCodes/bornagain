@@ -432,7 +432,7 @@ export default function ProfilePage() {
             <div className="flex-grow w-full text-center space-y-4">
                 <div className="flex flex-col items-center gap-4 text-center">
                     <div className="flex-grow min-w-0 w-full text-center">
-                        <h1 className="text-2xl sm:text-3xl font-bold truncate leading-tight capitalize text-center w-full">{displayName}</h1>
+                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize text-center w-full">{displayName}</h1>
                         <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium text-center">
                             {(city || state || country) && (
                                 <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider">
@@ -497,7 +497,7 @@ export default function ProfilePage() {
       </Card>
 
       {videoTestimonies.length > 0 && (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none overflow-hidden border-t-4 border-t-red-600 border-b-2 sm:border-b bg-card/50">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-t-4 border-t-red-600 border-b-2 sm:border-b bg-card/50">
             <CardHeader className="pb-4 pt-6 px-6">
                 <CardTitle className="flex items-center justify-center gap-2 text-lg font-bold">
                     <Youtube className="h-5 w-5 text-red-600" />
@@ -540,7 +540,7 @@ export default function ProfilePage() {
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
                             filterDate={testimonyFilterDate}
-                            setFilterDate={setTestimonyFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search testimonies..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
@@ -569,7 +569,7 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setPrayerFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
@@ -600,7 +600,7 @@ export default function ProfilePage() {
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setCreatedCampaignFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
@@ -720,7 +720,7 @@ export default function ProfilePage() {
                             searchTerm={soulSearchTerm}
                             setSearchTerm={setSoulSearchTerm}
                             filterDate={soulFilterDate}
-                            setFilterDate={setSoulFilterDate}
+                            setFilterDate={setFilterDate}
                             searchPlaceholder="Search souls by name..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
