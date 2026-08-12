@@ -56,8 +56,8 @@ function FilterControls({
   const dateValue = filterDate ? format(filterDate, "yyyy-MM-dd") : "";
 
   return (
-    <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center text-left">
-      <div className="relative flex-grow text-left">
+    <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center">
+      <div className="relative flex-grow">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder={searchPlaceholder}
@@ -89,7 +89,7 @@ function FilterControls({
 }
 
 export default function ProfilePage() {
-  const { user: currentUser, loading: userLoading } = useUser();
+  const { user: currentUser, loading: authLoading } = useUser();
   const firestore = useFirestore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -398,7 +398,7 @@ export default function ProfilePage() {
   const { city, state, country } = location || {};
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-32 text-center">
+    <div className="space-y-6 max-w-5xl mx-auto pb-32">
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
         <CardContent className="p-6 sm:p-8">
           <div className="flex flex-col items-center gap-6">
@@ -429,11 +429,11 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
-            <div className="flex-grow w-full text-center space-y-4">
-                <div className="flex flex-col items-center gap-4 text-center">
-                    <div className="flex-grow min-w-0 w-full text-center">
+            <div className="flex-grow w-full space-y-4">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="flex-grow min-w-0 w-full">
                         <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize text-center w-full">{displayName}</h1>
-                        <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium text-center">
+                        <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
                             {(city || state || country) && (
                                 <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider">
                                     <MapPin className="h-4 w-4" /> 
@@ -480,7 +480,7 @@ export default function ProfilePage() {
                 </div>
 
                 {personalMessage && (
-                    <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 inline-flex items-center gap-3 text-center max-w-xl mx-auto">
+                    <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 inline-flex items-center gap-3 text-left max-w-xl mx-auto">
                         <Sparkles className="h-5 w-5 text-primary shrink-0" />
                         <p className="text-sm sm:text-base font-bold text-foreground leading-snug italic">
                           &ldquo;{personalMessage}&rdquo;
@@ -530,9 +530,9 @@ export default function ProfilePage() {
                 <Activity className="h-5 w-5" /> Your Kingdom Activity
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
+                    <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="text-base sm:text-lg">Testimonies ({testimonies?.length ?? 0})</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -540,14 +540,14 @@ export default function ProfilePage() {
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
                             filterDate={testimonyFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setTestimonyFilterDate}
                             searchPlaceholder="Search testimonies..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
                             <div className="p-1 space-y-px">
                                 {filteredTestimonies.length > 0 ? (
                                     filteredTestimonies.map(t => (
-                                        <Link key={t.id} href={`/testimonies#${t.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={t.id} href={`/testimonies#${t.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
                                             <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1">{t.category}</p>
                                             <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed">{t.content}</p>
                                         </Link>
@@ -561,7 +561,7 @@ export default function ProfilePage() {
                 </Card>
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
+                    <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="text-base sm:text-lg">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -569,14 +569,14 @@ export default function ProfilePage() {
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
                             filterDate={prayerFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setPrayerFilterDate}
                             searchPlaceholder="Search prayer requests..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
                             <div className="p-1 space-y-px">
                                 {filteredPrayerRequests.length > 0 ? (
                                     filteredPrayerRequests.map(p => (
-                                        <Link key={p.id} href="/testimonies?tab=prayers" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={p.id} href="/testimonies?tab=prayers" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
                                             <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1">{p.category}</p>
                                             <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed">{p.content}</p>
                                         </Link>
@@ -590,9 +590,9 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
+                    <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="text-base sm:text-lg">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -600,14 +600,14 @@ export default function ProfilePage() {
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
                             filterDate={createdCampaignFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setCreatedCampaignFilterDate}
                             searchPlaceholder="Search created campaigns..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
                             <div className="p-1 space-y-px">
                                 {filteredCreatedCampaigns.length > 0 ? (
                                     filteredCreatedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{c.title}</p>
                                             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
@@ -621,7 +621,7 @@ export default function ProfilePage() {
                 </Card>
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
+                    <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="text-base sm:text-lg">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -634,7 +634,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredJoinedCampaigns.length > 0 ? (
                                     filteredJoinedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{c.title}</p>
                                             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
@@ -648,9 +648,9 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
+                    <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <Users className="h-5 w-5 text-primary" />
                             Fellowships Joined ({joinedFellowships.length})
@@ -666,7 +666,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredJoinedFellowships.length > 0 ? (
                                     filteredJoinedFellowships.map(f => (
-                                        <Link key={f.id} href={`/fellowships/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={f.id} href={`/fellowships/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{f.name}</p>
                                             <p className="text-xs text-muted-foreground mt-1 truncate">{f.location || 'Global'}</p>
                                         </Link>
@@ -680,7 +680,7 @@ export default function ProfilePage() {
                 </Card>
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
+                    <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <Group className="h-5 w-5 text-primary" />
                             Associations Joined ({joinedAssociations.length})
@@ -696,7 +696,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredJoinedAssociations.length > 0 ? (
                                     filteredJoinedAssociations.map(a => (
-                                        <Link key={a.id} href={`/fellowships/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={a.id} href={`/fellowships/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{a.name}</p>
                                             <p className="text-xs text-muted-foreground mt-1 truncate">{a.location || 'Global'}</p>
                                         </Link>
@@ -710,9 +710,9 @@ export default function ProfilePage() {
                 </Card>
             </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-left">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
+                    <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="text-base sm:text-lg">Souls Won ({soulsWon?.length ?? 0})</CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 sm:p-6 pt-0">
@@ -720,14 +720,14 @@ export default function ProfilePage() {
                             searchTerm={soulSearchTerm}
                             setSearchTerm={setSoulSearchTerm}
                             filterDate={soulFilterDate}
-                            setFilterDate={setFilterDate}
+                            setFilterDate={setSoulFilterDate}
                             searchPlaceholder="Search souls by name..."
                         />
                         <ScrollArea className="h-48 border rounded-lg bg-muted/5">
                             <div className="p-1 space-y-px">
                                 {filteredSoulsWon.length > 0 ? (
                                     filteredSoulsWon.map(s => (
-                                        <Link key={s.id} href="/souls-won" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={s.id} href="/souls-won" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{s.firstName} {s.lastName}</p>
                                             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Won on {s.wonAt ? format(safeToDate(s.wonAt)!, "PPP") : 'N/A'}</p>
                                         </Link>
@@ -741,7 +741,7 @@ export default function ProfilePage() {
                 </Card>
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
+                    <CardHeader className="p-5 sm:p-6">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <HeartHandshake className="h-5 w-5 text-primary" />
                             Partners ({userProfile?.accountabilityPartners?.length ?? 0})
@@ -757,7 +757,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredAccountabilityPartners.length > 0 ? (
                                     filteredAccountabilityPartners.map(p => (
-                                        <Link key={p.userId} href={`/profile/${p.userId}`} className="flex items-center gap-3 p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                        <Link key={p.userId} href={`/profile/${p.userId}`} className="flex items-center gap-3 p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
                                             <Avatar className="h-10 w-10 sm:h-9 sm:w-9 border shrink-0">
                                                 <AvatarImage src={p.photoURL} />
                                                 <AvatarFallback className="text-xs font-bold">{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
