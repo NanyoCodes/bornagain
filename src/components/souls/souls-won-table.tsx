@@ -406,12 +406,12 @@ function ShareWordDialog({
   const desc = view === 'hub' ? `Equip ${soul?.firstName} with the living Word.` : `Browsing ${selectedBookName || 'Bible'} for the harvest.`;
 
   const header = (
-    <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+    <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
       <div className="flex items-center justify-between gap-4 text-left">
         <div className="min-w-0 text-left">
           <div className="flex items-center gap-3 mb-2 text-left">
             {view !== 'hub' && (
-                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2 text-left" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
+                <Button variant="ghost" size="icon" className="h-4 w-4 rounded-full -ml-2 text-left" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
                     <ArrowLeft className="h-4 w-4 text-left" />
                 </Button>
             )}
@@ -1383,10 +1383,10 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                         <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
+                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left text-left text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <div className="p-6 pb-24 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         {profileView}
                     </div>

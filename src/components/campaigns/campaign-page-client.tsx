@@ -285,7 +285,7 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
                         ) : (
                             <div className="py-20 text-center bg-muted/10 rounded-[2rem] border-2 border-dashed">
                                 <Loader2 className="h-8 w-8 animate-spin text-primary/20 mx-auto mb-3" />
-                                <p className="text-xs text-muted-foreground uppercase font-black tracking-widest text-center">Crunching Harvest Data...</p>
+                                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest text-center">Crunching Harvest Data...</p>
                             </div>
                         )}
                     </div>
@@ -437,3 +437,4 @@ export default function CampaignPageClient({ campaignId }: { campaignId: string 
         </div>
     );
 }
+
