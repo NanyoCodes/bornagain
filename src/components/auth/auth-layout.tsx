@@ -70,7 +70,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="relative w-full min-h-screen overflow-hidden">
+    <div className="relative w-full min-h-screen overflow-hidden text-left">
       <AnimatePresence>
         {showSplash && (
           <SplashScreen onDismiss={handleDismissSplash} />
@@ -81,7 +81,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: contentVisible ? 1 : 0 }}
         transition={{ duration: 1 }}
-        className="relative w-full min-h-screen"
+        className="relative w-full min-h-screen text-left"
       >
         {/* Background Gospel Image Overlay */}
         <div 
@@ -92,13 +92,13 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             data-ai-hint="bible scriptures"
         />
 
-        <div className="relative z-10 w-full lg:grid lg:grid-cols-2 min-h-screen bg-transparent">
-            <div className="flex flex-col p-6 sm:p-12 overflow-y-auto bg-background/95 backdrop-blur-md lg:bg-background/85 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
-            <div className="mx-auto w-full max-w-[320px] space-y-6">
+        <div className="relative z-10 w-full lg:grid lg:grid-cols-2 min-h-screen bg-transparent text-left">
+            <div className="flex flex-col p-6 sm:p-12 overflow-y-auto bg-background/95 backdrop-blur-md lg:bg-background/85 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-[calc(env(safe-area-inset-bottom)+1.5rem)] text-left">
+            <div className="mx-auto w-full max-w-[340px] space-y-6 text-left">
                 {logo && (
                     <div className="flex justify-start w-full mb-8">
                     <Link href="/">
-                        <Avatar className="h-16 w-16 border shadow-sm">
+                        <Avatar className="h-20 w-20 border shadow-sm ring-4 ring-primary/10">
                         <AvatarImage src={logo.imageUrl} alt={logo.description} />
                         <AvatarFallback>T</AvatarFallback>
                         </Avatar>
@@ -108,13 +108,13 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                 
                 {children}
                 
-                <div className="mt-8 space-y-4">
+                <div className="mt-8 space-y-4 text-left">
                     <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 text-center">GLOBAL TESTIMONIES</h3>
                     <div className="space-y-3">
                         {loading ? (
                             <div className="flex justify-center"><Loader2 className="h-5 w-5 animate-spin opacity-20" /></div>
                         ) : testimonies?.map((t) => (
-                            <Card key={t.id} className="bg-muted/10 border-none shadow-none">
+                            <Card key={t.id} className="bg-muted/10 border-none shadow-none text-left">
                                 <CardContent className="p-3">
                                     <p className="text-xs text-muted-foreground line-clamp-2 italic">"{t.content}"</p>
                                     <p className="text-[9px] font-bold mt-1 uppercase text-muted-foreground/60">— {t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
@@ -138,7 +138,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             </div>
             </div>
             
-            <div className="hidden lg:flex flex-col items-center justify-center p-12 text-foreground relative overflow-hidden bg-black/40 backdrop-blur-sm border-l border-white/5">
+            <div className="hidden lg:flex flex-col items-center justify-center p-12 text-foreground relative overflow-hidden bg-black/40 backdrop-blur-sm border-l border-white/5 text-left">
             <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-transparent" />
             
             <div className="space-y-4 mb-12 z-10 text-center">
