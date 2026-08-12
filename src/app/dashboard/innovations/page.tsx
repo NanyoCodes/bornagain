@@ -1,4 +1,3 @@
-'use server';
 /**
  * @fileOverview Kingdom Innovation Hub page.
  */
@@ -9,9 +8,10 @@ import InnovationClient from '@/components/innovations/innovation-client';
 type Params = Promise<{ [key: string]: string | string[] | undefined }>;
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-export default async function InnovationsPage(props: { params: Params; searchParams: SearchParams }) {
-    const searchParams = await props.searchParams;
-    const soulId = typeof searchParams.soulId === 'string' ? searchParams.soulId : null;
+export default async function InnovationsPage({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
+    await params;
+    const resolvedSearchParams = await searchParams;
+    const soulId = typeof resolvedSearchParams.soulId === 'string' ? resolvedSearchParams.soulId : null;
 
     return (
         <AppShell>
