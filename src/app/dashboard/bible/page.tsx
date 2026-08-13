@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +46,8 @@ import {
   XCircle,
   History,
   Calendar,
+  Edit,
+  Sparkles,
 } from 'lucide-react';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '@/components/ui/input';
@@ -57,7 +60,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Separator } from '@/components/ui/separator';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { useRouter } from 'next/navigation';
 
 const bibleVersions = [
     { id: 'kjv', name: 'KJV' },
@@ -100,6 +102,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
   const [isDeleting, setIsDeleting] = useState(false);
   
   const handleSave = async () => {
+    if (!note.trim()) return;
     setIsSaving(true);
     await onSave(highlight.id, note);
     setIsSaving(false);
@@ -112,46 +115,54 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
   }
 
   return (
-    <Card className={cn("bg-card border shadow-lg w-full rounded-2xl", getNoteCardClass(highlight.color))}>
-      <CardHeader className="p-4 sm:p-6 text-left">
-        <CardTitle className="text-base font-black uppercase tracking-tight text-left">Reflect & Note</CardTitle>
-        <CardDescription className="font-bold text-primary text-xs sm:text-sm uppercase tracking-widest text-left">{getVerseReference(highlight)}</CardDescription>
+    <Card className={cn("bg-card border shadow-lg w-full rounded-2xl overflow-hidden transition-all duration-300", getNoteCardClass(highlight.color))}>
+      <CardHeader className="p-4 sm:p-5 text-left">
+        <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
+                <CardTitle className="text-base font-black uppercase tracking-tight text-left">Reflect & Note</CardTitle>
+                <CardDescription className="font-bold text-primary text-[10px] sm:text-xs uppercase tracking-[0.15em] mt-1 text-left">{getVerseReference(highlight)}</CardDescription>
+            </div>
+            <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Edit className="h-4 w-4 text-primary" />
+            </div>
+        </div>
       </CardHeader>
-      <CardContent className="p-4 sm:p-6 pt-0 text-left">
+      <CardContent className="p-4 sm:p-5 pt-0 text-left">
         <Textarea 
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="What has the Spirit revealed through this Word?"
-            rows={6}
-            className="text-sm sm:text-base min-h-[140px] focus-visible:ring-primary rounded-xl border-none bg-muted/20 shadow-inner text-left"
+            className="text-sm sm:text-base min-h-[140px] focus-visible:ring-primary/20 rounded-xl border-none bg-muted/20 shadow-inner text-left leading-relaxed"
             autoFocus
         />
       </CardContent>
-      <CardFooter className="p-4 sm:p-6 pt-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-left">
-          <AlertDialog>
-             <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="default" disabled={isDeleting} className="w-full sm:w-auto text-destructive hover:bg-destructive/10 rounded-xl h-11 font-bold text-left">
-                    {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left"/> : <Trash2 className="mr-2 h-4 w-4 text-left"/>}
-                    Remove Note
+      <CardFooter className="p-4 sm:p-5 pt-0 flex flex-col gap-4 text-left">
+          <div className="flex items-center justify-between w-full gap-2 flex-wrap">
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="sm" disabled={isDeleting} className="text-destructive hover:bg-destructive/10 rounded-xl h-9 font-bold text-left px-3 text-[11px] uppercase tracking-wider">
+                        {isDeleting ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left"/> : <Trash2 className="mr-1.5 h-3.5 w-3.5 text-left"/>}
+                        Remove Note
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                    <AlertDialogHeader className="text-left">
+                    <AlertDialogTitle className="text-2xl font-black font-headline text-left">Delete highlight?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium text-left">This action cannot be undone and will remove your revelation from the journal.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="mt-6 gap-3 text-left">
+                    <AlertDialogCancel className="rounded-xl h-11 text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} className="bg-destructive text-white hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">Confirm Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+            <div className="flex items-center gap-2 text-left ml-auto">
+                <Button variant="ghost" size="sm" onClick={onCancel} className="h-9 rounded-xl font-bold px-3 text-left text-[11px] uppercase tracking-wider">Cancel</Button>
+                <Button size="sm" onClick={handleSave} disabled={isSaving || !note.trim()} className="h-9 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 text-left px-4">
+                    {isSaving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left" />}
+                    SAVE NOTE
                 </Button>
-             </AlertDialogTrigger>
-             <AlertDialogContent className="w-[90vw] rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                <AlertDialogHeader className="text-left">
-                  <AlertDialogTitle className="text-2xl font-black font-headline text-left">Delete highlight?</AlertDialogTitle>
-                  <AlertDialogDescription className="text-sm font-medium text-left">This action cannot be undone and will remove your revelation from the journal.</AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="mt-6 gap-3 text-left">
-                  <AlertDialogCancel className="rounded-xl h-11 text-left">Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete} className="bg-destructive text-white hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">Confirm Delete</AlertDialogAction>
-                </AlertDialogFooter>
-             </AlertDialogContent>
-          </AlertDialog>
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto text-left">
-            <Button variant="outline" size="default" onClick={onCancel} className="h-11 rounded-xl font-bold text-left">Cancel</Button>
-            <Button size="default" onClick={handleSave} disabled={isSaving} className="h-11 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left">
-              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
-              SAVE NOTE
-            </Button>
+            </div>
           </div>
       </CardFooter>
     </Card>
@@ -183,6 +194,7 @@ export default function BibleReaderPage() {
   const [toolbarPos, setToolbarPos] = useState<{ top: number; left: number } | null>(null);
 
   const isMobile = useIsMobile();
+  const [mounted, setMounted] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isChapterPopoverOpen, setIsChapterPopoverOpen] = useState(false);
   const [isJournalSheetOpen, setIsJournalSheetOpen] = useState(false);
@@ -197,6 +209,10 @@ export default function BibleReaderPage() {
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
   
   const selectedBook = useMemo(() => bibleData.find(b => b.name === selectedBookName), [selectedBookName]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!profileLoading && !isInitialized) {
