@@ -195,7 +195,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   if (loading || !mounted) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left">
+      <div className="flex h-full w-full flex-col items-center justify-center py-20">
         <div className="relative mb-8">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
             <div className="absolute inset-0 flex items-center justify-center">
@@ -276,7 +276,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               </DialogTrigger>
               {photoURL && (
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                    <DialogHeader className="sr-only text-center"><DialogTitle className="text-center">Profile photo of {displayName}</DialogTitle></DialogHeader>
+                    <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
                     <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
                         <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                             <Image 
