@@ -57,12 +57,12 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
   }, [soul?.locationWon]);
 
   const historyContent = (
-    <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[70vh]")}>
-        <div className="space-y-8 pb-12">
+    <ScrollArea className="h-full w-full">
+        <div className="space-y-8 p-6 sm:p-10 pb-16 sm:pb-20 text-left">
             {soul && (
                 <div className="space-y-6">
-                    <div className="flex flex-col gap-4 p-5 rounded-[2rem] bg-muted/20 border border-dashed shadow-inner">
-                        <div className="flex items-center justify-between gap-3">
+                    <div className="flex flex-col gap-4 p-6 rounded-[2rem] bg-muted/20 border border-dashed shadow-inner">
+                        <div className="flex items-center justify-between gap-3 flex-wrap">
                             <Badge className={cn("h-6 px-3 uppercase font-black tracking-widest text-[10px]", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                             {wonAtDate && <span className="text-[10px] font-bold text-muted-foreground uppercase">Won {format(wonAtDate, 'PPP')}</span>}
                         </div>
@@ -173,7 +173,7 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
                   <SheetDescription className="text-sm font-medium mt-1">Status and spiritual development history.</SheetDescription>
                 </SheetHeader>
               </div>
-              <div className="flex-grow min-h-0 pt-8 px-8">
+              <div className="flex-grow min-h-0">
                 {historyContent}
               </div>
             </>
@@ -194,7 +194,7 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
                     <DialogDescription className="text-base font-medium">Harvest Record & Spiritual Progress</DialogDescription>
                 </DialogHeader>
             </div>
-            <div className="flex-grow overflow-hidden p-8">
+            <div className="flex-grow min-h-0 overflow-hidden">
                 {historyContent}
             </div>
           </>
