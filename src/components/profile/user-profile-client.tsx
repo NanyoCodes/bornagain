@@ -217,7 +217,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             <h3 className="text-2xl font-bold font-headline">Profile Not Found</h3>
             <p className="text-sm text-muted-foreground max-w-xs mx-auto">This profile might have been set to private or the believer has moved to a new station.</p>
         </div>
-        <Button variant="outline" onClick={() => router.back()} className="h-11 px-8 rounded-full">
+        <Button variant="outline" onClick={() => router.back()} className="h-11 px-8 rounded-full text-left">
             <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
         </Button>
       </div>
@@ -259,7 +259,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       
       <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-none shadow-2xl bg-gradient-to-br from-background via-background to-primary/5">
         <CardContent className="p-6 sm:p-10 lg:p-12 relative z-20">
-          <div className="flex flex-col md:flex-row items-center md:items-end text-center md:text-left gap-6 md:gap-10">
+          <div className="flex flex-col items-center text-center gap-6">
             <Dialog>
               <DialogTrigger asChild disabled={!photoURL}>
                 <div className="relative group shrink-0">
@@ -292,8 +292,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               )}
             </Dialog>
             
-            <div className="flex-grow min-w-0 space-y-4 pb-2">
-                <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4">
+            <div className="flex-grow min-w-0 space-y-4 pb-2 w-full">
+                <div className="flex flex-col justify-between items-center gap-4">
                     <div className="min-w-0 w-full text-center">
                         <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize text-center w-full">{displayName}</h1>
                         <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
@@ -348,7 +348,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </div>
 
                 {personalMessage && (
-                    <div className="bg-primary/10 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 border-primary/20 inline-flex items-center gap-3 sm:gap-4 text-left max-w-2xl group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 mx-auto md:mx-0">
+                    <div className="bg-primary/10 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 border-primary/20 inline-flex items-center gap-3 sm:gap-4 text-left max-w-2xl group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 mx-auto">
                         <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-primary shrink-0 transition-transform group-hover:scale-110" />
                         <p className="text-base sm:text-lg lg:text-xl font-black text-foreground leading-tight italic tracking-tight">
                             &ldquo;{personalMessage}&rdquo;
@@ -371,7 +371,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </div>
           </div>
 
-          <div className="mt-8 sm:mt-10 max-w-3xl mx-auto md:mx-0">
+          <div className="mt-8 sm:mt-10 max-w-3xl mx-auto">
             <div className="relative pl-5 sm:pl-6 border-l-4 border-primary/20 text-center md:text-left">
                 <p className="text-base sm:text-lg text-muted-foreground leading-relaxed italic font-medium">
                     {bio ? `"${bio}"` : "This believer is a member of the global harvest workforce, dedicated to sharing the goodness of Jesus Christ with the world."}
@@ -451,7 +451,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 ) : (
                     <div className="text-center py-16 bg-muted/20 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0">
                         <Newspaper className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
-                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium text-balance px-8">No shared testimonies found in this folder.</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium text-balance px-8 text-center">No shared testimonies found in this folder.</p>
                     </div>
                 )}
             </div>
@@ -480,7 +480,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 ) : (
                     <div className="text-center py-16 bg-muted/20 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0">
                         <Target className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
-                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium text-balance px-8">No public mission campaigns organized.</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium text-balance px-8 text-center">No public mission campaigns organized.</p>
                     </div>
                 )}
             </div>
@@ -489,10 +489,10 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         {testimonies.length === 0 && processedCampaigns.length === 0 && (
             <div className="text-center py-24 text-muted-foreground border-2 border-dashed rounded-[2rem] sm:rounded-[3.5rem] bg-muted/5 mx-4 sm:mx-0">
                 <Globe className="h-16 w-16 text-muted-foreground/5 mx-auto mb-6" />
-                <p className="font-black text-xl sm:text-2xl px-8 leading-tight uppercase tracking-widest text-muted-foreground/30">
+                <p className="font-black text-xl sm:text-2xl px-8 leading-tight uppercase tracking-widest text-muted-foreground/30 text-center">
                     Faith in the Secret Place
                 </p>
-                <p className="text-xs sm:text-sm mt-3 px-12 opacity-50 font-medium max-w-md mx-auto">
+                <p className="text-xs sm:text-sm mt-3 px-12 opacity-50 font-medium max-w-md mx-auto text-center">
                     This believer is actively serving the Kingdom through prayer and local fellowship.
                 </p>
             </div>
