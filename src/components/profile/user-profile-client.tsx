@@ -294,9 +294,9 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             
             <div className="flex-grow min-w-0 space-y-4 pb-2">
                 <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4">
-                    <div className="min-w-0 w-full text-center md:text-left">
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize text-center md:text-left w-full">{displayName}</h1>
-                        <div className="mt-3 flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
+                    <div className="min-w-0 w-full text-center">
+                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize text-center w-full">{displayName}</h1>
+                        <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
                             {(city || state || country) && (
                                 <div className="flex items-center gap-1.5 text-primary font-black uppercase tracking-wider">
                                     <MapPin className="h-4 w-4" /> 
@@ -356,7 +356,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     </div>
                 )}
 
-                <div className="flex flex-wrap justify-center md:justify-start gap-3">
+                <div className="flex flex-wrap justify-center gap-3">
                      <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-xl border">
                         <Newspaper className="h-3.5 w-3.5 text-primary" />
                         <span className="text-base font-black">{testimonies.length}</span>
@@ -371,8 +371,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </div>
           </div>
 
-          <div className="mt-8 sm:mt-10 max-w-3xl">
-            <div className="relative pl-5 sm:pl-6 border-l-4 border-primary/20 text-center md:text-left mx-auto md:mx-0">
+          <div className="mt-8 sm:mt-10 max-w-3xl mx-auto md:mx-0">
+            <div className="relative pl-5 sm:pl-6 border-l-4 border-primary/20 text-center md:text-left">
                 <p className="text-base sm:text-lg text-muted-foreground leading-relaxed italic font-medium">
                     {bio ? `"${bio}"` : "This believer is a member of the global harvest workforce, dedicated to sharing the goodness of Jesus Christ with the world."}
                 </p>
