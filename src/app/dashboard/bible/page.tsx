@@ -553,7 +553,7 @@ export default function BibleReaderPage() {
                             <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}>
                                 <PopoverTrigger asChild>
                                   <Button variant="ghost" size="sm" className="h-9 px-3 font-bold text-xs sm:text-sm rounded-full hover:bg-background/80 shadow-sm border-none text-left">
-                                    CH {selectedChapterNumber}
+                                    Chapter {selectedChapterNumber}
                                     <ChevronDown className="ml-1.5 h-3.5 w-3.5 opacity-50 text-left" />
                                   </Button>
                                 </PopoverTrigger>
