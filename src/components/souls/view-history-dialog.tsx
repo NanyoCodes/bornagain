@@ -11,7 +11,8 @@ import { format } from "date-fns";
 import { actionItems } from "@/lib/follow-up-data";
 import { cn, safeToDate } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { History, Sparkles, MapPin, Church, Phone, Mail, User } from "lucide-react";
+import { History, Sparkles, MapPin, Church, Phone, Mail, User, X } from "lucide-react";
+import { Button } from "../ui/button";
 
 interface ViewHistoryDialogProps {
   soul: Soul | null;
@@ -58,7 +59,7 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
 
   const historyContent = (
     <ScrollArea className="h-full w-full">
-        <div className="space-y-8 p-6 sm:p-10 pb-16 sm:pb-20 text-left">
+        <div className="space-y-8 p-6 sm:p-10 pb-24 text-left">
             {soul && (
                 <div className="space-y-6">
                     <div className="flex flex-col gap-4 p-6 rounded-[2rem] bg-muted/20 border border-dashed shadow-inner">
@@ -176,6 +177,9 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
               <div className="flex-grow min-h-0">
                 {historyContent}
               </div>
+              <div className="p-8 border-t bg-background/80 backdrop-blur-sm shrink-0">
+                <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full h-12 rounded-2xl font-bold">Close History</Button>
+              </div>
             </>
           )}
         </SheetContent>
@@ -185,17 +189,23 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl flex flex-col max-h-[90vh] p-0 rounded-[2.5rem] overflow-hidden border-none shadow-2xl">
+      <DialogContent className="sm:max-w-2xl flex flex-col max-h-[90vh] p-0 rounded-[2.5rem] overflow-hidden border-none shadow-2xl text-left">
         {soul && (
           <>
             <div className="p-8 border-b shrink-0 bg-muted/10">
-                <DialogHeader>
+                <DialogHeader className="text-left">
                     <DialogTitle className="text-3xl font-black font-headline uppercase tracking-tight break-words [overflow-wrap:anywhere]">{soul.firstName} {soul.lastName}</DialogTitle>
                     <DialogDescription className="text-base font-medium">Harvest Record & Spiritual Progress</DialogDescription>
                 </DialogHeader>
+                <DialogClose className="absolute right-8 top-10 rounded-full h-10 w-10 bg-background/50 hover:bg-background shadow-sm border border-transparent transition-all hover:scale-105 active:scale-95 flex items-center justify-center outline-none">
+                    <X className="h-5 w-5 text-muted-foreground" />
+                </DialogClose>
             </div>
             <div className="flex-grow min-h-0 overflow-hidden">
                 {historyContent}
+            </div>
+            <div className="p-6 border-t bg-muted/5 flex justify-end shrink-0">
+                <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-full px-10 font-bold h-11">Close</Button>
             </div>
           </>
         )}

@@ -400,7 +400,7 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-32">
       <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-        <CardContent className="p-6 sm:p-8">
+        <CardContent className="p-6 sm:p-8 text-center">
           <div className="flex flex-col items-center gap-6">
             <div className="relative">
               <Dialog>
@@ -532,10 +532,10 @@ export default function ProfilePage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="text-base sm:text-lg">Testimonies ({testimonies?.length ?? 0})</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
                         <FilterControls 
                             searchTerm={testimonySearchTerm}
                             setSearchTerm={setTestimonySearchTerm}
@@ -547,7 +547,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredTestimonies.length > 0 ? (
                                     filteredTestimonies.map(t => (
-                                        <Link key={t.id} href={`/testimonies#${t.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
+                                        <Link key={t.id} href={`/testimonies#${t.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1">{t.category}</p>
                                             <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed text-left">{t.content}</p>
                                         </Link>
@@ -561,10 +561,10 @@ export default function ProfilePage() {
                 </Card>
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="text-base sm:text-lg">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
                          <FilterControls 
                             searchTerm={prayerSearchTerm}
                             setSearchTerm={setPrayerSearchTerm}
@@ -592,10 +592,10 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="text-base sm:text-lg">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
                          <FilterControls 
                             searchTerm={createdCampaignSearchTerm}
                             setSearchTerm={setCreatedCampaignSearchTerm}
@@ -621,10 +621,10 @@ export default function ProfilePage() {
                 </Card>
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="text-base sm:text-lg">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
                          <FilterControls 
                             searchTerm={joinedCampaignSearchTerm}
                             setSearchTerm={setJoinedCampaignSearchTerm}
@@ -650,13 +650,13 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <Users className="h-5 w-5 text-primary" />
                             Fellowships Joined ({joinedFellowships.length})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
                         <FilterControls 
                             searchTerm={joinedFellowshipSearchTerm}
                             setSearchTerm={setJoinedFellowshipSearchTerm}
@@ -680,13 +680,13 @@ export default function ProfilePage() {
                 </Card>
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                             <Group className="h-5 w-5 text-primary" />
                             Associations Joined ({joinedAssociations.length})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
                         <FilterControls 
                             searchTerm={joinedAssociationSearchTerm}
                             setSearchTerm={setJoinedAssociationSearchTerm}
@@ -712,10 +712,10 @@ export default function ProfilePage() {
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="text-base sm:text-lg">Souls Won ({soulsWon?.length ?? 0})</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
                          <FilterControls 
                             searchTerm={soulSearchTerm}
                             setSearchTerm={setSoulSearchTerm}
@@ -741,13 +741,13 @@ export default function ProfilePage() {
                 </Card>
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6">
+                    <CardHeader className="p-5 sm:p-6 text-left">
                         <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left">
                             <HeartHandshake className="h-5 w-5 text-primary" />
                             Partners ({userProfile?.accountabilityPartners?.length ?? 0})
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0">
+                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
                          <FilterControls 
                             searchTerm={partnerSearchTerm}
                             setSearchTerm={setPartnerSearchTerm}
