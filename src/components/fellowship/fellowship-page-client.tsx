@@ -379,7 +379,7 @@ export default function FellowshipPageClient() {
         const soulQueryField = fellowship.groupType === 'Association' ? 'associationId' : 'fellowshipId';
         return query(collection(firestore, 'souls'), where(soulQueryField, '==', fellowshipId));
     }, [firestore, fellowshipId, isMember, isOrganizer, fellowship?.groupType]);
-    const { data: assignedSouls, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
+    const { data: assignedSouls, loading: soulsLoading } = useCollection<Soul>( soulsQuery);
 
     const activeSoul = useMemo(() => {
         const id = historySoulId || followUpSoulId;
@@ -871,7 +871,7 @@ export default function FellowshipPageClient() {
                 ) : (
                     <Dialog open={isDevotionalDialogOpen} onOpenChange={setIsDevotionalDialogOpen}>
                         <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
-                            <div className="p-8 border-b bg-muted/10 shrink-0">
+                            <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader>
                                     <DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase text-left">Devotional Hub</DialogTitle>
                                     <DialogDescription className="text-base font-medium text-left">Prepare and schedule spiritual nourishment for your group.</DialogDescription>
@@ -889,7 +889,7 @@ export default function FellowshipPageClient() {
 
             {isScheduleViewOpen && (
                 isMobile ? (
-                    <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]"><div className="p-8 border-b flex-shrink-0 bg-muted/10"><SheetHeader className="text-left flex-shrink-0"><div className="flex items-center gap-2 mb-2"><CalendarClock className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span></div><SheetTitle className="text-2xl font-black font-headline">Planned Word</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Browse scheduled meditations for this group.</SheetDescription></SheetHeader></div><ScrollArea className="flex-grow px-8 pt-6">{ScheduleList}</ScrollArea></SheetContent></Sheet>
+                    <Sheet open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left"><div className="p-8 border-b flex-shrink-0 bg-muted/10"><SheetHeader className="text-left flex-shrink-0"><div className="flex items-center gap-2 mb-2"><CalendarClock className="h-4 w-4 text-primary" /><span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Spiritual Schedule</span></div><SheetTitle className="text-2xl font-black font-headline">Planned Word</SheetTitle><SheetDescription className="text-sm font-medium mt-1">Browse scheduled meditations for this group.</SheetDescription></SheetHeader></div><ScrollArea className="flex-grow px-8 pt-6">{ScheduleList}</ScrollArea></SheetContent></Sheet>
                 ) : (
                     <Dialog open={isScheduleViewOpen} onOpenChange={setIsScheduleViewOpen}><DialogContent className="sm:max-w-md max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left"><div className="p-8 border-b bg-muted/10 shrink-0"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Spiritual Schedule</DialogTitle><DialogDescription className="text-sm font-medium">Peek ahead at scheduled meditations.</DialogDescription></DialogHeader></div><ScrollArea className="flex-1 min-h-0 p-6">{ScheduleList}</ScrollArea></DialogContent></Dialog>
                 )
@@ -933,7 +933,7 @@ export default function FellowshipPageClient() {
 
             <AlertDialog open={!!soulToUnassign} onOpenChange={(open) => !open && setSoulToUnassign(null)}>
                 <AlertDialogContent className="rounded-3xl p-8 border-none shadow-2xl text-left">
-                  <AlertDialogHeader className="text-left">
+                  <AlertDialogHeader>
                     <AlertDialogTitle className="text-2xl font-black font-headline text-left">Unassign Convert?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium text-left">Remove {soulToUnassign?.firstName} from this shared list?</AlertDialogDescription>
                   </AlertDialogHeader>
