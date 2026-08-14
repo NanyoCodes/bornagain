@@ -16,7 +16,8 @@ import {
   MessagesSquare, 
   Edit,
   Globe,
-  ChevronDown
+  ChevronDown,
+  X
 } from "lucide-react";
 import type { Event, UserProfile, EventParticipant, Chat } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -160,7 +161,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
                     <div className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed hover:bg-muted/40 transition-colors group relative text-left">
                         <LiveParticipantAvatar userId={organizer.userId} fallbackUrl={organizer.photoURL} fallbackInitials={organizer.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm group-hover:scale-105 transition-transform" />
                         <Link 
-                            href={organizer.userId === user?.uid ? '/profile' : `/profile/${organizer.userId}`}
+                            href={`/profile/${organizer.userId}`}
                             className='font-bold text-sm sm:text-base hover:underline uppercase tracking-tight'
                             onClick={stopPropagation}
                         >
@@ -179,7 +180,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
                       <div className="flex items-center gap-3 group relative text-left">
                         <LiveParticipantAvatar userId={p.userId} fallbackUrl={p.photoURL} fallbackInitials={p.firstName?.charAt(0)} className="h-9 w-9 text-xs border group-hover:scale-105 transition-transform" />
                         <Link 
-                            href={p.userId === user?.uid ? '/profile' : `/profile/${p.userId}`}
+                            href={`/profile/${p.userId}`}
                             className='font-bold text-sm hover:underline uppercase tracking-tight'
                             onClick={stopPropagation}
                         >
@@ -337,7 +338,6 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             setIsChatLoading(false);
         }
     } else if (isOwner) {
-        // Simple redirect if owner has already initialized
         router.push(`/chats/${event.id}`);
     }
   };
@@ -361,7 +361,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
   };
 
   return (
-    <Card className="rounded-none sm:rounded-[3rem] overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-2 sm:border-b-8 border-b-primary/10 text-left">
+    <Card className="rounded-none sm:rounded-[3rem] overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-8 border-b-primary/10 text-left">
       <CardHeader className="p-6 sm:p-10 pb-4 text-left">
         <div className="flex justify-between items-start text-left">
           <Badge className="h-6 text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20 text-left">

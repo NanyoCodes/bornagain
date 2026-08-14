@@ -31,7 +31,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/types';
+import type { Note, NoteCategory, BibleHighlight, ReadingHistoryItem, UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay } from 'date-fns';
 import {
@@ -45,9 +45,7 @@ import {
   ArrowLeft,
   XCircle,
   History,
-  Calendar,
   Edit,
-  Sparkles,
 } from 'lucide-react';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '@/components/ui/input';
@@ -216,7 +214,7 @@ export default function BibleReaderPage() {
 
   useEffect(() => {
     if (!profileLoading && !isInitialized) {
-      const urlParams = new URLSearchParams(window.location.search);
+      const urlParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
       const urlBook = urlParams.get('book');
       const urlChapter = urlParams.get('chapter');
 
@@ -633,7 +631,7 @@ export default function BibleReaderPage() {
                         <div className="flex items-center gap-3 mb-8 shrink-0 text-left">
                             <div className="relative flex-1 text-left">
                                 <Input type="date" value={historyFilterDate} onChange={(e) => setHistoryFilterDate(e.target.value)} className="h-12 pl-10 rounded-2xl bg-background shadow-inner border-none font-bold text-left" />
-                                <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
+                                <History className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
                             </div>
                             {historyFilterDate && (
                                 <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-12 w-12 rounded-2xl shadow-md text-left">
@@ -691,4 +689,3 @@ export default function BibleReaderPage() {
         </div>
     );
 }
-

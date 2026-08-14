@@ -10,11 +10,11 @@ import { useParams } from "next/navigation";
  */
 export default function ChatStandalonePage() {
     const params = useParams();
-    const chatId = params.chatId as string;
+    const chatId = params?.chatId as string;
     
     return (
         <AppShell>
-            <ChatPageClient chatId={chatId} />
+            {chatId ? <ChatPageClient chatId={chatId} /> : <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin" /></div>}
         </AppShell>
     );
 }

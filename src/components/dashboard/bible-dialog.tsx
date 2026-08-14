@@ -32,7 +32,6 @@ import type { UserProfile, ReadingHistoryItem, BibleHighlight } from '@/lib/type
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay, isToday } from 'date-fns';
 import { Loader2, XCircle, BookOpen, Trash2, ChevronRight, Minus, Plus, Highlighter, ChevronDown } from 'lucide-react';
-import { Skeleton } from '../ui/skeleton';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
@@ -41,8 +40,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 
 const bibleVersions = [
     { id: 'kjv', name: 'King James Version' },
@@ -481,12 +478,16 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
 
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl max-h-[90dvh] grid grid-rows-[auto_1fr] gap-4 p-4 sm:p-6 text-left">
-          <DialogHeader className="text-left">
-            <DialogTitle className="text-left">Bible Reader</DialogTitle>
-            <DialogDescription className="text-left">Read and meditate on the Word.</DialogDescription>
-          </DialogHeader>
-          {DialogBody}
+        <DialogContent className="max-w-3xl md:max-w-5xl lg:max-w-7xl max-h-[90dvh] flex flex-col p-4 sm:p-6 text-left">
+          <div className="p-4 border-b shrink-0 text-left">
+            <DialogHeader className="text-left">
+                <DialogTitle className="text-left">Bible Reader</DialogTitle>
+                <DialogDescription className="text-left">Read and meditate on the Word.</DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="flex-grow min-h-0">
+            {DialogBody}
+          </div>
         </DialogContent>
       </Dialog>
     );

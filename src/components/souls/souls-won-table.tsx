@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { format, differenceInMinutes, isSameDay } from "date-fns";
+import { format, differenceInMinutes, isSameDay, isToday } from "date-fns";
 import { 
   MoreHorizontal, 
   Church, 
@@ -42,7 +42,10 @@ import {
   Award,
   Newspaper,
   ImageIcon,
-  PlayCircle
+  PlayCircle,
+  Hourglass,
+  UserPlus,
+  User
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput } from "@/lib/types";
@@ -258,7 +261,7 @@ function ShareWordDialog({
       .join(' ');
       
     const reference = `${chapterContent.book} ${chapterContent.chapter}:${selectedVerses.join(', ')}`;
-    const link = `${window.location.origin}/dashboard/bible?book=${encodeURIComponent(chapterContent.book)}&chapter=${chapterContent.chapter}`;
+    const link = `${window.location.origin}/bible?book=${encodeURIComponent(chapterContent.book)}&chapter=${chapterContent.chapter}`;
     
     onSelectVerse(constructInvitationMessage(selectedTexts, reference, link));
   };
@@ -720,7 +723,7 @@ function SoulProfileContent({
   };
 
   const handleVerseSelected = (verseMessage: string) => {
-    setCustomPrayerText(verseMessage);
+    setCustomMessageText(verseMessage);
     setIsStudyWordOpen(false);
     setIsCommChannelDialogOpen(true);
   };
@@ -755,8 +758,6 @@ function SoulProfileContent({
       )}
     </div>
   );
-
-  if (!mounted) return null;
 
   return (
     <div className="space-y-6 text-left">
@@ -1072,7 +1073,7 @@ function SoulProfileContent({
         </CardContent>
       </Card>
 
-      {isPrayerCustomizationOpen && (
+      {mounted && isPrayerCustomizationOpen && (
           isMobile ? (
               <Sheet open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
                   <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
@@ -1146,7 +1147,7 @@ function SoulProfileContent({
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
                   <MessageSquare className="h-7 w-7 text-primary" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Message Hub</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center text-balance">How would you like to encourage {soul?.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
@@ -1188,7 +1189,7 @@ function SoulProfileContent({
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
                   <Share className="h-7 w-7 text-primary" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center text-balance">Where would you like to share {soul?.firstName}'s info?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">

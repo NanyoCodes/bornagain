@@ -15,8 +15,13 @@ export default function ProfilePageContent() {
 
   if (userLoading) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center py-20">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <div className="flex h-full w-full flex-col items-center justify-center py-20 text-center">
+        <div className="relative mb-8 mx-auto">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            </div>
+        </div>
         <p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse">
             Loading Identity...
         </p>

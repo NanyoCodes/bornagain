@@ -373,7 +373,7 @@ function CartButton() {
       return;
     }
     const key = `testify_marketplace_cart_${user.uid}`;
-    const stored = localStorage.getItem(key);
+    const stored = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
     if (stored) {
       try {
         const cart = JSON.parse(stored);
@@ -639,7 +639,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest text-left text-left">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/marketplace/orders" className="flex items-center gap-3 w-full text-left text-left text-left">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left">
                         <Package className="h-4 w-4 text-left text-left text-left" />
@@ -647,7 +647,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/events" className="flex items-center gap-3 w-full text-left text-left text-left">
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left">
                         <CalendarDays className="h-4 w-4 text-primary text-left text-left" />
@@ -655,7 +655,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest text-left text-left text-left">Event Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/fellowships" className="flex items-center gap-3 w-full text-left text-left text-left">
                       <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left">
                         <Users className="h-4 w-4 text-left text-left" />
@@ -809,8 +809,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
 
     const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
-    const lastShown = localStorage.getItem('testify_splash_last_shown');
-    const forceSplash = sessionStorage.getItem('testify_force_splash') === 'true';
+    const lastShown = typeof window !== 'undefined' ? localStorage.getItem('testify_splash_last_shown') : null;
+    const forceSplash = typeof window !== 'undefined' ? sessionStorage.getItem('testify_force_splash') === 'true' : false;
     const now = Date.now();
 
     if (forceSplash || !lastShown || now - parseInt(lastShown || '0', 10) > SPLASH_COOLDOWN) {

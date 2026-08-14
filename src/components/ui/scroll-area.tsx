@@ -25,7 +25,7 @@ const ScrollArea = React.forwardRef<
     >
       {children}
     </ScrollAreaPrimitive.Viewport>
-    <ScrollBar />
+    <ScrollBar className="opacity-0 pointer-events-none" />
     <ScrollAreaPrimitive.Corner />
   </ScrollAreaPrimitive.Root>
 ))
