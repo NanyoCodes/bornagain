@@ -68,7 +68,7 @@ export default function SignUpPage() {
       const userData = {
         firstName: firstName,
         lastName: lastName,
-        fullName_lowercase: fullName.toLowerCase(),
+        fullName_lowercase: displayName.toLowerCase(),
         name_tokens: nameTokens,
         email: user.email,
         photoURL: user.photoURL,

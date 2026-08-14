@@ -166,7 +166,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       type: 'accountability_request' as const,
       title: 'New Accountability Request',
       message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} wants to be your partner after viewing your profile!`,
-      link: '/dashboard/accountability',
+      link: '/accountability',
       isRead: false,
       createdAt: serverTimestamp()
     };
@@ -249,7 +249,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </Button>
             {isOwnProfile && (
                 <Button asChild variant="outline" size="sm" className="h-9 px-6 rounded-full font-bold shadow-sm">
-                    <Link href="/dashboard/settings">
+                    <Link href="/settings">
                         <Edit className="mr-2 h-3.5 w-3.5" />
                         Settings
                     </Link>
