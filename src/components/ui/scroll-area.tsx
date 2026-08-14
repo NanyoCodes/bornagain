@@ -25,6 +25,7 @@ const ScrollArea = React.forwardRef<
     >
       {children}
     </ScrollAreaPrimitive.Viewport>
+    {/* Scrollbar is hidden for a cleaner cinematic experience */}
     <ScrollBar className="opacity-0 pointer-events-none" />
     <ScrollAreaPrimitive.Corner />
   </ScrollAreaPrimitive.Root>

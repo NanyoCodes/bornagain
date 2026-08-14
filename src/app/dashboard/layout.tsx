@@ -4,6 +4,11 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 
+/**
+ * @fileOverview Redirection logic for legacy /dashboard routes.
+ * Ensures that deep links saved by users or cached by browsers are seamlessly
+ * routed to their new clean, root-level counterparts.
+ */
 export default function LegacyDashboardRedirectLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -17,7 +22,7 @@ export default function LegacyDashboardRedirectLayout({ children }: { children: 
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
-      <div className="relative mb-8 mx-auto">
+      <div className="relative mb-8 mx-auto w-fit">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
         <div className="absolute inset-0 flex items-center justify-center">
             <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
