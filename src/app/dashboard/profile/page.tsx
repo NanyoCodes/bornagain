@@ -1,34 +1,87 @@
 'use client';
 
-import { useState, useEffect, useMemo } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Edit, Loader2, MapPin, Phone, HeartHandshake, XCircle, Users, Group, Youtube, Activity, Video, MessageSquare, Sparkles, Search, Briefcase, Heart } from "lucide-react";
-import { useCollection, useFirestore, useUser } from "@/firebase";
-import { useDoc } from "@/firebase/firestore/use-doc";
-import { collection, query, where, doc, getDocs, documentId } from "firebase/firestore";
-import type { Soul, Testimony, UserProfile, JoinedCampaign, Campaign, PrayerRequest, Fellowship, JoinedFellowship } from "@/lib/types";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import Link from "next/link";
-import { format, isSameDay } from "date-fns";
-import { Input } from "@/components/ui/input";
-import { EditProfileModal } from "@/components/profile/edit-profile-modal";
-import { cn, safeToDate } from "@/lib/utils";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormDescription,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone, Palette, Type, Image as ImageIcon, Sparkles, Search, XCircle } from 'lucide-react';
+import { useDoc, useFirestore, useUser } from '@/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+import type { UserProfile } from '@/lib/types';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import Link from 'next/link';
+import { useEffect, useState, useMemo } from 'react';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { ChurchSettingsCard } from '@/components/settings/church-settings-card';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { PasswordSettingsCard } from '@/components/settings/password-settings-card';
+import { useFontSize } from '@/components/font-size-provider';
+import { PwaInstallCard } from '@/components/settings/pwa-install-card';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
+import { SoulsImportTemplateCard } from '@/components/settings/souls-import-template-card';
+import { format, isSameDay } from 'date-fns';
 
-function getYouTubeEmbedUrl(url: string | undefined) {
-  if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  if (match && match[2].length === 11) {
-    return `https://www.youtube.com/embed/${match[2]}`;
-  }
-  return null;
-}
+const notificationFormSchema = z.object({
+  newCampaignsInArea: z.boolean().default(false),
+  weeklyDigest: z.boolean().default(false),
+});
+
+const backgroundPresets = [
+  { id: 'midnight', label: 'Midnight Grace', url: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)' },
+  { id: 'ancient-church', label: 'Ancient Church', url: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'worship', label: 'Worship Atmosphere', url: 'https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'cross', label: 'Cross at Sunset', url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'bible', label: 'The Living Word', url: 'https://images.unsplash.com/photo-1504052434569-70ad58ebb96d?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'dawn', label: 'Dawn of Hope', url: 'https://images.unsplash.com/photo-1470252649358-96940c93f319?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'harvest', label: 'Global Harvest', url: 'https://images.unsplash.com/photo-1521295121783-8a321d551ad2?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'waters', label: 'Still Waters', url: 'https://images.unsplash.com/photo-1505118380757-91f5f45d8de4?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'majesty', label: 'Majesty Mountains', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'stained-glass', label: 'Stained Glass', url: 'https://images.unsplash.com/photo-1438032005730-c779502df39b?q=80&w=2071&auto=format&fit=crop' },
+  { id: 'garden', label: 'Garden of Peace', url: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=2070&auto=format&fit=crop' },
+  { id: 'morning', label: 'Morning Grace', url: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=2070&auto=format&fit=crop' },
+];
 
 function FilterControls({
   searchTerm,
@@ -56,7 +109,7 @@ function FilterControls({
   const dateValue = filterDate ? format(filterDate, "yyyy-MM-dd") : "";
 
   return (
-    <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center text-left">
       <div className="relative flex-grow">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
@@ -88,16 +141,185 @@ function FilterControls({
   );
 }
 
-export default function ProfilePage() {
-  const { user: currentUser, loading: userLoading } = useUser();
+function ProfileSettingsCard() {
+  return (
+    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight"><User className="h-5 w-5 text-primary" /> Public Identity</CardTitle>
+        <CardDescription>This is how others see your impact on the platform.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button asChild className="w-full sm:w-auto h-12 rounded-2xl font-bold uppercase tracking-widest"><Link href="/dashboard/profile">Edit Your Profile</Link></Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfile, userId: string }) {
+  const { toast } = useToast();
   const firestore = useFirestore();
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  
-  const [activeJoinedCampaigns, setActiveJoinedCampaigns] = useState<Campaign[]>([]);
-  const [activeJoinedGroups, setActiveJoinedGroups] = useState<Fellowship[]>([]);
-  const [campaignsListLoading, setCampaignsListLoading] = useState(true);
-  const [groupsListLoading, setGroupsListLoading] = useState(true);
+  const { user } = useUser();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedUrl, setSelectedUrl] = useState(userProfile.backgroundImage || backgroundPresets[0].url);
+  const [overlayOpacity, setOverlayOpacity] = useState(userProfile.backgroundOverlayOpacity ?? 0.7);
+  const { fontSize, setFontSize } = useFontSize();
+
+  const handleSave = async () => {
+    setIsSubmitting(true);
+    const userRef = doc(firestore, 'users', userId);
+    
+    const updateData = {
+        backgroundImage: selectedUrl,
+        backgroundOverlayOpacity: overlayOpacity,
+    };
+
+    updateDoc(userRef, updateData)
+        .then(() => {
+            toast({ title: 'Environment Updated', description: 'Your visual preferences have been saved.' });
+        })
+        .catch(() => {
+            errorEmitter.emit('permission-error', new FirestorePermissionError({ 
+                path: userRef.path, 
+                operation: 'update', 
+                requestResourceData: updateData 
+            }, user));
+        })
+        .finally(() => setIsSubmitting(false));
+  };
+
+  return (
+    <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight"><ImageIcon className="h-5 w-5 text-primary" /> Kingdom Atmosphere</CardTitle>
+            <CardDescription>Personalize your environment and app readability.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-8">
+            {/* Appearance Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3">
+                    <div className="space-y-0.5">
+                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                             <Palette className="h-4 w-4 text-primary" />
+                             Theme
+                        </label>
+                        <p className="text-[10px] text-muted-foreground uppercase font-medium">Dark mode is default</p>
+                    </div>
+                    <ThemeToggle />
+                </div>
+
+                <div className="flex items-center justify-between rounded-2xl border p-4 bg-muted/20 gap-3">
+                    <div className="space-y-0.5 pr-2">
+                        <label className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                            <Type className="h-4 w-4 text-primary" />
+                            Text Size
+                        </label>
+                        <p className="text-[10px] text-muted-foreground uppercase font-medium">Adjust readability</p>
+                    </div>
+                    <Select value={fontSize} onValueChange={(val) => setFontSize(val as any)}>
+                        <SelectTrigger className="w-fit min-w-[100px] h-9 text-xs font-bold uppercase gap-2">
+                            <SelectValue placeholder="Size" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl">
+                            <SelectItem value="sm">Small</SelectItem>
+                            <SelectItem value="base">Medium</SelectItem>
+                            <SelectItem value="lg">Large</SelectItem>
+                            <SelectItem value="xl">XL</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+
+            <Separator className="opacity-50" />
+
+            {/* Background Selection */}
+            <div className="space-y-6">
+                <div className="space-y-4">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Select Background</Label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                        {backgroundPresets.map((preset) => (
+                            <button
+                                key={preset.id}
+                                type="button"
+                                onClick={() => setSelectedUrl(preset.url)}
+                                className={cn(
+                                    "group relative aspect-video rounded-2xl overflow-hidden border-2 transition-all active:scale-95 flex flex-col items-center justify-center",
+                                    selectedUrl === preset.url ? "border-primary ring-2 ring-primary/20" : "border-transparent opacity-60 hover:opacity-100"
+                                )}
+                            >
+                                {preset.url.startsWith('linear-gradient') ? (
+                                <div className="absolute inset-0" style={{ background: preset.url }} />
+                                ) : (
+                                <Image src={preset.url} alt={preset.label} fill className="object-cover" unoptimized />
+                                )}
+                                <div className={cn(
+                                  "absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity p-2",
+                                  selectedUrl === preset.url ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                                )}>
+                                    <span className="text-[9px] font-black text-white uppercase tracking-widest text-center leading-tight">{preset.label}</span>
+                                </div>
+                                {selectedUrl === preset.url && (
+                                    <div className="absolute top-1 right-1 bg-primary rounded-full p-0.5 z-10 shadow-lg">
+                                        <Sparkles className="h-3 w-3 text-white" />
+                                    </div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="space-y-8">
+                    <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                            <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Overlay Intensity</Label>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-tighter">{Math.round(overlayOpacity * 100)}% Dark</span>
+                        </div>
+                        <div className="flex items-center gap-4 px-2">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Glass</span>
+                            <Slider 
+                                value={[1 - overlayOpacity]} 
+                                max={1} 
+                                step={0.05} 
+                                min={0}
+                                onValueChange={(val) => setOverlayOpacity(1 - val[0])}
+                                className="flex-1"
+                            />
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Solid</span>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Custom Image URL</Label>
+                        <div className="flex gap-2">
+                            <Input 
+                                placeholder="https://..." 
+                                value={selectedUrl}
+                                onChange={(e) => setSelectedUrl(e.target.value)}
+                                className="h-11 text-sm rounded-2xl bg-muted/20 border-none shadow-inner"
+                            />
+                            {selectedUrl && !backgroundPresets.some(p => p.url === selectedUrl) && (
+                                <Button variant="outline" size="icon" className="h-11 w-11 shrink-0 rounded-2xl border-dashed" onClick={() => setSelectedUrl(backgroundPresets[0].url)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <Button onClick={handleSave} disabled={isSubmitting} className="w-full min-h-[3.5rem] h-auto rounded-[1.5rem] font-black shadow-xl shadow-primary/20 tracking-widest uppercase py-4">
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Environment
+                </Button>
+            </div>
+        </CardContent>
+    </Card>
+  );
+}
+
+export default function SettingsPage() {
+  const { user, loading: userLoading } = useUser();
+  const firestore = useFirestore();
+  const userDocRef = useMemo(() => (user?.uid ? doc(firestore, 'users', user.uid) : null), [user?.uid, firestore]);
+  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
 
   const [testimonySearchTerm, setTestimonySearchTerm] = useState('');
   const [testimonyFilterDate, setTestimonyFilterDate] = useState<Date>();
@@ -105,682 +327,59 @@ export default function ProfilePage() {
   const [prayerFilterDate, setPrayerFilterDate] = useState<Date>();
   const [createdCampaignSearchTerm, setCreatedCampaignSearchTerm] = useState('');
   const [createdCampaignFilterDate, setCreatedCampaignFilterDate] = useState<Date>();
-  const [joinedCampaignSearchTerm, setJoinedCampaignSearchTerm] = useState('');
-  const [joinedFellowshipSearchTerm, setJoinedFellowshipSearchTerm] = useState('');
-  const [joinedAssociationSearchTerm, setJoinedAssociationSearchTerm] = useState('');
   const [soulSearchTerm, setSoulSearchTerm] = useState('');
   const [soulFilterDate, setSoulFilterDate] = useState<Date>();
-  const [partnerSearchTerm, setPartnerSearchTerm] = useState('');
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const userId = currentUser?.uid;
-
-  const userDocRef = useMemo(() => {
-    if (!userId || !firestore) return null;
-    return doc(firestore, 'users', userId);
-  }, [userId, firestore]);
-  const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
-
-  const testimoniesQuery = useMemo(() => {
-    if (!userId || !firestore) return null;
-    return query(collection(firestore, 'testimonies'), where('authorId', '==', userId));
-  }, [userId, firestore]);
-  const { data: testimonies, loading: testimoniesLoading } = useCollection<Testimony>(testimoniesQuery);
-
-  const prayerRequestsQuery = useMemo(() => {
-    if (!userId || !firestore) return null;
-    return query(collection(firestore, 'prayerRequests'), where('authorId', '==', userId));
-  }, [userId, firestore]);
-  const { data: prayerRequests, loading: prayerRequestsLoading } = useCollection<PrayerRequest>(prayerRequestsQuery);
-
-  const soulsQuery = useMemo(() => {
-    if (!userId || !firestore) return null;
-    return query(collection(firestore, `users/${userId}/souls`));
-  }, [userId, firestore]);
-  const { data: soulsWon, loading: soulsLoading } = useCollection<Soul>(soulsQuery);
-
-  const joinedCampaignsQuery = useMemo(() => {
-    if (!userId || !firestore) return null;
-    return query(collection(firestore, `users/${userId}/joinedCampaigns`));
-  }, [userId, firestore]);
-  const { data: joinedCampaignsDocs, loading: campaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
-  
-  const createdCampaignsQuery = useMemo(() => {
-    if (!userId || !firestore) return null;
-    return query(collection(firestore, 'campaigns'), where('organizerId', '==', userId));
-  }, [userId, firestore]);
-  const { data: allCreatedCampaigns, loading: createdCampaignsLoading } = useCollection<Campaign>(createdCampaignsQuery);
-
-  const joinedFellowshipsDocsQuery = useMemo(() => {
-    if (!userId || !firestore) return null;
-    return query(collection(firestore, `users/${userId}/fellowships`));
-  }, [userId, firestore]);
-  const { data: joinedFellowshipRefs, loading: joinedGroupsRefsLoading } = useCollection<JoinedFellowship>(joinedFellowshipsDocsQuery);
-
-  const createdCampaigns = useMemo(() => {
-    if (!allCreatedCampaigns) return [];
-    return allCreatedCampaigns.filter(c => c.status === 'active');
-  }, [allCreatedCampaigns]);
-
-  const videoTestimonies = useMemo(() => {
-    const list = [...(userProfile?.videoTestimonies || [])];
-    return list.map(v => ({ ...v, embedUrl: getYouTubeEmbedUrl(v.url) })).filter(v => !!v.embedUrl);
-  }, [userProfile]);
-
-  const isProfileIncomplete = useMemo(() => {
-    return userProfile && (!userProfile.firstName || !userProfile.lastName || !userProfile.photoURL);
-  }, [userProfile]);
-
-  useEffect(() => {
-    if (!firestore || campaignsLoading || !joinedCampaignsDocs) {
-        setActiveJoinedCampaigns([]);
-        setCampaignsListLoading(false);
-        return;
-    }
-    const joinedCampaignIds = joinedCampaignsDocs.map(jc => jc.id);
-    if (joinedCampaignIds.length === 0) {
-        setActiveJoinedCampaigns([]);
-        setCampaignsListLoading(false);
-        return;
-    }
-    const fetchActiveCampaigns = async () => {
-        setCampaignsListLoading(true);
-        try {
-            const chunks: string[][] = [];
-            for (let i = 0; i < joinedCampaignIds.length; i += 30) {
-                chunks.push(joinedCampaignIds.slice(i, i + 30));
-            }
-            const campaignPromises = chunks.map(chunk => {
-                const q = query(collection(firestore, 'campaigns'), where(documentId(), 'in', chunk), where('status', '==', 'active'));
-                return getDocs(q);
-            });
-            const snapshots = await Promise.all(campaignPromises);
-            const campaignsData: Campaign[] = [];
-            snapshots.forEach(snapshot => snapshot.forEach(doc => { campaignsData.push({ id: doc.id, ...doc.data() } as Campaign); }));
-            setActiveJoinedCampaigns(campaignsData.filter(c => c.organizerId !== userId));
-        } catch (error) {
-            console.error("Error fetching active joined campaigns:", error);
-            setActiveJoinedCampaigns([]);
-        } finally {
-            setCampaignsListLoading(false);
-        }
-    };
-    fetchActiveCampaigns();
-  }, [joinedCampaignsDocs, campaignsLoading, firestore, userId]);
-
-  useEffect(() => {
-    if (!firestore || joinedGroupsRefsLoading || !joinedFellowshipRefs) {
-        setActiveJoinedGroups([]);
-        setGroupsListLoading(false);
-        return;
-    }
-    const joinedGroupIds = joinedFellowshipRefs.map(jf => jf.id);
-    if (joinedGroupIds.length === 0) {
-        setActiveJoinedGroups([]);
-        setGroupsListLoading(false);
-        return;
-    }
-    const fetchGroups = async () => {
-        setGroupsListLoading(true);
-        try {
-            const chunks: string[][] = [];
-            for (let i = 0; i < joinedGroupIds.length; i += 30) {
-                chunks.push(joinedGroupIds.slice(i, i + 30));
-            }
-            const groupPromises = chunks.map(chunk => {
-                const q = query(collection(firestore, 'fellowships'), where(documentId(), 'in', chunk), where('status', '==', 'active'));
-                return getDocs(q);
-            });
-            const snapshots = await Promise.all(groupPromises);
-            const groupsData: Fellowship[] = [];
-            snapshots.forEach(snapshot => snapshot.forEach(doc => { groupsData.push({ id: doc.id, ...doc.data() } as Fellowship); }));
-            setActiveJoinedGroups(groupsData);
-        } catch (error) {
-            console.error("Error fetching joined groups:", error);
-            setActiveJoinedGroups([]);
-        } finally {
-            setGroupsListLoading(false);
-        }
-    };
-    fetchGroups();
-  }, [joinedFellowshipRefs, joinedGroupsRefsLoading, firestore, userId]);
-
-  const filteredTestimonies = useMemo(() => {
-    if (!testimonies) return [];
-    const sorted = [...testimonies].sort((a, b) => {
-        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
-        return timeB - timeA;
-    });
-
-    return sorted.filter(t => {
-      const search = testimonySearchTerm.toLowerCase();
-      const matchSearch = !search || t.content.toLowerCase().includes(search) || t.category.toLowerCase().includes(search);
-      const matchDate = !testimonyFilterDate || isSameDay(t.createdAt.toDate(), testimonyFilterDate);
-      return matchSearch && matchDate;
-    });
-  }, [testimonies, testimonySearchTerm, testimonyFilterDate]);
-
-  const filteredPrayerRequests = useMemo(() => {
-    if (!prayerRequests) return [];
-    const sorted = [...prayerRequests].sort((a, b) => {
-        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
-        return timeB - timeA;
-    });
-
-    return sorted.filter(p => {
-      const search = prayerSearchTerm.toLowerCase();
-      const matchSearch = !search || p.content.toLowerCase().includes(search) || p.category.toLowerCase().includes(search);
-      const matchDate = !prayerFilterDate || isSameDay(p.createdAt.toDate(), prayerFilterDate);
-      return matchSearch && matchDate;
-    });
-  }, [prayerRequests, prayerSearchTerm, prayerFilterDate]);
-
-  const filteredCreatedCampaigns = useMemo(() => {
-    if (!createdCampaigns) return [];
-    const sorted = [...createdCampaigns].sort((a, b) => {
-        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
-        return timeB - timeA;
-    });
-
-    return sorted.filter(c => {
-      const search = createdCampaignSearchTerm.toLowerCase();
-      const matchSearch = !search || c.title.toLowerCase().includes(search) || c.location.toLowerCase().includes(search);
-      const matchDate = !createdCampaignFilterDate || isSameDay(c.createdAt.toDate(), createdCampaignFilterDate);
-      return matchSearch && matchDate;
-    });
-  }, [createdCampaigns, createdCampaignSearchTerm, createdCampaignFilterDate]);
-
-  const filteredJoinedCampaigns = useMemo(() => {
-    if (!activeJoinedCampaigns) return [];
-    const sorted = [...activeJoinedCampaigns].sort((a, b) => {
-        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
-        return timeB - timeA;
-    });
-
-    return sorted.filter(c => {
-      const search = joinedCampaignSearchTerm.toLowerCase();
-      return !search || c.title.toLowerCase().includes(search) || c.location.toLowerCase().includes(search);
-    });
-  }, [activeJoinedCampaigns, joinedCampaignSearchTerm]);
-
-  const joinedFellowships = useMemo(() => activeJoinedGroups.filter(f => (f.groupType || 'Fellowship') === 'Fellowship'), [activeJoinedGroups]);
-  const joinedAssociations = useMemo(() => activeJoinedGroups.filter(f => f.groupType === 'Association'), [activeJoinedGroups]);
-
-  const filteredJoinedFellowships = useMemo(() => {
-    const sorted = [...joinedFellowships].sort((a, b) => {
-        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
-        return timeB - timeA;
-    });
-
-    return sorted.filter(f => {
-        const search = joinedFellowshipSearchTerm.toLowerCase();
-        return !search || f.name.toLowerCase().includes(search) || f.description.toLowerCase().includes(search);
-    });
-  }, [joinedFellowships, joinedFellowshipSearchTerm]);
-
-  const filteredJoinedAssociations = useMemo(() => {
-    const sorted = [...joinedAssociations].sort((a, b) => {
-        const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-        const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
-        return timeB - timeA;
-    });
-
-    return sorted.filter(f => {
-        const search = joinedAssociationSearchTerm.toLowerCase();
-        return !search || f.name.toLowerCase().includes(search) || f.description.toLowerCase().includes(search);
-    });
-  }, [joinedAssociations, joinedAssociationSearchTerm]);
-
-  const filteredSoulsWon = useMemo(() => {
-    if (!soulsWon) return [];
-    const sorted = [...soulsWon].sort((a, b) => {
-        const timeA = safeToDate(a.wonAt)?.getTime() ?? 0;
-        const timeB = safeToDate(b.wonAt)?.getTime() ?? 0;
-        return timeB - timeA;
-    });
-
-    return sorted.filter(s => {
-      const search = soulSearchTerm.toLowerCase();
-      const matchSearch = !search || `${s.firstName} ${s.lastName}`.toLowerCase().includes(search);
-      const matchDate = !soulFilterDate || isSameDay(s.wonAt.toDate(), soulFilterDate);
-      return matchSearch && matchDate;
-    });
-  }, [soulsWon, soulSearchTerm, soulFilterDate]);
-
-  const filteredAccountabilityPartners = useMemo(() => {
-    if (!userProfile?.accountabilityPartners) return [];
-    
-    const uniqueMap = new Map();
-    userProfile.accountabilityPartners.forEach(p => {
-        if (p.userId && !uniqueMap.has(p.userId)) {
-            uniqueMap.set(p.userId, p);
-        }
-    });
-    const partners = Array.from(uniqueMap.values());
-
-    return partners.filter(p => {
-        const search = partnerSearchTerm.toLowerCase();
-        return !search || `${p.firstName} ${p.lastName}`.toLowerCase().includes(search);
-    });
-  }, [userProfile?.accountabilityPartners, partnerSearchTerm]);
-
-  const loading = profileLoading || userLoading || testimoniesLoading || soulsLoading || campaignsLoading || createdCampaignsLoading || campaignsListLoading || prayerRequestsLoading || groupsListLoading;
-
-  if (loading) {
-    return <div className="flex items-center justify-center min-h-[400px]"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
-  }
-  
-  if (!userProfile) return <div className="text-center py-12"><p>User profile not found.</p></div>;
-  
-  const { 
-    firstName, 
-    lastName, 
-    email, 
-    photoURL, 
-    bio, 
-    personalMessage, 
-    location, 
-    phone, 
-    maritalStatus,
-    workStatus,
-    organizationName,
-    roleInOrganization
-  } = userProfile;
-  const displayName = [firstName, lastName].filter(Boolean).join(' ');
-  const { city, state, country } = location || {};
+  const loading = userLoading || profileLoading;
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-32">
-      <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-        <CardContent className="p-6 sm:p-8 text-center">
-          <div className="flex flex-col items-center gap-6">
-            <div className="relative">
-              <Dialog>
-                  <DialogTrigger asChild disabled={!photoURL}>
-                      <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shrink-0 shadow-lg", photoURL && "cursor-pointer")}>
-                          <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} className="object-contain" />
-                          <AvatarFallback className="text-3xl sm:text-4xl">
-                              {firstName?.charAt(0) || email?.charAt(0) || 'U'}
-                          </AvatarFallback>
-                      </Avatar>
-                  </DialogTrigger>
-                  {photoURL && (
-                      <DialogContent className="p-0 bg-transparent border-0 w-auto max-w-lg">
-                          <DialogHeader className="sr-only">
-                              <DialogTitle>Profile photo of {displayName}</DialogTitle>
-                              <DialogDescription>A larger view of your profile photo.</DialogDescription>
-                          </DialogHeader>
-                          <Image src={photoURL} alt={displayName} width={600} height={600} className="rounded-lg object-contain" unoptimized />
-                      </DialogContent>
-                  )}
-              </Dialog>
-              {isProfileIncomplete && (
-                <div className="absolute -top-1 -right-1 flex h-4 w-4">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-4 w-4 bg-red-600 border-2 border-background"></span>
-                </div>
-              )}
-            </div>
-            <div className="flex-grow w-full space-y-4">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="flex-grow min-w-0 w-full text-center">
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize text-center w-full">{displayName}</h1>
-                        <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
-                            {(city || state || country) && (
-                                <div className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider">
-                                    <MapPin className="h-4 w-4" /> 
-                                    {[city, state].filter(Boolean).join(', ') || country}
-                                </div>
-                            )}
-                            {maritalStatus && (
-                                <div className="flex items-center gap-1.5">
-                                    <Heart className="h-3.5 w-3.5 text-primary" />
-                                    {maritalStatus}
-                                </div>
-                            )}
-                            {workStatus && (
-                                <div className="flex items-center gap-1.5">
-                                    <Briefcase className="h-3.5 w-3.5 text-primary" />
-                                    <span>
-                                        {roleInOrganization && `${roleInOrganization}${organizationName ? ' @ ' : ''}`}
-                                        {organizationName || workStatus}
-                                    </span>
-                                </div>
-                            )}
-                            {phone && <div className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-primary" /> {phone}</div>}
-                        </div>
-                    </div>
-                    <div className="w-full sm:w-auto shrink-0 flex justify-center">
-                        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                            <DialogTrigger asChild>
-                              <Button className="w-full sm:w-auto font-bold h-10 px-6 rounded-full shadow-md transition-transform active:scale-95">
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit Profile
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-lg">
-                                <DialogHeader className="text-left">
-                                    <DialogTitle>Edit Profile</DialogTitle>
-                                    <DialogDescription>Make changes to your public profile.</DialogDescription>
-                                </DialogHeader>
-                                <div className="max-h-[70vh] overflow-y-auto pr-2">
-                                  {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />}
-                                </div>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
-                </div>
-
-                {personalMessage && (
-                    <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 inline-flex items-center gap-3 text-left max-w-xl mx-auto">
-                        <Sparkles className="h-5 w-5 text-primary shrink-0" />
-                        <p className="text-sm sm:text-base font-bold text-foreground leading-snug italic text-left">
-                          &ldquo;{personalMessage}&rdquo;
-                        </p>
-                    </div>
-                )}
-
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-3xl text-center mx-auto">
-                    {bio || "You haven't set a bio yet. Share a brief summary of your spiritual journey to encourage others."}
-                </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {videoTestimonies.length > 0 && (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-t-4 border-t-red-600 border-b-2 sm:border-b bg-card/50">
-            <CardHeader className="pb-4 pt-6 px-6">
-                <CardTitle className="flex items-center justify-center gap-2 text-lg font-bold">
-                    <Youtube className="h-5 w-5 text-red-600" />
-                    My Video Testimonies
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="px-6 pb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {videoTestimonies.map((video, idx) => (
-                        <div key={idx} className="space-y-2">
-                            {video.title && <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate">{video.title}</p>}
-                            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-white/5 transition-transform hover:scale-[1.01]">
-                                <iframe
-                                    src={video.embedUrl!}
-                                    title={video.title || "Video Testimony"}
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                    className="absolute inset-0 w-full h-full border-0"
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </CardContent>
-        </Card>
-      )}
-
-      <div className="space-y-6">
-            <h2 className="text-xl font-bold tracking-tight px-4 sm:px-0 uppercase text-muted-foreground flex items-center justify-center gap-2">
-                <Activity className="h-5 w-5" /> Your Kingdom Activity
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="text-base sm:text-lg">Testimonies ({testimonies?.length ?? 0})</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
-                        <FilterControls 
-                            searchTerm={testimonySearchTerm}
-                            setSearchTerm={setTestimonySearchTerm}
-                            filterDate={testimonyFilterDate}
-                            setFilterDate={setTestimonyFilterDate}
-                            searchPlaceholder="Search testimonies..."
-                        />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
-                            <div className="p-1 space-y-px">
-                                {filteredTestimonies.length > 0 ? (
-                                    filteredTestimonies.map(t => (
-                                        <Link key={t.id} href={`/testimonies#${t.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1">{t.category}</p>
-                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed text-left">{t.content}</p>
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{testimonies?.length === 0 ? 'No testimonies shared yet.' : 'No results found.'}</p>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </CardContent>
-                </Card>
-
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="text-base sm:text-lg">Prayer Requests ({prayerRequests?.length ?? 0})</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
-                         <FilterControls 
-                            searchTerm={prayerSearchTerm}
-                            setSearchTerm={setPrayerSearchTerm}
-                            filterDate={prayerFilterDate}
-                            setFilterDate={setPrayerFilterDate}
-                            searchPlaceholder="Search prayer requests..."
-                        />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
-                            <div className="p-1 space-y-px">
-                                {filteredPrayerRequests.length > 0 ? (
-                                    filteredPrayerRequests.map(p => (
-                                        <Link key={p.id} href="/testimonies?tab=prayers" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1">{p.category}</p>
-                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed">{p.content}</p>
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{prayerRequests?.length === 0 ? 'No prayer requests submitted yet.' : 'No results found.'}</p>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="text-base sm:text-lg">Campaigns Created ({createdCampaigns?.length ?? 0})</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
-                         <FilterControls 
-                            searchTerm={createdCampaignSearchTerm}
-                            setSearchTerm={setCreatedCampaignSearchTerm}
-                            filterDate={createdCampaignFilterDate}
-                            setFilterDate={setCreatedCampaignFilterDate}
-                            searchPlaceholder="Search created campaigns..."
-                        />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
-                            <div className="p-1 space-y-px">
-                                {filteredCreatedCampaigns.length > 0 ? (
-                                    filteredCreatedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1">{c.title}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{createdCampaigns?.length === 0 ? 'No campaigns created yet.' : 'No results found.'}</p>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </CardContent>
-                </Card>
-
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="text-base sm:text-lg">Campaigns Joined ({activeJoinedCampaigns.length})</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
-                         <FilterControls 
-                            searchTerm={joinedCampaignSearchTerm}
-                            setSearchTerm={setJoinedCampaignSearchTerm}
-                            searchPlaceholder="Search joined campaigns..."
-                        />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
-                            <div className="p-1 space-y-px">
-                                {filteredJoinedCampaigns.length > 0 ? (
-                                    filteredJoinedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1">{c.title}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{activeJoinedCampaigns.length === 0 ? 'No other campaigns joined yet.' : 'No results found.'}</p>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                            <Users className="h-5 w-5 text-primary" />
-                            Fellowships Joined ({joinedFellowships.length})
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
-                        <FilterControls 
-                            searchTerm={joinedFellowshipSearchTerm}
-                            setSearchTerm={setJoinedFellowshipSearchTerm}
-                            searchPlaceholder="Search joined fellowships..."
-                        />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
-                            <div className="p-1 space-y-px">
-                                {filteredJoinedFellowships.length > 0 ? (
-                                    filteredJoinedFellowships.map(f => (
-                                        <Link key={f.id} href={`/fellowship/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1">{f.name}</p>
-                                            <p className="text-xs text-muted-foreground mt-1 truncate">{f.location || 'Global'}</p>
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{joinedFellowships.length === 0 ? 'No fellowships joined yet.' : 'No results found.'}</p>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </CardContent>
-                </Card>
-
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                            <Group className="h-5 w-5 text-primary" />
-                            Associations Joined ({joinedAssociations.length})
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
-                        <FilterControls 
-                            searchTerm={joinedAssociationSearchTerm}
-                            setSearchTerm={setJoinedAssociationSearchTerm}
-                            searchPlaceholder="Search joined associations..."
-                        />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
-                            <div className="p-1 space-y-px">
-                                {filteredJoinedAssociations.length > 0 ? (
-                                    filteredJoinedAssociations.map(a => (
-                                        <Link key={a.id} href={`/fellowship/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1">{a.name}</p>
-                                            <p className="text-xs text-muted-foreground mt-1 truncate">{a.location || 'Global'}</p>
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{joinedAssociations.length === 0 ? 'No associations joined yet.' : 'No results found.'}</p>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </CardContent>
-                </Card>
-            </div>
-
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="text-base sm:text-lg">Souls Won ({soulsWon?.length ?? 0})</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
-                         <FilterControls 
-                            searchTerm={soulSearchTerm}
-                            setSearchTerm={setSoulSearchTerm}
-                            filterDate={soulFilterDate}
-                            setFilterDate={setSoulFilterDate}
-                            searchPlaceholder="Search souls by name..."
-                        />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
-                            <div className="p-1 space-y-px">
-                                {filteredSoulsWon.length > 0 ? (
-                                    filteredSoulsWon.map(s => (
-                                        <Link key={s.id} href="/souls-won" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <p className="font-bold text-sm group-hover:underline line-clamp-1">{s.firstName} {s.lastName}</p>
-                                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Won on {s.wonAt ? format(safeToDate(s.wonAt)!, "PPP") : 'N/A'}</p>
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{soulsWon?.length === 0 ? 'No souls won yet.' : 'No results found.'}</p>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </CardContent>
-                </Card>
-
-                <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-                    <CardHeader className="p-5 sm:p-6 text-left">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left">
-                            <HeartHandshake className="h-5 w-5 text-primary" />
-                            Partners ({userProfile?.accountabilityPartners?.length ?? 0})
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 sm:p-6 pt-0 text-left">
-                         <FilterControls 
-                            searchTerm={partnerSearchTerm}
-                            setSearchTerm={setPartnerSearchTerm}
-                            searchPlaceholder="Search partners..."
-                        />
-                        <ScrollArea className="h-48 border rounded-lg bg-muted/5">
-                            <div className="p-1 space-y-px">
-                                {filteredAccountabilityPartners.length > 0 ? (
-                                    filteredAccountabilityPartners.map(p => (
-                                        <Link key={p.userId} href={`/profile/${p.userId}`} className="flex items-center gap-3 p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
-                                            <Avatar className="h-10 w-10 sm:h-9 sm:w-9 border shrink-0 text-left">
-                                                <AvatarImage src={p.photoURL} className="text-left" />
-                                                <AvatarFallback className="text-xs font-bold text-left">{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
-                                            </Avatar>
-                                            <div className="min-w-0 flex-1 text-left">
-                                                <p className="font-bold text-sm truncate leading-tight group-hover:underline text-left">{p.firstName} {p.lastName}</p>
-                                            </div>
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <p className="text-xs text-center text-muted-foreground py-10 italic">{userProfile?.accountabilityPartners?.length === 0 ? 'No accountability partners yet.' : 'No results found.'}</p>
-                                )}
-                            </div>
-                        </ScrollArea>
-                        <div className="pt-6 flex justify-end">
-                            <Button asChild variant="outline" size="sm" className="text-[10px] font-black uppercase tracking-widest h-9 sm:h-8 px-6 rounded-full shadow-sm text-left">
-                                <Link href="/accountability" className="text-left">Find Partners</Link>
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+    <div className="space-y-8 max-w-4xl mx-auto pb-32">
+      <div className="px-4 sm:px-0 space-y-1 text-left">
+        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Settings</h1>
+        <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60">Identity & Kingdom Preferences</p>
+      </div>
+      
+       {loading || !userProfile || !user ? (
+        <div className="space-y-6 px-4 sm:px-0">
+            <Skeleton className="h-40 w-full rounded-3xl" />
+            <Skeleton className="h-60 w-full rounded-3xl" />
+            <Skeleton className="h-40 w-full rounded-3xl" />
         </div>
+       ) : (
+        <div className="space-y-6 md:space-y-10">
+            <ProfileSettingsCard />
+            <VisualEnvironmentCard userProfile={userProfile} userId={user.uid} />
+            <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
+            <SoulsImportTemplateCard />
+            <PwaInstallCard />
+            <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
+            <PasswordSettingsCard />
+            <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+              <CardHeader><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight"><MessageSquare className="h-5 w-5 text-primary" /> Ministry Support</CardTitle></CardHeader>
+              <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Mail className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5">Email Support</p>
+                        <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-bold hover:underline truncate block text-foreground">testifyglobal360@gmail.com</a>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Phone className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5">Call / WhatsApp</p>
+                        <a href="tel:+2348148538502" className="text-sm font-bold hover:underline truncate block text-foreground">+234 814 853 8502</a>
+                    </div>
+                </div>
+              </CardContent>
+            </Card>
+            <PasswordSettingsCard />
+        </div>
+      )}
     </div>
   );
 }
