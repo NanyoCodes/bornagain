@@ -152,7 +152,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
   const [isLoadingChapter, setIsLoadingChapter] = useState(true);
   const [chapterError, setChapterError] = useState<string | null>(null);
 
-  const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
@@ -268,7 +267,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       setIsLoadingChapter(true);
       setChapterError(null);
       setChapterContent(null);
-      setIsScrolledToEnd(false);
       setSelectedVerses([]);
       setActiveHighlightId(null);
       setToolbarPos(null);
@@ -281,17 +279,10 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     fetchChapter();
   }, [isOpen, isInitialized, selectedBookName, selectedChapterNumber, selectedVersion]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const viewport = scrollAreaRef.current?.querySelector('div[data-radix-scroll-area-viewport]');
     if (!viewport) return;
     viewport.scrollTop = 0;
-    const checkScrollable = () => {
-        if (!isLoadingChapter && chapterContent) {
-            if (viewport.scrollHeight <= viewport.clientHeight) setIsScrolledToEnd(true);
-        }
-    };
-    const timeoutId = setTimeout(checkScrollable, 100);
-    return () => clearTimeout(timeoutId);
   }, [isLoadingChapter, chapterContent]);
 
   const handleMarkAsRead = async () => {
@@ -309,12 +300,6 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
         } else { setSelectedChapterNumber(chapterContent.chapter + 1); }
     } catch (e) { console.error(e); }
     finally { setIsSubmitting(false); }
-  };
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    if (isScrolledToEnd) return;
-    const target = event.currentTarget;
-    if (target.scrollHeight - target.scrollTop <= target.clientHeight + 5) setIsScrolledToEnd(true);
   };
   
     const handleDeleteHighlight = async (highlightId: string) => {
@@ -403,7 +388,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                  <Button variant="outline" size="icon" className="h-7 w-7 text-left" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : fontSizes[fontSizes.indexOf(f)-1] as any)}><Minus className="h-4 w-4 text-left" /></Button>
                  <Button variant="outline" size="icon" className="h-7 w-7 text-left" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : fontSizes[fontSizes.indexOf(f)+1] as any)}><Plus className="h-4 w-4 text-left" /></Button>
                </div>
-              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4 pt-12 relative text-left">
+              <ScrollArea ref={scrollAreaRef} className="h-full border rounded-md p-2 sm:p-4 pt-12 relative text-left">
                   {(isLoadingChapter || !isInitialized) && <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>}
                   {!isLoadingChapter && isInitialized && !chapterError && chapterContent && (
                   <>
@@ -434,7 +419,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     <Input type="number" placeholder="Verse" value={goToVerse} onChange={(e) => setGoToVerse(e.target.value)} className="w-20 h-9 text-left" onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()} />
                     <Button onClick={handleGoToVerse} size="sm" variant="secondary" className="text-left">Go</Button>
                 </div>
-                <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter || !isScrolledToEnd} className="text-left">Mark as Read & Next</Button>
+                <Button onClick={handleMarkAsRead} disabled={isSubmitting || isLoadingChapter} className="text-left">Mark as Read & Next</Button>
             </div>
           </div>
       </div>
