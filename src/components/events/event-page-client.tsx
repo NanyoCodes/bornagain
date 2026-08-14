@@ -119,7 +119,6 @@ export default function EventPageClient() {
     const eventRef = doc(firestore, 'events', eventToDelete.id);
     const updateData = { status: 'cancelled', deletedAt: serverTimestamp() };
     
-    // Reset state immediately to prevent unmount freeze
     setEventToDelete(null);
     setIsDeleting(true);
 
@@ -134,16 +133,17 @@ export default function EventPageClient() {
                 errorEmitter.emit('permission-error', new FirestorePermissionError({ path: eventRef.path, operation: 'update' }, user));
             }
         } finally {
-            setIsDeleting(false);
+            setIsDeleting(true);
+            setTimeout(() => setIsDeleting(false), 500);
         }
     };
 
     performCancel();
-    return true; // Signal async intent
+    return true; 
   };
 
   return (
-    <div className="space-y-8 md:space-y-12 max-w-6xl mx-auto pb-32 w-full text-left">
+    <div className="space-y-8 md:space-y-12 max-w-4xl mx-auto pb-32 w-full text-left">
         <header className="px-4 sm:px-0 space-y-6 pt-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
@@ -179,10 +179,10 @@ export default function EventPageClient() {
             </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 sm:gap-8 px-0 sm:px-0 -mx-4 sm:mx-0">
+        <div className="flex flex-col gap-6 sm:gap-10 px-0 sm:px-0 -mx-4 sm:mx-0">
             {loading ? (
-                [...Array(4)].map((_, i) => (
-                    <Card key={i} className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-none sm:shadow-sm animate-pulse h-[350px]">
+                [...Array(3)].map((_, i) => (
+                    <Card key={i} className="rounded-none sm:rounded-[3rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-none sm:shadow-sm animate-pulse h-[400px]">
                         <CardContent className="h-full bg-muted/30" />
                     </Card>
                 ))
