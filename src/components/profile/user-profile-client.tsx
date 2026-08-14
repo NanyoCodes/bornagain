@@ -304,7 +304,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             <div className="flex-grow min-w-0 space-y-4 pb-2 w-full text-center">
                 <div className="flex flex-col justify-between items-center gap-4">
                     <div className="min-w-0 w-full text-center">
-                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize text-center w-full">{displayName}</h1>
+                        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize text-center w-full break-words [overflow-wrap:anywhere]">{displayName}</h1>
                         <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium">
                             {(city || state || country) && (
                                 <div className="flex items-center gap-1.5 text-primary font-black uppercase tracking-wider">

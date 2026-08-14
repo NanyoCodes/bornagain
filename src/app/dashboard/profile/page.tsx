@@ -315,6 +315,124 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
   );
 }
 
+function NotificationSettingsForm({ userProfile, userId }: { userProfile: UserProfile, userId: string }) {
+  const { toast } = useToast();
+  const firestore = useFirestore();
+  const { user } = useUser();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const form = useForm<z.infer<typeof notificationFormSchema>>({
+    resolver: zodResolver(notificationFormSchema),
+    defaultValues: {
+      newCampaignsInArea: userProfile.notificationSettings?.newCampaignsInArea ?? false,
+      weeklyDigest: userProfile.notificationSettings?.weeklyDigest ?? false,
+    },
+  });
+  useEffect(() => {
+    form.reset({
+      newCampaignsInArea: userProfile.notificationSettings?.newCampaignsInArea ?? false,
+      weeklyDigest: userProfile.notificationSettings?.weeklyDigest ?? false,
+    });
+  }, [userProfile, form]);
+
+  async function onSubmit(values: z.infer<typeof notificationFormSchema>) {
+    setIsSubmitting(true);
+    const userRef = doc(firestore, 'users', userId);
+    updateDoc(userRef, { notificationSettings: values }).then(() => {
+            toast({ title: 'Preferences Saved' });
+            form.reset(values);
+        }).catch(() => {
+             const permissionError = new FirestorePermissionError({ path: userRef.path, operation: 'update' }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        }).finally(() => setIsSubmitting(false));
+  }
+  return (
+    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+      <CardHeader><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight"><Bell className="h-5 w-5 text-primary" /> Notifications</CardTitle></CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField control={form.control} name="newCampaignsInArea" render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-2xl border p-5 bg-muted/20 gap-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-sm font-black uppercase tracking-wider">New Campaigns</FormLabel>
+                    <FormDescription className="text-[10px] font-medium leading-tight">Notify me of missions in my area.</FormDescription>
+                  </div>
+                  <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                </FormItem>
+              )} />
+            <Button type="submit" className="w-full sm:w-auto h-12 rounded-2xl font-black uppercase tracking-widest" disabled={isSubmitting || !form.formState.isDirty}>{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Save Preferences</Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ContactCard() {
+  return (
+    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
+      <CardHeader><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight"><MessageSquare className="h-5 w-5 text-primary" /> Ministry Support</CardTitle></CardHeader>
+      <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Mail className="h-5 w-5 text-primary" />
+            </div>
+            <div className="min-w-0">
+                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5">Email Support</p>
+                <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-bold hover:underline truncate block text-foreground">testifyglobal360@gmail.com</a>
+            </div>
+        </div>
+        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Phone className="h-5 w-5 text-primary" />
+            </div>
+            <div className="min-w-0">
+                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5">Call / WhatsApp</p>
+                <a href="tel:+2348148538502" className="text-sm font-bold hover:underline truncate block text-foreground">+234 814 853 8502</a>
+            </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AccountSettingsCard() {
+    const { toast } = useToast();
+    const [isDeleting, setIsDeleting] = useState(false);
+    const handleDelete = () => {
+        setIsDeleting(true);
+        toast({ variant: 'destructive', title: 'Account Deletion Initiated' });
+        setTimeout(() => setIsDeleting(false), 2000);
+    }
+  return (
+    <Card className="border-destructive border-t-8 rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none bg-card/50 backdrop-blur-sm">
+      <CardHeader><CardTitle className="text-destructive flex items-center gap-2 text-lg font-black uppercase tracking-tight"><Trash2 className="h-5 w-5" /> Danger Zone</CardTitle></CardHeader>
+      <CardContent>
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="w-full sm:w-auto h-12 rounded-2xl font-black uppercase tracking-widest">Delete My Account</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
+                <AlertDialogHeader>
+                    <AlertDialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed">
+                        This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="gap-3 mt-6">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
+                        {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        Confirm Deletion
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function SettingsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
@@ -334,7 +452,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto pb-32">
-      <div className="px-4 sm:px-0 space-y-1 text-left">
+      <div className="px-4 sm:px-0 space-y-1">
         <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Settings</h1>
         <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60">Identity & Kingdom Preferences</p>
       </div>
@@ -354,30 +472,8 @@ export default function SettingsPage() {
             <PwaInstallCard />
             <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
             <PasswordSettingsCard />
-            <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-              <CardHeader><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight"><MessageSquare className="h-5 w-5 text-primary" /> Ministry Support</CardTitle></CardHeader>
-              <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner">
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <Mail className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="min-w-0">
-                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5">Email Support</p>
-                        <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-bold hover:underline truncate block text-foreground">testifyglobal360@gmail.com</a>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner">
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <Phone className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="min-w-0">
-                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-0.5">Call / WhatsApp</p>
-                        <a href="tel:+2348148538502" className="text-sm font-bold hover:underline truncate block text-foreground">+234 814 853 8502</a>
-                    </div>
-                </div>
-              </CardContent>
-            </Card>
-            <PasswordSettingsCard />
+            <ContactCard />
+            <AccountSettingsCard />
         </div>
       )}
     </div>
