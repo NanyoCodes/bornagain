@@ -11,9 +11,9 @@ import { useUser } from "@/firebase";
 import { Loader2 } from "lucide-react";
 
 export default function ProfilePageContent() {
-  const { user, loading } = useUser();
+  const { user, loading: userLoading } = useUser();
 
-  if (loading) {
+  if (userLoading) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center py-20">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />

@@ -98,25 +98,25 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
   }
 
   return (
-    <Card className={cn("bg-card border shadow-lg text-left text-left")}>
+    <Card className={cn("bg-card border shadow-lg text-left")}>
       <CardHeader className="p-3 text-left">
         <CardTitle className="text-base text-left">Editing Note</CardTitle>
         <CardDescription className="text-left">{getVerseReference(highlight)}</CardDescription>
       </CardHeader>
-      <CardContent className="p-3 pt-0 text-left text-left">
+      <CardContent className="p-3 pt-0 text-left">
         <Textarea 
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Add your meditation note..."
             rows={4}
-            className="text-sm text-left text-left"
+            className="text-sm text-left"
         />
       </CardContent>
       <CardFooter className="p-3 pt-0 flex flex-wrap items-center justify-between gap-y-2 text-left">
           <AlertDialog>
              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" disabled={isDeleting} className="text-left text-left">
-                    {isDeleting ? <Loader2 className="mr-1 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-1 h-4 w-4 text-left" />}
+                <Button variant="destructive" size="sm" disabled={isDeleting} className="text-left">
+                    {isDeleting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Trash2 className="mr-1 h-4 w-4" />}
                     Delete
                 </Button>
              </AlertDialogTrigger>
@@ -384,7 +384,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     const handleSelectVersion = (version: string) => { setSelectedVersion(version); setIsVersionSheetOpen(false); }
     
     const NotesList = (
-        <div className="space-y-2 p-1 text-left text-left text-left">
+        <div className="space-y-2 p-1 text-left">
             {highlights?.sort((a, b) => (a.createdAt?.seconds ?? 0) - (b.createdAt?.seconds ?? 0)).map(h => h.id === activeHighlightId ? (
                 <div key={h.id} ref={activeNoteRef} className="text-left">
                     <NoteEditor highlight={h} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
@@ -400,19 +400,19 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
     );
     
     const ReaderContent = (
-      <div className="flex flex-col gap-2 sm:gap-4 flex-grow min-h-0 text-left text-left">
+      <div className="flex flex-col gap-2 sm:gap-4 flex-grow min-h-0 text-left">
           <div className="relative flex-grow min-h-0 text-left">
                <div className="absolute top-2 right-2 z-10 flex items-center justify-end gap-2 px-2 sm:px-0 text-left">
                  <Button variant="outline" size="icon" className="h-7 w-7 text-left" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : fontSizes[fontSizes.indexOf(f)-1] as any)}><Minus className="h-4 w-4 text-left" /></Button>
                  <Button variant="outline" size="icon" className="h-7 w-7 text-left" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : fontSizes[fontSizes.indexOf(f)+1] as any)}><Plus className="h-4 w-4 text-left" /></Button>
                </div>
-              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4 pt-12 relative text-left text-left">
-                  {(isLoadingChapter || !isInitialized) && <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20 text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>}
+              <ScrollArea ref={scrollAreaRef} onScroll={handleScroll} className="h-full border rounded-md p-2 sm:p-4 pt-12 relative text-left">
+                  {(isLoadingChapter || !isInitialized) && <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left" /></div>}
                   {!isLoadingChapter && isInitialized && !chapterError && chapterContent && (
                   <>
-                    <div className={cn("space-y-1 font-serif text-left text-left", fontSizeClasses[fontSize])}>
+                    <div className={cn("space-y-1 font-serif text-left", fontSizeClasses[fontSize])}>
                         {chapterContent.verses.map(v => (
-                                <p key={v.verse} id={`verse-${v.verse}`} className={cn('rounded-sm transition-colors -mx-1 px-1 py-0.5 sm:leading-relaxed cursor-pointer text-left text-left', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-primary/20', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
+                                <p key={v.verse} id={`verse-${v.verse}`} className={cn('rounded-sm transition-colors -mx-1 px-1 py-0.5 sm:leading-relaxed cursor-pointer text-left', highlightsMap.get(v.verse) && getHighlightClass(highlightsMap.get(v.verse)!.color), selectedVerses.includes(v.verse) && 'bg-primary/20', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
                                     <sup className={cn("font-sans text-muted-foreground mr-1 text-left", subFontSizeClasses[fontSize])}>{v.verse}</sup>{v.text}
                                 </p>
                         ))}
@@ -420,7 +420,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
                     {selectedVerses.length > 0 && !unfinishedHighlight && toolbarPos && (
                         <div className="absolute z-30 transition-all pointer-events-none text-left" style={{ top: `${toolbarPos.top}px`, left: `${toolbarPos.left}px`, transform: 'translate(-50%, -120%)' }}>
                             <Button size="default" className="shadow-xl pointer-events-auto text-left" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>
-                                {isProcessingHighlight ? <Loader2 className="h-4 w-4 animate-spin text-left" /> : <Highlighter className="mr-2 h-4 w-4 text-left text-left" />}Highlight & Note
+                                {isProcessingHighlight ? <Loader2 className="h-4 w-4 animate-spin text-left" /> : <Highlighter className="mr-2 h-4 w-4 text-left" />}Highlight & Note
                             </Button>
                         </div>
                     )}
@@ -430,7 +430,7 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
           </div>
            <div className="flex-shrink-0 pt-4 flex flex-col sm:flex-row gap-2 items-center justify-between text-left">
             {unfinishedHighlight && (
-                <Card className="border-amber-500/50 bg-amber-500/5 p-3 w-full max-w-md text-left text-left"><div className="flex items-center justify-between gap-4 text-left"><p className="font-semibold text-sm text-left">Note Required</p><Button size="sm" variant="outline" onClick={() => { setActiveHighlightId(unfinishedHighlight.id); if (isMobile) setMobileTab('notes'); }} className="text-left text-left">Go to Note</Button></div></Card>
+                <Card className="border-amber-500/50 bg-amber-500/5 p-3 w-full max-w-md text-left text-left"><div className="flex items-center justify-between gap-4 text-left"><p className="font-semibold text-sm text-left">Note Required</p><Button size="sm" variant="outline" onClick={() => { setActiveHighlightId(unfinishedHighlight.id); if (isMobile) setMobileTab('notes'); }} className="text-left">Go to Note</Button></div></Card>
             )}
             <div className="flex gap-2 items-center text-left">
                 <div className="flex items-center gap-2 text-left">
@@ -491,4 +491,3 @@ export function BibleDialog({ isOpen, onOpenChange, onDisciplineCompleted }: { i
       </Dialog>
     );
 }
-
