@@ -614,7 +614,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <DropdownMenuSeparator />
 
                 <div className="p-1 space-y-1 text-left">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Navigation</p>
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Main Navigation</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/growth" className="flex items-center gap-3 w-full text-left">
                       <div className="h-7 w-7 rounded-lg bg-chart-1/10 flex items-center justify-center text-left">
@@ -806,11 +806,11 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10",
+                      "relative z-10 flex flex-col items-center justify-center",
                       isActive ? "text-white" : "text-muted-foreground"
                     )}
                   >
-                    <item.icon className={cn("h-6 w-6", !isActive && item.color)} />
+                    <item.icon className={cn("h-6 w-6 mb-1", !isActive && item.color)} />
                     <span className={cn(
                         "text-[8px] font-black uppercase tracking-tighter transition-all leading-none",
                         isActive ? "opacity-100" : "opacity-60"
