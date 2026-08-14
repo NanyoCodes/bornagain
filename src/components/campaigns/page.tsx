@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
@@ -8,10 +7,10 @@ import { CreateCampaignForm } from "@/components/campaigns/create-campaign-form"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -49,6 +48,7 @@ import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 function CampaignSkeletons() {
   return (
@@ -435,28 +435,30 @@ export default function CampaignsPage() {
                     <SheetDescription className="text-sm font-medium mt-1">Update mission progress and details.</SheetDescription>
                 </SheetHeader>
               </div>
-              <div className="flex-grow overflow-y-auto p-8">
-                <ManageCampaignForm 
-                  campaign={campaignToManage} 
-                  onCampaignUpdated={() => { setCampaignToManage(null); }} 
-                  onDelete={() => {
-                    setCampaignToDelete(campaignToManage);
-                    setCampaignToManage(null);
-                  }}
-                />
-              </div>
+              <ScrollArea className="flex-1 min-h-0">
+                <div className="p-8">
+                    <ManageCampaignForm 
+                    campaign={campaignToManage} 
+                    onCampaignUpdated={() => { setCampaignToManage(null); }} 
+                    onDelete={() => {
+                        setCampaignToDelete(campaignToManage);
+                        setCampaignToManage(null);
+                    }}
+                    />
+                </div>
+              </ScrollArea>
             </SheetContent>
           </Sheet>
         ) : (
           <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
-            <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden">
-               <div className="p-6 border-b bg-muted/10">
+            <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl shadow-2xl border-none">
+               <div className="p-6 border-b bg-muted/10 shrink-0">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold font-headline">Manage Campaign</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">Update mission progress and details.</DialogDescription>
+                        <DialogTitle className="text-2xl font-bold font-headline text-left">Manage Campaign</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">Update mission progress and details.</DialogDescription>
                     </DialogHeader>
                 </div>
-              <ScrollArea className="max-h-[70vh]">
+              <ScrollArea className="flex-1 min-h-0">
                 <div className="p-6">
                     <ManageCampaignForm 
                     campaign={campaignToManage} 
@@ -475,15 +477,15 @@ export default function CampaignsPage() {
 
       {campaignToDelete && (
         <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
-          <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8">
+          <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
             <AlertDialogHeader>
-                <AlertDialogTitle className="text-2xl font-black font-headline">Delete Campaign?</AlertDialogTitle>
-                <AlertDialogDescription className="text-sm font-medium">
+                <AlertDialogTitle className="text-2xl font-black font-headline text-left">Delete Campaign?</AlertDialogTitle>
+                <AlertDialogDescription className="text-sm font-medium text-left">
                     This will permanently remove the mission from the global record. This action cannot be undone.
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="gap-3 mt-6">
-                <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12">Cancel</AlertDialogCancel>
+                <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
                     {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Confirm Deletion
@@ -495,16 +497,16 @@ export default function CampaignsPage() {
 
       {campaignForSoul && (
         <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
-            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden">
-                <div className="p-6 border-b bg-muted/10">
+            <DialogContent className="sm:max-w-lg max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+                <div className="p-6 border-b bg-muted/10 shrink-0">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold font-headline">Log Harvest</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">
+                        <DialogTitle className="text-2xl font-bold font-headline text-left">Log Harvest</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">
                             Record the details of the person won during this mission.
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="max-h-[70vh]">
+                <ScrollArea className="flex-1 min-h-0">
                     <div className="p-6">
                         <LogSoulForm
                             onSoulLogged={handleSoulLogged}
@@ -520,16 +522,16 @@ export default function CampaignsPage() {
       
       {campaignForTestimony && userProfile && (
         <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
-            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden">
-                <div className="p-6 border-b bg-muted/10">
+            <DialogContent className="sm:max-w-lg max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+                <div className="p-6 border-b bg-muted/10 shrink-0">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold font-headline">Share Victory</DialogTitle>
-                        <DialogDescription className="text-sm font-medium">
+                        <DialogTitle className="text-2xl font-bold font-headline text-left">Share Victory</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">
                             What has God done during "{campaignForTestimony.title}"?
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="max-h-[70vh]">
+                <ScrollArea className="flex-1 min-h-0">
                     <div className="p-6">
                     <CreateTestimonyForm
                             userProfile={userProfile}
@@ -540,6 +542,44 @@ export default function CampaignsPage() {
                 </ScrollArea>
             </DialogContent>
         </Dialog>
+      )}
+
+      {isCreateOpen && (
+        mounted && isMobile ? (
+          <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+              <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                <SheetHeader className="text-left">
+                  <SheetTitle className="text-2xl font-black font-headline uppercase">Launch Mission</SheetTitle>
+                  <SheetDescription className="text-sm font-medium mt-1 text-left">Fill in the details below to organize your soul-winning efforts.</SheetDescription>
+                </SheetHeader>
+              </div>
+              <ScrollArea className="flex-1 min-h-0">
+                <div className="p-8">
+                  {formContent}
+                </div>
+              </ScrollArea>
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+            <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+              <div className="p-8 border-b bg-muted/10 shrink-0">
+                  <DialogHeader>
+                      <DialogTitle className="text-2xl font-bold font-headline uppercase text-left">Create a New Mission</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left">
+                          Fill in the details below to organize your soul-winning efforts.
+                      </DialogDescription>
+                  </DialogHeader>
+              </div>
+              <ScrollArea className="flex-1 min-h-0">
+                  <div className="p-8">
+                      {formContent}
+                  </div>
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
+        )
       )}
 
     </div>

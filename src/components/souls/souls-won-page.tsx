@@ -534,7 +534,7 @@ export default function SoulsWonPage() {
                 {soulsWithPhotos.length > 0 && (
                     <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700 text-left">
                         <div className="flex items-center justify-between mb-4 px-1 text-left">
-                            <div className="flex items-center gap-2 text-left text-left">
+                            <div className="flex items-center gap-2 text-left text-left text-left">
                                 <ImageIcon className="h-4 w-4 text-primary" />
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left">GALLERY OF MY SOULS</h3>
                             </div>
@@ -606,7 +606,7 @@ export default function SoulsWonPage() {
 
                 <div className="px-4 sm:px-0 space-y-4 text-left">
                     <div className="flex items-center gap-3 text-left">
-                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left">
+                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left">
                             <BarChart3 className="h-5 w-5 text-primary text-left" />
                         </div>
                         <div className="min-w-0 text-left">
@@ -637,8 +637,8 @@ export default function SoulsWonPage() {
                                             )}
                                             onClick={() => setSelectedAgeGroup(group.label)}
                                         >
-                                            <div className="flex items-center justify-between text-left">
-                                                <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left">
+                                            <div className="flex items-center justify-between text-left text-left">
+                                                <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left text-left">
                                                     <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left" />
                                                 </div>
                                                 <span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span>
@@ -658,7 +658,7 @@ export default function SoulsWonPage() {
                     </Card>
                 </div>
 
-                <div className="px-4 sm:px-0 text-left text-left">
+                <div className="px-4 sm:px-0 text-left text-left text-left">
                     <RelationshipCircleTracker 
                         souls={souls || []}
                         campaigns={campaigns || []}
@@ -696,7 +696,7 @@ export default function SoulsWonPage() {
                         <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Harvest Demographic</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Harvest Demographic</span>
                             </div>
                             <SheetHeader className="text-left flex-shrink-0 text-left">
                                 <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedAgeGroup} Directory</SheetTitle>
@@ -729,7 +729,7 @@ export default function SoulsWonPage() {
                                 <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this age group.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-1 min-h-0 text-left">
+                        <ScrollArea className="flex-1 min-h-0 text-left text-left">
                             <div className="p-4 sm:p-8 text-left">
                                 <AgeGroupSoulList 
                                   souls={activeAgeGroupSouls} 
@@ -765,7 +765,7 @@ export default function SoulsWonPage() {
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                         Confirm Removal
                     </AlertDialogAction>
@@ -781,7 +781,7 @@ export default function SoulsWonPage() {
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
                             </ScrollArea>
                         </SheetContent>
@@ -791,7 +791,7 @@ export default function SoulsWonPage() {
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <SheetHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left text-left text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </SheetContent>
@@ -807,8 +807,10 @@ export default function SoulsWonPage() {
                                     <DialogDescription className="text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 p-8 text-left text-left">
-                                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+                            <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
+                                <div className="p-8 text-left">
+                                    <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+                                </div>
                             </ScrollArea>
                         </DialogContent>
                     </Dialog>
@@ -820,8 +822,10 @@ export default function SoulsWonPage() {
                                     <DialogDescription className="text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 p-8 text-left text-left text-left">
-                                {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
+                            <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left">
+                                <div className="p-8 text-left">
+                                    {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
+                                </div>
                             </ScrollArea>
                         </DialogContent>
                     </Dialog>
@@ -831,3 +835,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+
