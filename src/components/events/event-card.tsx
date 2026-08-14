@@ -381,10 +381,10 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
   };
 
   return (
-    <Card className="rounded-none sm:rounded-xl overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-2 sm:border-b-8 border-b-primary/5">
-      <CardHeader className="p-4 sm:p-6 pb-2">
+    <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-2 sm:border-b-8 border-b-primary/5">
+      <CardHeader className="p-6 sm:p-8 pb-4">
         <div className="flex justify-between items-start">
-          <Badge className="h-5 text-[8px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20">
+          <Badge className="h-6 text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20">
             {event.category}
           </Badge>
           <div className="flex items-center gap-2">
@@ -395,7 +395,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
                     <Button 
                         variant={event.hasGroupChat ? "default" : "outline"}
                         size="icon" 
-                        className={cn("h-8 w-8 rounded-full shadow-sm", event.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90")}
+                        className={cn("h-9 w-9 rounded-full shadow-sm", event.hasGroupChat && "bg-primary text-primary-foreground border-primary hover:bg-primary/90")}
                         onClick={handleOpenGroupChat}
                         disabled={isChatLoading}
                     >
@@ -409,8 +409,8 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             {isOwner && (
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                        <MoreVertical className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+                        <MoreVertical className="h-5 w-5" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl">
@@ -428,51 +428,51 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             )}
           </div>
         </div>
-        <CardTitle className="text-lg sm:text-2xl font-black font-headline uppercase mt-2 leading-tight truncate">{event.title}</CardTitle>
-        <CardDescription className="flex items-center gap-2 mt-1">
+        <CardTitle className="text-xl sm:text-3xl font-black font-headline uppercase mt-3 leading-tight truncate">{event.title}</CardTitle>
+        <CardDescription className="flex items-center gap-2 mt-2">
           <LiveAuthor userId={event.organizerId} fallbackInitials={event.organizerName.charAt(0)} />
-          <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">Host: {event.organizerName}</span>
+          <span className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest truncate">Host: {event.organizerName}</span>
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="p-4 sm:p-6 space-y-4 flex-grow">
-        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 leading-relaxed font-medium italic">
+      <CardContent className="p-6 sm:p-8 pt-0 space-y-6 flex-grow">
+        <p className="text-sm sm:text-base text-muted-foreground line-clamp-3 leading-relaxed font-medium italic">
           &ldquo;{event.description}&rdquo;
         </p>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div className="flex items-center gap-2 text-muted-foreground bg-muted/30 p-2 sm:p-2.5 rounded-xl border border-dashed">
-            <CalendarDays className="h-4 w-4 text-primary shrink-0" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div className="flex items-center gap-3 text-muted-foreground bg-muted/30 p-4 rounded-[1.5rem] border border-dashed">
+            <CalendarDays className="h-5 w-5 text-primary shrink-0" />
             <div className="min-w-0">
                 <p className="font-bold leading-tight">{dateStr}</p>
-                <p className="text-[9px] font-black uppercase tracking-tighter opacity-60">{event.startTime} - {event.endTime}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mt-0.5">{event.startTime} - {event.endTime}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground bg-muted/30 p-2 sm:p-2.5 rounded-xl border border-dashed">
-            <MapPin className="h-4 w-4 text-primary shrink-0" />
+          <div className="flex items-center gap-3 text-muted-foreground bg-muted/30 p-4 rounded-[1.5rem] border border-dashed">
+            <MapPin className="h-5 w-5 text-primary shrink-0" />
             <div className="min-w-0">
-                <p className="font-bold truncate leading-tight uppercase tracking-tighter">{event.location}</p>
-                <p className="text-[9px] font-black uppercase tracking-tighter opacity-60">{event.locationType}</p>
+                <p className="font-bold truncate leading-tight uppercase tracking-widest">{event.location}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mt-0.5">{event.locationType}</p>
             </div>
           </div>
         </div>
       </CardContent>
 
-      <CardFooter className="p-4 sm:p-6 bg-muted/20 border-t flex items-center justify-between">
+      <CardFooter className="p-6 sm:p-8 bg-muted/20 border-t flex items-center justify-between mt-auto">
         <ParticipantsDialog campaign={event}>
-            <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-              <Users className="h-4 w-4 text-primary" />
+            <div className="flex items-center gap-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+              <Users className="h-5 w-5 text-primary" />
               {event.participantCount || 0} {event.participantCount === 1 ? 'MEMBER' : 'MEMBERS'}
             </div>
         </ParticipantsDialog>
         
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl shadow-md bg-background" onClick={handleShare}>
-            <Share2 className="h-4 w-4 text-primary" />
+          <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shadow-md bg-background" onClick={handleShare}>
+            <Share2 className="h-5 w-5 text-primary" />
           </Button>
           
           {event.streamUrl && (
-            <Button variant="outline" size="sm" className="rounded-xl h-8 sm:h-9" asChild>
+            <Button variant="outline" size="sm" className="rounded-xl h-10 px-4 font-bold" asChild>
               <a href={event.streamUrl} target="_blank" rel="noopener noreferrer">
                 <PlayCircle className="mr-2 h-4 w-4" /> LIVE
               </a>
@@ -480,11 +480,11 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
           )}
           
           {isJoined ? (
-            <Badge variant="secondary" className="h-8 sm:h-9 px-3 sm:px-4 rounded-xl flex items-center gap-2 font-black tracking-widest bg-green-500/10 text-green-600 border-green-500/20">
+            <Badge variant="secondary" className="h-10 px-4 rounded-xl flex items-center gap-2 font-black tracking-widest bg-green-500/10 text-green-600 border-green-500/20">
               <UserCheck className="h-4 w-4" /> JOINED
             </Badge>
           ) : (
-            <Button onClick={handleJoin} disabled={isJoining || event.status !== 'active'} className="h-8 sm:h-9 px-4 sm:px-6 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-95">
+            <Button onClick={handleJoin} disabled={isJoining || event.status !== 'active'} className="h-10 px-6 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-95">
               {isJoining ? <Loader2 className="h-4 w-4 animate-spin" /> : "JOIN"}
             </Button>
           )}
