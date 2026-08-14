@@ -85,6 +85,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
   const [isDeleting, setIsDeleting] = useState(false);
   
   const handleSave = async () => {
+    if (!note.trim()) return;
     setIsSaving(true);
     await onSave(highlight.id, note);
     setIsSaving(false);

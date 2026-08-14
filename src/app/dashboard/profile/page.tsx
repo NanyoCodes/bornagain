@@ -412,8 +412,8 @@ function AccountSettingsCard() {
             <AlertDialogTrigger asChild>
                 <Button variant="destructive" className="w-full sm:w-auto h-12 rounded-2xl font-black uppercase tracking-widest">Delete My Account</Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
-                <AlertDialogHeader>
+            <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                <AlertDialogHeader className="text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium leading-relaxed">
                         This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
@@ -433,7 +433,7 @@ function AccountSettingsCard() {
   );
 }
 
-export default function SettingsPage() {
+export function SettingsPageContent() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const userDocRef = useMemo(() => (user?.uid ? doc(firestore, 'users', user.uid) : null), [user?.uid, firestore]);
@@ -452,7 +452,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto pb-32">
-      <div className="px-4 sm:px-0 space-y-1">
+      <div className="px-4 sm:px-0 space-y-1 text-left">
         <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Settings</h1>
         <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60">Identity & Kingdom Preferences</p>
       </div>

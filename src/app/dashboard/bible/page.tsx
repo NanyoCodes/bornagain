@@ -12,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/alert-dialog";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -545,7 +545,7 @@ export default function BibleReaderPage() {
                                 <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-black text-xs sm:text-sm rounded-full hover:bg-accent transition-colors text-left">
                                   <SelectValue className="text-left" />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[300px] rounded-2xl text-left">{bibleData.map(b => <SelectItem key={b.name} value={b.name} className="text-xs uppercase font-bold text-left">{b.name}</SelectItem>)}</SelectContent>
+                                <SelectContent className="max-h-[300px] rounded-2xl text-left">{bibleData.map(book => <SelectItem key={book.name} value={book.name} className="text-xs uppercase font-bold text-left">{book.name}</SelectItem>)}</SelectContent>
                             </Select>
                             
                             <Separator orientation="vertical" className="h-4 mx-1 text-left" />
