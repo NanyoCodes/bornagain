@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
-import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/lib/types';
+import type { Testimony, Campaign, UserProfile, AccountabilityRequest, Soul } from '@/lib/types';
 import { doc, collection, query, where, orderBy, setDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { 
     Loader2, 

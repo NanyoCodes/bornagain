@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -666,7 +667,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredJoinedFellowships.length > 0 ? (
                                     filteredJoinedFellowships.map(f => (
-                                        <Link key={f.id} href={`/fellowships/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
+                                        <Link key={f.id} href={`/fellowship/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{f.name}</p>
                                             <p className="text-xs text-muted-foreground mt-1 truncate">{f.location || 'Global'}</p>
                                         </Link>
@@ -696,7 +697,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredJoinedAssociations.length > 0 ? (
                                     filteredJoinedAssociations.map(a => (
-                                        <Link key={a.id} href={`/fellowships/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
+                                        <Link key={a.id} href={`/fellowship/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{a.name}</p>
                                             <p className="text-xs text-muted-foreground mt-1 truncate">{a.location || 'Global'}</p>
                                         </Link>
