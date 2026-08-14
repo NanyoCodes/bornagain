@@ -31,43 +31,43 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
 
     if (chat.isGroupChat) {
         return (
-            <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className={containerClasses}>
+            <div onClick={() => router.push(`/chats/${chat.id}`)} className={containerClasses}>
                 <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 text-left">
-                    <div className="relative shrink-0 text-left">
+                    <div className="relative shrink-0 text-left text-left">
                         <Avatar className={cn(
-                            "h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform group-hover:scale-105 text-left",
+                            "h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform group-hover:scale-105 text-left text-left",
                             !isUnread && "grayscale"
                         )}>
-                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs sm:text-sm text-left">
-                                <Users className="h-4 w-4 sm:h-5 sm:w-5 text-left" />
+                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs sm:text-sm text-left text-left">
+                                <Users className="h-4 w-4 sm:h-5 sm:w-5 text-left text-left" />
                             </AvatarFallback>
                         </Avatar>
-                        {isUnread && <div className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-primary border-2 border-background shadow-sm animate-pulse text-left" />}
+                        {isUnread && <div className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-primary border-2 border-background shadow-sm animate-pulse text-left text-left" />}
                     </div>
-                    <div className="flex-1 min-w-0 text-left">
-                        <div className="flex justify-between items-baseline gap-2 mb-0.5 text-left">
+                    <div className="flex-1 min-w-0 text-left text-left">
+                        <div className="flex justify-between items-baseline gap-2 mb-0.5 text-left text-left text-left">
                             <h3 className={cn(
-                                "font-bold truncate text-sm sm:text-base leading-none text-left", 
+                                "font-bold truncate text-sm sm:text-base leading-none text-left text-left", 
                                 isUnread ? "text-primary" : "text-foreground"
                             )}>
                                 {chat.campaignTitle}
                             </h3>
                         </div>
-                        <div className="flex items-center gap-2 mb-1 text-left">
+                        <div className="flex items-center gap-2 mb-1 text-left text-left text-left">
                             <ChatParticipantsDialog chat={chat}>
-                                <button className="text-[10px] sm:text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 font-semibold uppercase tracking-tighter text-left" onClick={(e) => e.stopPropagation()}>
-                                    <Users className="h-2.5 w-2.5 text-left" />
+                                <button className="text-[10px] sm:text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 font-semibold uppercase tracking-tighter text-left text-left" onClick={(e) => e.stopPropagation()}>
+                                    <Users className="h-2.5 w-2.5 text-left text-left" />
                                     {chat.participantIds.length} Members
                                 </button>
                             </ChatParticipantsDialog>
-                            <span className="text-[10px] text-muted-foreground opacity-30 text-left">•</span>
-                            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground text-left">Group</span>
+                            <span className="text-[10px] text-muted-foreground opacity-30 text-left text-left">•</span>
+                            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground text-left text-left">Group</span>
                         </div>
-                        <div className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter mb-1 text-left">
+                        <div className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter mb-1 text-left text-left">
                             {dateDisplay}
                         </div>
                         <p className={cn(
-                            "text-xs sm:text-sm truncate leading-relaxed text-left", 
+                            "text-xs sm:text-sm truncate leading-relaxed text-left text-left", 
                             isUnread ? "text-foreground font-bold" : "text-muted-foreground font-medium"
                         )}>
                             {chat.hasMessages ? 'Tap to view message history...' : 'Start the conversation!'}
@@ -85,37 +85,37 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
     if (!otherParticipantInfo) return null;
 
     return (
-        <div onClick={() => router.push(`/dashboard/chats/${chat.id}`)} className={containerClasses}>
+        <div onClick={() => router.push(`/chats/${chat.id}`)} className={containerClasses}>
             <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 text-left">
                 <Dialog>
                     <DialogTrigger asChild onClick={(e) => {e.stopPropagation()}} disabled={!otherParticipantInfo.photoURL}>
-                        <div className="relative shrink-0 text-left">
+                        <div className="relative shrink-0 text-left text-left">
                             <Avatar className={cn(
-                                "h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform active:scale-95 text-left", 
+                                "h-10 w-10 sm:h-12 sm:w-12 border shadow-sm transition-transform active:scale-95 text-left text-left text-left", 
                                 otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105",
                                 !isUnread && "grayscale"
                             )}>
-                                <AvatarImage src={otherParticipantInfo.photoURL} className="object-cover text-left" />
-                                <AvatarFallback className="font-bold text-xs sm:text-sm text-left">
+                                <AvatarImage src={otherParticipantInfo.photoURL} className="object-cover text-left text-left text-left" />
+                                <AvatarFallback className="font-bold text-xs sm:text-sm text-left text-left">
                                     {otherParticipantInfo.firstName?.charAt(0)}
                                 </AvatarFallback>
                             </Avatar>
-                            {isUnread && <div className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-primary border-2 border-background shadow-sm animate-pulse text-left" />}
+                            {isUnread && <div className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-primary border-2 border-background shadow-sm animate-pulse text-left text-left" />}
                         </div>
                     </DialogTrigger>
                     {otherParticipantInfo.photoURL && (
-                    <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left" onClick={(e) => {e.stopPropagation()}}>
-                        <DialogHeader className="sr-only text-left">
-                            <DialogTitle className="text-left">Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
-                            <DialogDescription className="text-left">Full screen view of the user's profile photo.</DialogDescription>
+                    <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left text-left" onClick={(e) => {e.stopPropagation()}}>
+                        <DialogHeader className="sr-only text-left text-left text-left">
+                            <DialogTitle className="text-left text-left text-left">Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
+                            <DialogDescription className="text-left text-left text-left">Full screen view of the user's profile photo.</DialogDescription>
                         </DialogHeader>
-                        <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
-                            <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
+                        <div className="relative h-full w-full flex items-center justify-center p-4 text-left text-left">
+                            <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left text-left">
                                 <Image 
                                     src={otherParticipantInfo.photoURL} 
                                     alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} 
                                     fill 
-                                    className="object-contain shadow-2xl ring-4 ring-white/10 text-left" 
+                                    className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left text-left" 
                                     unoptimized 
                                 />
                             </div>
@@ -123,35 +123,35 @@ function ChatListItem({ chat, currentUserId, isUnread }: { chat: Chat, currentUs
                     </DialogContent>
                     )}
                 </Dialog>
-                <div className="flex-1 min-w-0 text-left text-left">
-                    <div className="flex justify-between items-baseline gap-2 mb-0.5 text-left">
+                <div className="flex-1 min-w-0 text-left text-left text-left">
+                    <div className="flex justify-between items-baseline gap-2 mb-0.5 text-left text-left text-left">
                         <h3 className={cn(
-                            "font-bold truncate text-sm sm:text-base leading-none text-left", 
+                            "font-bold truncate text-sm sm:text-base leading-none text-left text-left text-left", 
                             isUnread ? "text-primary" : "text-foreground"
                         )}>
                             {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
                         </h3>
                     </div>
-                    <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate font-medium flex items-center gap-1.5 mb-1 uppercase tracking-tighter text-left">
+                    <div className="text-[9px] sm:text-[10px] text-muted-foreground truncate font-medium flex items-center gap-1.5 mb-1 uppercase tracking-tighter text-left text-left text-left">
                        {chat.vendorId ? (
                           <>
-                            <Store className="h-2.5 w-2.5 text-primary text-left" />
-                            <span className="truncate italic text-left">"{chat.campaignTitle}" Provider</span>
+                            <Store className="h-2.5 w-2.5 text-primary text-left text-left text-left" />
+                            <span className="truncate italic text-left text-left">"{chat.campaignTitle}" Provider</span>
                           </>
                        ) : chat.campaignTitle ? (
                           <>
-                            <span className="font-black shrink-0 text-left">RE:</span>
-                            <span className="truncate italic text-left">"{chat.campaignTitle}"</span>
+                            <span className="font-black shrink-0 text-left text-left text-left">RE:</span>
+                            <span className="truncate italic text-left text-left">"{chat.campaignTitle}"</span>
                           </>
                         ) : (
-                          <span className="font-black opacity-60 text-left">Accountability Partner</span>
+                          <span className="font-black opacity-60 text-left text-left">Accountability Partner</span>
                         )}
                     </div>
-                    <div className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter mb-1 text-left">
+                    <div className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap font-medium uppercase tracking-tighter mb-1 text-left text-left text-left">
                         {dateDisplay}
                     </div>
                     <p className={cn(
-                        "text-xs sm:text-sm truncate leading-relaxed text-left", 
+                        "text-xs sm:text-sm truncate leading-relaxed text-left text-left text-left", 
                         isUnread ? "text-foreground font-bold" : "text-muted-foreground font-medium"
                     )}>
                         {chat.hasMessages ? 'Tap to continue chatting...' : 'Send an encouraging word!'}
@@ -193,7 +193,7 @@ export default function ChatsPage() {
         if (!unreadNotifications) return new Set<string>();
         const chatIds = new Set<string>();
         unreadNotifications.forEach(notif => {
-            const match = notif.link?.match(/\/dashboard\/chats\/(.*)/);
+            const match = notif.link?.match(/\/(?:dashboard\/)?chats\/(.*)/);
             if (match && match[1]) {
                 chatIds.add(match[1]);
             }
@@ -219,16 +219,16 @@ export default function ChatsPage() {
     return (
         <div className="flex flex-col h-full w-full bg-background overflow-hidden text-left">
             <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4 text-left">
-                <div className="flex items-center gap-4 text-left">
+                <div className="flex items-center gap-4 text-left text-left">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
-                        <ArrowLeft className="h-6 w-6 text-left" />
-                        <span className="sr-only text-left">Back</span>
+                        <ArrowLeft className="h-6 w-6 text-left text-left" />
+                        <span className="sr-only text-left text-left">Back</span>
                     </Button>
-                    <div className="min-w-0 text-left">
-                        <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase truncate text-left">
+                    <div className="min-w-0 text-left text-left">
+                        <h1 className="text-2xl sm:text-3xl font-black font-headline tracking-tight uppercase truncate text-left text-left">
                             Conversations
                         </h1>
-                        <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-1 uppercase tracking-[0.2em] truncate text-left">Kingdom Messages</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-1 uppercase tracking-[0.2em] truncate text-left text-left">Kingdom Messages</p>
                     </div>
                 </div>
             </div>

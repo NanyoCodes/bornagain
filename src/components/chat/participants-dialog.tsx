@@ -70,25 +70,25 @@ export function ChatParticipantsDialog({ chat, children }: { chat: Chat; childre
 
   const listContent = (
     <ScrollArea className={cn("pr-4", isMobile ? "h-full" : "max-h-[60vh]")}>
-      <div className="space-y-3 pb-6">
+      <div className="space-y-3 pb-6 text-left">
         {participants.map(([id, p]) => (
-          <div key={id} className="flex items-center gap-3 rounded-xl border p-3 bg-muted/5">
-            <div className="flex items-center gap-3 flex-1 min-w-0 group relative">
+          <div key={id} className="flex items-center gap-3 rounded-xl border p-3 bg-muted/5 text-left">
+            <div className="flex items-center gap-3 flex-1 min-w-0 group relative text-left">
                 <LiveParticipantAvatar 
                     userId={id} 
                     fallbackUrl={p.photoURL} 
                     fallbackInitials={p.firstName?.charAt(0) || 'U'}
-                    className="shrink-0 shadow-sm border"
+                    className="shrink-0 shadow-sm border text-left"
                 />
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 text-left">
                     <Link 
-                        href={id === user?.uid ? '/dashboard/profile' : `/dashboard/profile/${id}`} 
-                        className="font-bold truncate text-sm sm:text-base hover:underline leading-tight uppercase tracking-tight block"
+                        href={id === user?.uid ? '/profile' : `/profile/${id}`} 
+                        className="font-bold truncate text-sm sm:text-base hover:underline leading-tight uppercase tracking-tight block text-left"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {p.firstName} {p.lastName}
                     </Link>
-                    {p.email && <p className="text-[10px] sm:text-xs text-muted-foreground truncate font-medium">{p.email}</p>}
+                    {p.email && <p className="text-[10px] sm:text-xs text-muted-foreground truncate font-medium text-left">{p.email}</p>}
                 </div>
             </div>
           </div>
@@ -101,14 +101,14 @@ export function ChatParticipantsDialog({ chat, children }: { chat: Chat; childre
     return (
       <Sheet>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-          <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-            <SheetHeader className="text-left flex-shrink-0">
-              <SheetTitle className="text-2xl font-black font-headline">Directory</SheetTitle>
-              <SheetDescription className="text-sm font-medium">{participants.length} believers in {chat.campaignTitle}.</SheetDescription>
+        <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+          <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+            <SheetHeader className="text-left flex-shrink-0 text-left">
+              <SheetTitle className="text-2xl font-black font-headline text-left">Directory</SheetTitle>
+              <SheetDescription className="text-sm font-medium text-left">{participants.length} believers in {chat.campaignTitle}.</SheetDescription>
             </SheetHeader>
           </div>
-          <div className="flex-grow min-h-0 pt-6 px-8">
+          <div className="flex-grow min-h-0 pt-6 px-8 text-left">
             {listContent}
           </div>
         </SheetContent>
@@ -119,16 +119,16 @@ export function ChatParticipantsDialog({ chat, children }: { chat: Chat; childre
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-[2rem] overflow-hidden p-0 max-w-md border-none shadow-2xl">
-        <div className="p-8 border-b bg-muted/10">
-            <DialogHeader>
-                <DialogTitle className="text-2xl font-black font-headline">Participants</DialogTitle>
-                <DialogDescription className="text-sm font-medium">
+      <DialogContent className="rounded-[2rem] overflow-hidden p-0 max-w-md border-none shadow-2xl text-left">
+        <div className="p-8 border-b bg-muted/10 text-left">
+            <DialogHeader className="text-left">
+                <DialogTitle className="text-2xl font-black font-headline text-left">Participants</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-left">
                     {participants.length} believers in this conversation.
                 </DialogDescription>
             </DialogHeader>
         </div>
-        <div className="p-8">
+        <div className="p-8 text-left">
             {listContent}
         </div>
       </DialogContent>
