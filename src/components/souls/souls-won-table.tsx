@@ -310,7 +310,7 @@ function ShareWordDialog({
                         onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference, `${window.location.origin}/dashboard/bible`))}
                     >
                         <div className="flex items-center justify-between w-full">
-                            <span className="font-black text-[9px] sm:text-xs uppercase tracking-widest text-primary">{res.reference}</span>
+                            <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{res.reference}</span>
                             <Send className="h-3.5 w-3.5 sm:h-4 w-4 text-primary opacity-40" />
                         </div>
                         <p className="text-xs sm:text-base text-muted-foreground leading-relaxed italic line-clamp-4">"{res.text.trim()}"</p>
@@ -422,7 +422,7 @@ function ShareWordDialog({
             <Target className="h-5 w-5 text-primary" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
           </div>
-          <DialogHeader className="text-left">
+          <DialogHeader>
             <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">{title}</DialogTitle>
             <DialogDescription className="text-xs sm:text-sm font-medium">{desc}</DialogDescription>
           </DialogHeader>
@@ -1089,7 +1089,6 @@ function SoulProfileContent({
               <>
                 <Sheet open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <DialogTitle className="sr-only">Kingdom Intercession</DialogTitle>
                         <div className="p-8 border-b bg-muted/10 shrink-0">
                             <div className="flex items-center gap-2 mb-2">
                                 <Sparkles className="h-5 w-5 text-primary" />
@@ -1188,7 +1187,7 @@ function SoulProfileContent({
                 <Sheet open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
                     <SheetContent side="bottom" className="h-auto p-0 rounded-t-[2.5rem] border-none shadow-2xl">
                         <div className="p-8 text-center space-y-6">
-                            <div className="space-y-2">
+                            <div className="space-y-2 text-center">
                                 <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
                                     <Share2 className="h-7 w-7 text-primary" />
                                 </div>
@@ -1278,13 +1277,13 @@ function SoulProfileContent({
 
                 <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
                     <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
-                        <div className="text-center space-y-2">
+                        <DialogHeader className="text-center space-y-2">
                             <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
                                 <MessageSquare className="h-7 w-7 text-primary" />
                             </div>
                             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
                             <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul?.firstName}?</DialogDescription>
-                        </div>
+                        </DialogHeader>
                         <div className="flex flex-col gap-3 pt-6">
                             <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
                                 <WhatsAppIcon className="h-5 w-5" /> WhatsApp
@@ -1320,13 +1319,13 @@ function SoulProfileContent({
 
                 <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
                     <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
-                        <div className="text-center space-y-2">
+                        <DialogHeader className="text-center space-y-2">
                             <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
                                 <Share2 className="h-7 w-7 text-primary" />
                             </div>
                             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
                             <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul?.firstName}'s info?</DialogDescription>
-                        </div>
+                        </DialogHeader>
                         <div className="flex flex-col gap-3 pt-6">
                             <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
                                 <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
@@ -1521,7 +1520,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                             <Table>
                                 <TableHeader className="bg-muted/10">
                                     <TableRow className="hover:bg-transparent">
-                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Soul Identity</TableRow>
+                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Soul Identity</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>

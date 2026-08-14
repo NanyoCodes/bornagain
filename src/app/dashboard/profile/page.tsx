@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from "react";
@@ -483,7 +482,7 @@ export default function ProfilePage() {
                 {personalMessage && (
                     <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 inline-flex items-center gap-3 text-left max-w-xl mx-auto">
                         <Sparkles className="h-5 w-5 text-primary shrink-0" />
-                        <p className="text-sm sm:text-base font-bold text-foreground leading-snug italic">
+                        <p className="text-sm sm:text-base font-bold text-foreground leading-snug italic text-left">
                           &ldquo;{personalMessage}&rdquo;
                         </p>
                     </div>
@@ -550,7 +549,7 @@ export default function ProfilePage() {
                                     filteredTestimonies.map(t => (
                                         <Link key={t.id} href={`/testimonies#${t.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
                                             <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1">{t.category}</p>
-                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed">{t.content}</p>
+                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed text-left">{t.content}</p>
                                         </Link>
                                     ))
                                 ) : (
@@ -577,7 +576,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredPrayerRequests.length > 0 ? (
                                     filteredPrayerRequests.map(p => (
-                                        <Link key={p.id} href="/testimonies?tab=prayers" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
+                                        <Link key={p.id} href="/testimonies?tab=prayers" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm text-primary group-hover:underline line-clamp-1">{p.category}</p>
                                             <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 italic mt-1 leading-relaxed">{p.content}</p>
                                         </Link>
@@ -608,7 +607,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredCreatedCampaigns.length > 0 ? (
                                     filteredCreatedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
+                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{c.title}</p>
                                             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Created on {c.createdAt ? format(c.createdAt.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
@@ -635,7 +634,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredJoinedCampaigns.length > 0 ? (
                                     filteredJoinedCampaigns.map(c => (
-                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
+                                        <Link key={c.id} href={`/campaigns/${c.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{c.title}</p>
                                             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Starts on {c.startDate ? format(c.startDate.toDate(), "PPP") : 'N/A'}</p>
                                         </Link>
@@ -667,7 +666,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredJoinedFellowships.length > 0 ? (
                                     filteredJoinedFellowships.map(f => (
-                                        <Link key={f.id} href={`/fellowship/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
+                                        <Link key={f.id} href={`/fellowship/${f.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{f.name}</p>
                                             <p className="text-xs text-muted-foreground mt-1 truncate">{f.location || 'Global'}</p>
                                         </Link>
@@ -697,7 +696,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredJoinedAssociations.length > 0 ? (
                                     filteredJoinedAssociations.map(a => (
-                                        <Link key={a.id} href={`/fellowship/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
+                                        <Link key={a.id} href={`/fellowship/${a.id}`} className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{a.name}</p>
                                             <p className="text-xs text-muted-foreground mt-1 truncate">{a.location || 'Global'}</p>
                                         </Link>
@@ -728,7 +727,7 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredSoulsWon.length > 0 ? (
                                     filteredSoulsWon.map(s => (
-                                        <Link key={s.id} href="/souls-won" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
+                                        <Link key={s.id} href="/souls-won" className="block p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
                                             <p className="font-bold text-sm group-hover:underline line-clamp-1">{s.firstName} {s.lastName}</p>
                                             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 uppercase font-bold tracking-tighter">Won on {s.wonAt ? format(safeToDate(s.wonAt)!, "PPP") : 'N/A'}</p>
                                         </Link>
@@ -743,7 +742,7 @@ export default function ProfilePage() {
 
                 <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
                     <CardHeader className="p-5 sm:p-6">
-                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                        <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-left">
                             <HeartHandshake className="h-5 w-5 text-primary" />
                             Partners ({userProfile?.accountabilityPartners?.length ?? 0})
                         </CardTitle>
@@ -758,13 +757,13 @@ export default function ProfilePage() {
                             <div className="p-1 space-y-px">
                                 {filteredAccountabilityPartners.length > 0 ? (
                                     filteredAccountabilityPartners.map(p => (
-                                        <Link key={p.userId} href={`/profile/${p.userId}`} className="flex items-center gap-3 p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group">
-                                            <Avatar className="h-10 w-10 sm:h-9 sm:w-9 border shrink-0">
-                                                <AvatarImage src={p.photoURL} />
-                                                <AvatarFallback className="text-xs font-bold">{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
+                                        <Link key={p.userId} href={`/profile/${p.userId}`} className="flex items-center gap-3 p-4 sm:p-3 hover:bg-muted/50 transition-colors border-b last:border-0 border-muted/50 group text-left">
+                                            <Avatar className="h-10 w-10 sm:h-9 sm:w-9 border shrink-0 text-left">
+                                                <AvatarImage src={p.photoURL} className="text-left" />
+                                                <AvatarFallback className="text-xs font-bold text-left">{p.firstName.charAt(0)}{p.lastName.charAt(0)}</AvatarFallback>
                                             </Avatar>
-                                            <div className="min-w-0 flex-1">
-                                                <p className="font-bold text-sm truncate leading-tight group-hover:underline">{p.firstName} {p.lastName}</p>
+                                            <div className="min-w-0 flex-1 text-left">
+                                                <p className="font-bold text-sm truncate leading-tight group-hover:underline text-left">{p.firstName} {p.lastName}</p>
                                             </div>
                                         </Link>
                                     ))
@@ -774,8 +773,8 @@ export default function ProfilePage() {
                             </div>
                         </ScrollArea>
                         <div className="pt-6 flex justify-end">
-                            <Button asChild variant="outline" size="sm" className="text-[10px] font-black uppercase tracking-widest h-9 sm:h-8 px-6 rounded-full shadow-sm">
-                                <Link href="/accountability">Find Partners</Link>
+                            <Button asChild variant="outline" size="sm" className="text-[10px] font-black uppercase tracking-widest h-9 sm:h-8 px-6 rounded-full shadow-sm text-left">
+                                <Link href="/accountability" className="text-left">Find Partners</Link>
                             </Button>
                         </div>
                     </CardContent>
