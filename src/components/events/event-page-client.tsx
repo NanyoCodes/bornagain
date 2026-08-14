@@ -227,14 +227,14 @@ export default function EventPageClient() {
                 </Sheet>
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                    <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                             <DialogHeader className="text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline text-left">Host for the Kingdom</DialogTitle>
                                 <DialogDescription className="text-base font-medium text-left">Organize a gathering to strengthen and equip the saints.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left">
+                        <ScrollArea className="flex-1 min-h-0 text-left">
                             <div className="p-8 text-left">
                                 {userProfile && <CreateEventForm onEventCreated={() => setIsCreateOpen(false)} userProfile={userProfile} />}
                             </div>
@@ -247,7 +247,7 @@ export default function EventPageClient() {
         {eventToEdit && (
             isMobile ? (
                 <Sheet open={!!eventToEdit} onOpenChange={(open) => !open && setEventToEdit(null)}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                             <SheetHeader className="text-left flex-shrink-0 text-left">
                                 <SheetTitle className="text-2xl font-black font-headline text-left">Manage Hub</SheetTitle>
@@ -271,14 +271,14 @@ export default function EventPageClient() {
                 </Sheet>
             ) : (
                 <Dialog open={!!eventToEdit} onOpenChange={(open) => !open && setEventToEdit(null)}>
-                    <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                    <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                             <DialogHeader className="text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline text-left">Manage Hub</DialogTitle>
                                 <DialogDescription className="text-base font-medium text-left">Update event logistics and details.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left">
+                        <ScrollArea className="flex-1 min-h-0 text-left">
                             <div className="p-8 text-left">
                                 <ManageEventForm 
                                     event={eventToEdit} 
@@ -305,7 +305,7 @@ export default function EventPageClient() {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Close</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-12 font-bold text-left">Close</AlertDialogCancel>
                     <AlertDialogAction onClick={handleCancelEvent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                         Confirm Cancellation

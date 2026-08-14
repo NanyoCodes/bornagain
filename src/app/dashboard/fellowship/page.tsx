@@ -265,9 +265,7 @@ function FellowshipForm({
                 <FormField control={form.control} name="streamUrl" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Meeting URL (Optional)</FormLabel>
-                        <FormControl>
-                            <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base h-11" />
-                        </FormControl>
+                        <FormControl><Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base h-11" /></FormControl>
                         <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
                           <Video className="mr-2 h-4 w-4" />
                           Google Meet
@@ -322,7 +320,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-left">
         <Form {...form}>
         <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-6">
             <FormField
@@ -461,9 +459,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
             <FormField control={form.control} name="streamUrl" render={({ field }) => (
                 <FormItem>
                     <FormLabel>Meeting URL (Optional)</FormLabel>
-                    <FormControl>
-                        <Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base h-11" />
-                    </FormControl>
+                    <FormControl><Input placeholder="https://..." {...field} value={field.value ?? ''} className="text-base h-11" /></FormControl>
                     <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1">
                       <Video className="mr-2 h-4 w-4" />
                       Google Meet
@@ -482,7 +478,7 @@ function ManageFellowshipForm({ fellowship, onFormSubmit, isSubmitting, onDelete
 
         <Card className="border-destructive">
             <CardHeader>
-                <CardTitle className="text-destructive flex items-center gap-2"><Trash2 className="h-4 w-4" /> Delete Group</CardTitle>
+                <CardTitle className="text-destructive flex items-center gap-2"><Trash2 className="h-5 w-5" /> Delete Group</CardTitle>
                 <CardDescription>Permanently remove this {(fellowship.groupType || 'group').toLowerCase()} from Testify.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -832,14 +828,14 @@ export default function FellowshipPage() {
                 </Sheet>
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+                    <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight">New Community Group</DialogTitle>
-                                <DialogDescription className="text-sm font-medium">Create a space for community and growth.</DialogDescription>
+                                <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">New Community Group</DialogTitle>
+                                <DialogDescription className="text-sm font-medium text-left">Create a space for community and growth.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-grow min-h-0">
+                        <ScrollArea className="flex-1 min-h-0 text-left">
                             <div className="p-8">
                                 <FellowshipForm 
                                     userProfile={userProfile ?? null} 
@@ -877,14 +873,14 @@ export default function FellowshipPage() {
                     </Sheet>
                 ) : (
                     <Dialog open={!!fellowshipToManage} onOpenChange={(open) => !open && closeAllDialogs()}>
-                        <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Manage Group</DialogTitle>
-                                    <DialogDescription className="text-sm font-medium">Update your group's details.</DialogDescription>
+                                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Manage Group</DialogTitle>
+                                    <DialogDescription className="text-sm font-medium text-left">Update your group's details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-grow min-h-0">
+                            <ScrollArea className="flex-1 min-h-0 text-left">
                                 <div className="p-8">
                                      <ManageFellowshipForm 
                                         fellowship={fellowshipToManage} 

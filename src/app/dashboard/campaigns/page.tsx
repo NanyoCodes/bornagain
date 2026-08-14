@@ -494,8 +494,8 @@ export default function CampaignsPage() {
         </Sheet>
       ) : (
         <Dialog open={isCreateOpen} onOpenChange={(open) => { setIsCreateOpen(open); if(!open) router.refresh(); }}>
-          <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-            <div className="p-8 border-b bg-muted/10 text-left">
+          <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl text-left rounded-3xl">
+            <div className="p-8 border-b bg-muted/10 text-left shrink-0">
                 <DialogHeader className="text-left">
                     <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Create a New Mission</DialogTitle>
                     <DialogDescription className="text-sm font-medium text-left">
@@ -503,7 +503,7 @@ export default function CampaignsPage() {
                     </DialogDescription>
                 </DialogHeader>
             </div>
-            <ScrollArea className="max-h-[70vh] text-left">
+            <ScrollArea className="flex-1 min-h-0 text-left">
                 <div className="p-8 text-left">
                     {formContent}
                 </div>
@@ -541,14 +541,14 @@ export default function CampaignsPage() {
         </Sheet>
       ) : (
         <Dialog open={!!campaignToManage} onOpenChange={(open) => { if (!open) setCampaignToManage(null); router.refresh(); }}>
-          <DialogContent className="sm:max-w-2xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-             <div className="p-8 border-b bg-muted/10 text-left">
+          <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl text-left rounded-3xl">
+             <div className="p-8 border-b bg-muted/10 text-left shrink-0">
                 <DialogHeader className="text-left">
                     <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Manage Mission</DialogTitle>
                     <DialogDescription className="text-sm font-medium text-left">Update the details or status of your campaign.</DialogDescription>
                 </DialogHeader>
             </div>
-            <ScrollArea className="max-h-[80vh] text-left">
+            <ScrollArea className="flex-1 min-h-0 text-left">
                 <div className="p-8 text-left">
                     {campaignToManage && (
                         <ManageCampaignForm 
@@ -611,8 +611,8 @@ export default function CampaignsPage() {
         </Sheet>
       ) : (
         <Dialog open={!!campaignForTestimony} onOpenChange={(open) => { if (!open) setCampaignForTestimony(null); router.refresh(); }}>
-            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                 <div className="p-8 border-b bg-muted/10 text-left">
+            <DialogContent className="sm:max-w-lg max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl text-left rounded-3xl">
+                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Share Victory</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">
@@ -620,7 +620,7 @@ export default function CampaignsPage() {
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="max-h-[70vh] text-left">
+                <ScrollArea className="flex-1 min-h-0 text-left">
                     <div className="p-8 text-left">
                         {campaignForTestimony && userProfile && (
                         <CreateTestimonyForm
@@ -660,8 +660,8 @@ export default function CampaignsPage() {
         </Sheet>
       ) : (
         <Dialog open={!!campaignForSoul} onOpenChange={(open) => { if (!open) setCampaignForSoul(null); router.refresh(); }}>
-            <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 text-left">
+            <DialogContent className="sm:max-w-lg max-h-[90dvh] flex flex-col p-0 overflow-hidden border-none shadow-2xl text-left rounded-3xl">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">Log Harvest</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">
@@ -669,7 +669,7 @@ export default function CampaignsPage() {
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="max-h-[70vh] text-left">
+                <ScrollArea className="flex-1 min-h-0 text-left">
                     <div className="p-8 text-left">
                         {campaignForSoul && (
                         <LogSoulForm
