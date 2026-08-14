@@ -31,6 +31,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -155,7 +156,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
          <div className="space-y-6 pb-6 px-1">
             {organizer && (
                 <div className="space-y-3">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Organizer</h3>
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Organizer</h3>
                     <div className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed hover:bg-muted/40 transition-colors group relative">
                         <LiveParticipantAvatar userId={organizer.userId} fallbackUrl={organizer.photoURL} fallbackInitials={organizer.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm group-hover:scale-105 transition-transform" />
                         <Link 
@@ -171,10 +172,10 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
             )}
             {otherParticipants && otherParticipants.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Members ({otherParticipants.length})</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Members ({otherParticipants.length})</h3>
                 <div className="space-y-3">
                   {otherParticipants.map(p => (
-                    <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm">
+                    <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm text-left">
                       <div className="flex items-center gap-3 group relative">
                         <LiveParticipantAvatar userId={p.userId} fallbackUrl={p.photoURL} fallbackInitials={p.firstName?.charAt(0)} className="h-9 w-9 text-xs border group-hover:scale-105 transition-transform" />
                         <Link 
@@ -230,8 +231,8 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
       <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl text-left">
         <div className="p-8 border-b bg-muted/10">
             <DialogHeader>
-                <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance">Participants for "{campaign.title}"</DialogTitle>
-                <DialogDescription className="text-sm font-medium">
+                <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants for "{campaign.title}"</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-left">
                     {campaign.participantCount || 0} people have joined this mission.
                 </DialogDescription>
             </DialogHeader>
@@ -336,7 +337,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             setIsChatLoading(false);
         }
     } else if (isOwner) {
-        // Start group chat logic (simplified for brevity)
+        // Chat initialization simplified
         router.push(`/chats/${event.id}`);
     }
   };
@@ -361,7 +362,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
 
   return (
     <Card className="rounded-none sm:rounded-[3rem] overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-2 sm:border-b-8 border-b-primary/10">
-      <CardHeader className="p-6 sm:p-10 pb-4">
+      <CardHeader className="p-6 sm:p-10 pb-4 text-left">
         <div className="flex justify-between items-start">
           <Badge className="h-6 text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20">
             {event.category}
@@ -389,45 +390,45 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             )}
           </div>
         </div>
-        <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase mt-4 leading-tight break-words [overflow-wrap:anywhere]">{event.title}</CardTitle>
-        <CardDescription className="flex items-center gap-3 mt-3">
+        <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase mt-4 leading-tight break-words [overflow-wrap:anywhere] text-left">{event.title}</CardTitle>
+        <CardDescription className="flex items-center gap-3 mt-3 text-left">
           <LiveAuthor userId={event.organizerId} fallbackInitials={event.organizerName.charAt(0)} />
           <span className="text-[11px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest truncate">Host: {event.organizerName}</span>
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="p-6 sm:p-10 pt-0 space-y-8 flex-grow">
-        <p className="text-sm sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium italic border-l-4 border-primary/20 pl-6 py-2 bg-primary/5 rounded-r-[1.5rem]">
+      <CardContent className="p-6 sm:p-10 pt-0 space-y-8 flex-grow text-left">
+        <p className="text-sm sm:text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed font-medium italic border-l-4 border-primary/20 pl-6 py-2 bg-primary/5 rounded-r-[1.5rem] text-left">
           &ldquo;{event.description}&rdquo;
         </p>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
+          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left">
             <CalendarDays className="h-6 w-6 text-primary shrink-0" />
-            <div className="min-w-0">
-                <p className="text-sm sm:text-base font-bold leading-tight">{dateStr}</p>
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1">{event.startTime} - {event.endTime}</p>
+            <div className="min-w-0 text-left">
+                <p className="text-sm sm:text-base font-bold leading-tight text-left">{dateStr}</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">{event.startTime} - {event.endTime}</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem]">
+          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left">
             <MapPin className="h-6 w-6 text-primary shrink-0" />
-            <div className="min-w-0">
-                <p className="text-sm sm:text-base font-bold truncate leading-tight uppercase tracking-tight">{event.location}</p>
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1">{event.locationType}</p>
+            <div className="min-w-0 text-left">
+                <p className="text-sm sm:text-base font-bold truncate leading-tight uppercase tracking-tight text-left">{event.location}</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">{event.locationType}</p>
             </div>
           </div>
         </div>
       </CardContent>
 
-      <CardFooter className="p-6 sm:p-10 bg-muted/10 border-t flex flex-col sm:flex-row items-center justify-between gap-6 mt-auto">
+      <CardFooter className="p-6 sm:p-10 bg-muted/10 border-t flex flex-col sm:flex-row items-center justify-between gap-6 mt-auto text-left">
         <ParticipantsDialog campaign={event}>
-            <div className="flex items-center gap-2.5 text-xs sm:text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+            <div className="flex items-center gap-2.5 text-xs sm:text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left">
               <Users className="h-5 w-5 text-primary" />
               {event.participantCount || 0} {event.participantCount === 1 ? 'MEMBER' : 'MEMBERS'}
             </div>
         </ParticipantsDialog>
         
-        <div className="flex gap-3 w-full sm:w-auto">
+        <div className="flex gap-3 w-full sm:w-auto text-left">
           <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl shadow-md bg-background border-primary/20 text-primary/60 hover:text-primary" onClick={handleShare}>
             <Share2 className="h-5 w-5" />
           </Button>
