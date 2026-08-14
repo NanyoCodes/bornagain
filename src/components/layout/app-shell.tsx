@@ -623,7 +623,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-xs font-bold uppercase tracking-widest text-left">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
                     <Link href="/marketplace" className="flex items-center gap-3 w-full text-left text-left">
                       <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-left text-left">
                         <Store className="h-4 w-4 text-blue-600 text-left text-left" />
@@ -695,7 +695,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                         <span className="text-xs font-bold uppercase tracking-widest text-left">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-12 px-3 transition-colors cursor-pointer text-left text-left text-left">
                       <Link href="/resources" className="flex items-center gap-3 w-full text-left text-left text-left text-left">
                         <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-left text-left">
                           <BookMarked className="h-4 w-4 text-left" />
@@ -768,7 +768,7 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10 flex flex-col items-center gap-1",
+                      "relative z-10",
                       isActive ? "text-white" : "text-muted-foreground"
                     )}
                   >

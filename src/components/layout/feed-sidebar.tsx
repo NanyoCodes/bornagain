@@ -129,7 +129,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                             </div>
                             <Progress value={progressValue} className="h-2 bg-white/20" indicatorClassName="bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                         </div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance">
+                        <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
                             Every life logged contributes to the global harvest map and city impact stats.
                         </p>
                     </CardContent>
@@ -140,7 +140,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
             {(mode === 'harvest' || mode === 'campaigns' || mode === 'general') && (
                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
                     <CardHeader className="p-5 pb-2">
-                        <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+                        <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 text-left">
                             <Zap className="h-4 w-4 text-primary" /> Daily Disciplines
                         </CardTitle>
                     </CardHeader>
@@ -174,13 +174,13 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
             {/* Faith Seed - Spiritual Inspiration */}
             {mode === 'testimonies' && (
                 <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
-                    <CardHeader className="p-5 pb-2">
+                    <CardHeader className="p-5 pb-2 text-left">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
                             <Sparkles className="h-4 w-4 text-primary" /> Seed of Faith
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 pt-4">
-                        <div className="p-5 rounded-2xl bg-primary/5 border-2 border-dashed border-primary/20 relative group">
+                        <div className="p-5 rounded-2xl bg-primary/5 border-2 border-dashed border-primary/20 relative group text-left">
                             <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
                             <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance">
                                 &ldquo;{randomSeed.text}&rdquo;
@@ -193,7 +193,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
 
             {/* Quick Kingdom Sectors Navigation */}
             <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
-                <CardHeader className="p-5 pb-2">
+                <CardHeader className="p-5 pb-2 text-left">
                     <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Sectors</CardTitle>
                 </CardHeader>
                 <CardContent className="p-3 space-y-1">
@@ -218,7 +218,7 @@ export function FeedSidebar({ mode = 'general', className }: { mode?: SidebarMod
                 </CardContent>
                 <CardFooter className="p-5 pt-0">
                     <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full">
-                        <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic">
+                        <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic text-center">
                             "Equipping the saints for the work of ministry." — Eph 4:12
                         </p>
                     </div>

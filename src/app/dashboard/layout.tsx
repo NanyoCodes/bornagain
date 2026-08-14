@@ -1,10 +1,5 @@
 'use client';
 
-/**
- * @fileOverview Redirects legacy dashboard routes to the new root-level clean URLs.
- * Part of the global URL flattening initiative.
- */
-
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';

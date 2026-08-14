@@ -23,7 +23,7 @@ function CommentAuthorAvatar({ userId, fallbackInitials, className }: { userId: 
     
     return (
         <Avatar className={className}>
-            <AvatarImage src={photoURL} />
+            <AvatarImage src={photoURL} className="object-cover" />
             <AvatarFallback className="font-bold">{fallbackInitials || 'U'}</AvatarFallback>
         </Avatar>
     );
@@ -114,13 +114,13 @@ function CommentItem({
     };
 
     const authorName = `${comment.authorFirstName || 'User'} ${comment.authorLastName || ''}`.trim();
-    const profileLink = isAuthor ? "/dashboard/profile" : `/dashboard/profile/${comment.authorId}`;
+    const profileLink = `/profile/${comment.authorId}`;
     const initials = comment.authorFirstName?.charAt(0) || 'U';
 
     return (
-        <div className={cn("space-y-4", level > 0 && (isMobile ? "ml-4" : "ml-10"))} onClick={(e) => e.stopPropagation()}>
-            <div className="flex gap-2 sm:gap-4 items-start group relative">
-                <Link href={profileLink} className="shrink-0" onClick={(e) => e.stopPropagation()}>
+        <div className={cn("space-y-4 text-left", level > 0 && (isMobile ? "ml-4" : "ml-10"))} onClick={(e) => e.stopPropagation()}>
+            <div className="flex gap-2 sm:gap-4 items-start group relative text-left">
+                <Link href={profileLink} className="shrink-0 text-left" onClick={(e) => e.stopPropagation()}>
                     <CommentAuthorAvatar 
                         userId={comment.authorId} 
                         fallbackInitials={initials}
@@ -130,16 +130,16 @@ function CommentItem({
                         )}
                     />
                 </Link>
-                <div className="flex-1 min-w-0">
-                    <div className="bg-muted/30 rounded-2xl p-3 sm:p-4 relative border">
-                        <div className="flex justify-between items-start mb-1 gap-2">
-                            <div className="min-w-0 flex-1">
+                <div className="flex-1 min-w-0 text-left">
+                    <div className="bg-muted/30 rounded-2xl p-3 sm:p-4 relative border text-left">
+                        <div className="flex justify-between items-start mb-1 gap-2 text-left">
+                            <div className="min-w-0 flex-1 text-left">
                                 <Link href={profileLink} className="hover:underline decoration-primary/30 underline-offset-2" onClick={(e) => e.stopPropagation()}>
                                     <p className="text-sm font-bold truncate leading-tight">
                                         {authorName}
                                     </p>
                                 </Link>
-                                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 opacity-70">
+                                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 opacity-70 text-left">
                                     {createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : 'just now'}
                                     {updatedAt && <span className="ml-2">• edited</span>}
                                 </p>
@@ -166,11 +166,11 @@ function CommentItem({
                         </div>
                         
                         {isEditing ? (
-                            <div className="space-y-3 py-1">
+                            <div className="space-y-3 py-1 text-left">
                                 <Input 
                                     value={editedText}
                                     onChange={(e) => setEditedText(e.target.value)}
-                                    className="h-9 text-sm bg-background"
+                                    className="h-9 text-sm bg-background text-left"
                                     autoFocus
                                     onClick={(e) => e.stopPropagation()}
                                     onKeyDown={(e) => {
@@ -182,7 +182,7 @@ function CommentItem({
                                         }
                                     }}
                                 />
-                                <div className="flex justify-end gap-2">
+                                <div className="flex justify-end gap-2 text-left">
                                     <Button size="sm" variant="ghost" className="h-7 text-[10px] font-bold uppercase tracking-widest" onClick={(e) => {
                                         e.stopPropagation();
                                         setIsEditing(false);
@@ -192,27 +192,27 @@ function CommentItem({
                                 </div>
                             </div>
                         ) : (
-                            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">
+                            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed whitespace-pre-wrap break-words text-left">
                                 {comment.text}
                             </p>
                         )}
                         
                         {(supporters.length > 0 || inspiredBy.length > 0 || connectedBy.length > 0) && (
-                            <div className="absolute -bottom-2.5 right-2 flex items-center gap-1 bg-background border rounded-full px-1.5 py-0.5 shadow-sm z-10">
-                                <div className="flex items-center -space-x-1">
-                                    {supporters.length > 0 && <HandHeart className="h-3 w-3 text-primary fill-current" />}
-                                    {inspiredBy.length > 0 && <Sparkles className="h-3 w-3 text-chart-3 fill-current" />}
-                                    {connectedBy.length > 0 && <PartyPopper className="h-3 w-3 text-blue-500" />}
+                            <div className="absolute -bottom-2.5 right-2 flex items-center gap-1 bg-background border rounded-full px-1.5 py-0.5 shadow-sm z-10 text-left">
+                                <div className="flex items-center -space-x-1 text-left">
+                                    {supporters.length > 0 && <HandHeart className="h-3 w-3 text-primary fill-current text-left" />}
+                                    {inspiredBy.length > 0 && <Sparkles className="h-3 w-3 text-chart-3 fill-current text-left" />}
+                                    {connectedBy.length > 0 && <PartyPopper className="h-3 w-3 text-blue-500 text-left" />}
                                 </div>
-                                <span className="text-[10px] font-bold px-0.5 leading-none text-muted-foreground">
+                                <span className="text-[10px] font-bold px-0.5 leading-none text-muted-foreground text-left">
                                     {(supporters.length + inspiredBy.length + connectedBy.length)}
                                 </span>
                             </div>
                         )}
                     </div>
 
-                    <div className="flex items-center gap-4 mt-1.5 px-1">
-                        <div className="flex items-center gap-x-4 gap-y-1 flex-wrap">
+                    <div className="flex items-center gap-4 mt-1.5 px-1 text-left text-left">
+                        <div className="flex items-center gap-x-4 gap-y-1 flex-wrap text-left">
                             <button 
                                 onClick={(e) => handleReaction('amen', e)}
                                 disabled={isReacting !== null}
@@ -333,17 +333,17 @@ export function CommentSection({ testimonyId, path, inline = false }: { testimon
     };
 
     return (
-        <div className={cn("flex flex-col min-h-0 overflow-hidden", !inline ? "h-full bg-background" : "h-auto")}>
-            <div className={cn(!inline ? "flex-1 min-h-0 overflow-y-auto scrollbar-hide" : "h-auto")}>
-                <div className={cn("space-y-6", !inline ? "p-4 sm:p-6 pb-24" : "p-0 pb-6")}>
+        <div className={cn("flex flex-col min-h-0 overflow-hidden text-left", !inline ? "h-full bg-background" : "h-auto")}>
+            <div className={cn(!inline ? "flex-1 min-h-0 overflow-y-auto scrollbar-hide text-left" : "h-auto")}>
+                <div className={cn("space-y-6 text-left", !inline ? "p-4 sm:p-6 pb-24" : "p-0 pb-6")}>
                     {(loading || userLoading || (profileLoading && !profile)) ? (
-                        <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
+                        <div className="flex justify-center py-12 text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left" /></div>
                     ) : topLevelComments.length > 0 ? (
                         topLevelComments.map(comment => renderComment(comment))
                     ) : (
-                        <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed mx-2 flex flex-col items-center">
-                             <Sparkles className="h-10 w-10 text-muted-foreground/20 mb-4" />
-                             <p className="text-sm text-muted-foreground italic px-8 text-balance">No responses yet. Be the first to share a prayer or word of encouragement!</p>
+                        <div className="text-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed mx-2 flex flex-col items-center text-left">
+                             <Sparkles className="h-10 w-10 text-muted-foreground/20 mb-4 text-left" />
+                             <p className="text-sm text-muted-foreground italic px-8 text-balance text-left">No responses yet. Be the first to share a prayer or word of encouragement!</p>
                         </div>
                     )}
                 </div>
@@ -351,29 +351,29 @@ export function CommentSection({ testimonyId, path, inline = false }: { testimon
 
             {user && (
                 <div className={cn(
-                    "p-3 sm:p-4 border-t bg-background/80 backdrop-blur-md", 
+                    "p-3 sm:p-4 border-t bg-background/80 backdrop-blur-md text-left", 
                     !inline ? "shrink-0 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.1)] sticky bottom-0 z-30" : "sticky bottom-0 z-30 rounded-2xl border shadow-lg mt-4"
                 )} onClick={(e) => e.stopPropagation()}>
                     {replyingTo && (
-                        <div className="flex items-center justify-between bg-primary/5 px-4 py-2 rounded-t-2xl text-[11px] text-muted-foreground border-x border-t mb-0 border-primary/20">
-                            <p className="truncate">Replying to <span className="font-bold text-primary">{replyingTo.authorFirstName}</span></p>
-                            <button onClick={(e) => { e.stopPropagation(); setReplyingTo(null); }} className="hover:text-foreground transition-colors p-1 rounded-full hover:bg-muted">
-                                <X className="h-3 w-3" />
+                        <div className="flex items-center justify-between bg-primary/5 px-4 py-2 rounded-t-2xl text-[11px] text-muted-foreground border-x border-t mb-0 border-primary/20 text-left">
+                            <p className="truncate text-left">Replying to <span className="font-bold text-primary">{replyingTo.authorFirstName}</span></p>
+                            <button onClick={(e) => { e.stopPropagation(); setReplyingTo(null); }} className="hover:text-foreground transition-colors p-1 rounded-full hover:bg-muted text-left">
+                                <X className="h-3 w-3 text-left" />
                             </button>
                         </div>
                     )}
-                    <form onSubmit={handleSendComment} className={cn("flex gap-2 items-center", replyingTo && "border-x border-b p-1.5 rounded-b-2xl bg-muted/5 border-primary/20")} onClick={(e) => e.stopPropagation()}>
+                    <form onSubmit={handleSendComment} className={cn("flex gap-2 items-center text-left", replyingTo && "border-x border-b p-1.5 rounded-b-2xl bg-muted/5 border-primary/20")} onClick={(e) => e.stopPropagation()}>
                         <Input
                             placeholder={replyingTo ? "Write your reply..." : "Write a prayer or encouragement..."}
                             value={newComment}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            className="text-sm sm:text-base h-11 sm:h-12 shadow-inner rounded-2xl focus-visible:ring-primary/20 border-muted-foreground/20"
+                            className="text-sm sm:text-base h-11 sm:h-12 shadow-inner rounded-2xl focus-visible:ring-primary/20 border-muted-foreground/20 text-left"
                             disabled={isSending || profileLoading}
                             onClick={(e) => e.stopPropagation()}
                             onKeyDown={(e) => e.stopPropagation()}
                         />
-                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl shadow-lg transition-transform active:scale-90" disabled={!newComment.trim() || isSending || profileLoading} onClick={(e) => e.stopPropagation()}>
-                            {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                        <Button type="submit" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 rounded-2xl shadow-lg transition-transform active:scale-90 text-left" disabled={!newComment.trim() || isSending || profileLoading} onClick={(e) => e.stopPropagation()}>
+                            {isSending ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : <Send className="h-5 w-5 text-left" />}
                         </Button>
                     </form>
                 </div>
