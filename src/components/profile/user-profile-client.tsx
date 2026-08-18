@@ -268,7 +268,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                           "h-36 w-36 sm:h-48 sm:w-48 lg:h-64 lg:w-64 border-[6px] border-background shrink-0 shadow-2xl transition-all duration-500", 
                           photoURL && "cursor-pointer hover:scale-105 active:scale-95 ring-2 ring-primary/10"
                       )}>
-                      <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} className="object-contain" />
+                      <AvatarImage src={photoURL ?? undefined} alt={displayName || 'user'} className="object-cover" />
                       <AvatarFallback className="text-4xl lg:text-5xl font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">
                           {initials || userProfile.email?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
@@ -506,7 +506,6 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </p>
             </div>
         )}
-      </div>
     </div>
   );
 }
