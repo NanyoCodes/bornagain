@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Fixed syntax error in isAllowedType - 2025-07-04T20:15:00Z
+    // Deployment trigger: Granular read access for converted soul privacy - 2025-03-05T14:35:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -28,8 +27,14 @@ service firebase.storage {
       return folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies', 'souls'];
     }
 
-    match /{allPaths=**} {
-      allow read: if true;
+    // Publicly viewable Kingdom activities (Identities and Testimonies)
+    match /{folder}/{userId}/{allPaths=**} {
+      allow read: if folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies'];
+    }
+
+    // Private harvest records (Converted souls information)
+    match /souls/{userId}/{allPaths=**} {
+      allow read: if isAuthenticated();
     }
 
     // Secure UID-based directory structure for all Kingdom assets
