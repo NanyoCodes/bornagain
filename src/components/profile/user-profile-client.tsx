@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
 import type { Testimony, Campaign, UserProfile, AccountabilityRequest, Soul } from '@/lib/types';
 import { doc, collection, query, where, orderBy, setDoc, serverTimestamp, addDoc } from 'firebase/firestore';
@@ -165,7 +165,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       userId: userId,
       type: 'accountability_request' as const,
       title: 'New Accountability Request',
-      message: `${currentUserProfile.firstName} ${currentUserProfile.lastName} wants to be your partner after viewing your profile!`,
+      message: `${currentUserProfile.firstName} wants to be your partner!`,
       link: '/accountability',
       isRead: false,
       createdAt: serverTimestamp()
@@ -174,7 +174,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     try {
       await setDoc(requestRef, newRequestData);
       await addDoc(collection(firestore, 'users', userId, 'notifications'), notificationData);
-      toast({ title: 'Request Sent!', description: `Accountability request sent to ${userProfile?.firstName}.` });
+      toast({ title: 'Request Sent!' });
     } catch (error) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
         path: requestRef.path,
@@ -213,9 +213,9 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         <div className="bg-muted/20 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
             <Globe className="h-10 w-10 text-muted-foreground/30" />
         </div>
-        <div className="space-y-2">
-            <h3 className="text-2xl font-bold font-headline">Profile Not Found</h3>
-            <p className="text-sm text-muted-foreground max-w-xs mx-auto">This profile might have been set to private or the believer has moved to a new station.</p>
+        <div className="space-y-2 text-left">
+            <h3 className="text-2xl font-bold font-headline text-center">Profile Not Found</h3>
+            <p className="text-sm text-muted-foreground max-w-xs mx-auto text-center">This profile might have been set to private or the believer has moved to a new station.</p>
         </div>
         <Button variant="outline" onClick={() => router.back()} className="h-11 px-8 rounded-full">
             <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
@@ -241,7 +241,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const initials = (firstName?.charAt(0) || '') + (lastName?.charAt(0) || '');
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto px-0 sm:px-4 pb-20">
+    <div className="space-y-8 max-w-6xl mx-auto px-0 sm:px-4 pb-20 text-left">
         <div className="flex items-center justify-between px-4 sm:px-0">
             <Button variant="ghost" size="sm" onClick={() => router.back()} className="h-9 pr-4 text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="mr-2 h-4 w-4"/>
@@ -506,6 +506,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </p>
             </div>
         )}
+      </div>
     </div>
   );
 }

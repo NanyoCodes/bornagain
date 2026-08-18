@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Bell, Lock, Trash2, MessageSquare, Mail, Phone, Palette, Type, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { Loader2, User, Bell, Lock, MessageSquare, Mail, Phone, Palette, Type, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { useDoc, useFirestore, useUser } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
@@ -47,7 +47,6 @@ import { PwaInstallCard } from '@/components/settings/pwa-install-card';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { SoulsImportTemplateCard } from './souls-import-template-card';
 
@@ -165,11 +164,7 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
                                     selectedUrl === preset.url ? "border-primary ring-2 ring-primary/20" : "border-transparent opacity-60 hover:opacity-100"
                                 )}
                             >
-                                {preset.url.startsWith('linear-gradient') ? (
                                 <div className="absolute inset-0" style={{ background: preset.url }} />
-                                ) : (
-                                <Image src={preset.url} alt={preset.label} fill className="object-cover" unoptimized />
-                                )}
                                 <div className={cn(
                                   "absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity p-2",
                                   selectedUrl === preset.url ? "opacity-100" : "opacity-0 group-hover:opacity-100"
@@ -203,23 +198,6 @@ function VisualEnvironmentCard({ userProfile, userId }: { userProfile: UserProfi
                                 className="flex-1"
                             />
                             <span className="text-[10px] font-bold text-muted-foreground uppercase">Solid</span>
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Custom Image URL</Label>
-                        <div className="flex gap-2">
-                            <Input 
-                                placeholder="https://..." 
-                                value={selectedUrl}
-                                onChange={(e) => setSelectedUrl(e.target.value)}
-                                className="h-11 text-sm rounded-2xl bg-muted/20 border-none shadow-inner"
-                            />
-                            {selectedUrl && !backgroundPresets.some(p => p.url === selectedUrl) && (
-                                <Button variant="outline" size="icon" className="h-11 w-11 shrink-0 rounded-2xl border-dashed" onClick={() => setSelectedUrl(backgroundPresets[0].url)}>
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -291,8 +269,8 @@ function ContactCard() {
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
       <CardHeader><CardTitle className="flex items-center gap-2 text-lg font-bold uppercase tracking-tight"><MessageSquare className="h-5 w-5 text-primary" /> Ministry Support</CardTitle></CardHeader>
-      <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner">
+      <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left text-left text-left">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <Mail className="h-5 w-5 text-primary" />
             </div>
@@ -301,7 +279,7 @@ function ContactCard() {
                 <a href="mailto:testifyglobal360@gmail.com" className="text-sm font-bold hover:underline truncate block text-foreground">testifyglobal360@gmail.com</a>
             </div>
         </div>
-        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner">
+        <div className="flex items-center gap-4 p-4 rounded-2xl border bg-muted/20 overflow-hidden shadow-inner text-left text-left text-left">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <Phone className="h-5 w-5 text-primary" />
             </div>
@@ -323,7 +301,7 @@ function AccountDeletionRequest({ userId }: { userId: string }) {
     };
 
     return (
-        <div className="pt-12 pb-8 flex flex-col items-center gap-4 text-center px-6">
+        <div className="pt-12 pb-8 flex flex-col items-center gap-4 text-center px-6 text-left">
             <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] opacity-40">Account Lifecycle</p>
             <Button 
                 variant="ghost" 
@@ -332,7 +310,7 @@ function AccountDeletionRequest({ userId }: { userId: string }) {
             >
                 Request Account Deletion
             </Button>
-            <p className="text-[9px] text-muted-foreground italic max-w-xs leading-relaxed">
+            <p className="text-[9px] text-muted-foreground italic max-w-xs leading-relaxed text-center">
                 Send a request to our ministry team for secure identity removal.
             </p>
         </div>
@@ -346,10 +324,10 @@ export function SettingsPageContent() {
   const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto pb-32">
+    <div className="space-y-8 max-w-4xl mx-auto pb-32 text-left">
       <div className="px-4 sm:px-0 space-y-1">
-        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase">Settings</h1>
-        <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60">Identity & Kingdom Preferences</p>
+        <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">Settings</h1>
+        <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 text-left">Identity & Kingdom Preferences</p>
       </div>
       
        {loading || !userProfile || !user ? (
