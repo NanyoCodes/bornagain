@@ -88,8 +88,8 @@ interface EventCardProps {
  */
 function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, className }: { userId: string, fallbackUrl?: string, fallbackInitials: string, className?: string }) {
     const firestore = useFirestore();
-    const userDocRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
-    const { data: profile } = useDoc<UserProfile>(userDocRef);
+    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
+    const { data: profile } = useDoc<UserProfile>(userRef);
     const currentPhotoUrl = profile?.photoURL || fallbackUrl;
     
     return (
@@ -123,7 +123,7 @@ function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, classNam
 function ParticipantsDialog({ campaign, children }: { campaign: Event; children: React.ReactNode; }) {
   const firestore = useFirestore();
   const { user } = useUser();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -211,7 +211,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
         <SheetTrigger asChild>{children}</SheetTrigger>
         <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
           <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-            <SheetHeader className="text-left flex-shrink-0 text-left">
+            <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                 <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants Directory</SheetTitle>
                 <SheetDescription className="text-sm font-medium text-left">
                 {campaign.participantCount || 0} believers mobilized for "{campaign.title}".
@@ -414,7 +414,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             <MapPin className="h-6 w-6 text-primary shrink-0 text-left" />
             <div className="min-w-0 text-left">
                 <p className="text-sm sm:text-base font-bold truncate leading-tight uppercase tracking-tight text-left">{event.location}</p>
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">{event.locationType}</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">{event.locationType === 'Both' ? 'BOTH PHYSICAL AND VIRTUAL' : event.locationType}</p>
             </div>
           </div>
         </div>
