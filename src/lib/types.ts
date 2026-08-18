@@ -71,6 +71,7 @@ export type UserProfile = {
   organizationName?: string;
   roleInOrganization?: string;
   videoTestimonies?: VideoTestimony[];
+  dateOfBirth?: Timestamp | null;
   location?: {
     city?: string;
     state?: string;
@@ -385,12 +386,13 @@ export type ChatMessage = {
 export type Notification = {
   id: string;
   userId: string;
-  type: 'campaign_join' | 'new_chat_message' | 'accountability_nudge' | 'accountability_request' | 'request_accepted' | 'request_declined' | 'accountability_partner_removed' | 'new_soul_in_fellowship' | 'soul_unassigned_from_fellowship' | 'new_order' | 'order_update';
+  type: 'campaign_join' | 'new_chat_message' | 'accountability_nudge' | 'accountability_request' | 'request_accepted' | 'request_declined' | 'accountability_partner_removed' | 'new_soul_in_fellowship' | 'soul_unassigned_from_fellowship' | 'new_order' | 'order_update' | 'birthday_reminder';
   title: string;
   message: string;
   link?: string;
   isRead: boolean;
   createdAt: Timestamp;
+  targetId?: string;
 };
 
 export type AccountabilityRequest = {

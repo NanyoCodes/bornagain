@@ -35,6 +35,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Country, State } from 'country-state-city';
 import { motion, AnimatePresence } from "framer-motion";
+import { format } from "date-fns";
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -59,6 +60,7 @@ const formSchema = z.object({
   organizationName: z.string().max(100, "Name is too long.").optional(),
   roleInOrganization: z.string().max(100, "Role is too long.").optional(),
   videoTestimonies: z.array(videoSchema).default([]),
+  dateOfBirth: z.date().optional().nullable(),
   city: z.string().max(100, "City is too long.").optional(),
   state: z.string().max(100, "State is too long.").optional(),
   country: z.string().optional(),
@@ -93,11 +95,11 @@ function PrivateLocationMap({ form, markerPosition }: { form: any, markerPositio
         }
     };
 
-    if (loadError) return <div className="h-60 w-full bg-muted/50 rounded-md flex items-center justify-center border-2 border-dashed"><p className="text-xs text-muted-foreground">Map Error</p></div>;
+    if (loadError) return <div className="h-60 w-full bg-muted/50 rounded-md flex items-center justify-center border-2 border-dashed"><p className="text-xs text-muted-foreground text-left">Map Error</p></div>;
     if (!isLoaded) return <Skeleton className="h-60 w-full mt-2" />;
 
     return (
-        <div className="h-60 w-full rounded-md overflow-hidden mt-2 border">
+        <div className="h-60 w-full rounded-md overflow-hidden mt-2 border text-left">
             <GoogleMap
                 mapContainerClassName="h-full w-full"
                 center={markerPosition || fallbackCenter}
@@ -144,6 +146,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
       organizationName: userProfile.organizationName || "",
       roleInOrganization: userProfile.roleInOrganization || "",
       videoTestimonies: initialVideos,
+      dateOfBirth: safeToDate(userProfile.dateOfBirth) || null,
       city: userProfile.location?.city || "",
       state: userProfile.location?.state || "",
       country: userProfile.location?.country || "",
@@ -242,6 +245,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
         organizationName: values.organizationName || "",
         roleInOrganization: values.roleInOrganization || "",
         videoTestimonies: values.videoTestimonies,
+        dateOfBirth: values.dateOfBirth || null,
         location: authorLocation,
         phone: values.phone || "",
         photoURL: values.photoURL || "",
@@ -342,7 +346,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 control={form.control}
                 name="photoURL"
                 render={({ field }) => (
-                    <FormItem className="flex flex-col items-center py-4 text-left">
+                    <FormItem className="flex flex-col items-center py-4">
                         <FormControl>
                             <ImageUpload
                                 initialImageUrl={field.value}
@@ -397,7 +401,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 <FormControl>
                   <Input placeholder="e.g., Jesus is Lord of all!" {...field} value={field.value ?? ''} className="text-base h-11 font-medium text-left" />
                 </FormControl>
-                <FormDescription className="text-[10px] text-left">A prominent short message shown at the top of your profile.</FormDescription>
+                <FormDescription className="text-[10px] text-left text-left">A prominent short message shown at the top of your profile.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -441,7 +445,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                           <SelectValue placeholder="Select Status" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="text-left">
+                      <SelectContent className="text-left text-left">
                         <SelectItem value="Employed">Employed</SelectItem>
                         <SelectItem value="Self-Employed">Self-Employed</SelectItem>
                         <SelectItem value="Business Owner">Business Owner</SelectItem>
@@ -457,6 +461,35 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               />
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left">
+              <FormField
+                control={form.control}
+                name="dateOfBirth"
+                render={({ field }) => (
+                    <FormItem className="text-left">
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Date of Birth</FormLabel>
+                        <FormControl>
+                            <Input 
+                                type="date"
+                                value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        const [year, month, day] = e.target.value.split('-').map(Number);
+                                        field.onChange(new Date(year, month - 1, day));
+                                    } else {
+                                        field.onChange(null);
+                                    }
+                                }}
+                                className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-base text-left"
+                                max={format(new Date(), "yyyy-MM-dd")}
+                            />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+          </div>
+
           <AnimatePresence>
             {showOrganizationField && (
               <motion.div
@@ -465,7 +498,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden text-left"
               >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1 text-left">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1 text-left text-left">
                   <FormField
                     control={form.control}
                     name="organizationName"
@@ -487,7 +520,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     name="roleInOrganization"
                     render={({ field }) => (
                       <FormItem className="text-left">
-                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left">
+                        <FormLabel className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2 text-left text-left">
                           <User className="h-3.5 w-3.5 text-left" />
                           Role / Job Title
                         </FormLabel>
@@ -519,11 +552,11 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
 
           <div className="space-y-4 text-left">
             <div className="flex items-center justify-between text-left">
-                <FormLabel className="flex items-center gap-2 text-base font-bold text-left">
+                <FormLabel className="flex items-center gap-2 text-base font-bold text-left text-left">
                     <Youtube className="h-5 w-5 text-red-600 text-left" />
                     Video Testimonies
                 </FormLabel>
-                <Button type="button" variant="outline" size="sm" onClick={() => append({ url: '', title: '' })} className="h-8 text-left">
+                <Button type="button" variant="outline" size="sm" onClick={() => append({ url: '', title: '' })} className="h-8 text-left text-left">
                     <Plus className="mr-1 h-3 w-3 text-left" /> Add Video
                 </Button>
             </div>
@@ -534,14 +567,14 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                         <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto text-left">
                             <Video className="h-6 w-6 text-primary text-left" />
                         </div>
-                        <div className="space-y-1 text-left">
+                        <div className="space-y-1 text-left text-left">
                             <h4 className="font-bold text-sm text-center">Share Your Story via Video</h4>
                             <p className="text-xs text-muted-foreground leading-relaxed max-w-[250px] mx-auto text-center">
                                 Sharing your journey through video is a powerful way to testify of God's goodness.
                             </p>
                         </div>
                         <div className="flex flex-col gap-2 text-left">
-                             <Button type="button" size="sm" onClick={handleCreateYoutubeChannel} className="font-bold text-left">
+                             <Button type="button" size="sm" onClick={handleCreateYoutubeChannel} className="font-bold text-left text-left">
                                 <Youtube className="mr-2 h-4 w-4 text-left" />
                                 Create YouTube Channel
                                 <ExternalLink className="ml-2 h-3 w-3 text-left" />
@@ -574,7 +607,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                                         <FormItem className="space-y-1 text-left">
                                             <FormLabel className="text-[10px] uppercase font-bold text-muted-foreground text-left">Video Title (Optional)</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="e.g., My Healing Miracle" {...field} className="h-8 text-xs text-left" />
+                                                <Input placeholder="e.g., My Healing Miracle" {...field} className="h-8 text-xs text-left text-left" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -612,13 +645,13 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
               </AccordionTrigger>
               <AccordionContent className="p-4 pt-0 space-y-4 text-left">
                 <div className="text-left">
-                  <Label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Quick Search</Label>
+                  <Label className="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground text-left text-left">Quick Search</Label>
                   <LocationProfileInput form={form} />
                 </div>
                 
                 <div className="space-y-4 pt-2 text-left">
                   <FormField control={form.control} name="country" render={({ field }) => (
-                      <FormItem className="text-left">
+                      <FormItem className="text-left text-left">
                         <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-left">Country</FormLabel>
                         <Select 
                           onValueChange={(val) => { 
@@ -628,7 +661,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                           }} 
                           value={field.value}
                         >
-                          <FormControl>
+                          <FormControl className="text-left">
                             <SelectTrigger className="text-base h-11 text-left">
                               <SelectValue placeholder="Select Country" />
                             </SelectTrigger>
@@ -703,7 +736,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                     ) : (
                         <PrivateLocationMap form={form} markerPosition={markerPosition} />
                     )}
-                    <p className="text-[10px] text-muted-foreground mt-2 leading-snug text-left">
+                    <p className="text-[10px] text-muted-foreground mt-2 leading-snug text-left text-left">
                         Your private pin is only used to calculate proximity to local campaigns and testimonies. It is never shared with other users.
                     </p>
                 </div>
@@ -720,7 +753,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                 <FormControl>
                   <Input placeholder="https://meet.google.com/..." {...field} value={field.value ?? ""} className="text-base h-11 text-left" />
                 </FormControl>
-                <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1 text-left">
+                <Button type="button" variant="outline" size="sm" onClick={handleCreateMeet} className="mt-1 text-left text-left">
                   <Video className="mr-2 h-4 w-4 text-left" />
                   New Meet
                 </Button>

@@ -38,7 +38,8 @@ import {
   Utensils,
   Trash2,
   Minus,
-  Plus
+  Plus,
+  Cake
 } from "lucide-react";
 
 import {
@@ -94,7 +95,8 @@ const NOTIFICATION_TYPES = [
   'new_soul_in_fellowship', 
   'soul_unassigned_from_fellowship', 
   'new_order', 
-  'order_update'
+  'order_update',
+  'birthday_reminder'
 ];
 
 const inspirationalMessages = [
@@ -245,7 +247,7 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                     type: 'new_order',
                     title: 'New Offering Order!',
                     message: `${senderName} ordered "${cartItem.item.name}" for ${manualRecipientName}.`,
-                    link: `/marketplace/orders`,
+                    link: `/dashboard/marketplace/orders`,
                     isRead: false,
                     createdAt: serverTimestamp(),
                 });
@@ -276,12 +278,12 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Provision Hub</span>
                     </div>
                     <SheetHeader className="text-left flex-shrink-0 text-left">
-                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1 text-left">Review selection for {manualRecipientName || 'the brethren'}.</SheetDescription>
+                        <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kindness Package</SheetTitle>
+                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Review selection for {manualRecipientName || 'the brethren'}.</SheetDescription>
                     </SheetHeader>
                 </div>
                 
-                <ScrollArea className="flex-grow min-h-0 overscroll-contain">
+                <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left">
                     <div className="p-8 space-y-10 text-left">
                         {cartItems.length > 0 ? (
                             <div className="space-y-10 text-left">
@@ -293,11 +295,11 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                                                     <Store className="h-3.5 w-3.5 text-primary" />
                                                     <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[200px] text-left">{group.vendorName}</h4>
                                                 </div>
-                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 text-left">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
+                                                <Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 text-left text-left">{getCurrencySymbol(group.currency)}{group.deliveryFee.toLocaleString()} Delivery</Badge>
                                             </div>
                                             <div className="space-y-2 text-left">
                                                 {group.items.map((c: any) => (
-                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group text-left">
+                                                    <div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group text-left text-left">
                                                         <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                                                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">
                                                                 {c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary" /> : <Utensils className="h-5 w-5 text-primary" />}
@@ -449,7 +451,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
             <ArrowLeft className="h-6 w-6 text-left" />
           </Button>
           <form className="w-full text-left" onSubmit={(e) => e.preventDefault()}>
-            <div className="relative text-left">
+            <div className="relative text-left text-left">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50 text-left" />
               <Input
                 type="search"
@@ -475,7 +477,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
           {logo && (
             <Avatar className="h-14 w-14 md:h-16 md:w-16 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent text-left">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left" />
-              <AvatarFallback className="text-left">T</AvatarFallback>
+              <AvatarFallback className="text-left text-left">T</AvatarFallback>
             </Avatar>
           )}
         </Link>
@@ -616,7 +618,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <div className="p-1 space-y-1 text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Main Navigation</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/growth" className="flex items-center gap-3 w-full text-left">
+                    <Link href="/growth" className="flex items-center gap-3 w-full text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-chart-1/10 flex items-center justify-center text-left">
                         <TrendingUp className="h-3.5 w-3.5 text-chart-1 text-left" />
                       </div>
@@ -624,7 +626,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/souls-won" className="flex items-center gap-3 w-full text-left">
+                    <Link href="/souls-won" className="flex items-center gap-3 w-full text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-chart-2/10 flex items-center justify-center text-left">
                         <UserPlus className="h-3.5 w-3.5 text-chart-2 text-left" />
                       </div>
@@ -632,7 +634,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/testimonies" className="flex items-center gap-3 w-full text-left">
+                    <Link href="/testimonies" className="flex items-center gap-3 w-full text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-chart-3/10 flex items-center justify-center text-left">
                         <Newspaper className="h-3.5 w-3.5 text-chart-3 text-left" />
                       </div>
@@ -640,7 +642,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/campaigns" className="flex items-center gap-3 w-full text-left">
+                    <Link href="/campaigns" className="flex items-center gap-3 w-full text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-chart-4/10 flex items-center justify-center text-left">
                         <Target className="h-3.5 w-3.5 text-chart-4 text-left" />
                       </div>
@@ -727,7 +729,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <div className="p-1 space-y-1 text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
                       <Link href="/guide" className="flex items-center gap-3 w-full text-left">
-                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
+                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left">
                           <Info className="h-3.5 w-3.5 text-left" />
                         </div>
                         <span className="text-[11px] font-bold uppercase tracking-widest text-left">App Guide</span>
@@ -735,7 +737,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
                       <Link href="/resources" className="flex items-center gap-3 w-full text-left">
-                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
+                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left">
                           <BookMarked className="h-3.5 w-3.5 text-left" />
                         </div>
                         <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kingdom Library</span>
@@ -757,10 +759,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
         ) : showGuestButtons ? (
           <div className="flex items-center gap-2 text-left">
             <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold text-left">
-              <Link href="/login" className="text-left">Sign In</Link>
+              <Link href="/login" className="text-left text-left">Sign In</Link>
             </Button>
             <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
-              <Link href="/" className="text-left">Get Started</Link>
+              <Link href="/" className="text-left text-left">Get Started</Link>
             </Button>
           </div>
         ) : (
@@ -931,7 +933,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     if (!profileLoading && userProfile) {
         const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
         const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
-        if (isNewUserSession && userProfile.firstName && !welcomePopupShown) {
+        const isProfileComplete = !!(userProfile.firstName && userProfile.lastName && userProfile.photoURL);
+        if (isNewUserSession && isProfileComplete && !welcomePopupShown) {
             const timer = setTimeout(() => {
                 setShowWelcomePopup(true);
                 sessionStorage.setItem('welcomePopupShown', 'true');
@@ -944,16 +947,16 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center">
-        <div className="relative mb-8 mx-auto w-fit">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+        <div className="relative mb-8 mx-auto w-fit text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
+            <div className="absolute inset-0 flex items-center justify-center text-left">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
             </div>
         </div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center">
             Kingdom Network Active
         </p>
       </div>
@@ -1008,27 +1011,27 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
-              <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
+              <SheetHeader className="text-left text-left">
+                <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6">
+            <div className="flex-grow overflow-y-auto p-6 text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </SheetContent>
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
-            <div className="p-6 border-b bg-muted/10">
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
+            <div className="p-6 border-b bg-muted/10 text-left">
               <DialogHeader className="text-left">
-                  <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
-                  <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                  <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
+                  <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -1043,8 +1046,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SearchProvider>
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
-                <div className="relative mx-auto w-fit">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <div className="relative mx-auto w-fit text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
                 </div>
             </div>
         }>

@@ -1,4 +1,3 @@
-
 'use client';
 
 /**
@@ -16,6 +15,7 @@ import { useDoc } from './firestore/use-doc';
 import { doc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { BirthdayChecker } from '@/components/common/birthday-checker';
 
 const { app, auth, firestore, storage } = initializeFirebase();
 
@@ -42,6 +42,7 @@ function ProfileProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ProfileContext.Provider value={{ userProfile, loading }}>
+      <BirthdayChecker />
       {children}
     </ProfileContext.Provider>
   );
