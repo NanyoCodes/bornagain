@@ -30,7 +30,8 @@ import {
     Utensils,
     Timer,
     HeartHandshake,
-    AlertCircle
+    AlertCircle,
+    User
 } from 'lucide-react';
 import { 
     Card, 
@@ -241,7 +242,7 @@ const strongholdCategories = [
         mission: 'Proverbs 14:30 - A heart at peace gives life to the body, but envy rots the bones.',
         icon: Users, 
         color: 'text-purple-500', 
-        bg: 'bg-purple-500/10' 
+        bg: 'bg-purple-400/10' 
     },
     { 
         name: 'Other', 
@@ -298,7 +299,7 @@ function CategoryCard({ category }: { category: typeof strongholdCategories[0] }
     };
     
     return (
-        <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5">
+        <Card className="rounded-[2.5rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden group hover:shadow-xl transition-all duration-500 flex flex-col h-full border-b-8 border-b-primary/5 text-left">
             <CardHeader className="p-8 pb-4 text-left">
                 <div className="flex justify-between items-start mb-6 text-left">
                     <div className={cn("h-16 w-16 rounded-[1.5rem] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform", category.bg)}>
@@ -314,7 +315,7 @@ function CategoryCard({ category }: { category: typeof strongholdCategories[0] }
                         <span className="sr-only">Share Circle</span>
                     </Button>
                 </div>
-                <CardTitle className="text-2xl font-black font-headline tracking-tight uppercase group-hover:text-primary transition-colors text-left">
+                <CardTitle className="text-2xl font-black font-headline uppercase group-hover:text-primary transition-colors text-left">
                     VICTORY OVER {category.name}
                 </CardTitle>
                 <CardDescription className="text-sm font-medium mt-2 leading-relaxed text-left">
@@ -356,7 +357,7 @@ export default function VictoryHubPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                     <div className="space-y-1 text-left">
                         <div className="flex items-center gap-2 mb-2 text-left">
-                            <ShieldCheck className="h-5 w-5 text-primary" />
+                            <ShieldCheck className="h-5 w-5 text-primary text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Recovery</span>
                         </div>
                         <h1 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-left">Victory Hub</h1>
@@ -384,7 +385,7 @@ export default function VictoryHubPage() {
                         placeholder="Search for a struggle circle..." 
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="h-14 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-lg font-bold w-full"
+                        className="h-14 pl-12 rounded-[1.5rem] bg-muted/20 border-none shadow-inner text-lg font-bold w-full text-left"
                     />
                 </div>
             </header>
@@ -396,8 +397,8 @@ export default function VictoryHubPage() {
                     ))
                 ) : (
                     <div className="col-span-full py-32 text-center flex flex-col items-center">
-                        <div className="h-20 w-20 rounded-full bg-muted/20 flex items-center justify-center mb-6">
-                            <ShieldCheck className="h-10 w-10 text-muted-foreground opacity-20" />
+                        <div className="h-20 w-20 rounded-full bg-muted/20 flex items-center justify-center mb-6 text-left">
+                            <ShieldCheck className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
                         </div>
                         <p className="text-base font-black uppercase tracking-tight opacity-40 text-center text-left">No matching circles found</p>
                         <p className="text-xs text-muted-foreground mt-2 italic text-center text-left">Try a different search term or enter the "Other" circle.</p>
