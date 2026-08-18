@@ -184,9 +184,9 @@ function FullDevotionalDialog({
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={stopPropagation}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <SheetHeader className="text-left flex-shrink-0">
+                        <SheetHeader className="text-left flex-shrink-0 text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3 text-balance">
                                 <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                                 {devotional.title}
@@ -216,11 +216,11 @@ function FullDevotionalDialog({
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mission Overview</span>
                     </div>
                     <DialogHeader>
-                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3 text-balance">
+                        <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight break-words [overflow-wrap:anywhere] flex items-center gap-3 text-balance text-left">
                             <MessageSquare className="h-6 w-6 text-primary shrink-0" />
                             {devotional.title}
                         </DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
+                        <DialogDescription className="text-sm font-medium mt-1 text-left">Daily Word • {format(parseISO(devotional.scheduledDate), 'PPPP')}</DialogDescription>
                     </DialogHeader>
                 </div>
                 <ScrollArea className="max-h-[70vh]">
@@ -323,7 +323,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
 
     const handleShare = async (e: React.MouseEvent) => {
         e.stopPropagation();
-        const shareUrl = `${window.location.origin}/dashboard/fellowship/${fellowship.id}`;
+        const shareUrl = `${window.location.origin}/fellowship/${fellowship.id}`;
         let shareText = `Join the '${fellowship.name}' fellowship on Testify!`;
         
         if (todayDevotional) {
@@ -436,7 +436,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                               <span className="leading-tight truncate">
                                 Organized by{" "}
                                 <Link 
-                                    href={isOrganizer ? '/dashboard/profile' : `/dashboard/profile/${fellowship.organizerId}`}
+                                    href={isOrganizer ? '/profile' : `/profile/${fellowship.organizerId}`}
                                     onClick={stopPropagation}
                                     className="font-bold text-primary hover:underline"
                                 >
@@ -474,7 +474,7 @@ const FellowshipCardComponent = ({ fellowship, userProfile, onManage, onDelete, 
                                         variant="outline" 
                                         size="icon" 
                                         className="h-9 w-9 sm:h-10 sm:w-10 border-primary/20 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-full shadow-md bg-background" 
-                                        onClick={() => triggerAction(() => router.push(`/dashboard/fellowship/${fellowship.id}`))}
+                                        onClick={() => triggerAction(() => router.push(`/fellowship/${fellowship.id}`))}
                                     >
                                         <BarChart3 className="h-4 w-4 sm:h-5 w-5" />
                                         <span className="sr-only">View Details</span>

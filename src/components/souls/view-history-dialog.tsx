@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -58,7 +58,7 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
   }, [soul?.locationWon]);
 
   const historyContent = (
-    <ScrollArea className="h-full w-full">
+    <div className="h-full w-full">
         <div className="space-y-8 p-6 sm:p-10 pb-24 text-left">
             {soul && (
                 <div className="space-y-6">
@@ -153,7 +153,7 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
                 </div>
             )}
         </div>
-    </ScrollArea>
+    </div>
   );
 
   if (!mounted) return null;
@@ -174,9 +174,9 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
                   <SheetDescription className="text-sm font-medium mt-1">Status and spiritual development history.</SheetDescription>
                 </SheetHeader>
               </div>
-              <div className="flex-grow min-h-0">
+              <ScrollArea className="flex-grow min-h-0">
                 {historyContent}
-              </div>
+              </ScrollArea>
               <div className="p-8 border-t bg-background/80 backdrop-blur-sm shrink-0">
                 <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full h-12 rounded-2xl font-bold">Close History</Button>
               </div>
@@ -201,9 +201,9 @@ export function ViewHistoryDialog({ soul, isOpen, onOpenChange }: ViewHistoryDia
                     <X className="h-5 w-5 text-muted-foreground" />
                 </DialogClose>
             </div>
-            <div className="flex-grow min-h-0 overflow-hidden">
+            <ScrollArea className="flex-grow min-h-0 overflow-hidden">
                 {historyContent}
-            </div>
+            </ScrollArea>
             <div className="p-6 border-t bg-muted/5 flex justify-end shrink-0">
                 <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-full px-10 font-bold h-11">Close</Button>
             </div>

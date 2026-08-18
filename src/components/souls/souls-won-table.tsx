@@ -299,7 +299,7 @@ function ShareWordDialog({
                         onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference, `${window.location.origin}/bible`))}
                     >
                         <div className="flex items-center justify-between w-full">
-                            <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{res.reference}</span>
+                            <span className="font-black text-[9px] sm:text-xs uppercase tracking-widest text-primary">{res.reference}</span>
                             <Send className="h-3.5 w-3.5 sm:h-4 w-4 text-primary opacity-40" />
                         </div>
                         <p className="text-xs sm:text-base text-muted-foreground leading-relaxed italic line-clamp-4">"{res.text.trim()}"</p>
@@ -310,11 +310,11 @@ function ShareWordDialog({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
+        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
             <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
-            <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest">Browse Bible</span>
+            <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Browse Bible</span>
         </Button>
-        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
+        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
             <Link href="/bible">
                 <BookMarked className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
                 <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Open Reader</span>
@@ -425,7 +425,7 @@ function ShareWordDialog({
 
   const body = (
     <ScrollArea className="flex-grow min-h-[300px]">
-        <div className="p-4 sm:p-10">
+        <div className="p-4 sm:p-10 text-left text-left text-left">
             {view === 'hub' && renderHub}
             {view === 'books' && renderBooks}
             {view === 'chapters' && renderChapters}
@@ -476,12 +476,12 @@ function ShareWordDialog({
 
 function SoulProfileContent({ 
   soul, 
-  onFollowUp, 
+  onFollowUp,
   onViewHistory,
-  onEdit, 
-  onAssess, 
-  onOpenAssignDialog, 
-  onExportSingle, 
+  onEdit,
+  onAssess,
+  onOpenAssignDialog,
+  onExportSingle,
   onDelete
 }: { 
   soul: Soul; 
@@ -499,12 +499,9 @@ function SoulProfileContent({
   const { toast } = useToast();
   const router = useRouter();
 
-  const [mounted, setMounted] = React.useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
-  const isMobile = useIsMobile();
   const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
   const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = React.useState(false);
   const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = React.useState(false);
@@ -717,17 +714,6 @@ function SoulProfileContent({
       });
   };
 
-  const handleHelpNeedConfirm = (note: string) => {
-      finalizeLog('helped_with_need', note);
-      setIsHelpNeedDialogOpen(false);
-  };
-
-  const handleVerseSelected = (verseMessage: string) => {
-    setCustomMessageText(verseMessage);
-    setIsStudyWordOpen(false);
-    setIsCommChannelDialogOpen(true);
-  };
-
   const uniquePartners = React.useMemo(() => {
     const partners = currentUserProfile?.accountabilityPartners || [];
     const uniqueMap = new Map();
@@ -737,27 +723,7 @@ function SoulProfileContent({
     return Array.from(uniqueMap.values());
   }, [currentUserProfile?.accountabilityPartners]);
 
-  const partnerSelectionList = (
-    <div className="space-y-2 text-left">
-      {uniquePartners.map(p => (
-          <Button 
-              key={p.userId} 
-              variant="ghost" 
-              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center"
-              onClick={() => handleShareToPartner(p)}
-          >
-              <Avatar className="h-8 w-8 border shrink-0">
-                  <AvatarImage src={p.photoURL} />
-                  <AvatarFallback className="font-bold text-[10px] flex items-center justify-center h-full w-full text-center">{p.firstName?.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
-          </Button>
-      ))}
-      {uniquePartners.length === 0 && (
-          <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
-      )}
-    </div>
-  );
+  const isMobileView = useIsMobile();
 
   return (
     <div className="space-y-6 text-left">
@@ -1074,7 +1040,7 @@ function SoulProfileContent({
       </Card>
 
       {mounted && (
-          isMobile ? (
+          isMobileView ? (
               <>
                 <Sheet open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
                     <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
@@ -1102,7 +1068,7 @@ function SoulProfileContent({
                                 </div>
                             </div>
                         </ScrollArea>
-                        <div className="p-8 border-t bg-background/80 backdrop-blur-sm">
+                        <div className="p-8 border-t flex flex-col sm:flex-row gap-3 bg-background/80 backdrop-blur-sm">
                             <Button onClick={() => handlePrayerCustomizationConfirm(customMessageText)} disabled={!customMessageText.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">
                                 CONTINUE TO CHANNEL
                             </Button>
@@ -1292,7 +1258,7 @@ function SoulProfileContent({
                 <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
                     <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10">
-                            <DialogHeader className="text-left">
+                            <DialogHeader>
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
                                 <DialogDescription className="text-sm font-medium">Which partner should receive these details?</DialogDescription>
                             </DialogHeader>
@@ -1498,12 +1464,12 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         <Sheet open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left flex-shrink-0 text-left">
-                    <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left">
                             <Sparkles className="h-4 w-4 text-primary text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span>
                         </div>
-                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
+                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
                         <SheetDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
