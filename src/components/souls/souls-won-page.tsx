@@ -24,7 +24,8 @@ import {
   HelpCircle,
   ClipboardList,
   ChevronRight,
-  Plus
+  Plus,
+  CalendarDays
 } from "lucide-react";
 import { 
   Dialog, 
@@ -51,7 +52,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -63,7 +64,7 @@ import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { safeToDate, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -137,6 +138,71 @@ function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
       })}
     </div>
   );
+}
+
+function HarvestTimelineTracker({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul: (soulId: string) => void }) {
+    const groupedByDate = useMemo(() => {
+        const groups: { [key: string]: Soul[] } = {};
+        souls.forEach(s => {
+            const date = safeToDate(s.wonAt);
+            if (!date) return;
+            const dateStr = format(date, 'yyyy-MM-dd');
+            if (!groups[dateStr]) groups[dateStr] = [];
+            groups[dateStr].push(s);
+        });
+        return Object.entries(groups).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 7); // top 7 recent dates
+    }, [souls]);
+
+    return (
+        <Card className="rounded-[2rem] border-none shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5">
+            <CardHeader className="p-6 sm:p-8 pb-4 text-left">
+                <CardTitle className="text-lg flex items-center gap-2 text-left">
+                    <CalendarDays className="h-5 w-5 text-primary text-left" />
+                    Kingdom Milestones
+                </CardTitle>
+                <CardDescription className="font-medium text-left">
+                    Commemorating the glorious dates of new birth in the Kingdom.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="px-6 sm:px-8 pb-8 space-y-6 text-left">
+                {groupedByDate.length > 0 ? (
+                    <div className="space-y-6 text-left">
+                        {groupedByDate.map(([dateStr, list]) => (
+                            <div key={dateStr} className="space-y-3 text-left">
+                                <div className="flex items-center gap-3 text-left">
+                                    <Badge variant="outline" className="font-black uppercase tracking-widest text-[9px] bg-primary/5 text-primary border-primary/20 h-5 text-left">
+                                        {format(parseISO(dateStr), 'PPP')}
+                                    </Badge>
+                                    <div className="h-px bg-muted flex-1 text-left" />
+                                    <span className="text-[10px] font-bold text-muted-foreground uppercase text-left">{list.length} {list.length === 1 ? 'SOUL' : 'SOULS'}</span>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+                                    {list.map(s => (
+                                        <Button 
+                                            key={s.id} 
+                                            variant="ghost" 
+                                            className="justify-start h-10 px-3 rounded-xl bg-muted/20 border border-transparent hover:border-primary/10 hover:bg-primary/5 transition-all text-left flex items-center"
+                                            onClick={() => onSelectSoul(s.id)}
+                                        >
+                                            <Avatar className="h-6 w-6 mr-2 text-left">
+                                                <AvatarFallback className="text-[8px] font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left">{s.firstName.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <span className="text-xs font-bold truncate uppercase tracking-tight text-left">{s.firstName} {s.lastName}</span>
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="py-12 text-center bg-muted/10 rounded-[2rem] border-2 border-dashed text-left">
+                        <CalendarDays className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-3 text-left" />
+                        <p className="text-xs text-muted-foreground italic font-medium text-left">No harvest dates recorded yet.</p>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
 }
 
 export default function SoulsWonPage() {
@@ -637,9 +703,9 @@ export default function SoulsWonPage() {
                                             )}
                                             onClick={() => setSelectedAgeGroup(group.label)}
                                         >
-                                            <div className="flex items-center justify-between text-left text-left">
-                                                <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left text-left">
-                                                    <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left" />
+                                            <div className="flex items-center justify-between text-left text-left text-left">
+                                                <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left text-left text-left">
+                                                    <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left text-left" />
                                                 </div>
                                                 <span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span>
                                             </div>
@@ -664,6 +730,13 @@ export default function SoulsWonPage() {
                         campaigns={campaigns || []}
                         fellowships={activeFellowships || []}
                         className="rounded-3xl text-left"
+                    />
+                </div>
+
+                <div className="px-4 sm:px-0 text-left text-left text-left">
+                    <HarvestTimelineTracker 
+                        souls={souls || []} 
+                        onSelectSoul={(id) => setSelectedSoulId(id)} 
                     />
                 </div>
 
@@ -694,17 +767,17 @@ export default function SoulsWonPage() {
                 <Sheet open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left">
-                                <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Harvest Demographic</span>
+                            <div className="flex items-center gap-2 mb-2 text-left text-left">
+                                <BarChart3 className="h-4 w-4 text-primary text-left text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Harvest Demographic</span>
                             </div>
-                            <SheetHeader className="text-left flex-shrink-0 text-left">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedAgeGroup} Directory</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
+                            <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+                                <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left">{selectedAgeGroup} Directory</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
                             </SheetHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left">
-                            <div className="p-4 sm:p-8 text-left">
+                        <ScrollArea className="flex-grow text-left text-left">
+                            <div className="p-4 sm:p-8 text-left text-left">
                                 <AgeGroupSoulList 
                                   souls={activeAgeGroupSouls} 
                                   onSelectSoul={(soul) => {
@@ -718,19 +791,19 @@ export default function SoulsWonPage() {
                 </Sheet>
             ) : (
                 <Dialog open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
-                    <DialogContent className="sm:max-w-md max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left">
-                                <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
+                    <DialogContent className="sm:max-w-md max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left">
+                                <BarChart3 className="h-4 w-4 text-primary text-left text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Demographic View</span>
                             </div>
-                            <DialogHeader className="text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedAgeGroup} Directory</DialogTitle>
-                                <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this age group.</DialogDescription>
+                            <DialogHeader className="text-left text-left text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{selectedAgeGroup} Directory</DialogTitle>
+                                <DialogDescription className="text-sm font-medium text-left text-left">Viewing all souls within this age group.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-1 min-h-0 text-left text-left">
-                            <div className="p-4 sm:p-8 text-left">
+                        <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
+                            <div className="p-4 sm:p-8 text-left text-left">
                                 <AgeGroupSoulList 
                                   souls={activeAgeGroupSouls} 
                                   onSelectSoul={(soul) => {
@@ -756,17 +829,17 @@ export default function SoulsWonPage() {
         <SoulAssessmentDialog soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                <AlertDialogHeader className="text-left text-left text-left">
-                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
+                <AlertDialogHeader className="text-left text-left text-left text-left">
+                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left">Delete Record?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6 text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+                <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
                         Confirm Removal
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -777,21 +850,21 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <>
                     <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                                <SheetHeader className="text-left text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm text-left text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left text-left text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
                             </ScrollArea>
                         </SheetContent>
                     </Sheet>
                     <Sheet open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                                <SheetHeader className="text-left text-left text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </SheetContent>
@@ -800,30 +873,30 @@ export default function SoulsWonPage() {
             ) : (
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black font-headline text-left">Add New Soul</DialogTitle>
-                                    <DialogDescription className="text-left">Record a new life won for Christ.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                                <DialogHeader className="text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left">Add New Soul</DialogTitle>
+                                    <DialogDescription className="text-left text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
-                                <div className="p-8 text-left">
+                            <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left">
+                                <div className="p-8 text-left text-left">
                                     <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
                                 </div>
                             </ScrollArea>
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
-                                    <DialogDescription className="text-left">Update soul identity and mission details.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                                <DialogHeader className="text-left text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left">Edit Record</DialogTitle>
+                                    <DialogDescription className="text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left">
-                                <div className="p-8 text-left">
+                            <ScrollArea className="flex-1 min-h-0 text-left text-left text-left text-left text-left">
+                                <div className="p-8 text-left text-left">
                                     {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
                                 </div>
                             </ScrollArea>
