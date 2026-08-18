@@ -6,19 +6,28 @@ import { Button } from './ui/button';
 import { Cookie } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+/**
+ * @fileOverview A high-fidelity cookie consent banner for the Testify platform.
+ * Allows users to explicitly accept or reject cookies for privacy compliance.
+ */
 export function CookieConsentBanner() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // This code runs only on the client
+    // Check if the user has already made a choice
     const consent = localStorage.getItem('cookie_consent');
-    if (consent !== 'accepted') {
+    if (!consent) {
       setIsVisible(true);
     }
   }, []);
 
   const handleAccept = () => {
     localStorage.setItem('cookie_consent', 'accepted');
+    setIsVisible(false);
+  };
+
+  const handleReject = () => {
+    localStorage.setItem('cookie_consent', 'rejected');
     setIsVisible(false);
   };
 
@@ -29,27 +38,40 @@ export function CookieConsentBanner() {
   return (
     <div
       className={cn(
-        'fixed bottom-0 left-0 right-0 z-50 p-4 bg-background border-t shadow-lg',
-        'data-[state=visible]:animate-in data-[state=hidden]:animate-out',
-        'data-[state=hidden]:slide-out-to-bottom data-[state=visible]:slide-in-from-bottom',
-        'transition-all duration-500'
+        'fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:bottom-8 z-[100] p-6 bg-background/95 backdrop-blur-md border shadow-2xl rounded-3xl max-w-md border-primary/10',
+        'animate-in fade-in slide-in-from-bottom-10 duration-700'
       )}
-      data-state={isVisible ? 'visible' : 'hidden'}
     >
-      <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <Cookie className="h-5 w-5 shrink-0" />
-          <p>
-            We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies. See our{' '}
-            <Link href="/privacy-policy" className="underline font-semibold hover:text-primary">
-              Privacy Policy
-            </Link>
-            .
-          </p>
+      <div className="flex flex-col gap-6">
+        <div className="flex items-start gap-4">
+          <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+             <Cookie className="h-6 w-6 text-primary" />
+          </div>
+          <div className="space-y-1">
+            <h4 className="font-black text-sm uppercase tracking-tight">Cookie Preferences</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed font-medium text-balance">
+              We use cookies to personalize your Kingdom experience and analyze platform traffic. You can choose to accept or reject them. 
+              Read our <Link href="/privacy-policy" className="underline font-bold hover:text-primary">Privacy Policy</Link>.
+            </p>
+          </div>
         </div>
-        <Button onClick={handleAccept} size="sm" className="w-full sm:w-auto shrink-0">
-          Accept
-        </Button>
+        <div className="flex gap-3">
+          <Button 
+            onClick={handleReject} 
+            variant="outline" 
+            size="sm" 
+            className="flex-1 h-10 rounded-xl font-bold border-muted-foreground/20"
+          >
+            Reject
+          </Button>
+          <Button 
+            onClick={handleAccept} 
+            size="sm" 
+            className="flex-1 h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20"
+          >
+            Accept All
+          </Button>
+        </div>
       </div>
     </div>
   );
