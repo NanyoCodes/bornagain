@@ -29,17 +29,6 @@ import type { UserProfile } from '@/lib/types';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -69,17 +58,6 @@ const notificationFormSchema = z.object({
 
 const backgroundPresets = [
   { id: 'midnight', label: 'Midnight Grace', url: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)' },
-  { id: 'ancient-church', label: 'Ancient Church', url: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'worship', label: 'Worship Atmosphere', url: 'https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'cross', label: 'Cross at Sunset', url: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'bible', label: 'The Living Word', url: 'https://images.unsplash.com/photo-1504052434569-70ad58ebb96d?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'dawn', label: 'Dawn of Hope', url: 'https://images.unsplash.com/photo-1470252649358-96940c93f319?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'harvest', label: 'Global Harvest', url: 'https://images.unsplash.com/photo-1521295121783-8a321d551ad2?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'waters', label: 'Still Waters', url: 'https://images.unsplash.com/photo-1505118380757-91f5f45d8de4?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'majesty', label: 'Majesty Mountains', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'stained-glass', label: 'Stained Glass', url: 'https://images.unsplash.com/photo-1438032005730-c779502df39b?q=80&w=2071&auto=format&fit=crop' },
-  { id: 'garden', label: 'Garden of Peace', url: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=2070&auto=format&fit=crop' },
-  { id: 'morning', label: 'Morning Grace', url: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=2070&auto=format&fit=crop' },
 ];
 
 function ProfileSettingsCard() {
@@ -90,7 +68,7 @@ function ProfileSettingsCard() {
         <CardDescription>This is how others see your impact on the platform.</CardDescription>
       </CardHeader>
       <CardContent>
-        <Button asChild className="w-full sm:w-auto h-12 rounded-2xl font-bold uppercase tracking-widest"><Link href="/dashboard/profile">Edit Your Profile</Link></Button>
+        <Button asChild className="w-full sm:w-auto h-12 rounded-2xl font-bold uppercase tracking-widest"><Link href="/profile">Edit Your Profile</Link></Button>
       </CardContent>
     </Card>
   );
@@ -337,41 +315,28 @@ function ContactCard() {
   );
 }
 
-function AccountSettingsCard() {
-    const { toast } = useToast();
-    const [isDeleting, setIsDeleting] = useState(false);
-    const handleDelete = () => {
-        setIsDeleting(true);
-        toast({ variant: 'destructive', title: 'Account Deletion Initiated' });
-        setTimeout(() => setIsDeleting(false), 2000);
-    }
-  return (
-    <Card className="border-destructive border-t-8 rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none bg-card/50 backdrop-blur-sm">
-      <CardHeader><CardTitle className="text-destructive flex items-center gap-2 text-lg font-black uppercase tracking-tight"><Trash2 className="h-5 w-5" /> Danger Zone</CardTitle></CardHeader>
-      <CardContent>
-        <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <Button variant="destructive" className="w-full sm:w-auto h-12 rounded-2xl font-black uppercase tracking-widest">Delete My Account</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
-                <AlertDialogHeader>
-                    <AlertDialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed">
-                        This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-11 font-bold">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold">
-                        {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                        Confirm Deletion
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-      </CardContent>
-    </Card>
-  );
+function AccountDeletionRequest({ userId }: { userId: string }) {
+    const handleEmailRequest = () => {
+        const subject = encodeURIComponent("Account Deletion Request - Testify Global");
+        const body = encodeURIComponent(`Hello Testify Team,\n\nI would like to request the permanent deletion of my account.\n\nUser ID: ${userId}\n\nPlease let me know the next steps.\n\nGod bless.`);
+        window.location.href = `mailto:testifyglobal360@gmail.com?subject=${subject}&body=${body}`;
+    };
+
+    return (
+        <div className="pt-12 pb-8 flex flex-col items-center gap-4 text-center px-6">
+            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] opacity-40">Account Lifecycle</p>
+            <Button 
+                variant="ghost" 
+                onClick={handleEmailRequest}
+                className="text-destructive hover:text-destructive hover:bg-destructive/10 font-black uppercase tracking-[0.2em] text-[10px] h-10 px-8 rounded-full border border-destructive/20 transition-all active:scale-95"
+            >
+                Request Account Deletion
+            </Button>
+            <p className="text-[9px] text-muted-foreground italic max-w-xs leading-relaxed">
+                Send a request to our ministry team for secure identity removal.
+            </p>
+        </div>
+    );
 }
 
 export function SettingsPageContent() {
@@ -403,7 +368,7 @@ export function SettingsPageContent() {
             <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
             <PasswordSettingsCard />
             <ContactCard />
-            <AccountSettingsCard />
+            <AccountDeletionRequest userId={user.uid} />
         </div>
       )}
     </div>
