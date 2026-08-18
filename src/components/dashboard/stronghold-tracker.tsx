@@ -64,7 +64,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 
 const strongholdCategories = [
-    'Pride', 'Lust', 'Fear', 'Unforgiveness', 'Anger', 'Addiction', 'Laziness', 'Grief', 'Comparison', 'Unbelief', 'Depression', 'Greed', 'Worldliness', 'Jealousy', 'Other'
+    'Pride', 'Lust', 'Fear', 'Bitterness', 'Poverty', 'Unforgiveness', 'Anger', 'Discouragement', 'Addiction', 'Loneliness', 'Laziness', 'Confusion', 'Grief', 'Disobedience', 'Comparison', 'Self-Righteousness', 'Unbelief', 'Gluttony', 'Depression', 'Procrastination', 'Greed', 'Rejection', 'Worldliness', 'Jealousy', 'Other'
 ];
 
 const victoryScriptures = [
@@ -226,11 +226,11 @@ export function StrongholdTracker() {
             <CardHeader className="p-4 sm:p-6 pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1">
-                        <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                        <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left">
                             <Flame className="h-5 w-5 text-primary" />
                             Victory Tracker
                         </CardTitle>
-                        <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60">Overcoming strongholds in Christ</CardDescription>
+                        <CardDescription className="text-[10px] sm:text-xs font-bold uppercase tracking-widest opacity-60 text-left">Overcoming strongholds in Christ</CardDescription>
                     </div>
                     <Button onClick={() => setIsAddOpen(true)} className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
                         <Plus className="mr-2 h-4 w-4" />
@@ -246,7 +246,7 @@ export function StrongholdTracker() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {strongholds.map((s) => {
                             const isVictorious = s.status === 'victorious';
-                            const circleLink = `/dashboard/strongholds/${(s.category || 'Other').toLowerCase()}`;
+                            const circleLink = `/strongholds/${(s.category || 'Other').toLowerCase()}`;
                             
                             // Deterministically pick a victory scripture based on ID to avoid hydration mismatch
                             const scriptureIdx = s.id.charCodeAt(s.id.length - 1) % victoryScriptures.length;
@@ -267,7 +267,7 @@ export function StrongholdTracker() {
                                                     {isVictorious && <Badge className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-green-500 text-white border-none">Victorious</Badge>}
                                                 </div>
                                                 <Link href={circleLink} className="group/title">
-                                                    <h4 className="font-black text-sm sm:text-base uppercase tracking-tight truncate group-hover/title:text-primary transition-colors">{s.title}</h4>
+                                                    <h4 className="font-black text-sm sm:text-base uppercase tracking-tight truncate group-hover/title:text-primary transition-colors text-left">{s.title}</h4>
                                                 </Link>
                                             </div>
                                             <DropdownMenu>
@@ -305,7 +305,7 @@ export function StrongholdTracker() {
                                                     <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
                                                         <CheckCircle2 className="h-5 w-5 text-green-600" />
                                                     </div>
-                                                    <p className="text-[10px] font-bold text-green-700 leading-tight italic break-words">
+                                                    <p className="text-[10px] font-bold text-green-700 leading-tight italic break-words text-left">
                                                         "{victoryVerse.text}" — {victoryVerse.ref}
                                                     </p>
                                                 </div>
@@ -333,10 +333,10 @@ export function StrongholdTracker() {
                     </div>
                 ) : (
                     <div className="text-center py-12 bg-muted/20 rounded-[2rem] border-2 border-dashed">
-                        <div className="h-12 w-12 bg-muted/40 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Zap className="h-6 w-6 text-muted-foreground opacity-20" />
+                        <div className="h-12 w-12 bg-muted/40 rounded-full flex items-center justify-center mx-auto mb-4 text-left">
+                            <Zap className="h-6 w-6 text-muted-foreground opacity-20 text-left" />
                         </div>
-                        <p className="text-xs text-muted-foreground font-medium italic px-12 text-balance leading-relaxed">"For the weapons of our warfare are not carnal but mighty in God for pulling down strongholds." — 2 Cor 10:4</p>
+                        <p className="text-xs text-muted-foreground font-medium italic px-12 text-balance leading-relaxed text-center">"For the weapons of our warfare are not carnal but mighty in God for pulling down strongholds." — 2 Cor 10:4</p>
                         <Button variant="link" onClick={() => setIsAddOpen(true)} className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest">Initialize a Tracker</Button>
                     </div>
                 )}
@@ -344,36 +344,36 @@ export function StrongholdTracker() {
 
             {mounted && isMobile ? (
                 <Sheet open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <SheetHeader className="text-left">
-                                <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Enter the Warfare</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1">Naming a struggle is the first step toward the Light.</SheetDescription>
+                    <SheetContent side="bottom" className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <SheetHeader className="text-left text-left">
+                                <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Enter the Warfare</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1 text-left">Naming a struggle is the first step toward the Light.</SheetDescription>
                             </SheetHeader>
                         </div>
-                        <ScrollArea className="flex-grow">
-                            <div className="p-8">
+                        <ScrollArea className="flex-grow text-left">
+                            <div className="p-8 text-left">
                                 {formFields}
                             </div>
                         </ScrollArea>
-                        <div className="p-8 border-t flex flex-col sm:flex-row gap-3 bg-background/80 backdrop-blur-sm">
+                        <div className="p-8 border-t flex flex-col sm:flex-row gap-3 bg-background/80 backdrop-blur-sm text-left">
                             {formFooter}
                         </div>
                     </SheetContent>
                 </Sheet>
             ) : (
                 <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-                        <div className="p-8 border-b bg-muted/10">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Enter the Warfare</DialogTitle>
-                                <DialogDescription className="text-sm font-medium">Naming a struggle is the first step toward the Light.</DialogDescription>
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left text-left">
+                            <DialogHeader className="text-left text-left">
+                                <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Enter the Warfare</DialogTitle>
+                                <DialogDescription className="text-sm font-medium text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <div className="p-8">
+                        <div className="p-8 text-left">
                             {formFields}
                         </div>
-                        <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3">
+                        <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 text-left">
                             {formFooter}
                         </div>
                     </DialogContent>
@@ -381,17 +381,17 @@ export function StrongholdTracker() {
             )}
 
             <Dialog open={!!testimonyStronghold} onOpenChange={(open) => !open && setTestimonyStronghold(null)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
-                    <div className="p-8 border-b bg-muted/10">
-                        <DialogHeader>
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Share Your Victory</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                    <div className="p-8 border-b bg-muted/10 text-left">
+                        <DialogHeader className="text-left text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Your Victory</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left">
                                 Encourage the body of Christ by sharing how God gave you victory over "{testimonyStronghold?.title}".
                             </DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="max-h-[70vh]">
-                        <div className="p-8">
+                    <ScrollArea className="max-h-[70vh] text-left">
+                        <div className="p-8 text-left">
                             {userProfile && testimonyStronghold && (
                                 <CreateTestimonyForm 
                                     userProfile={userProfile} 

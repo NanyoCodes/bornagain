@@ -83,83 +83,127 @@ const categoryScriptures: Record<string, { verse: string; text: string; prayer: 
   pride: [
     { verse: "Proverbs 16:18", text: "Pride goes before destruction, a haughty spirit before a fall.", prayer: "Lord, strip away my pride and clothe me in Your humility. Let me never forget that You are the source of my strength. Amen." },
     { verse: "James 4:6", text: "God opposes the proud but shows favor to the humble.", prayer: "I choose to humble myself before You today, Lord. May Your favor rest upon me as I decrease and You increase. Amen." },
-    { verse: "1 Peter 5:5", text: "Clothe yourselves, all of you, with humility toward one another.", prayer: "Holy Spirit, help me to serve others with a genuine heart, free from the need for recognition or praise. Amen." },
-    { verse: "Proverbs 11:2", text: "When pride comes, then comes disgrace, but with humility comes wisdom.", prayer: "Father, give me a heart that seeks Your wisdom above my own reputation. Protect me from the snare of arrogance. Amen." },
-    { verse: "Proverbs 29:23", text: "Pride brings a person low, but the lowly in spirit gain honor.", prayer: "I surrender my need to be right or superior. I find my true honor in being Your child. Amen." },
-    { verse: "Obadiah 1:3", text: "The pride of your heart has deceived you.", prayer: "Lord, search my heart. Remove any deception that makes me feel self-sufficient without You. Amen." },
-    { verse: "Luke 14:11", text: "For all those who exalt themselves will be humbled, and those who humble themselves will be exalted.", prayer: "Jesus, I choose the lowest seat. I trust You to lift me up in Your perfect timing. Amen." }
+    { verse: "1 Peter 5:5", text: "Clothe yourselves, all of you, with humility toward one another.", prayer: "Holy Spirit, help me to serve others with a genuine heart, free from the need for recognition or praise. Amen." }
   ],
   lust: [
     { verse: "1 Corinthians 10:13", text: "No temptation has overtaken you except what is common to mankind. And God is faithful; he will not let you be tempted beyond what you can bear.", prayer: "Lord, I thank You for providing a way out. I choose Your path of escape and declare my freedom in Christ. Amen." },
     { verse: "Matthew 5:28", text: "But I tell you that anyone who looks at a woman lustfully has already committed adultery with her in his heart.", prayer: "Father, purify my vision and my heart. Let my eyes see only what is holy and honoring to You. Amen." },
-    { verse: "1 John 2:16", text: "For everything in the world—the lust of the flesh, the lust of the eyes, and the pride of life—comes not from the Father but from the world.", prayer: "I reject the cravings of this world. I feast my soul on Your presence and Your Word. Amen." },
-    { verse: "2 Timothy 2:22", text: "Flee the evil desires of youth and pursue righteousness, faith, love and peace.", prayer: "Spirit, give me the strength to turn away and run toward Your righteousness. Amen." },
-    { verse: "Galatians 5:16", text: "So I say, walk by the Spirit, and you will not gratify the desires of the flesh.", prayer: "I choose to walk step by step with the Holy Spirit today. Lead me away from temptation. Amen." },
-    { verse: "James 1:14-15", text: "But each person is tempted when they are dragged away by their own evil desire and enticed.", prayer: "Lord, kill the roots of wrong desires in my heart. Let Your holy fire consume every ungodly urge. Amen." },
-    { verse: "1 Thessalonians 4:3-5", text: "It is God’s will that you should be sanctified: that you should avoid sexual immorality.", prayer: "Sanctify me, O God. Help me to control my own body in a way that is holy and honorable. Amen." }
+    { verse: "1 John 2:16", text: "For everything in the world—the lust of the flesh, the lust of the eyes, and the pride of life—comes not from the Father but from the world.", prayer: "I reject the cravings of this world. I feast my soul on Your presence and Your Word. Amen." }
+  ],
+  fear: [
+    { verse: "2 Timothy 1:7", text: "For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.", prayer: "I cast out fear and receive Your power, love, and sound mind, Father. Amen." },
+    { verse: "Psalm 27:1", text: "The Lord is my light and my salvation—whom shall I fear? The Lord is the stronghold of my life—of whom shall I be afraid?", prayer: "You are my stronghold, O God. I am secure in Your salvation. Amen." },
+    { verse: "Isaiah 41:10", text: "So do not fear, for I am with you; do not be dismayed, for I am your God.", prayer: "Thank You for being with me always. I am not alone. Amen." }
+  ],
+  bitterness: [
+    { verse: "Hebrews 12:15", text: "See to it that no one falls short of the grace of God and that no bitter root grows up to cause trouble.", prayer: "Lord, help me to guard my heart against resentment. Wash me with Your grace. Amen." },
+    { verse: "Ephesians 4:31-32", text: "Get rid of all bitterness, rage and anger... Be kind and compassionate to one another, forgiving each other, just as in Christ God forgave you.", prayer: "I choose to forgive and release all bitterness today. Soften my heart, Lord. Amen." },
+    { verse: "James 3:14", text: "But if you harbor bitter envy and selfish ambition in your hearts, do not boast about it or deny the truth.", prayer: "Holy Spirit, reveal any hidden bitterness and help me walk in truth and love. Amen." }
+  ],
+  poverty: [
+    { verse: "2 Corinthians 8:9", text: "For you know the grace of our Lord Jesus Christ, that though he was rich, yet for your sake he became poor, so that you through his poverty might become rich.", prayer: "I declare that lack is broken in my life through the sacrifice of Jesus. Amen." },
+    { verse: "Philippians 4:19", text: "And my God will meet all your needs according to the riches of his glory in Christ Jesus.", prayer: "I trust in Your supply, Jehovah Jireh. You are my source. Amen." },
+    { verse: "Proverbs 10:22", text: "The blessing of the Lord brings wealth, without painful toil for it.", prayer: "I receive Your blessing that makes rich and adds no sorrow. Amen." }
+  ],
+  unforgiveness: [
+    { verse: "Matthew 6:14", text: "For if you forgive other people when they sin against you, your heavenly Father will also forgive you.", prayer: "Lord, give me the strength to forgive as I have been forgiven. Amen." },
+    { verse: "Colossians 3:13", text: "Bear with each other and forgive one another if any of you has a grievance against someone. Forgive as the Lord forgave you.", prayer: "I choose to drop every grievance at Your feet, Jesus. Amen." },
+    { verse: "Ephesians 4:32", text: "Be kind and compassionate to one another, forgiving each other, just as in Christ God forgave you.", prayer: "Fill me with Your compassion for those who have hurt me. Amen." }
   ],
   anger: [
     { verse: "James 1:19-20", text: "Everyone should be quick to listen, slow to speak and slow to become angry, because human anger does not produce the righteousness that God desires.", prayer: "Lord, put a guard over my mouth and a peace in my spirit. Let Your righteousness be my response. Amen." },
     { verse: "Ephesians 4:26-27", text: "In your anger do not sin: Do not let the sun go down while you are still angry, and do not give the devil a foothold.", prayer: "I refuse to give the enemy space in my heart through bitterness. I release all anger to You before I sleep. Amen." },
-    { verse: "Proverbs 14:29", text: "Whoever is patient has great understanding, but one who is quick-tempered displays folly.", prayer: "Father, grant me Your patience and a heart of understanding for those who provoke me. Amen." },
-    { verse: "Proverbs 15:1", text: "A gentle answer turns away wrath, but a harsh word stirs up anger.", prayer: "Holy Spirit, season my speech with grace. Let my gentle responses diffuse every storm. Amen." },
-    { verse: "Colossians 3:8", text: "But now you must also rid yourselves of all such things as these: anger, rage, malice, slander, and filthy language.", prayer: "I take off the old self and its rage. I put on Christ, who is my peace. Amen." },
-    { verse: "Ecclesiastes 7:9", text: "Do not be quickly provoked in your spirit, for anger resides in the lap of fools.", prayer: "Lord, strengthen my spirit. Make me hard to offend and quick to forgive. Amen." },
-    { verse: "Psalm 37:8", text: "Refrain from anger and turn from wrath; do not fret—it leads only to evil.", prayer: "I choose to rest in Your justice, Lord. I release the need to retaliate. Amen." }
+    { verse: "Proverbs 14:29", text: "Whoever is patient has great understanding, but one who is quick-tempered displays folly.", prayer: "Father, grant me Your patience and a heart of understanding for those who provoke me. Amen." }
+  ],
+  discouragement: [
+    { verse: "Psalm 42:11", text: "Why, my soul, are you downcast? Why so disturbed within me? Put your hope in God, for I will yet praise him, my Savior and my God.", prayer: "I command my soul to hope in God! My season of discouragement ends now. Amen." },
+    { verse: "Joshua 1:9", text: "Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.", prayer: "I take courage today, knowing the Lord of hosts is by my side. Amen." },
+    { verse: "Galatians 6:9", text: "Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.", prayer: "Father, strengthen my hands and my heart. I will not faint before my harvest. Amen." }
   ],
   addiction: [
     { verse: "1 Corinthians 6:12", text: "I will not be mastered by anything.", prayer: "I declare that only Jesus is my Master. No substance or habit has authority over my life. Amen." },
     { verse: "Galatians 5:1", text: "It is for freedom that Christ has set us free. Stand firm, then, and do not let yourselves be burdened again by a yoke of slavery.", prayer: "I stand firm in the freedom bought by the blood of Jesus. I am no longer a slave to addiction. Amen." },
-    { verse: "1 Peter 5:8", text: "Be alert and of sober mind. Your enemy the devil prowls around like a roaring lion looking for someone to devour.", prayer: "Lord, keep my mind sharp and my spirit alert. I resist the enemy and he must flee. Amen." },
-    { verse: "John 8:36", text: "So if the Son sets you free, you will be free indeed.", prayer: "Jesus, You have set me free. I receive my total deliverance today. I am free indeed! Amen." },
-    { verse: "Romans 6:12-14", text: "For sin shall no longer be your master, because you are not under the law, but under grace.", prayer: "I am under Your grace, Lord. Your grace provides the strength I need to overcome every craving. Amen." },
-    { verse: "1 Corinthians 10:13", text: "God is faithful; he will not let you be tempted beyond what you can bear.", prayer: "I thank You, Father, that You have equipped me to handle this moment. I trust Your faithfulness. Amen." },
-    { verse: "Psalm 107:13-16", text: "He brought them out of darkness, and broke their chains.", prayer: "Break every chain in my life, Lord. Lead me fully into Your marvelous light. Amen." }
+    { verse: "1 Peter 5:8", text: "Be alert and of sober mind. Your enemy the devil prowls around like a roaring lion looking for someone to devour.", prayer: "Lord, keep my mind sharp and my spirit alert. I resist the enemy and he must flee. Amen." }
+  ],
+  loneliness: [
+    { verse: "Matthew 28:20", text: "And surely I am with you always, to the very end of the age.", prayer: "I am never alone, for You are with me. I abide in Your constant friendship, Lord. Amen." },
+    { verse: "Psalm 68:6", text: "God sets the lonely in families, he leads out the prisoners with singing.", prayer: "Father, connect me with the Body. Thank You for the family of faith. Amen." },
+    { verse: "Hebrews 13:5", text: "Never will I leave you; never will I forsake you.", prayer: "I anchor my heart in Your promise of presence. You are my enough. Amen." }
   ],
   laziness: [
     { verse: "Proverbs 6:6-8", text: "Go to the ant, you sluggard; consider its ways and be wise!", prayer: "Lord, give me a diligent heart that works with purpose even when no one is watching. Amen." },
     { verse: "Colossians 3:23", text: "Whatever you do, work at it with all your heart, as working for the Lord, not for human masters.", prayer: "I offer my work today as an act of worship to You, Jesus. Let me be productive for Your Kingdom. Amen." },
-    { verse: "Proverbs 10:4", text: "Lazy hands make for poverty, but diligent hands bring wealth.", prayer: "Father, bless the work of my hands. Give me the discipline to be a good steward of my time. Amen." },
-    { verse: "Proverbs 13:4", text: "A sluggard’s appetite is never filled, but the desires of the diligent are fully satisfied.", prayer: "I choose to act rather than just wish. Satisfy my soul with the fruit of my labor. Amen." },
-    { verse: "Proverbs 20:4", text: "Sluggards do not plow in season; so at harvest time they look but find nothing.", prayer: "Lord, help me to recognize the seasons of work. May I not miss the opportunities You provide. Amen." },
-    { verse: "2 Thessalonians 3:10", text: "For even when we were with you, we gave you this rule: 'The one who is unwilling to work shall not eat.'", prayer: "Lord, remove any sense of entitlement from me. Help me to earn my bread with integrity. Amen." },
-    { verse: "Romans 12:11", text: "Never be lacking in zeal, but keep your spiritual fervor, serving the Lord.", prayer: "Ignite a fire in my spirit, Lord. Let me be fervent in my service to You and others. Amen." }
+    { verse: "Proverbs 10:4", text: "Lazy hands make for poverty, but diligent hands bring wealth.", prayer: "Father, bless the work of my hands. Give me the discipline to be a good steward of my time. Amen." }
+  ],
+  confusion: [
+    { verse: "1 Corinthians 14:33", text: "For God is not a God of disorder but of peace—as in all the congregations of the Lord’s people.", prayer: "I speak order to my mind. I receive Your peace that surpasses understanding. Amen." },
+    { verse: "James 1:5", text: "If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault, and it will be given to you.", prayer: "I ask for Your wisdom and clarity in this season. Lead me in the path of truth. Amen." },
+    { verse: "2 Timothy 1:7", text: "For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.", prayer: "I reject the spirit of confusion. I walk in a sound mind and holy power. Amen." }
+  ],
+  grief: [
+    { verse: "Psalm 34:18", text: "The Lord is close to the brokenhearted and saves those who are crushed in spirit.", prayer: "Thank You for being close to me in my pain, Lord. Heal my heart. Amen." },
+    { verse: "Matthew 5:4", text: "Blessed are those who mourn, for they will be comforted.", prayer: "I receive Your divine comfort today. Lift the spirit of heaviness. Amen." },
+    { verse: "Isaiah 61:3", text: "To bestow on them a crown of beauty instead of ashes, the oil of joy instead of mourning.", prayer: "I trade my ashes for Your beauty. Let Your joy be my strength. Amen." }
+  ],
+  disobedience: [
+    { verse: "John 14:15", text: "If you love me, keep my commands.", prayer: "Lord, let my love for You translate into a willing and obedient heart. Amen." },
+    { verse: "1 Samuel 15:22", text: "To obey is better than sacrifice, and to heed is better than the fat of rams.", prayer: "I surrender my will to Yours. Help me to heed Your voice above all others. Amen." },
+    { verse: "Luke 6:46", text: "Why do you call me, 'Lord, Lord,' and do not do what I say?", prayer: "Forgive my rebellion, Father. I choose to follow Your path step by step. Amen." }
+  ],
+  comparison: [
+    { verse: "2 Corinthians 10:12", text: "When they measure themselves by themselves and compare themselves with themselves, they are not wise.", prayer: "Lord, free me from the trap of comparison. I am uniquely made for Your glory. Amen." },
+    { verse: "Galatians 1:10", text: "Am I now trying to win the approval of human beings, or of God? Or am I trying to please people?", prayer: "I seek Your approval alone. I rest in the identity You have given me. Amen." },
+    { verse: "Psalm 139:14", text: "I praise you because I am fearfully and wonderfully made; your works are wonderful, I know that full well.", prayer: "Thank You for my design. I celebrate who I am in Christ. Amen." }
+  ],
+  self_righteousness: [
+    { verse: "Isaiah 64:6", text: "All of us have become like one who is unclean, and all our righteous acts are like filthy rags.", prayer: "Lord, I repent of my own merit. I cloth myself in Your righteousness alone. Amen." },
+    { verse: "Luke 18:14", text: "For all those who exalt themselves will be humbled, and those who humble themselves will be exalted.", prayer: "I humble myself before You. It is Your grace, not my works, that saves me. Amen." },
+    { verse: "Philippians 3:9", text: "And be found in him, not having a righteousness of my own... but that which is through faith in Christ.", prayer: "I bank my entire eternity on Your perfection, Jesus. Amen." }
   ],
   unbelief: [
     { verse: "Mark 9:24", text: "I do believe; help me overcome my unbelief!", prayer: "Lord, I choose to trust You. Where my faith is weak, strengthen it by Your Spirit. Amen." },
     { verse: "Hebrews 11:6", text: "And without faith it is impossible to please God.", prayer: "Father, I approach You believing that You exist and that You reward those who seek You. Amen." },
-    { verse: "Matthew 21:21", text: "Truly I tell you, if you have faith and do not doubt... you can say to this mountain, 'Go, throw yourself into the sea,' and it will be done.", prayer: "I speak to the mountains of doubt in my life: move in the name of Jesus! I choose faith. Amen." },
-    { verse: "Romans 10:17", text: "Consequently, faith comes from hearing the message, and the message is heard through the word about Christ.", prayer: "Lord, as I read Your Word, let my faith explode. I build my life on Your promises. Amen." },
-    { verse: "James 1:6", text: "But when you ask, you must believe and not doubt.", prayer: "I anchor my soul in Your truth, Lord. I will not be tossed about by the waves of doubt. Amen." },
-    { verse: "Hebrews 3:12", text: "See to it, brothers and sisters, that none of you has a sinful, unbelieving heart that turns away from the living God.", prayer: "Guard my heart, O God. Keep me close to You and protect me from the hardness of unbelief. Amen." },
-    { verse: "Mark 11:23", text: "Whatever you say will be done for you.", prayer: "I declare that Your Word is true. I align my speech with Your promises and expect Your move. Amen." }
+    { verse: "Romans 10:17", text: "Consequently, faith comes from hearing the message, and the message is heard through the word about Christ.", prayer: "Lord, as I read Your Word, let my faith explode. I build my life on Your promises. Amen." }
+  ],
+  gluttony: [
+    { verse: "1 Corinthians 6:19-20", text: "Do you not know that your bodies are temples of the Holy Spirit? ... Therefore honor God with your bodies.", prayer: "Holy Spirit, help me to steward my body with self-control and honor. Amen." },
+    { verse: "Proverbs 23:20-21", text: "Do not join those who drink too much wine or gorge themselves on meat.", prayer: "I choose moderation and discipline. Satisfy my hunger with Your presence. Amen." },
+    { verse: "1 Corinthians 10:31", text: "So whether you eat or drink or whatever you do, do it all for the glory of God.", prayer: "I consecrate my appetite to You. May my life be an offering in every area. Amen." }
+  ],
+  depression: [
+    { verse: "Psalm 42:11", text: "Why, my soul, are you downcast? ... Put your hope in God.", prayer: "I speak to the spirit of heaviness: Leave in the name of Jesus! I choose hope. Amen." },
+    { verse: "Psalm 34:17", text: "The righteous cry out, and the Lord hears them; he delivers them from all their troubles.", prayer: "Thank You for hearing my cry. I receive Your deliverance today. Amen." },
+    { verse: "Nehemiah 8:10", text: "Do not grieve, for the joy of the Lord is your strength.", prayer: "I lay down my grief and receive Your strength, which is my joy. Amen." }
+  ],
+  procrastination: [
+    { verse: "Ephesians 5:15-16", text: "Be very careful, then, how you live—not as unwise but as wise, making the most of every opportunity, because the days are evil.", prayer: "Lord, give me wisdom to manage my time. I choose diligence over delay. Amen." },
+    { verse: "Colossians 3:23", text: "Whatever you do, work at it with all your heart, as working for the Lord.", prayer: "I activate my heart for the task at hand. I work for Your glory today. Amen." },
+    { verse: "Proverbs 6:6", text: "Go to the ant, you sluggard; consider its ways and be wise!", prayer: "Holy Spirit, spark a fire of productivity in my life. Amen." }
   ],
   greed: [
     { verse: "Luke 12:15", text: "Watch out! Be on your guard against all kinds of greed; life does not consist in an abundance of possessions.", prayer: "Lord, deliver me from the love of things. Let my life consist of Your presence and Your love. Amen." },
     { verse: "Hebrews 13:5", text: "Keep your lives free from the love of money and be content with what you have.", prayer: "I find my satisfaction in You, Lord. I declare that You are my portion and my enough. Amen." },
-    { verse: "1 Timothy 6:10", text: "For the love of money is a root of all kinds of evil.", prayer: "Father, pull up any roots of greed in my heart. Give me a spirit of generosity and trust. Amen." },
-    { verse: "Proverbs 28:25", text: "The greedy stir up conflict, but those who trust in the Lord will prosper.", prayer: "I choose trust over grasping. I seek Your prosperity that adds no sorrow with it. Amen." },
-    { verse: "Matthew 6:24", text: "No one can serve two masters... You cannot serve both God and money.", prayer: "I serve only You, Lord. Money is my tool, not my master. Amen." },
-    { verse: "Ecclesiastes 5:10", text: "Whoever loves money never has enough; whoever loves wealth is never satisfied with their income.", prayer: "I break the cycle of never-ending wanting. I am satisfied with Your daily bread. Amen." },
-    { verse: "Ephesians 5:3", text: "But among you there must not be even a hint of... greed, because these are improper for God’s holy people.", prayer: "Let my life be marked by holy simplicity and open-handed giving. Amen." }
+    { verse: "1 Timothy 6:10", text: "For the love of money is a root of all kinds of evil.", prayer: "Father, pull up any roots of greed in my heart. Give me a spirit of generosity and trust. Amen." }
+  ],
+  rejection: [
+    { verse: "Ephesians 1:6", text: "To the praise of his glorious grace, which he has freely given us in the One he loves.", prayer: "I am accepted in the Beloved! I reject the lie of rejection and receive Your love. Amen." },
+    { verse: "Psalm 27:10", text: "Though my father and mother forsake me, the Lord will receive me.", prayer: "You are my Father and my Home. I am secure in Your everlasting arms. Amen." },
+    { verse: "Romans 8:38-39", text: "For I am convinced that neither death nor life... will be able to separate us from the love of God.", prayer: "Nothing can separate me from You. I walk in total acceptance today. Amen." }
+  ],
+  worldliness: [
+    { verse: "1 John 2:15", text: "Do not love the world or anything in the world.", prayer: "I set my affections on things above. Purify my desires, O Lord. Amen." },
+    { verse: "Romans 12:2", text: "Do not conform to the pattern of this world, but be transformed by the renewing of your mind.", prayer: "Transform my thinking, Holy Spirit. Let me see through the lens of eternity. Amen." },
+    { verse: "James 4:4", text: "Don’t you know that friendship with the world means enmity against God?", prayer: "I choose Your friendship above the approval of the world. Amen." }
   ],
   jealousy: [
     { verse: "James 3:16", text: "For where you have envy and selfish ambition, there you find disorder and every evil practice.", prayer: "Lord, cast out the spirit of envy. I speak order and peace into my life and relationships. Amen." },
     { verse: "Proverbs 14:30", text: "A heart at peace gives life to the body, but envy rots the bones.", prayer: "I choose to be at peace with what You have given me. Revitalize my heart with Your joy. Amen." },
-    { verse: "Galatians 5:26", text: "Let us not become conceited, provoking and envying each other.", prayer: "Father, help me to rejoice in the blessings of others as if they were my own. Amen." },
-    { verse: "1 Corinthians 3:3", text: "You are still worldly. For since there is jealousy and quarreling among you, are you not worldly?", prayer: "Spirit of God, mature me. Help me to walk in love and unity with my brothers and sisters. Amen." },
-    { verse: "1 Peter 2:1", text: "Therefore, rid yourselves of all malice and all deceit, hypocrisy, envy, and slander of every kind.", prayer: "I strip off the garment of jealousy. I put on the kindness and sincerity of Christ. Amen." },
-    { verse: "Romans 13:13", text: "Let us behave decently, as in the daytime, not in... jealousy.", prayer: "I walk in the light today. I celebrate Your goodness in the lives of those around me. Amen." },
-    { verse: "Song of Solomon 8:6", text: "For love is as strong as death, its jealousy unyielding as the grave.", prayer: "Lord, let Your divine love overshadow any human jealousy. Make my heart secure in Your affection. Amen." }
+    { verse: "Galatians 5:26", text: "Let us not become conceited, provoking and envying each other.", prayer: "Father, help me to rejoice in the blessings of others as if they were my own. Amen." }
   ],
   other: [
     { verse: "Isaiah 41:10", text: "So do not fear, for I am with you; do not be dismayed, for I am your God.", prayer: "I cast out fear today. You are my God, and You are holding my hand. Amen." },
     { verse: "Philippians 4:13", text: "I can do all this through him who gives me strength.", prayer: "Whatever I face today, I have the victory through Your power, Jesus. Amen." },
-    { verse: "Romans 8:37", text: "No, in all these things we are more than conquerors through him who loved us.", prayer: "I am more than a conqueror! I walk in the victory of Your love today. Amen." },
-    { verse: "1 John 4:4", text: "The one who is in you is greater than the one who is in the world.", prayer: "Greater is He that is in me than any problem in the world. I am victorious! Amen." },
-    { verse: "Deuteronomy 31:6", text: "Be strong and courageous. Do not be afraid or terrified... for the Lord your God goes with you.", prayer: "I take courage today. I am never alone, for the Lord is my constant companion. Amen." },
-    { verse: "Psalm 34:17", text: "The righteous cry out, and the Lord hears them; he delivers them from all their troubles.", prayer: "Thank You for hearing my cry, Lord. I trust in Your deliverance from every trouble. Amen." },
-    { verse: "2 Corinthians 12:9", text: "My grace is sufficient for you, for my power is made perfect in weakness.", prayer: "I boast in my weakness, for Your power rests on me. Your grace is all I need. Amen." }
+    { verse: "Romans 8:37", text: "No, in all these things we are more than conquerors through him who loved us.", prayer: "I am more than a conqueror! I walk in the victory of Your love today. Amen." }
   ]
 };
 
@@ -487,7 +531,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     const [editingPostId, setEditingPostId] = useState<string | null>(null);
     const [editingText, setEditingText] = useState('');
     const [isUpdating, setIsUpdating] = useState(false);
-    const [amenScriptureIdx, setAmenScriptureIdx] = useState<number | null>(null);
+    const [amenScriptureIdx, setAmenScriptureIdx] = useState<number | string | null>(null);
 
     const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
     const categoryKey = category.toLowerCase();
@@ -590,7 +634,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
     };
 
     const handleAmen = (idx: number | string) => {
-        setAmenScriptureIdx(typeof idx === 'number' ? idx : -1);
+        setAmenScriptureIdx(idx);
         toast({ title: 'Amen!', description: 'May this word be established in your heart.' });
         setTimeout(() => setAmenScriptureIdx(null), 2000);
     };
@@ -852,7 +896,7 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                             <X className="mr-1 h-3 w-3 text-left text-left" /> Cancel
                                                         </Button>
                                                         <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left text-left">
-                                                            {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin text-left text-left" /> : <Check className="mr-1 h-3 w-3 text-left text-left" />}
+                                                            {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3 text-left text-left" />}
                                                             Save Changes
                                                         </Button>
                                                     </div>
@@ -953,4 +997,3 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
         </div>
     );
 }
-

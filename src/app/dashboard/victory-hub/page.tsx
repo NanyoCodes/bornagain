@@ -25,7 +25,12 @@ import {
     Share2,
     Banknote,
     ShoppingBag,
-    Loader2
+    Loader2,
+    HelpCircle,
+    Utensils,
+    Timer,
+    HeartHandshake,
+    AlertCircle
 } from 'lucide-react';
 import { 
     Card, 
@@ -71,9 +76,17 @@ const strongholdCategories = [
         bg: 'bg-blue-600/10' 
     },
     { 
+        name: 'Bitterness', 
+        desc: 'Uprooting resentment to allow the peace of God to reign.', 
+        mission: 'Hebrews 12:15 - See to it that no one falls short of the grace of God and that no bitter root grows up.',
+        icon: AlertCircle, 
+        color: 'text-orange-700', 
+        bg: 'bg-orange-700/10' 
+    },
+    { 
         name: 'Poverty', 
         desc: 'Breaking the spirit of lack to walk in divine abundance and stewardship.', 
-        mission: '2 Corinthians 8:9 - For you know the grace of our Lord Jesus Christ, that though he was rich, yet for your sake he became poor, so that you through his poverty might become rich.',
+        mission: '2 Corinthians 8:9 - For you know the grace of our Lord Jesus Christ, that though he was rich, yet for your sake he became poor.',
         icon: Banknote, 
         color: 'text-emerald-600', 
         bg: 'bg-emerald-600/10' 
@@ -95,12 +108,28 @@ const strongholdCategories = [
         bg: 'bg-orange-500/10' 
     },
     { 
+        name: 'Discouragement', 
+        desc: 'Renewing hope when the weight of the journey feels heavy.', 
+        mission: 'Psalm 42:11 - Why, my soul, are you downcast? ... Put your hope in God.',
+        icon: CloudRain, 
+        color: 'text-slate-500', 
+        bg: 'bg-slate-500/10' 
+    },
+    { 
         name: 'Addiction', 
         desc: 'Breaking chains and finding freedom in God\'s presence.', 
         mission: '1 Corinthians 6:12 - Everything is permissible for me, but I will not be mastered by anything.',
         icon: Zap, 
         color: 'text-blue-500', 
         bg: 'bg-blue-500/10' 
+    },
+    { 
+        name: 'Loneliness', 
+        desc: 'Finding comfort in the constant presence of the Great Companion.', 
+        mission: 'Matthew 28:20 - And surely I am with you always, to the very end of the age.',
+        icon: User, 
+        color: 'text-blue-400', 
+        bg: 'bg-blue-400/10' 
     },
     { 
         name: 'Laziness', 
@@ -111,6 +140,14 @@ const strongholdCategories = [
         bg: 'bg-emerald-500/10' 
     },
     { 
+        name: 'Confusion', 
+        desc: 'Seeking clarity and sound mind through the Word of Truth.', 
+        mission: '1 Corinthians 14:33 - For God is not a God of disorder but of peace.',
+        icon: HelpCircle, 
+        color: 'text-purple-400', 
+        bg: 'bg-purple-400/10' 
+    },
+    { 
         name: 'Grief', 
         desc: 'Walking through loss into the comfort of God.', 
         mission: 'Psalm 34:18 - The Lord is close to the brokenhearted and saves those who are crushed in spirit.',
@@ -119,12 +156,28 @@ const strongholdCategories = [
         bg: 'bg-indigo-600/10' 
     },
     { 
+        name: 'Disobedience', 
+        desc: 'Aligning the will with the perfect commands of the Father.', 
+        mission: '1 Samuel 15:22 - To obey is better than sacrifice.',
+        icon: Target, 
+        color: 'text-red-600', 
+        bg: 'bg-red-600/10' 
+    },
+    { 
         name: 'Comparison', 
         desc: 'Finding security in your unique Kingdom purpose.', 
-        mission: '2 Corinthians 10:12 - When they measure themselves by themselves and compare themselves with themselves, they are not wise.',
+        mission: '2 Corinthians 10:12 - When they measure themselves by themselves... they are not wise.',
         icon: Eye, 
         color: 'text-violet-500', 
         bg: 'bg-violet-500/10' 
+    },
+    { 
+        name: 'Self-Righteousness', 
+        desc: 'Trading human merit for the perfect righteousness of Christ.', 
+        mission: 'Isaiah 64:6 - All our righteous acts are like filthy rags.',
+        icon: Award, 
+        color: 'text-amber-600', 
+        bg: 'bg-amber-600/10' 
     },
     { 
         name: 'Unbelief', 
@@ -135,6 +188,14 @@ const strongholdCategories = [
         bg: 'bg-indigo-500/10' 
     },
     { 
+        name: 'Gluttony', 
+        desc: 'Cultivating self-control and honoring the temple of the Holy Spirit.', 
+        mission: '1 Corinthians 6:19-20 - Do you not know that your bodies are temples of the Holy Spirit?',
+        icon: Utensils, 
+        color: 'text-orange-400', 
+        bg: 'bg-orange-400/10' 
+    },
+    { 
         name: 'Depression', 
         desc: 'Lifting the weight of heaviness through spiritual light.', 
         mission: 'Psalm 42:11 - Why, my soul, are you downcast? ... Put your hope in God.',
@@ -143,12 +204,28 @@ const strongholdCategories = [
         bg: 'bg-slate-600/10' 
     },
     { 
+        name: 'Procrastination', 
+        desc: 'Redeeming the time for the work of the Kingdom.', 
+        mission: 'Ephesians 5:16 - Making the most of every opportunity, because the days are evil.',
+        icon: Timer, 
+        color: 'text-teal-600', 
+        bg: 'bg-teal-600/10' 
+    },
+    { 
         name: 'Greed', 
         desc: 'Finding contentment in God\'s sufficient provision.', 
         mission: 'Luke 12:15 - Watch out! Be on your guard against all kinds of greed.',
         icon: Target, 
         color: 'text-green-500', 
         bg: 'bg-green-500/10' 
+    },
+    { 
+        name: 'Rejection', 
+        desc: 'Embracing your eternal acceptance as a child of the Most High.', 
+        mission: 'Ephesians 1:6 - To the praise of his glorious grace, which he has freely given us.',
+        icon: HeartHandshake, 
+        color: 'text-pink-500', 
+        bg: 'bg-pink-500/10' 
     },
     { 
         name: 'Worldliness', 
@@ -179,7 +256,7 @@ const strongholdCategories = [
 function CategoryCard({ category }: { category: typeof strongholdCategories[0] }) {
     const { toast } = useToast();
     const firestore = useFirestore();
-    const circleLink = `/dashboard/strongholds/${category.name.toLowerCase()}`;
+    const circleLink = `/strongholds/${category.name.toLowerCase()}`;
     const Icon = category.icon;
 
     const [participantCount, setParticipantCount] = useState(0);
