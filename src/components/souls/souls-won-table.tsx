@@ -106,8 +106,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Skeleton } from "../ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -115,12 +115,13 @@ import { actionItems, prayerTemplates, kingdomVerses } from "@/lib/follow-up-dat
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
-import { ScrollArea } from "../ui/scroll-area";
-import { Separator } from "../ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { MutualConnectBadge } from "./mutual-connect-badge";
 import { useToast } from "@/hooks/use-toast";
-import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
@@ -1116,7 +1117,7 @@ function SoulProfileContent({
                   <MessageSquare className="h-7 w-7 text-primary text-center" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
+            <DialogDescription className="text-sm font-medium">How would you like to encourage {soul.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
             <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
@@ -1155,7 +1156,7 @@ function SoulProfileContent({
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
           <DialogHeader className="text-center space-y-2">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
-                  <Share className="h-7 w-7 text-primary text-center" />
+                  <Share className="h-7 w-7 text-primary" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
@@ -1339,7 +1340,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                 </div>
             ) : (
                 <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left text-left text-left">
                         <div className="flex items-center gap-3 text-left">
                             <Heart className="h-6 w-6 text-primary fill-current text-left" />
                             <div className="text-left">
@@ -1377,7 +1378,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         <Sheet open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left flex-shrink-0 text-left">
-                    <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left">
                             <Sparkles className="h-4 w-4 text-primary text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
@@ -1385,7 +1386,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                         <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
+                        <SheetDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                     </SheetHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left">
@@ -1414,7 +1415,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                             </p>
                         </motion.div>
                     ) : (
-                        <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left">
+                        <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left text-left">
                             <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left" />
                             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left">Select a record to preview identity</p>
                         </div>
