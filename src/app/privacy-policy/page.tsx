@@ -9,7 +9,7 @@ export default function PrivacyPolicyPage() {
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle className="text-3xl font-bold font-headline">Privacy Policy</CardTitle>
-          <CardDescription>Last updated: July 26, 2024</CardDescription>
+          <CardDescription>Last updated: June 23, 2025</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 text-muted-foreground">
           <p>Welcome to Testify. We respect your privacy.</p>
