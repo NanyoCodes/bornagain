@@ -242,8 +242,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto px-0 sm:px-4 pb-20 text-left">
-        <div className="flex items-center justify-between px-4 sm:px-0 text-left">
-            <Button variant="ghost" size="sm" onClick={() => router.back()} className="h-9 pr-4 text-muted-foreground hover:text-foreground text-left">
+        <div className="flex items-center justify-between px-4 sm:px-0 text-left text-left">
+            <Button variant="ghost" size="sm" onClick={() => router.back()} className="h-9 pr-4 text-muted-foreground hover:text-foreground text-left text-left">
                 <ArrowLeft className="mr-2 h-4 w-4 text-left"/>
                 Back
             </Button>
@@ -263,7 +263,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             <div className="relative text-left">
               <Dialog>
                 <DialogTrigger asChild disabled={!photoURL}>
-                  <div className="relative group shrink-0">
+                  <div className="relative group shrink-0 text-left">
                       <Avatar className={cn(
                           "h-36 w-36 sm:h-48 sm:w-48 lg:h-64 lg:w-64 border-[6px] border-background shrink-0 shadow-2xl transition-all duration-500 text-left", 
                           photoURL && "cursor-pointer hover:scale-105 active:scale-95 ring-2 ring-primary/10"
@@ -276,9 +276,9 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                   </div>
                 </DialogTrigger>
                 {photoURL && (
-                  <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
+                  <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
                       <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
-                      <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                      <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left">
                           <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                               <Image 
                                   src={photoURL} 
@@ -301,25 +301,25 @@ export default function UserProfileClient({ userId }: { userId: string }) {
               )}
             </div>
             
-            <div className="flex-grow min-w-0 space-y-4 pb-2 w-full text-center text-left">
+            <div className="flex-grow min-w-0 space-y-4 pb-2 w-full text-center text-left text-left">
                 <div className="flex flex-col justify-between items-center gap-4 text-left">
                     <div className="min-w-0 w-full text-center text-left">
                         <h1 className="text-3xl sm:text-4xl font-black font-headline tracking-tight truncate leading-tight capitalize text-center w-full break-words [overflow-wrap:anywhere]">{displayName}</h1>
                         <div className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs sm:text-sm text-muted-foreground font-medium text-left">
                             {(city || state || country) && (
-                                <div className="flex items-center gap-1.5 text-primary font-black uppercase tracking-wider text-left">
+                                <div className="flex items-center gap-1.5 text-primary font-black uppercase tracking-wider text-left text-left text-left">
                                     <MapPin className="h-4 w-4 text-left" /> 
                                     {[city, state].filter(Boolean).join(', ') || country}
                                 </div>
                             )}
                             {maritalStatus && (
-                                <div className="flex items-center gap-1.5 text-left">
+                                <div className="flex items-center gap-1.5 text-left text-left text-left">
                                     <Heart className="h-3.5 w-3.5 text-primary text-left" />
                                     {maritalStatus}
                                 </div>
                             )}
                             {workStatus && (
-                                <div className="flex items-center gap-1.5 text-left">
+                                <div className="flex items-center gap-1.5 text-left text-left text-left">
                                     <Briefcase className="h-3.5 w-3.5 text-primary text-left" />
                                     <span>
                                         {roleInOrganization && `${roleInOrganization}${organizationName ? ' @ ' : ''}`}
@@ -333,7 +333,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     {!isOwnProfile && currentUserProfile && (
                         <div className="shrink-0 flex gap-2 text-left">
                             {isPartner ? (
-                                <Badge variant="secondary" className="h-10 px-6 rounded-full font-bold bg-primary/10 text-primary border-primary/20 flex items-center gap-2 text-left">
+                                <Badge variant="secondary" className="h-10 px-6 rounded-full font-bold bg-primary/10 text-primary border-primary/20 flex items-center gap-2 text-left text-left">
                                     <HeartHandshake className="h-4 w-4 text-left" />
                                     PARTNER
                                 </Badge>
@@ -357,7 +357,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 </div>
 
                 {personalMessage && (
-                    <div className="bg-primary/10 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 border-primary/20 inline-flex items-center gap-3 sm:gap-4 text-center max-w-2xl group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 mx-auto">
+                    <div className="bg-primary/10 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 border-primary/20 inline-flex items-center gap-3 sm:gap-4 text-center max-w-2xl group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 mx-auto text-left">
                         <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-primary shrink-0 transition-transform group-hover:scale-110 text-left" />
                         <p className="text-base sm:text-lg lg:text-xl font-black text-foreground leading-tight italic tracking-tight text-left">
                             &ldquo;{personalMessage}&rdquo;
@@ -380,7 +380,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </div>
           </div>
 
-          <div className="mt-8 sm:mt-10 max-w-3xl mx-auto text-left text-left">
+          <div className="mt-8 sm:mt-10 max-w-3xl mx-auto text-left text-left text-left">
             <div className="relative pl-5 sm:pl-6 border-l-4 border-primary/20 text-center md:text-left text-left">
                 <p className="text-base sm:text-lg text-muted-foreground leading-relaxed italic font-medium text-left">
                     {bio ? `"${bio}"` : "This believer is a member of the global harvest workforce, dedicated to sharing the goodness of Jesus Christ with the world."}
@@ -391,7 +391,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       </Card>
       
       {videoTestimonies.length > 0 && (
-        <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden shadow-2xl border-t-8 border-t-red-600 bg-zinc-950 text-left text-left">
+        <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden shadow-2xl border-t-8 border-t-red-600 bg-zinc-950 text-left text-left text-left">
             <CardHeader className="pb-6 pt-10 px-6 sm:px-12 text-center md:text-left text-left">
                 <CardTitle className="flex items-center justify-center md:justify-start gap-3 text-2xl sm:text-3xl font-black font-headline text-white tracking-tight text-left">
                     <Youtube className="h-8 w-8 text-red-600 text-left" />
@@ -404,7 +404,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             <CardContent className="px-6 sm:px-12 pb-12 text-left">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
                     {videoTestimonies.map((video, idx) => (
-                        <div key={idx} className="space-y-3 text-left">
+                        <div key={idx} className="space-y-3 text-left text-left">
                             {video.title && (
                                 <h4 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 truncate ml-2 text-center md:text-left text-left">
                                     {video.title}
@@ -427,7 +427,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
       )}
 
       <div className="space-y-10 text-left">
-        <div className="flex items-center justify-center md:justify-start gap-3 px-4 sm:px-0 text-left text-left">
+        <div className="flex items-center justify-center md:justify-start gap-3 px-4 sm:px-0 text-left text-left text-left">
             <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 text-left">
                 <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground text-left" />
             </div>
@@ -435,10 +435,10 @@ export default function UserProfileClient({ userId }: { userId: string }) {
         </div>
         
         <div className="space-y-12 text-left">
-            <div className="space-y-6 text-left">
-                <div className="flex items-center justify-between px-4 sm:px-0 text-left">
+            <div className="space-y-6 text-left text-left text-left">
+                <div className="flex items-center justify-between px-4 sm:px-0 text-left text-left text-left">
                     <div className="flex items-center gap-2 text-left">
-                        <Sparkles className="h-4 w-4 text-primary text-left text-left" />
+                        <Sparkles className="h-4 w-4 text-primary text-left text-left text-left" />
                         <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight text-left">Shared Testimonies ({testimonies.length})</h3>
                     </div>
                 </div>
@@ -458,7 +458,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-16 bg-muted/20 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left">
+                    <div className="text-center py-16 bg-muted/20 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left text-left">
                         <Newspaper className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3 text-left" />
                         <p className="text-xs sm:text-sm text-muted-foreground italic font-medium text-balance px-8 text-center text-left">No shared testimonies found in this folder.</p>
                     </div>
@@ -466,8 +466,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </div>
 
             <div className="space-y-6 text-left">
-                <div className="flex items-center gap-2 px-4 sm:px-0 text-left">
-                    <CalendarDays className="h-4 w-4 text-primary text-left" />
+                <div className="flex items-center gap-2 px-4 sm:px-0 text-left text-left text-left text-left">
+                    <CalendarDays className="h-4 w-4 text-primary text-left text-left text-left text-left" />
                     <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight text-left">Organized Campaigns ({processedCampaigns.length})</h3>
                 </div>
                 {processedCampaigns.length > 0 ? (
@@ -487,7 +487,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-16 bg-muted/20 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left">
+                    <div className="text-center py-16 bg-muted/20 rounded-2xl sm:rounded-[2rem] border-2 border-dashed border-muted mx-4 sm:mx-0 text-left text-left text-left text-left">
                         <Target className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3 text-left" />
                         <p className="text-xs sm:text-sm text-muted-foreground italic font-medium text-balance px-8 text-center text-left">No public mission campaigns organized.</p>
                     </div>
