@@ -136,7 +136,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
   const descText = `We found ${uniqueUserCount} other ${uniqueUserCount === 1 ? 'believer' : 'believers'} with a matching record for ${soul.firstName}.`;
 
   const innerContent = (
-    <div className="space-y-12">
+    <div className="space-y-8 sm:space-y-12 text-left">
         {mutualRecords.map((record, idx) => {
             const history = [...(record.soul.followUpLog || [])].sort((a, b) => {
                 const dateB = safeToDate(b.date)?.getTime() ?? 0;
@@ -146,69 +146,69 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
 
             return (
                 <div key={`${record.user.id}-${idx}`} className="space-y-6">
-                    <div className="flex items-center gap-4">
-                        <Avatar className="h-14 w-14 border-2 border-primary/10 shadow-lg shrink-0">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                        <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border-2 border-primary/10 shadow-lg shrink-0">
                             <AvatarImage src={record.user.photoURL} className="object-cover" />
-                            <AvatarFallback className="font-black bg-primary/5 text-primary text-center flex items-center justify-center w-full h-full">
+                            <AvatarFallback className="font-black bg-primary/5 text-primary text-center flex items-center justify-center w-full h-full text-[10px] sm:text-base">
                                 {record.user.firstName?.charAt(0)}
                             </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
-                            <p className="font-black text-lg uppercase tracking-tight truncate">
+                            <p className="font-black text-sm sm:text-lg uppercase tracking-tight truncate">
                                 {record.user.firstName} {record.user.lastName}
                             </p>
-                            <div className="flex items-center gap-1.5 mt-1 text-left">
-                                <MapPin className="h-3 w-3 text-primary opacity-60" />
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                            <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 text-left">
+                                <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary opacity-60" />
+                                <p className="text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">
                                     Station: {record.user.location?.city || 'Global Network'}
                                 </p>
                             </div>
                         </div>
-                        <Badge variant="secondary" className="h-6 px-3 text-[9px] font-black uppercase tracking-widest shrink-0">
+                        <Badge variant="secondary" className="h-5 sm:h-6 px-1.5 sm:px-3 text-[7px] sm:text-[9px] font-black uppercase tracking-widest shrink-0">
                             {record.soul.status}
                         </Badge>
                     </div>
 
-                    <div className="pl-6 border-l-4 border-primary/20 space-y-8 ml-7">
-                        <h4 className="text-[10px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2">
-                            <History className="h-3.5 w-3.5" /> Partner Log History
+                    <div className="pl-4 sm:pl-6 border-l-4 border-primary/20 space-y-6 sm:space-y-8 ml-5 sm:ml-7">
+                        <h4 className="text-[8px] sm:text-[10px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2">
+                            <History className="h-3 sm:h-3.5 w-3 sm:w-3.5" /> Partner Log History
                         </h4>
                         {history.length > 0 ? history.map((log, lIdx) => {
                             const date = safeToDate(log.date);
                             return (
                                 <div key={lIdx} className="relative">
-                                    <div className="flex justify-between items-center mb-2">
+                                    <div className="flex justify-between items-center mb-1.5 sm:mb-2">
                                         <div className="flex items-center gap-2">
-                                            <Clock className="h-3 w-3 text-muted-foreground opacity-40" />
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
-                                                {date ? format(date, "MMM d, yyyy 'at' p") : 'Recently'}
+                                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground opacity-40" />
+                                            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                                {date ? format(date, "MMM d, p") : 'Recently'}
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="bg-muted/30 rounded-[1.5rem] p-5 border shadow-inner">
+                                    <div className="bg-muted/30 rounded-[1rem] sm:rounded-[1.5rem] p-3 sm:p-5 border shadow-inner">
                                         {log.actions && log.actions.length > 0 && (
-                                            <div className="flex flex-wrap gap-1.5 mb-3">
+                                            <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
                                                 {log.actions.map(aId => {
                                                     const action = actionItems.find(a => a.id === aId);
                                                     return action ? (
-                                                        <Badge key={aId} variant="outline" className="h-4 px-1.5 text-[8px] font-black uppercase bg-background border-primary/10">{action.label}</Badge>
+                                                        <Badge key={aId} variant="outline" className="h-3.5 sm:h-4 px-1 sm:px-1.5 text-[7px] sm:text-[8px] font-black uppercase bg-background border-primary/10">{action.label}</Badge>
                                                     ) : null;
                                                 })}
                                             </div>
                                         )}
-                                        <p className="text-sm text-muted-foreground italic font-medium leading-relaxed">
+                                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium leading-relaxed">
                                             &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                         </p>
                                     </div>
                                 </div>
                             );
                         }) : (
-                            <div className="py-8 bg-muted/10 rounded-[1.5rem] border-2 border-dashed text-center">
-                                <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest opacity-40">No detailed logs found.</p>
+                            <div className="py-6 sm:py-8 bg-muted/10 rounded-[1rem] sm:rounded-[1.5rem] border-2 border-dashed text-center">
+                                <p className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-black tracking-widest opacity-40">No detailed logs found.</p>
                             </div>
                         )}
                     </div>
-                    {idx < mutualRecords.length - 1 && <Separator className="mt-10 opacity-50" />}
+                    {idx < mutualRecords.length - 1 && <Separator className="mt-8 sm:mt-10 opacity-50" />}
                 </div>
             );
         })}

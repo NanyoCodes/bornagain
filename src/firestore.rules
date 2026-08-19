@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Public event visibility and cybersecurity hardening - 2025-03-05T15:00:00Z
+    // Deployment trigger: Public event visibility and cybersecurity hardening - 2025-03-05T15:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -37,7 +37,7 @@ service cloud.firestore {
 
     function isCampaignOrganizer(cId) {
       return isAuthenticated() && 
-             cId != null &&
+             cId != null && 
              cId is string &&
              cId != "" &&
              exists(/databases/$(database)/documents/campaigns/$(cId)) &&

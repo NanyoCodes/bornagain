@@ -7,8 +7,8 @@ import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/
 import { doc, collection, query, where, serverTimestamp, setDoc, addDoc } from 'firebase/firestore';
 import { 
     Loader2, 
-    MapPin, 
     ArrowLeft, 
+    MapPin, 
     Edit, 
     Youtube, 
     Globe, 
@@ -349,7 +349,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 {personalMessage && (
                     <div className="bg-primary/10 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 border-primary/20 inline-flex items-center gap-3 sm:gap-4 text-center max-w-2xl group transition-all hover:bg-primary/15 shadow-xl shadow-primary/5 mx-auto">
                         <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-primary shrink-0 transition-transform group-hover:scale-110" />
-                        <p className="text-base sm:text-lg lg:text-xl font-black text-foreground leading-tight italic tracking-tight">
+                        <p className="text-base sm:text-lg lg:text-xl font-black text-foreground leading-tight italic tracking-tight text-balance break-words [overflow-wrap:anywhere]">
                             &ldquo;{personalMessage}&rdquo;
                         </p>
                     </div>
