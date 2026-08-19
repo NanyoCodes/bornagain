@@ -5,7 +5,7 @@ import { useUser, useFirestore } from '@/firebase';
 import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
 import type { Soul, UserProfile } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Users, History, Sparkles, Clock, MapPin, X } from 'lucide-react';
+import { Users, History, Sparkles, Clock, MapPin, X, ArrowRight } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -27,11 +27,28 @@ import { safeToDate, cn } from '@/lib/utils';
 import { actionItems } from '@/lib/follow-up-data';
 import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Link from 'next/link';
+import Image from 'next/image';
 
 interface MutualRecord {
     user: UserProfile;
     soul: Soul;
 }
+
+const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+};
+
+import { BookOpen, Utensils, Home, Gift, Phone, MessageSquare, Heart, Calendar } from 'lucide-react';
 
 export function MutualConnectBadge({ soul }: { soul: Soul }) {
   const { user: currentUser } = useUser();
@@ -67,10 +84,6 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                 where('lastName', '==', soul.lastName),
                 limit(10)
             )));
-        }
-
-        if (soul.nickname && soul.nickname.length > 2) {
-            queryPromises.push(getDocs(query(soulsRef, where('nickname', '==', soul.nickname), limit(10))));
         }
 
         if (queryPromises.length === 0) {
@@ -122,7 +135,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
       } finally {
         setLoading(false);
       }
-  }, [firestore, currentUser, soul.phone, soul.email, soul.firstName, soul.lastName, soul.nickname]);
+  }, [firestore, currentUser, soul.phone, soul.email, soul.firstName, soul.lastName]);
 
   React.useEffect(() => {
     fetchMutual();
@@ -144,20 +157,26 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                 return dateB - dateA;
             });
 
+            const profileUrl = `/profile/${record.user.id}`;
+
             return (
                 <div key={`${record.user.id}-${idx}`} className="space-y-6">
                     <div className="flex items-center gap-3 sm:gap-4">
-                        <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border-2 border-primary/10 shadow-lg shrink-0">
-                            <AvatarImage src={record.user.photoURL} className="object-cover" />
-                            <AvatarFallback className="font-black bg-primary/5 text-primary text-center flex items-center justify-center w-full h-full text-[10px] sm:text-base">
-                                {record.user.firstName?.charAt(0)}
-                            </AvatarFallback>
-                        </Avatar>
+                        <Link href={profileUrl} onClick={(e) => e.stopPropagation()} className="shrink-0 group">
+                            <Avatar className="h-10 w-10 sm:h-14 sm:w-14 border-2 border-primary/10 shadow-lg group-hover:scale-105 transition-transform">
+                                <AvatarImage src={record.user.photoURL} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/5 text-primary text-center flex items-center justify-center w-full h-full text-[10px] sm:text-base">
+                                    {record.user.firstName?.charAt(0)}
+                                </AvatarFallback>
+                            </Avatar>
+                        </Link>
                         <div className="min-w-0 flex-1">
-                            <p className="font-black text-sm sm:text-lg uppercase tracking-tight truncate">
-                                {record.user.firstName} {record.user.lastName}
-                            </p>
-                            <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 text-left">
+                            <Link href={profileUrl} onClick={(e) => e.stopPropagation()} className="hover:underline decoration-primary/30">
+                                <p className="font-black text-sm sm:text-lg uppercase tracking-tight truncate">
+                                    {record.user.firstName} {record.user.lastName}
+                                </p>
+                            </Link>
+                            <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1">
                                 <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary opacity-60" />
                                 <p className="text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">
                                     Station: {record.user.location?.city || 'Global Network'}
@@ -213,7 +232,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
             );
         })}
         <div className="p-8 border-t bg-muted/5 flex justify-center text-center shrink-0">
-            <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] leading-relaxed max-w-sm text-center">
+            <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] leading-relaxed max-w-sm">
                 "Iron sharpens iron, and one man sharpens another." — Proverbs 27:17
             </p>
         </div>
@@ -257,9 +276,9 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
             </Sheet>
         ) : (
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="sm:max-w-xl max-h-[90dvh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">
+                <DialogContent className="sm:max-w-xl max-h-[90dvh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <DialogHeader>
+                        <DialogHeader className="text-left">
                             <div className="flex items-center gap-3 mb-2">
                                 <Sparkles className="h-5 w-5 text-primary" />
                                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mutual Effort</span>

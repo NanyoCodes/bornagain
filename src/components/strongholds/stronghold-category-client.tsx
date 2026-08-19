@@ -215,33 +215,33 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
 
     const content = (
         <div className="flex flex-col h-full overflow-hidden text-left">
-            <div className="p-6 border-b bg-muted/5 shrink-0 text-left">
-                <div className="flex items-center gap-3 mb-4 text-left">
-                    <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left">
-                        <Users className="h-5 w-5 text-muted-foreground/40 text-left" />
+            <div className="p-6 border-b bg-muted/5 shrink-0">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner">
+                        <Users className="h-5 w-5 text-muted-foreground/40" />
                     </div>
-                    <div className="min-w-0 text-left">
-                        <p className="text-sm font-black uppercase tracking-tight text-left">{post.authorName}</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">
+                    <div className="min-w-0">
+                        <p className="text-sm font-black uppercase tracking-tight">{post.authorName}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                             {postDate ? format(postDate, 'PPP') : 'Just now'}
                         </p>
                     </div>
                 </div>
-                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2 text-left">
-                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
-                    <p className="text-sm text-muted-foreground leading-relaxed italic font-medium text-left">
+                <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner mb-2">
+                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12" />
+                    <p className="text-sm text-muted-foreground leading-relaxed italic font-medium">
                         &ldquo;{post.text}&rdquo;
                     </p>
                 </div>
             </div>
             
-            <div className="flex-grow min-h-0 flex flex-col text-left">
-                <div className="p-4 sm:p-6 pb-2 shrink-0 text-left">
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 text-left">
-                        <Zap className="h-3.5 w-3.5 text-left" /> Circle Responses & Solutions
+            <div className="flex-grow min-h-0 flex flex-col">
+                <div className="p-4 sm:p-6 pb-2 shrink-0">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60">
+                        <Zap className="h-3.5 w-3.5" /> Circle Responses & Solutions
                     </div>
                 </div>
-                <div className="flex-1 min-h-0 text-left">
+                <div className="flex-1 min-h-0">
                     <CommentSection path={`victoryCircles/${post.category}/posts/${post.id}/comments`} />
                 </div>
             </div>
@@ -252,18 +252,18 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
         return (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</SheetTrigger>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left text-left">
-                                <Zap className="h-4 w-4 text-primary text-left text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Circle Conversation</span>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                        <SheetHeader className="text-left flex-shrink-0">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Zap className="h-4 w-4 text-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Circle Conversation</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance text-left text-left">Victory over {categoryTitle}</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Community responses and spiritual solutions.</SheetDescription>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">Victory over {categoryTitle}</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Community responses and spiritual solutions.</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <div className="flex-grow min-h-0 text-left">
+                    <div className="flex-grow min-h-0">
                         {content}
                     </div>
                 </SheetContent>
@@ -277,13 +277,13 @@ function PostResponsesDialog({ post, categoryTitle, children }: { post: any, cat
                 {children}
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                <div className="p-8 border-b bg-muted/10 shrink-0">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Victory over {categoryTitle}</DialogTitle>
-                        <DialogDescription className="text-base font-medium text-left">Shared wisdom and encouragement for victory.</DialogDescription>
+                        <DialogDescription className="text-base font-medium">Shared wisdom and encouragement for victory.</DialogDescription>
                     </DialogHeader>
                 </div>
-                <div className="flex-grow min-h-0 text-left">
+                <div className="flex-grow min-h-0">
                     {content}
                 </div>
             </DialogContent>
@@ -357,57 +357,57 @@ function AddArmorDialog({ category, onArmorAdded }: { category: string, onArmorA
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20 text-left">
-                <Plus className="mr-2 h-4 w-4 text-left text-left" /> ADD SCRIPTURE
+            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
+                <Plus className="mr-2 h-4 w-4" /> ADD SCRIPTURE
             </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-md max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
-            <div className="p-8 border-b bg-muted/10 text-left shrink-0 text-left text-left">
-                <DialogHeader className="text-left text-left text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Equip the Body</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left text-left text-left">Add a scripture and your revelation to the circle.</DialogDescription>
+        <DialogContent className="sm:max-w-md max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+            <div className="p-8 border-b bg-muted/10 shrink-0">
+                <DialogHeader className="text-left">
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Equip the Body</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">Add a scripture and your revelation to the circle.</DialogDescription>
                 </DialogHeader>
             </div>
-            <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
-                <form id="add-armor-form" onSubmit={handleAdd} className="p-8 space-y-6 text-left text-left text-left text-left">
-                    <div className="space-y-4 text-left text-left">
-                        <div className="space-y-2 text-left text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Scripture Reference</Label>
-                            <div className="relative text-left text-left text-left">
+            <ScrollArea className="flex-1 min-h-0">
+                <form id="add-armor-form" onSubmit={handleAdd} className="p-8 space-y-6">
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Scripture Reference</Label>
+                            <div className="relative">
                                 <Input 
                                     placeholder="e.g., Romans 8:31" 
                                     value={verse} 
                                     onChange={e => setVerse(e.target.value)} 
                                     required 
-                                    className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold pr-20 text-left text-left" 
+                                    className="h-11 rounded-xl bg-muted/20 border-none shadow-inner font-bold pr-20" 
                                 />
                                 <Button 
                                     type="button"
                                     variant="ghost"
                                     size="sm"
-                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 text-[9px] font-black uppercase text-primary hover:bg-primary/10 text-left text-left"
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 text-[9px] font-black uppercase text-primary hover:bg-primary/10"
                                     onClick={handleBibleSearch}
                                     disabled={isSearching || !verse.trim()}
                                 >
-                                    {isSearching ? <Loader2 className="h-3 w-3 animate-spin text-left" /> : "SEARCH"}
+                                    {isSearching ? <Loader2 className="h-3 w-3 animate-spin" /> : "SEARCH"}
                                 </Button>
                             </div>
                         </div>
-                        <div className="space-y-2 text-left text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">The Word</Label>
-                            <Textarea placeholder="Type or search for the scripture text..." value={text} onChange={e => setText(e.target.value)} required className="min-h-[120px] rounded-xl bg-muted/20 border-none shadow-inner text-base text-left text-left" />
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">The Word</Label>
+                            <Textarea placeholder="Type or search for the scripture text..." value={text} onChange={e => setText(e.target.value)} required className="min-h-[120px] rounded-xl bg-muted/20 border-none shadow-inner text-base" />
                         </div>
-                        <div className="space-y-2 text-left text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Personal Comment / Revelation</Label>
-                            <Textarea placeholder="How did this Word help you overcome?" value={comment} onChange={e => setComment(e.target.value)} className="min-h-[100px] rounded-xl bg-muted/20 border-none shadow-inner text-base text-left text-left" />
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Personal Comment / Revelation</Label>
+                            <Textarea placeholder="How did this Word help you overcome?" value={comment} onChange={e => setComment(e.target.value)} className="min-h-[100px] rounded-xl bg-muted/20 border-none shadow-inner text-base" />
                         </div>
                     </div>
                 </form>
             </ScrollArea>
-            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0 text-left text-left text-left">
-                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left text-left">Cancel</Button>
-                <Button type="submit" form="add-armor-form" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left text-left">
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : 'CONTRIBUTE'}
+            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0">
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-12 font-bold">Cancel</Button>
+                <Button type="submit" form="add-armor-form" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'CONTRIBUTE'}
                 </Button>
             </div>
         </DialogContent>
@@ -461,54 +461,54 @@ function ShareResourceDialog({ category, onResourceAdded }: { category: string, 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20 text-left">
-                <Plus className="mr-2 h-4 w-4 text-left text-left" /> SHARE RESOURCE
+            <Button className="h-10 rounded-2xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-lg shadow-primary/20">
+                <Plus className="mr-2 h-4 w-4" /> SHARE RESOURCE
             </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-md max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
-            <div className="p-8 border-b bg-muted/10 text-left shrink-0 text-left text-left text-left text-left">
-                <DialogHeader className="text-left text-left text-left text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Add to Armory</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Share a resource that helped you overcome.</DialogDescription>
+        <DialogContent className="sm:max-w-md max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+            <div className="p-8 border-b bg-muted/10 text-left shrink-0">
+                <DialogHeader className="text-left">
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Add to Armory</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left">Share a resource that helped you overcome.</DialogDescription>
                 </DialogHeader>
             </div>
-            <ScrollArea className="flex-1 min-h-0 text-left text-left text-left">
-                <form id="share-resource-form" onSubmit={handleShare} className="p-8 space-y-6 text-left text-left text-left">
-                    <div className="space-y-4 text-left text-left text-left">
-                        <div className="space-y-2 text-left text-left text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Resource Title</Label>
-                            <Input placeholder="e.g., Understanding Grace Video" value={title} onChange={e => setTitle(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left text-left" />
+            <ScrollArea className="flex-1 min-h-0">
+                <form id="share-resource-form" onSubmit={handleShare} className="p-8 space-y-6">
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Resource Title</Label>
+                            <Input placeholder="e.g., Understanding Grace Video" value={title} onChange={e => setTitle(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner" />
                         </div>
-                        <div className="space-y-2 text-left text-left text-left">
-                            <Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left">Type</Label>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Type</Label>
                             <Select value={type} onValueChange={(val: any) => setType(val)}>
-                                <SelectTrigger className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left text-left text-left">
-                                    <SelectValue className="text-left text-left text-left" />
+                                <SelectTrigger className="h-11 rounded-xl bg-muted/20 border-none shadow-inner">
+                                    <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-xl border-none shadow-2xl text-left text-left text-left">
-                                    <SelectItem value="Video" className="rounded-lg text-left text-left">Video</SelectItem>
-                                    <SelectItem value="Article" className="rounded-lg text-left text-left">Article</SelectItem>
-                                    <SelectItem value="Book" className="rounded-lg text-left text-left">Book</SelectItem>
-                                    <SelectItem value="Sermon" className="rounded-lg text-left text-left">Sermon</SelectItem>
-                                    <SelectItem value="Other" className="rounded-lg text-left text-left">Other</SelectItem>
+                                <SelectContent className="rounded-xl border-none shadow-2xl">
+                                    <SelectItem value="Video" className="rounded-lg">Video</SelectItem>
+                                    <SelectItem value="Article" className="rounded-lg">Article</SelectItem>
+                                    <SelectItem value="Book" className="rounded-lg">Book</SelectItem>
+                                    <SelectItem value="Sermon" className="rounded-lg">Sermon</SelectItem>
+                                    <SelectItem value="Other" className="rounded-lg">Other</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-2 text-left text-left text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">URL / Link</Label>
-                            <Input type="url" placeholder="https://..." value={url} onChange={e => setUrl(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left text-left" />
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL / Link</Label>
+                            <Input type="url" placeholder="https://..." value={url} onChange={e => setUrl(e.target.value)} required className="h-11 rounded-xl bg-muted/20 border-none shadow-inner" />
                         </div>
-                        <div className="space-y-2 text-left text-left text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Description (Optional)</Label>
-                            <Textarea placeholder="How did this help you?" value={description} onChange={e => setDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/20 border-none shadow-inner text-left text-left" />
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Description (Optional)</Label>
+                            <Textarea placeholder="How did this help you?" value={description} onChange={e => setDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/20 border-none shadow-inner" />
                         </div>
                     </div>
                 </form>
             </ScrollArea>
-            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0 text-left text-left text-left">
-                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="flex-1 rounded-xl h-12 font-bold text-left text-left">Cancel</Button>
-                <Button type="submit" form="share-resource-form" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left text-left">
-                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : 'SHARE NOW'}
+            <div className="p-8 bg-muted/5 border-t flex flex-col sm:flex-row gap-3 shrink-0">
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
+                <Button type="submit" form="share-resource-form" disabled={isSubmitting} className="flex-1 rounded-xl h-12 font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'SHARE NOW'}
                 </Button>
             </div>
         </DialogContent>
@@ -646,129 +646,132 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
             case 'Book': return <Book className="h-5 w-5 text-blue-500" />;
             case 'Article': return <FileText className="h-5 w-5 text-emerald-500" />;
             case 'Sermon': return <Mic className="h-5 w-5 text-purple-500" />;
-            default: return <Globe className="h-5 w-5 text-primary text-left" />;
+            default: return <Globe className="h-5 w-5 text-primary" />;
         }
     };
 
     return (
-        <div className="space-y-8 max-w-4xl mx-auto pb-32 text-left text-left">
-            <header className="flex items-center gap-4 px-4 sm:px-0 pt-4 text-left text-left text-left">
-                <div className="min-w-0 flex-1 text-left text-left text-left">
-                    <div className="flex items-center gap-2 mb-1 text-left text-left text-left">
-                        <ShieldCheck className="h-3.5 w-3.5 text-primary text-left text-left text-left" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Victory Hub</span>
+        <div className="space-y-8 max-w-4xl mx-auto pb-32 text-left">
+            <header className="flex items-center gap-4 px-4 sm:px-0 pt-4 text-left">
+                <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
+                    <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <div className="min-w-0 flex-1 text-left">
+                    <div className="flex items-center gap-2 mb-1">
+                        <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Victory Hub</span>
                     </div>
-                    <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate leading-tight text-balance text-left text-left text-left">Victory over {categoryTitle}</h1>
+                    <h1 className="text-2xl sm:text-4xl font-black font-headline uppercase tracking-tight truncate leading-tight text-balance text-left">Victory over {categoryTitle}</h1>
                 </div>
             </header>
 
-            <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-xl overflow-hidden bg-primary text-primary-foreground mx-4 sm:mx-0 text-left text-left text-left text-left">
-                <CardContent className="p-8 sm:p-10 space-y-6 text-left text-left text-left">
-                    <div className="flex items-start gap-4 text-left text-left text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0 text-left text-left text-left">
-                            <ShieldCheck className="h-6 w-6 text-white text-left text-left text-left" />
+            <Card className="rounded-none sm:rounded-[2.5rem] border-x-0 sm:border-x shadow-xl overflow-hidden bg-primary text-primary-foreground mx-4 sm:mx-0 text-left">
+                <CardContent className="p-8 sm:p-10 space-y-6 text-left">
+                    <div className="flex items-start gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+                            <ShieldCheck className="h-6 w-6 text-white" />
                         </div>
-                        <div className="space-y-1 text-left text-left text-left">
-                            <h2 className="text-xl font-black uppercase tracking-tight leading-tight text-left text-left text-left">Lasting Solutions Through Transparency</h2>
-                            <p className="text-sm font-medium text-white/80 leading-relaxed text-balance text-left text-left text-left">
-                                This is a sanctuary for brethren struggling with <span className="font-bold text-white underline decoration-white/30 underline-offset-4 text-left text-left">{categoryTitle}</span>. By bringing our struggles into the light of the Body, we find strength to overcome.
+                        <div className="space-y-1 text-left">
+                            <h2 className="text-xl font-black uppercase tracking-tight leading-tight text-left">Lasting Solutions Through Transparency</h2>
+                            <p className="text-sm font-medium text-white/80 leading-relaxed text-balance text-left">
+                                This is a sanctuary for brethren struggling with <span className="font-bold text-white underline decoration-white/30 underline-offset-4">{categoryTitle}</span>. By bringing our struggles into the light of the Body, we find strength to overcome.
                             </p>
                         </div>
                     </div>
                     
-                    <div className="space-y-4 pt-2 text-left text-left text-left">
+                    <div className="space-y-4 pt-2">
                         <Textarea 
                             placeholder="Share your struggle or a victory strategy..."
                             value={newPostText}
                             onChange={(e) => setNewPostText(e.target.value)}
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[120px] rounded-2xl text-base focus-visible:ring-white/30 text-left text-left text-left"
+                            className="bg-white/10 border-white/20 text-white placeholder:text-white/40 min-h-[120px] rounded-2xl text-base focus-visible:ring-white/30 text-left"
                         />
-                        <div className="flex items-center space-x-2 px-1 text-left text-left text-left">
+                        <div className="flex items-center space-x-2 px-1">
                             <Checkbox 
                                 id="anonymous-toggle" 
                                 checked={isAnonymous} 
                                 onCheckedChange={(val) => setIsAnonymous(!!val)}
-                                className="border-white/40 data-[state=checked]:bg-white data-[state=checked]:text-primary text-left text-left text-left"
+                                className="border-white/40 data-[state=checked]:bg-white data-[state=checked]:text-primary"
                             />
-                            <Label htmlFor="anonymous-toggle" className="text-xs font-bold text-white/80 cursor-pointer uppercase tracking-widest text-left text-left text-left">Post Anonymously</Label>
+                            <Label htmlFor="anonymous-toggle" className="text-xs font-bold text-white/80 cursor-pointer uppercase tracking-widest">Post Anonymously</Label>
                         </div>
                         <Button 
                             onClick={handleCreatePost} 
                             disabled={isSubmitting || !newPostText.trim()}
-                            className="w-full h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-widest uppercase text-left text-left text-left"
+                            className="w-full h-12 bg-white text-primary hover:bg-white/90 font-black rounded-2xl shadow-2xl tracking-widest uppercase text-left"
                         >
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             SHARE IN THE LIGHT
                         </Button>
                     </div>
                 </CardContent>
             </Card>
 
-            <Tabs defaultValue="armor" className="w-full text-left text-left text-left">
-                <TabsList className="grid w-full grid-cols-3 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 mx-4 sm:mx-0 w-[calc(100%-2rem)] sm:w-full text-left text-left text-left">
-                    <TabsTrigger value="armor" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left text-left text-left">Armor</TabsTrigger>
-                    <TabsTrigger value="discussion" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left text-left text-left">Discussion</TabsTrigger>
-                    <TabsTrigger value="resources" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left text-left text-left">Resources</TabsTrigger>
+            <Tabs defaultValue="armor" className="w-full text-left">
+                <TabsList className="grid w-full grid-cols-3 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 mx-4 sm:mx-0 w-[calc(100%-2rem)] sm:w-full">
+                    <TabsTrigger value="armor" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Armor</TabsTrigger>
+                    <TabsTrigger value="discussion" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">Discussion</TabsTrigger>
+                    <TabsTrigger value="resources" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">Resources</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="armor" className="space-y-6 outline-none px-4 sm:px-0 text-left text-left text-left">
-                    <div className="flex items-center justify-between gap-3 text-left text-left text-left">
-                        <div className="flex items-center gap-3 text-left text-left text-left">
-                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left text-left text-left">
-                                <BookOpen className="h-5 w-5 text-primary text-left text-left text-left" />
+                <TabsContent value="armor" className="space-y-6 outline-none px-4 sm:px-0 text-left">
+                    <div className="flex items-center justify-between gap-3 text-left">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner text-left">
+                                <BookOpen className="h-5 w-5 text-primary text-left" />
                             </div>
-                            <h3 className="text-lg font-black uppercase tracking-tight text-left text-left text-left">Armor of the Word</h3>
+                            <h3 className="text-lg font-black uppercase tracking-tight text-left">Armor of the Word</h3>
                         </div>
                         <AddArmorDialog category={categoryKey} onArmorAdded={() => {}} />
                     </div>
 
-                    <div className="space-y-12 text-left text-left text-left text-left">
-                        <div className="space-y-4 text-left text-left text-left text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-1 text-left text-left text-left text-left">Foundational Armor</Label>
-                            <Accordion type="single" collapsible className="w-full space-y-3 text-left text-left text-left text-left">
+                    <div className="space-y-12 text-left">
+                        <div className="space-y-4 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-1 text-left">Foundational Armor</Label>
+                            <Accordion type="single" collapsible className="w-full space-y-3 text-left">
                                 {scriptures.map((s, idx) => (
-                                    <AccordionItem key={idx} value={`item-${idx}`} className="border rounded-2xl overflow-hidden px-4 bg-muted/10 group/item transition-all hover:bg-muted/20 text-left text-left text-left text-left">
-                                        <AccordionTrigger className="hover:no-underline py-4 text-left text-left text-left text-left">
-                                            <div className="flex items-center gap-3 text-left text-left text-left text-left text-left">
-                                                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-left text-left text-left text-left text-left text-left">
-                                                    <span className="text-[10px] font-black text-primary text-left text-left text-left text-left text-left"> {idx + 1}</span>
+                                    <AccordionItem key={idx} value={`item-${idx}`} className="border rounded-2xl overflow-hidden px-4 bg-muted/10 group/item transition-all hover:bg-muted/20 text-left">
+                                        <AccordionTrigger className="hover:no-underline py-4 text-left">
+                                            <div className="flex items-center gap-3 text-left">
+                                                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-left">
+                                                    <span className="text-[10px] font-black text-primary text-left"> {idx + 1}</span>
                                                 </div>
-                                                <span className="text-sm font-black uppercase tracking-tight text-foreground/80 group-hover/item:text-primary transition-colors text-left text-left text-left text-left">{s.verse}</span>
+                                                <span className="text-sm font-black uppercase tracking-tight text-foreground/80 group-hover/item:text-primary transition-colors text-left">{s.verse}</span>
                                             </div>
                                         </AccordionTrigger>
-                                        <AccordionContent className="pb-6 pt-2 text-left text-left text-left text-left text-left">
-                                            <div className="space-y-6 text-left text-left text-left text-left text-left">
-                                                <div className="relative pl-6 border-l-4 border-primary/20 bg-background/50 p-4 rounded-r-2xl shadow-inner text-left text-left text-left text-left text-left text-left">
-                                                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left text-left text-left text-left text-left" />
-                                                    <p className="text-base text-muted-foreground italic font-medium text-justify text-balance text-left text-left text-left text-left text-left text-left">
+                                        <AccordionContent className="pb-6 pt-2 text-left">
+                                            <div className="space-y-6 text-left">
+                                                <div className="relative pl-6 border-l-4 border-primary/20 bg-background/50 p-4 rounded-r-2xl shadow-inner text-left">
+                                                    <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
+                                                    <p className="text-base text-muted-foreground italic font-medium text-justify text-balance text-left">
                                                         &ldquo;{s.text}&rdquo;
                                                     </p>
                                                 </div>
-                                                <div className="space-y-3 p-4 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20 text-left text-left text-left text-left text-left text-left">
-                                                    <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 text-left text-left text-left text-left text-left text-left text-left">
-                                                        <HandHeart className="h-3 w-3 text-left text-left text-left text-left text-left text-left text-left text-left" /> Victory Prayer
+                                                <div className="space-y-3 p-4 bg-primary/[0.03] rounded-2xl border border-dashed border-primary/20 text-left">
+                                                    <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary/60 text-left">
+                                                        <HandHeart className="h-3 w-3 text-left" /> Victory Prayer
                                                     </div>
-                                                    <p className="text-sm font-medium leading-relaxed text-foreground/70 text-balance italic text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                    <p className="text-sm font-medium leading-relaxed text-foreground/70 text-balance italic text-left">
                                                         &ldquo;{s.prayer}&rdquo;
                                                     </p>
-                                                    <div className="pt-2 text-left text-left text-left text-left text-left text-left text-left">
+                                                    <div className="pt-2 text-left">
                                                         <Button 
                                                             onClick={() => handleAmen(idx)}
                                                             variant="outline" 
                                                             size="sm" 
                                                             className={cn(
-                                                                "h-8 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest transition-all text-left text-left text-left text-left text-left text-left text-left",
-                                                                amenScriptureIdx === idx ? "bg-primary text-white border-none scale-105 shadow-lg text-left text-left text-left text-left text-left text-left" : "bg-background hover:bg-primary/5 text-primary/60 hover:text-primary text-left text-left text-left text-left text-left text-left"
+                                                                "h-8 rounded-xl gap-2 font-black uppercase text-[10px] tracking-widest transition-all",
+                                                                amenScriptureIdx === idx ? "bg-primary text-white border-none scale-105 shadow-lg" : "bg-background hover:bg-primary/5 text-primary/60 hover:text-primary"
                                                             )}
                                                         >
-                                                            {amenScriptureIdx === idx ? <Check className="h-3.5 w-3.5 text-left text-left text-left text-left text-left text-left" /> : <Sparkles className="h-3.5 w-3.5 text-left text-left text-left text-left text-left text-left" />}
+                                                            {amenScriptureIdx === idx ? <Check className="h-3.5 w-3.5" /> : <Sparkles className="h-3.5 w-3.5" />}
                                                             AMEN
                                                         </Button>
                                                     </div>
                                                 </div>
-                                                <div className="pt-4 border-t border-dashed space-y-4 text-left text-left text-left text-left text-left text-left">
-                                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 ml-1 text-left text-left text-left text-left text-left text-left text-left">
-                                                        <MessageSquare className="h-3.5 w-3.5 text-left text-left text-left text-left text-left text-left text-left" /> Armor Responses
+                                                <div className="pt-4 border-t border-dashed space-y-4 text-left">
+                                                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary/60 ml-1 text-left">
+                                                        <MessageSquare className="h-3.5 w-3.5 text-left" /> Armor Responses
                                                     </div>
                                                     <CommentSection path={`victoryCircles/${categoryKey}/foundational_armor/${idx}/comments`} inline />
                                                 </div>
@@ -780,36 +783,36 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                         </div>
 
                         {contributedArmor && contributedArmor.length > 0 && (
-                            <div className="space-y-6 text-left text-left text-left text-left">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-1 text-left text-left text-left text-left text-left">Community Contributions</Label>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left text-left text-left text-left">
+                            <div className="space-y-6 text-left">
+                                <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-1 text-left">Community Contributions</Label>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
                                     {contributedArmor.map((arm: any) => (
-                                        <Card key={arm.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden flex flex-col h-full text-left text-left text-left text-left text-left text-left text-left">
-                                            <CardHeader className="p-6 pb-2 text-left text-left text-left text-left text-left text-left text-left text-left">
-                                                <div className="flex justify-between items-start mb-3 text-left text-left text-left text-left text-left text-left text-left text-left">
-                                                    <Badge variant="outline" className="h-5 px-2 text-[9px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left text-left text-left text-left text-left text-left text-left">{arm.verse}</Badge>
-                                                    <Sparkles className="h-4 w-4 text-primary opacity-20 text-left text-left text-left text-left text-left text-left text-left" />
+                                        <Card key={arm.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden flex flex-col h-full text-left">
+                                            <CardHeader className="p-6 pb-2 text-left">
+                                                <div className="flex justify-between items-start mb-3 text-left">
+                                                    <Badge variant="outline" className="h-5 px-2 text-[9px] font-black uppercase tracking-widest bg-primary/5 text-primary border-primary/20 text-left">{arm.verse}</Badge>
+                                                    <Sparkles className="h-4 w-4 text-primary opacity-20 text-left" />
                                                 </div>
-                                                <div className="relative pl-4 border-l-4 border-primary/20 bg-muted/20 p-4 rounded-r-2xl shadow-inner text-left text-left text-left text-left text-left text-left text-left text-left">
-                                                    <Quote className="absolute top-1 right-3 h-8 w-8 opacity-5 text-left text-left text-left text-left text-left text-left text-left" />
-                                                    <p className="text-sm text-muted-foreground italic font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left">&ldquo;{arm.text}&rdquo;</p>
+                                                <div className="relative pl-4 border-l-4 border-primary/20 bg-muted/20 p-4 rounded-r-2xl shadow-inner text-left">
+                                                    <Quote className="absolute top-1 right-3 h-8 w-8 opacity-5 text-left" />
+                                                    <p className="text-sm text-muted-foreground italic font-medium leading-relaxed text-left">&ldquo;{arm.text}&rdquo;</p>
                                                 </div>
                                             </CardHeader>
-                                            <CardContent className="p-6 pt-2 flex-grow text-left text-left text-left text-left text-left text-left text-left text-left">
+                                            <CardContent className="p-6 pt-2 flex-grow text-left">
                                                 {arm.comment && (
-                                                    <div className="space-y-2 text-left text-left text-left text-left text-left text-left">
-                                                        <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-left text-left text-left text-left text-left text-left text-left">Revelation</p>
-                                                        <p className="text-xs text-foreground font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left">{arm.comment}</p>
+                                                    <div className="space-y-2 text-left">
+                                                        <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest text-left">Revelation</p>
+                                                        <p className="text-xs text-foreground font-medium leading-relaxed text-left">{arm.comment}</p>
                                                     </div>
                                                 )}
                                             </CardContent>
-                                            <CardFooter className="p-4 bg-muted/5 border-t flex items-center justify-between text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                                <div className="flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                                    <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left text-left text-left text-left text-left text-left text-left" />
-                                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left">BY {arm.authorName}</p>
+                                            <CardFooter className="p-4 bg-muted/5 border-t flex items-center justify-between text-left">
+                                                <div className="flex items-center gap-2 text-left">
+                                                    <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
+                                                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest text-left">BY {arm.authorName}</p>
                                                 </div>
-                                                <Button variant="ghost" size="sm" className="h-7 rounded-lg text-[9px] font-black text-primary uppercase text-left text-left text-left text-left text-left text-left text-left" onClick={() => handleAmen(arm.id)}>
-                                                    <HandHeart className="mr-1.5 h-3 w-3 text-left text-left text-left text-left text-left text-left text-left" /> AMEN
+                                                <Button variant="ghost" size="sm" className="h-7 rounded-lg text-[9px] font-black text-primary uppercase text-left" onClick={() => handleAmen(arm.id)}>
+                                                    <HandHeart className="mr-1.5 h-3 w-3 text-left" /> AMEN
                                                 </Button>
                                             </CardFooter>
                                         </Card>
@@ -820,28 +823,28 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                     </div>
                 </TabsContent>
 
-                <TabsContent value="discussion" className="space-y-6 outline-none px-4 sm:px-0 text-left text-left text-left text-left">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left text-left text-left text-left">
-                        <div className="flex items-center gap-3 text-left text-left text-left text-left">
-                            <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner text-left text-left text-left text-left text-left">
-                                <MessageSquare className="h-5 w-5 text-muted-foreground text-left text-left text-left text-left text-left" />
+                <TabsContent value="discussion" className="space-y-6 outline-none px-4 sm:px-0 text-left">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-10 w-10 rounded-2xl bg-muted/20 flex items-center justify-center shadow-inner text-left">
+                                <MessageSquare className="h-5 w-5 text-muted-foreground text-left" />
                             </div>
-                            <h3 className="text-lg font-black uppercase tracking-tight text-left text-left text-left text-left">Circle Discussions</h3>
+                            <h3 className="text-lg font-black uppercase tracking-tight text-left">Circle Discussions</h3>
                         </div>
-                        <div className="relative flex-1 max-w-sm text-left text-left text-left text-left">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left text-left text-left text-left text-left" />
+                        <div className="relative flex-1 max-w-sm text-left">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                             <Input 
                                 placeholder="Search discussions..." 
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
-                                className="h-11 pl-11 rounded-2xl bg-muted/20 border-none shadow-inner text-sm text-left text-left text-left text-left"
+                                className="h-11 pl-11 rounded-2xl bg-muted/20 border-none shadow-inner text-sm text-left"
                             />
                         </div>
                     </div>
 
-                    <div className="space-y-6 text-left text-left text-left text-left text-left text-left">
+                    <div className="space-y-6 text-left">
                         {loadingPosts ? (
-                            <div className="flex justify-center py-20 text-left text-left text-left text-left text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left text-left text-left text-left text-left text-left" /></div>
+                            <div className="flex justify-center py-20 text-left"><Loader2 className="h-10 w-10 animate-spin text-primary opacity-20 text-left" /></div>
                         ) : filteredPosts && filteredPosts.length > 0 ? (
                             filteredPosts.map((post: any) => {
                                 const postDate = safeToDate(post.createdAt);
@@ -849,65 +852,65 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 const isEditing = editingPostId === post.id;
 
                                 return (
-                                    <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5 text-left text-left text-left text-left text-left text-left text-left">
-                                        <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between text-left text-left text-left text-left text-left text-left text-left text-left">
-                                            <div className="flex items-center gap-3 text-left text-left text-left text-left text-left text-left text-left">
-                                                <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left text-left text-left text-left text-left text-left text-left">
-                                                    <Users className="h-5 w-5 text-muted-foreground/40 text-left text-left text-left text-left text-left text-left text-left" />
+                                    <Card key={post.id} className="rounded-[2rem] border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden border-b-8 border-b-primary/5 text-left">
+                                        <CardHeader className="p-6 pb-2 flex flex-row items-center justify-between text-left">
+                                            <div className="flex items-center gap-3 text-left">
+                                                <div className="h-10 w-10 rounded-full bg-muted/20 flex items-center justify-center border shadow-inner text-left">
+                                                    <Users className="h-5 w-5 text-muted-foreground/40 text-left" />
                                                 </div>
-                                                <div className="min-w-0 text-left text-left text-left text-left text-left text-left text-left">
-                                                    <p className="text-sm font-black uppercase tracking-tight text-left text-left text-left text-left text-left">{post.authorName}</p>
-                                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left text-left">
+                                                <div className="min-w-0 text-left">
+                                                    <p className="text-sm font-black uppercase tracking-tight text-left">{post.authorName}</p>
+                                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
                                                         {postDate ? format(postDate, 'PPP') : 'Just now'}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-2 text-left text-left text-left text-left text-left">
+                                            <div className="flex items-center gap-2 text-left">
                                                 {isAuthor && !isEditing && (
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left text-left text-left text-left text-left">
-                                                                <MoreHorizontal className="h-4 w-4 text-left text-left text-left text-left text-left text-left" />
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left">
+                                                                <MoreHorizontal className="h-4 w-4 text-left" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="rounded-xl text-left text-left text-left text-left text-left">
-                                                            <DropdownMenuItem onSelect={() => { setEditingPostId(post.id); setEditingText(post.text); }} className="text-left text-left text-left text-left text-left">
-                                                                <Edit className="mr-2 h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left" /> Edit Story
+                                                        <DropdownMenuContent align="end" className="rounded-xl text-left">
+                                                            <DropdownMenuItem onSelect={() => { setEditingPostId(post.id); setEditingText(post.text); }} className="text-left">
+                                                                <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit Story
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuSeparator className="text-left text-left text-left text-left text-left" />
-                                                            <DropdownMenuItem onSelect={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive text-left text-left text-left text-left text-left">
-                                                                <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left" /> Remove from Circle
+                                                            <DropdownMenuSeparator className="text-left" />
+                                                            <DropdownMenuItem onSelect={() => handleDeletePost(post.id)} className="text-destructive focus:text-destructive text-left">
+                                                                <Trash2 className="mr-2 h-4 w-4 text-left" /> Remove from Circle
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
                                                 )}
                                             </div>
                                         </CardHeader>
-                                        <CardContent className="p-6 pt-4 text-left text-left text-left text-left text-left text-left text-left text-left">
+                                        <CardContent className="p-6 pt-4 text-left">
                                             {isEditing ? (
-                                                <div className="space-y-4 text-left text-left text-left text-left text-left text-left text-left">
+                                                <div className="space-y-4 text-left">
                                                     <Textarea 
                                                         value={editingText}
                                                         onChange={(e) => setEditingText(e.target.value)}
-                                                        className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left text-left text-left text-left text-left"
+                                                        className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left"
                                                         autoFocus
                                                     />
-                                                    <div className="flex justify-end gap-2 text-left text-left text-left text-left text-left text-left">
-                                                        <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold text-left text-left text-left text-left text-left">
-                                                            <X className="mr-1 h-3 w-3 text-left text-left text-left text-left text-left" /> Cancel
+                                                    <div className="flex justify-end gap-2 text-left">
+                                                        <Button variant="ghost" size="sm" onClick={() => setEditingPostId(null)} className="rounded-xl font-bold text-left">
+                                                            <X className="mr-1 h-3 w-3 text-left" /> Cancel
                                                         </Button>
-                                                        <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left text-left text-left text-left text-left text-left">
-                                                            {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin text-left text-left text-left text-left text-left" /> : <Check className="mr-1 h-3 w-3 text-left text-left text-left text-left text-left" />}
+                                                        <Button size="sm" onClick={() => handleUpdatePost(post.id)} disabled={isUpdating || !editingText.trim()} className="rounded-xl font-black uppercase tracking-widest text-[10px] text-left">
+                                                            {isUpdating ? <Loader2 className="mr-1 h-3 w-3 animate-spin text-left" /> : <Check className="mr-1 h-3 w-3 text-left" />}
                                                             Save Changes
                                                         </Button>
                                                     </div>
                                                 </div>
                                             ) : (
                                                 <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                                    <button className="w-full text-left outline-none group/post text-left text-left text-left text-left text-left text-left">
-                                                        <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left text-left text-left text-left text-left text-left">
-                                                            <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left text-left text-left text-left text-left text-left text-left text-left" />
-                                                            <p className="text-base text-muted-foreground leading-relaxed italic font-medium text-left text-left text-left text-left text-left text-left text-left">
+                                                    <button className="w-full text-left outline-none group/post text-left">
+                                                        <div className="relative pl-6 border-l-4 border-primary/20 bg-muted/5 p-4 rounded-r-2xl shadow-inner transition-all hover:bg-muted/10 active:scale-[0.99] text-left">
+                                                            <Quote className="absolute top-2 right-4 h-12 w-12 opacity-5 rotate-12 text-left" />
+                                                            <p className="text-base text-muted-foreground leading-relaxed italic font-medium text-left">
                                                                 &ldquo;{post.text}&rdquo;
                                                             </p>
                                                         </div>
@@ -915,13 +918,13 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                                 </PostResponsesDialog>
                                             )}
                                         </CardContent>
-                                        <CardFooter className="p-3 bg-muted/5 flex justify-between items-center text-left text-left text-left text-left text-left text-left text-left">
-                                             <div className="flex items-center gap-2 px-3 text-left text-left text-left text-left text-left text-left text-left">
-                                                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left text-left text-left text-left text-left text-left text-left" />
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60 text-left text-left text-left text-left text-left text-left text-left">Victory Support Active</span>
+                                        <CardFooter className="p-3 bg-muted/5 flex justify-between items-center text-left">
+                                             <div className="flex items-center gap-2 px-3 text-left">
+                                                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
+                                                <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground opacity-60 text-left">Victory Support Active</span>
                                              </div>
                                              <PostResponsesDialog post={post} categoryTitle={categoryTitle}>
-                                                <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-left text-left text-left text-left text-left text-left text-left">
+                                                <Button variant="ghost" size="sm" className="h-8 rounded-xl font-black uppercase tracking-widest text-[9px] text-primary text-left">
                                                     Participate
                                                 </Button>
                                              </PostResponsesDialog>
@@ -930,50 +933,50 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 );
                             })
                         ) : (
-                            <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center text-left text-left text-left text-left text-left text-left">
-                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left text-left text-left text-left text-left text-left">
-                                    <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left text-left text-left text-left text-left text-left text-left text-left" />
+                            <div className="text-center py-24 border-2 border-dashed rounded-[3rem] bg-muted/5 flex flex-col items-center text-left text-left">
+                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
+                                    <Sparkles className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
                                 </div>
-                                <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left text-left text-left text-left text-left text-left">Circle Silence</h4>
-                                <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left text-left text-left text-left text-left text-left">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
+                                <h4 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Circle Silence</h4>
+                                <p className="text-sm text-muted-foreground italic mt-2 px-12 max-w-sm text-balance text-center text-left">No brethren have shared in this circle yet. Be the first to bring a word of encouragement or a struggle into the light.</p>
                             </div>
                         )}
                     </div>
                 </TabsContent>
 
-                <TabsContent value="resources" className="space-y-6 outline-none px-4 sm:px-0 text-left text-left text-left text-left text-left">
-                    <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left text-left text-left">
-                        <div className="flex items-center gap-3 text-left text-left text-left text-left text-left text-left">
-                            <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner text-left text-left text-left text-left text-left text-left text-left">
-                                <Target className="h-5 w-5 text-indigo-600 text-left text-left text-left text-left text-left text-left text-left" />
+                <TabsContent value="resources" className="space-y-6 outline-none px-4 sm:px-0 text-left">
+                    <div className="flex items-center justify-between gap-4 text-left">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-10 w-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center shadow-inner text-left">
+                                <Target className="h-5 w-5 text-indigo-600 text-left" />
                             </div>
-                            <h3 className="text-lg font-black uppercase tracking-tight text-left text-left text-left text-left text-left text-left">Kingdom Armory</h3>
+                            <h3 className="text-lg font-black uppercase tracking-tight text-left">Kingdom Armory</h3>
                         </div>
                         <ShareResourceDialog category={categoryKey} onResourceAdded={() => {}} />
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left text-left text-left text-left text-left text-left text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
                         {loadingResources ? (
                             [...Array(4)].map((_, i) => (
-                                <Card key={i} className="h-32 rounded-2xl animate-pulse bg-muted/30 text-left text-left text-left text-left text-left" />
+                                <Card key={i} className="h-32 rounded-2xl animate-pulse bg-muted/30 text-left" />
                             ))
                         ) : resources && resources.length > 0 ? (
                             resources.map(res => (
-                                <Card key={res.id} className="rounded-2xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-md transition-all text-left text-left text-left text-left text-left text-left">
-                                    <CardContent className="p-5 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                        <div className="flex items-start justify-between mb-3 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                            <div className="h-10 w-10 rounded-xl bg-muted/5 flex items-center justify-center shrink-0 border text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <Card key={res.id} className="rounded-2xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden hover:shadow-md transition-all text-left">
+                                    <CardContent className="p-5 text-left">
+                                        <div className="flex items-start justify-between mb-3 text-left">
+                                            <div className="h-10 w-10 rounded-xl bg-muted/5 flex items-center justify-center shrink-0 border text-left">
                                                 {getResourceIcon(res.type)}
                                             </div>
-                                            <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest text-left text-left text-left text-left text-left text-left">{res.type}</Badge>
+                                            <Badge variant="outline" className="text-[8px] font-black uppercase tracking-widest text-left">{res.type}</Badge>
                                         </div>
-                                        <h4 className="font-black text-sm uppercase tracking-tight truncate text-left text-left text-left text-left text-left text-left">{res.title}</h4>
-                                        {res.description && <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1 italic text-left text-left text-left text-left text-left text-left">{res.description}</p>}
-                                        <div className="flex items-center justify-between mt-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                            <p className="text-[8px] font-bold text-muted-foreground uppercase text-left text-left text-left text-left text-left text-left">Shared by {res.authorName}</p>
-                                            <Button variant="ghost" size="sm" asChild className="h-7 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left text-left text-left text-left text-left text-left text-left">
-                                                <a href={res.url} target="_blank" rel="noopener noreferrer" className="text-left text-left text-left text-left text-left text-left text-left flex items-center">
-                                                    Open <ExternalLink className="ml-1 h-2.5 w-2.5 text-left text-left text-left text-left text-left text-left text-left" />
+                                        <h4 className="font-black text-sm uppercase tracking-tight truncate text-left">{res.title}</h4>
+                                        {res.description && <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1 italic text-left">{res.description}</p>}
+                                        <div className="flex items-center justify-between mt-4 text-left">
+                                            <p className="text-[8px] font-bold text-muted-foreground uppercase text-left">Shared by {res.authorName}</p>
+                                            <Button variant="ghost" size="sm" asChild className="h-7 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left">
+                                                <a href={res.url} target="_blank" rel="noopener noreferrer" className="flex items-center text-left">
+                                                    Open <ExternalLink className="ml-1 h-2.5 w-2.5 text-left" />
                                                 </a>
                                             </Button>
                                         </div>
@@ -981,17 +984,17 @@ export function StrongholdCategoryClient({ category }: { category: string }) {
                                 </Card>
                             ))
                         ) : (
-                            <div className="col-span-full py-20 text-center border-2 border-dashed rounded-3xl bg-muted/5 flex flex-col items-center text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                <PlusCircle className="h-12 w-12 text-muted-foreground opacity-10 mb-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
-                                <p className="text-sm text-muted-foreground italic text-left text-left text-left text-left text-left text-left text-left text-left text-left">The armory is empty. Share a supply to help others!</p>
+                            <div className="col-span-full py-20 text-center border-2 border-dashed rounded-3xl bg-muted/5 flex flex-col items-center text-left">
+                                <PlusCircle className="h-12 w-12 text-muted-foreground opacity-10 mb-4 text-left" />
+                                <p className="text-sm text-muted-foreground italic text-left">The armory is empty. Share a supply to help others!</p>
                             </div>
                         )}
                     </div>
                 </TabsContent>
             </Tabs>
             
-            <footer className="text-center pt-12 border-t mt-12 px-8 text-left text-left text-left text-left">
-                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed font-serif text-balance text-center text-left text-left text-left">
+            <footer className="text-center pt-12 border-t mt-12 px-8 text-left">
+                <p className="text-xs text-muted-foreground italic font-medium leading-relaxed font-serif text-balance text-center text-left">
                     "Confess your faults one to another, and pray one for another, that ye may be healed. The effectual fervent prayer of a righteous man availeth much." — James 5:16
                 </p>
             </footer>

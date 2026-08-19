@@ -123,7 +123,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height, naturalWidth, naturalHeight } = e.currentTarget;
     
-    // Determine target aspect ratio: priority to prop, then fallback to photo's natural ratio
     const photoAspect = naturalWidth / naturalHeight;
     const aspectToUse = cropAspect || (circularCrop ? 1 : photoAspect);
     
@@ -143,17 +142,7 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
         throw new Error("Kingdom session not ready. Please try again.");
     }
 
-    if (currentUser.uid !== user.uid) {
-        throw new Error("Identity verification failed. Please try again.");
-    }
-
     if (!storage) throw new Error("Storage service unavailable.");
-
-    try {
-        await currentUser.getIdToken(true);
-    } catch (tokenErr) {
-        console.error("Failed to refresh auth token:", tokenErr);
-    }
 
     const fileName = file instanceof File ? file.name : 'optimized-image.jpg';
     const fileRef = ref(storage, `${storagePath}/${currentUser.uid}/${Date.now()}_${fileName}`);
@@ -207,45 +196,45 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
   return (
     <>
       <div className="flex flex-col items-center gap-4 w-full py-4 text-left">
-        <div className="relative text-left">
+        <div className="relative">
           {circularCrop ? (
-            <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shadow-xl ring-2 ring-primary/10 text-left">
-              <AvatarImage src={previewUrl ?? undefined} className="object-cover text-left" />
-              <AvatarFallback className="bg-muted text-left"><Camera className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/30 text-left" /></AvatarFallback>
+            <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shadow-xl ring-2 ring-primary/10">
+              <AvatarImage src={previewUrl ?? undefined} className="object-cover" />
+              <AvatarFallback className="bg-muted"><Camera className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/30" /></AvatarFallback>
             </Avatar>
           ) : (
             <div 
-              className="relative w-full max-w-xs rounded-2xl border-2 border-dashed bg-muted/20 flex items-center justify-center overflow-hidden shadow-md text-left"
+              className="relative w-full max-w-xs rounded-2xl border-2 border-dashed bg-muted/20 flex items-center justify-center overflow-hidden shadow-md"
               style={{ aspectRatio: cropAspect || 1.777 }}
             >
               {previewUrl ? (
-                <Image src={previewUrl} alt="Preview" fill className="object-cover text-left" unoptimized />
+                <Image src={previewUrl} alt="Preview" fill className="object-cover" unoptimized />
               ) : (
-                <Camera className="h-10 w-10 text-muted-foreground/20 text-left" />
+                <Camera className="h-10 w-10 text-muted-foreground/20" />
               )}
             </div>
           )}
         </div>
         
         {isLoading ? (
-          <div className="flex items-center gap-3 bg-muted/50 px-5 py-2.5 rounded-full border shadow-inner text-left">
-            <Loader2 className="h-4 w-4 animate-spin text-primary text-left" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary text-left">Transmitting...</span>
+          <div className="flex items-center gap-3 bg-muted/50 px-5 py-2.5 rounded-full border shadow-inner">
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Transmitting...</span>
           </div>
         ) : (
-          <div className="flex flex-col sm:flex-row gap-2 text-left">
-            <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm border-primary/20 hover:bg-primary/5 transition-all uppercase tracking-widest text-[10px] text-left">
-                <Camera className="mr-2 h-4 w-4 text-primary text-left"/>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button type="button" variant="outline" onClick={handleFileSelect} className="h-10 px-6 rounded-full font-bold shadow-sm border-primary/20 hover:bg-primary/5 transition-all uppercase tracking-widest text-[10px]">
+                <Camera className="mr-2 h-4 w-4 text-primary"/>
                 Set Photo
             </Button>
             {previewUrl && (
               <Button 
                 type="button" 
                 variant="ghost" 
-                className="h-10 px-6 rounded-full font-bold text-destructive hover:text-destructive hover:bg-destructive/10 uppercase tracking-widest text-[10px] text-left" 
+                className="h-10 px-6 rounded-full font-bold text-destructive hover:text-destructive hover:bg-destructive/10 uppercase tracking-widest text-[10px]" 
                 onClick={handleRemoveImage}
               >
-                <Trash2 className="mr-2 h-4 w-4 text-left" />
+                <Trash2 className="mr-2 h-4 w-4" />
                 Remove
               </Button>
             )}
@@ -261,15 +250,15 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
       </div>
 
       <Dialog open={isCropModalOpen} onOpenChange={(open) => { if (!isLoading) setIsCropModalOpen(open); }}>
-        <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
-          <div className="p-4 sm:p-8 border-b bg-muted/10 text-left shrink-0">
+        <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
+          <div className="p-4 sm:p-8 border-b bg-muted/10 shrink-0">
             <DialogHeader className="text-left">
                 <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">Refine Frame</DialogTitle>
                 <DialogDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Adjust the crop to set your Kingdom asset appearance.</DialogDescription>
             </DialogHeader>
           </div>
           <ScrollArea className="flex-1 min-h-0 bg-black/5">
-            <div className="p-4 sm:p-8 overflow-hidden flex justify-center items-center min-h-[300px] text-left">
+            <div className="p-4 sm:p-8 overflow-hidden flex justify-center items-center min-h-[300px]">
               {imgSrc && (
                 <ReactCrop
                   crop={crop}
@@ -277,23 +266,23 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
                   onComplete={(c) => setCompletedCrop(c)}
                   aspect={cropAspect}
                   circularCrop={circularCrop}
-                  className="max-h-full shadow-2xl rounded-lg text-left"
+                  className="max-h-full shadow-2xl rounded-lg"
                 >
                   <img
                     ref={imgRef}
                     alt="Source"
                     src={imgSrc}
                     onLoad={onImageLoad}
-                    className="max-h-[50dvh] w-auto object-contain text-left"
+                    className="max-h-[50dvh] w-auto object-contain"
                   />
                 </ReactCrop>
               )}
             </div>
           </ScrollArea>
-          <DialogFooter className="p-4 sm:p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left shrink-0">
-            <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12 text-left">Cancel</Button>
-            <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12 rounded-xl uppercase tracking-widest text-left">
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <CropIcon className="mr-2 h-4 w-4 text-left" />}
+          <DialogFooter className="p-4 sm:p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0">
+            <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12">Cancel</Button>
+            <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12 rounded-xl uppercase tracking-widest">
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CropIcon className="mr-2 h-4 w-4" />}
               {isLoading ? 'OPTIMIZING...' : 'CONFIRM & UPLOAD'}
             </Button>
           </DialogFooter>
