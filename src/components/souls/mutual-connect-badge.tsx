@@ -5,7 +5,7 @@ import { useUser, useFirestore } from '@/firebase';
 import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
 import type { Soul, UserProfile } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Users, History, Sparkles, Clock, Target, MapPin } from 'lucide-react';
+import { Users, History, Sparkles, Clock, MapPin, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -13,12 +13,20 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { actionItems } from '@/lib/follow-up-data';
 import { Separator } from '@/components/ui/separator';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MutualRecord {
     user: UserProfile;
@@ -34,6 +42,12 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
   const [mutualRecords, setMutualRecords] = React.useState<MutualRecord[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
+  const isMobile = useIsMobile();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchMutual = React.useCallback(async () => {
       if (!firestore || !currentUser) return;
@@ -127,120 +141,136 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
 
   const uniqueUserCount = new Set(mutualRecords.map(r => r.user.id)).size;
 
+  const content = (
+    <div className="flex flex-col h-full text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <div className="flex items-center gap-3 mb-2 text-left">
+                <Sparkles className="h-5 w-5 text-primary text-left" />
+                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Mutual Kingdom Effort</span>
+            </div>
+            <div className="space-y-1 text-left">
+                <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Collective Harvest Intelligence</h3>
+                <p className="text-sm font-medium text-left">
+                    We found {uniqueUserCount} other {uniqueUserCount === 1 ? 'believer' : 'believers'} with a matching record for {soul.firstName}.
+                </p>
+            </div>
+        </div>
+        
+        <ScrollArea className="flex-grow min-h-0 text-left">
+            <div className="p-6 sm:p-10 space-y-12 text-left">
+                {mutualRecords.map((record, idx) => {
+                    const history = [...(record.soul.followUpLog || [])].sort((a, b) => {
+                        const dateB = safeToDate(b.date)?.getTime() ?? 0;
+                        const dateA = safeToDate(a.date)?.getTime() ?? 0;
+                        return dateB - dateA;
+                    });
+
+                    return (
+                        <div key={`${record.user.id}-${idx}`} className="space-y-6 text-left">
+                            <div className="flex items-center gap-4 text-left">
+                                <Avatar className="h-14 w-14 border-2 border-primary/10 shadow-lg shrink-0 text-left">
+                                    <AvatarImage src={record.user.photoURL} className="object-cover text-left" />
+                                    <AvatarFallback className="font-black bg-primary/5 text-primary text-left text-center flex items-center justify-center w-full h-full">
+                                        {record.user.firstName?.charAt(0)}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="min-w-0 flex-1 text-left">
+                                    <p className="font-black text-lg uppercase tracking-tight truncate text-left">
+                                        {record.user.firstName} {record.user.lastName}
+                                    </p>
+                                    <div className="flex items-center gap-1.5 mt-1 text-left">
+                                        <MapPin className="h-3 w-3 text-primary opacity-60 text-left" />
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
+                                            Mobilizer Station: {record.user.location?.city || 'Global Network'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <Badge variant="secondary" className="h-6 px-3 text-[9px] font-black uppercase tracking-widest shrink-0 text-left">
+                                    {record.soul.status}
+                                </Badge>
+                            </div>
+
+                            <div className="pl-6 border-l-4 border-primary/20 space-y-8 ml-7 text-left">
+                                <h4 className="text-[10px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left">
+                                    <History className="h-3.5 w-3.5 text-left" /> Partner Log History
+                                </h4>
+                                {history.length > 0 ? history.map((log, lIdx) => {
+                                    const date = safeToDate(log.date);
+                                    return (
+                                        <div key={lIdx} className="relative text-left">
+                                            <div className="flex items-center gap-2 mb-2 text-left">
+                                                <Clock className="h-3 w-3 text-muted-foreground opacity-40 text-left" />
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 text-left">
+                                                    {date ? format(date, "MMM d, yyyy 'at' p") : 'Recently'}
+                                                </p>
+                                            </div>
+                                            <div className="bg-muted/30 rounded-[1.5rem] p-5 border shadow-inner text-left">
+                                                {log.actions && log.actions.length > 0 && (
+                                                    <div className="flex flex-wrap gap-1.5 mb-3 text-left">
+                                                        {log.actions.map(aId => {
+                                                            const action = actionItems.find(a => a.id === aId);
+                                                            return action ? (
+                                                                <Badge key={aId} variant="outline" className="h-4 px-1.5 text-[8px] font-black uppercase bg-background border-primary/10 text-left">{action.label}</Badge>
+                                                            ) : null;
+                                                        })}
+                                                    </div>
+                                                )}
+                                                <p className="text-sm text-muted-foreground italic font-medium leading-relaxed text-left">
+                                                    &ldquo;{log.note || 'Interaction logged.'}&rdquo;
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                }) : (
+                                    <div className="py-8 bg-muted/10 rounded-[1.5rem] border-2 border-dashed text-center text-left">
+                                        <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest opacity-40 text-left">No detailed logs found.</p>
+                                    </div>
+                                )}
+                            </div>
+                            {idx < mutualRecords.length - 1 && <Separator className="mt-10 opacity-50 text-left" />}
+                        </div>
+                    );
+                })}
+            </div>
+        </ScrollArea>
+
+        <div className="p-8 border-t bg-muted/5 flex justify-center text-center text-left shrink-0">
+            <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] leading-relaxed max-w-sm text-center text-left">
+                "Iron sharpens iron, and one man sharpens another." — Proverbs 27:17
+            </p>
+        </div>
+    </div>
+  );
+
   return (
     <>
       <Badge 
         variant="outline" 
-        className="h-8 px-3 gap-2 bg-primary/10 text-primary border-primary/30 animate-in fade-in zoom-in shrink-0 cursor-pointer hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/5 active:scale-95"
+        className="h-8 px-3 gap-2 bg-primary/10 text-primary border-primary/30 animate-in fade-in zoom-in shrink-0 cursor-pointer hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/5 active:scale-95 text-left"
         onClick={(e) => {
             e.stopPropagation();
             setIsOpen(true);
         }}
       >
-        <Users className="h-4 w-4" />
-        <span className="text-[11px] font-black tracking-widest">{uniqueUserCount}</span>
+        <Users className="h-4 w-4 text-left" />
+        <span className="text-[11px] font-black tracking-widest text-left">{uniqueUserCount}</span>
       </Badge>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-            <div className="p-8 border-b bg-muted/10">
-                <div className="flex items-center gap-3 mb-2 text-left">
-                    <Sparkles className="h-5 w-5 text-primary text-left" />
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Mutual Kingdom Effort</span>
-                </div>
-                <DialogHeader className="text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Collective Harvest Intelligence</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">
-                        We found {uniqueUserCount} other {uniqueUserCount === 1 ? 'believer' : 'believers'} with a matching record for {soul.firstName}.
-                    </DialogDescription>
-                </DialogHeader>
-            </div>
-            
-            <ScrollArea className="max-h-[60vh] text-left">
-                <div className="p-6 sm:p-10 space-y-12 text-left">
-                    {mutualRecords.map((record, idx) => {
-                        const history = [...(record.soul.followUpLog || [])].sort((a, b) => {
-                            const dateB = safeToDate(b.date)?.getTime() ?? 0;
-                            const dateA = safeToDate(a.date)?.getTime() ?? 0;
-                            return dateB - dateA;
-                        });
-
-                        return (
-                            <div key={`${record.user.id}-${idx}`} className="space-y-6 text-left">
-                                <div className="flex items-center gap-4 text-left">
-                                    <Avatar className="h-14 w-14 border-2 border-primary/10 shadow-lg shrink-0 text-left">
-                                        <AvatarImage src={record.user.photoURL} className="object-cover text-left" />
-                                        <AvatarFallback className="font-black bg-primary/5 text-primary text-left">
-                                            {record.user.firstName?.charAt(0)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="min-w-0 flex-1 text-left">
-                                        <p className="font-black text-lg uppercase tracking-tight truncate text-left">
-                                            {record.user.firstName} {record.user.lastName}
-                                        </p>
-                                        <div className="flex items-center gap-1.5 mt-1 text-left">
-                                            <MapPin className="h-3 w-3 text-primary opacity-60 text-left" />
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
-                                                Mobilizer Station: {record.user.location?.city || 'Global Network'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <Badge variant="secondary" className="h-6 px-3 text-[9px] font-black uppercase tracking-widest shrink-0 text-left">
-                                        {record.soul.status}
-                                    </Badge>
-                                </div>
-
-                                <div className="pl-6 border-l-4 border-primary/20 space-y-8 ml-7 text-left">
-                                    <h4 className="text-[10px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left">
-                                        <History className="h-3.5 w-3.5 text-left" /> Partner Log History
-                                    </h4>
-                                    {history.length > 0 ? history.map((log, lIdx) => {
-                                        const date = safeToDate(log.date);
-                                        return (
-                                            <div key={lIdx} className="relative text-left">
-                                                <div className="flex items-center gap-2 mb-2 text-left">
-                                                    <Clock className="h-3 w-3 text-muted-foreground opacity-40 text-left" />
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 text-left">
-                                                        {date ? format(date, "MMM d, yyyy 'at' p") : 'Recently'}
-                                                    </p>
-                                                </div>
-                                                <div className="bg-muted/30 rounded-[1.5rem] p-5 border shadow-inner text-left">
-                                                    {log.actions && log.actions.length > 0 && (
-                                                        <div className="flex flex-wrap gap-1.5 mb-3 text-left">
-                                                            {log.actions.map(aId => {
-                                                                const action = actionItems.find(a => a.id === aId);
-                                                                return action ? (
-                                                                    <Badge key={aId} variant="outline" className="h-4 px-1.5 text-[8px] font-black uppercase bg-background border-primary/10 text-left">{action.label}</Badge>
-                                                                ) : null;
-                                                            })}
-                                                        </div>
-                                                    )}
-                                                    <p className="text-sm text-muted-foreground italic font-medium leading-relaxed text-left">
-                                                        &ldquo;{log.note || 'Interaction logged.'}&rdquo;
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        );
-                                    }) : (
-                                        <div className="py-8 bg-muted/10 rounded-[1.5rem] border-2 border-dashed text-center text-left">
-                                            <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest opacity-40 text-left">No detailed logs found.</p>
-                                        </div>
-                                    )}
-                                </div>
-                                {idx < mutualRecords.length - 1 && <Separator className="mt-10 opacity-50 text-left" />}
-                            </div>
-                        );
-                    })}
-                </div>
-            </ScrollArea>
-
-            <div className="p-8 border-t bg-muted/5 flex justify-center text-center text-left">
-                <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] leading-relaxed max-w-sm text-center">
-                    "Iron sharpens iron, and one man sharpens another." — Proverbs 27:17
-                </p>
-            </div>
-        </DialogContent>
-      </Dialog>
+      {mounted && (
+        isMobile ? (
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    {content}
+                </SheetContent>
+            </Sheet>
+        ) : (
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogContent className="sm:max-w-xl max-h-[90dvh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">
+                    {content}
+                </DialogContent>
+            </Dialog>
+        )
+      )}
     </>
   );
 }
