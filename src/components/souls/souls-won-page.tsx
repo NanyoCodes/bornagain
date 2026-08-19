@@ -610,12 +610,12 @@ export default function SoulsWonPage() {
                 <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                         <div className="space-y-1 text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY HARVEST</h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
-                                <ClipboardList className="h-4 w-4 text-primary text-left" /> Logged Records
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left">MY HARVEST</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left">
+                                <ClipboardList className="h-4 w-4 text-primary text-left text-left" /> Logged Records
                             </p>
                         </div>
-                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap text-left w-full sm:w-auto text-left">
+                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap text-left w-full sm:w-auto text-left text-left">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none text-left">
@@ -719,7 +719,7 @@ export default function SoulsWonPage() {
                             <BarChart3 className="h-5 w-5 text-primary text-left text-left text-left" />
                         </div>
                         <div className="min-w-0 text-left text-left text-left">
-                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left">DEMOGRAPHICS</h2>
+                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left text-left">DEMOGRAPHICS</h2>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left">Age Analysis</p>
                         </div>
                     </div>
