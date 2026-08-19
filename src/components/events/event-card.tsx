@@ -17,7 +17,8 @@ import {
   Edit,
   Globe,
   ChevronDown,
-  X
+  X,
+  ImageIcon
 } from "lucide-react";
 import type { Event, UserProfile, EventParticipant, Chat } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -211,7 +212,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
         <SheetTrigger asChild>{children}</SheetTrigger>
         <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
           <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-            <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+            <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
                 <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left text-left">Participants Directory</SheetTitle>
                 <SheetDescription className="text-sm font-medium text-left text-left">
                 {campaign.participantCount || 0} believers mobilized for "{campaign.title}".
@@ -360,8 +361,23 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
     } catch (e) {}
   };
 
+  const photoCount = event.photoUrls?.length || 0;
+
   return (
     <Card className="rounded-none sm:rounded-[3rem] overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-8 border-b-primary/10 text-left">
+      {photoCount > 0 && (
+        <div className={cn(
+            "grid gap-1 border-b",
+            photoCount === 1 ? "grid-cols-1" : photoCount === 2 ? "grid-cols-2" : "grid-cols-3"
+        )}>
+            {event.photoUrls?.map((url, idx) => (
+                <div key={idx} className={cn("relative aspect-video bg-muted", photoCount === 1 && "aspect-[21/9]")}>
+                    <Image src={url} alt={`Event ${idx+1}`} fill className="object-cover" unoptimized />
+                </div>
+            ))}
+        </div>
+      )}
+      
       <CardHeader className="p-6 sm:p-10 pb-4 text-left">
         <div className="flex justify-between items-start text-left">
           <Badge className="h-6 text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20 text-left">
@@ -405,14 +421,14 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
           <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left text-left">
             <CalendarDays className="h-6 w-6 text-primary shrink-0 text-left" />
-            <div className="min-w-0 text-left text-left">
+            <div className="min-w-0 text-left text-left text-left">
                 <p className="text-sm sm:text-base font-bold leading-tight text-left">{dateStr}</p>
                 <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">{event.startTime} - {event.endTime}</p>
             </div>
           </div>
           <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left text-left">
             <MapPin className="h-6 w-6 text-primary shrink-0 text-left" />
-            <div className="min-w-0 text-left text-left">
+            <div className="min-w-0 text-left text-left text-left">
                 <p className="text-sm sm:text-base font-bold truncate leading-tight uppercase tracking-tight text-left">{event.location}</p>
                 <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">{event.locationType === 'Both' ? 'BOTH PHYSICAL AND VIRTUAL' : event.locationType}</p>
             </div>
@@ -461,4 +477,3 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
     </Card>
   );
 }
-

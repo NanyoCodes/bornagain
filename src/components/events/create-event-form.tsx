@@ -1,4 +1,3 @@
-
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,12 +17,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
-import { Loader2, Video, CalendarIcon, MapPin, User } from "lucide-react";
+import { Loader2, Video, CalendarIcon, MapPin, User, Camera, Sparkles } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser, useFirestore } from "@/firebase";
 import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore";
 import { format, isSameDay } from "date-fns";
 import type { UserProfile, EventCategory } from "@/lib/types";
+import { ImageUpload } from "../common/image-upload";
+import { Label } from "../ui/label";
 
 const eventCategories: EventCategory[] = [
   'Conference', 'Worship', 'Seminar', 'Outreach', 'Prayer', 'Youth', 'Church Service', 'Other'
@@ -42,6 +43,9 @@ const formSchema = z.object({
   endTime: z.string().min(1, "End time is required."),
   maxParticipants: z.number().optional().nullable(),
   streamUrl: z.string().url("Valid URL required").optional().or(z.literal('')),
+  photoUrl1: z.string().optional(),
+  photoUrl2: z.string().optional(),
+  photoUrl3: z.string().optional(),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
@@ -64,6 +68,9 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
       startTime: "10:00",
       endTime: "12:00",
       streamUrl: userProfile?.defaultMeetingLink || "",
+      photoUrl1: "",
+      photoUrl2: "",
+      photoUrl3: "",
     },
   });
 
@@ -75,8 +82,19 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
         const batch = writeBatch(firestore);
         const eventRef = doc(collection(firestore, 'events'));
         
+        const photoUrls = [values.photoUrl1, values.photoUrl2, values.photoUrl3].filter(Boolean) as string[];
+
         const eventData = {
-            ...values,
+            title: values.title,
+            description: values.description,
+            category: values.category,
+            organizerName: values.organizerName,
+            location: values.location,
+            locationType: values.locationType,
+            startDate: values.startDate,
+            endDate: values.endDate,
+            startTime: values.startTime,
+            endTime: values.endTime,
             organizerId: user.uid,
             organizerPhotoURL: userProfile.photoURL || null,
             participantCount: 1,
@@ -84,6 +102,7 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
             createdAt: serverTimestamp(),
             maxParticipants: values.maxParticipants || null,
             streamUrl: values.streamUrl || null,
+            photoUrls: photoUrls.length > 0 ? photoUrls : null,
         };
 
         batch.set(eventRef, eventData);
@@ -112,137 +131,189 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField control={form.control} name="title" render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Event Title</FormLabel>
-              <FormControl><Input placeholder="e.g., Night of Wonders" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl>
-              <FormMessage />
-            </FormItem>
-        )} />
-
-        <FormField control={form.control} name="organizerName" render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Event Host / Organizer</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-                  <Input placeholder="e.g., Pastor John Smith" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold pl-10" />
-                </div>
-              </FormControl>
-              <FormDescription className="text-[10px]">Defaults to your name, but can be any Kingdom leader.</FormDescription>
-              <FormMessage />
-            </FormItem>
-        )} />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField control={form.control} name="category" render={({ field }) => (
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 text-left">
+        <div className="space-y-6">
+            <div className="flex items-center gap-3 px-1">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">General Info</h3>
+            </div>
+            
+            <FormField control={form.control} name="title" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Event Title</FormLabel>
+                <FormControl><Input placeholder="e.g., Night of Wonders" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl>
+                <FormMessage />
+                </FormItem>
+            )} />
+
+            <FormField control={form.control} name="organizerName" render={({ field }) => (
+                <FormItem>
+                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Event Host / Organizer</FormLabel>
+                <FormControl>
+                    <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                    <Input placeholder="e.g., Pastor John Smith" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold pl-10" />
+                    </div>
+                </FormControl>
+                <FormDescription className="text-[10px]">Defaults to your name, but can be any Kingdom leader.</FormDescription>
+                <FormMessage />
+                </FormItem>
+            )} />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField control={form.control} name="category" render={({ field }) => (
+                    <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                            <SelectValue placeholder="Select Category" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-2xl border-none shadow-2xl">
+                        {eventCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    </FormItem>
+                )} />
+                <FormField control={form.control} name="locationType" render={({ field }) => (
+                    <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Meeting Format</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                        <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                            <SelectValue placeholder="Format" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-2xl border-none shadow-2xl">
+                        <SelectItem value="Physical" className="rounded-xl">Physical Only</SelectItem>
+                        <SelectItem value="Virtual" className="rounded-xl">Virtual Only</SelectItem>
+                        <SelectItem value="Both" className="rounded-xl">Hybrid</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    </FormItem>
+                )} />
+            </div>
+        </div>
+
+        <div className="space-y-6">
+            <div className="flex items-center gap-3 px-1">
+                <Camera className="h-5 w-5 text-primary" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Event Photos (Up to 3)</h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <FormField control={form.control} name="photoUrl1" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Hero Image</FormLabel>
+                        <FormControl>
+                            <ImageUpload initialImageUrl={field.value} onUploadComplete={url => field.onChange(url)} storagePath="events" cropAspect={16/9} />
+                        </FormControl>
+                    </FormItem>
+                )} />
+                <FormField control={form.control} name="photoUrl2" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Proof 2</FormLabel>
+                        <FormControl>
+                            <ImageUpload initialImageUrl={field.value} onUploadComplete={url => field.onChange(url)} storagePath="events" cropAspect={16/9} />
+                        </FormControl>
+                    </FormItem>
+                )} />
+                <FormField control={form.control} name="photoUrl3" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Proof 3</FormLabel>
+                        <FormControl>
+                            <ImageUpload initialImageUrl={field.value} onUploadComplete={url => field.onChange(url)} storagePath="events" cropAspect={16/9} />
+                        </FormControl>
+                    </FormItem>
+                )} />
+            </div>
+        </div>
+
+        <div className="space-y-6">
+            <div className="flex items-center gap-3 px-1">
+                <MapPin className="h-5 w-5 text-primary" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Logistics</h3>
+            </div>
+            <FormField control={form.control} name="location" render={({ field }) => (
+                <FormItem>
+                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Address / Venue</FormLabel>
+                <FormControl>
+                    <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                    <Input placeholder="e.g., Kingdom Hall, Center City" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold pl-10" />
+                    </div>
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )} />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField control={form.control} name="startDate" render={({ field }) => (
+                    <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Start Date</FormLabel>
                     <FormControl>
-                      <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
-                        <SelectValue placeholder="Select Category" />
-                      </SelectTrigger>
+                        <Input type="date" value={field.value ? format(field.value, "yyyy-MM-dd") : ""} onChange={e => field.onChange(e.target.value ? new Date(e.target.value) : undefined)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                     </FormControl>
-                    <SelectContent className="rounded-2xl border-none shadow-2xl">
-                      {eventCategories.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl">{cat}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-            )} />
-            <FormField control={form.control} name="locationType" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Meeting Format</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormMessage />
+                    </FormItem>
+                )} />
+                <FormField control={form.control} name="endDate" render={({ field }) => (
+                    <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">End Date</FormLabel>
                     <FormControl>
-                      <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
-                        <SelectValue placeholder="Format" />
-                      </SelectTrigger>
+                        <Input type="date" value={field.value ? format(field.value, "yyyy-MM-dd") : ""} onChange={e => field.onChange(e.target.value ? new Date(e.target.value) : undefined)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
                     </FormControl>
-                    <SelectContent className="rounded-2xl border-none shadow-2xl">
-                      <SelectItem value="Physical" className="rounded-xl">Physical Only</SelectItem>
-                      <SelectItem value="Virtual" className="rounded-xl">Virtual Only</SelectItem>
-                      <SelectItem value="Both" className="rounded-xl">Hybrid</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
+                    <FormMessage />
+                    </FormItem>
+                )} />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField control={form.control} name="startTime" render={({ field }) => (
+                    <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Start Time</FormLabel>
+                    <FormControl><Input type="time" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )} />
+                <FormField control={form.control} name="endTime" render={({ field }) => (
+                    <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">End Time</FormLabel>
+                    <FormControl><Input type="time" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )} />
+            </div>
+
+            <FormField control={form.control} name="streamUrl" render={({ field }) => (
+                <FormItem>
+                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Meeting Link (Optional)</FormLabel>
+                <FormControl>
+                    <div className="relative">
+                    <Video className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                    <Input placeholder="https://meet.google.com/..." {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold pl-10" />
+                    </div>
+                </FormControl>
+                <FormMessage />
                 </FormItem>
             )} />
         </div>
 
-        <FormField control={form.control} name="location" render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Address / Venue</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-                  <Input placeholder="e.g., Kingdom Hall, Center City" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold pl-10" />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-        )} />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField control={form.control} name="startDate" render={({ field }) => (
+        <div className="space-y-6">
+            <div className="flex items-center gap-3 px-1">
+                <Target className="h-5 w-5 text-primary" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Description</h3>
+            </div>
+            <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Start Date</FormLabel>
-                  <FormControl>
-                    <Input type="date" value={field.value ? format(field.value, "yyyy-MM-dd") : ""} onChange={e => field.onChange(e.target.value ? new Date(e.target.value) : undefined)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-            )} />
-            <FormField control={form.control} name="endDate" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">End Date</FormLabel>
-                  <FormControl>
-                    <Input type="date" value={field.value ? format(field.value, "yyyy-MM-dd") : ""} onChange={e => field.onChange(e.target.value ? new Date(e.target.value) : undefined)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
-                  </FormControl>
-                  <FormMessage />
+                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About this Event</FormLabel>
+                <FormControl><Textarea placeholder="Share the vision and schedule..." className="min-h-[120px] rounded-[2rem] p-6 bg-muted/10 border-2 border-dashed text-base leading-relaxed" {...field} /></FormControl>
+                <FormMessage />
                 </FormItem>
             )} />
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <FormField control={form.control} name="startTime" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Start Time</FormLabel>
-                  <FormControl><Input type="time" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-            )} />
-            <FormField control={form.control} name="endTime" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">End Time</FormLabel>
-                  <FormControl><Input type="time" {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-            )} />
-        </div>
-
-        <FormField control={form.control} name="streamUrl" render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Meeting Link (Optional)</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Video className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
-                  <Input placeholder="https://meet.google.com/..." {...field} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold pl-10" />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-        )} />
-
-        <FormField control={form.control} name="description" render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About this Event</FormLabel>
-              <FormControl><Textarea placeholder="Share the vision and schedule..." className="min-h-[120px] rounded-[2rem] p-6 bg-muted/10 border-2 border-dashed text-base leading-relaxed" {...field} /></FormControl>
-              <FormMessage />
-            </FormItem>
-        )} />
 
         <Button type="submit" className="w-full h-14 text-xl font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

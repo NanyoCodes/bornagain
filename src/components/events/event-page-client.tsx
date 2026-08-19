@@ -147,7 +147,7 @@ export default function EventPageClient() {
         <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                 <div className="flex items-center gap-4 text-left">
-                    <div className="space-y-1 text-left">
+                    <div className="space-y-1 text-left text-left">
                         <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">EVENTS HUB</h1>
                         <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
                             <CalendarDays className="h-4 w-4 text-primary text-left" /> Event Directory
@@ -162,9 +162,9 @@ export default function EventPageClient() {
             <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between text-left">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto text-left">
                     <TabsList className="grid w-full grid-cols-3 h-12 bg-muted/40 p-1 rounded-2xl text-left">
-                        <TabsTrigger value="all" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-left">Global</TabsTrigger>
-                        <TabsTrigger value="mine" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-left">My Events</TabsTrigger>
-                        <TabsTrigger value="joined" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-left">I'm Going</TabsTrigger>
+                        <TabsTrigger value="all" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-left text-left">Global</TabsTrigger>
+                        <TabsTrigger value="mine" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-left text-left text-left">My Events</TabsTrigger>
+                        <TabsTrigger value="joined" className="font-black text-[10px] uppercase tracking-widest rounded-xl text-left text-left text-left">I'm Going</TabsTrigger>
                     </TabsList>
                 </Tabs>
                 <div className="relative flex-1 w-full sm:max-w-sm text-left">
@@ -179,7 +179,7 @@ export default function EventPageClient() {
             </div>
         </header>
 
-        <div className="flex flex-col gap-6 sm:gap-10 px-0 sm:px-0 -mx-4 sm:mx-0 text-left">
+        <div className="flex flex-col gap-6 sm:gap-10 px-0 sm:px-0 -mx-4 sm:mx-0 text-left text-left">
             {loading ? (
                 [...Array(3)].map((_, i) => (
                     <Card key={i} className="rounded-none sm:rounded-[3rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-none sm:shadow-sm animate-pulse h-[400px] text-left">
@@ -199,10 +199,10 @@ export default function EventPageClient() {
                 ))
             ) : (
                 <div className="col-span-full py-32 text-center flex flex-col items-center px-8 text-left">
-                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
+                    <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left">
                         <CalendarDays className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
                     </div>
-                    <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-left text-left">Hub Silence</h3>
+                    <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-40 text-left text-left text-left text-left">Hub Silence</h3>
                     <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm mx-auto text-left text-left">No events found in this category. Why not host one for the body of Christ?</p>
                 </div>
             )}
@@ -211,8 +211,8 @@ export default function EventPageClient() {
         {isCreateOpen && (
             isMobile ? (
                 <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
                             <SheetHeader className="text-left flex-shrink-0 text-left">
                                 <SheetTitle className="text-2xl font-black font-headline text-left">Host for the Kingdom</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1 text-left">Organize a gathering to strengthen and equip the saints.</SheetDescription>
@@ -227,14 +227,14 @@ export default function EventPageClient() {
                 </Sheet>
             ) : (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                            <DialogHeader className="text-left text-left">
+                    <DialogContent className="sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
+                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                            <DialogHeader className="text-left text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline text-left">Host for the Kingdom</DialogTitle>
                                 <DialogDescription className="text-base font-medium text-left">Organize a gathering to strengthen and equip the saints.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-1 min-h-0 text-left">
+                        <ScrollArea className="flex-grow min-h-0 text-left">
                             <div className="p-8 text-left">
                                 {userProfile && <CreateEventForm onEventCreated={() => setIsCreateOpen(false)} userProfile={userProfile} />}
                             </div>
@@ -247,15 +247,15 @@ export default function EventPageClient() {
         {eventToEdit && (
             isMobile ? (
                 <Sheet open={!!eventToEdit} onOpenChange={(open) => !open && setEventToEdit(null)}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                            <SheetHeader className="text-left flex-shrink-0 text-left">
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
+                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                            <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                                 <SheetTitle className="text-2xl font-black font-headline text-left">Manage Hub</SheetTitle>
                                 <SheetDescription className="text-sm font-medium mt-1 text-left">Refine the vision for your gathering.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left">
-                            <div className="p-8 text-left">
+                            <div className="p-8 text-left text-left">
                                 <ManageEventForm 
                                     event={eventToEdit} 
                                     onEventUpdated={() => setEventToEdit(null)} 
@@ -271,15 +271,15 @@ export default function EventPageClient() {
                 </Sheet>
             ) : (
                 <Dialog open={!!eventToEdit} onOpenChange={(open) => !open && setEventToEdit(null)}>
-                    <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                            <DialogHeader className="text-left text-left">
+                    <DialogContent className="sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
+                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                            <DialogHeader className="text-left text-left text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline text-left">Manage Hub</DialogTitle>
                                 <DialogDescription className="text-base font-medium text-left">Update event logistics and details.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="flex-1 min-h-0 text-left text-left">
-                            <div className="p-8 text-left">
+                        <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
+                            <div className="p-8 text-left text-left">
                                 <ManageEventForm 
                                     event={eventToEdit} 
                                     onEventUpdated={() => setEventToEdit(null)} 
@@ -297,17 +297,17 @@ export default function EventPageClient() {
         )}
 
         <AlertDialog open={!!eventToDelete} onOpenChange={(open) => !open && setEventToDelete(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                <AlertDialogHeader className="text-left text-left">
-                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">Cancel Gathering?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
+                <AlertDialogHeader className="text-left text-left text-left text-left">
+                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left">Cancel Gathering?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">
                         This will mark "{eventToDelete?.title}" as cancelled and remove it from the global directory. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6 text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-12 font-bold text-left">Close</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleCancelEvent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+                <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-12 font-bold text-left text-left">Close</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleCancelEvent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
                         Confirm Cancellation
                     </AlertDialogAction>
                 </AlertDialogFooter>
