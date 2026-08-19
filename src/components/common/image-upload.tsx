@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { ScrollArea } from '../ui/scroll-area';
 
 function getCroppedImg(
   image: HTMLImageElement,
@@ -143,11 +144,6 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
     }
 
     if (currentUser.uid !== user.uid) {
-        console.error("UID Mismatch in Upload Flow:", {
-            authUid: currentUser.uid,
-            hookUid: user.uid,
-            path: storagePath
-        });
         throw new Error("Identity verification failed. Please try again.");
     }
 
@@ -265,34 +261,36 @@ export function ImageUpload({ initialImageUrl, onUploadComplete, storagePath, cr
       </div>
 
       <Dialog open={isCropModalOpen} onOpenChange={(open) => { if (!isLoading) setIsCropModalOpen(open); }}>
-        <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
-          <div className="p-8 border-b bg-muted/10 text-left">
+        <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
+          <div className="p-4 sm:p-8 border-b bg-muted/10 text-left shrink-0">
             <DialogHeader className="text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Refine Frame</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left">Adjust the crop to set your Kingdom asset appearance.</DialogDescription>
+                <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">Refine Frame</DialogTitle>
+                <DialogDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Adjust the crop to set your Kingdom asset appearance.</DialogDescription>
             </DialogHeader>
           </div>
-          <div className="p-8 overflow-hidden flex justify-center bg-black/5 min-h-[300px] text-left">
-            {imgSrc && (
-              <ReactCrop
-                crop={crop}
-                onChange={(_, percentCrop) => setCrop(percentCrop)}
-                onComplete={(c) => setCompletedCrop(c)}
-                aspect={cropAspect}
-                circularCrop={circularCrop}
-                className="max-h-[60vh] shadow-2xl rounded-lg text-left"
-              >
-                <img
-                  ref={imgRef}
-                  alt="Source"
-                  src={imgSrc}
-                  onLoad={onImageLoad}
-                  className="max-h-[50vh] w-auto object-contain text-left"
-                />
-              </ReactCrop>
-            )}
-          </div>
-          <DialogFooter className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
+          <ScrollArea className="flex-1 min-h-0 bg-black/5">
+            <div className="p-4 sm:p-8 overflow-hidden flex justify-center items-center min-h-[300px] text-left">
+              {imgSrc && (
+                <ReactCrop
+                  crop={crop}
+                  onChange={(_, percentCrop) => setCrop(percentCrop)}
+                  onComplete={(c) => setCompletedCrop(c)}
+                  aspect={cropAspect}
+                  circularCrop={circularCrop}
+                  className="max-h-full shadow-2xl rounded-lg text-left"
+                >
+                  <img
+                    ref={imgRef}
+                    alt="Source"
+                    src={imgSrc}
+                    onLoad={onImageLoad}
+                    className="max-h-[50dvh] w-auto object-contain text-left"
+                  />
+                </ReactCrop>
+              )}
+            </div>
+          </ScrollArea>
+          <DialogFooter className="p-4 sm:p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left shrink-0">
             <Button variant="outline" onClick={() => setIsCropModalOpen(false)} disabled={isLoading} className="flex-1 font-bold rounded-xl h-12 text-left">Cancel</Button>
             <Button onClick={handleCrop} disabled={!completedCrop || isLoading} className="flex-1 font-black shadow-lg shadow-primary/20 h-12 rounded-xl uppercase tracking-widest text-left">
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <CropIcon className="mr-2 h-4 w-4 text-left" />}
