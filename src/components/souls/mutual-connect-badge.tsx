@@ -5,7 +5,7 @@ import { useUser, useFirestore } from '@/firebase';
 import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
 import type { Soul, UserProfile } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Users, History, Sparkles, Clock, MapPin, X, ArrowRight } from 'lucide-react';
+import { Users, History, Sparkles, Clock, MapPin, X, ArrowRight, BookOpen, Utensils, Home, Gift, Phone, MessageSquare, Heart, Calendar } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -47,8 +47,6 @@ const iconMap: Record<string, any> = {
     'helped_with_need': Heart,
     'invited_to_event': Calendar,
 };
-
-import { BookOpen, Utensils, Home, Gift, Phone, MessageSquare, Heart, Calendar } from 'lucide-react';
 
 export function MutualConnectBadge({ soul }: { soul: Soul }) {
   const { user: currentUser } = useUser();
@@ -145,8 +143,8 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
 
   const uniqueUserCount = new Set(mutualRecords.map(r => r.user.id)).size;
 
-  const titleText = "Collective Harvest Intelligence";
-  const descText = `We found ${uniqueUserCount} other ${uniqueUserCount === 1 ? 'believer' : 'believers'} with a matching record for ${soul.firstName}.`;
+  const titleText = "Mutual Kingdom Effort";
+  const descText = `Collective Harvest Intelligence: We found ${uniqueUserCount} other ${uniqueUserCount === 1 ? 'believer' : 'believers'} with a matching record for ${soul.firstName}.`;
 
   const innerContent = (
     <div className="space-y-8 sm:space-y-12 text-left">
@@ -179,7 +177,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                             <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1">
                                 <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary opacity-60" />
                                 <p className="text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">
-                                    Station: {record.user.location?.city || 'Global Network'}
+                                    Mobilizer Station: {record.user.location?.city || 'Global Network'}
                                 </p>
                             </div>
                         </div>
@@ -196,15 +194,15 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                             const date = safeToDate(log.date);
                             return (
                                 <div key={lIdx} className="relative">
-                                    <div className="flex justify-between items-center mb-1.5 sm:mb-2">
+                                    <div className="flex justify-between items-center mb-1.5 sm:mb-2 text-left">
                                         <div className="flex items-center gap-2">
                                             <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground opacity-40" />
-                                            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
+                                            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 text-left">
                                                 {date ? format(date, "MMM d, p") : 'Recently'}
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="bg-muted/30 rounded-[1rem] sm:rounded-[1.5rem] p-3 sm:p-5 border shadow-inner">
+                                    <div className="bg-muted/30 rounded-[1rem] sm:rounded-[1.5rem] p-3 sm:p-5 border shadow-inner text-left">
                                         {log.actions && log.actions.length > 0 && (
                                             <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
                                                 {log.actions.map(aId => {
@@ -215,7 +213,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                                                 })}
                                             </div>
                                         )}
-                                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium leading-relaxed">
+                                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium leading-relaxed text-left">
                                             &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                         </p>
                                     </div>
@@ -261,9 +259,9 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                         <SheetHeader className="text-left flex-shrink-0">
                             <div className="flex items-center gap-3 mb-2">
                                 <Sparkles className="h-5 w-5 text-primary" />
-                                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mutual Effort</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Mutual effort</span>
                             </div>
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight">{titleText}</SheetTitle>
+                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">{titleText}</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1">{descText}</SheetDescription>
                         </SheetHeader>
                     </div>
@@ -281,9 +279,9 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                         <DialogHeader className="text-left">
                             <div className="flex items-center gap-3 mb-2">
                                 <Sparkles className="h-5 w-5 text-primary" />
-                                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Mutual Effort</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Mutual effort</span>
                             </div>
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{titleText}</DialogTitle>
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">{titleText}</DialogTitle>
                             <DialogDescription className="text-sm font-medium mt-1">{descText}</DialogDescription>
                         </DialogHeader>
                     </div>
@@ -292,6 +290,9 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                             {innerContent}
                         </div>
                     </ScrollArea>
+                    <DialogFooter className="p-6 border-t bg-muted/5 shrink-0">
+                        <Button variant="outline" className="rounded-full px-8" onClick={() => setIsOpen(false)}>Close</Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         )

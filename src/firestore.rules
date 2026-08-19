@@ -126,7 +126,7 @@ service cloud.firestore {
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
         request.auth.uid == resource.data.organizerId ||
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'hasGroupChat', 'photoUrls'])
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'hasGroupChat', 'photoURL'])
       );
       allow delete: if isAuthenticated() && resource.data.organizerId == request.auth.uid;
 

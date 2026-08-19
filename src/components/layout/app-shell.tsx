@@ -336,14 +336,14 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                                 </div>
                             </div>
                         ) : (
-                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left">
-                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left">
-                                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 text-left" />
+                            <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left">
+                                <div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left">
+                                    <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 text-left text-left" />
                                 </div>
-                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3>
+                                <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left">Empty Hub</h3>
                                 <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-center">Add items from the marketplace to build your package.</p>
                                 <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left" onClick={() => onOpenChange(false)}>
-                                    <Link href="/marketplace" className="text-left">VISIT HUB</Link>
+                                    <Link href="/marketplace" className="text-left text-left">VISIT HUB</Link>
                                 </Button>
                             </div>
                         )}
@@ -860,7 +860,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
             setShowSplash(false);
             localStorage.setItem('testify_splash_last_shown', now.toString());
             setContentVisible(true);
-        }, 10000);
+        }, 3000); //snappier splash
         return () => clearTimeout(timer);
     } else {
         setContentVisible(true);

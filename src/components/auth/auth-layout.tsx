@@ -56,7 +56,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         setShowSplash(false);
         localStorage.setItem('testify_splash_last_shown', now.toString());
         setContentVisible(true);
-      }, 10000); // 10 seconds only
+      }, 3000); //snappier splash
       return () => clearTimeout(timer);
     } else {
       setContentVisible(true);
@@ -96,11 +96,11 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
             <div className="flex flex-col p-6 sm:p-12 overflow-y-auto bg-background/95 backdrop-blur-md lg:bg-background/85 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-[calc(env(safe-area-inset-bottom)+1.5rem)] text-left">
             <div className="mx-auto w-full max-w-[340px] space-y-6 text-left">
                 {logo && (
-                    <div className="flex justify-start w-full mb-8">
+                    <div className="flex justify-start w-full mb-8 text-left">
                     <Link href="/">
-                        <Avatar className="h-20 w-20 border shadow-sm ring-4 ring-primary/10">
-                        <AvatarImage src={logo.imageUrl} alt={logo.description} />
-                        <AvatarFallback>T</AvatarFallback>
+                        <Avatar className="h-20 w-20 border shadow-sm ring-4 ring-primary/10 text-left">
+                        <AvatarImage src={logo.imageUrl} alt={logo.description} className="text-left" />
+                        <AvatarFallback className="text-left">T</AvatarFallback>
                         </Avatar>
                     </Link>
                     </div>
@@ -108,53 +108,53 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                 
                 {children}
                 
-                <div className="mt-8 space-y-4 text-left">
+                <div className="mt-8 space-y-4 text-left text-left">
                     <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 text-center">GLOBAL TESTIMONIES</h3>
-                    <div className="space-y-3">
+                    <div className="space-y-3 text-left">
                         {loading ? (
-                            <div className="flex justify-center"><Loader2 className="h-5 w-5 animate-spin opacity-20" /></div>
+                            <div className="flex justify-center text-left"><Loader2 className="h-5 w-5 animate-spin opacity-20 text-left" /></div>
                         ) : testimonies?.map((t) => (
                             <Card key={t.id} className="bg-muted/10 border-none shadow-none text-left">
-                                <CardContent className="p-3">
-                                    <p className="text-xs text-muted-foreground line-clamp-2 italic">"{t.content}"</p>
-                                    <p className="text-[9px] font-bold mt-1 uppercase text-muted-foreground/60">— {t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
+                                <CardContent className="p-3 text-left">
+                                    <p className="text-xs text-muted-foreground line-clamp-2 italic text-left">"{t.content}"</p>
+                                    <p className="text-[9px] font-bold mt-1 uppercase text-muted-foreground/60 text-left">— {t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
                                 </CardContent>
                             </Card>
                         ))}
                     </div>
                 </div>
 
-                <footer className="text-center text-[9px] uppercase tracking-widest text-muted-foreground/40 mt-8 pt-8 border-t border-muted/20">
-                    <div className="flex justify-center gap-4 mb-4 flex-wrap">
-                        <Link href="/about" className="hover:text-primary transition-colors">About</Link>
-                        <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
-                        <Link href="/guide" className="hover:text-primary transition-colors">App Guide</Link>
-                        <Link href="/resources" className="hover:text-primary transition-colors">Resources</Link>
-                        <Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms</Link>
-                        <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy</Link>
+                <footer className="text-center text-[9px] uppercase tracking-widest text-muted-foreground/40 mt-8 pt-8 border-t border-muted/20 text-left">
+                    <div className="flex justify-center gap-4 mb-4 flex-wrap text-left">
+                        <Link href="/about" className="hover:text-primary transition-colors text-left">About</Link>
+                        <Link href="/contact" className="hover:text-primary transition-colors text-left">Contact</Link>
+                        <Link href="/guide" className="hover:text-primary transition-colors text-left">App Guide</Link>
+                        <Link href="/resources" className="hover:text-primary transition-colors text-left">Resources</Link>
+                        <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left">Terms</Link>
+                        <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left">Privacy</Link>
                     </div>
-                    <p>© {new Date().getFullYear()} TESTIFY GLOBAL</p>
+                    <p className="text-left">© {new Date().getFullYear()} TESTIFY GLOBAL</p>
                 </footer>
             </div>
             </div>
             
-            <div className="hidden lg:flex flex-col items-center justify-center p-12 text-foreground relative overflow-hidden bg-black/40 backdrop-blur-sm border-l border-white/5 text-left">
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-transparent" />
+            <div className="hidden lg:flex flex-col items-center justify-center p-12 text-foreground relative overflow-hidden bg-black/40 backdrop-blur-sm border-l border-white/5 text-left text-left">
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-transparent text-left" />
             
-            <div className="space-y-4 mb-12 z-10 text-center">
-                <h1 className="text-5xl font-bold font-headline text-white shadow-sm">Testify</h1>
-                <p className="text-white/80 max-w-md text-lg">Share Testimonies. Win Souls. Spread Jesus Christ.</p>
-                <p className="text-primary font-black tracking-[0.3em] uppercase text-xs">GLORIFYING GOD</p>
+            <div className="space-y-4 mb-12 z-10 text-center text-left">
+                <h1 className="text-5xl font-bold font-headline text-white shadow-sm text-left">Testify</h1>
+                <p className="text-white/80 max-w-md text-lg text-left">Share Testimonies. Win Souls. Spread Jesus Christ.</p>
+                <p className="text-primary font-black tracking-[0.3em] uppercase text-xs text-left">GLORIFYING GOD</p>
             </div>
 
-            <Carousel plugins={[plugin.current]} className="w-full max-w-lg z-10">
-                <CarouselContent>
+            <Carousel plugins={[plugin.current]} className="w-full max-w-lg z-10 text-left">
+                <CarouselContent className="text-left">
                 {scriptures.map((scripture, index) => (
-                    <CarouselItem key={index}>
-                    <div className="bg-white/5 backdrop-blur-md border border-white/10 p-10 rounded-3xl text-center space-y-6 shadow-2xl">
-                        <Quote className="h-8 w-8 text-primary opacity-50 mx-auto" />
-                        <p className="text-2xl font-medium italic text-white">"{scripture.text}"</p>
-                        <p className="text-white/60 font-bold tracking-wider">— {scripture.reference}</p>
+                    <CarouselItem key={index} className="text-left">
+                    <div className="bg-white/5 backdrop-blur-md border border-white/10 p-10 rounded-3xl text-center space-y-6 shadow-2xl text-left">
+                        <Quote className="h-8 w-8 text-primary opacity-50 mx-auto text-left" />
+                        <p className="text-2xl font-medium italic text-white text-left">"{scripture.text}"</p>
+                        <p className="text-white/60 font-bold tracking-wider text-left">— {scripture.reference}</p>
                     </div>
                     </CarouselItem>
                 ))}
