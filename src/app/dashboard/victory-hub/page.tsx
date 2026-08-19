@@ -367,19 +367,19 @@ export default function VictoryHubPage() {
                     </div>
                 </div>
 
-                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2.5rem] flex items-start gap-5 shadow-inner text-left">
+                <div className="bg-primary/5 border-2 border-dashed border-primary/20 p-6 rounded-[2rem] flex items-start gap-5 shadow-inner text-left">
                     <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shrink-0 mt-1">
                         <Lock className="h-6 w-6 text-white" />
                     </div>
-                    <div className="text-left">
+                    <div className="text-left text-left">
                         <h3 className="text-lg font-black uppercase tracking-tight leading-tight mb-1 text-left">Choice-Based Sanctuary</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance text-left">
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium text-balance text-left text-left">
                             Participation in Victory Circles offers <span className="text-foreground font-bold underline decoration-primary/30">choice-based anonymity</span>. You can choose to appear as yourself or post anonymously to ensure you can bring your struggles into the Light without fear.
                         </p>
                     </div>
                 </div>
 
-                <div className="relative text-left">
+                <div className="relative text-left text-left">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-40 text-left" />
                     <Input 
                         placeholder="Search for a struggle circle..." 
@@ -396,17 +396,17 @@ export default function VictoryHubPage() {
                         <CategoryCard key={cat.name} category={cat} />
                     ))
                 ) : (
-                    <div className="col-span-full py-32 text-center flex flex-col items-center">
-                        <div className="h-20 w-20 rounded-full bg-muted/20 flex items-center justify-center mb-6 text-left">
+                    <div className="col-span-full py-32 text-center flex flex-col items-center text-left">
+                        <div className="h-20 w-20 rounded-full bg-muted/20 flex items-center justify-center mb-6 text-left text-left text-left text-left">
                             <ShieldCheck className="h-10 w-10 text-muted-foreground opacity-20 text-left" />
                         </div>
                         <p className="text-base font-black uppercase tracking-tight opacity-40 text-center text-left">No matching circles found</p>
-                        <p className="text-xs text-muted-foreground mt-2 italic text-center text-left">Try a different search term or enter the "Other" circle.</p>
+                        <p className="text-xs text-muted-foreground italic text-center text-left">Try a different search term or enter the "Other" circle.</p>
                     </div>
                 )}
             </div>
 
-            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left">
+            <footer className="px-8 pt-12 border-t mt-12 text-center max-w-2xl mx-auto text-left text-left">
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium italic text-balance text-center text-left">
                     "And they overcame him by the blood of the Lamb, and by the word of their testimony; and they loved not their lives unto the death." — Revelation 12:11
                 </p>

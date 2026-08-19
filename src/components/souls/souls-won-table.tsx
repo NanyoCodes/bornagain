@@ -387,7 +387,7 @@ function ShareWordDialog({
              )}
              onClick={() => toggleVerse(v.verse)}
             >
-              <sup className="text-[10px] font-black mr-2 opacity-40">{v.verse}</sup>
+              <sup className="text-[10px] font-black mr-2 opacity-40 text-left">{v.verse}</sup>
               <span className="text-sm leading-relaxed">{v.text}</span>
            </div>
          ))}
@@ -1219,7 +1219,7 @@ const SoulCard = React.memo(({ soul, onClick }: {
                         </div>
                         <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left text-left">
                             <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
-                            {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0">Fellowship</Badge>}
+                            {soul.fellowshipId && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0">Fellowship</Badge>}
                         </div>
                     </div>
                 </div>
@@ -1376,7 +1376,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         {/* Tablet/Mobile Pop-up */}
         <Sheet open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left flex-shrink-0 text-left text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left flex-shrink-0 text-left text-left text-left">
                     <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left">
                             <Sparkles className="h-4 w-4 text-primary text-left" />
@@ -1397,7 +1397,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         </Sheet>
 
         {/* Desktop Detailed Preview Panel (Large screens only) */}
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left">
             <ScrollArea className="h-[calc(100vh-8rem)] pr-4 text-left text-left">
                 <AnimatePresence mode="wait">
                     {selectedSoul ? (
@@ -1409,7 +1409,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                             className="space-y-6 text-left"
                         >
                             {profileView}
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left">
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left text-left">
                                 {selectedSoul.firstName} {selectedSoul.lastName}
                             </p>
                         </motion.div>

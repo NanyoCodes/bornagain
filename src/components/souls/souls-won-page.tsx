@@ -625,10 +625,10 @@ export default function SoulsWonPage() {
                                 <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl text-left">
                                     <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Select Format</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left">
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left text-left">
                                         <Download className="mr-2 h-4 w-4 opacity-40" /> CSV (Excel)
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5 text-left">
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5 text-left text-left">
                                         <Download className="mr-2 h-4 w-4 text-primary" /> PDF Report
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -714,18 +714,18 @@ export default function SoulsWonPage() {
                 )}
 
                 <div className="px-4 sm:px-0 space-y-4 text-left">
-                    <div className="flex items-center gap-3 text-left">
+                    <div className="flex items-center gap-3 text-left text-left">
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
                             <BarChart3 className="h-5 w-5 text-primary text-left" />
                         </div>
-                        <div className="min-w-0 text-left">
+                        <div className="min-w-0 text-left text-left">
                             <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">DEMOGRAPHICS</h2>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Age Analysis</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Age Analysis</p>
                         </div>
                     </div>
                     <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
                         <CardContent className="p-6 sm:p-8 space-y-6 text-left">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left text-left">
                                 {[
                                     { label: 'Children (0-12)', count: ageGroups.children.count, color: 'bg-blue-500', icon: Sparkles },
                                     { label: 'Teens (13-19)', count: ageGroups.teens.count, color: 'bg-green-500', icon: Zap },
@@ -741,19 +741,19 @@ export default function SoulsWonPage() {
                                         <div 
                                             key={group.label} 
                                             className={cn(
-                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left",
+                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left text-left",
                                                 "hover:border-primary/20"
                                             )}
                                             onClick={() => setSelectedAgeGroup(group.label)}
                                         >
                                             <div className="flex items-center justify-between text-left">
                                                 <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left">
-                                                    <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left" />
+                                                    <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left text-left" />
                                                 </div>
                                                 <span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span>
                                             </div>
                                             <div className="space-y-1 text-left">
-                                                <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">
+                                                <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">
                                                     <span className="text-left">{group.label}</span>
                                                     <span className="text-left">{Math.round(percent)}%</span>
                                                 </div>
@@ -772,7 +772,7 @@ export default function SoulsWonPage() {
                         souls={souls || []}
                         campaigns={campaigns || []}
                         fellowships={activeFellowships || []}
-                        className="rounded-3xl"
+                        className="rounded-3xl text-left"
                     />
                 </div>
 
@@ -875,7 +875,7 @@ export default function SoulsWonPage() {
             <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
                 <AlertDialogHeader className="text-left text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left">
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -916,14 +916,14 @@ export default function SoulsWonPage() {
             ) : (
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader>
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                                <DialogHeader className="text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 text-left">
+                            <ScrollArea className="flex-1 min-h-0 text-left text-left">
                                 <div className="p-8 text-left">
                                     <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
                                 </div>
@@ -931,14 +931,14 @@ export default function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                        <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="flex-1 min-h-0 text-left">
+                            <ScrollArea className="flex-1 min-h-0 text-left text-left">
                                 <div className="p-8 text-left">
                                     {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
                                 </div>
@@ -951,3 +951,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+

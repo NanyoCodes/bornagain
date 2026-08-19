@@ -123,7 +123,7 @@ function LiveParticipantAvatar({ userId, fallbackUrl, fallbackInitials, classNam
 function ParticipantsDialog({ campaign, children }: { campaign: Event; children: React.ReactNode; }) {
   const firestore = useFirestore();
   const { user } = useUser();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -176,7 +176,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
                 <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Members ({otherParticipants.length})</h3>
                 <div className="space-y-3">
                   {otherParticipants.map(p => (
-                    <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm text-left text-left">
+                    <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm text-left text-left text-left">
                       <div className="flex items-center gap-3 group relative text-left">
                         <LiveParticipantAvatar userId={p.userId} fallbackUrl={p.photoURL} fallbackInitials={p.firstName?.charAt(0)} className="h-9 w-9 text-xs border group-hover:scale-105 transition-transform" />
                         <Link 
@@ -212,8 +212,8 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
         <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
           <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
             <SheetHeader className="text-left flex-shrink-0 text-left text-left">
-                <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants Directory</SheetTitle>
-                <SheetDescription className="text-sm font-medium text-left">
+                <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left text-left">Participants Directory</SheetTitle>
+                <SheetDescription className="text-sm font-medium text-left text-left">
                 {campaign.participantCount || 0} believers mobilized for "{campaign.title}".
                 </SheetDescription>
             </SheetHeader>
@@ -230,7 +230,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl text-left">
-        <div className="p-8 border-b bg-muted/10 text-left">
+        <div className="p-8 border-b bg-muted/10 text-left text-left">
             <DialogHeader className="text-left">
                 <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants for "{campaign.title}"</DialogTitle>
                 <DialogDescription className="text-sm font-medium text-left">
@@ -372,7 +372,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-left">
-                        <MoreVertical className="h-5 w-5 text-left" />
+                        <MoreVertical className="h-4 w-4 text-left" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl text-left">
@@ -403,16 +403,16 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
         </p>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
-          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left">
+          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left text-left">
             <CalendarDays className="h-6 w-6 text-primary shrink-0 text-left" />
-            <div className="min-w-0 text-left">
+            <div className="min-w-0 text-left text-left">
                 <p className="text-sm sm:text-base font-bold leading-tight text-left">{dateStr}</p>
                 <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">{event.startTime} - {event.endTime}</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left">
+          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left text-left">
             <MapPin className="h-6 w-6 text-primary shrink-0 text-left" />
-            <div className="min-w-0 text-left">
+            <div className="min-w-0 text-left text-left">
                 <p className="text-sm sm:text-base font-bold truncate leading-tight uppercase tracking-tight text-left">{event.location}</p>
                 <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">{event.locationType === 'Both' ? 'BOTH PHYSICAL AND VIRTUAL' : event.locationType}</p>
             </div>
@@ -435,7 +435,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
           
           {(isJoined || isOwner) && event.hasGroupChat && (
               <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl shadow-md bg-background border-primary/20 text-primary text-left" onClick={handleOpenGroupChat} disabled={isChatLoading}>
-                {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : <MessagesSquare className="h-5 w-5 text-left" />}
+                {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin text-left text-left" /> : <MessagesSquare className="h-5 w-5 text-left" />}
               </Button>
           )}
 
@@ -453,7 +453,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             </Badge>
           ) : (
             <Button onClick={handleJoin} disabled={isJoining || event.status !== 'active'} className="h-12 px-8 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95 flex-1 sm:flex-none text-left">
-              {isJoining ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : "JOIN GATHERING"}
+              {isJoining ? <Loader2 className="h-5 w-5 animate-spin text-left text-left" /> : "JOIN GATHERING"}
             </Button>
           )}
         </div>
@@ -461,3 +461,4 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
     </Card>
   );
 }
+
