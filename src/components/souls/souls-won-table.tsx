@@ -348,7 +348,7 @@ function ShareWordDialog({
   );
 
   const renderBooks = (
-    <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
+    <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2 text-left">
       {bibleData.map(book => (
         <Button key={book.name} variant="outline" className="h-12 sm:h-14 rounded-xl font-bold uppercase text-[9px] sm:text-xs" onClick={() => handleSelectBook(book.name)}>
           {book.name}
@@ -358,7 +358,7 @@ function ShareWordDialog({
   );
 
   const renderChapters = (
-    <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2">
+    <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2 text-left">
        {selectedBook && bibleData.find(b => b.name === selectedBook)?.chapters.map(ch => (
          <Button key={ch.chapter} variant="outline" className="h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-lg font-black text-xs sm:text-sm" onClick={() => handleSelectChapter(ch.chapter)}>
            {ch.chapter}
@@ -370,8 +370,8 @@ function ShareWordDialog({
   const renderVerses = (
     <div className="space-y-4 pb-12 text-left">
        <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left">
-          <p className="text-[10px] font-black uppercase text-primary mb-1">SELECTED FOR SHARING</p>
-          <p className="text-xs font-bold text-muted-foreground">
+          <p className="text-[10px] font-black uppercase text-primary mb-1 text-left">SELECTED FOR SHARING</p>
+          <p className="text-xs font-bold text-muted-foreground text-left">
             {selectedBook} {selectedChapter}:{selectedVerses.join(', ')}
           </p>
        </div>
@@ -388,7 +388,7 @@ function ShareWordDialog({
              onClick={() => toggleVerse(v.verse)}
             >
               <sup className="text-[10px] font-black mr-2 opacity-40 text-left">{v.verse}</sup>
-              <span className="text-sm leading-relaxed">{v.text}</span>
+              <span className="text-sm leading-relaxed text-left">{v.text}</span>
            </div>
          ))}
        </div>
@@ -411,9 +411,9 @@ function ShareWordDialog({
             <Target className="h-5 w-5 text-primary" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
           </div>
-          <DialogHeader className="text-left">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm font-medium text-left">{desc}</DialogDescription>
+          <DialogHeader className="text-left text-left">
+            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{title}</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm font-medium text-left text-left">{desc}</DialogDescription>
           </DialogHeader>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}>
@@ -424,8 +424,8 @@ function ShareWordDialog({
   );
 
   const body = (
-    <ScrollArea className="flex-grow min-h-[300px]">
-        <div className="p-4 sm:p-10 text-left">
+    <ScrollArea className="flex-grow min-h-[300px] text-left">
+        <div className="p-4 sm:p-10 text-left text-left">
             {view === 'hub' && renderHub}
             {view === 'books' && renderBooks}
             {view === 'chapters' && renderChapters}
@@ -465,7 +465,7 @@ function ShareWordDialog({
         {header}
         {body}
         {footer || (
-            <div className="p-6 border-t bg-muted/5 flex justify-end shrink-0 text-left">
+            <div className="p-6 border-t bg-muted/5 flex justify-end shrink-0">
                 <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs">Close Hub</Button>
             </div>
         )}
@@ -498,9 +498,6 @@ function SoulProfileContent({
   const { userProfile: currentUserProfile } = useUserProfile();
   const { toast } = useToast();
   const router = useRouter();
-
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
 
   const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
   const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = React.useState(false);
@@ -746,7 +743,7 @@ function SoulProfileContent({
             </Button>
         ))}
         {uniquePartners.length === 0 && (
-            <p className="text-center text-xs text-muted-foreground py-12 text-left">No partners found. Connect with some in Settings!</p>
+            <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
         )}
     </div>
   );
@@ -1382,7 +1379,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                             <Sparkles className="h-4 w-4 text-primary text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span>
                         </div>
-                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">
+                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
                         <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>

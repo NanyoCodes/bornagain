@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Public profiles for testimony feed - 2025-06-15T12:00:00Z
+    // Deployment trigger: Public event visibility and cybersecurity hardening - 2025-03-05T15:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -69,7 +69,8 @@ service cloud.firestore {
 
       allow update: if isAuthenticated() && (
         isOwner(userId) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline']) && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline', 'photoURL', 'firstName', 'lastName', 'fullName_lowercase', 'name_tokens', 'bio', 'personalMessage', 'maritalStatus', 'workStatus', 'organizationName', 'roleInOrganization', 'videoTestimonies', 'dateOfBirth', 'location', 'phone', 'defaultMeetingLink']) && (
+          isOwner(userId) ||
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
           (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
         ))
@@ -121,7 +122,7 @@ service cloud.firestore {
     }
 
     match /events/{eventId} {
-      allow read: if isAuthenticated();
+      allow get, list: if true;
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
         request.auth.uid == resource.data.organizerId ||
@@ -150,7 +151,7 @@ service cloud.firestore {
         match /comments/{commentId} {
           allow get, list: if isAuthenticated();
           allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-          allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
           allow update: if isAuthenticated() && (
             (request.resource.data.authorId == request.auth.uid) ||
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
@@ -291,7 +292,7 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
               (request.resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))

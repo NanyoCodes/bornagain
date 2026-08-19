@@ -510,4 +510,3 @@ export default function UserProfileClient({ userId }: { userId: string }) {
     </div>
   );
 }
-
