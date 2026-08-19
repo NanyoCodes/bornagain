@@ -2,7 +2,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Deployment trigger: Granular read access for converted soul privacy - 2025-03-05T14:35:00Z
+    // Deployment trigger: Granular read access for converted soul privacy - 2025-03-05T15:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -24,12 +24,12 @@ service firebase.storage {
     }
 
     function isAllowedFolder(folder) {
-      return folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies', 'souls'];
+      return folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies', 'souls', 'events'];
     }
 
     // Publicly viewable Kingdom activities (Identities and Testimonies)
     match /{folder}/{userId}/{allPaths=**} {
-      allow read: if folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies'];
+      allow read: if folder in ['profile-pictures', 'vendor-branding', 'meals-center', 'kindness-center', 'campaign-assets', 'testimonies', 'events'];
     }
 
     // Private harvest records (Converted souls information)

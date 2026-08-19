@@ -11,13 +11,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useMemo } from "react";
-import { Loader2, Video, MapPin, User, Trash2, Camera, Sparkles, Target } from "lucide-react";
+import { useState } from "react";
+import { Loader2, Video, MapPin, User, Trash2, Sparkles, Target } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser, useFirestore } from "@/firebase";
 import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
@@ -26,8 +25,6 @@ import type { Event, EventCategory } from "@/lib/types";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { safeToDate } from "@/lib/utils";
-import { ImageUpload } from "../common/image-upload";
-import { Label } from "../ui/label";
 
 const eventCategories: EventCategory[] = [
   'Conference', 'Worship', 'Seminar', 'Outreach', 'Prayer', 'Youth', 'Church Service', 'Other'
@@ -46,9 +43,6 @@ const formSchema = z.object({
   endTime: z.string().min(1, "End time is required."),
   maxParticipants: z.number().optional().nullable(),
   streamUrl: z.string().url("Valid URL required").optional().or(z.literal('')),
-  photoUrl1: z.string().optional(),
-  photoUrl2: z.string().optional(),
-  photoUrl3: z.string().optional(),
 }).refine((data) => data.endDate >= data.startDate, {
     message: "End date cannot be before start date.",
     path: ["endDate"],
@@ -75,9 +69,6 @@ export function ManageEventForm({ event, onEventUpdated, onDelete }: { event: Ev
       endTime: event.endTime || "12:00",
       maxParticipants: event.maxParticipants ?? null,
       streamUrl: event.streamUrl || "",
-      photoUrl1: event.photoUrls?.[0] || "",
-      photoUrl2: event.photoUrls?.[1] || "",
-      photoUrl3: event.photoUrls?.[2] || "",
     },
   });
 
@@ -86,7 +77,6 @@ export function ManageEventForm({ event, onEventUpdated, onDelete }: { event: Ev
     setIsSubmitting(true);
 
     const eventRef = doc(firestore, 'events', event.id);
-    const photoUrls = [values.photoUrl1, values.photoUrl2, values.photoUrl3].filter(Boolean) as string[];
 
     const updateData = {
         title: values.title,
@@ -101,7 +91,6 @@ export function ManageEventForm({ event, onEventUpdated, onDelete }: { event: Ev
         endTime: values.endTime,
         maxParticipants: values.maxParticipants || null,
         streamUrl: values.streamUrl || null,
-        photoUrls: photoUrls.length > 0 ? photoUrls : null,
         updatedAt: serverTimestamp(),
     };
 
@@ -155,13 +144,13 @@ export function ManageEventForm({ event, onEventUpdated, onDelete }: { event: Ev
                 </FormItem>
             )} />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                 <FormField control={form.control} name="category" render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Category</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
+                          <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                             <SelectValue placeholder="Select Category" />
                           </SelectTrigger>
                         </FormControl>
@@ -188,39 +177,6 @@ export function ManageEventForm({ event, onEventUpdated, onDelete }: { event: Ev
                         </SelectContent>
                       </Select>
                       <FormMessage />
-                    </FormItem>
-                )} />
-            </div>
-        </div>
-
-        <div className="space-y-6">
-            <div className="flex items-center gap-3 px-1">
-                <Camera className="h-5 w-5 text-primary" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Event Photos (Up to 3)</h3>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <FormField control={form.control} name="photoUrl1" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Hero Image</FormLabel>
-                        <FormControl>
-                            <ImageUpload initialImageUrl={field.value} onUploadComplete={url => field.onChange(url)} storagePath="events" cropAspect={16/9} />
-                        </FormControl>
-                    </FormItem>
-                )} />
-                <FormField control={form.control} name="photoUrl2" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Proof 2</FormLabel>
-                        <FormControl>
-                            <ImageUpload initialImageUrl={field.value} onUploadComplete={url => field.onChange(url)} storagePath="events" cropAspect={16/9} />
-                        </FormControl>
-                    </FormItem>
-                )} />
-                <FormField control={form.control} name="photoUrl3" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Proof 3</FormLabel>
-                        <FormControl>
-                            <ImageUpload initialImageUrl={field.value} onUploadComplete={url => field.onChange(url)} storagePath="events" cropAspect={16/9} />
-                        </FormControl>
                     </FormItem>
                 )} />
             </div>
@@ -303,9 +259,9 @@ export function ManageEventForm({ event, onEventUpdated, onDelete }: { event: Ev
             </div>
             <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About this Event</FormLabel>
-                  <FormControl><Textarea placeholder="Share the vision and schedule..." className="min-h-[120px] rounded-[2rem] p-6 bg-muted/10 border-2 border-dashed text-base leading-relaxed" {...field} /></FormControl>
-                  <FormMessage />
+                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">About this Event</FormLabel>
+                <FormControl><Textarea placeholder="Share the vision and schedule..." className="min-h-[120px] rounded-[2rem] p-6 bg-muted/10 border-2 border-dashed text-base leading-relaxed" {...field} /></FormControl>
+                <FormMessage />
                 </FormItem>
             )} />
         </div>

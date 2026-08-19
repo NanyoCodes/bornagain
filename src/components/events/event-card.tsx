@@ -10,15 +10,10 @@ import {
   PlayCircle, 
   Loader2, 
   UserCheck, 
-  Sparkles, 
   MoreVertical, 
   Trash2, 
   MessagesSquare, 
-  Edit,
-  Globe,
-  ChevronDown,
-  X,
-  ImageIcon
+  Edit
 } from "lucide-react";
 import type { Event, UserProfile, EventParticipant, Chat } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -53,13 +48,9 @@ import {
   collection, 
   serverTimestamp, 
   query, 
-  where, 
-  getDocs, 
-  addDoc, 
   doc, 
   getDoc, 
   runTransaction, 
-  writeBatch, 
   arrayUnion, 
   updateDoc 
 } from "firebase/firestore";
@@ -177,7 +168,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
                 <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Members ({otherParticipants.length})</h3>
                 <div className="space-y-3">
                   {otherParticipants.map(p => (
-                    <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm text-left text-left text-left">
+                    <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm text-left text-left">
                       <div className="flex items-center gap-3 group relative text-left">
                         <LiveParticipantAvatar userId={p.userId} fallbackUrl={p.photoURL} fallbackInitials={p.firstName?.charAt(0)} className="h-9 w-9 text-xs border group-hover:scale-105 transition-transform" />
                         <Link 
@@ -212,9 +203,9 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
         <SheetTrigger asChild>{children}</SheetTrigger>
         <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
           <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-            <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
-                <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left text-left">Participants Directory</SheetTitle>
-                <SheetDescription className="text-sm font-medium text-left text-left">
+            <SheetHeader className="text-left flex-shrink-0 text-left">
+                <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants Directory</SheetTitle>
+                <SheetDescription className="text-sm font-medium text-left">
                 {campaign.participantCount || 0} believers mobilized for "{campaign.title}".
                 </SheetDescription>
             </SheetHeader>
@@ -230,8 +221,8 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl text-left">
-        <div className="p-8 border-b bg-muted/10 text-left text-left">
+      <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
+        <div className="p-8 border-b bg-muted/10 text-left shrink-0">
             <DialogHeader className="text-left">
                 <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants for "{campaign.title}"</DialogTitle>
                 <DialogDescription className="text-sm font-medium text-left">
@@ -239,7 +230,7 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
                 </DialogDescription>
             </DialogHeader>
         </div>
-        <div className="p-8 text-left">
+        <div className="p-8 text-left flex-1 min-h-0">
             {content}
         </div>
       </DialogContent>
@@ -361,23 +352,8 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
     } catch (e) {}
   };
 
-  const photoCount = event.photoUrls?.length || 0;
-
   return (
     <Card className="rounded-none sm:rounded-[3rem] overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-8 border-b-primary/10 text-left">
-      {photoCount > 0 && (
-        <div className={cn(
-            "grid gap-1 border-b",
-            photoCount === 1 ? "grid-cols-1" : photoCount === 2 ? "grid-cols-2" : "grid-cols-3"
-        )}>
-            {event.photoUrls?.map((url, idx) => (
-                <div key={idx} className={cn("relative aspect-video bg-muted", photoCount === 1 && "aspect-[21/9]")}>
-                    <Image src={url} alt={`Event ${idx+1}`} fill className="object-cover" unoptimized />
-                </div>
-            ))}
-        </div>
-      )}
-      
       <CardHeader className="p-6 sm:p-10 pb-4 text-left">
         <div className="flex justify-between items-start text-left">
           <Badge className="h-6 text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20 text-left">
@@ -430,7 +406,7 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
             <MapPin className="h-6 w-6 text-primary shrink-0 text-left" />
             <div className="min-w-0 text-left text-left text-left">
                 <p className="text-sm sm:text-base font-bold truncate leading-tight uppercase tracking-tight text-left">{event.location}</p>
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">{event.locationType === 'Both' ? 'BOTH PHYSICAL AND VIRTUAL' : event.locationType}</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">BOTH PHYSICAL AND VIRTUAL</p>
             </div>
           </div>
         </div>

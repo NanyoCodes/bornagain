@@ -544,7 +544,7 @@ export type Event = {
   streamUrl?: string;
   createdAt: Timestamp;
   hasGroupChat?: boolean;
-  photoUrls?: string[];
+  photoURL?: string;
 };
 
 export type EventParticipant = {
