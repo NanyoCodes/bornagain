@@ -36,6 +36,7 @@ import { Separator } from "@/components/ui/separator";
 import { Country, State } from 'country-state-city';
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
+import { cn, safeToDate } from "@/lib/utils";
 
 const libraries: ('places')[] = ['places'];
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -567,7 +568,7 @@ export function EditProfileModal({ userProfile, onClose }: EditProfileModalProps
                         <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto text-left">
                             <Video className="h-6 w-6 text-primary text-left" />
                         </div>
-                        <div className="space-y-1 text-left text-left">
+                        <div className="space-y-1 text-left text-left text-left">
                             <h4 className="font-bold text-sm text-center">Share Your Story via Video</h4>
                             <p className="text-xs text-muted-foreground leading-relaxed max-w-[250px] mx-auto text-center">
                                 Sharing your journey through video is a powerful way to testify of God's goodness.

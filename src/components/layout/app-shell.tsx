@@ -342,7 +342,7 @@ function GlobalCartSheet({ isOpen, onOpenChange }: { isOpen: boolean, onOpenChan
                                 </div>
                                 <h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left">Empty Hub</h3>
                                 <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-center">Add items from the marketplace to build your package.</p>
-                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left" onClick={() => onOpenChange(false)}>
+                                <Button variant="outline" asChild className="mt-10 rounded-2xl h-12 px-10 font-black uppercase tracking-[0.2em] border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left text-left">
                                     <Link href="/marketplace" className="text-left text-left">VISIT HUB</Link>
                                 </Button>
                             </div>
@@ -426,7 +426,7 @@ function CartButton() {
 }
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendors }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, userVendors: VendorProfile[] | null }) {
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
