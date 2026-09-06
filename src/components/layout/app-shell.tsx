@@ -39,7 +39,8 @@ import {
   Trash2,
   Minus,
   Plus,
-  Cake
+  Cake,
+  Hourglass
 } from "lucide-react";
 
 import {
@@ -808,7 +809,7 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10 flex flex-col items-center justify-center",
+                      "relative z-10",
                       isActive ? "text-white" : "text-muted-foreground"
                     )}
                   >

@@ -62,13 +62,13 @@ export default function SignUpPage() {
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ');
       const fullName = `${firstName} ${lastName}`;
-      const nameTokens = fullName.toLowerCase().split(' ').filter(Boolean);
+      const nameTokens = fullName.toLowerCase().split(/\s+/).filter(Boolean);
 
       const userDocRef = doc(firestore, 'users', user.uid);
       const userData = {
         firstName: firstName,
         lastName: lastName,
-        fullName_lowercase: displayName.toLowerCase(),
+        fullName_lowercase: fullName.toLowerCase(),
         name_tokens: nameTokens,
         email: user.email,
         photoURL: user.photoURL,

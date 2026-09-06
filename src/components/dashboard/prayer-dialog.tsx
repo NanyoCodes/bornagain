@@ -301,11 +301,11 @@ export function PrayerDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl flex flex-col max-h-[85vh] p-0">
+      <DialogContent className="sm:max-w-xl flex flex-col h-[85vh] max-h-[85vh] p-0 overflow-hidden">
         <div className="p-6 border-b shrink-0">
             <Header />
         </div>
-        <ScrollArea className="flex-grow px-6">
+        <ScrollArea className="flex-1 min-h-0 px-6">
             <div className="py-6">
                 <DialogBody />
             </div>
