@@ -380,7 +380,7 @@ function CartButton() {
     if (stored) {
       try {
         const cart = JSON.parse(stored);
-        const total = Object.values(cart).reduce((acc: number, c: any) => acc + c.quantity, 0);
+        const total = Object.values(cart).reduce((acc: number, c: any) => acc + (c.quantity as number), 0);
         setCount(total);
       } catch (e) {
         setCount(0);
@@ -427,7 +427,7 @@ function CartButton() {
 }
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendors }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, userVendors: VendorProfile[] | null }) {
-  const { user, loading: authLoading } = useUser();
+  const { user } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
@@ -809,13 +809,13 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10",
+                      "relative z-10 flex flex-col items-center",
                       isActive ? "text-white" : "text-muted-foreground"
                     )}
                   >
                     <item.icon className={cn("h-6 w-6 mb-1", !isActive && item.color)} />
                     <span className={cn(
-                        "text-[8px] font-black uppercase tracking-tighter transition-all leading-none",
+                        "text-[8px] font-black uppercase tracking-tighter transition-all leading-none text-center",
                         isActive ? "opacity-100" : "opacity-60"
                     )}>
                         {item.label}
@@ -861,7 +861,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
             setShowSplash(false);
             localStorage.setItem('testify_splash_last_shown', now.toString());
             setContentVisible(true);
-        }, 3000); //snappier splash
+        }, 2500); //snappier splash
         return () => clearTimeout(timer);
     } else {
         setContentVisible(true);

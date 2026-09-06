@@ -135,7 +135,7 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-3 sm:px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[9px] sm:text-[10px] whitespace-nowrap">
                   GLORIFYING GOD
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-5xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
                   Testify the <br className="hidden sm:block" />
                   Greatness of GOD.<br className="hidden sm:block" />
                   <span className="text-primary">Join the Harvest.</span>
