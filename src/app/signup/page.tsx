@@ -56,22 +56,22 @@ export default function SignUpPage() {
     try {
       await setPersistence(auth, browserLocalPersistence);
       const result = await signInWithPopup(auth, authProvider);
-      const user = result.user;
+      const loggedUser = result.user;
       
-      const nameParts = user.displayName?.split(' ') || [];
+      const nameParts = loggedUser.displayName?.split(' ') || [];
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ');
       const fullName = `${firstName} ${lastName}`;
       const nameTokens = fullName.toLowerCase().split(/\s+/).filter(Boolean);
 
-      const userDocRef = doc(firestore, 'users', user.uid);
+      const userDocRef = doc(firestore, 'users', loggedUser.uid);
       const userData = {
         firstName: firstName,
         lastName: lastName,
         fullName_lowercase: fullName.toLowerCase(),
         name_tokens: nameTokens,
-        email: user.email,
-        photoURL: user.photoURL,
+        email: loggedUser.email,
+        photoURL: loggedUser.photoURL,
       };
 
       await setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
@@ -79,7 +79,7 @@ export default function SignUpPage() {
           path: userDocRef.path,
           operation: 'create',
           requestResourceData: userData,
-        }, user);
+        }, loggedUser);
         errorEmitter.emit('permission-error', permissionError);
       });
 

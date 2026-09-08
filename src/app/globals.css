@@ -80,7 +80,7 @@
     -ms-overflow-style: none; /* Hide for IE/Edge */
   }
   
-  /* Hide for Chrome/Safari */
+  /* Hide for Chrome/Safari while keeping functional */
   *::-webkit-scrollbar {
     display: none;
   }
