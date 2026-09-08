@@ -7,13 +7,14 @@ import { collection, query, doc, updateDoc, writeBatch, where, getDoc, serverTim
 import type { Notification, Soul } from '@/lib/types';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles, X, ShoppingBag, Package, Cake } from 'lucide-react';
+import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles, X, ShoppingBag, Package, Cake, Filter } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const NOTIFICATION_TYPES = [
   'campaign_join', 
@@ -69,6 +70,7 @@ export default function NotificationsPage() {
   const router = useRouter();
 
   const [pendingProvisions, setPendingProvisions] = useState<any[]>([]);
+  const [filter, setFilter] = useState('all');
 
   const checkPending = useCallback(() => {
     if (typeof window === 'undefined' || !user?.uid) return;
@@ -178,8 +180,26 @@ export default function NotificationsPage() {
         soulId: p.soulId
     }));
 
-    return [...virtualNotifs, ...items];
-  }, [notifications, pendingProvisions, user?.uid]);
+    let combined = [...virtualNotifs, ...items];
+
+    if (filter === 'kindness') {
+        return combined.filter(i => 
+            i.type === 'pending_provision' || 
+            i.type === 'new_order' || 
+            i.type === 'order_update'
+        );
+    }
+
+    if (filter === 'general') {
+        return combined.filter(i => 
+            i.type !== 'pending_provision' && 
+            i.type !== 'new_order' && 
+            i.type !== 'order_update'
+        );
+    }
+
+    return combined;
+  }, [notifications, pendingProvisions, user?.uid, filter]);
 
   const handleNotificationClick = (notification: any) => {
     if (!user || !firestore) return;
@@ -225,31 +245,41 @@ export default function NotificationsPage() {
   return (
     <div className="flex flex-col h-full w-full bg-background overflow-hidden text-left">
       <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4 text-left">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 min-w-0 text-left">
-            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
-                <ArrowLeft className="h-6 w-6 text-left" />
-                <span className="sr-only text-left">Back</span>
-            </Button>
-            <div className="space-y-0.5 sm:space-y-1 min-w-0 text-left">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight uppercase truncate text-left">
-                Notifications
-                </h1>
-                <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] truncate text-left">
-                Kingdom Alerts
-                </p>
+        <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4 min-w-0 text-left">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
+                        <ArrowLeft className="h-6 w-6 text-left" />
+                        <span className="sr-only text-left">Back</span>
+                    </Button>
+                    <div className="space-y-0.5 sm:space-y-1 min-w-0 text-left">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight uppercase truncate text-left">
+                        Notifications
+                        </h1>
+                        <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] truncate text-left">
+                        Kingdom Alerts
+                        </p>
+                    </div>
+                </div>
+                {!loading && notifications && notifications.length > 0 && unreadCount > 0 && (
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={handleMarkAllAsRead} 
+                        className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary hover:bg-primary/5 h-8 rounded-full px-3 sm:px-4 shrink-0 shadow-sm border border-primary/10 sm:border-none text-left"
+                    >
+                        Mark all as read
+                    </Button>
+                )}
             </div>
-          </div>
-          {!loading && notifications && notifications.length > 0 && unreadCount > 0 && (
-               <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleMarkAllAsRead} 
-                  className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary hover:bg-primary/5 h-8 rounded-full px-3 sm:px-4 shrink-0 shadow-sm border border-primary/10 sm:border-none text-left"
-              >
-                  Mark all as read
-              </Button>
-          )}
+
+            <Tabs value={filter} onValueChange={setFilter} className="w-full">
+                <TabsList className="grid w-full grid-cols-3 h-11 bg-muted/30 p-1 rounded-2xl">
+                    <TabsTrigger value="all" className="text-[10px] font-black uppercase tracking-widest rounded-xl">All Alerts</TabsTrigger>
+                    <TabsTrigger value="kindness" className="text-[10px] font-black uppercase tracking-widest rounded-xl">Kindness</TabsTrigger>
+                    <TabsTrigger value="general" className="text-[10px] font-black uppercase tracking-widest rounded-xl">System</TabsTrigger>
+                </TabsList>
+            </Tabs>
         </div>
       </div>
 
@@ -273,11 +303,11 @@ export default function NotificationsPage() {
                     {!loading && allDisplayItems.length === 0 && (
                         <div className="py-24 text-center px-8 flex flex-col items-center justify-center flex-1 text-left">
                             <div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
-                                <Bell className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left" />
+                                {filter === 'kindness' ? <Gift className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left" /> : <Bell className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left" />}
                             </div>
-                            <h3 className="text-lg sm:text-xl font-bold font-headline uppercase tracking-tight text-left">No Alerts Yet</h3>
+                            <h3 className="text-lg sm:text-xl font-bold font-headline uppercase tracking-tight text-left">No {filter !== 'all' ? filter : ''} Alerts</h3>
                             <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed text-left text-left">
-                                Stay focused on the harvest. We'll notify you here about campaign activity and partner requests.
+                                Stay focused on the harvest. We'll notify you here about activities in the Kingdom Network.
                             </p>
                         </div>
                     )}
