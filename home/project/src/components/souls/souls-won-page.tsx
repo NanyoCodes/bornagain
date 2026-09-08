@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import dynamic from 'next/dynamic';
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { 
   PlusCircle, 
   Download, 
@@ -24,7 +24,9 @@ import {
   HelpCircle,
   ClipboardList,
   ChevronRight,
-  Plus
+  Plus,
+  Users,
+  Heart
 } from "lucide-react";
 import { 
   Dialog, 
@@ -97,41 +99,58 @@ const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').the
 const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 const SoulAssessmentDialog = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
 
-function AgeGroupSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul: (soul: Soul) => void }) {
+function FilteredSoulList({ souls, onSelectSoul }: { souls: any[], onSelectSoul: (soul: Soul) => void }) {
   if (! souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic text-left">No souls found in this age group.</p>
+        <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2 pb-4 text-left">
-      {souls.map((soul) => {
+    <div className="space-y-3 pb-6 text-left">
+      {souls.map((item) => {
+        // Handle family units vs individuals
+        const soul = item;
+        const isFamily = !!item.spouseRecord;
         const wonAt = safeToDate(soul.wonAt);
+        
         return (
           <Button 
             key={soul.id} 
             variant="ghost"
             onClick={() => onSelectSoul(soul)}
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98]"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98] relative"
           >
-            <div className="flex items-center gap-3 min-w-0 text-left">
-                <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
-                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
+            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                <Avatar aria-hidden="true" className="h-10 w-10 border shadow-sm shrink-0 text-left text-center flex items-center justify-center w-full h-full">
+                    <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
-                <div className="min-w-0 text-left">
+                <div className="min-w-0 text-left flex-1">
                     <div className="flex items-center gap-2 text-left flex-wrap">
-                        <p className="font-black text-sm truncate uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
-                        <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 text-left">{soul.status}</Badge>
+                        <p className="font-black text-sm truncate uppercase tracking-tight text-left">
+                            {soul.firstName} {soul.lastName}
+                            {isFamily && (
+                                <span className="text-primary/60 ml-1.5 lowercase">
+                                    & {item.spouseRecord.firstName}
+                                </span>
+                            )}
+                        </p>
+                        <Badge variant="outline" className="text-[8px] h-4 px-1.5 uppercase font-black tracking-tighter shrink-0 text-left ml-auto sm:ml-0 bg-background/50">{soul.status}</Badge>
                     </div>
-                    <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-1 text-left">
-                        Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
-                    </p>
+                    <div className="flex items-center gap-3 mt-1 text-muted-foreground">
+                        <p className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">
+                            Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
+                        </p>
+                        {isFamily && (
+                             <Badge variant="secondary" className="h-3.5 px-1 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none">Family Unit</Badge>
+                        )}
+                    </div>
                 </div>
             </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 ml-2" />
           </Button>
         );
       })}
@@ -145,6 +164,7 @@ export default function SoulsWonPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const searchParams = useSearchParams();
   const { searchTerm, setSearchPlaceholder, setIsSearchVisible, setSearchTerm } = useSearch();
 
   const [mounted, setMounted] = useState(false);
@@ -158,7 +178,7 @@ export default function SoulsWonPage() {
   const [deleteSoulId, setDeleteSoulId] = useState<string | null>(null);
   const [assessmentSoulId, setAssessmentSoulId] = useState<string | null>(null);
 
-  const [selectedAgeGroup, setSelectedAgeGroup] = useState<string | null>(null);
+  const [selectedFilterGroup, setSelectedFilterGroup] = useState<{ type: 'age' | 'gender' | 'marital', value: string } | null>(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGalleryPaused, setIsGalleryPaused] = useState(false);
@@ -172,6 +192,13 @@ export default function SoulsWonPage() {
       setSearchTerm("");
     };
   }, [setIsSearchVisible, setSearchTerm, setSearchPlaceholder]);
+
+  useEffect(() => {
+    const soulIdFromUrl = searchParams?.get('soulId');
+    if (soulIdFromUrl) {
+      setSelectedSoulId(soulIdFromUrl);
+    }
+  }, [searchParams]);
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -226,17 +253,108 @@ export default function SoulsWonPage() {
     return stats;
   }, [souls]);
 
-  const activeAgeGroupSouls = useMemo(() => {
-    if (!selectedAgeGroup) return [];
-    const groupKey = selectedAgeGroup.toLowerCase();
-    if (groupKey.includes('children')) return ageGroups.children.list;
-    if (groupKey.includes('teens')) return ageGroups.teens.list;
-    if (groupKey.includes('young adults')) return ageGroups.youngAdults.list;
-    if (groupKey.includes('adults')) return ageGroups.adults.list;
-    if (groupKey.includes('seniors')) return ageGroups.seniors.list;
-    if (groupKey.includes('age not set')) return ageGroups.unknown.list;
+  const genderStats = useMemo(() => {
+    const stats = {
+      male: { count: 0, list: [] as Soul[] },
+      female: { count: 0, list: [] as Soul[] },
+      unassigned: { count: 0, list: [] as Soul[] },
+      total: 0
+    };
+    if (!souls) return stats;
+    souls.forEach(s => {
+      if (s.gender === 'Male') {
+          stats.male.count++;
+          stats.male.list.push(s);
+      } else if (s.gender === 'Female') {
+          stats.female.count++;
+          stats.female.list.push(s);
+      } else {
+          stats.unassigned.count++;
+          stats.unassigned.list.push(s);
+      }
+      stats.total++;
+    });
+    return stats;
+  }, [souls]);
+
+  const maritalStats = useMemo(() => {
+    const stats = {
+      married: { count: 0, list: [] as any[] },
+      single: { count: 0, list: [] as Soul[] },
+      divorced: { count: 0, list: [] as Soul[] },
+      widowed: { count: 0, list: [] as Soul[] },
+      total: 0
+    };
+    if (!souls) return stats;
+
+    const processedIds = new Set<string>();
+
+    souls.forEach(s => {
+      const status = s.maritalStatus;
+      if (status === 'Married') {
+          if (!processedIds.has(s.id)) {
+              // Attempt to find spouse in the list to avoid double-counting the family unit
+              const spouse = souls.find(other => {
+                if (other.id === s.id || other.maritalStatus !== 'Married') return false;
+                
+                const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
+                const sFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+                const sSpouse = (s.spouseName || "").toLowerCase();
+                const otherSpouse = (other.spouseName || "").toLowerCase();
+
+                return (sSpouse === otherFullName || sSpouse === other.firstName.toLowerCase()) &&
+                       (otherSpouse === sFullName || otherSpouse === s.firstName.toLowerCase());
+              });
+
+              if (spouse) {
+                processedIds.add(spouse.id);
+                stats.married.list.push({ ...s, spouseRecord: spouse });
+              } else {
+                stats.married.list.push(s);
+              }
+              
+              processedIds.add(s.id);
+              stats.married.count++;
+          }
+      } else if (status === 'Single') {
+          stats.single.count++;
+          stats.single.list.push(s);
+      } else if (status === 'Divorced') {
+          stats.divorced.count++;
+          stats.divorced.list.push(s);
+      } else if (status === 'Widowed') {
+          stats.widowed.count++;
+          stats.widowed.list.push(s);
+      }
+      stats.total++;
+    });
+    return stats;
+  }, [souls]);
+
+  const activeFilteredSouls = useMemo(() => {
+    if (!selectedFilterGroup) return [];
+    const { type, value } = selectedFilterGroup;
+    const groupKey = value.toLowerCase();
+
+    if (type === 'age') {
+        if (groupKey.includes('children')) return ageGroups.children.list;
+        if (groupKey.includes('teens')) return ageGroups.teens.list;
+        if (groupKey.includes('young adults')) return ageGroups.youngAdults.list;
+        if (groupKey.includes('adults')) return ageGroups.adults.list;
+        if (groupKey.includes('seniors')) return ageGroups.seniors.list;
+        if (groupKey.includes('age not set')) return ageGroups.unknown.list;
+    } else if (type === 'gender') {
+        if (groupKey === 'male') return genderStats.male.list;
+        if (groupKey === 'female') return genderStats.female.list;
+        if (groupKey === 'not assigned') return genderStats.unassigned.list;
+    } else if (type === 'marital') {
+        if (groupKey === 'families') return maritalStats.married.list;
+        if (groupKey === 'singles') return maritalStats.single.list;
+        if (groupKey === 'divorced') return maritalStats.divorced.list;
+        if (groupKey === 'widowers') return maritalStats.widowed.list;
+    }
     return [];
-  }, [selectedAgeGroup, ageGroups]);
+  }, [selectedFilterGroup, ageGroups, genderStats, maritalStats]);
 
   const totalSoulsCount = useMemo(() => souls?.length || 0, [souls]);
 
@@ -257,7 +375,7 @@ export default function SoulsWonPage() {
     if (!firestore) return null;
     return query(collection(firestore, 'fellowships'), where('status', '==', 'active'));
   }, [firestore]);
-  const { data: activeFellowships } = useCollection<Fellowship>(activeFellowshipsQuery);
+  const { data: fellowships } = useCollection<Fellowship>(activeFellowshipsQuery);
 
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
@@ -451,7 +569,7 @@ export default function SoulsWonPage() {
 
     const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
     const globalSoulRef = doc(firestore, 'souls', soul.id);
-    const selectedGroup = activeFellowships?.find(f => f.id === fellowshipId);
+    const selectedGroup = fellowships?.find(f => f.id === fellowshipId);
     
     const updateData: { [key: string]: any } = {
         updatedAt: serverTimestamp(),
@@ -495,7 +613,7 @@ export default function SoulsWonPage() {
   }, [souls, searchTerm]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto text-left">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
             <div className="lg:col-span-8 space-y-8 pb-32 text-left">
                 <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
@@ -503,7 +621,7 @@ export default function SoulsWonPage() {
                         <div className="space-y-1 text-left">
                             <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY HARVEST</h1>
                             <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
-                                <ClipboardList className="h-4 w-4 text-primary" /> Logged Records
+                                <ClipboardList className="h-4 w-4 text-primary text-left" /> Logged Records
                             </p>
                         </div>
                         <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap text-left w-full sm:w-auto">
@@ -604,65 +722,153 @@ export default function SoulsWonPage() {
                     </div>
                 )}
 
-                <div className="px-4 sm:px-0 space-y-4 text-left">
-                    <div className="flex items-center gap-3 text-left">
-                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
-                            <BarChart3 className="h-5 w-5 text-primary text-left" />
-                        </div>
-                        <div className="min-w-0 text-left">
-                            <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">DEMOGRAPHICS</h2>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Age Analysis</p>
-                        </div>
-                    </div>
-                    <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
-                        <CardContent className="p-6 sm:p-8 space-y-6 text-left">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                                {[
-                                    { label: 'Children (0-12)', count: ageGroups.children.count, color: 'bg-blue-500', icon: Sparkles },
-                                    { label: 'Teens (13-19)', count: ageGroups.teens.count, color: 'bg-green-500', icon: Zap },
-                                    { label: 'Young Adults (20-33)', count: ageGroups.youngAdults.count, color: 'bg-primary', icon: Flame },
-                                    { label: 'Adults (34-55)', count: ageGroups.adults.count, color: 'bg-indigo-500', icon: Target },
-                                    { label: 'Seniors (56+)', count: ageGroups.seniors.count, color: 'bg-purple-500', icon: Award },
-                                    { label: 'Age Not Set', count: ageGroups.unknown.count, color: 'bg-slate-400', icon: HelpCircle },
-                                ].map(group => {
-                                    const percent = totalSoulsCount > 0 ? (group.count / totalSoulsCount) * 100 : 0;
-                                    const Icon = group.icon;
-
-                                    return (
-                                        <div 
-                                            key={group.label} 
-                                            className={cn(
-                                                "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left",
-                                                "hover:border-primary/20"
-                                            )}
-                                            onClick={() => setSelectedAgeGroup(group.label)}
-                                        >
-                                            <div className="flex items-center justify-between text-left">
-                                                <div className="h-8 w-8 rounded-xl bg-muted/50 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left">
-                                                    <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left" />
-                                                </div>
-                                                <span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span>
-                                            </div>
-                                            <div className="space-y-1 text-left">
-                                                <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">
-                                                    <span className="text-left">{group.label}</span>
-                                                    <span className="text-left">{Math.round(percent)}%</span>
-                                                </div>
-                                                <Progress value={percent} className="h-1.5 bg-muted text-left" indicatorClassName={group.color} />
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                <div className="px-4 sm:px-0 space-y-12 text-left">
+                    {/* Age Demographics */}
+                    <div className="space-y-4 text-left">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
+                                <BarChart3 className="h-5 w-5 text-primary text-left" />
                             </div>
-                        </CardContent>
-                    </Card>
+                            <div className="min-w-0 text-left">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">DEMOGRAPHICS</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Age Analysis</p>
+                            </div>
+                        </div>
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
+                            <CardContent className="p-6 sm:p-8 space-y-6 text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                                    {[
+                                        { label: 'Children (0-12)', count: ageGroups.children.count, color: 'bg-blue-500', icon: Sparkles },
+                                        { label: 'Teens (13-19)', count: ageGroups.teens.count, color: 'bg-green-500', icon: Zap },
+                                        { label: 'Young Adults (20-33)', count: ageGroups.youngAdults.count, color: 'bg-primary', icon: Flame },
+                                        { label: 'Adults (34-55)', count: ageGroups.adults.count, color: 'bg-indigo-500', icon: Target },
+                                        { label: 'Seniors (56+)', count: ageGroups.seniors.count, color: 'bg-purple-500', icon: Award },
+                                        { label: 'Age Not Set', count: ageGroups.unknown.count, color: 'bg-slate-400', icon: HelpCircle },
+                                    ].map(group => {
+                                        const percent = totalSoulsCount > 0 ? (group.count / totalSoulsCount) * 100 : 0;
+                                        const Icon = group.icon;
+
+                                        return (
+                                            <div 
+                                                key={group.label} 
+                                                className={cn(
+                                                    "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left",
+                                                    "hover:border-primary/20"
+                                                )}
+                                                onClick={() => setSelectedFilterGroup({ type: 'age', value: group.label })}
+                                            >
+                                                <div className="flex items-center justify-between text-left">
+                                                    <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left">
+                                                        <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left" />
+                                                    </div>
+                                                    <span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span>
+                                                </div>
+                                                <div className="space-y-1 text-left">
+                                                    <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">
+                                                        <span className="text-left">{group.label}</span>
+                                                        <span className="text-left">{Math.round(percent)}%</span>
+                                                    </div>
+                                                    <Progress value={percent} className="h-1.5 bg-muted text-left" indicatorClassName={group.color} />
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Gender Demographics */}
+                    <div className="space-y-4 text-left">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
+                                <Users className="h-5 w-5 text-primary text-left" />
+                            </div>
+                            <div className="min-w-0 text-left">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">GENDER BALANCE</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Kingdom Workforce Diversity</p>
+                            </div>
+                        </div>
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
+                            <CardContent className="p-6 sm:p-8 text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+                                    {[
+                                        { label: 'Male', count: genderStats.male.count, color: 'bg-blue-600' },
+                                        { label: 'Female', count: genderStats.female.count, color: 'bg-rose-500' },
+                                        { label: 'Not Assigned', count: genderStats.unassigned.count, color: 'bg-slate-400' },
+                                    ].map(stat => {
+                                        const percent = genderStats.total > 0 ? (stat.count / genderStats.total) * 100 : 0;
+                                        return (
+                                            <div 
+                                              key={stat.label} 
+                                              className="space-y-3 p-6 rounded-2xl bg-background shadow-sm border text-left cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
+                                              onClick={() => setSelectedFilterGroup({ type: 'gender', value: stat.label })}
+                                            >
+                                                <div className="flex justify-between items-baseline text-left">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">{stat.label}</p>
+                                                    <span className="text-2xl font-black text-primary tracking-tighter text-left">{stat.count}</span>
+                                                </div>
+                                                <div className="space-y-1.5 text-left">
+                                                    <Progress value={percent} className="h-2 bg-muted text-left" indicatorClassName={stat.color} />
+                                                    <p className="text-right text-[9px] font-black text-muted-foreground/60 uppercase text-left">{Math.round(percent)}% OF HARVEST</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Marital Demographics */}
+                    <div className="space-y-4 text-left">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
+                                <Heart className="h-5 w-5 text-primary text-left" />
+                            </div>
+                            <div className="min-w-0 text-left">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">MARITAL DEMOGRAPHICS</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Family & Status Insights</p>
+                            </div>
+                        </div>
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
+                            <CardContent className="p-6 sm:p-8 text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+                                    {[
+                                        { label: 'Families', count: maritalStats.married.count, color: 'bg-emerald-500', icon: Target },
+                                        { label: 'Singles', count: maritalStats.single.count, color: 'bg-primary', icon: Sparkles },
+                                        { label: 'Divorced', count: maritalStats.divorced.count, color: 'bg-slate-500', icon: HelpCircle },
+                                        { label: 'Widowers', count: maritalStats.widowed.count, color: 'bg-indigo-600', icon: Award },
+                                    ].map(stat => {
+                                        const percent = totalSoulsCount > 0 ? (stat.count / totalSoulsCount) * 100 : 0;
+                                        return (
+                                            <div 
+                                              key={stat.label} 
+                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border text-left cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
+                                              onClick={() => setSelectedFilterGroup({ type: 'marital', value: stat.label })}
+                                            >
+                                                <div className="flex justify-between items-center text-left">
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">{stat.label}</p>
+                                                    <span className="text-xl font-black text-primary tracking-tighter text-left">{stat.count}</span>
+                                                </div>
+                                                <div className="space-y-1.5 text-left">
+                                                    <Progress value={percent} className="h-1.5 bg-muted text-left" indicatorClassName={stat.color} />
+                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left">{Math.round(percent)}%</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
 
                 <div className="px-4 sm:px-0 text-left">
                     <RelationshipCircleTracker 
                         souls={souls || []}
                         campaigns={campaigns || []}
-                        fellowships={activeFellowships || []}
+                        fellowships={fellowships || []}
                         className="rounded-3xl"
                     />
                 </div>
@@ -691,24 +897,24 @@ export default function SoulsWonPage() {
 
         {mounted && (
             isMobile ? (
-                <Sheet open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
+                <Sheet open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
                             </div>
-                            <SheetHeader className="text-left flex-shrink-0 text-left">
-                                <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedAgeGroup} Directory</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedAgeGroup?.toLowerCase()} demographic.</SheetDescription>
+                            <SheetHeader className="text-left flex-shrink-0">
+                                <SheetTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedFilterGroup?.value} Directory</SheetTitle>
+                                <SheetDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left">
                             <div className="p-4 sm:p-8 text-left">
-                                <AgeGroupSoulList 
-                                  souls={activeAgeGroupSouls} 
+                                <FilteredSoulList 
+                                  souls={activeFilteredSouls} 
                                   onSelectSoul={(soul) => {
-                                    setSelectedAgeGroup(null);
+                                    setSelectedFilterGroup(null);
                                     setSelectedSoulId(soul.id);
                                   }} 
                                 />
@@ -717,24 +923,24 @@ export default function SoulsWonPage() {
                     </SheetContent>
                 </Sheet>
             ) : (
-                <Dialog open={!!selectedAgeGroup} onOpenChange={(open) => !open && setSelectedAgeGroup(null)}>
+                <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
                             </div>
-                            <DialogHeader className="text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedAgeGroup} Directory</DialogTitle>
-                                <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this age group.</DialogDescription>
+                            <DialogHeader className="text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
+                                <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this demographic group.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="max-h-[60vh] text-left">
                             <div className="p-4 sm:p-8 text-left">
-                                <AgeGroupSoulList 
-                                  souls={activeAgeGroupSouls} 
+                                <FilteredSoulList 
+                                  souls={activeFilteredSouls} 
                                   onSelectSoul={(soul) => {
-                                    setSelectedAgeGroup(null);
+                                    setSelectedFilterGroup(null);
                                     setSelectedSoulId(soul.id);
                                   }} 
                                 />
@@ -752,12 +958,12 @@ export default function SoulsWonPage() {
             onFollowUpLogged={() => setFollowUpSoulId(null)} 
         />
         <ViewHistoryDialog soul={soulForHistory} isOpen={!!historySoulId} onOpenChange={(isOpen) => !isOpen && setHistorySoulId(null)} />
-        <AssignFellowshipDialog soul={soulToAssign} fellowships={activeFellowships || []} isOpen={!!assignSoulId} onOpenChange={(isOpen) => !isOpen && setAssignSoulId(null)} onAssignGroup={handleAssignGroup} />
+        <AssignFellowshipDialog soul={soulToAssign} fellowships={fellowships || []} isOpen={!!assignSoulId} onOpenChange={(isOpen) => !isOpen && setAssignSoulId(null)} onAssignGroup={handleAssignGroup} />
         <SoulAssessmentDialog soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
             <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                <AlertDialogHeader className="text-left text-left">
+                <AlertDialogHeader className="text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
@@ -782,17 +988,17 @@ export default function SoulsWonPage() {
                                 <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
-                                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+                                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={fellowships || []} campaigns={campaigns || []} />
                             </ScrollArea>
                         </SheetContent>
                     </Sheet>
                     <Sheet open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <SheetHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
+                                <SheetHeader className="text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
-                                {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
+                                {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </SheetContent>
                     </Sheet>
@@ -808,7 +1014,7 @@ export default function SoulsWonPage() {
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8 text-left">
-                                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={activeFellowships || []} campaigns={campaigns || []} />
+                                <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={fellowships || []} campaigns={campaigns || []} />
                             </ScrollArea>
                         </DialogContent>
                     </Dialog>
@@ -821,7 +1027,7 @@ export default function SoulsWonPage() {
                                 </DialogHeader>
                             </div>
                             <ScrollArea className="max-h-[75vh] p-8 text-left">
-                                {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={activeFellowships || []} campaigns={campaigns || []} />}
+                                {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DialogContent>
                     </Dialog>
