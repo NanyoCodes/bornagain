@@ -36,6 +36,7 @@ const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
   lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
   nickname: z.string().max(20, "Nickname is too long.").optional(),
+  spouseName: z.string().max(100, "Spouse name is too long.").optional(),
   photoURL: z.string().optional(),
   gender: z.string().optional(),
   nationality: z.string().optional(),
@@ -82,6 +83,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       firstName: soul.firstName || "",
       lastName: soul.lastName || "",
       nickname: soul.nickname || "",
+      spouseName: soul.spouseName || "",
       photoURL: soul.photoURL || "",
       gender: soul.gender || "",
       nationality: soul.nationality || "",
@@ -115,6 +117,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             firstName: soul.firstName || "",
             lastName: soul.lastName || "",
             nickname: soul.nickname || "",
+            spouseName: soul.spouseName || "",
             photoURL: soul.photoURL || "",
             gender: soul.gender || "",
             nationality: soul.nationality || "",
@@ -143,6 +146,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
   
   const sourceValue = useWatch({ control, name: "source" });
   const dobValue = useWatch({ control, name: "dateOfBirth" });
+  const maritalStatusValue = useWatch({ control, name: "maritalStatus" });
 
   useEffect(() => {
     if (sourceValue !== 'Campaign' && getValues('sourceDetails') !== '') {
@@ -175,6 +179,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       firstName: values.firstName,
       lastName: values.lastName,
       nickname: values.nickname || null,
+      spouseName: values.maritalStatus === 'Married' ? values.spouseName : null,
       photoURL: values.photoURL || null,
       gender: values.gender || null,
       nationality: values.nationality || null,
@@ -365,7 +370,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
               name="maritalStatus"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Relationship Status</FormLabel>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Marital Status</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
@@ -412,6 +417,22 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
               )}
             />
         </div>
+
+        {maritalStatusValue === "Married" && (
+          <FormField
+            control={form.control}
+            name="spouseName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Spouse's Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g., Sarah Doe" {...field} value={field.value || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField

@@ -25,7 +25,8 @@ import {
   ClipboardList,
   ChevronRight,
   Plus,
-  Users
+  Users,
+  Heart
 } from "lucide-react";
 import { 
   Dialog, 
@@ -118,7 +119,7 @@ function FilteredSoulList({ souls, onSelectSoul }: { souls: Soul[], onSelectSoul
             onClick={() => onSelectSoul(soul)}
             className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98]"
           >
-            <div className="flex items-center gap-3 min-w-0 text-left">
+            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                 <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
                 <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
                 </Avatar>
@@ -159,7 +160,7 @@ export default function SoulsWonPage() {
   const [deleteSoulId, setDeleteSoulId] = useState<string | null>(null);
   const [assessmentSoulId, setAssessmentSoulId] = useState<string | null>(null);
 
-  const [selectedFilterGroup, setSelectedFilterGroup] = useState<{ type: 'age' | 'gender', value: string } | null>(null);
+  const [selectedFilterGroup, setSelectedFilterGroup] = useState<{ type: 'age' | 'gender' | 'marital', value: string } | null>(null);
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGalleryPaused, setIsGalleryPaused] = useState(false);
@@ -251,6 +252,35 @@ export default function SoulsWonPage() {
     return stats;
   }, [souls]);
 
+  const maritalStats = useMemo(() => {
+    const stats = {
+      married: { count: 0, list: [] as Soul[] },
+      single: { count: 0, list: [] as Soul[] },
+      divorced: { count: 0, list: [] as Soul[] },
+      widowed: { count: 0, list: [] as Soul[] },
+      total: 0
+    };
+    if (!souls) return stats;
+    souls.forEach(s => {
+      const status = s.maritalStatus;
+      if (status === 'Married') {
+          stats.married.count++;
+          stats.married.list.push(s);
+      } else if (status === 'Single') {
+          stats.single.count++;
+          stats.single.list.push(s);
+      } else if (status === 'Divorced') {
+          stats.divorced.count++;
+          stats.divorced.list.push(s);
+      } else if (status === 'Widowed') {
+          stats.widowed.count++;
+          stats.widowed.list.push(s);
+      }
+      stats.total++;
+    });
+    return stats;
+  }, [souls]);
+
   const activeFilteredSouls = useMemo(() => {
     if (!selectedFilterGroup) return [];
     const { type, value } = selectedFilterGroup;
@@ -267,9 +297,14 @@ export default function SoulsWonPage() {
         if (groupKey === 'male') return genderStats.male.list;
         if (groupKey === 'female') return genderStats.female.list;
         if (groupKey === 'not assigned') return genderStats.unassigned.list;
+    } else if (type === 'marital') {
+        if (groupKey === 'families') return maritalStats.married.list;
+        if (groupKey === 'singles') return maritalStats.single.list;
+        if (groupKey === 'divorced') return maritalStats.divorced.list;
+        if (groupKey === 'widowers') return maritalStats.widowed.list;
     }
     return [];
-  }, [selectedFilterGroup, ageGroups, genderStats]);
+  }, [selectedFilterGroup, ageGroups, genderStats, maritalStats]);
 
   const totalSoulsCount = useMemo(() => souls?.length || 0, [souls]);
 
@@ -529,56 +564,56 @@ export default function SoulsWonPage() {
 
   return (
     <div className="w-full max-w-7xl mx-auto text-left">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
-            <div className="lg:col-span-8 space-y-8 pb-32 text-left">
-                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
-                        <div className="space-y-1 text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left">MY HARVEST</h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left text-left">
+            <div className="lg:col-span-8 space-y-8 pb-32 text-left text-left">
+                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left text-left">
+                        <div className="space-y-1 text-left text-left">
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left text-left">MY HARVEST</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left text-left">
                                 <ClipboardList className="h-4 w-4 text-primary text-left" /> Logged Records
                             </p>
                         </div>
-                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap text-left w-full sm:w-auto text-left text-left">
+                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap text-left w-full sm:w-auto text-left text-left text-left">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none text-left text-left">
-                                        <Download className="mr-2 h-4 w-4 text-left" /> EXPORT
+                                        <Download className="mr-2 h-4 w-4 text-left text-left" /> EXPORT
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl text-left text-left">
-                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Select Format</DropdownMenuLabel>
-                                    <DropdownMenuSeparator className="text-left text-left" />
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left text-left">
-                                        <Download className="mr-2 h-4 w-4 opacity-40 text-left" /> CSV (Excel)
+                                <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl text-left text-left text-left">
+                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Select Format</DropdownMenuLabel>
+                                    <DropdownMenuSeparator className="text-left text-left text-left" />
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left text-left text-left">
+                                        <Download className="mr-2 h-4 w-4 opacity-40 text-left text-left" /> CSV (Excel)
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5 text-left text-left">
-                                        <Download className="mr-2 h-4 w-4 text-primary text-left" /> PDF Report
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5 text-left text-left text-left">
+                                        <Download className="mr-2 h-4 w-4 text-primary text-left text-left" /> PDF Report
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <Button onClick={() => setIsLogDialogOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none text-left text-left">
-                                <PlusCircle className="mr-2 h-4 w-4 text-left" /> ADD SOUL
+                            <Button onClick={() => setIsLogDialogOpen(true)} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none text-left text-left text-left">
+                                <PlusCircle className="mr-2 h-4 w-4 text-left text-left" /> ADD SOUL
                             </Button>
                         </div>
                     </div>
                 </header>
 
                 {soulsWithPhotos.length > 0 && (
-                    <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700 text-left text-left">
-                        <div className="flex items-center justify-between mb-4 px-1 text-left text-left">
-                            <div className="flex items-center gap-2 text-left text-left">
-                                <ImageIcon className="h-4 w-4 text-primary text-left" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left text-left">GALLERY OF MY SOULS</h3>
+                    <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700 text-left text-left text-left">
+                        <div className="flex items-center justify-between mb-4 px-1 text-left text-left text-left">
+                            <div className="flex items-center gap-2 text-left text-left text-left">
+                                <ImageIcon className="h-4 w-4 text-primary text-left text-left" />
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left text-left text-left">GALLERY OF MY SOULS</h3>
                             </div>
                         </div>
                         <div 
-                            className="overflow-hidden relative w-full text-left text-left"
+                            className="overflow-hidden relative w-full text-left text-left text-left"
                             onMouseEnter={() => setIsGalleryPaused(true)}
                             onMouseLeave={() => setIsGalleryPaused(false)}
                         >
                             <motion.div 
-                                className="flex gap-4 w-max text-left text-left"
+                                className="flex gap-4 w-max text-left text-left text-left"
                                 animate={{ x: isGalleryPaused ? undefined : ["0%", "-33.3333333%"] }}
                                 transition={{
                                     x: {
@@ -590,24 +625,24 @@ export default function SoulsWonPage() {
                                 }}
                             >
                                 {duplicatedSouls.map((s, idx) => (
-                                    <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0 text-left text-left">
+                                    <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0 text-left text-left text-left">
                                         <Dialog>
                                             <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-95 transition-all text-left text-left">
+                                                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-95 transition-all text-left text-left text-left">
                                                     <Image 
                                                         src={s.photoURL!} 
                                                         alt={s.firstName} 
                                                         fill 
-                                                        className="object-cover transition-transform group-hover:scale-110 duration-500 text-left text-left" 
+                                                        className="object-cover transition-transform group-hover:scale-110 duration-500 text-left text-left text-left" 
                                                         unoptimized 
                                                     />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left text-left" />
-                                                    <div className="absolute bottom-3 left-3 right-3 text-white text-left text-left">
-                                                        <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight text-left text-left text-left">
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left text-left text-left" />
+                                                    <div className="absolute bottom-3 left-3 right-3 text-white text-left text-left text-left">
+                                                        <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight text-left text-left text-left text-left">
                                                             {s.nickname || s.firstName} {s.age && <span className="opacity-60 ml-1">({s.age})</span>}
                                                         </p>
                                                         <Badge className={cn(
-                                                            "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1 shadow-sm text-left text-left",
+                                                            "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1 shadow-sm text-left text-left text-left",
                                                             s.status === 'New' ? "bg-amber-500" : 
                                                             s.status === 'Contacted' ? "bg-blue-500" : 
                                                             "bg-green-500"
@@ -615,15 +650,15 @@ export default function SoulsWonPage() {
                                                     </div>
                                                 </div>
                                             </DialogTrigger>
-                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left text-left">
-                                                <DialogHeader className="sr-only text-left text-left text-left"><DialogTitle className="text-left text-left text-left">Soul Photo</DialogTitle></DialogHeader>
-                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left text-left text-left">
-                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left text-left text-left">
+                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left text-left text-left">
+                                                <DialogHeader className="sr-only text-left text-left text-left text-left"><DialogTitle className="text-left text-left text-left text-left">Soul Photo</DialogTitle></DialogHeader>
+                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left text-left text-left text-left">
+                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left text-left text-left text-left">
                                                         <Image 
                                                             src={s.photoURL!} 
                                                             alt={s.firstName} 
                                                             fill 
-                                                            className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left text-left" 
+                                                            className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left text-left text-left" 
                                                             unoptimized 
                                                         />
                                                     </div>
@@ -637,20 +672,21 @@ export default function SoulsWonPage() {
                     </div>
                 )}
 
-                <div className="px-4 sm:px-0 space-y-8 text-left text-left">
+                <div className="px-4 sm:px-0 space-y-12 text-left">
+                    {/* Age Demographics */}
                     <div className="space-y-4 text-left text-left">
-                        <div className="flex items-center gap-3 text-left text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left">
-                                <BarChart3 className="h-5 w-5 text-primary text-left text-left" />
+                        <div className="flex items-center gap-3 text-left text-left text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left">
+                                <BarChart3 className="h-5 w-5 text-primary text-left text-left text-left" />
                             </div>
-                            <div className="min-w-0 text-left text-left">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left">DEMOGRAPHICS</h2>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left">Age Analysis</p>
+                            <div className="min-w-0 text-left text-left text-left">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left">DEMOGRAPHICS</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left text-left">Age Analysis</p>
                             </div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left">
-                            <CardContent className="p-6 sm:p-8 space-y-6 text-left text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left text-left">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left text-left">
+                            <CardContent className="p-6 sm:p-8 space-y-6 text-left text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left text-left text-left">
                                     {[
                                         { label: 'Children (0-12)', count: ageGroups.children.count, color: 'bg-blue-500', icon: Sparkles },
                                         { label: 'Teens (13-19)', count: ageGroups.teens.count, color: 'bg-green-500', icon: Zap },
@@ -666,23 +702,23 @@ export default function SoulsWonPage() {
                                             <div 
                                                 key={group.label} 
                                                 className={cn(
-                                                    "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left text-left",
+                                                    "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left text-left text-left text-left",
                                                     "hover:border-primary/20"
                                                 )}
                                                 onClick={() => setSelectedFilterGroup({ type: 'age', value: group.label })}
                                             >
-                                                <div className="flex items-center justify-between text-left text-left">
-                                                    <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left text-left">
-                                                        <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left text-left" />
+                                                <div className="flex items-center justify-between text-left text-left text-left">
+                                                    <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left text-left text-left">
+                                                        <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left text-left text-left" />
                                                     </div>
-                                                    <span className="font-black text-lg text-primary tracking-tighter text-left text-left">{group.count}</span>
+                                                    <span className="font-black text-lg text-primary tracking-tighter text-left text-left text-left">{group.count}</span>
                                                 </div>
-                                                <div className="space-y-1 text-left text-left">
-                                                    <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">
-                                                        <span className="text-left text-left">{group.label}</span>
-                                                        <span className="text-left text-left">{Math.round(percent)}%</span>
+                                                <div className="space-y-1 text-left text-left text-left">
+                                                    <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left">
+                                                        <span className="text-left text-left text-left">{group.label}</span>
+                                                        <span className="text-left text-left text-left">{Math.round(percent)}%</span>
                                                     </div>
-                                                    <Progress value={percent} className="h-1.5 bg-muted text-left text-left" indicatorClassName={group.color} />
+                                                    <Progress value={percent} className="h-1.5 bg-muted text-left text-left text-left" indicatorClassName={group.color} />
                                                 </div>
                                             </div>
                                         );
@@ -692,14 +728,15 @@ export default function SoulsWonPage() {
                         </Card>
                     </div>
 
+                    {/* Gender Demographics */}
                     <div className="space-y-4 text-left text-left">
                         <div className="flex items-center gap-3 text-left text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left">
                                 <Users className="h-5 w-5 text-primary text-left text-left" />
                             </div>
                             <div className="min-w-0 text-left text-left text-left">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left">GENDER BALANCE</h2>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left">Kingdom Workforce Diversity</p>
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left">GENDER BALANCE</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left text-left">Kingdom Workforce Diversity</p>
                             </div>
                         </div>
                         <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left">
@@ -724,6 +761,49 @@ export default function SoulsWonPage() {
                                                 <div className="space-y-1.5 text-left text-left">
                                                     <Progress value={percent} className="h-2 bg-muted text-left text-left" indicatorClassName={stat.color} />
                                                     <p className="text-right text-[9px] font-black text-muted-foreground/60 uppercase text-left text-left">{Math.round(percent)}% OF HARVEST</p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Marital Demographics */}
+                    <div className="space-y-4 text-left text-left">
+                        <div className="flex items-center gap-3 text-left text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left">
+                                <Heart className="h-5 w-5 text-primary text-left text-left" />
+                            </div>
+                            <div className="min-w-0 text-left text-left text-left">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left">MARITAL DEMOGRAPHICS</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left text-left">Family & Status Insights</p>
+                            </div>
+                        </div>
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left">
+                            <CardContent className="p-6 sm:p-8 text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left text-left">
+                                    {[
+                                        { label: 'Families', count: maritalStats.married.count, color: 'bg-emerald-500', icon: Target },
+                                        { label: 'Singles', count: maritalStats.single.count, color: 'bg-primary', icon: Sparkles },
+                                        { label: 'Divorced', count: maritalStats.divorced.count, color: 'bg-slate-500', icon: HelpCircle },
+                                        { label: 'Widowers', count: maritalStats.widowed.count, color: 'bg-indigo-600', icon: Award },
+                                    ].map(stat => {
+                                        const percent = totalSoulsCount > 0 ? (stat.count / totalSoulsCount) * 100 : 0;
+                                        return (
+                                            <div 
+                                              key={stat.label} 
+                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border text-left text-left cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
+                                              onClick={() => setSelectedFilterGroup({ type: 'marital', value: stat.label })}
+                                            >
+                                                <div className="flex justify-between items-center text-left text-left">
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">{stat.label}</p>
+                                                    <span className="text-xl font-black text-primary tracking-tighter text-left text-left">{stat.count}</span>
+                                                </div>
+                                                <div className="space-y-1.5 text-left text-left">
+                                                    <Progress value={percent} className="h-1.5 bg-muted text-left text-left" indicatorClassName={stat.color} />
+                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left text-left text-left">{Math.round(percent)}%</p>
                                                 </div>
                                             </div>
                                         );
@@ -770,7 +850,7 @@ export default function SoulsWonPage() {
                 <Sheet open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                         <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Harvest Demographic</span>
                             </div>
@@ -841,8 +921,8 @@ export default function SoulsWonPage() {
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
                         Confirm Removal
                     </AlertDialogAction>
                 </AlertDialogFooter>

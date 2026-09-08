@@ -303,6 +303,7 @@ export type Soul = {
   firstName: string;
   lastName: string;
   nickname?: string;
+  spouseName?: string;
   photoURL?: string | null;
   email?: string;
   phone?: string;
