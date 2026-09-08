@@ -76,16 +76,13 @@
   * {
     @apply border-border;
     -webkit-tap-highlight-color: transparent;
+    scrollbar-width: none; /* Hide for Firefox */
+    -ms-overflow-style: none; /* Hide for IE/Edge */
   }
   
-  /* HIDE SCROLLBARS BUT KEEP FUNCTIONAL */
-  * {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
-  }
-
+  /* Hide for Chrome/Safari */
   *::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
   }
 
   body {
