@@ -28,7 +28,8 @@ import {
   ShieldCheck,
   ShoppingCart,
   X,
-  Sparkles
+  Sparkles,
+  Info
 } from "lucide-react";
 
 import {
