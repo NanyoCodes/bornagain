@@ -51,7 +51,7 @@ service cloud.firestore {
              eId != "" && 
              (
                (exists(/databases/$(database)/documents/events/$(eId)) && get(/databases/$(database)/documents/events/$(eId)).data.organizerId == request.auth.uid) ||
-               request.resource.data.organizerId == request.auth.uid
+               (request.resource.data.organizerId == request.auth.uid)
              );
     }
 
@@ -121,7 +121,7 @@ service cloud.firestore {
 
     match /events/{eventId} {
       allow get, list: if (resource.data.get('visibility', 'public') == 'public') || (isAuthenticated() && (request.auth.uid == resource.data.organizerId || request.auth.uid in resource.data.get('participantIds', []) || exists(/databases/$(database)/documents/events/$(eventId)/participants/$(request.auth.uid))));
-      allow create: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.organizerId == request.auth.uid;
       allow update: if isAuthenticated() && (
         request.auth.uid == resource.data.organizerId ||
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'hasGroupChat', 'photoURL', 'participantIds'])
