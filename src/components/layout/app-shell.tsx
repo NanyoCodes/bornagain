@@ -99,7 +99,7 @@ function CartButton() {
   const updateCount = useCallback(() => {
     if (!user?.uid) return;
     const key = `testify_marketplace_cart_${user.uid}`;
-    const stored = localStorage.getItem(key);
+    const stored = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
     if (stored) {
       try {
         const cart = JSON.parse(stored);
@@ -115,11 +115,15 @@ function CartButton() {
 
   useEffect(() => {
     updateCount();
-    window.addEventListener('testify_marketplace_cart_update', updateCount);
-    window.addEventListener('storage', updateCount);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('testify_marketplace_cart_update', updateCount);
+      window.addEventListener('storage', updateCount);
+    }
     return () => {
-      window.removeEventListener('testify_marketplace_cart_update', updateCount);
-      window.removeEventListener('storage', updateCount);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('testify_marketplace_cart_update', updateCount);
+        window.removeEventListener('storage', updateCount);
+      }
     };
   }, [updateCount]);
 
@@ -149,7 +153,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
-  const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
+  const isProfileIncomplete = !!(userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim()));
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -622,7 +626,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const isProfileIncomplete = user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
+  const isProfileIncomplete = !!(user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim()));
   const showBottomNav = !isTakeoverPage;
 
   return (
@@ -637,14 +641,16 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           transition={{ duration: 1 }}
           className="flex-1 flex flex-col min-h-0"
       >
-          {!isTakeoverPage && (
-          <AppHeader 
-              unreadChatCount={unreadChatNotifications?.length || 0} 
-              unreadNotifCount={unreadOtherNotifications?.length || 0}
-              isPublicRoute={isPublicRoute}
-              userVendors={userVendors || null}
-          />
-          )}
+          <Suspense fallback={null}>
+            {!isTakeoverPage && (
+            <AppHeader 
+                unreadChatCount={unreadChatNotifications?.length || 0} 
+                unreadNotifCount={unreadOtherNotifications?.length || 0}
+                isPublicRoute={isPublicRoute}
+                userVendors={userVendors || null}
+            />
+            )}
+          </Suspense>
           <div className="flex-1 relative min-h-0">
           <main 
               ref={scrollContainerRef}

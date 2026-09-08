@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { safeToDate, cn } from '@/lib/utils';
 import { actionItems } from '@/lib/follow-up-data';
@@ -195,7 +196,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                             const date = safeToDate(log.date);
                             return (
                                 <div key={lIdx} className="relative">
-                                    <div className="flex justify-between items-center mb-1.5 sm:mb-2">
+                                    <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
                                         <div className="flex items-center gap-2">
                                             <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground opacity-40" />
                                             <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
@@ -203,7 +204,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="bg-muted/30 rounded-[1rem] sm:rounded-[1.5rem] p-3 sm:p-5 border shadow-inner">
+                                    <div className="bg-muted/30 rounded-[1rem] sm:rounded-[1.5rem] p-3 sm:p-5 border shadow-inner text-left">
                                         {log.actions && log.actions.length > 0 && (
                                             <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
                                                 {log.actions.map(aId => {
@@ -255,8 +256,8 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
       {mounted && (
         isMobile ? (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                         <SheetHeader className="text-left flex-shrink-0">
                             <div className="flex items-center gap-3 mb-2">
                                 <Sparkles className="h-5 w-5 text-primary" />
@@ -276,23 +277,23 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
         ) : (
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogContent className="sm:max-w-xl max-h-[90dvh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
-                    <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <DialogHeader>
-                            <div className="flex items-center gap-3 mb-2">
-                                <Sparkles className="h-5 w-5 text-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Mutual effort</span>
+                    <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                        <DialogHeader className="text-left text-left">
+                            <div className="flex items-center gap-3 mb-2 text-left">
+                                <Sparkles className="h-5 w-5 text-primary text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Mutual effort</span>
                             </div>
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance">{titleText}</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1">{descText}</DialogDescription>
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-balance text-left">{titleText}</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1 text-left">{descText}</DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-grow min-h-0">
-                        <div className="p-8">
+                    <ScrollArea className="flex-grow min-h-0 text-left">
+                        <div className="p-8 text-left">
                             {innerContent}
                         </div>
                     </ScrollArea>
-                    <DialogFooter className="p-6 border-t bg-muted/5 shrink-0">
-                        <Button variant="outline" className="rounded-full px-8" onClick={() => setIsOpen(false)}>Close</Button>
+                    <DialogFooter className="p-6 border-t bg-muted/5 shrink-0 text-left">
+                        <Button variant="outline" className="rounded-full px-8 text-left" onClick={() => setIsOpen(false)}>Close</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
