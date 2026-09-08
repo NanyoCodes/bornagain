@@ -524,6 +524,7 @@ export type MealGift = {
 
 export type EventCategory = 'Conference' | 'Worship' | 'Seminar' | 'Outreach' | 'Prayer' | 'Youth' | 'Church Service' | 'Other';
 export type EventStatus = 'active' | 'cancelled' | 'concluded';
+export type EventVisibility = 'public' | 'private';
 
 export type Event = {
   id: string;
@@ -542,6 +543,7 @@ export type Event = {
   participantCount: number;
   maxParticipants?: number;
   status: EventStatus;
+  visibility: EventVisibility;
   streamUrl?: string;
   createdAt: Timestamp;
   hasGroupChat?: boolean;

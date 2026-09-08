@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Unification and accountability hardening - 2025-03-05T16:00:00Z
+    // Deployment trigger: Unification and private event security - 2025-03-05T21:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -118,7 +118,7 @@ service cloud.firestore {
     }
 
     match /events/{eventId} {
-      allow get, list: if true;
+      allow get, list: if (resource.data.get('visibility', 'public') == 'public') || (isAuthenticated() && (request.auth.uid == resource.data.organizerId || exists(/databases/$(database)/documents/events/$(eventId)/participants/$(request.auth.uid))));
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
         request.auth.uid == resource.data.organizerId ||
