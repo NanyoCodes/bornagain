@@ -185,8 +185,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
   const showGuestButtons = isPublicRoute && !user;
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4 text-left">
-      <div className="flex shrink-0 w-[56px] md:w-[220px] text-left">
+    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4">
+      <div className="flex shrink-0 w-[56px] md:w-[220px]">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
             <Avatar className="h-14 w-14 md:h-16 md:w-16 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
@@ -253,7 +253,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
             <CartButton />
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
                       <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
@@ -265,7 +265,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
                       <Bell className="h-6 w-6 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
@@ -292,7 +292,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal p-4">
-                  <div className="flex flex-col space-y-1 text-left">
+                  <div className="flex flex-col space-y-1">
                     <p className="text-sm font-black leading-tight truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
                     <p className="text-[10px] text-muted-foreground truncate font-bold uppercase tracking-wider">{user.email}</p>
                   </div>
@@ -330,7 +330,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <DropdownMenuSeparator />
 
                 <div className="p-1 space-y-1">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Main Navigation</p>
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Main Navigation</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                     <Link href="/growth" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-chart-1/10 flex items-center justify-center">
@@ -368,7 +368,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Kingdom Hubs</p>
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -423,7 +423,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                    <>
                     <DropdownMenuSeparator />
                     <div className="p-1 space-y-1">
-                      <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-1.5 tracking-[0.2em] text-left">My Storefronts</p>
+                      <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-1.5 tracking-[0.2em]">My Storefronts</p>
                       {userVendors.map(v => (
                         <DropdownMenuItem key={v.id} asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                           <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full">
@@ -699,7 +699,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
               userVendors={userVendors || null}
           />
           )}
-          <div className="flex-1 relative min-h-0 text-left">
+          <div className="flex-1 relative min-h-0">
           <main 
               ref={scrollContainerRef}
               className={cn(
