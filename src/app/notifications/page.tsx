@@ -7,7 +7,7 @@ import { collection, query, doc, updateDoc, writeBatch, where, getDoc, serverTim
 import type { Notification, Soul } from '@/lib/types';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles, X, ShoppingBag, Package, Cake, Filter } from 'lucide-react';
+import { Bell, HeartHandshake, Target, Users, CheckCircle2, MessageSquare, Info, XCircle, ArrowLeft, CircleAlert, UserMinus, Utensils, Gift, Sparkles, X, ShoppingBag, Package, Cake } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn, safeToDate } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -275,15 +275,15 @@ export default function NotificationsPage() {
 
             <Tabs value={filter} onValueChange={setFilter} className="w-full">
                 <TabsList className="grid w-full grid-cols-3 h-11 bg-muted/30 p-1 rounded-2xl">
-                    <TabsTrigger value="all" className="text-[10px] font-black uppercase tracking-widest rounded-xl">All Alerts</TabsTrigger>
+                    <TabsTrigger value="all" className="text-[10px] font-black uppercase tracking-widest rounded-xl">All</TabsTrigger>
                     <TabsTrigger value="kindness" className="text-[10px] font-black uppercase tracking-widest rounded-xl">Kindness</TabsTrigger>
-                    <TabsTrigger value="general" className="text-[10px] font-black uppercase tracking-widest rounded-xl">System</TabsTrigger>
+                    <TabsTrigger value="general" className="text-[10px] font-black uppercase tracking-widest rounded-xl">Others</TabsTrigger>
                 </TabsList>
             </Tabs>
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 px-0 sm:px-6 md:px-8 pb-4 text-left text-left">
+      <div className="flex-1 min-h-0 px-0 sm:px-6 md:px-8 pb-4 text-left">
         <Card className="h-full flex flex-col overflow-hidden border-x-0 sm:border-x rounded-none sm:rounded-3xl shadow-xl bg-card border-y sm:border-y-0 text-left">
             <ScrollArea className="flex-1 w-full text-left">
                 <div className="flex flex-col text-left">
@@ -292,7 +292,7 @@ export default function NotificationsPage() {
                         {[...Array(5)].map((_, i) => (
                             <div key={i} className="py-6 flex items-start gap-4 text-left">
                                 <Skeleton className="h-10 w-10 rounded-full shrink-0 text-left" />
-                                <div className="flex-1 space-y-2 text-left text-left">
+                                <div className="flex-1 space-y-2 text-left">
                                     <Skeleton className="h-4 w-3/4 text-left" />
                                     <Skeleton className="h-3 w-1/2 text-left" />
                                 </div>
@@ -306,7 +306,7 @@ export default function NotificationsPage() {
                                 {filter === 'kindness' ? <Gift className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left" /> : <Bell className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left" />}
                             </div>
                             <h3 className="text-lg sm:text-xl font-bold font-headline uppercase tracking-tight text-left">No {filter !== 'all' ? filter : ''} Alerts</h3>
-                            <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed text-left text-left">
+                            <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed text-left">
                                 Stay focused on the harvest. We'll notify you here about activities in the Kingdom Network.
                             </p>
                         </div>
@@ -348,7 +348,7 @@ export default function NotificationsPage() {
                                                     {notification.message}
                                                 </p>
                                                 {createdAt && (
-                                                    <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1.5 text-left text-left">
+                                                    <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1.5 text-left">
                                                         {format(createdAt, 'PPP')}
                                                     </p>
                                                 )}
