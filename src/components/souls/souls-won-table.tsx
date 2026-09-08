@@ -389,7 +389,7 @@ function ShareWordDialog({
              key={v.verse} 
              className={cn(
                "p-3 rounded-xl transition-all cursor-pointer border-2 text-left",
-               selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40 text-left" : "bg-transparent border-transparent hover:bg-muted/50 text-left"
+               selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50 text-left"
              )}
              onClick={() => toggleVerse(v.verse)}
             >
@@ -446,7 +446,7 @@ function ShareWordDialog({
         <Button 
           onClick={handleShareSelected} 
           disabled={selectedVerses.length === 0}
-          className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left text-left"
+          className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 text-left text-left"
         >
           PREPARE SHARE ({selectedVerses.length})
         </Button>
@@ -543,7 +543,7 @@ function PrivateHangoutBuilder({
                             onClick={() => setThirdSoul(s)}
                         >
                             <Avatar className="h-8 w-8 border shrink-0 text-left">
-                                <AvatarFallback className="font-bold text-[10px] text-left">{s.firstName.charAt(0)}</AvatarFallback>
+                                <AvatarFallback className="font-bold text-[10px] text-left text-center flex items-center justify-center w-full h-full">{s.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 flex-1 text-left">
                                 <p className="font-black text-sm uppercase tracking-tight truncate text-left">{s.firstName} {s.lastName}</p>
@@ -962,7 +962,7 @@ function SoulProfileContent({
         startDate: new Date(details.date),
         endDate: new Date(details.date),
         startTime: details.time,
-        endTime: details.time, // Placeholder
+        endTime: details.time,
         organizerId: user.uid,
         organizerPhotoURL: currentUserProfile.photoURL || null,
         participantCount: 3,
@@ -1001,7 +1001,17 @@ function SoulProfileContent({
         await batch.commit();
         await finalizeLog('matchmaking', `PRIVATE HANGOUT CREATED: Scheduled with ${targetSoul.firstName} at ${details.location} on ${details.date}.`, soul);
         await finalizeLog('matchmaking', `PRIVATE HANGOUT CREATED: Scheduled with ${soul.firstName} at ${details.location} on ${details.date}.`, targetSoul);
-        toast({ title: 'Hangout Arranged', description: 'Private event created for the three of you.' });
+        
+        const invitation = `I've arranged a private Kingdom hangout for us to connect! \n\nVenue: ${details.location}\nDate: ${details.date}\nTime: ${details.time}\n\nLooking forward to our gathering! God bless.`;
+        setCustomMessageText(invitation);
+        setClickedActionId('matchmaking');
+        
+        toast({ title: 'Hangout Arranged', description: 'Private event created. Redirecting to invite guests...' });
+        
+        setTimeout(() => {
+            setIsCommChannelDialogOpen(true);
+        }, 300);
+
     } catch (e) {
         toast({ variant: 'destructive', title: 'Action Failed' });
     }
@@ -1380,7 +1390,7 @@ function SoulProfileContent({
                                           </Avatar>
                                           <div className="text-left flex-1 min-w-0 text-left">
                                               <p className="font-black text-sm uppercase tracking-tight text-left">{s.firstName} {s.lastName}</p>
-                                              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{s.gender} • {s.age ? `${s.age} yrs` : 'Age N/A'}</p>
+                                              <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left">{s.gender} • {s.age ? `${s.age} yrs` : 'Age N/A'}</p>
                                           </div>
                                           <MessageSquare className="h-4 w-4 opacity-40 group-hover:opacity-100 transition-opacity text-left" />
                                       </Button>
@@ -1452,7 +1462,7 @@ function SoulProfileContent({
                   </DialogHeader>
               </div>
               <div className="p-8 space-y-6 text-left">
-                <div className="space-y-3 text-left">
+                <div className="space-y-3 text-left text-left">
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Select Focus</label>
                     <div className="flex flex-wrap gap-2 text-left text-left">
                         {prayerTemplates.map(t => (
@@ -1746,7 +1756,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                 </div>
             ) : (
                 <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left text-left">
                         <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left text-left text-left">
                             <Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left text-left text-left" />
                             Harvest Dashboard
@@ -1780,7 +1790,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
 
         {/* Tablet/Mobile Pop-up */}
         <Sheet open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                     <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
@@ -1802,7 +1812,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         </Sheet>
 
         {/* Desktop Detailed Preview Panel (Large screens only) */}
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left text-left text-left text-left">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left text-left text-left text-left text-left">
             <AnimatePresence>
                 {selectedSoul ? (
                     <motion.div
