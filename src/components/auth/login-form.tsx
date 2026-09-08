@@ -2,8 +2,7 @@
 
 /**
  * @fileOverview This component handles the email/password login form.
- * It includes logic for handling unverified email addresses and enforcing
- * session persistence.
+ * It handles errors gracefully and provides feedback for unverified emails.
  */
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,12 +23,12 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
 import { Loader2, Mail, Lock } from "lucide-react";
-import { signInWithEmailAndPassword, AuthError, sendEmailVerification, type User, setPersistence, browserLocalPersistence, signOut } from "firebase/auth";
+import { signInWithEmailAndPassword, AuthError, sendEmailVerification, type User, signOut } from "firebase/auth";
 import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/dialog";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -129,8 +128,9 @@ export function LoginForm() {
       return;
     }
     try {
-      await setPersistence(auth, browserLocalPersistence);
-      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      // Persistence is already set globally in FirebaseClientProvider.
+      // Calling it again here is redundant and can cause race conditions.
+      const userCredential = await signInWithEmailAndPassword(auth, values.email.trim(), values.password);
       const user = userCredential.user;
 
       if (!user.emailVerified) {

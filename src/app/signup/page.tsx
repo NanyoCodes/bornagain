@@ -16,8 +16,6 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   AuthError,
-  setPersistence,
-  browserLocalPersistence,
   signOut,
 } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
@@ -55,7 +53,7 @@ export default function SignUpPage() {
     }
     const authProvider = new GoogleAuthProvider();
     try {
-      await setPersistence(auth, browserLocalPersistence);
+      // Persistence is handled globally.
       const result = await signInWithPopup(auth, authProvider);
       const loggedUser = result.user;
       
