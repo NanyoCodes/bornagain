@@ -135,7 +135,7 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-3 sm:px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[9px] sm:text-[10px] whitespace-nowrap">
                   GLORIFYING GOD
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
                   Testify the <br className="hidden sm:block" />
                   Greatness of GOD.<br className="hidden sm:block" />
                   <span className="text-primary">Join the Harvest.</span>
@@ -190,9 +190,9 @@ export default function LandingPage() {
                     <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
                       <Globe className="h-5 w-5 text-primary" />
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight">Our Mission</h2>
+                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left">Our Mission</h2>
                   </div>
-                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium text-pretty">
+                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium text-pretty text-left">
                     Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD so that the kingdom of GOD will be built on Earth.
                   </p>
                 </div>
@@ -202,9 +202,9 @@ export default function LandingPage() {
                     <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
                       <Sparkles className="h-5 w-5 text-primary" />
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight">Our Vision</h2>
+                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left">Our Vision</h2>
                   </div>
-                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium text-pretty">
+                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium text-pretty text-left">
                     Testify exists to help believers overcome sin, grow in Christ, and become living testimonies through the transforming power of God's Word and the Holy Spirit. We believe lasting discipline is born not merely from stronger willpower, but from deeper revelation of who God is and who we are in Christ.
                   </p>
                 </div>
@@ -220,17 +220,17 @@ export default function LandingPage() {
                   <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
                     <Award className="h-5 w-5 text-primary" />
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight">Founder's Story</h2>
+                  <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left">Founder's Story</h2>
                 </div>
                 <Card className="rounded-[2.5rem] border-l-8 border-l-primary bg-muted/20 border-none shadow-sm relative overflow-hidden">
                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none">
                       <Quote className="h-24 w-24 text-primary" />
                    </div>
                    <CardContent className="p-8 sm:p-10">
-                      <p className="italic text-muted-foreground text-base sm:text-lg leading-relaxed">
+                      <p className="italic text-muted-foreground text-base sm:text-lg leading-relaxed text-left">
                         "I believe that technology is a divine gift for this final harvest. Seeing the need for accountability and collective encouragement in evangelism, I was led to create a space where every soul won is celebrated and every miracle is recorded for God's glory. God is great, and His power in Jesus Christ is moving through the earth like never before. Testify is a testimony in itself of God's provision for His people."
                       </p>
-                      <p className="mt-6 text-sm font-black uppercase tracking-widest text-primary">— Nanyo Theophilus</p>
+                      <p className="mt-6 text-sm font-black uppercase tracking-widest text-primary text-left">— Nanyo Theophilus</p>
                    </CardContent>
                 </Card>
               </motion.div>
@@ -287,12 +287,12 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
             <div className="text-center mb-12 sm:mb-16 space-y-4">
               <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-balance">Kingdom Ready Workforce</h2>
-              <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto text-pretty font-medium">
+              <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto text-pretty font-medium text-left">
                 Testify equips believers with the tools needed to fulfill the Great Commission in a digital age.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
               {features.map((feature, i) => (
                 <Card key={i} className="rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 duration-300">
                   <CardHeader className="p-6 sm:p-8">
@@ -314,11 +314,11 @@ export default function LandingPage() {
 
         {/* Victory Hub Highlight Section */}
         <section className="py-16 sm:py-24 relative overflow-hidden bg-zinc-950 text-white text-left">
-          <div className="absolute inset-0 z-0 opacity-10">
+          <div className="absolute inset-0 z-0 opacity-10 text-left">
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 via-transparent to-transparent" />
           </div>
           
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-left">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 items-center text-left">
               <div className="order-2 lg:order-1 text-left">
                 <div className="grid grid-cols-2 gap-4 text-left">
@@ -356,7 +356,7 @@ export default function LandingPage() {
               <div className="space-y-8 text-center lg:text-left order-1 lg:order-2">
                 <div className="space-y-4">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3 py-1">THE RECOVERY WING</Badge>
-                  <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance">The Victory <br className="hidden sm:block" />Hub</h2>
+                  <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance">The Victory <br className="hidden sm:block" />Hub</h2>
                   <p className="text-white/70 text-base sm:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 font-medium text-left">
                     We don't just share successes. The Victory Hub is a sanctuary for brethren to bring struggles into the Light and find lasting spiritual solutions.
                   </p>
@@ -441,7 +441,7 @@ export default function LandingPage() {
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
             <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8">
-              <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance">
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance">
                 The Harvest is Plentiful.<br className="hidden sm:block" />
                 Ready to Labor?
               </h2>
@@ -474,7 +474,7 @@ export default function LandingPage() {
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty">
+              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
               <div className="flex gap-4">
@@ -487,7 +487,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Platform</h4>
               <ul className="space-y-3">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Glory Feed</Link></li>
@@ -497,7 +497,7 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Ministry</h4>
               <ul className="space-y-3">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Our Story</Link></li>
@@ -515,8 +515,8 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
             <p className="text-center md:text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.</p>
             <div className="flex gap-6">
-              <Link href="/terms-of-service" className="hover:text-primary transition-colors">Terms</Link>
-              <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy</Link>
+              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left">Terms</Link>
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left">Privacy</Link>
             </div>
           </div>
         </div>

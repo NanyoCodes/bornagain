@@ -78,6 +78,16 @@
     -webkit-tap-highlight-color: transparent;
   }
   
+  /* HIDE SCROLLBARS BUT KEEP FUNCTIONAL */
+  * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+
+  *::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
   body {
     @apply bg-background text-foreground;
     background-image: 

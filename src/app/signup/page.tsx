@@ -84,8 +84,8 @@ export default function SignUpPage() {
       });
 
       toast({
-        title: 'Success',
-        description: 'Welcome to the movement!',
+        title: "Success",
+        description: "Welcome to the movement!",
       });
 
       sessionStorage.setItem('testify_force_splash', 'true');
