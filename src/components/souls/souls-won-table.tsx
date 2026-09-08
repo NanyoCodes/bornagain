@@ -417,9 +417,9 @@ function ShareWordDialog({
             <Target className="h-5 w-5 text-primary text-left" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
           </div>
-          <DialogHeader className="text-left">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm font-medium text-left">{desc}</DialogDescription>
+          <DialogHeader className="text-left text-left">
+            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{title}</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm font-medium text-left text-left">{desc}</DialogDescription>
           </DialogHeader>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40 text-left" onClick={() => onOpenChange(false)}>
@@ -431,7 +431,7 @@ function ShareWordDialog({
 
   const body = (
     <ScrollArea className="flex-grow min-h-[300px] text-left">
-        <div className="p-4 sm:p-10 text-left">
+        <div className="p-4 sm:p-10 text-left text-left">
             {view === 'hub' && renderHub}
             {view === 'books' && renderBooks}
             {view === 'chapters' && renderChapters}
@@ -441,12 +441,12 @@ function ShareWordDialog({
   );
 
   const footer = view === 'verses' && (
-    <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left">
-        <Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold text-left">Clear Selection</Button>
+    <div className="p-6 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 text-left text-left">
+        <Button variant="outline" onClick={() => setSelectedVerses([])} className="rounded-xl h-12 flex-1 font-bold text-left text-left">Clear Selection</Button>
         <Button 
           onClick={handleShareSelected} 
           disabled={selectedVerses.length === 0}
-          className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left"
+          className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left text-left"
         >
           PREPARE SHARE ({selectedVerses.length})
         </Button>
@@ -467,12 +467,12 @@ function ShareWordDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
+      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left text-left">
         {header}
         {body}
         {footer || (
-            <div className="p-6 border-t bg-muted/5 flex justify-end shrink-0 text-left">
-                <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs text-left">Close Hub</Button>
+            <div className="p-6 border-t bg-muted/5 flex justify-end shrink-0 text-left text-left text-left">
+                <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs text-left text-left text-left">Close Hub</Button>
             </div>
         )}
       </DialogContent>
@@ -527,7 +527,7 @@ function PrivateHangoutBuilder({
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Step 1: Pick a Kingdom Match</Label>
                 <div className="relative text-left">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
-                    <Input placeholder="Search single souls..." value={search} onChange={e => setSearch(e.target.value)} className="h-11 pl-10 rounded-xl bg-muted/20 border-none shadow-inner" />
+                    <Input placeholder="Search single souls..." value={search} onChange={e => setSearch(e.target.value)} className="h-11 pl-10 rounded-xl bg-muted/20 border-none shadow-inner text-left" />
                 </div>
             </div>
             <ScrollArea className="h-[30vh] border rounded-2xl bg-muted/5 text-left">
@@ -560,18 +560,18 @@ function PrivateHangoutBuilder({
     const step2 = (
         <div className="space-y-6 text-left">
             <div className="grid grid-cols-2 gap-4 text-left">
-                <div className="space-y-2 text-left">
+                <div className="space-y-2 text-left text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Date</Label>
-                    <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-11 rounded-xl bg-muted/20 border-none font-bold" />
+                    <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-11 rounded-xl bg-muted/20 border-none font-bold text-left" />
                 </div>
                 <div className="space-y-2 text-left">
-                    <Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Time</Label>
-                    <Input type="time" value={time} onChange={e => setTime(e.target.value)} className="h-11 rounded-xl bg-muted/20 border-none font-bold" />
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Time</Label>
+                    <Input type="time" value={time} onChange={e => setTime(e.target.value)} className="h-11 rounded-xl bg-muted/20 border-none font-bold text-left" />
                 </div>
             </div>
             <div className="space-y-2 text-left">
-                <Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Meeting Venue</Label>
-                <Input placeholder="e.g., Kingdom Cafe, Central Park" value={location} onChange={e => setLocation(e.target.value)} className="h-11 rounded-xl bg-muted/20 border-none shadow-inner" />
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Meeting Venue</Label>
+                <Input placeholder="e.g., Kingdom Cafe, Central Park" value={location} onChange={e => setLocation(e.target.value)} className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left" />
             </div>
             <div className="p-4 bg-primary/5 rounded-2xl border-2 border-dashed border-primary/10 text-left">
                 <div className="flex items-center gap-2 mb-2 text-left">
@@ -584,14 +584,14 @@ function PrivateHangoutBuilder({
     );
 
     const header = (
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
             <div className="flex items-center gap-2 mb-2 text-left">
                 <Heart className="h-5 w-5 text-primary fill-current text-left" />
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Private Matchmaking</span>
             </div>
-            <DialogHeader className="text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Coordinate Hangout</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-left">Create a private gathering for {soul?.firstName}, you, and another soul.</DialogDescription>
+            <DialogHeader className="text-left text-left">
+                <DialogTitle className="text-2xl font-black font-headline uppercase text-left text-left">Coordinate Hangout</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-left text-left">Create a private gathering for {soul?.firstName}, you, and another soul.</DialogDescription>
             </DialogHeader>
         </div>
     );
@@ -622,7 +622,7 @@ function PrivateHangoutBuilder({
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     {header}
-                    <ScrollArea className="flex-grow">{body}</ScrollArea>
+                    <ScrollArea className="flex-grow text-left">{body}</ScrollArea>
                     {footer}
                 </SheetContent>
             </Sheet>
@@ -633,7 +633,7 @@ function PrivateHangoutBuilder({
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
                 {header}
-                <ScrollArea className="flex-grow">{body}</ScrollArea>
+                <ScrollArea className="flex-grow text-left">{body}</ScrollArea>
                 {footer}
             </DialogContent>
         </Dialog>
@@ -947,7 +947,7 @@ function SoulProfileContent({
   };
 
   const handleCreatePrivateHangout = async (targetSoul: Soul, details: any) => {
-    if (!user || !firestore || !userProfile || !soul) return;
+    if (!user || !firestore || !currentUserProfile || !soul) return;
     
     const batch = writeBatch(firestore);
     const eventRef = doc(collection(firestore, 'events'));
@@ -956,7 +956,7 @@ function SoulProfileContent({
         title: `Private Group Hangout: ${soul.firstName} & ${targetSoul.firstName}`,
         description: `A private introductory hangout arranged for Kingdom matchmaking. Guests: ${soul.firstName} ${soul.lastName} and ${targetSoul.firstName} ${targetSoul.lastName}.`,
         category: 'Other' as EventCategory,
-        organizerName: `${userProfile.firstName} ${userProfile.lastName}`,
+        organizerName: `${currentUserProfile.firstName} ${currentUserProfile.lastName}`,
         location: details.location,
         locationType: 'Physical',
         startDate: new Date(details.date),
@@ -964,7 +964,7 @@ function SoulProfileContent({
         startTime: details.time,
         endTime: details.time, // Placeholder
         organizerId: user.uid,
-        organizerPhotoURL: userProfile.photoURL || null,
+        organizerPhotoURL: currentUserProfile.photoURL || null,
         participantCount: 3,
         status: 'active' as const,
         visibility: 'private' as const,
@@ -974,7 +974,7 @@ function SoulProfileContent({
     batch.set(eventRef, eventData);
 
     const participants = [
-        { id: user.uid, first: userProfile.firstName, last: userProfile.lastName, photo: userProfile.photoURL },
+        { id: user.uid, first: currentUserProfile.firstName, last: currentUserProfile.lastName, photo: currentUserProfile.photoURL },
         { id: soul.id, first: soul.firstName, last: soul.lastName, photo: soul.photoURL },
         { id: targetSoul.id, first: targetSoul.firstName, last: targetSoul.lastName, photo: targetSoul.photoURL }
     ];
@@ -1355,7 +1355,7 @@ function SoulProfileContent({
                           <Heart className="h-6 w-6 text-primary fill-current text-left" />
                           Kingdom Matchmaking
                       </DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left">Helping {soul.firstName} find a godly partner through divine connection and strategic activities.</DialogDescription>
+                      <DialogDescription className="text-sm font-medium text-left text-left">Helping {soul.firstName} find a godly partner through divine connection and strategic activities.</DialogDescription>
                   </DialogHeader>
               </div>
               <div className="p-6 text-left">
@@ -1379,7 +1379,7 @@ function SoulProfileContent({
                                               <AvatarFallback className="font-bold text-[10px] text-center flex items-center justify-center w-full h-full text-left">{s.firstName.charAt(0)}</AvatarFallback>
                                           </Avatar>
                                           <div className="text-left flex-1 min-w-0 text-left">
-                                              <p className="font-black text-sm truncate uppercase tracking-tight text-left">{s.firstName} {s.lastName}</p>
+                                              <p className="font-black text-sm uppercase tracking-tight text-left">{s.firstName} {s.lastName}</p>
                                               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{s.gender} • {s.age ? `${s.age} yrs` : 'Age N/A'}</p>
                                           </div>
                                           <MessageSquare className="h-4 w-4 opacity-40 group-hover:opacity-100 transition-opacity text-left" />
@@ -1524,7 +1524,7 @@ function SoulProfileContent({
                     className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
                 />
             </div>
-            <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-12 rounded-xl font-bold text-left">Confirm Service</Button>
+            <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-12 rounded-xl font-bold text-left text-center">Confirm Service</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -1747,7 +1747,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
             ) : (
                 <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left">
                     <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left">
-                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left text-left">
+                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left text-left text-left">
                             <Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left text-left text-left" />
                             Harvest Dashboard
                         </CardTitle>
