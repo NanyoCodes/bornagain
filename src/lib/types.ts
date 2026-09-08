@@ -548,6 +548,7 @@ export type Event = {
   createdAt: Timestamp;
   hasGroupChat?: boolean;
   photoURL?: string;
+  participantIds?: string[];
 };
 
 export type EventParticipant = {

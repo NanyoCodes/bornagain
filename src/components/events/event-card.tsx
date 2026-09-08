@@ -148,9 +148,9 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
       ) : participants ? (
          <div className="space-y-6 pb-6 px-1 text-left">
             {organizer && (
-                <div className="space-y-3">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Organizer</h3>
-                    <div className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed hover:bg-muted/40 transition-colors group relative text-left">
+                <div className="space-y-3 text-left">
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Organizer</h3>
+                    <div className="flex items-center gap-3 rounded-2xl p-4 bg-muted/30 border border-dashed hover:bg-muted/40 transition-colors group relative">
                         <LiveParticipantAvatar userId={organizer.userId} fallbackUrl={organizer.photoURL} fallbackInitials={organizer.firstName?.charAt(0)} className="h-10 w-10 border shadow-sm group-hover:scale-105 transition-transform" />
                         <Link 
                             href={`/profile/${organizer.userId}`}
@@ -165,11 +165,11 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
             )}
             {otherParticipants && otherParticipants.length > 0 && (
               <div className="space-y-3 text-left">
-                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1 text-left">Members ({otherParticipants.length})</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Members ({otherParticipants.length})</h3>
                 <div className="space-y-3">
                   {otherParticipants.map(p => (
-                    <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm text-left text-left">
-                      <div className="flex items-center gap-3 group relative text-left">
+                    <div key={p.id} className="p-4 border rounded-2xl space-y-3 bg-background shadow-sm text-left">
+                      <div className="flex items-center gap-3 group relative">
                         <LiveParticipantAvatar userId={p.userId} fallbackUrl={p.photoURL} fallbackInitials={p.firstName?.charAt(0)} className="h-9 w-9 text-xs border group-hover:scale-105 transition-transform" />
                         <Link 
                             href={`/profile/${p.userId}`}
@@ -203,14 +203,14 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
         <SheetTrigger asChild>{children}</SheetTrigger>
         <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
           <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-            <SheetHeader className="text-left flex-shrink-0 text-left">
-                <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants Directory</SheetTitle>
+            <SheetHeader className="text-left flex-shrink-0">
+                <SheetTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance">Participants Directory</SheetTitle>
                 <SheetDescription className="text-sm font-medium text-left">
                 {campaign.participantCount || 0} believers mobilized for "{campaign.title}".
                 </SheetDescription>
             </SheetHeader>
           </div>
-          <div className="flex-grow min-h-0 pt-6 px-8 text-left">
+          <div className="flex-grow min-h-0 pt-6 px-8">
             {content}
           </div>
         </SheetContent>
@@ -224,13 +224,13 @@ function ParticipantsDialog({ campaign, children }: { campaign: Event; children:
       <DialogContent className="rounded-3xl overflow-hidden p-0 max-w-md border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
         <div className="p-8 border-b bg-muted/10 text-left shrink-0">
             <DialogHeader className="text-left">
-                <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance text-left">Participants for "{campaign.title}"</DialogTitle>
+                <DialogTitle className="text-xl sm:text-2xl font-black font-headline leading-tight text-balance">Participants for "{campaign.title}"</DialogTitle>
                 <DialogDescription className="text-sm font-medium text-left">
                     {campaign.participantCount || 0} people have joined this gathering.
                 </DialogDescription>
             </DialogHeader>
         </div>
-        <div className="p-8 text-left flex-1 min-h-0">
+        <div className="p-8 flex-1 min-h-0">
             {content}
         </div>
       </DialogContent>
@@ -244,9 +244,9 @@ function LiveAuthor({ userId, fallbackInitials }: { userId: string, fallbackInit
     const { data: profile } = useDoc<UserProfile>(userDocRef);
     
     return (
-      <Avatar className="h-6 w-6 border shadow-sm text-left">
-        <AvatarImage src={profile?.photoURL} className="object-cover text-left" />
-        <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left">{fallbackInitials || 'U'}</AvatarFallback>
+      <Avatar className="h-6 w-6 border shadow-sm">
+        <AvatarImage src={profile?.photoURL} className="object-cover" />
+        <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{fallbackInitials || 'U'}</AvatarFallback>
       </Avatar>
     );
 }
@@ -282,7 +282,10 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
         const snap = await transaction.get(eventRef);
         if (!snap.exists()) throw new Error("Event missing");
         
-        transaction.update(eventRef, { participantCount: (snap.data().participantCount || 0) + 1 });
+        transaction.update(eventRef, { 
+            participantCount: (snap.data().participantCount || 0) + 1,
+            participantIds: arrayUnion(user.uid)
+        });
         transaction.set(joinedRef, { eventId: event.id, joinedAt: serverTimestamp() });
         transaction.set(participantRef, {
             userId: user.uid,
@@ -355,37 +358,37 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
   return (
     <Card className="rounded-none sm:rounded-[3rem] overflow-hidden border-x-0 sm:border-x border-y sm:border-y-0 shadow-none sm:shadow-lg bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all h-full flex flex-col border-b-8 border-b-primary/10 text-left">
       <CardHeader className="p-6 sm:p-10 pb-4 text-left">
-        <div className="flex justify-between items-start text-left">
-          <Badge className="h-6 text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20 text-left">
+        <div className="flex justify-between items-start">
+          <Badge className="h-6 text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-primary/10 text-primary border-primary/20">
             {event.category}
           </Badge>
-          <div className="flex items-center gap-2 text-left">
+          <div className="flex items-center gap-2">
             {isOwner && (
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-left">
-                        <MoreVertical className="h-4 w-4 text-left" />
+                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full">
+                        <MoreVertical className="h-4 w-4" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl text-left">
+                <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl">
                     <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Manage Gathering</DropdownMenuLabel>
-                    <DropdownMenuSeparator className="text-left" />
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={onEdit} className="rounded-lg text-left">
-                        <Edit className="mr-2 h-4 w-4 text-primary text-left" /> Edit Event
+                        <Edit className="mr-2 h-4 w-4 text-primary" /> Edit Event
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator className="text-left" />
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10 rounded-lg text-left" onClick={onDelete}>
-                        <Trash2 className="mr-2 h-4 w-4 text-left" /> Cancel Event
+                        <Trash2 className="mr-2 h-4 w-4" /> Cancel Event
                     </DropdownMenuItem>
                 </DropdownMenuContent>
                 </DropdownMenu>
             )}
           </div>
         </div>
-        <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase mt-4 leading-tight break-words [overflow-wrap:anywhere] text-left">{event.title}</CardTitle>
+        <CardTitle className="text-2xl sm:text-4xl font-black font-headline uppercase mt-4 leading-tight break-words [overflow-wrap:anywhere]">{event.title}</CardTitle>
         <CardDescription className="flex items-center gap-3 mt-3 text-left">
           <LiveAuthor userId={event.organizerId} fallbackInitials={event.organizerName.charAt(0)} />
-          <span className="text-[11px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest truncate text-left">Host: {event.organizerName}</span>
+          <span className="text-[11px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest truncate">Host: {event.organizerName}</span>
         </CardDescription>
       </CardHeader>
       
@@ -395,18 +398,18 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
         </p>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
-          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left text-left">
-            <CalendarDays className="h-6 w-6 text-primary shrink-0 text-left" />
-            <div className="min-w-0 text-left text-left text-left">
-                <p className="text-sm sm:text-base font-bold leading-tight text-left">{dateStr}</p>
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">{event.startTime} - {event.endTime}</p>
+          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left">
+            <CalendarDays className="h-6 w-6 text-primary shrink-0" />
+            <div className="min-w-0 text-left">
+                <p className="text-sm sm:text-base font-bold leading-tight">{dateStr}</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1">{event.startTime} - {event.endTime}</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left text-left">
-            <MapPin className="h-6 w-6 text-primary shrink-0 text-left" />
-            <div className="min-w-0 text-left text-left text-left">
-                <p className="text-sm sm:text-base font-bold truncate leading-tight uppercase tracking-tight text-left">{event.location}</p>
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1 text-left">BOTH PHYSICAL AND VIRTUAL</p>
+          <div className="flex items-center gap-4 text-muted-foreground bg-muted/20 p-5 sm:p-6 rounded-[2rem] border border-dashed min-h-[6rem] text-left">
+            <MapPin className="h-6 w-6 text-primary shrink-0" />
+            <div className="min-w-0 text-left">
+                <p className="text-sm sm:text-base font-bold truncate leading-tight uppercase tracking-tight">{event.location}</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest opacity-60 mt-1">BOTH PHYSICAL AND VIRTUAL</p>
             </div>
           </div>
         </div>
@@ -414,38 +417,38 @@ export function EventCard({ event, isJoined, userProfile, onEdit, onDelete }: Ev
 
       <CardFooter className="p-6 sm:p-10 bg-muted/10 border-t flex flex-col sm:flex-row items-center justify-between gap-6 mt-auto text-left">
         <ParticipantsDialog campaign={event}>
-            <div className="flex items-center gap-2.5 text-xs sm:text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left">
-              <Users className="h-5 w-5 text-primary text-left" />
+            <div className="flex items-center gap-2.5 text-xs sm:text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+              <Users className="h-5 w-5 text-primary" />
               {event.participantCount || 0} {event.participantCount === 1 ? 'MEMBER' : 'MEMBERS'}
             </div>
         </ParticipantsDialog>
         
         <div className="flex gap-3 w-full sm:w-auto text-left">
-          <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl shadow-md bg-background border-primary/20 text-primary/60 hover:text-primary text-left" onClick={handleShare}>
-            <Share2 className="h-5 w-5 text-left" />
+          <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl shadow-md bg-background border-primary/20 text-primary/60 hover:text-primary" onClick={handleShare}>
+            <Share2 className="h-5 w-5" />
           </Button>
           
           {(isJoined || isOwner) && event.hasGroupChat && (
-              <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl shadow-md bg-background border-primary/20 text-primary text-left" onClick={handleOpenGroupChat} disabled={isChatLoading}>
-                {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin text-left text-left" /> : <MessagesSquare className="h-5 w-5 text-left" />}
+              <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl shadow-md bg-background border-primary/20 text-primary" onClick={handleOpenGroupChat} disabled={isChatLoading}>
+                {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
               </Button>
           )}
 
           {event.streamUrl && (
-            <Button variant="outline" className="rounded-2xl h-12 px-6 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-md flex-1 sm:flex-none text-left" asChild>
-              <a href={event.streamUrl} target="_blank" rel="noopener noreferrer" className="text-left">
-                <PlayCircle className="mr-2 h-5 w-5 text-left" /> LIVE STREAM
+            <Button variant="outline" className="rounded-2xl h-12 px-6 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-md flex-1 sm:flex-none" asChild>
+              <a href={event.streamUrl} target="_blank" rel="noopener noreferrer">
+                <PlayCircle className="mr-2 h-5 w-5" /> LIVE STREAM
               </a>
             </Button>
           )}
           
           {isJoined ? (
-            <Badge variant="secondary" className="h-12 px-6 rounded-2xl flex items-center gap-2 font-black tracking-[0.1em] bg-primary/10 text-primary border-primary/30 flex-1 sm:flex-none text-[10px] sm:text-xs text-left">
-              <UserCheck className="h-5 w-5 text-left" /> I'M ATTENDING
+            <Badge variant="secondary" className="h-12 px-6 rounded-2xl flex items-center gap-2 font-black tracking-[0.1em] bg-primary/10 text-primary border-primary/30 flex-1 sm:flex-none text-[10px] sm:text-xs">
+              <UserCheck className="h-5 w-5" /> I'M ATTENDING
             </Badge>
           ) : (
-            <Button onClick={handleJoin} disabled={isJoining || event.status !== 'active'} className="h-12 px-8 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95 flex-1 sm:flex-none text-left">
-              {isJoining ? <Loader2 className="h-5 w-5 animate-spin text-left text-left" /> : "JOIN GATHERING"}
+            <Button onClick={handleJoin} disabled={isJoining || event.status !== 'active'} className="h-12 px-8 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95 flex-1 sm:flex-none">
+              {isJoining ? <Loader2 className="h-5 w-5 animate-spin" /> : "JOIN GATHERING"}
             </Button>
           )}
         </div>

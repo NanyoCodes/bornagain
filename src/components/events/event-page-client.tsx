@@ -75,18 +75,42 @@ export default function EventPageClient() {
   }, []);
 
   const eventsQuery = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'events'), where('status', '==', 'active'));
-  }, [firestore]);
+    if (!firestore || !user?.uid) return null;
+    
+    const eventsRef = collection(firestore, 'events');
+    
+    // In Firestore, we must query in a way that respects permissions.
+    // 'all' tab shows public events only.
+    if (activeTab === 'all') {
+      return query(
+        eventsRef, 
+        where('status', '==', 'active'),
+        where('visibility', '==', 'public')
+      );
+    }
+    
+    // 'mine' tab shows events user organized (public or private).
+    if (activeTab === 'mine') {
+      return query(
+        eventsRef, 
+        where('status', '==', 'active'),
+        where('organizerId', '==', user.uid)
+      );
+    }
+    
+    // 'joined' tab shows events where user is a participant.
+    if (activeTab === 'joined') {
+      return query(
+        eventsRef,
+        where('status', '==', 'active'),
+        where('participantIds', 'array-contains', user.uid)
+      );
+    }
+
+    return query(eventsRef, where('status', '==', 'active'), where('visibility', '==', 'public'));
+  }, [firestore, user?.uid, activeTab]);
+
   const { data: rawEvents, loading } = useCollection<Event>(eventsQuery);
-
-  const joinedQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/joinedEvents`));
-  }, [user?.uid, firestore]);
-  const { data: joinedEvents } = useCollection<JoinedEvent>(joinedQuery);
-
-  const joinedIds = useMemo(() => new Set(joinedEvents?.map(j => j.eventId)), [joinedEvents]);
 
   const filteredEvents = useMemo(() => {
     if (!rawEvents) return [];
@@ -97,15 +121,6 @@ export default function EventPageClient() {
         return dateA - dateB;
     });
 
-    if (activeTab === 'all') {
-      // Global tab only shows public events
-      list = list.filter(e => (e.visibility || 'public') === 'public');
-    } else if (activeTab === 'mine') {
-      list = list.filter(e => e.organizerId === user?.uid);
-    } else if (activeTab === 'joined') {
-      list = list.filter(e => joinedIds.has(e.id));
-    }
-
     if (!searchTerm) return list;
     const term = searchTerm.toLowerCase();
     return list.filter(e => 
@@ -114,7 +129,7 @@ export default function EventPageClient() {
       e.location.toLowerCase().includes(term) ||
       e.organizerName.toLowerCase().includes(term)
     );
-  }, [rawEvents, searchTerm, activeTab, user?.uid, joinedIds]);
+  }, [rawEvents, searchTerm]);
 
   const handleCancelEvent = () => {
     if (!eventToDelete || !user || !firestore) return;
@@ -149,8 +164,8 @@ export default function EventPageClient() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                 <div className="flex items-center gap-4 text-left">
                     <div className="space-y-1 text-left">
-                        <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left">EVENTS HUB</h1>
-                        <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left">
+                        <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">EVENTS HUB</h1>
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
                             <CalendarDays className="h-4 w-4 text-primary text-left" /> Event Directory
                         </p>
                     </div>
@@ -192,7 +207,7 @@ export default function EventPageClient() {
                     <EventCard 
                         key={event.id} 
                         event={event} 
-                        isJoined={joinedIds.has(event.id)} 
+                        isJoined={activeTab === 'mine' || activeTab === 'joined' || (user?.uid ? event.participantIds?.includes(user.uid) : false)} 
                         userProfile={userProfile ?? null} 
                         onEdit={() => setEventToEdit(event)}
                         onDelete={() => setEventToDelete(event)}
@@ -248,11 +263,11 @@ export default function EventPageClient() {
         {eventToEdit && (
             isMobile ? (
                 <Sheet open={!!eventToEdit} onOpenChange={(open) => !open && setEventToEdit(null)}>
-                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                            <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
+                    <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <SheetHeader className="text-left flex-shrink-0 text-left">
                                 <SheetTitle className="text-2xl font-black font-headline text-left">Manage Hub</SheetTitle>
-                                <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Refine the vision for your gathering.</SheetDescription>
+                                <SheetDescription className="text-sm font-medium mt-1 text-left">Refine the vision for your gathering.</SheetDescription>
                             </SheetHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left">
@@ -272,11 +287,11 @@ export default function EventPageClient() {
                 </Sheet>
             ) : (
                 <Dialog open={!!eventToEdit} onOpenChange={(open) => !open && setEventToEdit(null)}>
-                    <DialogContent className="w-[95vw] sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
-                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                            <DialogHeader className="text-left text-left text-left">
+                    <DialogContent className="w-[95vw] sm:max-w-3xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-2xl sm:rounded-[2rem] border-none shadow-2xl text-left">
+                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <DialogHeader className="text-left">
                                 <DialogTitle className="text-2xl font-black font-headline text-left">Manage Hub</DialogTitle>
-                                <DialogDescription className="text-base font-medium text-left text-left text-left">Update event logistics and details.</DialogDescription>
+                                <DialogDescription className="text-base font-medium text-left">Update event logistics and details.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="flex-1 min-h-0 text-left">
@@ -298,17 +313,17 @@ export default function EventPageClient() {
         )}
 
         <AlertDialog open={!!eventToDelete} onOpenChange={(open) => !open && setEventToDelete(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
-                <AlertDialogHeader className="text-left text-left">
-                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left">Cancel Gathering?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                <AlertDialogHeader className="text-left">
+                    <AlertDialogTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">Cancel Gathering?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
                         This will mark "{eventToDelete?.title}" as cancelled and remove it from the global directory. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-12 font-bold text-left text-left text-left">Close</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleCancelEvent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
+                <AlertDialogFooter className="gap-3 mt-6 text-left">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-xl h-12 font-bold text-left">Close</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleCancelEvent} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                         Confirm Cancellation
                     </AlertDialogAction>
                 </AlertDialogFooter>
