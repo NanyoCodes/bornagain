@@ -66,7 +66,8 @@ import {
   getDoc, 
   getDocs, 
   where,
-  writeBatch
+  writeBatch,
+  Timestamp
 } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import {
@@ -129,7 +130,7 @@ import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
+import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -584,34 +585,34 @@ function PrivateHangoutBuilder({
     );
 
     const header = (
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-            <div className="flex items-center gap-2 mb-2 text-left">
-                <Heart className="h-5 w-5 text-primary fill-current text-left" />
-                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Private Matchmaking</span>
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
+            <div className="flex items-center gap-2 mb-2 text-left text-left">
+                <Heart className="h-5 w-5 text-primary fill-current text-left text-left" />
+                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left">Private Matchmaking</span>
             </div>
-            <DialogHeader className="text-left text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase text-left text-left">Coordinate Hangout</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-left text-left">Create a private gathering for {soul?.firstName}, you, and another soul.</DialogDescription>
+            <DialogHeader className="text-left text-left text-left">
+                <DialogTitle className="text-2xl font-black font-headline uppercase text-left text-left text-left">Coordinate Hangout</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-left text-left text-left">Create a private gathering for {soul?.firstName}, you, and another soul.</DialogDescription>
             </DialogHeader>
         </div>
     );
 
     const body = (
-        <div className="p-8 space-y-10 text-left">
+        <div className="p-8 space-y-10 text-left text-left">
             {step1}
             {thirdSoul && step2}
         </div>
     );
 
     const footer = (
-        <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0 text-left">
-            <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-xl h-12 flex-1 font-bold text-left">Cancel</Button>
+        <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0 text-left text-left">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-xl h-12 flex-1 font-bold text-left text-left">Cancel</Button>
             <Button 
                 onClick={handleCreate} 
                 disabled={!thirdSoul || !location.trim() || isCreating}
-                className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
+                className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left"
             >
-                {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Sparkles className="mr-2 h-4 w-4 text-left" />}
+                {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Sparkles className="mr-2 h-4 w-4 text-left text-left" />}
                 CREATE HANGOUT
             </Button>
         </div>
@@ -954,8 +955,8 @@ function SoulProfileContent({
         organizerName: `${currentUserProfile.firstName} ${currentUserProfile.lastName}`,
         location: details.location,
         locationType: 'Both' as const,
-        startDate: new Date(details.date),
-        endDate: new Date(details.date),
+        startDate: Timestamp.fromDate(new Date(details.date)),
+        endDate: Timestamp.fromDate(new Date(details.date)),
         startTime: details.time,
         endTime: details.time,
         organizerId: user.uid,
@@ -1016,7 +1017,7 @@ function SoulProfileContent({
                 path: eventRef.path,
                 operation: 'write',
                 requestResourceData: eventData
-            }, user);
+            } satisfies SecurityRuleContext, user);
             errorEmitter.emit('permission-error', permissionError);
         } else {
             toast({ variant: 'destructive', title: 'Action Failed', description: e.message || 'Could not coordinate hangout.' });
@@ -1393,18 +1394,18 @@ function SoulProfileContent({
                                           className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group text-left text-left text-left flex items-center"
                                           onClick={() => handleMatchmakePairing(s)}
                                       >
-                                          <Avatar className="h-8 w-8 border shrink-0 text-left text-left text-left">
-                                              <AvatarImage src={s.photoURL || undefined} className="text-left text-left text-left" />
-                                              <AvatarFallback className="font-bold text-[10px] text-center flex items-center justify-center w-full h-full text-left text-left text-left">{s.firstName.charAt(0)}</AvatarFallback>
+                                          <Avatar className="h-8 w-8 border shrink-0 text-left text-left text-left text-left">
+                                              <AvatarImage src={s.photoURL || undefined} className="text-left text-left text-left text-left" />
+                                              <AvatarFallback className="font-bold text-[10px] text-center flex items-center justify-center w-full h-full text-left text-left text-left text-left text-left">{s.firstName.charAt(0)}</AvatarFallback>
                                           </Avatar>
-                                          <div className="text-left flex-1 min-w-0 text-left text-left text-left">
-                                              <p className="font-black text-sm uppercase tracking-tight text-left text-left text-left">{s.firstName} {s.lastName}</p>
-                                              <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left">{s.gender} • {s.age ? `${s.age} yrs` : 'Age N/A'}</p>
+                                          <div className="text-left flex-1 min-w-0 text-left text-left text-left text-left">
+                                              <p className="font-black text-sm uppercase tracking-tight text-left text-left text-left text-left">{s.firstName} {s.lastName}</p>
+                                              <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left">{s.gender} • {s.age ? `${s.age} yrs` : 'Age N/A'}</p>
                                           </div>
-                                          <MessageSquare className="h-4 w-4 opacity-40 group-hover:opacity-100 transition-opacity text-left text-left text-left" />
+                                          <MessageSquare className="h-4 w-4 opacity-40 group-hover:opacity-100 transition-opacity text-left text-left text-left text-left" />
                                       </Button>
                                   )) : (
-                                      <p className="text-center text-xs text-muted-foreground py-12 text-left text-left text-left">No other single/widowed believers found in your harvest list.</p>
+                                      <p className="text-center text-xs text-muted-foreground py-12 text-left text-left text-left text-left">No other single/widowed believers found in your harvest list.</p>
                                   )}
                               </div>
                           </ScrollArea>
@@ -1535,7 +1536,7 @@ function SoulProfileContent({
             </DialogHeader>
           </div>
           <div className="p-8 space-y-6 text-left text-left text-left text-left">
-            <div className="space-y-2 text-left text-left text-left text-left">
+            <div className="space-y-2 text-left text-left text-left text-left text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
@@ -1577,7 +1578,7 @@ function SoulProfileContent({
                   </DialogHeader>
               </div>
               <div className="p-6 text-left text-left text-left text-left">
-              <ScrollArea className="h-64 text-left text-left text-left text-left">
+              <ScrollArea className="h-64 text-left text-left text-left text-left text-left">
                   <div className="space-y-2 text-left text-left text-left text-left text-left">
                       {uniquePartners.map(p => (
                           <Button 

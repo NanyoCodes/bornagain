@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Unification and private event security - 2025-03-05T21:30:00Z
+    // Deployment trigger: Unification and private event security - 2025-03-05T21:45:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -128,7 +128,6 @@ service cloud.firestore {
 
       match /participants/{userId} {
         allow read: if isAuthenticated();
-        // Allow the organizer to add participants during private event creation
         allow create: if isAuthenticated();
         allow update, delete: if isOwner(userId) || isEventOrganizer(eventId);
       }
@@ -151,7 +150,7 @@ service cloud.firestore {
           allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
           allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
           allow update: if isAuthenticated() && (
-            (request.resource.data.authorId == request.auth.uid) ||
+            (request.resource.data.authorId == request.authorId) ||
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
           );
         }
