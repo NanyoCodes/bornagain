@@ -65,9 +65,9 @@ const navItems = [
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
 
-const NOTIFICATION_TYPES = [
+const CHAT_NOTIFICATION_TYPES = ['new_chat_message'];
+const SYSTEM_NOTIFICATION_TYPES = [
   'campaign_join', 
-  'new_chat_message', 
   'accountability_nudge', 
   'accountability_request', 
   'request_accepted', 
@@ -572,13 +572,13 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   const unreadChatNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', CHAT_NOTIFICATION_TYPES), where('isRead', '==', false));
   }, [user?.uid, firestore]);
   const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotificationsQuery);
 
   const unreadOtherNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', NOTIFICATION_TYPES), where('isRead', '==', false));
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', SYSTEM_NOTIFICATION_TYPES), where('isRead', '==', false));
   }, [user?.uid, firestore]);
   const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotificationsQuery);
 

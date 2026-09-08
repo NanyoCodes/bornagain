@@ -99,7 +99,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
             snap.docs.forEach(d => {
                 const s = { id: d.id, ...d.data() } as Soul;
                 if (s.userId !== currentUser.uid) {
-                    soulsMap.set(d.id, s);
+                     soulsMap.set(d.id, s);
                 }
             });
         });
