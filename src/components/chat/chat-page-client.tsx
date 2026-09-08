@@ -22,7 +22,7 @@ import type { Chat, ChatMessage, Campaign, Fellowship, UserProfile, Event } from
 import { Loader2, Send, ArrowLeft, Reply, X, ChevronDown, MessagesSquare, MoreHorizontal, Edit, Trash2, Check } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn, safeToDate } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -59,6 +59,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { toast } = useToast();
 
     const [newMessage, setNewMessage] = useState('');
@@ -257,6 +258,15 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         const target = e.currentTarget;
         const isNearBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 100;
         setShowScrollBottom(!isNearBottom);
+    };
+
+    const handleBack = () => {
+        const soulIdParam = searchParams?.get('soulId');
+        if (soulIdParam) {
+            router.push(`/souls-won?soulId=${soulIdParam}`);
+        } else {
+            router.push('/chats');
+        }
     };
 
     const sendMessage = async () => {
@@ -468,7 +478,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     return (
         <div className="flex flex-col w-full h-full min-h-0 bg-background overflow-hidden relative">
             <div className="flex items-center gap-4 p-4 shrink-0 border-b bg-background/80 backdrop-blur-md z-20">
-                <Button variant="outline" size="icon" onClick={() => router.push('/chats')} className="rounded-full">
+                <Button variant="outline" size="icon" onClick={handleBack} className="rounded-full">
                     <ArrowLeft className="h-4 w-4" />
                     <span className="sr-only">Back</span>
                 </Button>
@@ -632,7 +642,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                                         <MoreHorizontal className="h-3.5 w-3.5 text-left" />
                                                                     </Button>
                                                                 </DropdownMenuTrigger>
-                                                                <DropdownMenuContent align={isOwnMessage ? "end" : "start"} className="rounded-xl text-left">
+                                                                <DropdownMenuContent align="isOwnMessage ? "end" : "start"} className="rounded-xl text-left">
                                                                     <DropdownMenuItem onSelect={() => { 
                                                                         setEditingMessageId(msg.id); 
                                                                         setNewMessage(msg.text || '');
