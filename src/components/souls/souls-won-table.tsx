@@ -516,6 +516,7 @@ function SoulProfileContent({
   const [customMessageText, setCustomMessageText] = React.useState('');
   const [clickedActionId, setClickedActionId] = React.useState<string | null>(null);
   const [isActionSubmitting, setIsActionSubmitting] = React.useState(false);
+  const [suitorTarget, setSuitorTarget] = React.useState<Soul | null>(null);
 
   const address = getSoulAddress(soul);
   const needs = soul.needsAssessment;
@@ -588,6 +589,7 @@ function SoulProfileContent({
     } finally {
         setIsActionSubmitting(false);
         setClickedActionId(null);
+        setSuitorTarget(null);
     }
   };
 
@@ -655,20 +657,23 @@ function SoulProfileContent({
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
-      if (!soul?.phone || !clickedActionId) return;
-      const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
-      const message = customMessageText || `Hi ${soul.firstName}, I'm thinking of you today and praying for you. God bless you!`;
-      const messageText = encodeURIComponent(message);
+      const targetPhone = suitorTarget?.phone || soul?.phone;
+      if (!targetPhone || !clickedActionId) return;
+      
+      const cleanPhone = targetPhone.replace(/\+/g, '').replace(/\D/g, '');
+      const messageText = encodeURIComponent(customMessageText || `Hi, I'm thinking of you today and praying for you. God bless you!`);
       
       if (channel === 'whatsapp') {
           window.open(`https://wa.me/${cleanPhone}?text=${messageText}`, '_blank');
       } else {
-          window.location.href = `sms:${soul.phone}?body=${messageText}`;
+          window.location.href = `sms:${targetPhone}?body=${messageText}`;
       }
       
-      finalizeLog(clickedActionId, `Sent via ${channel.toUpperCase()}: ${message.substring(0, 30)}...`);
+      const logAddendum = suitorTarget ? `Kingdom Matchmaking: Sent permission-seeking message to potential suitor ${suitorTarget.firstName}.` : `Sent via ${channel.toUpperCase()}: ${customMessageText.substring(0, 30)}...`;
+      finalizeLog(clickedActionId, logAddendum);
       setIsCommChannelDialogOpen(false);
       setCustomMessageText('');
+      setSuitorTarget(null);
   };
 
   const handleShareToWhatsApp = () => {
@@ -729,12 +734,42 @@ function SoulProfileContent({
   };
 
   const handleMatchmakePairing = async (partner: Soul) => {
-      await finalizeLog('matchmake', `Kingdom Matchmaking: Initiated connection with ${partner.firstName} ${partner.lastName}.`);
+      if (!partner.phone) {
+          toast({ variant: 'destructive', title: 'Partner Phone Missing', description: `I need a phone number for ${partner.firstName} to seek permission.` });
+          return;
+      }
+      
+      const userName = `${currentUserProfile?.firstName || 'A believer'}`;
+      const message = `Hi ${partner.firstName}, I'm ${userName} from Testify. I've been praying about divine connections and would like to ask if you'd be open to an introduction with ${soul.firstName}? I believe there could be a godly alignment here for marriage. Let me know if you'd like to hear more. God bless!`;
+      
+      setCustomMessageText(message);
+      setSuitorTarget(partner);
+      setClickedActionId('matchmaking');
       setIsMatchmakingOpen(false);
+      
+      requestAnimationFrame(() => {
+          setIsCommChannelDialogOpen(true);
+      });
   };
 
-  const handleMatchmakeActivity = async (label: string) => {
-      await finalizeLog('matchmake', `Kingdom Matchmaking Strategy: ${label}.`);
+  const handleMatchmakeActivity = async (strategyId: string) => {
+      switch (strategyId) {
+          case 'singles_fellowship':
+          case 'group_hangout':
+              router.push('/dashboard/events');
+              await finalizeLog('matchmaking', `Strategy: Scheduled participation in ${strategyId.replace(/_/g, ' ')}.`);
+              break;
+          case 'marriage_committee':
+              setIsMatchmakingOpen(false);
+              setTimeout(() => setIsPartnerSelectionDialogOpen(true), 200);
+              break;
+          case 'courting_study':
+              router.push('/dashboard/bible');
+              await finalizeLog('matchmaking', `Strategy: Initiated courting study foundation.`);
+              break;
+          default:
+              await finalizeLog('matchmaking', `Strategy selected: ${strategyId}`);
+      }
       setIsMatchmakingOpen(false);
   };
 
@@ -802,7 +837,7 @@ function SoulProfileContent({
                     <div className="flex items-center gap-1 text-left text-left text-left text-left text-left">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left">
+                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left" title="Export">
                                     <Download className="h-4 w-4 text-left text-left text-left" />
                                 </Button>
                             </DropdownMenuTrigger>
@@ -813,7 +848,7 @@ function SoulProfileContent({
                                 <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')} className="text-left text-left text-left text-left text-left">PDF Report</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left text-left" onClick={() => onEdit(soul)}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left text-left" onClick={() => onEdit(soul)} title="Edit Record">
                             <Edit className="h-4 w-4 text-left text-left text-left" />
                         </Button>
                     </div>
@@ -851,7 +886,7 @@ function SoulProfileContent({
             <div className="space-y-3 text-left text-left text-left text-left text-left">
                 <div className="flex items-center justify-between text-left text-left text-left text-left text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left text-left text-left">Contact Identity</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left text-left" onClick={() => onEdit(soul)}>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left text-left" onClick={() => onEdit(soul)} title="Edit Contacts">
                         <Edit className="h-4 w-4 text-left text-left text-left text-left text-left" />
                     </Button>
                 </div>
@@ -925,7 +960,7 @@ function SoulProfileContent({
             <div className="space-y-4 text-left text-left text-left text-left text-left">
                 <div className="flex items-center justify-between text-left text-left text-left text-left text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left text-left text-left">Kingdom Placement</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left text-left" onClick={() => onOpenAssignDialog(soul)}>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left text-left" onClick={() => onOpenAssignDialog(soul)} title="Change Assignment">
                         <Edit className="h-4 w-4 text-left text-left text-left text-left text-left" />
                     </Button>
                 </div>
@@ -947,7 +982,7 @@ function SoulProfileContent({
                 </div>
             </div>
 
-            <Separator className="opacity-20 text-left text-left text-left text-left" />
+            <Separator className="opacity-20 text-left text-left text-left text-left text-left" />
 
             <div className="space-y-4 text-left text-left text-left text-left text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left text-left text-left">Spiritual Milestones</p>
@@ -1107,7 +1142,7 @@ function SoulProfileContent({
                                               <p className="font-black text-sm truncate uppercase tracking-tight text-left">{s.firstName} {s.lastName}</p>
                                               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{s.maritalStatus} • {s.age ? `${s.age} yrs` : 'Age N/A'}</p>
                                           </div>
-                                          <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity text-left" />
+                                          <MessageSquare className="h-4 w-4 opacity-40 group-hover:opacity-100 transition-opacity text-left" />
                                       </Button>
                                   )) : (
                                       <p className="text-center text-xs text-muted-foreground py-12 text-left">No other single/widowed believers found in your harvest list.</p>
@@ -1117,23 +1152,38 @@ function SoulProfileContent({
                       </TabsContent>
                       <TabsContent value="activities" className="outline-none">
                           <div className="grid gap-2 text-left">
-                              {[
-                                  { id: 'singles_fellowship', label: 'Invite to Singles Fellowship', icon: Users },
-                                  { id: 'suitor_intro', label: 'Introduce to Godly Suitor', icon: UserPlus },
-                                  { id: 'group_hangout', label: 'Organize Group Hangout', icon: Sparkles },
-                                  { id: 'marriage_committee', label: 'Refer to Marriage Committee', icon: ShieldCheck },
-                                  { id: 'courting_study', label: 'Start Courting Study', icon: BookOpen },
-                              ].map(act => (
-                                  <Button 
-                                      key={act.id} 
-                                      variant="outline" 
-                                      className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/20 transition-all text-left"
-                                      onClick={() => handleMatchmakeActivity(act.label)}
-                                  >
-                                      <act.icon className="h-4 w-4 text-primary text-left" />
-                                      <span className="text-[10px] font-black uppercase tracking-widest text-left">{act.label}</span>
-                                  </Button>
-                              ))}
+                              <Button 
+                                  variant="outline" 
+                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/20 transition-all text-left"
+                                  onClick={() => handleMatchmakeActivity('singles_fellowship')}
+                              >
+                                  <Users className="h-4 w-4 text-primary text-left" />
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-left">Invite to Singles Fellowship</span>
+                              </Button>
+                              <Button 
+                                  variant="outline" 
+                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/20 transition-all text-left"
+                                  onClick={() => handleMatchmakeActivity('group_hangout')}
+                              >
+                                  <Sparkles className="h-4 w-4 text-primary text-left" />
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-left">Organize Group Hangout</span>
+                              </Button>
+                              <Button 
+                                  variant="outline" 
+                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/20 transition-all text-left"
+                                  onClick={() => handleMatchmakeActivity('marriage_committee')}
+                              >
+                                  <ShieldCheck className="h-4 w-4 text-primary text-left" />
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-left">Refer to Marriage Committee</span>
+                              </Button>
+                              <Button 
+                                  variant="outline" 
+                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/20 transition-all text-left"
+                                  onClick={() => handleMatchmakeActivity('courting_study')}
+                              >
+                                  <BookOpen className="h-4 w-4 text-primary text-left" />
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-left">Start Courting Study</span>
+                              </Button>
                           </div>
                       </TabsContent>
                   </Tabs>
@@ -1195,7 +1245,7 @@ function SoulProfileContent({
                   <MessageSquare className="h-7 w-7 text-primary text-left text-left text-left text-left text-left text-left" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left text-left text-left text-left text-left text-left">Message Hub</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left text-left text-left text-left text-left text-left">How would you like to encourage {soul.firstName}?</DialogDescription>
+            <DialogDescription className="text-sm font-medium text-center text-left text-left text-left text-left text-left text-left">How would you like to encourage {suitorTarget?.firstName || soul.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6 text-left text-left text-left text-left text-left text-left">
             <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left text-left text-left text-left text-left">
@@ -1288,7 +1338,7 @@ function SoulProfileContent({
           isOpen={isStudyWordOpen}
           onOpenChange={setIsStudyWordOpen}
           soul={soul}
-          onSelectVerse={(v) => { setCustomMessageText(v); setIsStudyWordOpen(false); setIsCommChannelDialogOpen(true); }}
+          onSelectVerse={handleVerseSelected}
       />
     </div>
   );
