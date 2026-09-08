@@ -67,8 +67,7 @@ import {
   getDoc, 
   getDocs, 
   where,
-  writeBatch,
-  Timestamp
+  writeBatch
 } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import {
@@ -131,9 +130,9 @@ import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError, type SecurityRuleContext } from "@/firebase/errors";
+import { FirestorePermissionError } from "@/firebase/errors";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -318,11 +317,11 @@ function ShareWordDialog({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
+        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
             <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
             <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Browse Bible</span>
         </Button>
-        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
+        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
             <Link href="/dashboard/bible" className="flex flex-col items-center justify-center">
                 <BookMarked className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
                 <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Open Reader</span>
@@ -343,7 +342,7 @@ function ShareWordDialog({
               className="w-full justify-start h-auto py-4 sm:py-6 px-4 sm:px-6 rounded-2xl sm:rounded-[2rem] hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all text-left block relative overflow-hidden bg-muted/5 shadow-sm"
               onClick={() => onSelectVerse(constructInvitationMessage(v.text, v.reference, `${window.location.origin}/dashboard/bible`))}
             >
-              <div className="flex items-center justify-between w-full mb-1.5">
+              <div className="flex items-center justify-between w-full mb-1.5 text-left">
                   <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{v.reference}</span>
                   <PlusCircle className="h-3.5 w-3.5 sm:h-4 w-4 opacity-0 group-hover:opacity-40 transition-opacity" />
               </div>
@@ -448,7 +447,7 @@ function ShareWordDialog({
         <Button 
           onClick={handleShareSelected} 
           disabled={selectedVerses.length === 0}
-          className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest shadow-lg shadow-primary/20"
+          className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-left"
         >
           PREPARE SHARE ({selectedVerses.length})
         </Button>
@@ -474,7 +473,7 @@ function ShareWordDialog({
         {body}
         {footer || (
             <div className="p-6 border-t bg-muted/5 flex justify-end shrink-0 text-left">
-                <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs">Close Hub</Button>
+                <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs text-left">Close Hub</Button>
             </div>
         )}
       </DialogContent>
@@ -495,7 +494,7 @@ function PrivateHangoutBuilder({
   soul: Soul | null; 
   userProfile: UserProfile | null;
   allSouls: Soul[];
-  onCreate: (targetSoul: Soul, hangoutDetails: any) => Promise<void>;
+  onCreate: (targetSoul: Soul, details: { date: string; time: string; location: string }) => Promise<void>;
 }) {
     const [thirdSoul, setThirdSoul] = useState<Soul | null>(null);
     const [search, setSearch] = useState('');
@@ -566,7 +565,7 @@ function PrivateHangoutBuilder({
     );
 
     const step2 = (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Date</Label>
@@ -583,23 +582,23 @@ function PrivateHangoutBuilder({
             </div>
             <div className="p-4 bg-primary/5 rounded-2xl border-2 border-dashed border-primary/10">
                 <div className="flex items-center gap-2 mb-2">
-                    <Lock className="h-3.5 w-3.5 text-primary" />
-                    <span className="text-[9px] font-black text-primary uppercase tracking-widest">Privacy Guard</span>
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-[9px] font-black text-primary uppercase tracking-widest">Invitation Logic</span>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">This event is <span className="font-black text-foreground">private</span>. It will only be visible to you and your guests. It will not appear in the public feed.</p>
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">This will not create a public event. It will prepare an invitation for you to share directly with both participants.</p>
             </div>
         </div>
     );
 
     const header = (
-        <div className="p-8 border-b bg-muted/10 shrink-0">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
             <div className="flex items-center gap-2 mb-2">
                 <Heart className="h-5 w-5 text-primary fill-current" />
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Private Matchmaking</span>
             </div>
             <DialogHeader className="text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase">Coordinate Hangout</DialogTitle>
-                <DialogDescription className="text-sm font-medium">Create a private gathering for {soul?.firstName}, you, and another soul.</DialogDescription>
+                <DialogTitle className="text-2xl font-black font-headline uppercase">Coordinate Connection</DialogTitle>
+                <DialogDescription className="text-sm font-medium">Draft a warm invitation for {soul?.firstName} and another soul to meet.</DialogDescription>
             </DialogHeader>
         </div>
     );
@@ -619,8 +618,8 @@ function PrivateHangoutBuilder({
                 disabled={!thirdSoul || !location.trim() || isCreating}
                 className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
             >
-                {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                CREATE HANGOUT
+                {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                PREPARE INVITATION
             </Button>
         </div>
     );
@@ -943,85 +942,24 @@ function SoulProfileContent({
     if (!user || !firestore || !currentUserProfile || !soul) return;
     
     setIsActionSubmitting(true);
-    const eventRef = doc(collection(firestore, 'events'));
-    
-    const guestIds = [user.uid, soul.id, targetSoul.id].sort();
-
-    const eventData = {
-        title: `Private Group Hangout: ${soul.firstName} & ${targetSoul.firstName}`,
-        description: `A private introductory hangout arranged for Kingdom matchmaking. Guests: ${soul.firstName} ${soul.lastName} and ${targetSoul.firstName} ${targetSoul.lastName}.`,
-        category: 'Other' as EventCategory,
-        organizerName: `${currentUserProfile.firstName} ${currentUserProfile.lastName}`,
-        location: details.location,
-        locationType: 'Both' as const,
-        startDate: Timestamp.fromDate(new Date(details.date)),
-        endDate: Timestamp.fromDate(new Date(details.date)),
-        startTime: details.time,
-        endTime: details.time,
-        organizerId: user.uid,
-        organizerPhotoURL: currentUserProfile.photoURL || null,
-        participantCount: 3,
-        status: 'active' as const,
-        visibility: 'private' as const,
-        createdAt: serverTimestamp(),
-        participantIds: guestIds,
-    };
 
     try {
-        await setDoc(eventRef, eventData);
-
-        const batch = writeBatch(firestore);
-        const participants = [
-            { id: user.uid, first: currentUserProfile.firstName, last: currentUserProfile.lastName, photo: currentUserProfile.photoURL },
-            { id: soul.id, first: soul.firstName, last: soul.lastName, photo: soul.photoURL },
-            { id: targetSoul.id, first: targetSoul.firstName, last: targetSoul.lastName, photo: targetSoul.photoURL }
-        ];
-
-        participants.forEach(p => {
-            const pRef = doc(firestore, `events/${eventRef.id}/participants/${p.id}`);
-            batch.set(pRef, {
-                userId: p.id,
-                firstName: p.first,
-                lastName: p.last,
-                photoURL: p.photo || null,
-                joinedAt: serverTimestamp()
-            });
-            
-            if (p.id === user.uid) {
-                batch.set(doc(firestore, `users/${user.uid}/joinedEvents/${eventRef.id}`), {
-                    eventId: eventRef.id,
-                    joinedAt: serverTimestamp()
-                });
-            }
-        });
-
-        await batch.commit();
-
-        await finalizeLog('matchmaking', `PRIVATE HANGOUT CREATED: Scheduled with ${targetSoul.firstName} at ${details.location} on ${details.date}.`, soul);
-        await finalizeLog('matchmaking', `PRIVATE HANGOUT CREATED: Scheduled with ${soul.firstName} at ${details.location} on ${details.date}.`, targetSoul);
+        await finalizeLog('matchmaking', `COORDINATED HANGOUT: Scheduled intro with ${targetSoul.firstName} at ${details.location} on ${details.date}.`, soul);
+        await finalizeLog('matchmaking', `COORDINATED HANGOUT: Scheduled intro with ${soul.firstName} at ${details.location} on ${details.date}.`, targetSoul);
         
         const invitation = `I've arranged a private Kingdom hangout for us to connect! \n\nVenue: ${details.location}\nDate: ${details.date}\nTime: ${details.time}\n\nLooking forward to our gathering! God bless.`;
         setCustomMessageText(invitation);
         setClickedActionId('matchmaking');
         
-        toast({ title: 'Hangout Arranged', description: 'Private gathering created. Redirecting to send invitations...' });
+        toast({ title: 'Hangout Arranged', description: 'Invitations are now ready for dispatch.' });
         
         setTimeout(() => {
             setIsCommChannelDialogOpen(true);
         }, 300);
 
     } catch (e: any) {
-        console.error("Hangout creation failed:", e);
-        if (e.code === 'permission-denied') {
-            const permissionError = new FirestorePermissionError({
-                path: eventRef.path,
-                operation: 'write',
-                requestResourceData: eventData
-            } satisfies SecurityRuleContext, user);
-            errorEmitter.emit('permission-error', permissionError);
-        } else {
-            toast({ variant: 'destructive', title: 'Action Failed', description: e.message || 'Could not coordinate hangout.' });
-        }
+        console.error("Hangout coordination failed:", e);
+        toast({ variant: 'destructive', title: 'Action Failed', description: e.message || 'Could not coordinate hangout.' });
     } finally {
         setIsActionSubmitting(false);
     }
@@ -1157,7 +1095,7 @@ function SoulProfileContent({
                     {(soul.maritalStatus === 'Single' || soul.maritalStatus === 'Widowed') && (
                         <Button
                             variant="outline"
-                            className="flex items-center justify-start gap-2 h-10 px-3 rounded-xl border-2 border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all text-left group"
+                            className="flex items-center justify-start gap-2 h-10 px-3 rounded-xl border-2 border-transparent bg-primary/5 hover:bg-primary/10 transition-all text-left group"
                             onClick={() => setIsMatchmakingOpen(true)}
                             disabled={isActionSubmitting}
                         >
@@ -1299,7 +1237,7 @@ function SoulProfileContent({
                                   onClick={() => handleMatchmakeActivity('group_hangout')}
                               >
                                   <Sparkles className="h-4 w-4 text-primary" />
-                                  <span className="text-[10px] font-black uppercase tracking-widest">Organize Private Group Hangout</span>
+                                  <span className="text-[10px] font-black uppercase tracking-widest">Draft Direct Hangout Invitation</span>
                               </Button>
                               <Button 
                                   variant="outline" 
@@ -1432,10 +1370,10 @@ function SoulProfileContent({
             <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul?.firstName}'s info?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6 text-center">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center">
               <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
             </Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setIsPartnerSelectionDialogOpen(true); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center">
               <HeartHandshake className="h-5 w-5" /> Partner on App
             </Button>
           </div>
@@ -1493,7 +1431,7 @@ const SoulCard = React.memo(({ soul, onClick }: {
     return (
         <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left">
             <div className="flex items-center justify-between p-4 gap-4">
-                <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left">
                     <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0")}>
                         <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-center flex items-center justify-center w-full h-full">
@@ -1685,7 +1623,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         </Sheet>
 
         {/* Desktop Detailed Preview Panel (Large screens only) */}
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left">
             <AnimatePresence>
                 {selectedSoul ? (
                     <motion.div
@@ -1693,7 +1631,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="space-y-6"
+                        className="space-y-6 text-left"
                     >
                         {profileView}
                         <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center">
