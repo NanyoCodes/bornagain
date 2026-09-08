@@ -178,7 +178,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                             <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1">
                                 <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary opacity-60" />
                                 <p className="text-[8px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate">
-                                    Mobilizer Station: {record.user.location?.city || 'Global Network'}
+                                    Station: {record.user.location?.city || 'Global Network'}
                                 </p>
                             </div>
                         </div>
@@ -195,15 +195,15 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                             const date = safeToDate(log.date);
                             return (
                                 <div key={lIdx} className="relative">
-                                    <div className="flex justify-between items-center mb-1.5 sm:mb-2 text-left">
+                                    <div className="flex justify-between items-center mb-1.5 sm:mb-2">
                                         <div className="flex items-center gap-2">
                                             <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground opacity-40" />
-                                            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 text-left">
+                                            <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
                                                 {date ? format(date, "MMM d, p") : 'Recently'}
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="bg-muted/30 rounded-[1rem] sm:rounded-[1.5rem] p-3 sm:p-5 border shadow-inner text-left">
+                                    <div className="bg-muted/30 rounded-[1rem] sm:rounded-[1.5rem] p-3 sm:p-5 border shadow-inner">
                                         {log.actions && log.actions.length > 0 && (
                                             <div className="flex flex-wrap gap-1 mb-2 sm:mb-3">
                                                 {log.actions.map(aId => {
@@ -214,7 +214,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                                                 })}
                                             </div>
                                         )}
-                                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium leading-relaxed text-left">
+                                        <p className="text-xs sm:text-sm text-muted-foreground italic font-medium leading-relaxed">
                                             &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                         </p>
                                     </div>
@@ -255,7 +255,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
       {mounted && (
         isMobile ? (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                         <SheetHeader className="text-left flex-shrink-0">
                             <div className="flex items-center gap-3 mb-2">
@@ -277,7 +277,7 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogContent className="sm:max-w-xl max-h-[90dvh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                        <DialogHeader className="text-left">
+                        <DialogHeader>
                             <div className="flex items-center gap-3 mb-2">
                                 <Sparkles className="h-5 w-5 text-primary" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Mutual effort</span>

@@ -266,11 +266,31 @@ export default function SoulsWonPage() {
       total: 0
     };
     if (!souls) return stats;
+
+    // Track processed couples to avoid double counting family units
+    const processedCoupleIds = new Set<string>();
+
     souls.forEach(s => {
       const status = s.maritalStatus;
       if (status === 'Married') {
-          stats.married.count++;
           stats.married.list.push(s);
+          
+          if (!processedCoupleIds.has(s.id)) {
+              // Attempt to find spouse in the list to avoid double-counting the family unit
+              const spouse = souls.find(other => 
+                other.id !== s.id &&
+                other.maritalStatus === 'Married' &&
+                other.firstName.toLowerCase() === (s.spouseName || "").toLowerCase() &&
+                other.spouseName?.toLowerCase() === s.firstName.toLowerCase() &&
+                (other.lastName?.toLowerCase() === s.lastName?.toLowerCase())
+              );
+
+              if (spouse) {
+                processedCoupleIds.add(spouse.id);
+              }
+              
+              stats.married.count++;
+          }
       } else if (status === 'Single') {
           stats.single.count++;
           stats.single.list.push(s);
@@ -681,8 +701,8 @@ export default function SoulsWonPage() {
                     {/* Age Demographics */}
                     <div className="space-y-4 text-left text-left text-left">
                         <div className="flex items-center gap-3 text-left text-left text-left text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left text-left">
-                                <BarChart3 className="h-5 w-5 text-primary text-left text-left text-left text-left" />
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left text-left text-left">
+                                <BarChart3 className="h-5 w-5 text-primary text-left text-left text-left text-left text-left" />
                             </div>
                             <div className="min-w-0 text-left text-left text-left text-left">
                                 <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left text-left">DEMOGRAPHICS</h2>
@@ -974,7 +994,7 @@ export default function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
                                 <DialogHeader className="text-left text-left text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Edit Record</DialogTitle>
