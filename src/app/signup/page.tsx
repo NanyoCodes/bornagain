@@ -107,7 +107,7 @@ export default function SignUpPage() {
 
   if (authLoading || (user && (user.emailVerified || user.providerData.some(p => p.providerId === 'google.com')))) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-screen items-center justify-center bg-background text-left">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     );
@@ -115,7 +115,7 @@ export default function SignUpPage() {
 
   return (
     <AuthLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 text-left">
         <div className="grid gap-2 text-left">
           <h1 className="text-2xl md:text-3xl font-bold text-left">Join the Movement</h1>
           <p className="text-balance text-muted-foreground text-left">
