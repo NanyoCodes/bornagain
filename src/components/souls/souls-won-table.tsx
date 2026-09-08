@@ -53,7 +53,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput, MealGiftStatus } from "@/lib/types";
-import { useUser, useFirestore, useDoc, useUserProfile, useCollection } from "@/firebase";
+import { useUser, useDoc, useUserProfile, useCollection, useFirestore } from "@/firebase";
 import { 
   doc, 
   updateDoc, 
@@ -82,8 +82,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuLabel,
+  DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { 
@@ -285,7 +285,7 @@ function ShareWordDialog({
   };
 
   const renderHub = (
-    <div className="space-y-8 sm:space-y-10 text-left text-left">
+    <div className="space-y-8 sm:space-y-10 text-left">
       <div className="space-y-4">
         <div className="relative">
             <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-50 text-left" />
@@ -328,11 +328,11 @@ function ShareWordDialog({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
-        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left text-left">
+        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
             <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform text-left" />
             <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center text-left">Browse Bible</span>
         </Button>
-        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left text-left">
+        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
             <Link href="/dashboard/bible" className="flex flex-col items-center justify-center text-left">
                 <BookMarked className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform text-left" />
                 <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center text-left">Open Reader</span>
@@ -340,7 +340,7 @@ function ShareWordDialog({
         </Button>
       </div>
 
-      <div className="space-y-6 text-left text-left">
+      <div className="space-y-6 text-left">
         <div className="flex items-center justify-between px-1 text-left">
             <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left">Kingdom Essential Scriptures</Label>
             <Badge variant="outline" className="h-5 px-2 text-[8px] font-bold text-primary border-primary/20 bg-primary/5 uppercase text-left">Top Weapons</Badge>
@@ -376,7 +376,7 @@ function ShareWordDialog({
   );
 
   const renderChapters = (
-    <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2 text-left text-left">
+    <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2 text-left">
        {selectedBookName && bibleData.find(b => b.name === selectedBookName)?.chapters.map(ch => (
          <Button key={ch.chapter} variant="outline" className="h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-lg font-black text-xs sm:text-sm text-left" onClick={() => handleSelectChapter(ch.chapter)}>
            {ch.chapter}
@@ -386,7 +386,7 @@ function ShareWordDialog({
   );
 
   const renderVerses = (
-    <div className="space-y-4 pb-12 text-left text-left">
+    <div className="space-y-4 pb-12 text-left">
        <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left">
           <p className="text-[10px] font-black uppercase text-primary mb-1 text-left">SELECTED FOR SHARING</p>
           <p className="text-xs font-bold text-muted-foreground text-left">
@@ -418,18 +418,18 @@ function ShareWordDialog({
 
   const header = (
     <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left">
-      <div className="flex items-center justify-between gap-4 text-left text-left">
-        <div className="min-w-0 text-left text-left">
-          <div className="flex items-center gap-3 mb-2 text-left text-left">
+      <div className="flex items-center justify-between gap-4 text-left">
+        <div className="min-w-0 text-left">
+          <div className="flex items-center gap-3 mb-2 text-left">
             {view !== 'hub' && (
                 <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2 text-left" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
                     <ArrowLeft className="h-4 w-4 text-left" />
                 </Button>
             )}
-            <Target className="h-5 w-5 text-primary text-left text-left" />
+            <Target className="h-5 w-5 text-primary text-left" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
           </div>
-          <DialogHeader className="text-left text-left text-left">
+          <DialogHeader className="text-left text-left">
             <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{title}</DialogTitle>
             <DialogDescription className="text-xs sm:text-sm font-medium text-left text-left">{desc}</DialogDescription>
           </DialogHeader>
@@ -580,11 +580,11 @@ function PrivateHangoutBuilder({
     const step2 = (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 text-left">
             <div className="grid grid-cols-2 gap-4 text-left">
-                <div className="space-y-2 text-left">
+                <div className="space-y-2 text-left text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Date</Label>
                     <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-11 rounded-xl bg-muted/20 border-none font-bold text-left" />
                 </div>
-                <div className="space-y-2 text-left">
+                <div className="space-y-2 text-left text-left">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Time</Label>
                     <Input type="time" value={time} onChange={e => setTime(e.target.value)} className="h-11 rounded-xl bg-muted/20 border-none font-bold text-left" />
                 </div>
@@ -605,7 +605,7 @@ function PrivateHangoutBuilder({
 
     const header = (
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center gap-2 mb-2 text-left text-left">
+            <div className="flex items-center gap-2 mb-2 text-left">
                 <Heart className="h-5 w-5 text-primary fill-current text-left" />
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Private Matchmaking</span>
             </div>
@@ -640,9 +640,9 @@ function PrivateHangoutBuilder({
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
-                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                     {header}
-                    <ScrollArea className="flex-grow text-left">{bodyContent}</ScrollArea>
+                    <ScrollArea className="flex-grow text-left text-left">{bodyContent}</ScrollArea>
                     {footer}
                 </SheetContent>
             </Sheet>
@@ -651,9 +651,9 @@ function PrivateHangoutBuilder({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left">
+            <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left">
                 {header}
-                <ScrollArea className="flex-grow text-left">{bodyContent}</ScrollArea>
+                <ScrollArea className="flex-grow text-left text-left">{bodyContent}</ScrollArea>
                 {footer}
             </DialogContent>
         </Dialog>
@@ -1075,13 +1075,13 @@ function SoulProfileContent({
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Gender/Age</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
+                    <div className="space-y-1 text-left text-left text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Relationship</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left">{soul.relationship || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left text-left">{soul.relationship || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left text-left">
+                    <div className="space-y-1 text-left text-left text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Work Status</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left">{soul.workStatus || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left text-left">{soul.workStatus || 'N/A'}</p>
                     </div>
                 </div>
             </div>
