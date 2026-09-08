@@ -50,7 +50,7 @@ import { collection, query, where } from "firebase/firestore";
 import type { Notification, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -127,16 +127,16 @@ function CartButton() {
     };
   }, [updateCount]);
 
-  if (count === 0) return null;
-
   return (
     <Link href="/marketplace">
       <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
         <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
           <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
-          <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
-            {count}
-          </div>
+          {count > 0 && (
+            <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
+              {count}
+            </div>
+          )}
         </Button>
       </motion.div>
     </Link>
