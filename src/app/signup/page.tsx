@@ -18,6 +18,7 @@ import {
   AuthError,
   setPersistence,
   browserLocalPersistence,
+  signOut,
 } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { doc, setDoc } from 'firebase/firestore';
@@ -116,8 +117,8 @@ export default function SignUpPage() {
     <AuthLayout>
       <div className="space-y-6">
         <div className="grid gap-2 text-left">
-          <h1 className="text-2xl md:text-3xl font-bold">Join the Movement</h1>
-          <p className="text-balance text-muted-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold text-left">Join the Movement</h1>
+          <p className="text-balance text-muted-foreground text-left">
             Create your account to start sharing testimonies and winning souls.
           </p>
         </div>
@@ -131,23 +132,23 @@ export default function SignUpPage() {
           </Link>
         </div>
 
-        <div className="relative">
+        <div className="relative text-left">
               <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground font-black tracking-widest">
+              <div className="relative flex justify-center text-xs uppercase text-left">
+                  <span className="bg-background px-2 text-muted-foreground font-black tracking-widest text-left">
                     Or Continue With
                   </span>
               </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-2">
-              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-12 rounded-xl">
+          <div className="grid grid-cols-1 gap-2 text-left">
+              <Button variant="outline" onClick={() => handleSocialLogin('google')} disabled={isGoogleLoading} className="h-12 rounded-xl text-left">
                   {isGoogleLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />
                   ) : (
-                    <Icons.google className="mr-2 h-4 w-4" />
+                    <Icons.google className="mr-2 h-4 w-4 text-left" />
                   )}
                   Google
               </Button>

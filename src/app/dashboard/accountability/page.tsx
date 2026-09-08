@@ -84,38 +84,30 @@ const accountabilityVerses = [
     { text: "Bear one another's burdens, and so fulfill the law of Christ.", ref: "Galatians 6:2" },
 ];
 
-function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
-    </svg>
-  );
-}
-
 function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partnerCount?: number, pendingCount?: number }) {
     const verse = useMemo(() => accountabilityVerses[Math.floor(Math.random() * accountabilityVerses.length)], []);
 
     return (
-        <div className="hidden lg:flex flex-col gap-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar pb-10">
-            <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0">
+        <div className="hidden lg:flex flex-col gap-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar pb-10 text-left">
+            <Card className="rounded-3xl border-none shadow-lg bg-indigo-600 text-white overflow-hidden border-b-8 border-b-black/10 shrink-0 text-left">
                 <CardHeader className="p-6 pb-2 text-left">
-                    <div className="flex items-center justify-between mb-2">
-                        <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center">
-                            <HeartHandshake className="h-5 w-5 text-white" />
+                    <div className="flex items-center justify-between mb-2 text-left">
+                        <div className="h-8 w-8 rounded-xl bg-white/20 flex items-center justify-center text-left">
+                            <HeartHandshake className="h-5 w-5 text-white text-left" />
                         </div>
                         <Badge variant="outline" className="bg-white/10 text-white border-white/20 font-black text-[9px] uppercase tracking-widest text-left">Active Alliance</Badge>
                     </div>
                     <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">Alliance Hub</CardTitle>
                 </CardHeader>
-                <CardContent className="p-6 pt-2 space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10">
-                            <p className="text-2xl font-black">{partnerCount}</p>
-                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70">Partners</p>
+                <CardContent className="p-6 pt-2 space-y-4 text-left">
+                    <div className="grid grid-cols-2 gap-3 text-left">
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left">
+                            <p className="text-2xl font-black text-center">{partnerCount}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center">Partners</p>
                         </div>
-                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10">
-                            <p className="text-2xl font-black">{pendingCount}</p>
-                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70">Requests</p>
+                        <div className="bg-white/10 rounded-2xl p-3 text-center border border-white/10 text-left">
+                            <p className="text-2xl font-black text-center">{pendingCount}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest opacity-70 text-center">Requests</p>
                         </div>
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-80 text-balance text-left">
@@ -125,42 +117,42 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
             </Card>
 
             <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
-                <CardHeader className="p-5 pb-2">
-                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2">
-                        <BookOpen className="h-4 w-4 text-primary" /> Iron Sharpens Iron
+                <CardHeader className="p-5 pb-2 text-left">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center gap-2 text-left">
+                        <BookOpen className="h-4 w-4 text-primary text-left" /> Iron Sharpens Iron
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="p-5 pt-4">
+                <CardContent className="p-5 pt-4 text-left">
                     <div className="p-5 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/20 relative group text-left">
-                        <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110" />
-                        <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance">
+                        <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110 text-left" />
+                        <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance text-left text-left">
                             &ldquo;{verse.text}&rdquo;
                         </p>
-                        <p className="text-[9px] font-black text-primary text-right mt-3 uppercase tracking-widest">— {verse.ref}</p>
+                        <p className="text-[9px] font-black text-primary text-right mt-3 uppercase tracking-widest text-left">— {verse.ref}</p>
                     </div>
                 </CardContent>
             </Card>
 
             <Card className="rounded-3xl border shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden shrink-0 text-left">
-                <CardHeader className="p-5 pb-2">
-                    <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Kingdom Protocol</CardTitle>
+                <CardHeader className="p-5 pb-2 text-left">
+                    <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Kingdom Protocol</CardTitle>
                 </CardHeader>
-                <CardContent className="p-4 space-y-2">
+                <CardContent className="p-4 space-y-2 text-left">
                     {[
                         { icon: ShieldCheck, label: "Strict Confidentiality", color: "text-blue-500" },
                         { icon: Zap, label: "Regular Nudges", color: "text-amber-500" },
                         { icon: Sparkles, label: "Prayer Agreement", color: "text-primary" },
                         { icon: Users, label: "Truth with Love", color: "text-indigo-600" },
                     ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/10 border border-transparent">
-                            <item.icon className={cn("h-4 w-4", item.color)} />
-                            <span className="text-[10px] font-bold uppercase tracking-tight">{item.label}</span>
+                        <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl bg-muted/10 border border-transparent text-left">
+                            <item.icon className={cn("h-4 w-4 text-left", item.color)} />
+                            <span className="text-[10px] font-bold uppercase tracking-tight text-left">{item.label}</span>
                         </div>
                     ))}
                 </CardContent>
-                <CardFooter className="p-5 pt-0">
-                    <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full">
-                        <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic uppercase tracking-widest text-center">
+                <CardFooter className="p-5 pt-0 text-left">
+                    <div className="p-4 bg-muted/30 rounded-2xl border border-dashed text-center w-full text-left">
+                        <p className="text-[9px] font-bold text-muted-foreground leading-relaxed italic uppercase tracking-widest text-center text-left">
                             "Bearing one another's burdens"
                         </p>
                     </div>
@@ -191,28 +183,28 @@ function PartnerDisciplineStatus({ partnerId, date }: { partnerId: string; date:
 
     if (loading) {
         return (
-            <div className="flex justify-around items-center h-12 bg-muted/5 rounded-xl border border-dashed">
-                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground animate-pulse">Checking records...</span>
+            <div className="flex justify-around items-center h-12 bg-muted/5 rounded-xl border border-dashed text-left">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground text-left" />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground animate-pulse text-left">Checking records...</span>
             </div>
         );
     }
 
     return (
-        <div className="grid grid-cols-4 gap-1 items-center h-14">
+        <div className="grid grid-cols-4 gap-1 items-center h-14 text-left">
             {disciplines.map(d => (
-                <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0">
+                <div key={d.id} className="flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] text-center min-w-0 text-left">
                     {completedOnDate.includes(d.id) ? (
-                        <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center">
-                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        <div className="h-6 w-6 rounded-full bg-green-500/10 flex items-center justify-center text-left">
+                            <CheckCircle2 className="h-4 w-4 text-green-500 text-left" />
                         </div>
                     ) : (
-                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
-                            <XCircle className="h-4 w-4 text-muted-foreground/30" />
+                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-left">
+                            <XCircle className="h-4 w-4 text-muted-foreground/30 text-left" />
                         </div>
                     )}
                     <span className={cn(
-                        "leading-tight uppercase font-black tracking-tighter truncate w-full px-1 text-center",
+                        "leading-tight uppercase font-black tracking-tighter truncate w-full px-1 text-center text-left",
                         completedOnDate.includes(d.id) ? 'text-foreground' : 'text-muted-foreground/60'
                     )}>
                         {d.label}
@@ -252,106 +244,107 @@ function PartnerCard({
 
     return (
         <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-sm overflow-hidden bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all border-l-4 border-l-primary/10 text-left">
-            <CardHeader className="flex flex-row items-start justify-between p-4 sm:p-6 gap-4">
-                 <div className="flex items-start gap-4 min-w-0 flex-1">
+            <CardHeader className="flex flex-col items-start p-4 sm:p-6 gap-4 text-left">
+                 <div className="flex items-start gap-4 min-w-0 w-full text-left">
                     <Dialog>
                       <DialogTrigger asChild disabled={!livePhotoURL}>
-                        <div className="relative cursor-pointer active:scale-95 transition-transform hover:scale-105 shrink-0">
-                            <Avatar className="h-11 w-11 sm:h-14 sm:w-14 border shadow-sm">
-                                <AvatarImage src={livePhotoURL} className="object-contain" />
-                                <AvatarFallback className="font-black text-lg bg-primary/10 text-primary">{partner.firstName?.charAt(0)}</AvatarFallback>
+                        <div className="relative cursor-pointer active:scale-95 transition-transform hover:scale-105 shrink-0 text-left">
+                            <Avatar className="h-11 w-11 sm:h-14 sm:w-14 border shadow-sm text-left">
+                                <AvatarImage src={livePhotoURL} className="object-contain text-left" />
+                                <AvatarFallback className="font-black text-lg bg-primary/10 text-primary text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         </div>
                       </DialogTrigger>
                       {livePhotoURL && (
-                          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                              <DialogHeader className="sr-only text-center"><DialogTitle>Profile photo</DialogTitle></DialogHeader>
-                              <div className="relative h-full w-full flex items-center justify-center p-4">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
-                                    <Image src={livePhotoURL} alt="partner" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
+                          <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
+                              <DialogHeader className="sr-only text-center text-left"><DialogTitle className="text-left">Profile photo</DialogTitle></DialogHeader>
+                              <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left text-left">
+                                    <Image src={livePhotoURL} alt="partner" fill className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left" unoptimized />
                                 </div>
                               </div>
                           </DialogContent>
                       )}
                     </Dialog>
-                    <div className="min-w-0 flex-1">
-                        <div className="group inline-flex flex-col text-left max-w-full">
-                            <Link href={`/profile/${partner.userId}`} className="text-sm sm:text-base font-black truncate hover:underline leading-none uppercase tracking-tight max-w-[140px] sm:max-w-[200px]">{partner.firstName} {partner.lastName}</Link>
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 truncate">Spiritual Partner</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 sm:gap-2 mt-3">
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background" onClick={() => onNudge({...partner, phone})}>
-                                            <BellRing className="h-3.5 w-3.5" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent><p className="text-[10px] font-bold uppercase">Nudge {partner.firstName}</p></TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button 
-                                            variant="outline" 
-                                            size="icon" 
-                                            className="h-8 w-8 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background" 
-                                            onClick={() => setIsMessageOpen(true)}
-                                        >
-                                            <Smartphone className="h-3.5 w-3.5" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent><p className="text-[10px] font-bold uppercase">Connect Externally</p></TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background" onClick={() => onChat(partner)}>
-                                            <MessagesSquare className="h-3.5 w-3.5" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent><p className="text-[10px] font-bold uppercase">Chat with {partner.firstName}</p></TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
+                    <div className="min-w-0 flex-1 text-left">
+                        <div className="group inline-flex flex-col text-left max-w-full text-left">
+                            <Link href={`/profile/${partner.userId}`} className="text-sm sm:text-base font-black truncate hover:underline leading-none uppercase tracking-tight max-w-[140px] sm:max-w-[200px] text-left">{partner.firstName} {partner.lastName}</Link>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 truncate text-left">Spiritual Partner</span>
                         </div>
                     </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-left">
+                                <MoreVertical className="h-4 w-4 text-left" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl text-left text-left">
+                            <DropdownMenuItem onSelect={() => router.push(`/profile/${partner.userId}`)} className="rounded-lg text-left">
+                                <User className="mr-2 h-4 w-4 text-left" /> View Identity
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => router.push('/bible')} className="rounded-lg text-left">
+                                <BookOpen className="mr-2 h-4 w-4 text-left" /> Word Study
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator className="text-left" />
+                            <DropdownMenuItem className="text-destructive focus:text-destructive rounded-lg text-left" onSelect={() => onRemove(partner)}>
+                                <UserX className="mr-2 h-4 w-4 text-left" /> End Alliance
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-                            <MoreVertical className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl text-left">
-                        <DropdownMenuItem onSelect={() => router.push(`/profile/${partner.userId}`)} className="rounded-lg">
-                            <User className="mr-2 h-4 w-4" /> View Identity
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onSelect={() => router.push('/bible')} className="rounded-lg">
-                            <BookOpen className="mr-2 h-4 w-4" /> Word Study
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive focus:text-destructive rounded-lg" onSelect={() => onRemove(partner)}>
-                            <UserX className="mr-2 h-4 w-4" /> End Alliance
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                
+                <div className="flex items-center gap-1.5 sm:gap-2 w-full text-left">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" onClick={() => onNudge({...partner, phone})}>
+                                    <BellRing className="h-3.5 w-3.5 text-left" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase text-left">Nudge {partner.firstName}</p></TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button 
+                                    variant="outline" 
+                                    size="icon" 
+                                    className="h-8 w-8 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" 
+                                    onClick={() => setIsMessageOpen(true)}
+                                >
+                                    <Smartphone className="h-3.5 w-3.5 text-left" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase text-left">Connect Externally</p></TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shadow-md bg-background text-left" onClick={() => onChat(partner)}>
+                                    <MessagesSquare className="h-3.5 w-3.5 text-left" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase text-left">Chat with {partner.firstName}</p></TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
             </CardHeader>
-            <CardContent className="px-4 sm:px-6 pb-6">
-                <div className="pt-4 border-t border-dashed space-y-4">
-                    <div className="flex justify-between items-center gap-2">
-                        <div className="flex items-center gap-1.5">
-                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                            <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Discipline Records</h4>
+            <CardContent className="px-4 sm:px-6 pb-6 text-left">
+                <div className="pt-4 border-t border-dashed space-y-4 text-left">
+                    <div className="flex justify-between items-center gap-2 text-left">
+                        <div className="flex items-center gap-1.5 text-left">
+                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
+                            <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] text-left">Discipline Records</h4>
                         </div>
                         <Input 
                             type="date" 
                             value={dateStr} 
                             onChange={(e) => setDateStr(e.target.value)} 
-                            className="w-[140px] h-8 text-[10px] sm:text-xs font-bold uppercase tracking-tighter bg-muted/20 border-none rounded-lg"
+                            className="w-[140px] h-8 text-[10px] sm:text-xs font-bold uppercase tracking-tighter bg-muted/20 border-none rounded-lg text-left"
                         />
                     </div>
                     <PartnerDisciplineStatus partnerId={partner.userId} date={selectedDate} />
@@ -359,15 +352,15 @@ function PartnerCard({
             </CardContent>
 
             <Dialog open={isMessageOpen} onOpenChange={setIsMessageOpen}>
-                <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
-                    <DialogHeader className="text-center space-y-2">
-                        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
-                            <MessageSquare className="h-7 w-7 text-primary text-center" />
+                <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
+                    <DialogHeader className="text-center space-y-2 text-left">
+                        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
+                            <MessageSquare className="h-7 w-7 text-primary text-center text-left" />
                         </div>
-                        <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-balance">Message {partner.firstName}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-center text-balance">Choose how to encourage your partner externally.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-balance text-left">Message {partner.firstName}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-center text-balance text-left">Choose how to encourage your partner externally.</DialogDescription>
                     </DialogHeader>
-                    <div className="flex flex-col gap-3 pt-6">
+                    <div className="flex flex-col gap-3 pt-6 text-left">
                         <Button 
                             onClick={() => {
                                 if (!phone) {
@@ -379,9 +372,9 @@ function PartnerCard({
                                 window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
                                 setIsMessageOpen(false);
                             }} 
-                            className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center"
+                            className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center text-left"
                         >
-                            <WhatsAppIcon className="h-5 w-5 text-center" /> WhatsApp
+                            <WhatsAppIcon className="h-5 w-5 text-center text-left" /> WhatsApp
                         </Button>
                         <Button 
                             onClick={() => {
@@ -394,9 +387,9 @@ function PartnerCard({
                                 setIsMessageOpen(false);
                             }} 
                             variant="outline" 
-                            className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center"
+                            className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center text-left"
                         >
-                            <MessageSquare className="h-5 w-5 text-center" /> Standard SMS
+                            <MessageSquare className="h-5 w-5 text-center text-left" /> Standard SMS
                         </Button>
                     </div>
                 </DialogContent>
@@ -577,18 +570,18 @@ export default function AccountabilityPage() {
     }
   };
 
-  if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse">Establishing Connection...</p></div>;
+  if (userLoading || loadingProfile) return <div className="flex h-full w-full flex-col items-center justify-center py-20 text-left"><Loader2 className="h-12 w-12 animate-spin text-primary text-left" /><p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-primary animate-pulse text-left">Establishing Connection...</p></div>;
   
   return (
     <div className="w-full max-w-7xl mx-auto text-left">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
             <div className="lg:col-span-8 space-y-10 pb-32 text-left">
                 <header className="px-4 sm:px-0 space-y-1 text-left">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 text-left">
                         <div className="space-y-1 text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">MY PARTNERS</h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
-                                <HeartHandshake className="h-4 w-4 text-primary" /> Spiritual Accountability
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY PARTNERS</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
+                                <HeartHandshake className="h-4 w-4 text-primary text-left" /> Spiritual Accountability
                             </p>
                         </div>
                     </div>
@@ -600,11 +593,11 @@ export default function AccountabilityPage() {
                     ))}
                     {partners.length === 0 && (
                         <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted text-left">
-                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6">
-                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40" />
+                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left">
+                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left" />
                             </div>
-                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center">No Active Alliance</h2>
-                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center">
+                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center text-left">No Active Alliance</h2>
+                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center text-left">
                             "Two are better than one... for if they fall, the one will lift up his fellow." — Eccl 4:9-10
                             </p>
                         </div>
@@ -626,16 +619,16 @@ export default function AccountabilityPage() {
                 <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
                     <AlertDialogHeader className="text-left">
                         <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">End Alliance?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">You're about to end your accountability partnership with {removalTarget?.firstName || 'this partner'}.</AlertDialogDescription>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">You're about to end your accountability partnership with {removalTarget?.firstName || 'this partner'}.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <div className="grid gap-4 py-6 text-left">
-                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Reason for Removal</Label>
-                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner" />
+                    <div className="grid gap-4 py-6 text-left text-left">
+                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Reason for Removal</Label>
+                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left text-left text-left" />
                     </div>
-                    <AlertDialogFooter className="gap-3 text-left">
-                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left">Close</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">
-                            {isRemoving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UserX className="mr-2 h-4 w-4" />}
+                    <AlertDialogFooter className="gap-3 text-left text-left text-left">
+                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left text-left text-left">Close</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left">
+                            {isRemoving ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" /> : <UserX className="mr-2 h-4 w-4 text-left text-left text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>

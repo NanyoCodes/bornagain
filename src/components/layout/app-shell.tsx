@@ -21,26 +21,14 @@ import {
   TrendingUp,
   BookMarked,
   Users,
-  Info,
   CalendarDays,
   Store,
   Gift,
   Package,
   ShieldCheck,
-  PlusCircle,
   ShoppingCart,
-  ChevronRight,
-  Menu,
-  Edit,
-  Globe,
   X,
-  Sparkles,
-  Utensils,
-  Trash2,
-  Minus,
-  Plus,
-  Cake,
-  Hourglass
+  Sparkles
 } from "lucide-react";
 
 import {
@@ -54,16 +42,16 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn, safeToDate } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { collection, doc, query, where, updateDoc, serverTimestamp, writeBatch } from "firebase/firestore";
-import type { Notification, UserProfile, VendorProfile } from "@/lib/types";
+import { collection, query, where } from "firebase/firestore";
+import type { Notification, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -305,7 +293,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal p-4">
-                  <div className="flex flex-col space-y-1">
+                  <div className="flex flex-col space-y-1 text-left">
                     <p className="text-sm font-black leading-tight truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
                     <p className="text-[10px] text-muted-foreground truncate font-bold uppercase tracking-wider">{user.email}</p>
                   </div>
@@ -343,7 +331,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <DropdownMenuSeparator />
 
                 <div className="p-1 space-y-1">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Main Navigation</p>
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Main Navigation</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                     <Link href="/growth" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-chart-1/10 flex items-center justify-center">
@@ -381,7 +369,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Kingdom Hubs</p>
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -436,7 +424,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                    <>
                     <DropdownMenuSeparator />
                     <div className="p-1 space-y-1">
-                      <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-1.5 tracking-[0.2em]">My Storefronts</p>
+                      <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-1.5 tracking-[0.2em] text-left">My Storefronts</p>
                       {userVendors.map(v => (
                         <DropdownMenuItem key={v.id} asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                           <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full">
@@ -502,12 +490,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
 
 function BottomNavBar() {
     const pathname = usePathname();
-    const mobileNavItems = navItems.slice(0, 6);
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
         <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
-          {mobileNavItems.map((item) => {
+          {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
               <Link
@@ -587,7 +574,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
             setShowSplash(false);
             localStorage.setItem('testify_splash_last_shown', now.toString());
             setContentVisible(true);
-        }, 2500); //snappier splash
+        }, 2500); 
         return () => clearTimeout(timer);
     } else {
         setContentVisible(true);
@@ -680,10 +667,10 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
             </div>
         </div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 text-left">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center text-left">
             Kingdom Network Active
         </p>
       </div>
@@ -713,7 +700,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
               userVendors={userVendors || null}
           />
           )}
-          <div className="flex-1 relative min-h-0">
+          <div className="flex-1 relative min-h-0 text-left">
           <main 
               ref={scrollContainerRef}
               className={cn(
@@ -738,13 +725,13 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+                <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6">
+            <div className="flex-grow overflow-y-auto p-6 text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </SheetContent>
@@ -752,13 +739,13 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
-            <div className="p-6 border-b bg-muted/10">
+            <div className="p-6 border-b bg-muted/10 text-left">
               <DialogHeader className="text-left">
-                  <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
-                  <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                  <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
+                  <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>

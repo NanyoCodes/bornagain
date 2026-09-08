@@ -121,7 +121,7 @@ export default function LandingPage() {
       <main className="flex-grow pt-20 text-left">
         {/* Hero Section */}
         <section className="relative h-[85vh] min-h-[500px] sm:min-h-[600px] flex items-center overflow-hidden bg-zinc-950 text-left">
-          <div className="absolute inset-0 z-0 text-left">
+          <div className="absolute inset-0 z-0 text-left text-left">
              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent text-left" />
           </div>
           
@@ -132,15 +132,15 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <Badge className="bg-primary text-primary-foreground mb-4 px-3 sm:px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[9px] sm:text-[10px] whitespace-nowrap">
+                <Badge className="bg-primary text-primary-foreground mb-4 px-3 sm:px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[9px] sm:text-[10px] whitespace-nowrap text-left">
                   GLORIFYING GOD
                 </Badge>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left">
                   Testify the <br className="hidden sm:block text-left" />
                   Greatness of GOD.<br className="hidden sm:block text-left" />
                   <span className="text-primary">Join the Harvest.</span>
                 </h1>
-                <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-white/80 font-medium max-w-xl leading-relaxed italic text-pretty">
+                <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-white/80 font-medium max-w-xl leading-relaxed italic text-pretty text-left">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
                 </p>
               </motion.div>
@@ -149,15 +149,15 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 text-left"
               >
-                <Button asChild size="lg" className="h-12 px-8 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest w-full sm:w-auto">
-                  <Link href="/signup">
-                    Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
+                <Button asChild size="lg" className="h-12 px-8 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest w-full sm:w-auto text-left">
+                  <Link href="/signup" className="text-left">
+                    Get Started Free <ArrowRight className="ml-2 h-5 w-5 text-left" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-12 px-8 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 w-full sm:w-auto">
-                  <Link href="/about">Our Mission</Link>
+                <Button asChild variant="outline" size="lg" className="h-12 px-8 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 w-full sm:w-auto text-left">
+                  <Link href="/about" className="text-left">Our Mission</Link>
                 </Button>
               </motion.div>
             </div>
@@ -177,15 +177,15 @@ export default function LandingPage() {
 
         {/* Mission & Vision Section */}
         <section className="py-16 sm:py-24 relative overflow-hidden bg-background text-left">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left text-left text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 text-left">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="space-y-8 text-left"
+                className="space-y-8 text-left text-left"
               >
-                <div className="space-y-4 text-left">
+                <div className="space-y-4 text-left text-left">
                   <div className="flex items-center gap-3 text-left">
                     <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-left">
                       <Globe className="h-5 w-5 text-primary text-left" />
@@ -214,7 +214,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="space-y-6 text-left"
+                className="space-y-6 text-left text-left"
               >
                 <div className="flex items-center gap-3 text-left">
                   <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-left">
@@ -226,17 +226,17 @@ export default function LandingPage() {
                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-left">
                       <Quote className="h-24 w-24 text-primary text-left" />
                    </div>
-                   <CardContent className="p-8 sm:p-10 text-left text-left">
-                      <p className="italic text-muted-foreground text-base sm:text-lg leading-relaxed text-left">
+                   <CardContent className="p-8 sm:p-10 text-left text-left text-left">
+                      <p className="italic text-muted-foreground text-base sm:text-lg leading-relaxed text-left text-left">
                         "I believe that technology is a divine gift for this final harvest. Seeing the need for accountability and collective encouragement in evangelism, I was led to create a space where every soul won is celebrated and every miracle is recorded for God's glory. God is great, and His power in Jesus Christ is moving through the earth like never before. Testify is a testimony in itself of God's provision for His people."
                       </p>
-                      <p className="mt-6 text-sm font-black uppercase tracking-widest text-primary text-left">— Nanyo Theophilus</p>
+                      <p className="mt-6 text-sm font-black uppercase tracking-widest text-primary text-left text-left">— Nanyo Theophilus</p>
                    </CardContent>
                 </Card>
               </motion.div>
             </div>
 
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-left text-left">
                <motion.div 
                  initial={{ opacity: 0, y: 20 }}
                  whileInView={{ opacity: 1, y: 0 }}
@@ -255,7 +255,7 @@ export default function LandingPage() {
                  whileInView={{ opacity: 1, y: 0 }}
                  viewport={{ once: true }}
                  transition={{ delay: 0.1 }}
-                 className="space-y-3 text-left"
+                 className="space-y-3 text-left text-left"
                >
                  <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-left">
                    <Zap className="h-4 w-4 text-primary text-left" /> Integrity
@@ -269,7 +269,7 @@ export default function LandingPage() {
                  whileInView={{ opacity: 1, y: 0 }}
                  viewport={{ once: true }}
                  transition={{ delay: 0.2 }}
-                 className="space-y-3 text-left"
+                 className="space-y-3 text-left text-left"
                >
                  <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-left">
                    <HeartHandshake className="h-4 w-4 text-primary text-left" /> Partnerships
@@ -284,7 +284,7 @@ export default function LandingPage() {
 
         {/* Feature Grid */}
         <section className="py-16 sm:py-24 bg-muted/30 relative text-left">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left text-left">
             <div className="text-center mb-12 sm:mb-16 space-y-4 text-left">
               <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-balance text-left text-left">Kingdom Ready Workforce</h2>
               <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto text-pretty font-medium text-left">
@@ -294,14 +294,14 @@ export default function LandingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
               {features.map((feature, i) => (
-                <Card key={i} className="rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 duration-300 text-left text-left">
+                <Card key={i} className="rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 duration-300 text-left">
                   <CardHeader className="p-6 sm:p-8 text-left text-left">
-                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-left text-left", feature.bgColor)}>
+                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-left", feature.bgColor)}>
                       <feature.icon className={cn("h-6 w-6 text-left", feature.color)} />
                     </div>
-                    <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left text-left">{feature.title}</CardTitle>
+                    <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">{feature.title}</CardTitle>
                   </CardHeader>
-                  <CardContent className="px-6 sm:px-8 pb-8 text-left">
+                  <CardContent className="px-6 sm:px-8 pb-8 text-left text-left">
                     <p className="text-muted-foreground leading-relaxed font-medium text-sm sm:text-base text-left">
                       {feature.description}
                     </p>
@@ -314,29 +314,29 @@ export default function LandingPage() {
 
         {/* Glory Feed Section */}
         <section className="py-16 sm:py-24 relative overflow-hidden text-left">
-          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left text-left">
-            <Flame className="h-64 w-64 text-left text-left" />
+          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left">
+            <Flame className="h-64 w-64 text-left" />
           </div>
           
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 items-center text-left">
               <div className="space-y-6 sm:space-y-8 text-center lg:text-left text-left">
-                <div className="space-y-4 text-left text-left">
-                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3 py-1 text-left text-left">The Digital Altar</Badge>
-                  <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight sm:leading-none uppercase tracking-tighter text-balance text-left text-left">See God <br className="hidden sm:block text-left" />In Action</h2>
-                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 font-medium text-left text-left text-left">
+                <div className="space-y-4 text-left">
+                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3 py-1 text-left">The Digital Altar</Badge>
+                  <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight sm:leading-none uppercase tracking-tighter text-balance text-left text-left text-left">See God <br className="hidden sm:block text-left" />In Action</h2>
+                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 font-medium text-left text-left">
                     Miracles aren't just for the Bible. Read real-time stories from believers around the world seeing the power of Jesus Christ today.
                   </p>
                 </div>
                 
                 <Button asChild size="lg" variant="outline" className="h-9 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-4 w-full sm:w-auto text-left">
-                  <Link href="/testimonies" className="text-left">View Glory Feed</Link>
+                  <Link href="/testimonies" className="text-left text-left">View Glory Feed</Link>
                 </Button>
               </div>
 
-              <div className="space-y-4 sm:space-y-6 text-left">
+              <div className="space-y-4 sm:space-y-6 text-left text-left">
                 {loadingTestimonies ? (
-                  <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left text-left" /></div>
+                  <div className="flex justify-center text-left text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left" /></div>
                 ) : testimonies?.map((t, idx) => (
                   <motion.div 
                     key={t.id}
@@ -344,16 +344,17 @@ export default function LandingPage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
+                    className="text-left"
                   >
-                    <Card className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left">
+                    <Card className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left text-left">
                       <CardContent className="p-5 sm:p-6 flex gap-4 text-left">
                         <Quote className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-20 shrink-0 mt-1 text-left" />
-                        <div className="min-w-0 text-left text-left">
+                        <div className="min-w-0 text-left">
                           <p className="text-sm sm:text-base italic text-muted-foreground line-clamp-2 leading-relaxed mb-4 text-left">
                             "{t.content}"
                           </p>
                           <div className="flex items-center gap-3 text-left">
-                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shrink-0 text-left text-left">
+                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shrink-0 text-left">
                               <AvatarFallback className="text-[10px] sm:text-xs bg-primary/10 text-primary font-black uppercase text-left">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 text-left">
@@ -376,7 +377,7 @@ export default function LandingPage() {
           <div className="absolute inset-0 opacity-10 pointer-events-none text-left">
             <div className="absolute inset-0 grid grid-cols-4 sm:grid-cols-6 gap-8 rotate-12 -translate-y-1/4 text-left">
               {[...Array(24)].map((_, i) => (
-                <Globe key={i} className="h-16 w-16 sm:h-24 sm:w-24 text-left text-left" />
+                <Globe key={i} className="h-16 w-16 sm:h-24 sm:w-24 text-left" />
               ))}
             </div>
           </div>
@@ -393,7 +394,7 @@ export default function LandingPage() {
               </p>
               <div className="flex justify-center pt-2 sm:pt-4 text-left">
                 <Button asChild size="lg" className="h-10 px-8 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto text-left">
-                  <Link href="/signup" className="text-left">
+                  <Link href="/signup" className="text-left text-left">
                     START TESTIFYING <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6 text-left" />
                   </Link>
                 </Button>
@@ -404,32 +405,32 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-muted/50 border-t py-12 sm:py-16 relative text-left text-left">
+      <footer className="bg-muted/50 border-t py-12 sm:py-16 relative text-left text-left text-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
                 {logo && (
-                  <Avatar className="h-12 w-12 text-left">
+                  <Avatar className="h-12 w-12 text-left text-left">
                     <AvatarImage src={logo.imageUrl} alt="Logo" className="text-left" />
                     <AvatarFallback className="text-left">T</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty text-left text-left text-left">
+              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty text-left text-left">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
-              <div className="flex gap-4 text-left text-left">
+              <div className="flex gap-4 text-left text-left text-left">
                 <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left">
-                  <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left">
+                  <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left text-left">
                     <Instagram className="h-4 w-4 text-left" />
-                    <span className="sr-only text-left text-left">Instagram</span>
+                    <span className="sr-only text-left">Instagram</span>
                   </Link>
                 </Button>
               </div>
             </div>
 
-            <div className="space-y-4 text-left">
+            <div className="space-y-4 text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Platform</h4>
               <ul className="space-y-3 text-left">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Glory Feed</Link></li>
@@ -439,7 +440,7 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <div className="space-y-4 text-left">
+            <div className="space-y-4 text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Ministry</h4>
               <ul className="space-y-3 text-left">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Our Story</Link></li>
@@ -454,11 +455,11 @@ export default function LandingPage() {
           
           <div className="h-px w-full bg-muted opacity-50 mb-8 text-left" />
           
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left">
             <p className="text-center md:text-left text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.</p>
             <div className="flex gap-6 text-left">
-              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left text-left">Terms</Link>
-              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left text-left">Privacy</Link>
+              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left">Terms</Link>
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left">Privacy</Link>
             </div>
           </div>
         </div>
