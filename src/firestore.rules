@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Unification and private event security - 2025-03-05T21:45:00Z
+    // Deployment trigger: Unified private event and resource security - 2025-06-15T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
