@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Loader2, Video, MapPin, User, Sparkles } from "lucide-react";
+import { Loader2, Video, MapPin, User, Sparkles, Target } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUser, useFirestore } from "@/firebase";
 import { collection, serverTimestamp, doc, writeBatch } from "firebase/firestore";
@@ -89,6 +89,7 @@ export function CreateEventForm({ onEventCreated, userProfile }: { onEventCreate
             organizerPhotoURL: userProfile.photoURL || null,
             participantCount: 1,
             status: 'active' as const,
+            visibility: 'public' as const, // Default to public for manual creation
             createdAt: serverTimestamp(),
             maxParticipants: values.maxParticipants || null,
             streamUrl: values.streamUrl || null,
