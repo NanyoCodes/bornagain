@@ -450,7 +450,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     
     if (!chat) {
         return (
-            <div className="flex h-full w-full flex-col items-center justify-center bg-background">
+            <div className="flex h-full w-full flex-col items-center justify-center bg-background text-left">
                 <p className="text-muted-foreground text-left">Chat not found.</p>
                  <Button variant="outline" asChild className="mt-4 text-left">
                     <Link href="/chats"><ArrowLeft className="mr-2 h-4 w-4 text-left" />Back to Conversations</Link>
@@ -463,7 +463,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
         const backUrl = chat.fellowshipId ? `/fellowship/${chat.fellowshipId}` : chat.campaignId ? `/campaigns/${chat.campaignId}` : chat.eventId ? "/events" : "/chats";
         const backLabel = chat.fellowshipId || chat.campaignId || chat.eventId ? "Return to Group" : "Back to Conversations";
         return (
-            <div className="flex h-full w-full flex-col items-center justify-center bg-background">
+            <div className="flex h-full w-full flex-col items-center justify-center bg-background text-left">
                 <p className="text-muted-foreground text-left">You do not have permission to view this chat.</p>
                 <Button variant="outline" asChild className="mt-4 text-left">
                     <Link href={backUrl}><ArrowLeft className="mr-2 h-4 w-4 text-left" />{backLabel}</Link>
@@ -476,29 +476,29 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
     const otherParticipantInfo = otherParticipantId ? chat.participantInfo[otherParticipantId] : null;
 
     return (
-        <div className="flex flex-col w-full h-full min-h-0 bg-background overflow-hidden relative">
-            <div className="flex items-center gap-4 p-4 shrink-0 border-b bg-background/80 backdrop-blur-md z-20">
-                <Button variant="outline" size="icon" onClick={handleBack} className="rounded-full">
-                    <ArrowLeft className="h-4 w-4" />
-                    <span className="sr-only">Back</span>
+        <div className="flex flex-col w-full h-full min-h-0 bg-background overflow-hidden relative text-left">
+            <div className="flex items-center gap-4 p-4 shrink-0 border-b bg-background/80 backdrop-blur-md z-20 text-left">
+                <Button variant="outline" size="icon" onClick={handleBack} className="rounded-full text-left">
+                    <ArrowLeft className="h-4 w-4 text-left" />
+                    <span className="sr-only text-left">Back</span>
                 </Button>
                 {chat.isGroupChat ? (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 text-left">
                         <Avatar className="border-2 border-primary/20 shadow-sm text-left">
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-left">{chat.participantIds.length}</AvatarFallback>
                         </Avatar>
-                        <div className="text-left">
+                        <div className="text-left text-left">
                             <h2 className="font-black text-sm sm:text-base leading-tight uppercase tracking-tight truncate max-w-[180px] sm:max-w-xs text-left">
                                 {chat.campaignId && campaign ? (
                                     <Link href={`/campaigns/${chat.campaignId}`} className="hover:underline text-left">
                                         {chat.campaignTitle}
                                     </Link>
                                 ) : chat.fellowshipId && fellowship ? (
-                                    <Link href={`/fellowship/${chat.fellowshipId}`} className="hover:underline text-left">
+                                    <Link href={`/fellowship/${chat.fellowshipId}`} className="hover:underline text-left text-left">
                                         {chat.campaignTitle}
                                     </Link>
                                 ) : chat.eventId && event ? (
-                                    <Link href={`/events`} className="hover:underline text-left">
+                                    <Link href={`/events`} className="hover:underline text-left text-left">
                                         {chat.campaignTitle}
                                     </Link>
                                 ) : (
@@ -506,20 +506,20 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                 )}
                             </h2>
                             <ChatParticipantsDialog chat={chat}>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left">{chat.participantIds.length} members</p>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors cursor-pointer text-left text-left">{chat.participantIds.length} members</p>
                             </ChatParticipantsDialog>
                         </div>
                     </div>
                 ) : otherParticipantInfo && otherParticipantId ? (
-                   <div className="flex items-center gap-3 flex-grow text-left">
+                   <div className="flex items-center gap-3 flex-grow text-left text-left">
                         <Dialog>
                             <DialogTrigger asChild disabled={!otherParticipantInfo.photoURL}>
-                                <div className="relative text-left">
+                                <div className="relative text-left text-left">
                                     <LiveChatAvatar 
                                         userId={otherParticipantId} 
                                         fallbackUrl={otherParticipantInfo.photoURL} 
                                         fallbackInitials={otherParticipantInfo.firstName?.charAt(0) || 'U'}
-                                        className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-sm text-left", otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105 active:scale-95 transition-transform")}
+                                        className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-sm text-left", otherParticipantInfo.photoURL && "cursor-pointer hover:scale-105 active:scale-95 transition-transform text-left")}
                                     />
                                 </div>
                             </DialogTrigger>
@@ -527,15 +527,15 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
                                     <DialogHeader className="sr-only text-left">
                                         <DialogTitle className="text-left">Profile photo of {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}</DialogTitle>
-                                        <DialogDescription className="text-left">Full screen view of the user's profile photo.</DialogDescription>
+                                        <DialogDescription className="text-left text-left">Full screen view of the user's profile photo.</DialogDescription>
                                     </DialogHeader>
                                     <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
-                                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
+                                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left text-left">
                                             <Image 
                                                 src={otherParticipantInfo.photoURL} 
                                                 alt={`${otherParticipantInfo.firstName} ${otherParticipantInfo.lastName}`} 
                                                 fill 
-                                                className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left" 
+                                                className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left text-left" 
                                                 unoptimized 
                                             />
                                         </div>
@@ -543,7 +543,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                 </DialogContent>
                             )}
                         </Dialog>
-                        <div className="flex-grow min-w-0 text-left">
+                        <div className="flex-grow min-w-0 text-left text-left">
                             <h2 className="font-black text-sm sm:text-base uppercase tracking-tight truncate leading-tight text-left">
                                 <Link href={`/profile/${otherParticipantId}`} className="hover:underline text-left">
                                     {otherParticipantInfo.firstName} {otherParticipantInfo.lastName}
@@ -642,7 +642,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                                         <MoreHorizontal className="h-3.5 w-3.5 text-left" />
                                                                     </Button>
                                                                 </DropdownMenuTrigger>
-                                                                <DropdownMenuContent align="isOwnMessage ? "end" : "start"} className="rounded-xl text-left">
+                                                                <DropdownMenuContent align={isOwnMessage ? "end" : "start"} className="rounded-xl text-left">
                                                                     <DropdownMenuItem onSelect={() => { 
                                                                         setEditingMessageId(msg.id); 
                                                                         setNewMessage(msg.text || '');
@@ -693,7 +693,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                                                                             }, 600);
                                                                         }
                                                                     }}
-                                                                    className="mb-2 rounded-xl border-l-4 border-primary/50 bg-black/5 p-2 text-xs dark:bg-white/5 block hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer text-left"
+                                                                    className="mb-2 rounded-xl border-l-4 border-primary/50 bg-black/5 p-2 text-xs dark:bg-white/5 block hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer text-left text-left"
                                                                 >
                                                                     <p className="font-black text-[9px] uppercase tracking-wider mb-0.5 text-left">{msg.replyTo.senderFirstName} {msg.replyTo.senderLastName}</p>
                                                                     <p className="line-clamp-2 opacity-80 leading-snug text-left">{msg.replyTo.text}</p>
@@ -768,7 +768,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     <>
                     {replyingTo && (
                         <div className="relative rounded-t-[1.5rem] border-x border-t bg-muted/40 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200 text-left">
-                            <div className="flex items-center justify-between mb-1.5 text-left">
+                            <div className="flex items-center justify-between mb-1.5 text-left text-left">
                                 <div className="flex items-center gap-2 text-left">
                                     <Reply className="h-3 w-3 text-primary text-left" />
                                     <p className="text-[10px] font-black uppercase tracking-widest text-primary text-left">
@@ -789,7 +789,7 @@ export default function ChatPageClient({ chatId }: { chatId: string }) {
                     )}
                     {editingMessageId && (
                         <div className="relative rounded-t-[1.5rem] border-x border-t bg-primary/10 p-4 pt-3 pb-4 mb-0 animate-in slide-in-from-bottom-2 duration-200 border-primary/20 text-left">
-                            <div className="flex items-center justify-between mb-1.5 text-left">
+                            <div className="flex items-center justify-between mb-1.5 text-left text-left text-left">
                                 <div className="flex items-center gap-2 text-left">
                                     <Edit className="h-3 w-3 text-primary text-left" />
                                     <p className="text-[10px] font-black uppercase tracking-widest text-primary text-left">
