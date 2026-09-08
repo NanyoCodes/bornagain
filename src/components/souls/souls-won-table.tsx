@@ -539,8 +539,8 @@ function PrivateHangoutBuilder({
     const step1 = (
         <div className="space-y-6 text-left">
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Step 1: Pick a Kingdom Match (Single/Widowed {oppositeGender}s)</Label>
-                <div className="relative">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Step 1: Pick a Kingdom Match (Single/Widowed {oppositeGender}s)</Label>
+                <div className="relative text-left">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                     <Input placeholder={`Search single ${oppositeGender.toLowerCase()} souls...`} value={search} onChange={e => setSearch(e.target.value)} className="h-11 pl-10 rounded-xl bg-muted/20 border-none shadow-inner text-left" />
                 </div>
@@ -865,7 +865,7 @@ function SoulProfileContent({
       const wonAt = safeToDate(soul.wonAt);
       const text = `SHARING SOUL DATA: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nLet's coordinate follow-up on Testify.`;
       try {
-          const participantIds = [user.uid, partner.userId].sort();
+          const participantIds = [user.uid, String(partner.userId)].sort();
           const chatsRef = collection(firestore, 'chats');
           const q = query(chatsRef, where('participantIds', '==', participantIds), where('isGroupChat', '==', false));
           const snap = await getDocs(q);
@@ -1072,11 +1072,11 @@ function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.firstName} {soul.lastName}</p>
                     </div>
                     <div className="space-y-1 text-left">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Gender/Age</p>
+                        <p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest text-left">Gender/Age</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left text-left text-left">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Relationship</p>
+                        <p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Relationship</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left text-left">{soul.relationship || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left text-left text-left">
@@ -1342,7 +1342,7 @@ function SoulProfileContent({
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Message Hub</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center text-left">How would you like to encourage {suitorTarget?.firstName || soul.firstName}?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left">
+          <div className="flex flex-col gap-3 pt-6 text-left text-left">
             <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
               <WhatsAppIcon className="h-5 w-5 text-left text-left" /> WhatsApp
             </Button>

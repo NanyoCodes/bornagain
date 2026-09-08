@@ -260,22 +260,22 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
         {user ? (
           <>
             <CartButton />
-            <Link href="/chats" className="text-left text-left text-left text-left text-left text-left">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left text-left text-left text-left text-left">
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left text-left text-left text-left">
-                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110 text-left text-left text-left" />
+            <Link href="/chats" className="text-left">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
+                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110 text-left" />
                       {unreadChatCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-left text-left text-left">
+                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-left">
                           {unreadChatCount}
                         </div>
                       )}
                     </Button>
                 </motion.div>
             </Link>
-            <Link href="/notifications" className="text-left text-left text-left text-left text-left">
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left text-left text-left text-left">
-                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left text-left text-left">
-                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110 text-left text-left" />
+            <Link href="/notifications" className="text-left">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }} className="text-left">
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
+                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110 text-left" />
                       {unreadNotifCount > 0 && (
                         <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-left text-left">
                           {unreadNotifCount}
@@ -460,7 +460,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
 
 function BottomNavBar() {
     const pathname = usePathname();
-    const bottomNavItems = navItems.filter(item => item.label !== "Partners");
+    const bottomNavItems = navItems.filter(item => 
+        item.label !== "Partners" && 
+        item.label !== "Groups" && 
+        item.label !== "Events"
+    );
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
