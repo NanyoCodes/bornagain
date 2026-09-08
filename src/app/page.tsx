@@ -136,8 +136,8 @@ export default function LandingPage() {
                   GLORIFYING GOD
                 </Badge>
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
-                  Testify the <br className="hidden sm:block" />
-                  Greatness of GOD.<br className="hidden sm:block" />
+                  Testify the <br className="hidden sm:block text-left" />
+                  Greatness of GOD.<br className="hidden sm:block text-left" />
                   <span className="text-primary">Join the Harvest.</span>
                 </h1>
                 <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-white/80 font-medium max-w-xl leading-relaxed italic text-pretty">
@@ -226,7 +226,7 @@ export default function LandingPage() {
                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-left">
                       <Quote className="h-24 w-24 text-primary text-left" />
                    </div>
-                   <CardContent className="p-8 sm:p-10 text-left">
+                   <CardContent className="p-8 sm:p-10 text-left text-left">
                       <p className="italic text-muted-foreground text-base sm:text-lg leading-relaxed text-left">
                         "I believe that technology is a divine gift for this final harvest. Seeing the need for accountability and collective encouragement in evangelism, I was led to create a space where every soul won is celebrated and every miracle is recorded for God's glory. God is great, and His power in Jesus Christ is moving through the earth like never before. Testify is a testimony in itself of God's provision for His people."
                       </p>
@@ -286,7 +286,7 @@ export default function LandingPage() {
         <section className="py-16 sm:py-24 bg-muted/30 relative text-left">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
             <div className="text-center mb-12 sm:mb-16 space-y-4 text-left">
-              <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-balance text-left">Kingdom Ready Workforce</h2>
+              <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-balance text-left text-left">Kingdom Ready Workforce</h2>
               <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto text-pretty font-medium text-left">
                 Testify equips believers with the tools needed to fulfill the Great Commission in a digital age.
               </p>
@@ -294,12 +294,12 @@ export default function LandingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
               {features.map((feature, i) => (
-                <Card key={i} className="rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 duration-300 text-left">
-                  <CardHeader className="p-6 sm:p-8 text-left">
-                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-left", feature.bgColor)}>
+                <Card key={i} className="rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 duration-300 text-left text-left">
+                  <CardHeader className="p-6 sm:p-8 text-left text-left">
+                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-left text-left", feature.bgColor)}>
                       <feature.icon className={cn("h-6 w-6 text-left", feature.color)} />
                     </div>
-                    <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">{feature.title}</CardTitle>
+                    <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left text-left">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="px-6 sm:px-8 pb-8 text-left">
                     <p className="text-muted-foreground leading-relaxed font-medium text-sm sm:text-base text-left">
@@ -312,89 +312,31 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Victory Hub Highlight Section */}
-        <section className="py-16 sm:py-24 relative overflow-hidden bg-zinc-950 text-white text-left">
-          <div className="absolute inset-0 z-0 opacity-10 text-left">
-            <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 via-transparent to-transparent text-left" />
-          </div>
-          
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-left">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 items-center text-left">
-              <div className="order-2 lg:order-1 text-left">
-                <div className="grid grid-cols-2 gap-4 text-left">
-                  <Card className="rounded-[2rem] bg-white/5 border-white/10 p-6 space-y-4 hover:bg-white/10 transition-colors text-left">
-                    <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-left">
-                      <ShieldCheck className="h-5 w-5 text-primary text-left" />
-                    </div>
-                    <h3 className="font-black uppercase tracking-tight text-sm text-white text-left">Transparency</h3>
-                    <p className="text-xs text-white/60 leading-relaxed text-left">Bringing struggles into the Light breaks the power of isolation.</p>
-                  </Card>
-                  <Card className="rounded-[2rem] bg-white/5 border-white/10 p-6 space-y-4 hover:bg-white/10 transition-colors text-left">
-                    <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-left">
-                      <Lock className="h-5 w-5 text-primary text-left" />
-                    </div>
-                    <h3 className="font-black uppercase tracking-tight text-sm text-white text-left">Sanctuary</h3>
-                    <p className="text-xs text-white/60 leading-relaxed text-left">A safe space for anonymous transparency and communal support.</p>
-                  </Card>
-                  <Card className="rounded-[2rem] bg-white/5 border-white/10 p-6 space-y-4 hover:bg-white/10 transition-colors text-left">
-                    <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-left">
-                      <Zap className="h-5 w-5 text-primary text-left" />
-                    </div>
-                    <h3 className="font-black uppercase tracking-tight text-sm text-white text-left">Armor</h3>
-                    <p className="text-xs text-white/60 leading-relaxed text-left">Access specific scriptural weapons for every spiritual stronghold.</p>
-                  </Card>
-                  <Card className="rounded-[2rem] bg-white/5 border-white/10 p-6 space-y-4 hover:bg-white/10 transition-colors text-left">
-                    <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-left">
-                      <Users className="h-5 w-5 text-primary text-left" />
-                    </div>
-                    <h3 className="font-black uppercase tracking-tight text-sm text-white text-left">Community</h3>
-                    <p className="text-xs text-white/60 leading-relaxed text-left">Receive guidance and battle supplies from the global Body.</p>
-                  </Card>
-                </div>
-              </div>
-              
-              <div className="space-y-8 text-center lg:text-left order-1 lg:order-2 text-left">
-                <div className="space-y-4 text-left">
-                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3 py-1 text-left">THE RECOVERY WING</Badge>
-                  <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-left">The Victory <br className="hidden sm:block text-left" />Hub</h2>
-                  <p className="text-white/70 text-base sm:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 font-medium text-left">
-                    We don't just share successes. The Victory Hub is a sanctuary for brethren to bring struggles into the Light and find lasting spiritual solutions.
-                  </p>
-                </div>
-                
-                <Button asChild size="lg" className="rounded-2xl font-black uppercase tracking-widest h-14 px-10 shadow-xl shadow-primary/20 w-full sm:w-auto text-left">
-                  <Link href="/signup" className="text-left">Claim Your Victory</Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Glory Feed Section */}
         <section className="py-16 sm:py-24 relative overflow-hidden text-left">
-          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left">
-            <Flame className="h-64 w-64 text-left" />
+          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left text-left">
+            <Flame className="h-64 w-64 text-left text-left" />
           </div>
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 items-center text-left">
               <div className="space-y-6 sm:space-y-8 text-center lg:text-left text-left">
-                <div className="space-y-4 text-left">
-                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3 py-1 text-left">The Digital Altar</Badge>
-                  <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight sm:leading-none uppercase tracking-tighter text-balance text-left">See God <br className="hidden sm:block text-left" />In Action</h2>
-                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 font-medium text-left">
+                <div className="space-y-4 text-left text-left">
+                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3 py-1 text-left text-left">The Digital Altar</Badge>
+                  <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight sm:leading-none uppercase tracking-tighter text-balance text-left text-left">See God <br className="hidden sm:block text-left" />In Action</h2>
+                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 font-medium text-left text-left text-left">
                     Miracles aren't just for the Bible. Read real-time stories from believers around the world seeing the power of Jesus Christ today.
                   </p>
                 </div>
                 
-                <Button asChild size="lg" variant="outline" className="h-10 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-6 w-full sm:w-auto text-left">
+                <Button asChild size="lg" variant="outline" className="h-9 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-4 w-full sm:w-auto text-left">
                   <Link href="/testimonies" className="text-left">View Glory Feed</Link>
                 </Button>
               </div>
 
               <div className="space-y-4 sm:space-y-6 text-left">
                 {loadingTestimonies ? (
-                  <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left" /></div>
+                  <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left text-left" /></div>
                 ) : testimonies?.map((t, idx) => (
                   <motion.div 
                     key={t.id}
@@ -406,12 +348,12 @@ export default function LandingPage() {
                     <Card className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left">
                       <CardContent className="p-5 sm:p-6 flex gap-4 text-left">
                         <Quote className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-20 shrink-0 mt-1 text-left" />
-                        <div className="min-w-0 text-left">
+                        <div className="min-w-0 text-left text-left">
                           <p className="text-sm sm:text-base italic text-muted-foreground line-clamp-2 leading-relaxed mb-4 text-left">
                             "{t.content}"
                           </p>
                           <div className="flex items-center gap-3 text-left">
-                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shrink-0 text-left">
+                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shrink-0 text-left text-left">
                               <AvatarFallback className="text-[10px] sm:text-xs bg-primary/10 text-primary font-black uppercase text-left">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 text-left">
@@ -430,27 +372,27 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 sm:py-24 bg-primary text-primary-foreground relative overflow-hidden text-left">
+        <section className="py-20 sm:py-24 bg-primary text-primary-foreground relative overflow-hidden text-left text-left">
           <div className="absolute inset-0 opacity-10 pointer-events-none text-left">
             <div className="absolute inset-0 grid grid-cols-4 sm:grid-cols-6 gap-8 rotate-12 -translate-y-1/4 text-left">
               {[...Array(24)].map((_, i) => (
-                <Globe key={i} className="h-16 w-16 sm:h-24 sm:w-24 text-left" />
+                <Globe key={i} className="h-16 w-16 sm:h-24 sm:w-24 text-left text-left" />
               ))}
             </div>
           </div>
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 text-left">
             <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8 text-left">
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center text-left">
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-left text-left">
                 The Harvest is Plentiful.<br className="hidden sm:block text-left" />
                 Ready to Labor?
               </h2>
-              <p className="text-base sm:text-lg md:text-xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-center text-left">
+              <p className="text-base sm:text-lg md:text-xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-left">
                 Join thousands of believers who are using technology to fulfill the mission of Jesus Christ. 
                 Record miracles, reach cities, and track the greatness of God.
               </p>
               <div className="flex justify-center pt-2 sm:pt-4 text-left">
-                <Button asChild size="lg" className="h-14 px-10 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto text-left">
+                <Button asChild size="lg" className="h-10 px-8 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto text-left">
                   <Link href="/signup" className="text-left">
                     START TESTIFYING <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6 text-left" />
                   </Link>
@@ -462,26 +404,26 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-muted/50 border-t py-12 sm:py-16 relative text-left">
+      <footer className="bg-muted/50 border-t py-12 sm:py-16 relative text-left text-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
                 {logo && (
-                  <Avatar className="h-16 w-16 text-left">
+                  <Avatar className="h-12 w-12 text-left">
                     <AvatarImage src={logo.imageUrl} alt="Logo" className="text-left" />
                     <AvatarFallback className="text-left">T</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm font-medium leading-relaxed italic text-pretty text-left">
+              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty text-left text-left text-left">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
-              <div className="flex gap-4 text-left">
-                <Button variant="outline" size="icon" asChild className="rounded-full h-11 w-11 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left">
+              <div className="flex gap-4 text-left text-left">
+                <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left">
                   <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left">
-                    <Instagram className="h-5 w-5 text-left" />
-                    <span className="sr-only text-left">Instagram</span>
+                    <Instagram className="h-4 w-4 text-left" />
+                    <span className="sr-only text-left text-left">Instagram</span>
                   </Link>
                 </Button>
               </div>
@@ -512,11 +454,11 @@ export default function LandingPage() {
           
           <div className="h-px w-full bg-muted opacity-50 mb-8 text-left" />
           
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left">
             <p className="text-center md:text-left text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.</p>
             <div className="flex gap-6 text-left">
-              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left">Terms</Link>
-              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left">Privacy</Link>
+              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left text-left">Terms</Link>
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left text-left">Privacy</Link>
             </div>
           </div>
         </div>

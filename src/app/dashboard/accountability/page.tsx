@@ -4,8 +4,8 @@ import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useUser, useAuth, useDoc, useUserProfile, useCollection, useFirestore } from '@/firebase';
-import { doc, collection, addDoc, serverTimestamp, query, getDocs, where, writeBatch, arrayRemove, getDoc, deleteDoc } from 'firebase/firestore';
 import { useSearch } from '@/context/search-context';
+import { doc, collection, addDoc, serverTimestamp, query, getDocs, where, writeBatch, arrayRemove, getDoc, deleteDoc } from 'firebase/firestore';
 import type { AccountabilityRequest, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -131,7 +131,7 @@ function AccountabilitySidebar({ partnerCount = 0, pendingCount = 0 }: { partner
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-5 pt-4 text-left text-left">
-                    <div className="p-5 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/20 relative group text-left text-left">
+                    <div className="p-5 rounded-2xl bg-muted/20 border-2 border-dashed border-primary/20 relative group text-left text-left text-left">
                         <Quote className="absolute top-2 right-4 h-8 w-8 opacity-5 rotate-12 transition-transform group-hover:scale-110 text-left" />
                         <p className="text-sm font-medium italic leading-relaxed text-muted-foreground text-balance text-left">
                             &ldquo;{verse.text}&rdquo;
@@ -252,8 +252,8 @@ function PartnerCard({
 
     return (
         <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x border-b-2 sm:border-b shadow-sm overflow-hidden bg-card/50 backdrop-blur-sm group hover:shadow-xl transition-all border-l-4 border-l-primary/10 text-left">
-            <CardHeader className="flex flex-row items-start justify-between p-4 sm:p-6 gap-4 text-left text-left">
-                 <div className="flex items-start gap-4 min-w-0 flex-1 text-left text-left">
+            <CardHeader className="flex flex-row items-start justify-between p-4 sm:p-6 gap-4 text-left text-left text-left">
+                 <div className="flex items-start gap-4 min-w-0 flex-1 text-left text-left text-left">
                     <Dialog>
                       <DialogTrigger asChild disabled={!livePhotoURL}>
                         <div className="relative cursor-pointer active:scale-95 transition-transform hover:scale-105 shrink-0 text-left">
@@ -274,8 +274,8 @@ function PartnerCard({
                           </DialogContent>
                       )}
                     </Dialog>
-                    <div className="min-w-0 flex-1 text-left text-left text-left">
-                        <div className="group inline-flex flex-col text-left max-w-full text-left text-left">
+                    <div className="min-w-0 flex-1 text-left text-left text-left text-left">
+                        <div className="group inline-flex flex-col text-left max-w-full text-left text-left text-left text-left">
                             <Link href={`/profile/${partner.userId}`} className="text-sm sm:text-base font-black truncate hover:underline leading-none uppercase tracking-tight max-w-[140px] sm:max-w-[200px] text-left">{partner.firstName} {partner.lastName}</Link>
                             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-60 truncate text-left">Spiritual Partner</span>
                         </div>
@@ -341,17 +341,17 @@ function PartnerCard({
                 </DropdownMenu>
             </CardHeader>
             <CardContent className="px-4 sm:px-6 pb-6 text-left">
-                <div className="pt-4 border-t border-dashed space-y-4 text-left">
-                    <div className="flex justify-between items-center gap-2">
-                        <div className="flex items-center gap-1.5 text-left text-left">
-                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left" />
-                            <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] text-left text-left text-left">Discipline Records</h4>
+                <div className="pt-4 border-t border-dashed space-y-4 text-left text-left">
+                    <div className="flex justify-between items-center gap-2 text-left">
+                        <div className="flex items-center gap-1.5 text-left text-left text-left">
+                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse text-left text-left" />
+                            <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] text-left text-left text-left text-left">Discipline Records</h4>
                         </div>
                         <Input 
                             type="date" 
                             value={dateStr} 
                             onChange={(e) => setDateStr(e.target.value)} 
-                            className="w-[140px] h-8 text-[10px] sm:text-xs font-bold uppercase tracking-tighter bg-muted/20 border-none rounded-lg text-left"
+                            className="w-[140px] h-8 text-[10px] sm:text-xs font-bold uppercase tracking-tighter bg-muted/20 border-none rounded-lg text-left text-left"
                         />
                     </div>
                     <PartnerDisciplineStatus partnerId={partner.userId} date={selectedDate} />
@@ -359,15 +359,15 @@ function PartnerCard({
             </CardContent>
 
             <Dialog open={isMessageOpen} onOpenChange={setIsMessageOpen}>
-                <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
-                    <DialogHeader className="text-center space-y-2 text-left">
-                        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
+                <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left text-left">
+                    <DialogHeader className="text-center space-y-2 text-left text-left">
+                        <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left">
                             <MessageSquare className="h-7 w-7 text-primary text-center" />
                         </div>
-                        <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-balance text-left text-left">Message {partner.firstName}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-center text-balance text-left text-left">Choose how to encourage your partner externally.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-balance text-left text-left text-left">Message {partner.firstName}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-center text-balance text-left text-left text-left">Choose how to encourage your partner externally.</DialogDescription>
                     </DialogHeader>
-                    <div className="flex flex-col gap-3 pt-6 text-left text-left">
+                    <div className="flex flex-col gap-3 pt-6 text-left text-left text-left">
                         <Button 
                             onClick={() => {
                                 if (!phone) {
@@ -379,7 +379,7 @@ function PartnerCard({
                                 window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
                                 setIsMessageOpen(false);
                             }} 
-                            className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center text-left text-left"
+                            className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center text-left text-left text-left"
                         >
                             <WhatsAppIcon className="h-5 w-5 text-center text-left" /> WhatsApp
                         </Button>
@@ -394,7 +394,7 @@ function PartnerCard({
                                 setIsMessageOpen(false);
                             }} 
                             variant="outline" 
-                            className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center text-left"
+                            className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center text-left text-left"
                         >
                             <MessageSquare className="h-5 w-5 text-center text-left" /> Standard SMS
                         </Button>
@@ -581,61 +581,61 @@ export default function AccountabilityPage() {
   
   return (
     <div className="w-full max-w-7xl mx-auto text-left text-left text-left text-left text-left">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left text-left">
-            <div className="lg:col-span-8 space-y-10 pb-32 text-left text-left">
-                <header className="px-4 sm:px-0 space-y-1 text-left text-left text-left text-left text-left">
-                    <div className="flex items-center gap-4 text-left text-left text-left text-left">
-                        <div className="space-y-1 text-left text-left text-left text-left text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left text-left text-left">MY PARTNERS</h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left">
-                                <HeartHandshake className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left text-left text-left" /> Spiritual Accountability
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left text-left text-left text-left">
+            <div className="lg:col-span-8 space-y-10 pb-32 text-left text-left text-left text-left">
+                <header className="px-4 sm:px-0 space-y-1 text-left text-left text-left text-left text-left text-left">
+                    <div className="flex items-center gap-4 text-left text-left text-left text-left text-left">
+                        <div className="space-y-1 text-left text-left text-left text-left text-left text-left">
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left text-left text-left text-left">MY PARTNERS</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <HeartHandshake className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left" /> Spiritual Accountability
                             </p>
                         </div>
                     </div>
                 </header>
 
-                <div className="space-y-4 text-left text-left text-left text-left">
+                <div className="space-y-4 text-left text-left text-left text-left text-left">
                     {filteredPartners.map(partner => (
                         <PartnerCard key={partner.userId} partner={partner} onNudge={handleNudgePartner} onChat={handleInitiateChat} onRemove={setRemovalTarget} />
                     ))}
                     {partners.length === 0 && (
-                        <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted text-left text-left text-left text-left">
-                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left text-left text-left text-left">
-                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left text-left text-left text-left" />
+                        <div className="flex flex-col items-center justify-center text-center p-12 sm:p-24 bg-muted/20 rounded-[2rem] border-2 border-dashed border-muted text-left text-left text-left text-left text-left">
+                            <div className="h-20 w-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 text-left text-left text-left text-left text-left">
+                                <HeartHandshake className="h-10 w-10 text-indigo-600 opacity-40 text-left text-left text-left text-left text-left" />
                             </div>
-                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center text-left text-left text-left text-left">No Active Alliance</h2>
-                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center text-left text-left text-left text-left">
+                            <h2 className="text-2xl font-black font-headline tracking-tight uppercase opacity-60 text-center text-left text-left text-left text-left text-left">No Active Alliance</h2>
+                            <p className="mt-3 max-w-xs text-sm text-muted-foreground font-medium leading-relaxed italic mx-auto text-center text-left text-left text-left text-left text-left">
                             "Two are better than one... for if they fall, the one will lift up his fellow." — Eccl 4:9-10
                             </p>
                         </div>
                     )}
                 </div>
 
-                <div className="px-4 sm:px-0 text-left text-left text-left text-left text-left text-left">
+                <div className="px-4 sm:px-0 text-left text-left text-left text-left text-left text-left text-left">
                     {userProfile && user && <AccountabilitySettingsCard userProfile={userProfile} userId={user.uid} />}
                 </div>
             </div>
 
-            <div className="lg:col-span-4 text-left text-left text-left text-left text-left text-left">
+            <div className="lg:col-span-4 text-left text-left text-left text-left text-left text-left text-left">
                 <AccountabilitySidebar partnerCount={activePartnersCount} pendingCount={pendingRequestsCount} />
             </div>
         </div>
 
         {removalTarget && (
             <AlertDialog open={!!removalTarget} onOpenChange={(open) => { if (!open) { setRemovalTarget(null); setRemovalReason(''); } }}>
-                <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
-                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left text-left text-left text-left">End Alliance?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left text-left">You're about to end your accountability partnership with {removalTarget?.firstName || 'this partner'}.</AlertDialogDescription>
+                <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left text-left text-left text-left text-left">End Alliance?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left">You're about to end your accountability partnership with {removalTarget?.firstName || 'this partner'}.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <div className="grid gap-4 py-6 text-left text-left text-left text-left text-left">
-                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left text-left">Reason for Removal</Label>
-                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left text-left text-left text-left text-left" />
+                    <div className="grid gap-4 py-6 text-left text-left text-left text-left text-left text-left">
+                        <Label htmlFor="removal-reason" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left text-left text-left">Reason for Removal</Label>
+                        <Textarea id="removal-reason" value={removalReason} onChange={(e) => setRemovalReason(e.target.value)} placeholder="e.g., Seasonal change, moved church..." className="text-base rounded-2xl min-h-[100px] bg-muted/20 border-none shadow-inner text-left text-left text-left text-left text-left text-left" />
                     </div>
-                    <AlertDialogFooter className="gap-3 text-left text-left text-left text-left text-left text-left text-left">
-                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left text-left text-left text-left text-left">Close</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left">
-                            {isRemoving ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left" /> : <UserX className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left" />}
+                    <AlertDialogFooter className="gap-3 text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <AlertDialogCancel disabled={!!isRemoving} className="rounded-xl h-11 text-left text-left text-left text-left text-left text-left">Close</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRemovePartner} disabled={!!isRemoving || !removalReason.trim()} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left text-left">
+                            {isRemoving ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left" /> : <UserX className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left" />}
                             Confirm Removal
                         </AlertDialogAction>
                     </AlertDialogFooter>

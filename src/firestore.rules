@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Unification and accountability hardening - 2025-03-05T16:00:00Z
+    // Deployment trigger: Public mission visibility and accountability optimization - 2025-03-05T18:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -38,7 +38,7 @@ service cloud.firestore {
     function isCampaignOrganizer(cId) {
       return isAuthenticated() && 
              cId != null && 
-             cId is string &&
+             cId is string && 
              cId != "" &&
              exists(/databases/$(database)/documents/campaigns/$(cId)) &&
              get(/databases/$(database)/documents/campaigns/$(cId)).data.organizerId == request.auth.uid;

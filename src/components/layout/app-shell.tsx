@@ -60,7 +60,7 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp, writeBatch } from "firebase/firestore";
-import type { Notification, UserProfile, VendorProfile, MealGiftStatus } from "@/lib/types";
+import type { Notification, UserProfile, VendorProfile } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
@@ -68,13 +68,6 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Separator } from "../ui/separator";
-import { Textarea } from "../ui/textarea";
-import { Badge } from "../ui/badge";
-import { Label } from "../ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const navItems = [
   { href: "/growth", label: "GROWTH", icon: TrendingUp, color: "text-chart-1" },
@@ -111,6 +104,53 @@ const inspirationalMessages = [
   "STAND FIRM IN FAITH",
   "REJOICE ALWAYS"
 ];
+
+function CartButton() {
+  const { user } = useUser();
+  const [count, setCount] = useState(0);
+
+  const updateCount = useCallback(() => {
+    if (!user?.uid) return;
+    const key = `testify_marketplace_cart_${user.uid}`;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      try {
+        const cart = JSON.parse(stored);
+        const total = Object.values(cart).reduce((acc: number, item: any) => acc + (item.quantity || 0), 0);
+        setCount(total);
+      } catch (e) {
+        setCount(0);
+      }
+    } else {
+      setCount(0);
+    }
+  }, [user?.uid]);
+
+  useEffect(() => {
+    updateCount();
+    window.addEventListener('testify_marketplace_cart_update', updateCount);
+    window.addEventListener('storage', updateCount);
+    return () => {
+      window.removeEventListener('testify_marketplace_cart_update', updateCount);
+      window.removeEventListener('storage', updateCount);
+    };
+  }, [updateCount]);
+
+  if (count === 0) return null;
+
+  return (
+    <Link href="/marketplace">
+      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+        <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
+          <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
+          <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
+            {count}
+          </div>
+        </Button>
+      </motion.div>
+    </Link>
+  );
+}
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendors }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, userVendors: VendorProfile[] | null }) {
   const { user, loading: authLoading } = useUser();
@@ -198,7 +238,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
         </div>
       </nav>
         
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left text-left">
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left text-left text-left">
         <div className="hidden lg:block min-w-0 text-left">
             <form onSubmit={(e) => e.preventDefault()} className="text-left">
               <div className="relative text-left">
@@ -287,7 +327,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
                         <HeartHandshake className="h-3.5 w-3.5 text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left">Partners</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left text-left">Partners</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
@@ -314,7 +354,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/souls-won" className="flex items-center gap-3 w-full text-left text-left">
-                      <div className="h-7 w-7 rounded-lg bg-chart-2/10 flex items-center justify-center text-left text-left text-left text-left">
+                      <div className="h-7 w-7 rounded-lg bg-chart-2/10 flex items-center justify-center text-left text-left text-left text-left text-left">
                         <UserPlus className="h-3.5 w-3.5 text-chart-2 text-left text-left text-left text-left text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left">Souls Won</span>
@@ -411,7 +451,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                    </>
                 )}
 
-                <DropdownMenuSeparator className="text-left text-left" />
+                <DropdownMenuSeparator className="text-left text-left text-left" />
                 
                 <div className="p-1 space-y-1 text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
@@ -427,12 +467,12 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left">
                           <BookMarked className="h-3.5 w-3.5 text-left text-left" />
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Kingdom Library</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left">Kingdom Library</span>
                       </Link>
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator className="text-left" />
+                <DropdownMenuSeparator className="text-left text-left" />
                 
                 <div className="p-1 text-left">
                   <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer text-left">
@@ -633,17 +673,17 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center text-left">
-        <div className="relative mb-8 mx-auto w-fit text-left text-left">
-            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
-            <div className="absolute inset-0 flex items-center justify-center text-left text-left">
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left" />
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center text-left text-left">
+        <div className="relative mb-8 mx-auto w-fit text-left text-left text-left text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left text-left text-left" />
+            <div className="absolute inset-0 flex items-center justify-center text-left text-left text-left text-left">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left text-left text-left" />
             </div>
         </div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center text-left">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center text-left text-left">
             Kingdom Network Active
         </p>
       </div>
@@ -654,7 +694,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   const showBottomNav = !isTakeoverPage;
 
   return (
-    <div className={cn("flex w-full flex-col overflow-x-hidden text-left", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+    <div className={cn("flex w-full flex-col overflow-x-hidden text-left text-left", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
       <AnimatePresence>
           {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
       </AnimatePresence>
@@ -663,7 +703,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: contentVisible ? 1 : 0 }}
           transition={{ duration: 1 }}
-          className="flex-1 flex flex-col min-h-0 text-left text-left"
+          className="flex-1 flex flex-col min-h-0 text-left text-left text-left text-left"
       >
           {!isTakeoverPage && (
           <AppHeader 
@@ -673,16 +713,16 @@ function ShellInner({ children }: { children: React.ReactNode }) {
               userVendors={userVendors || null}
           />
           )}
-          <div className="flex-1 relative min-h-0 text-left">
+          <div className="flex-1 relative min-h-0 text-left text-left">
           <main 
               ref={scrollContainerRef}
               className={cn(
-                  "absolute inset-0 text-left", 
+                  "absolute inset-0 text-left text-left", 
                   !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
               )}
           >
               <div className={cn(
-              "mx-auto h-full text-left", 
+              "mx-auto h-full text-left text-left", 
               !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
               )}>
                   <PageTransition>{children}</PageTransition>
@@ -697,28 +737,28 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       
       {user && mounted && isMobile ? (
         <Sheet open={!!isProfileIncomplete}>
-          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left">
-              <SheetHeader className="text-left text-left text-left text-left text-left">
-                <SheetTitle className="text-xl font-bold text-left text-left">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left text-left text-left">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left text-left text-left">
+              <SheetHeader className="text-left text-left text-left text-left text-left text-left text-left">
+                <SheetTitle className="text-xl font-bold text-left text-left text-left text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left text-left text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6 text-left text-left">
+            <div className="flex-grow overflow-y-auto p-6 text-left text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </SheetContent>
         </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
-            <div className="p-6 border-b bg-muted/10 text-left text-left">
-              <DialogHeader className="text-left text-left text-left">
-                  <DialogTitle className="text-2xl font-bold text-left text-left">Complete Your Profile</DialogTitle>
-                  <DialogDescription className="text-sm text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left text-left text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left text-left text-left">
+              <DialogHeader className="text-left text-left text-left text-left text-left text-left">
+                  <DialogTitle className="text-2xl font-bold text-left text-left text-left text-left">Complete Your Profile</DialogTitle>
+                  <DialogDescription className="text-sm text-left text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -732,9 +772,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
-                <div className="relative mx-auto w-fit text-left text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left text-left">
+                <div className="relative mx-auto w-fit text-left text-left text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left text-left" />
                 </div>
             </div>
         }>
