@@ -28,7 +28,16 @@ import { useAuth, useFirestore } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/dialog";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle 
+} from "@/components/ui/alert-dialog";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -128,8 +137,6 @@ export function LoginForm() {
       return;
     }
     try {
-      // Persistence is already set globally in FirebaseClientProvider.
-      // Calling it again here is redundant and can cause race conditions.
       const userCredential = await signInWithEmailAndPassword(auth, values.email.trim(), values.password);
       const user = userCredential.user;
 
