@@ -21,15 +21,13 @@ import {
   TrendingUp,
   BookMarked,
   Users,
+  ShoppingCart,
+  Info,
+  ShieldCheck,
   CalendarDays,
   Store,
   Gift,
-  Package,
-  ShieldCheck,
-  ShoppingCart,
-  X,
-  Sparkles,
-  Info
+  Package
 } from "lucide-react";
 
 import {
@@ -668,10 +666,10 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
             </div>
         </div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 text-left">
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center text-left">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
             Kingdom Network Active
         </p>
       </div>
@@ -728,8 +726,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
             <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
               <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
+                <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-6 text-left">
@@ -742,8 +740,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
             <div className="p-6 border-b bg-muted/10 text-left">
               <DialogHeader className="text-left">
-                  <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
-                  <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                  <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
+                  <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
             <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
