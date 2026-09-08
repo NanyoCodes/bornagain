@@ -328,44 +328,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 </div>
 
                 <DropdownMenuSeparator />
-
-                <div className="p-1 space-y-1">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Main Navigation</p>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/growth" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-chart-1/10 flex items-center justify-center">
-                        <TrendingUp className="h-3.5 w-3.5 text-chart-1" />
-                      </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Growth Hub</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/souls-won" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-chart-2/10 flex items-center justify-center">
-                        <UserPlus className="h-3.5 w-3.5 text-chart-2" />
-                      </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Souls Won</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/testimonies" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-chart-3/10 flex items-center justify-center">
-                        <Newspaper className="h-3.5 w-3.5 text-chart-3" />
-                      </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Testimonies</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/campaigns" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-chart-4/10 flex items-center justify-center">
-                        <Target className="h-3.5 w-3.5 text-chart-4" />
-                      </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Campaigns</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </div>
-
-                <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Kingdom Hubs</p>
@@ -399,22 +361,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                         <Package className="h-3.5 w-3.5" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest">Order Tracker</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/events" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <CalendarDays className="h-3.5 w-3.5 text-primary" />
-                      </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Event Hub</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/fellowships" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                        <Users className="h-3.5 w-3.5" />
-                      </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Fellowships</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
