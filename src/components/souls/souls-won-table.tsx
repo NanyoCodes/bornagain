@@ -48,7 +48,8 @@ import {
   UserPlus,
   Reply,
   Lock,
-  CheckCircle2
+  CheckCircle2,
+  Share
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput, MealGiftStatus, EventCategory } from "@/lib/types";
@@ -125,6 +126,7 @@ import { MutualConnectBadge } from "./mutual-connect-badge";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
@@ -504,13 +506,15 @@ function PrivateHangoutBuilder({
     const isMobile = useIsMobile();
 
     const filteredPotentials = useMemo(() => {
+        // Strictly follow the request: search for "single female souls" for Guest 3
         const list = allSouls.filter(s => 
             s.id !== soul?.id && 
             (s.maritalStatus === 'Single' || s.maritalStatus === 'Widowed') &&
-            (soul?.gender && s.gender ? s.gender !== soul.gender : true)
+            s.gender === 'Female'
         );
         if (!search) return list;
-        return list.filter(s => `${s.firstName} ${s.lastName}`.toLowerCase().includes(search.toLowerCase()));
+        const term = search.toLowerCase();
+        return list.filter(s => `${s.firstName} ${s.lastName}`.toLowerCase().includes(term));
     }, [allSouls, soul, search]);
 
     const handleCreate = async () => {
@@ -524,10 +528,10 @@ function PrivateHangoutBuilder({
     const step1 = (
         <div className="space-y-6">
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Step 1: Pick a Kingdom Match</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Step 1: Pick a Kingdom Match (Single Females)</Label>
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
-                    <Input placeholder="Search single souls..." value={search} onChange={e => setSearch(e.target.value)} className="h-11 pl-10 rounded-xl bg-muted/20 border-none shadow-inner" />
+                    <Input placeholder="Search single female souls..." value={search} onChange={e => setSearch(e.target.value)} className="h-11 pl-10 rounded-xl bg-muted/20 border-none shadow-inner" />
                 </div>
             </div>
             <ScrollArea className={cn("border rounded-2xl bg-muted/5", isMobile ? "h-[40vh]" : "h-[30vh]")}>
@@ -552,6 +556,11 @@ function PrivateHangoutBuilder({
                             {thirdSoul?.id === s.id && <CheckCircle2 className="h-4 w-4 text-primary" />}
                         </Button>
                     ))}
+                    {filteredPotentials.length === 0 && (
+                        <div className="py-12 text-center text-muted-foreground italic text-xs px-6">
+                            No single female souls found in your harvest list.
+                        </div>
+                    )}
                 </div>
             </ScrollArea>
         </div>
@@ -578,7 +587,7 @@ function PrivateHangoutBuilder({
                     <Lock className="h-3.5 w-3.5 text-primary" />
                     <span className="text-[9px] font-black text-primary uppercase tracking-widest">Privacy Guard</span>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium">This event is <span className="font-black text-foreground">private</span>. It will only be visible to you and your guests in your personal activity logs. It will not appear in the public feed.</p>
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium">This event is <span className="font-black text-foreground">private</span>. It will only be visible to you and your guests. It will not appear in the public feed.</p>
             </div>
         </div>
     );
@@ -697,7 +706,7 @@ function SoulProfileContent({
     return allSouls.filter(s => 
         s.id !== soul.id && 
         (s.maritalStatus === 'Single' || s.maritalStatus === 'Widowed') &&
-        (soul.gender && s.gender ? s.gender !== soul.gender : true)
+        s.gender === 'Female' // Filtering for "Single Female Souls" as Guest 3
     );
   }, [allSouls, soul]);
 
@@ -744,7 +753,6 @@ function SoulProfileContent({
 
     try {
         await batch.commit();
-        toast({ title: 'Kingdom Impact Logged' });
     } catch (err) {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: soulRef.path, operation: 'update' }, user));
     }
@@ -826,7 +834,7 @@ function SoulProfileContent({
           window.location.href = `sms:${targetPhone}?body=${messageText}`;
       }
       
-      const logAddendum = suitorTarget ? `Kingdom Matchmaking: Sent permission-seeking message to potential suitor ${suitorTarget.firstName}.` : `Sent via ${channel.toUpperCase()}: ${customMessageText.substring(0, 30)}...`;
+      const logAddendum = suitorTarget ? `Kingdom Matchmaking: Sent invitation to potential suitor ${suitorTarget.firstName}.` : `Sent via ${channel.toUpperCase()}: ${customMessageText.substring(0, 30)}...`;
       finalizeLog(clickedActionId, logAddendum);
       setIsCommChannelDialogOpen(false);
       setCustomMessageText('');
@@ -882,7 +890,7 @@ function SoulProfileContent({
           finalizeLog('introduced_friend', `Shared with partner: ${partner.firstName}`);
           setIsPartnerSelectionDialogOpen(false);
           setIsShareTargetDialogOpen(false);
-          router.push(`/chats/${chatId}?soulId=${soul.id}`);
+          router.push(`/dashboard/chats/${chatId}?soulId=${soul.id}`);
       } catch (e) {
           toast({ variant: 'destructive', title: 'Share Failed' });
       }
@@ -947,9 +955,7 @@ function SoulProfileContent({
     setIsActionSubmitting(true);
     const eventRef = doc(collection(firestore, 'events'));
     
-    const guestIds = [user.uid];
-    if (soul.id) guestIds.push(soul.id);
-    if (targetSoul.id) guestIds.push(targetSoul.id);
+    const guestIds = [user.uid, soul.id, targetSoul.id].sort();
 
     const eventData = {
         title: `Private Group Hangout: ${soul.firstName} & ${targetSoul.firstName}`,
@@ -1008,14 +1014,13 @@ function SoulProfileContent({
         setCustomMessageText(invitation);
         setClickedActionId('matchmaking');
         
-        toast({ title: 'Hangout Arranged', description: 'Private event created. Redirecting to invite guests...' });
+        toast({ title: 'Hangout Arranged', description: 'Private gathering created. Redirecting to send invitations...' });
         
         setTimeout(() => {
             setIsCommChannelDialogOpen(true);
         }, 300);
 
     } catch (e: any) {
-        console.error("Hangout creation failed:", e);
         if (e.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
                 path: eventRef.path,
@@ -1037,18 +1042,9 @@ function SoulProfileContent({
     setIsCommChannelDialogOpen(true);
   };
 
-  const uniquePartners = React.useMemo(() => {
-    const partners = currentUserProfile?.accountabilityPartners || [];
-    const uniqueMap = new Map();
-    partners.forEach(p => {
-        if (p.userId && !uniqueMap.has(p.userId)) uniqueMap.set(p.userId, p);
-    });
-    return Array.from(uniqueMap.values());
-  }, [currentUserProfile?.accountabilityPartners]);
-
   return (
-    <div className="space-y-6 text-left">
-      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-4 border-t-primary/20 text-left">
+    <div className="space-y-6">
+      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-4 border-t-primary/20">
         <CardHeader className="p-8 pb-4 text-center">
             <div className="relative inline-block mx-auto mb-4">
                 <Dialog>
@@ -1092,7 +1088,7 @@ function SoulProfileContent({
                 </div>
             </div>
         </CardHeader>
-        <CardContent className="p-8 pt-0 space-y-6 text-left">
+        <CardContent className="p-8 pt-0 space-y-6">
             <Separator className="opacity-50" />
             
             <div className="space-y-4">
@@ -1117,7 +1113,7 @@ function SoulProfileContent({
                         </Button>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 text-left">
                     <div className="space-y-1">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Full Name</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.firstName} {soul.lastName}</p>
@@ -1134,48 +1130,13 @@ function SoulProfileContent({
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Work Status</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.workStatus || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Rel. Status</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.maritalStatus || 'N/A'}</p>
-                    </div>
-                    <div className="space-y-1">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Nickname</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.nickname || 'N/A'}</p>
-                    </div>
-                </div>
-            </div>
-
-            <Separator className="opacity-20" />
-
-            <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Contact Identity</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onEdit(soul)}>
-                        <Edit className="h-4 w-4" />
-                    </Button>
-                </div>
-                <div className="space-y-2">
-                    {soul.phone ? (
-                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground">
-                            <Phone className="h-3.5 w-3.5 text-primary shrink-0" />
-                            {soul.phone}
-                        </div>
-                    ) : (
-                        <p className="text-[9px] text-muted-foreground/40 italic">No phone recorded</p>
-                    )}
-                    {soul.email && (
-                        <div className="flex items-center gap-2 text-[11px] sm:text-xs font-bold text-foreground">
-                            <Mail className="h-3.5 w-3.5 text-primary shrink-0" />
-                            {soul.email}
-                        </div>
-                    )}
                 </div>
             </div>
 
             <Separator className="opacity-20" />
 
             <div className="space-y-4">
-                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Relational Actions</p>
+                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Relational Actions</p>
                 <div className="grid grid-cols-2 gap-2">
                     {actionItems.map(action => {
                         const Icon = iconMap[action.id] || Heart;
@@ -1210,18 +1171,6 @@ function SoulProfileContent({
             <Separator className="opacity-20" />
 
             <div className="space-y-4">
-                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Harvest Context</p>
-                <div className="space-y-1">
-                    <p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate">
-                        <Target className="h-3 w-3 text-primary" />
-                        Source: {soul.source}
-                    </p>
-                </div>
-            </div>
-
-            <Separator className="opacity-20" />
-
-            <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Kingdom Placement</p>
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onOpenAssignDialog(soul)}>
@@ -1232,39 +1181,17 @@ function SoulProfileContent({
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10">
                         <HeartHandshake className="h-4 w-4 text-primary shrink-0" />
                         <div className="min-w-0">
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Fellowship</p>
-                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.fellowshipName || 'No Fellowship'}</p>
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p>
+                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10">
                         <Users className="h-4 w-4 text-blue-500 shrink-0" />
                         <div className="min-w-0">
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Association</p>
-                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.associationName || 'No Association'}</p>
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p>
+                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.associationName || 'No Association'}</p>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <Separator className="opacity-20" />
-
-            <div className="space-y-4">
-                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Spiritual Milestones</p>
-                <div className="grid grid-cols-2 gap-2">
-                    {[
-                        { label: 'Church', val: soul.attendingChurch, icon: Church },
-                        { label: 'Word Study', val: soul.inBibleStudy, icon: BookOpen },
-                        { label: 'Prayer', val: soul.attendingPrayer, icon: Zap },
-                        { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck },
-                    ].map(milestone => (
-                        <div key={milestone.label} className={cn(
-                            "flex items-center gap-2 p-2 rounded-xl border transition-all",
-                            milestone.val ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/10 border-transparent text-muted-foreground/40"
-                        )}>
-                            <milestone.icon className="h-3 w-3" />
-                            <span className="text-[10px] font-black uppercase tracking-tight">{milestone.label}</span>
-                        </div>
-                    ))}
                 </div>
             </div>
 
@@ -1278,7 +1205,7 @@ function SoulProfileContent({
                         View All
                     </Button>
                 </div>
-                <div className="space-y-4 pl-1">
+                <div className="space-y-4 pl-1 text-left">
                     {sortedHistory.length > 0 ? (
                         sortedHistory.slice(0, 3).map((log, index) => {
                             const date = safeToDate(log.date);
@@ -1302,64 +1229,6 @@ function SoulProfileContent({
                 </div>
             </div>
 
-            <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner">
-                <div className="flex items-center justify-between">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1">
-                        <ClipboardList className="h-3.5 w-3.5" /> Assessed Needs
-                    </p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10" onClick={() => onAssess(soul)}>
-                        <Edit className="h-4 w-4" />
-                    </Button>
-                </div>
-                {needs ? (
-                    <div className="space-y-4">
-                        {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance">&ldquo;{needs.generalImpression}&rdquo;</p>}
-                        
-                        <div className="grid grid-cols-2 gap-3">
-                            {needs.emotionalNeeds && (
-                                <div className="space-y-1">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black">Emotional</Badge>
-                                    <p className="text-[10px] text-muted-foreground line-clamp-2">{needs.emotionalNeeds}</p>
-                                </div>
-                            )}
-                            {needs.physicalNeeds && (
-                                <div className="space-y-1">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black">Physical</Badge>
-                                    <p className="text-[10px] text-muted-foreground line-clamp-2">{needs.physicalNeeds}</p>
-                                </div>
-                            )}
-                            {needs.financialNeeds && (
-                                <div className="space-y-1">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black">Financial</Badge>
-                                    <p className="text-[10px] text-muted-foreground line-clamp-2">{needs.financialNeeds}</p>
-                                </div>
-                            )}
-                            {needs.socialNeeds && (
-                                <div className="space-y-1">
-                                    <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black">Social</Badge>
-                                    <p className="text-[10px] text-muted-foreground line-clamp-2">{needs.socialNeeds}</p>
-                                </div>
-                            )}
-                        </div>
-
-                        {needs.followUpPlan && (
-                            <div className="pt-2 border-t border-primary/10">
-                                <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5">
-                                    <Target className="h-2.5 w-2.5" /> Strategy
-                                </p>
-                                <p className="text-[10px] text-muted-foreground leading-relaxed italic">{needs.followUpPlan}</p>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <div className="py-4 text-center">
-                        <Button variant="outline" size="sm" className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5" onClick={() => onAssess(soul)}>
-                            BEGIN ASSESSMENT
-                        </Button>
-                    </div>
-                )}
-            </div>
-
             <div className="pt-2 text-left space-y-3">
                 <Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20" onClick={() => onFollowUp(soul)}>
                     LOG FOLLOW-UP
@@ -1372,7 +1241,7 @@ function SoulProfileContent({
       </Card>
 
       <Dialog open={isMatchmakingOpen} onOpenChange={setIsMatchmakingOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+          <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10">
                   <DialogHeader>
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight flex items-center gap-2">
@@ -1409,7 +1278,7 @@ function SoulProfileContent({
                                           <MessageSquare className="h-4 w-4 opacity-40 group-hover:opacity-100 transition-opacity" />
                                       </Button>
                                   )) : (
-                                      <p className="text-center text-xs text-muted-foreground py-12">No other single/widowed believers found in your harvest list.</p>
+                                      <p className="text-center text-xs text-muted-foreground py-12">No other single female souls found in your harvest list.</p>
                                   )}
                               </div>
                           </ScrollArea>
@@ -1468,7 +1337,7 @@ function SoulProfileContent({
       />
 
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
-          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10">
                   <DialogHeader>
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
@@ -1492,7 +1361,7 @@ function SoulProfileContent({
                         ))}
                     </div>
                 </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-left">
                       <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Message</Label>
                       <Textarea 
                           value={customMessageText}
@@ -1518,7 +1387,7 @@ function SoulProfileContent({
                   <MessageSquare className="h-7 w-7 text-primary" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {suitorTarget?.firstName || soul.firstName}?</DialogDescription>
+            <DialogDescription className="text-sm font-medium">How would you like to encourage {suitorTarget?.firstName || soul.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
             <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
@@ -1541,7 +1410,7 @@ function SoulProfileContent({
           </div>
           <div className="p-8 space-y-6 text-left">
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomMessageText(e.target.value)} 
@@ -1575,14 +1444,14 @@ function SoulProfileContent({
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left">
-                  <DialogHeader className="text-left text-left">
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
+              <div className="p-8 border-b bg-muted/10">
+                  <DialogHeader>
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
+                      <DialogDescription className="text-sm font-medium">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
               </div>
               <div className="p-6">
-              <ScrollArea className="h-64">
+              <ScrollArea className="h-64 text-left">
                   <div className="space-y-2">
                       {uniquePartners.map(p => (
                           <Button 
@@ -1593,7 +1462,7 @@ function SoulProfileContent({
                           >
                               <Avatar className="h-8 w-8 border shrink-0">
                                   <AvatarImage src={p.photoURL} />
-                                  <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
+                                  <AvatarFallback className="font-black text-[10px] text-center flex items-center justify-center w-full h-full">{p.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
                           </Button>
@@ -1623,32 +1492,27 @@ const SoulCard = React.memo(({ soul, onClick }: {
 }) => {
     return (
         <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left">
-            <div className="flex items-center justify-between p-4 gap-4 text-left">
-                <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0 text-left")}>
+            <div className="flex items-center justify-between p-4 gap-4">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0")}>
                         <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
                             {soul.firstName?.charAt(0) || 'S'}
                         </AvatarFallback>
                     </Avatar>
-                    <div className="min-w-0 text-left">
-                        <div className="flex items-center gap-2 flex-wrap text-left">
-                            <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight text-left">
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight">
                               {soul.firstName || 'Unknown'} {soul.lastName || ''}
-                              {soul.maritalStatus === 'Married' && soul.spouseName && (
-                                <span className="text-[10px] text-primary/60 font-bold uppercase tracking-tighter ml-1.5">
-                                  & {soul.spouseName}
-                                </span>
-                              )}
                             </p>
                         </div>
-                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left">
-                            <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
-                            {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0 text-left">Fellowship</Badge>}
+                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
+                            <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                            {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0">Fellowship</Badge>}
                         </div>
                     </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-20 text-left" />
+                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-20" />
             </div>
         </Card>
     );
@@ -1662,7 +1526,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
 }) => {
     return (
         <TableRow 
-            className={cn("border-b hover:bg-muted/50 transition-colors cursor-pointer text-left", isSelected && "bg-primary/[0.03]")}
+            className={cn("border-b hover:bg-muted/30 transition-colors cursor-pointer text-left", isSelected && "bg-primary/[0.03]")}
             onClick={() => onSelect()}
         >
             <TableCell className="font-medium p-4 text-left">
@@ -1676,11 +1540,6 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
                     <div className="min-w-0 text-left">
                         <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left">
                             {soul.firstName} {soul.lastName}
-                            {soul.maritalStatus === 'Married' && soul.spouseName && (
-                                <span className="ml-2 text-xs font-medium text-muted-foreground/60 italic lowercase">
-                                    & {soul.spouseName} (spouse)
-                                </span>
-                            )}
                         </div>
                         {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left"><Church className="h-3 w-3 shrink-0 text-left" />{soul.church}</div>}
                     </div>
@@ -1732,13 +1591,13 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
   if (souls.length === 0) {
     return (
         <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left">
-            <CardContent className="text-left">
-                <div className="text-center py-24 flex flex-col items-center text-left">
-                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20 text-left">
-                        <HeartHandshake className="h-10 w-10 text-primary opacity-40 text-left" />
+            <CardContent>
+                <div className="text-center py-24 flex flex-col items-center">
+                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20">
+                        <HeartHandshake className="h-10 w-10 text-primary opacity-40" />
                     </div>
-                    <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left">Your Harvest Field</h3>
-                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
+                    <h3 className="text-xl font-black font-headline uppercase tracking-tight">Your Harvest Field</h3>
+                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
                 </div>
             </CardContent>
         </Card>
@@ -1761,9 +1620,9 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start text-left">
-        <div className="flex-1 w-full text-left">
+        <div className="flex-1 w-full">
             {isMobile ? (
-                <div className="space-y-px text-left">
+                <div className="space-y-px">
                     {souls.map((soul) => (
                         <SoulCard key={soul.id} soul={soul} onClick={() => onSelect(soul.id)} />
                     ))}
@@ -1772,7 +1631,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                 <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
                     <CardHeader className="p-8 border-b bg-muted/5 text-left">
                         <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
-                            <Heart className="h-6 w-6 text-primary fill-current text-left" />
+                            <Heart className="h-6 w-6 text-primary fill-current" />
                             Harvest Dashboard
                         </CardTitle>
                         <CardDescription className="text-base font-medium text-left">Keep track of spiritual development and community integration.</CardDescription>
@@ -1806,19 +1665,19 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         <Sheet open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                    <SheetHeader className="text-left flex-shrink-0 text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
+                    <SheetHeader className="text-left flex-shrink-0">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity Hub</span>
                         </div>
-                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
+                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
-                        <SheetDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
+                        <SheetDescription className="text-sm font-medium mt-1">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left">
-                    <div className="p-6 pb-24 text-left">
+                <ScrollArea className="flex-grow min-h-0">
+                    <div className="p-6 pb-24">
                         {profileView}
                     </div>
                 </ScrollArea>
@@ -1837,18 +1696,345 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                         className="space-y-6 text-left"
                     >
                         {profileView}
-                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left">
+                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center">
                             {selectedSoul.firstName} {selectedSoul.lastName}
                         </p>
                     </motion.div>
                 ) : (
                     <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left">Select a record to preview identity</p>
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>
         </div>
     </div>
   );
+}
+
+```
+- src/firestore.rules:
+```rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Deployment trigger: Unification and private event security - 2025-06-15T11:00:00Z
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function getRequestId(id1, id2) {
+      return id1 < id2 ? id1 + '_' + id2 : id2 + '_' + id1;
+    }
+
+    function isFellowshipMember(fellowshipId) {
+      return isAuthenticated() && 
+             fellowshipId != null && 
+             fellowshipId is string && 
+             fellowshipId != "" && 
+             fellowshipId != "none" &&
+             exists(/databases/$(database)/documents/fellowships/$(fellowshipId)) &&
+             request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.get('memberIds', []);
+    }
+
+    function isFellowshipOrganizer(fId) {
+      return isAuthenticated() && 
+             fId != null &&
+             fId is string &&
+             fId != "" &&
+             exists(/databases/$(database)/documents/fellowships/$(fId)) &&
+             get(/databases/$(database)/documents/fellowships/$(fId)).data.organizerId == request.auth.uid;
+    }
+
+    function isCampaignOrganizer(cId) {
+      return isAuthenticated() && 
+             cId != null && 
+             cId is string && 
+             cId != "" &&
+             exists(/databases/$(database)/documents/campaigns/$(cId)) &&
+             get(/databases/$(database)/documents/campaigns/$(cId)).data.organizerId == request.auth.uid;
+    }
+
+    function isEventOrganizer(eId) {
+      return isAuthenticated() && 
+             eId != null && 
+             eId is string && 
+             eId != "" && 
+             exists(/databases/$(database)/documents/events/$(eId)) && 
+             get(/databases/$(database)/documents/events/$(eId)).data.organizerId == request.auth.uid;
+    }
+
+    function canAccessChatDoc(chatData) {
+      return isAuthenticated() && (
+        request.auth.uid in chatData.get('participantIds', []) ||
+        (chatData.get('fellowshipId', '') != '' && isFellowshipMember(chatData.get('fellowshipId', ''))) ||
+        (chatData.get('associationId', '') != '' && isFellowshipMember(chatData.get('associationId', ''))) ||
+        (chatData.get('campaignId', '') != '' && exists(/databases/$(database)/documents/campaigns/$(chatData.get('campaignId', ''))/participants/$(request.auth.uid))) ||
+        (chatData.get('eventId', '') != '' && exists(/databases/$(database)/documents/events/$(chatData.get('eventId', ''))/participants/$(request.auth.uid)))
+      );
+    }
+
+    match /users/{userId} {
+      allow read: if true; 
+      allow create, delete: if isOwner(userId);
+
+      allow update: if isAuthenticated() && (
+        isOwner(userId) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline', 'photoURL', 'firstName', 'lastName', 'fullName_lowercase', 'name_tokens', 'bio', 'personalMessage', 'maritalStatus', 'workStatus', 'organizationName', 'roleInOrganization', 'videoTestimonies', 'dateOfBirth', 'location', 'phone', 'defaultMeetingLink']) && (
+          isOwner(userId) ||
+          exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
+          (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
+        ))
+      );
+
+      match /strongholds/{id} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /souls/{soulId} {
+        allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
+        allow create, delete: if isOwner(userId);
+        allow update: if isAuthenticated() && (
+          isOwner(userId) || 
+          isFellowshipMember(resource.data.get('fellowshipId', '')) || 
+          isFellowshipMember(resource.data.get('associationId', ''))
+        );
+      }
+      
+      match /disciplineHistory/{logId} {
+        allow read: if isAuthenticated();
+        allow write: if isOwner(userId);
+      }
+
+      match /bibleHighlights/{highlightId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /notes/{noteId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /notifications/{notificationId} {
+        allow read, update, delete: if isOwner(userId);
+        allow create: if isAuthenticated();
+      }
+
+      match /joinedCampaigns/{campaignId} {
+        allow get, list, write: if isOwner(userId);
+      }
+
+      match /joinedEvents/{eventId} {
+        allow get, list, write: if isOwner(userId);
+      }
+    }
+
+    match /events/{eventId} {
+      allow get, list: if (resource.data.get('visibility', 'public') == 'public') || (isAuthenticated() && (request.auth.uid == resource.data.organizerId || request.auth.uid in resource.data.get('participantIds', []) || exists(/databases/$(database)/documents/events/$(eventId)/participants/$(request.auth.uid))));
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        request.auth.uid == resource.data.organizerId ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'hasGroupChat', 'photoURL', 'participantIds'])
+      );
+      allow delete: if isAuthenticated() && resource.data.organizerId == request.auth.uid;
+
+      match /participants/{userId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isOwner(userId) || isEventOrganizer(eventId);
+      }
+    }
+
+    match /victoryCircles/{category} {
+      allow read: if isAuthenticated();
+
+      match /posts/{postId} {
+        allow get, list: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isOwner(resource.data.authorId));
+        allow update: if isAuthenticated() && (
+          (resource.data.authorId == request.auth.uid) ||
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
+        );
+
+        match /comments/{commentId} {
+          allow get, list: if isAuthenticated();
+          allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
+          allow update: if isAuthenticated() && (
+            (request.resource.data.authorId == request.authorId) ||
+            (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+          );
+        }
+      }
+      
+      match /armor/{armorId} {
+        allow get, list: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow update: if isAuthenticated() && (
+          (request.resource.data.authorId == request.authorId) ||
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
+        );
+      }
+      
+      match /foundational_armor/{armorIdx}/comments/{commentId} {
+        allow get, list: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/foundational_armor/$(armorIdx)).data.authorId == request.auth.uid);
+        allow update: if isAuthenticated() && (
+          (request.resource.data.authorId == request.authorId) ||
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+        );
+      }
+      
+      match /resources/{resourceId} {
+        allow get, list: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow update: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+      }
+    }
+    
+    match /souls/{soulId} {
+      allow get, list: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.get('userId', '') == request.auth.uid;
+      allow update, delete: if isAuthenticated() && (
+        (resource.data.get('userId', '') == request.auth.uid) || 
+        (resource.data.userId == request.auth.uid) || 
+        isFellowshipMember(resource.data.get('fellowshipId', '')) ||
+        isFellowshipMember(resource.data.get('associationId', ''))
+      );
+    }
+
+    match /testimonies/{testimonyId} {
+      allow get, list: if true;
+      allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid);
+      allow update: if isAuthenticated() && ( 
+        (resource.data.authorId == request.auth.uid) || 
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+      );
+
+      match /comments/{commentId} {
+          allow get, list: if true;
+          allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
+          allow update: if isAuthenticated() && (
+            (request.resource.data.authorId == request.authorId) ||
+            (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+          );
+      }
+    }
+    
+    match /prayerRequests/{requestId} {
+      allow get, list: if true;
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.authorId;
+      allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+      allow update: if isAuthenticated() && ( 
+        (request.resource.data.authorId == request.auth.uid) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
+        (resource.data.get('answeredTestimonyId', '') != '' && (
+          request.resource.data.status == 'pending' || 
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'answeredTestimonyId'])
+        ))
+      );
+    }
+
+    match /campaigns/{campaignId} {
+      allow get, list: if true;
+      allow create: if isAuthenticated();
+      allow delete: if false; 
+      allow update: if isAuthenticated() && ( (request.auth.uid == resource.data.organizerId) || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged'])) || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants'])) );
+
+      match /participants/{userId} {
+        allow read: if isAuthenticated();
+        allow write: if isOwner(userId);
+      }
+    }
+    
+    match /chats/{chatId} {
+      allow create: if isAuthenticated();
+      allow read, update: if canAccessChatDoc(resource.data);
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data);
+        allow create: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data) && request.resource.data.senderId == request.auth.uid;
+        allow update, delete: if isOwner(resource.data.senderId)
+          && canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data)
+          && (request.time < resource.data.createdAt + duration.value(24, 'h'));
+      }
+    }
+
+    match /accountabilityRequests/{requestId} {
+      allow read: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+      allow create: if isAuthenticated() && request.resource.data.fromUserId == request.auth.uid;
+      allow update: if isAuthenticated() && (request.auth.uid == request.resource.data.toUserId || request.auth.uid == request.resource.data.fromUserId);
+      allow delete: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+    }
+    
+    match /fellowships/{fellowshipId} {
+      allow get, list: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        (resource.data.organizerId == request.auth.uid) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount', 'hasGroupChat', 'status']))
+      );
+      allow delete: if isAuthenticated() && resource.data.organizerId == request.auth.uid;
+
+      match /members/{memberId} {
+        allow read, list: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+
+      match /devotionals/{date} {
+        allow read: if true;
+        allow create, update, delete: if isAuthenticated() && isFellowshipOrganizer(fellowshipId);
+        
+        match /comments/{commentId} {
+            allow get, list: if true;
+            allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
+            allow update: if isAuthenticated() && (
+              (request.resource.data.authorId == request.authorId) ||
+              (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+            );
+        }
+      }
+    }
+
+    match /vendors/{vendorId} {
+      allow get, list: if true;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      match /meals/{mealId} {
+        allow get, list: if true;
+        allow create, update, delete: if isAuthenticated() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid;
+      }
+    }
+
+    match /mealGifts/{giftId} {
+      allow create: if isAuthenticated();
+      allow get, list: if isAuthenticated() && (
+        request.auth.uid == resource.data.get('senderId', '') || 
+        request.auth.uid == resource.data.get('vendorOwnerId', '')
+      );
+      allow update: if isAuthenticated() && (
+        (request.auth.uid == request.resource.data.senderId && request.resource.data.status == 'cancelled' && resource.data.status == 'ordered') ||
+        (request.auth.uid == request.resource.data.vendorOwnerId && request.resource.data.status in ['preparing', 'delivering', 'delivered'] && resource.data.status != 'cancelled')
+      );
+    }
+
+    match /mail/{mailId} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if false;
+    }
+  }
 }
