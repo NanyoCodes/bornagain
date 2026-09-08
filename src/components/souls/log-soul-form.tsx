@@ -21,8 +21,8 @@ import { Loader2 } from "lucide-react";
 import type { Campaign, Soul, UserProfile, Fellowship, SoulRelationship } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format, differenceInYears } from "date-fns";
-import { useFirestore, useUser, useDoc } from "@/firebase";
-import { collection, serverTimestamp, doc, writeBatch, increment } from "firebase/firestore";
+import { useFirestore, useUser, useDoc, useCollection } from "@/firebase";
+import { collection, serverTimestamp, doc, writeBatch, increment, query, orderBy } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -91,6 +91,17 @@ export function LogSoulForm({
 
   const userDocRef = useMemo(() => user ? doc(firestore, 'users', user.uid) : null, [user, firestore]);
   const { data: userProfile, loading: profileLoading } = useDoc<UserProfile>(userDocRef);
+
+  const soulsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/souls`), orderBy("firstName", "asc"));
+  }, [user?.uid, firestore]);
+  const { data: existingSouls } = useCollection<Soul>(soulsQuery);
+
+  const spouseOptions = useMemo(() => {
+    if (!existingSouls) return [];
+    return existingSouls.map(s => `${s.firstName} ${s.lastName}`.trim());
+  }, [existingSouls]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -435,8 +446,22 @@ export function LogSoulForm({
               <FormItem>
                 <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Spouse's Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Sarah Doe" {...field} value={field.value || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
+                  <div className="relative">
+                    <Input 
+                      placeholder="Type or pick from harvest list..." 
+                      {...field} 
+                      value={field.value || ""} 
+                      list="souls-options-log"
+                      className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                    />
+                    <datalist id="souls-options-log">
+                        {spouseOptions.map((name, i) => (
+                            <option key={i} value={name} />
+                        ))}
+                    </datalist>
+                  </div>
                 </FormControl>
+                <FormDescription className="text-[10px]">Select a name from your list or type it manually.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

@@ -20,8 +20,8 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { format, differenceInYears } from "date-fns";
-import { useFirestore, useUser } from "@/firebase";
-import { doc, serverTimestamp, writeBatch } from "firebase/firestore";
+import { useFirestore, useUser, useCollection } from "@/firebase";
+import { doc, serverTimestamp, writeBatch, query, collection, orderBy } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -76,6 +76,19 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
   const [isLoading, setIsLoading] = useState(false);
 
   const countriesList = useMemo(() => Country.getAllCountries(), []);
+
+  const soulsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/souls`), orderBy("firstName", "asc"));
+  }, [user?.uid, firestore]);
+  const { data: existingSouls } = useCollection<Soul>(soulsQuery);
+
+  const spouseOptions = useMemo(() => {
+    if (!existingSouls) return [];
+    return existingSouls
+        .filter(s => s.id !== soul.id)
+        .map(s => `${s.firstName} ${s.lastName}`.trim());
+  }, [existingSouls, soul.id]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -426,8 +439,22 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
               <FormItem>
                 <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Spouse's Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Sarah Doe" {...field} value={field.value || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"/>
+                  <div className="relative">
+                    <Input 
+                        placeholder="Type or pick from harvest list..." 
+                        {...field} 
+                        value={field.value || ""} 
+                        list="souls-options-edit"
+                        className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                    />
+                    <datalist id="souls-options-edit">
+                        {spouseOptions.map((name, i) => (
+                            <option key={i} value={name} />
+                        ))}
+                    </datalist>
+                  </div>
                 </FormControl>
+                <FormDescription className="text-[10px]">Select a name from your list or type it manually.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
