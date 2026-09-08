@@ -439,11 +439,13 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
 
 function BottomNavBar() {
     const pathname = usePathname();
+    // Only show core harvest items in the bottom navigation for a cleaner mobile view.
+    const bottomNavItems = navItems.filter(item => item.label !== "Partners");
   
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
         <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
-          {navItems.map((item) => {
+          {bottomNavItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
               <Link
