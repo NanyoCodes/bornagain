@@ -175,7 +175,7 @@ function FilteredSoulList({
                                             {yearsMarried !== null ? `${yearsMarried} Years Married` : 'Family Unit'}
                                         </Badge>
                                         <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left">
-                                            Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
+                                            {soul.age ? `${soul.age} Yrs • ` : ''}Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                                         </span>
                                     </div>
                                 </div>
@@ -287,7 +287,7 @@ function FilteredSoulList({
                             {soul.status}
                         </Badge>
                         <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left">
-                            Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
+                            {soul.age ? `${soul.age} Yrs • ` : ''}Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                         </span>
                     </div>
                 </div>
@@ -324,6 +324,7 @@ export default function SoulsWonPage() {
   const [childImportConfig, setChildImportConfig] = useState<{ lastName: string, location: any, parentIds: string[], parentNames: string[] } | null>(null);
   const [isLinkChildDialogOpen, setIsLinkChildDialogOpen] = useState(false);
   const [linkingParents, setLinkingParents] = useState<Soul[] | null>(null);
+  
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGalleryPaused, setIsGalleryPaused] = useState(false);
