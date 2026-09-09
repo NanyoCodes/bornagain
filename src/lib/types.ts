@@ -346,6 +346,8 @@ export type Soul = {
   associationId?: string;
   associationName?: string;
   needsAssessment?: SoulNeedsAssessment;
+  parentIds?: string[];
+  parentNames?: string[];
 };
 
 export type ChatParticipantInfo = {

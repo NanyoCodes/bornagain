@@ -22,7 +22,7 @@ import type { Campaign, Soul, UserProfile, Fellowship, SoulRelationship } from "
 import { Textarea } from "@/components/ui/textarea";
 import { format, differenceInYears } from "date-fns";
 import { useFirestore, useUser, useDoc, useCollection } from "@/firebase";
-import { collection, serverTimestamp, doc, writeBatch, increment, query, orderBy } from "firebase/firestore";
+import { collection, serverTimestamp, doc, writeBatch, increment, query, orderBy, arrayUnion } from "firebase/firestore";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -62,6 +62,8 @@ const formSchema = z.object({
   wonAt: z.date({
     required_error: "A date is required.",
   }),
+  parentIds: z.array(z.string()).optional(),
+  parentNames: z.array(z.string()).optional(),
 });
 
 type LogSoulFormProps = {
@@ -70,6 +72,10 @@ type LogSoulFormProps = {
   defaultRelationship?: SoulRelationship;
   defaultFellowship?: Fellowship;
   defaultAssociation?: Fellowship;
+  defaultLastName?: string;
+  defaultLocation?: any;
+  defaultParentIds?: string[];
+  defaultParentNames?: string[];
   fellowships: Fellowship[];
   campaigns: Campaign[];
 };
@@ -80,6 +86,10 @@ export function LogSoulForm({
     defaultRelationship, 
     defaultFellowship, 
     defaultAssociation,
+    defaultLastName,
+    defaultLocation,
+    defaultParentIds,
+    defaultParentNames,
     fellowships, 
     campaigns 
 }: LogSoulFormProps) {
@@ -108,7 +118,7 @@ export function LogSoulForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
-      lastName: "",
+      lastName: defaultLastName || "",
       nickname: "",
       spouseName: "",
       photoURL: "",
@@ -123,17 +133,19 @@ export function LogSoulForm({
       phone: "",
       church: "",
       relationship: defaultRelationship || "Other",
-      locationWonCity: "",
-      locationWonState: "",
-      locationWonCountry: "",
-      locationWonStreet: "",
-      locationWonLandmark: "",
-      locationWonLatitude: null,
-      locationWonLongitude: null,
+      locationWonCity: defaultLocation?.city || "",
+      locationWonState: defaultLocation?.state || "",
+      locationWonCountry: defaultLocation?.country || "",
+      locationWonStreet: defaultLocation?.street || "",
+      locationWonLandmark: defaultLocation?.landmark || "",
+      locationWonLatitude: defaultLocation?.latitude || null,
+      locationWonLongitude: defaultLocation?.longitude || null,
       source: defaultCampaign ? "Campaign" : "Personal",
       sourceDetails: defaultCampaign ? defaultCampaign.title : "",
-      initialNote: "",
+      initialNote: defaultParentNames?.length ? `Added as child of ${defaultParentNames.join(' & ')}.` : "",
       wonAt: new Date(),
+      parentIds: defaultParentIds || [],
+      parentNames: defaultParentNames || [],
     },
   });
 
@@ -211,6 +223,8 @@ export function LogSoulForm({
       fellowshipName: defaultFellowship?.name || null,
       associationId: defaultAssociation?.id || null,
       associationName: defaultAssociation?.name || null,
+      parentIds: values.parentIds || [],
+      parentNames: values.parentNames || [],
     };
     
     const locationWon: { [key: string]: any } = {
@@ -236,6 +250,15 @@ export function LogSoulForm({
         if (campaignId) {
             const campaignRef = doc(firestore, 'campaigns', campaignId);
             batch.update(campaignRef, { soulsLogged: increment(1) });
+        }
+
+        if (values.parentIds?.length) {
+            values.parentIds.forEach(pId => {
+                const parentRef = doc(firestore, `users/${user.uid}/souls`, pId);
+                const globalParentRef = doc(firestore, 'souls', pId);
+                batch.update(parentRef, { childrenIds: arrayUnion(newSoulRef.id) });
+                batch.update(globalParentRef, { childrenIds: arrayUnion(newSoulRef.id) });
+            });
         }
 
         batch.commit().catch(async (serverError: any) => {
