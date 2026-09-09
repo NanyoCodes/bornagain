@@ -234,7 +234,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
       </nav>
         
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left text-left text-left text-left">
-        <div className="hidden lg:block min-w-0 text-left text-left text-left text-left">
+        <div className="hidden lg:block min-w-0 text-left text-left text-left text-left text-left">
             <form onSubmit={(e) => e.preventDefault()} className="text-left text-left text-left text-left">
               <div className="relative text-left text-left text-left text-left">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left text-left text-left text-left" />
@@ -337,7 +337,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1 text-left text-left text-left text-left text-left text-left">
+                <div className="p-1 space-y-1 text-left text-left text-left text-left text-left text-left text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left text-left text-left text-left text-left text-left">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left text-left">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left text-left text-left text-left text-left text-left">
@@ -355,7 +355,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left">Fellowship Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left text-left text-left">
                     <Link href="/events" className="flex items-center gap-3 w-full text-left text-left text-left text-left text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left text-left text-left text-left text-left text-left text-left">
                         <CalendarDays className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left text-left text-left text-left text-left" />
@@ -379,9 +379,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left text-left">
-                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full text-left text-left text-left text-left text-left text-left text-left">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left text-left text-left">
+                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full text-left text-left text-left text-left text-left text-left text-left text-left">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <Package className="h-3.5 w-3.5 text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Order Tracker</span>
