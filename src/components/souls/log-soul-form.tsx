@@ -46,6 +46,7 @@ const formSchema = z.object({
   age: z.number().optional().nullable(),
   maritalStatus: z.string().optional(),
   workStatus: z.string().optional(),
+  socialStatus: z.string().optional(),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
@@ -131,6 +132,7 @@ export function LogSoulForm({
       age: null,
       maritalStatus: "",
       workStatus: "",
+      socialStatus: "Normal",
       email: "",
       phone: "",
       church: "",
@@ -208,6 +210,7 @@ export function LogSoulForm({
       age: values.age || null,
       maritalStatus: values.maritalStatus || null,
       workStatus: values.workStatus || null,
+      socialStatus: values.socialStatus || "Normal",
       relationship: values.relationship,
       source: values.source as 'Campaign' | 'Personal',
       wonAt: values.wonAt,
@@ -413,7 +416,7 @@ export function LogSoulForm({
             />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <FormField
               control={form.control}
               name="maritalStatus"
@@ -458,6 +461,30 @@ export function LogSoulForm({
                       <SelectItem value="Unemployed" className="rounded-xl">Unemployed</SelectItem>
                       <SelectItem value="Student" className="rounded-xl">Student</SelectItem>
                       <SelectItem value="Retired" className="rounded-xl">Retired</SelectItem>
+                      <SelectItem value="Other" className="rounded-xl">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="socialStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Social Standing</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value || "Normal"}>
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                        <SelectValue placeholder="Select Stand" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded-2xl">
+                      <SelectItem value="Normal" className="rounded-xl">Normal</SelectItem>
+                      <SelectItem value="Orphan" className="rounded-xl">Orphan</SelectItem>
+                      <SelectItem value="Less Privileged" className="rounded-xl">Less Privileged</SelectItem>
+                      <SelectItem value="Homeless" className="rounded-xl">Homeless</SelectItem>
                       <SelectItem value="Other" className="rounded-xl">Other</SelectItem>
                     </SelectContent>
                   </Select>

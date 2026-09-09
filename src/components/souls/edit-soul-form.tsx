@@ -46,6 +46,7 @@ const formSchema = z.object({
   age: z.number().optional().nullable(),
   maritalStatus: z.string().optional(),
   workStatus: z.string().optional(),
+  socialStatus: z.string().optional(),
   email: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
   phone: z.string().optional(),
   church: z.string().optional(),
@@ -108,6 +109,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       age: soul.age || null,
       maritalStatus: soul.maritalStatus || "",
       workStatus: soul.workStatus || "",
+      socialStatus: soul.socialStatus || "Normal",
       email: soul.email || "",
       phone: soul.phone || "",
       church: soul.church || "",
@@ -144,6 +146,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             age: soul.age || null,
             maritalStatus: soul.maritalStatus || "",
             workStatus: soul.workStatus || "",
+            socialStatus: soul.socialStatus || "Normal",
             email: soul.email || "",
             phone: soul.phone || "",
             church: soul.church || "",
@@ -208,6 +211,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       age: values.age || null,
       maritalStatus: values.maritalStatus || null,
       workStatus: values.workStatus || null,
+      socialStatus: values.socialStatus || "Normal",
       relationship: values.relationship || null,
       source: values.source as 'Personal' | 'Campaign',
       wonAt: values.wonAt,
@@ -279,7 +283,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             control={form.control}
             name="photoURL"
             render={({ field }) => (
-                <FormItem className="flex flex-col items-center py-4">
+                <FormItem className="flex flex-col items-center py-4 text-left">
                     <FormControl>
                         <ImageUpload
                             initialImageUrl={field.value}
@@ -293,7 +297,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 </FormItem>
             )}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
             <FormField
             control={form.control}
             name="firstName"
@@ -385,7 +389,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <FormField
               control={form.control}
               name="maritalStatus"
@@ -430,6 +434,30 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                       <SelectItem value="Unemployed" className="rounded-xl">Unemployed</SelectItem>
                       <SelectItem value="Student" className="rounded-xl">Student</SelectItem>
                       <SelectItem value="Retired" className="rounded-xl">Retired</SelectItem>
+                      <SelectItem value="Other" className="rounded-xl">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="socialStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Social Standing</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value || "Normal"}>
+                    <FormControl>
+                      <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
+                        <SelectValue placeholder="Select Stand" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="rounded-2xl">
+                      <SelectItem value="Normal" className="rounded-xl">Normal</SelectItem>
+                      <SelectItem value="Orphan" className="rounded-xl">Orphan</SelectItem>
+                      <SelectItem value="Less Privileged" className="rounded-xl">Less Privileged</SelectItem>
+                      <SelectItem value="Homeless" className="rounded-xl">Homeless</SelectItem>
                       <SelectItem value="Other" className="rounded-xl">Other</SelectItem>
                     </SelectContent>
                   </Select>
@@ -552,7 +580,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                 <FormItem>
                 <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Kingdom Interests & Hobbies</FormLabel>
                 <FormControl>
-                    <Textarea placeholder="What does this soul enjoy? (e.g. Football, singing...)" {...field} value={field.value || ""} className="rounded-2xl bg-muted/20 border-none shadow-inner font-bold min-h-[80px]"/>
+                    <Textarea placeholder="What does this soul enjoy? (e.g. Football, singing, chess...)" {...field} value={field.value || ""} className="rounded-2xl bg-muted/20 border-none shadow-inner font-bold min-h-[80px]"/>
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -560,29 +588,29 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
         />
 
         <FormField
-          control={form.control}
-          name="wonAt"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Date Won</FormLabel>
-              <FormControl>
-                <Input 
-                  type="date"
-                  value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
-                  onChange={(e) => {
-                    if (e.target.value) {
-                        const [year, month, day] = e.target.value.split('-').map(Number);
-                        field.onChange(new Date(year, month - 1, day));
-                    } else {
-                        field.onChange(undefined);
-                    }
-                  }}
-                  className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+            control={form.control}
+            name="wonAt"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Date Won</FormLabel>
+                <FormControl>
+                    <Input 
+                        type="date"
+                        value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                        onChange={(e) => {
+                            if (e.target.value) {
+                                const [year, month, day] = e.target.value.split('-').map(Number);
+                                field.onChange(new Date(year, month - 1, day));
+                            } else {
+                                field.onChange(undefined);
+                            }
+                        }}
+                        className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                    />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
         />
         <FormField
           control={form.control}

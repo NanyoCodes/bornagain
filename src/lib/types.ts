@@ -297,6 +297,8 @@ export type SoulNeedsAssessment = {
   updatedAt?: Timestamp;
 };
 
+export type SoulSocialStatus = 'Normal' | 'Orphan' | 'Less Privileged' | 'Homeless' | 'Other';
+
 export type Soul = {
   id: string;
   userId: string;
@@ -316,6 +318,7 @@ export type Soul = {
   age?: number | null;
   maritalStatus?: string;
   workStatus?: string;
+  socialStatus?: SoulSocialStatus;
   relationship?: SoulRelationship;
   source: 'Campaign' | 'Personal';
   sourceDetails?: string;
