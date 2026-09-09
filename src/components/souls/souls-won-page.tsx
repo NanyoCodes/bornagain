@@ -688,18 +688,21 @@ export default function SoulsWonPage() {
     
     toast({ title: "Exporting...", description: "Your professional Kingdom report is being generated." });
 
-    const headers = ["First Name", "Last Name", "Gender", "Status", "Won At", "Source", "Phone", "Email", "City", "Country"];
+    const headers = ["First Name", "Last Name", "Gender", "Age", "Status", "Won At", "Source", "Phone", "Email", "City", "Church", "Marital", "Social"];
     const body = souls.map(s => [
         s.firstName,
         s.lastName || '',
         s.gender || 'N/A',
+        s.age ? String(s.age) : 'N/A',
         s.status,
         s.wonAt ? format(s.wonAt.toDate(), 'yyyy-MM-dd') : 'N/A',
         s.source,
         s.phone || 'N/A',
         s.email || 'N/A',
         s.locationWon?.city || 'N/A',
-        s.locationWon?.country || 'N/A'
+        s.church || 'N/A',
+        s.maritalStatus || 'N/A',
+        s.socialStatus || 'Normal'
     ]);
 
     if (formatType === 'pdf') {
@@ -758,17 +761,58 @@ export default function SoulsWonPage() {
 
   const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
       const wonAt = safeToDate(soul.wonAt);
+      const dob = safeToDate(soul.dateOfBirth);
+      const marriageDate = safeToDate(soul.marriageDate);
+      
       const data = [
+          ["Category", "Detail"],
+          ["Basic Identity", ""],
           ["First Name", soul.firstName],
           ["Last Name", soul.lastName || ''],
+          ["Nickname", soul.nickname || 'N/A'],
           ["Gender", soul.gender || 'N/A'],
-          ["Status", soul.status],
+          ["Age", soul.age ? `${soul.age} Years` : 'N/A'],
+          ["Date of Birth", dob ? format(dob, 'PPP') : 'N/A'],
+          ["Nationality", soul.nationality || 'N/A'],
+          ["", ""],
+          ["Life Context", ""],
+          ["Marital Status", soul.maritalStatus || 'N/A'],
+          ["Spouse Name", soul.spouseName || 'N/A'],
+          ["Marriage Date", marriageDate ? format(marriageDate, 'PPP') : 'N/A'],
+          ["Work Status", soul.workStatus || 'N/A'],
+          ["Social Standing", soul.socialStatus || 'Normal'],
+          ["Relationship to Mobilizer", soul.relationship || 'N/A'],
+          ["Hobbies", soul.hobbies || 'N/A'],
+          ["", ""],
+          ["Harvest Data", ""],
+          ["Spiritual Status", soul.status],
           ["Date Won", wonAt ? format(wonAt, 'PPP') : 'N/A'],
           ["Source", soul.source],
+          ["Campaign/Source Detail", soul.sourceDetails || 'N/A'],
+          ["Home Church", soul.church || 'N/A'],
+          ["Attending Church", soul.attendingChurch ? "Yes" : "No"],
+          ["In Bible Study", soul.inBibleStudy ? "Yes" : "No"],
+          ["Attending Prayer", soul.attendingPrayer ? "Yes" : "No"],
+          ["In Service Unit", soul.inServiceDepartment ? "Yes" : "No"],
+          ["", ""],
+          ["Contact & Logistics", ""],
           ["Phone", soul.phone || 'N/A'],
           ["Email", soul.email || 'N/A'],
-          ["Home Church", soul.church || 'N/A'],
-          ["Location", [soul.locationWon?.city, soul.locationWon?.country].filter(Boolean).join(', ') || 'N/A']
+          ["Street Address", soul.locationWon?.street || 'N/A'],
+          ["Landmark", soul.locationWon?.landmark || 'N/A'],
+          ["City", soul.locationWon?.city || 'N/A'],
+          ["State", soul.locationWon?.state || 'N/A'],
+          ["Country", soul.locationWon?.country || 'N/A'],
+          ["History Privacy", soul.isHistoryPrivate ? "Locked (Private)" : "Public"],
+          ["", ""],
+          ["Needs Assessment", ""],
+          ["General Impression", soul.needsAssessment?.generalImpression || 'N/A'],
+          ["Follow-up Strategy", soul.needsAssessment?.followUpPlan || 'N/A'],
+          ["Emotional Needs", soul.needsAssessment?.emotionalNeeds || 'N/A'],
+          ["Physical Needs", soul.needsAssessment?.physicalNeeds || 'N/A'],
+          ["Financial Needs", soul.needsAssessment?.financialNeeds || 'N/A'],
+          ["Social Needs", soul.needsAssessment?.socialNeeds || 'N/A'],
+          ["Other Needs", soul.needsAssessment?.otherNeeds || 'N/A'],
       ];
 
       if (formatType === 'pdf') {
@@ -796,16 +840,16 @@ export default function SoulsWonPage() {
 
           autoTable(docObj, {
               head: [["Attribute", "Information"]],
-              body: data,
+              body: data.slice(1), // Exclude custom header row as autoTable handles its own head
               startY: 38,
               theme: 'striped',
               headStyles: { fillColor: [249, 116, 22] },
-              styles: { cellPadding: 5 }
+              styles: { cellPadding: 5, fontSize: 9 }
           });
           
           docObj.save(`record-${soul.firstName.toLowerCase()}.pdf`);
       } else {
-          const csv = Papa.unparse({ fields: ["Field", "Detail"], data });
+          const csv = Papa.unparse({ fields: ["Category", "Detail"], data: data });
           const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
           const url = URL.createObjectURL(blob);
           const link = document.createElement("a");
@@ -974,10 +1018,10 @@ export default function SoulsWonPage() {
                                                     </div>
                                                 </div>
                                             </DialogTrigger>
-                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                                                 <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
-                                                <div className="relative h-full w-full flex items-center justify-center p-4">
-                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
+                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                                                         <Image 
                                                             src={s.photoURL!} 
                                                             alt={s.firstName} 

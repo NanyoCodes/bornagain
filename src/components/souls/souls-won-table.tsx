@@ -536,7 +536,7 @@ function PrivateHangoutBuilder({
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Step 1: Pick a Kingdom Match (Single/Widowed {oppositeGender}s)</Label>
                 <div className="relative text-left">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
-                    <Input placeholder={`Search single ${oppositeGender.toLowerCase()} souls...`} value={search} onChange={e => setSearch(e.target.value)} className="h-11 pl-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-left" />
+                    <Input placeholder={`Search single ${oppositeGender.toLowerCase()} souls...`} value={search} onChange={e => setSearchTerm(e.target.value)} className="h-11 pl-10 rounded-xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                 </div>
             </div>
             <ScrollArea className={cn("border rounded-2xl bg-muted/5 text-left", isMobile ? "h-[40vh]" : "h-[30vh]")}>
@@ -1012,20 +1012,20 @@ function SoulProfileContent({
   return (
     <div className="space-y-6 text-left">
       <Card className="rounded-none sm:rounded-[2.5rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-4 border-t-primary/20 text-left">
-        <CardHeader className="p-8 pb-4 text-center">
-            <div className="relative inline-block mx-auto mb-4">
+        <CardHeader className="p-8 pb-4 text-center text-left">
+            <div className="relative inline-block mx-auto mb-4 text-left">
                 <Dialog>
                     <DialogTrigger asChild disabled={!soul.photoURL}>
-                        <Avatar className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95", soul.photoURL && "cursor-pointer hover:scale-105")}>
+                        <Avatar className={cn("h-48 w-48 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-all active:scale-95 text-left", soul.photoURL && "cursor-pointer hover:scale-105")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                            <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className="text-3xl font-black bg-primary/10 text-primary text-left text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                     </DialogTrigger>
                     {soul.photoURL && (
                         <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                             <DialogHeader className="sr-only text-center"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
                             <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
@@ -1783,7 +1783,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                         <SheetDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left">
                     <div className="p-6 pb-24 text-left text-left text-left text-left">
                         {profileView}
                     </div>
