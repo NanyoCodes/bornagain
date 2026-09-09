@@ -101,19 +101,19 @@ const SoulAssessmentDialog = dynamic(() => import('@/components/souls/soul-asses
 
 /**
  * Filtered list of souls for the demographic sheets.
- * Optimized for readability and structural separation.
+ * Optimized for mobile responsiveness and display of family units.
  */
 function FilteredSoulList({ souls, onSelectSoul }: { souls: any[], onSelectSoul: (soul: Soul) => void }) {
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10 px-6">
-        <p className="text-sm text-muted-foreground italic text-center">No souls found matching this criteria.</p>
+        <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 pb-12">
+    <div className="space-y-3 pb-12">
       {souls.map((item) => {
         const soul = item;
         const isFamily = !!item.spouseRecord;
@@ -125,47 +125,47 @@ function FilteredSoulList({ souls, onSelectSoul }: { souls: any[], onSelectSoul:
             key={soul.id} 
             variant="ghost"
             onClick={() => onSelectSoul(soul)}
-            className="flex items-center justify-between p-4 h-auto rounded-[1.5rem] hover:bg-primary/5 transition-all border bg-card group w-full text-left active:scale-[0.98] shadow-sm"
+            className="flex items-center justify-between p-3 sm:p-4 h-auto rounded-[1.5rem] hover:bg-primary/5 transition-all border bg-card group w-full text-left active:scale-[0.98] shadow-sm relative overflow-hidden"
           >
-            <div className="flex items-center gap-4 min-w-0 flex-1">
-                <Avatar className="h-12 w-12 border shadow-sm shrink-0">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0">
                     <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                    <AvatarFallback className="font-black bg-primary/10 text-primary text-sm">
+                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs sm:text-sm">
                         {soul.firstName?.charAt(0) || 'S'}
                     </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-black text-sm sm:text-base uppercase tracking-tight truncate leading-none">
+                        <p className="font-black text-[13px] sm:text-base uppercase tracking-tight truncate leading-tight">
                             {name}
                             {isFamily && (
-                                <span className="text-primary/60 ml-2 normal-case font-bold">
+                                <span className="text-primary/60 ml-1.5 lowercase font-bold">
                                     & {item.spouseRecord.firstName}
                                 </span>
                             )}
                         </p>
                     </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                        <Badge variant="secondary" className="h-4 px-1.5 text-[8px] uppercase font-black tracking-widest bg-muted/50 border-none">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                        <Badge variant="secondary" className="h-4 px-1 text-[7px] sm:text-[8px] uppercase font-black tracking-widest bg-muted/50 border-none leading-none">
                             {soul.status}
                         </Badge>
                         {isFamily && (
-                             <Badge variant="outline" className="h-4 px-1.5 text-[8px] font-black uppercase border-primary/20 text-primary bg-primary/5">
+                             <Badge variant="outline" className="h-4 px-1 text-[7px] sm:text-[8px] font-black uppercase border-primary/20 text-primary bg-primary/5 leading-none">
                                 Family Unit
                              </Badge>
                         )}
-                        <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter">
-                            Won {wonAt ? format(wonAt, 'MMM d, yyyy') : 'Recently'}
+                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap">
+                            Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                         </span>
                     </div>
                     {soul.spouseName && !isFamily && (
-                        <p className="text-[10px] text-muted-foreground font-medium italic truncate">
+                        <p className="text-[9px] sm:text-[10px] text-muted-foreground font-medium italic truncate opacity-70">
                             Spouse: {soul.spouseName}
                         </p>
                     )}
                 </div>
             </div>
-            <ArrowRight className="h-5 w-5 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0 ml-4" />
+            <ArrowRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0 ml-2" />
           </Button>
         );
       })}
@@ -667,9 +667,9 @@ export default function SoulsWonPage() {
                 {soulsWithPhotos.length > 0 && (
                     <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700 text-left">
                         <div className="flex items-center justify-between mb-4 px-1 text-left">
-                            <div className="flex items-center gap-2 text-left">
-                                <ImageIcon className="h-4 w-4 text-primary text-left" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left">GALLERY OF MY SOULS</h3>
+                            <div className="flex items-center gap-2 text-left text-left">
+                                <ImageIcon className="h-4 w-4 text-primary text-left text-left" />
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left text-left">GALLERY OF MY SOULS</h3>
                             </div>
                         </div>
                         <div 
@@ -698,7 +698,7 @@ export default function SoulsWonPage() {
                                                         src={s.photoURL!} 
                                                         alt={s.firstName} 
                                                         fill 
-                                                        className="object-cover transition-transform group-hover:scale-110 duration-500 text-left" 
+                                                        className="object-cover transition-transform group-hover:scale-110 duration-500 text-left text-left" 
                                                         unoptimized 
                                                     />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
@@ -940,7 +940,7 @@ export default function SoulsWonPage() {
             ) : (
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left" />
@@ -1021,8 +1021,8 @@ export default function SoulsWonPage() {
             ) : (
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
                                 <DialogHeader className="text-left text-left text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-left text-left text-left text-left">Record a new life won for Christ.</DialogDescription>
@@ -1041,7 +1041,7 @@ export default function SoulsWonPage() {
                                     <DialogDescription className="text-left text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DialogContent>
