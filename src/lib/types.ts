@@ -311,6 +311,7 @@ export type Soul = {
   gender?: string;
   nationality?: string;
   dateOfBirth?: Timestamp | null;
+  marriageDate?: Timestamp | null;
   age?: number | null;
   maritalStatus?: string;
   workStatus?: string;

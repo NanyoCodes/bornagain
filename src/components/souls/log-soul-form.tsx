@@ -41,6 +41,7 @@ const formSchema = z.object({
   gender: z.string().optional(),
   nationality: z.string().optional(),
   dateOfBirth: z.date().optional().nullable(),
+  marriageDate: z.date().optional().nullable(),
   age: z.number().optional().nullable(),
   maritalStatus: z.string().optional(),
   workStatus: z.string().optional(),
@@ -114,6 +115,7 @@ export function LogSoulForm({
       gender: "",
       nationality: "",
       dateOfBirth: null,
+      marriageDate: null,
       age: null,
       maritalStatus: "",
       workStatus: "",
@@ -187,6 +189,7 @@ export function LogSoulForm({
       gender: values.gender || null,
       nationality: values.nationality || null,
       dateOfBirth: values.dateOfBirth || null,
+      marriageDate: values.maritalStatus === 'Married' ? values.marriageDate : null,
       age: values.age || null,
       maritalStatus: values.maritalStatus || null,
       workStatus: values.workStatus || null,
@@ -439,33 +442,60 @@ export function LogSoulForm({
         </div>
 
         {maritalStatusValue === "Married" && (
-          <FormField
-            control={form.control}
-            name="spouseName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Spouse's Name</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input 
-                      placeholder="Type or pick from harvest list..." 
-                      {...field} 
-                      value={field.value || ""} 
-                      list="souls-options-log"
-                      className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
-                    />
-                    <datalist id="souls-options-log">
-                        {spouseOptions.map((name, i) => (
-                            <option key={i} value={name} />
-                        ))}
-                    </datalist>
-                  </div>
-                </FormControl>
-                <FormDescription className="text-[10px]">Select a name from your list or type it manually.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="spouseName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Spouse's Name</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input 
+                          placeholder="Type or pick from harvest list..." 
+                          {...field} 
+                          value={field.value || ""} 
+                          list="souls-options-log"
+                          className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                        />
+                        <datalist id="souls-options-log">
+                            {spouseOptions.map((name, i) => (
+                                <option key={i} value={name} />
+                            ))}
+                        </datalist>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="marriageDate"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Marriage Date</FormLabel>
+                    <FormControl>
+                        <Input 
+                        type="date"
+                        value={field.value ? format(field.value, "yyyy-MM-dd") : ""}
+                        onChange={(e) => {
+                            if (e.target.value) {
+                                const [year, month, day] = e.target.value.split('-').map(Number);
+                                field.onChange(new Date(year, month - 1, day));
+                            } else {
+                                field.onChange(null);
+                            }
+                        }}
+                        className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                        max={format(new Date(), "yyyy-MM-dd")}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+          </div>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
