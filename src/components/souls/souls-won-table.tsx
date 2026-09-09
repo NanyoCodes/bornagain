@@ -546,29 +546,29 @@ function PrivateHangoutBuilder({
                 </div>
             </div>
             <ScrollArea className={cn("border rounded-2xl bg-muted/5 text-left", isMobile ? "h-[40vh]" : "h-[30vh]")}>
-                <div className="p-2 space-y-1.5 text-left">
+                <div className="p-2 space-y-1.5 text-left text-left">
                     {filteredPotentials.map(s => (
                         <Button 
                             key={s.id} 
                             variant="ghost" 
                             className={cn(
-                                "w-full justify-start h-14 rounded-xl gap-4 transition-all text-left",
+                                "w-full justify-start h-14 rounded-xl gap-4 transition-all text-left text-left",
                                 thirdSoul?.id === s.id ? "bg-primary/10 border-primary/20 border shadow-inner" : "hover:bg-primary/5"
                             )}
                             onClick={() => setThirdSoul(s)}
                         >
                             <Avatar className="h-8 w-8 border shrink-0 text-left">
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left">{s.firstName.charAt(0)}</AvatarFallback>
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left text-left">{s.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0 flex-1 text-left text-left text-left">
-                                <p className="font-black text-sm uppercase tracking-tight truncate text-left">{s.firstName} {s.lastName}</p>
-                                <p className="text-[9px] font-bold text-muted-foreground uppercase text-left">{s.gender} • {s.age || 'Age N/A'}</p>
+                            <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left">
+                                <p className="font-black text-sm uppercase tracking-tight truncate text-left text-left text-left">{s.firstName} {s.lastName}</p>
+                                <p className="text-[9px] font-bold text-muted-foreground uppercase text-left text-left text-left text-left">{s.gender} • {s.age || 'Age N/A'}</p>
                             </div>
-                            {thirdSoul?.id === s.id && <CheckCircle2 className="h-4 w-4 text-primary text-left" />}
+                            {thirdSoul?.id === s.id && <CheckCircle2 className="h-4 w-4 text-primary text-left text-left" />}
                         </Button>
                     ))}
                     {filteredPotentials.length === 0 && (
-                        <div className="py-12 text-center text-muted-foreground italic text-xs px-6 text-left">
+                        <div className="py-12 text-center text-muted-foreground italic text-xs px-6 text-left text-left">
                             No single {oppositeGender.toLowerCase()} souls found in your harvest list.
                         </div>
                     )}
@@ -589,7 +589,7 @@ function PrivateHangoutBuilder({
                     <Input type="time" value={time} onChange={e => setTime(e.target.value)} className="h-11 rounded-xl bg-muted/20 border-none font-bold text-left" />
                 </div>
             </div>
-            <div className="space-y-2 text-left">
+            <div className="space-y-2 text-left text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Meeting Venue</Label>
                 <Input placeholder="e.g., Kingdom Cafe, Central Park" value={location} onChange={e => setLocation(e.target.value)} className="h-11 rounded-xl bg-muted/20 border-none shadow-inner text-left" />
             </div>
@@ -604,14 +604,14 @@ function PrivateHangoutBuilder({
     );
 
     const header = (
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
             <div className="flex items-center gap-2 mb-2 text-left">
                 <Heart className="h-5 w-5 text-primary fill-current text-left" />
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Private Matchmaking</span>
             </div>
             <DialogHeader className="text-left text-left text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Coordinate Connection</DialogTitle>
-                <DialogDescription className="text-sm font-medium text-left">Draft a warm invitation for {soul?.firstName} and another soul to meet.</DialogDescription>
+                <DialogTitle className="text-2xl font-black font-headline uppercase text-left text-left">Coordinate Connection</DialogTitle>
+                <DialogDescription className="text-sm font-medium text-left text-left">Draft a warm invitation for {soul?.firstName} and another soul to meet.</DialogDescription>
             </DialogHeader>
         </div>
     );
@@ -624,12 +624,12 @@ function PrivateHangoutBuilder({
     );
 
     const footer = (
-        <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0 text-left">
+        <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-3 shrink-0 text-left text-left">
             <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-xl h-12 flex-1 font-bold text-left">Cancel</Button>
             <Button 
                 onClick={handleCreate} 
                 disabled={!thirdSoul || !location.trim() || isCreating}
-                className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
+                className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left"
             >
                 {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Send className="mr-2 h-4 w-4 text-left" />}
                 PREPARE INVITATION
@@ -640,9 +640,9 @@ function PrivateHangoutBuilder({
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
-                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
+                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
                     {header}
-                    <ScrollArea className="flex-grow text-left text-left text-left">{bodyContent}</ScrollArea>
+                    <ScrollArea className="flex-grow text-left text-left text-left text-left">{bodyContent}</ScrollArea>
                     {footer}
                 </SheetContent>
             </Sheet>
@@ -651,9 +651,9 @@ function PrivateHangoutBuilder({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left">
+            <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left text-left text-left text-left">
                 {header}
-                <ScrollArea className="flex-grow text-left text-left text-left">{bodyContent}</ScrollArea>
+                <ScrollArea className="flex-grow text-left text-left text-left text-left">{bodyContent}</ScrollArea>
                 {footer}
             </DialogContent>
         </Dialog>
@@ -1220,7 +1220,7 @@ function SoulProfileContent({
           <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
                   <DialogHeader className="text-left text-left text-left text-left">
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left text-left">
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left text-left text-left">
                           <Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left text-left" />
                           Kingdom Matchmaking
                       </DialogTitle>
@@ -1259,39 +1259,39 @@ function SoulProfileContent({
                               </div>
                           </ScrollArea>
                       </TabsContent>
-                      <TabsContent value="activities" className="outline-none text-left text-left text-left">
-                          <div className="grid gap-2 text-left text-left text-left">
+                      <TabsContent value="activities" className="outline-none text-left text-left text-left text-left">
+                          <div className="grid gap-2 text-left text-left text-left text-left">
                               <Button 
                                   variant="outline" 
-                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/10 transition-all text-left text-left text-left"
+                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/10 transition-all text-left text-left text-left text-left"
                                   onClick={() => handleMatchmakeActivity('singles_fellowship')}
                               >
-                                  <Users className="h-4 w-4 text-primary text-left text-left text-left" />
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-left text-left text-left">Invite to Singles Fellowship</span>
+                                  <Users className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-left text-left text-left text-left">Invite to Singles Fellowship</span>
                               </Button>
                               <Button 
                                   variant="outline" 
-                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/10 transition-all text-left text-left text-left"
+                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/10 transition-all text-left text-left text-left text-left"
                                   onClick={() => handleMatchmakeActivity('group_hangout')}
                               >
-                                  <Sparkles className="h-4 w-4 text-primary text-left text-left text-left" />
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-left text-left text-left">Draft Direct Hangout Invitation</span>
+                                  <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-left text-left text-left text-left">Draft Direct Hangout Invitation</span>
                               </Button>
                               <Button 
                                   variant="outline" 
-                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/10 transition-all text-left text-left text-left"
+                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/10 transition-all text-left text-left text-left text-left"
                                   onClick={() => handleMatchmakeActivity('marriage_committee')}
                               >
-                                  <ShieldCheck className="h-4 w-4 text-primary text-left text-left text-left" />
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-left text-left text-left">Refer to Marriage Committee</span>
+                                  <ShieldCheck className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-left text-left text-left text-left">Refer to Marriage Committee</span>
                               </Button>
                               <Button 
                                   variant="outline" 
-                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/10 transition-all text-left text-left text-left"
+                                  className="justify-start h-12 rounded-xl gap-3 border-primary/10 hover:bg-primary/5 hover:border-primary/10 transition-all text-left text-left text-left text-left"
                                   onClick={() => handleMatchmakeActivity('courting_study')}
                               >
-                                  <BookOpen className="h-4 w-4 text-primary text-left text-left text-left" />
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-left text-left text-left">Start Courting Study</span>
+                                  <BookOpen className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                                  <span className="text-[10px] font-black uppercase tracking-widest text-left text-left text-left text-left">Start Courting Study</span>
                               </Button>
                           </div>
                       </TabsContent>
@@ -1401,11 +1401,11 @@ function SoulProfileContent({
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
           <DialogHeader className="text-center space-y-2 text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left">
                   <Share2 className="h-7 w-7 text-primary text-center text-left text-left text-left" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left text-left text-left">Share Details</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left text-left text-left">Where would you like to share {soul.firstName}'s info?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left text-left text-left text-left">Share Details</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center text-left text-left text-left text-left">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6 text-left text-left text-left">
             <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left">
@@ -1606,8 +1606,8 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
             ) : (
                 <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left">
                     <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left">
-                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left text-left">
-                            <Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left text-left" />
+                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left text-left text-left">
+                            <Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left text-left text-left" />
                             Harvest Dashboard
                         </CardTitle>
                         <CardDescription className="text-base font-medium text-left">Keep track of spiritual development and community integration.</CardDescription>
@@ -1617,7 +1617,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                             <Table className="text-left text-left text-left text-left">
                                 <TableHeader className="bg-muted/10 text-left text-left text-left text-left">
                                     <TableRow className="hover:bg-transparent text-left text-left text-left text-left">
-                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Soul Identity</TableHead>
+                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left">Soul Identity</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody className="text-left text-left text-left text-left">
@@ -1641,9 +1641,9 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                     <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity Hub</span>
+                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left">
+                            <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Identity Hub</span>
                         </div>
                         <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
@@ -1651,8 +1651,8 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                         <SheetDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left">
-                    <div className="p-6 pb-24 text-left text-left text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left text-left text-left">
                         {profileView}
                     </div>
                 </ScrollArea>
@@ -1676,8 +1676,8 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                     </motion.div>
                 ) : (
                     <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left text-left">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left text-left">Select a record to preview identity</p>
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left text-left text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left text-left text-left">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>
