@@ -27,8 +27,7 @@ import {
   CalendarDays,
   Store,
   Gift,
-  Package,
-  Menu
+  Package
 } from "lucide-react";
 
 import {
