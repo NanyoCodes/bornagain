@@ -352,6 +352,7 @@ export type Soul = {
   needsAssessment?: SoulNeedsAssessment;
   parentIds?: string[];
   parentNames?: string[];
+  isHistoryPrivate?: boolean;
 };
 
 export type ChatParticipantInfo = {

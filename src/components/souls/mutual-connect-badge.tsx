@@ -5,7 +5,7 @@ import { useUser, useFirestore } from '@/firebase';
 import { collection, query, where, getDocs, doc, getDoc, limit } from 'firebase/firestore';
 import type { Soul, UserProfile } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Users, History, Sparkles, Clock, MapPin, X, ArrowRight, BookOpen, Utensils, Home, Gift, Phone, MessageSquare, Heart, Calendar } from 'lucide-react';
+import { Users, History, Sparkles, Clock, MapPin, X, ArrowRight, BookOpen, Utensils, Home, Gift, Phone, MessageSquare, Heart, Calendar, Lock } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,7 @@ import { safeToDate, cn } from '@/lib/utils';
 import { actionItems } from '@/lib/follow-up-data';
 import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -98,7 +99,8 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
         snapshots.forEach(snap => {
             snap.docs.forEach(d => {
                 const s = { id: d.id, ...d.data() } as Soul;
-                if (s.userId !== currentUser.uid) {
+                // Exclude self AND records where history is locked
+                if (s.userId !== currentUser.uid && !s.isHistoryPrivate) {
                      soulsMap.set(d.id, s);
                 }
             });
@@ -231,7 +233,11 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
                 </div>
             );
         })}
-        <div className="p-8 border-t bg-muted/5 flex justify-center text-center shrink-0">
+        <div className="p-8 border-t bg-muted/5 flex flex-col items-center text-center shrink-0 gap-4">
+             <div className="p-4 bg-primary/5 rounded-2xl border border-dashed border-primary/20 flex items-center gap-3">
+                <Lock className="h-4 w-4 text-primary" />
+                <p className="text-[10px] font-bold text-primary uppercase">You can lock your interaction history from others</p>
+            </div>
             <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em] leading-relaxed max-w-sm">
                 "Iron sharpens iron, and one man sharpens another." — Proverbs 27:17
             </p>
@@ -241,17 +247,29 @@ export function MutualConnectBadge({ soul }: { soul: Soul }) {
 
   return (
     <>
-      <Badge 
-        variant="outline" 
-        className="h-8 px-3 gap-2 bg-primary/10 text-primary border-primary/30 animate-in fade-in zoom-in shrink-0 cursor-pointer hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/5 active:scale-95"
-        onClick={(e) => {
-            e.stopPropagation();
-            setIsOpen(true);
-        }}
-      >
-        <Users className="h-4 w-4" />
-        <span className="text-[11px] font-black tracking-widest">{uniqueUserCount}</span>
-      </Badge>
+      <TooltipProvider>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Badge 
+                    variant="outline" 
+                    className="h-8 px-3 gap-2 bg-primary/10 text-primary border-primary/30 animate-in fade-in zoom-in shrink-0 cursor-pointer hover:bg-primary/20 transition-all shadow-sm ring-1 ring-primary/5 active:scale-95"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsOpen(true);
+                    }}
+                >
+                    <Users className="h-4 w-4" />
+                    <span className="text-[11px] font-black tracking-widest">{uniqueUserCount}</span>
+                </Badge>
+            </TooltipTrigger>
+            <TooltipContent className="rounded-xl border-primary/20 shadow-xl max-w-[200px] p-3">
+                <p className="text-[10px] font-bold uppercase text-center leading-tight">
+                    {uniqueUserCount} Mutual Connections<br/>
+                    <span className="text-primary mt-1 block">you can lock your interaction history from others</span>
+                </p>
+            </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       {mounted && (
         isMobile ? (

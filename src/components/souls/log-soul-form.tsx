@@ -31,6 +31,7 @@ import { LocationWonInput } from "./location-won-input";
 import { Label } from "@/components/ui/label";
 import { Country } from 'country-state-city';
 import { ImageUpload } from "../common/image-upload";
+import { Switch } from "../ui/switch";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters."),
@@ -66,6 +67,7 @@ const formSchema = z.object({
   }),
   parentIds: z.array(z.string()).optional(),
   parentNames: z.array(z.string()).optional(),
+  isHistoryPrivate: z.boolean().default(false),
 });
 
 type LogSoulFormProps = {
@@ -150,6 +152,7 @@ export function LogSoulForm({
       wonAt: new Date(),
       parentIds: defaultParentIds || [],
       parentNames: defaultParentNames || [],
+      isHistoryPrivate: false,
     },
   });
 
@@ -231,6 +234,7 @@ export function LogSoulForm({
       associationName: defaultAssociation?.name || null,
       parentIds: values.parentIds || [],
       parentNames: values.parentNames || [],
+      isHistoryPrivate: values.isHistoryPrivate,
     };
     
     const locationWon: { [key: string]: any } = {
@@ -787,6 +791,25 @@ export function LogSoulForm({
                             </FormItem>
                         )}
                         />
+                        <div className="space-y-4 pt-4 border-t border-dashed">
+                            <FormField
+                                control={form.control}
+                                name="isHistoryPrivate"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-xl p-3 bg-muted/30 border border-transparent hover:border-primary/10 transition-all">
+                                        <div className="space-y-0.5">
+                                            <FormLabel className="text-xs font-black uppercase flex items-center gap-2">
+                                                <Lock className="h-3.5 w-3.5 text-primary" /> Lock Interaction History
+                                            </FormLabel>
+                                            <FormDescription className="text-[10px]">When locked, your logs for this soul are hidden from other believers.</FormDescription>
+                                        </div>
+                                        <FormControl>
+                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <FormField
                         control={form.control}
                         name="initialNote"
@@ -813,3 +836,4 @@ export function LogSoulForm({
     </Form>
   );
 }
+

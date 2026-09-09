@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
 import type { Soul, Campaign, Fellowship } from "@/lib/types";
 import { format, differenceInYears } from "date-fns";
 import { useFirestore, useUser, useCollection } from "@/firebase";
@@ -31,6 +31,7 @@ import { Label } from "@/components/ui/label";
 import { Country } from 'country-state-city';
 import { ImageUpload } from "../common/image-upload";
 import { Textarea } from "../ui/textarea";
+import { Switch } from "../ui/switch";
 
 const formSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters.").max(50, "Name is too long."),
@@ -63,6 +64,7 @@ const formSchema = z.object({
   wonAt: z.date({
     required_error: "A date is required.",
   }),
+  isHistoryPrivate: z.boolean().default(false),
 });
 
 interface EditSoulFormProps {
@@ -124,6 +126,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       source: soul.source || "Personal",
       sourceDetails: soul.sourceDetails || "",
       wonAt: safeToDate(soul.wonAt) ?? new Date(),
+      isHistoryPrivate: !!soul.isHistoryPrivate,
     },
   });
 
@@ -161,6 +164,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             source: soul.source || "Personal",
             sourceDetails: soul.sourceDetails || "",
             wonAt: safeToDate(soul.wonAt) ?? new Date(),
+            isHistoryPrivate: !!soul.isHistoryPrivate,
         });
         lastSoulId.current = soul.id;
     }
@@ -220,6 +224,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       phone: sanitizedPhone,
       church: values.church || null,
       sourceDetails: values.sourceDetails || null,
+      isHistoryPrivate: values.isHistoryPrivate,
     };
 
     soulUpdateData.locationWon = {
@@ -283,7 +288,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             control={form.control}
             name="photoURL"
             render={({ field }) => (
-                <FormItem className="flex flex-col items-center py-4 text-left">
+                <FormItem className="flex flex-col items-center py-4 text-left text-left">
                     <FormControl>
                         <ImageUpload
                             initialImageUrl={field.value}
@@ -760,6 +765,25 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                                 </FormItem>
                             )}
                         />
+                        <div className="space-y-4 pt-4 border-t border-dashed">
+                            <FormField
+                                control={form.control}
+                                name="isHistoryPrivate"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-xl p-3 bg-muted/30 border border-transparent hover:border-primary/10 transition-all">
+                                        <div className="space-y-0.5">
+                                            <FormLabel className="text-xs font-black uppercase flex items-center gap-2">
+                                                <Lock className="h-3.5 w-3.5 text-primary" /> Lock Interaction History
+                                            </FormLabel>
+                                            <FormDescription className="text-[10px]">When locked, your logs for this soul are hidden from other believers.</FormDescription>
+                                        </div>
+                                        <FormControl>
+                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                     </div>
                 </AccordionContent>
             </AccordionItem>
@@ -772,3 +796,4 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
     </Form>
   );
 }
+
