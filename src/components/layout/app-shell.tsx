@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -635,7 +636,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center text-left">
-        <div className="relative mb-8 mx-auto w-fit text-left">
+        <div className="relative mx-auto w-fit text-left">
             <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
             <div className="absolute inset-0 flex items-center justify-center text-left text-left">
                 <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left text-left" />

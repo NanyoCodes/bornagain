@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -175,7 +176,7 @@ function FilteredSoulList({
                                             {yearsMarried !== null ? `${yearsMarried} Years Married` : 'Family Unit'}
                                         </Badge>
                                         <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left">
-                                            {soul.age ? `${soul.age} Yrs • ` : ''}Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
+                                            {soul.age && spouse.age ? `${soul.age} & ${spouse.age} Yrs • ` : (soul.age || spouse.age) ? `${soul.age || spouse.age} Yrs • ` : ''}Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                                         </span>
                                     </div>
                                 </div>
@@ -1281,7 +1282,7 @@ export default function SoulsWonPage() {
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                                 <DialogHeader className="text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
