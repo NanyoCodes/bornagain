@@ -972,7 +972,7 @@ function SoulProfileContent({
   };
 
   const handleVerseSelected = (verseMessage: string) => {
-    setCustomPrayerText(verseMessage);
+    setCustomMessageText(verseMessage);
     setIsStudyWordOpen(false);
     setIsCommChannelDialogOpen(true);
   };
@@ -1077,7 +1077,7 @@ function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left text-left">{soul.workStatus || 'N/A'}</p>
                     </div>
                 </div>
-                {(soul.hobbies || soul.socialStatus) && (
+                {(soul.hobbies || (soul.socialStatus && soul.socialStatus !== 'Normal')) && (
                    <div className="space-y-2 text-left text-left">
                         {soul.socialStatus && soul.socialStatus !== 'Normal' && (
                             <div className="space-y-1 text-left">
@@ -1157,7 +1157,7 @@ function SoulProfileContent({
                 </div>
             </div>
 
-            <Separator className="opacity-20 text-left text-left text-left" />
+            <Separator className="opacity-20 text-left text-left text-left text-left" />
 
             <div className="space-y-4 text-left text-left text-left text-left">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left">Spiritual Milestones</p>
@@ -1258,14 +1258,19 @@ function SoulProfileContent({
                                         <p className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 text-left text-left text-left">
                                         {date ? format(date, "PPP 'at' p") : 'Date not available'}
                                         </p>
+                                        {log.memberName && (
+                                            <span className="text-[9px] font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20 uppercase tracking-tighter truncate max-w-[140px]">
+                                                By {log.memberName}
+                                            </span>
+                                        )}
                                     </div>
-                                    <div className="pl-6 border-l-4 border-primary/20 space-y-4 text-left text-left text-left">
+                                    <div className="pl-6 border-l-4 border-primary/20 space-y-4">
                                     {log.actions && log.actions.length > 0 && (
-                                            <div className="flex flex-wrap gap-2 text-left text-left text-left">
+                                            <div className="flex flex-wrap gap-2">
                                                 {log.actions.map(actionId => {
                                                     const action = actionItems.find(a => a.id === actionId);
                                                     return action ? (
-                                                        <Badge key={actionId} variant="secondary" className="font-bold text-[9px] px-2 h-4 uppercase tracking-tight bg-background border text-left text-left text-left text-left">{action.label}</Badge>
+                                                        <Badge key={actionId} variant="secondary" className="font-bold text-[9px] px-2 h-4 uppercase tracking-tight bg-background border">{action.label}</Badge>
                                                     ) : null;
                                                 })}
                                             </div>
@@ -1310,7 +1315,7 @@ function SoulProfileContent({
           <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
               <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
                   <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left">
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left" >
                           <Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left text-left text-left text-left text-left text-left" />
                           Kingdom Matchmaking
                       </DialogTitle>
@@ -1449,7 +1454,7 @@ function SoulProfileContent({
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left text-left text-left text-left text-left text-left">
           <DialogHeader className="text-center space-y-2 text-left text-left text-left text-left text-left text-left text-left text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left text-left text-left text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                   <MessageSquare className="h-7 w-7 text-primary text-center text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left text-left text-left text-left text-left">Message Hub</DialogTitle>
@@ -1616,11 +1621,11 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
 });
 SoulTableRow.displayName = "SoulTableRow";
 
-export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: {
+export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulId, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: {
   souls: Soul[];
   loading: boolean;
-  selectedId: string | null;
-  onSelect: (id: string | null) => void;
+  selectedSoulId: string | null;
+  setSelectedSoulId: (id: string | null) => void;
   onFollowUp: (soul: Soul) => void;
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
@@ -1637,8 +1642,8 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
   }, []);
 
   const selectedSoul = React.useMemo(() => 
-    souls.find(s => s.id === selectedId) || null
-  , [souls, selectedId]);
+    souls.find(s => s.id === selectedSoulId) || null
+  , [souls, selectedSoulId]);
 
   if (loading || !mounted) {
     return (
@@ -1690,7 +1695,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
             {isMobile ? (
                 <div className="space-y-px text-left text-left text-left text-left text-left">
                     {souls.map((soul) => (
-                        <SoulCard key={soul.id} soul={soul} onClick={() => onSelect(soul.id)} />
+                        <SoulCard key={soul.id} soul={soul} onClick={() => setSelectedSoulId(soul.id)} />
                     ))}
                 </div>
             ) : (
@@ -1715,8 +1720,8 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                                     <SoulTableRow 
                                         key={soul.id} 
                                         soul={soul} 
-                                        isSelected={selectedId === soul.id}
-                                        onSelect={() => onSelect(soul.id)}
+                                        isSelected={selectedSoulId === soul.id}
+                                        onSelect={() => setSelectedSoulId(soul.id)}
                                     />
                                     ))}
                                 </TableBody>
@@ -1727,12 +1732,12 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
             )}
         </div>
 
-        <Sheet open={!!selectedId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && onSelect(null)}>
+        <Sheet open={!!selectedSoulId && !!selectedSoul && (isMobile || (typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && setSelectedSoulId(null)}>
             <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
                     <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left text-left text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left text-left text-left" />
+                            <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left text-left text-left text-left text-left">Identity Hub</span>
                         </div>
                         <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left text-left text-left">
@@ -1753,7 +1758,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
             <AnimatePresence>
                 {selectedSoul ? (
                     <motion.div
-                        key={selectedId}
+                        key={selectedSoulId}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
