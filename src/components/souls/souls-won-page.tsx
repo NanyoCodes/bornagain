@@ -30,7 +30,8 @@ import {
   Search,
   CheckCircle2,
   ShieldCheck,
-  HandHeart
+  HandHeart,
+  CircleAlert
 } from "lucide-react";
 import { 
   Dialog, 
@@ -97,6 +98,7 @@ import { RelationshipCircleTracker } from "@/components/souls/relationship-circl
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import Papa from 'papaparse';
 import Link from 'next/link';
 
@@ -431,6 +433,7 @@ export default function SoulsWonPage() {
       single: { count: 0, list: [] as Soul[] },
       divorced: { count: 0, list: [] as Soul[] },
       widowed: { count: 0, list: [] as Soul[] },
+      notAssigned: { count: 0, list: [] as Soul[] },
       total: 0
     };
     if (!souls) return stats;
@@ -439,7 +442,10 @@ export default function SoulsWonPage() {
 
     souls.forEach(s => {
       const status = s.maritalStatus;
-      if (status === 'Married') {
+      if (!status) {
+          stats.notAssigned.count++;
+          stats.notAssigned.list.push(s);
+      } else if (status === 'Married') {
           if (!processedIds.has(s.id)) {
               const spouse = souls.find(other => {
                 if (other.id === s.id || other.maritalStatus !== 'Married') return false;
@@ -482,8 +488,8 @@ export default function SoulsWonPage() {
     const stats = {
       orphans: { count: 0, list: [] as Soul[] },
       lessPrivileged: { count: 0, list: [] as Soul[] },
-      widowed: { count: 0, list: [] as Soul[] },
-      street: { count: 0, list: [] as Soul[] },
+      wellToDo: { count: 0, list: [] as Soul[] },
+      notAssigned: { count: 0, list: [] as Soul[] },
       needsSupport: { count: 0, list: [] as Soul[] },
       total: 0
     };
@@ -491,37 +497,44 @@ export default function SoulsWonPage() {
 
     souls.forEach(s => {
       let matched = false;
+      const isVulnerableYouth = (s.age != null && s.age < 20 && s.workStatus === 'Unemployed');
+      
       if (s.socialStatus === 'Orphan') {
           stats.orphans.count++;
           stats.orphans.list.push(s);
           matched = true;
       }
-      if (s.socialStatus === 'Less Privileged' || s.needsAssessment?.financialNeeds || s.needsAssessment?.physicalNeeds) {
+      
+      if (s.socialStatus === 'Well-to-do') {
+          stats.wellToDo.count++;
+          stats.wellToDo.list.push(s);
+          matched = true;
+      }
+
+      if (s.socialStatus === 'Less Privileged' || s.socialStatus === 'Homeless' || isVulnerableYouth) {
           stats.lessPrivileged.count++;
           stats.lessPrivileged.list.push(s);
           matched = true;
       }
-      if (s.maritalStatus === 'Widowed') {
-          stats.widowed.count++;
-          stats.widowed.list.push(s);
-          matched = true;
-      }
-      if (s.relationship === 'Stranger' || s.source === 'Street Evangelism') {
-          stats.street.count++;
-          stats.street.list.push(s);
-          matched = true;
-      }
-      const hasAnyNeed = s.needsAssessment && (
+
+      const hasAssessmentNeeds = s.needsAssessment && (
           s.needsAssessment.financialNeeds || 
           s.needsAssessment.physicalNeeds || 
           s.needsAssessment.emotionalNeeds || 
           s.needsAssessment.socialNeeds
       );
-      if (hasAnyNeed) {
+      if (hasAssessmentNeeds || isVulnerableYouth) {
           stats.needsSupport.count++;
           stats.needsSupport.list.push(s);
           matched = true;
       }
+
+      if (!s.socialStatus || s.socialStatus === 'Normal') {
+          stats.notAssigned.count++;
+          stats.notAssigned.list.push(s);
+          matched = true;
+      }
+
       if (matched) stats.total++;
     });
     return stats;
@@ -548,12 +561,13 @@ export default function SoulsWonPage() {
         if (groupKey === 'singles') return maritalStats.single.list;
         if (groupKey === 'divorced') return maritalStats.divorced.list;
         if (groupKey === 'widowers') return maritalStats.widowed.list;
+        if (groupKey === 'not assigned') return maritalStats.notAssigned.list;
     } else if (type === 'compassion') {
         if (groupKey === 'orphans') return compassionStats.orphans.list;
         if (groupKey === 'less privileged') return compassionStats.lessPrivileged.list;
-        if (groupKey === 'widows / widowers') return compassionStats.widowed.list;
-        if (groupKey === 'street outreach') return compassionStats.street.list;
+        if (groupKey === 'well-to-do') return compassionStats.wellToDo.list;
         if (groupKey === 'needs support') return compassionStats.needsSupport.list;
+        if (groupKey === 'not assigned') return compassionStats.notAssigned.list;
     }
     return [];
   }, [selectedFilterGroup, ageGroups, genderStats, maritalStats, compassionStats]);
@@ -873,57 +887,57 @@ export default function SoulsWonPage() {
   }, [souls, searchTerm]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto text-left text-left">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left text-left">
-            <div className="lg:col-span-8 space-y-8 pb-32 text-left text-left text-left">
-                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left text-left text-left">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left text-left text-left">
-                        <div className="space-y-1 text-left text-left text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left text-left">MY HARVEST</h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left text-left text-left">
-                                <ClipboardList className="h-4 w-4 text-primary text-left text-left text-left" /> Logged Records
+    <div className="w-full max-w-7xl mx-auto text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+            <div className="lg:col-span-8 space-y-8 pb-32">
+                <header className="px-4 sm:px-0 space-y-6 pt-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                        <div className="space-y-1">
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">MY HARVEST</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
+                                <ClipboardList className="h-4 w-4 text-primary" /> Logged Records
                             </p>
                         </div>
-                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap text-left text-left text-left w-full sm:w-auto">
+                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap w-full sm:w-auto">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none text-left text-left text-left">
-                                        <Download className="mr-2 h-4 w-4 text-left text-left text-left" /> EXPORT
+                                    <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none">
+                                        <Download className="mr-2 h-4 w-4" /> EXPORT
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl text-left text-left text-left text-left">
-                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Select Format</DropdownMenuLabel>
-                                    <DropdownMenuSeparator className="text-left text-left text-left" />
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left text-left text-left">
-                                        <Download className="mr-2 h-4 w-4 opacity-40 text-left text-left text-left" /> CSV (Excel)
+                                <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl">
+                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Select Format</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5">
+                                        <Download className="mr-2 h-4 w-4 opacity-40" /> CSV (Excel)
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5 text-left text-left text-left">
-                                        <Download className="mr-2 h-4 w-4 text-primary text-left text-left text-left" /> PDF Report
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5">
+                                        <Download className="mr-2 h-4 w-4 text-primary" /> PDF Report
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <Button onClick={() => { setChildImportConfig(null); setIsLogDialogOpen(true); }} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none text-left text-left text-left">
-                                <PlusCircle className="mr-2 h-4 w-4 text-left text-left text-left" /> ADD SOUL
+                            <Button onClick={() => { setChildImportConfig(null); setIsLogDialogOpen(true); }} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none">
+                                <PlusCircle className="mr-2 h-4 w-4" /> ADD SOUL
                             </Button>
                         </div>
                     </div>
                 </header>
 
                 {soulsWithPhotos.length > 0 && (
-                    <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700 text-left text-left text-left">
-                        <div className="flex items-center justify-between mb-4 px-1 text-left text-left text-left">
-                            <div className="flex items-center gap-2 text-left text-left text-left">
-                                <ImageIcon className="h-4 w-4 text-primary text-left text-left text-left" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left text-left text-left">GALLERY OF MY SOULS</h3>
+                    <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700">
+                        <div className="flex items-center justify-between mb-4 px-1">
+                            <div className="flex items-center gap-2">
+                                <ImageIcon className="h-4 w-4 text-primary" />
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">GALLERY OF MY SOULS</h3>
                             </div>
                         </div>
                         <div 
-                            className="overflow-hidden relative w-full text-left text-left text-left"
+                            className="overflow-hidden relative w-full"
                             onMouseEnter={() => setIsGalleryPaused(true)}
                             onMouseLeave={() => setIsGalleryPaused(false)}
                         >
                             <motion.div 
-                                className="flex gap-4 w-max text-left text-left text-left"
+                                className="flex gap-4 w-max"
                                 animate={{ x: isGalleryPaused ? undefined : ["0%", "-33.3333333%"] }}
                                 transition={{
                                     x: {
@@ -935,24 +949,24 @@ export default function SoulsWonPage() {
                                 }}
                             >
                                 {duplicatedSouls.map((s, idx) => (
-                                    <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0 text-left text-left text-left">
+                                    <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0">
                                         <Dialog>
                                             <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-[0.98] transition-all text-left text-left text-left">
+                                                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-[0.98] transition-all">
                                                     <Image 
                                                         src={s.photoURL!} 
                                                         alt={s.firstName} 
                                                         fill 
-                                                        className="object-cover transition-transform group-hover:scale-110 duration-500 text-left text-left text-left" 
+                                                        className="object-cover transition-transform group-hover:scale-110 duration-500" 
                                                         unoptimized 
                                                     />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left text-left text-left" />
-                                                    <div className="absolute bottom-3 left-3 right-3 text-white text-left text-left text-left">
-                                                        <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight text-left text-left text-left">
-                                                            {s.nickname || s.firstName} {s.age && <span className="opacity-60 ml-1 text-left text-left text-left">({s.age})</span>}
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                                                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                                                        <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight">
+                                                            {s.nickname || s.firstName} {s.age && <span className="opacity-60 ml-1">({s.age})</span>}
                                                         </p>
                                                         <Badge className={cn(
-                                                            "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1 shadow-sm text-left text-left text-left",
+                                                            "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1 shadow-sm",
                                                             s.status === 'New' ? "bg-amber-500" : 
                                                             s.status === 'Contacted' ? "bg-blue-500" : 
                                                             "bg-green-500"
@@ -960,15 +974,15 @@ export default function SoulsWonPage() {
                                                     </div>
                                                 </div>
                                             </DialogTrigger>
-                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left text-left text-left">
-                                                <DialogHeader className="sr-only text-left text-left text-left"><DialogTitle className="text-left text-left text-left text-left">Soul Photo</DialogTitle></DialogHeader>
-                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left text-left text-left">
-                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left text-left text-left">
+                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
+                                                <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
+                                                <div className="relative h-full w-full flex items-center justify-center p-4">
+                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center">
                                                         <Image 
                                                             src={s.photoURL!} 
                                                             alt={s.firstName} 
                                                             fill 
-                                                            className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left text-left" 
+                                                            className="object-contain shadow-2xl ring-4 ring-white/10" 
                                                             unoptimized 
                                                         />
                                                     </div>
@@ -982,21 +996,21 @@ export default function SoulsWonPage() {
                     </div>
                 )}
 
-                <div className="px-4 sm:px-0 space-y-12 text-left text-left text-left">
+                <div className="px-4 sm:px-0 space-y-12">
                     {/* Age Demographics */}
-                    <div className="space-y-4 text-left text-left text-left">
-                        <div className="flex items-center gap-3 text-left text-left text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left">
-                                <BarChart3 className="h-5 w-5 text-primary text-left text-left text-left" />
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
+                                <BarChart3 className="h-5 w-5 text-primary" />
                             </div>
-                            <div className="min-w-0 text-left text-left text-left">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left">DEMOGRAPHICS</h2>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left">Age Analysis</p>
+                            <div className="min-w-0">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">DEMOGRAPHICS</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Age Analysis</p>
                             </div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left text-left">
-                            <CardContent className="p-6 sm:p-8 space-y-6 text-left text-left text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left text-left text-left">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
+                            <CardContent className="p-6 sm:p-8 space-y-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {[
                                         { label: 'Children (0-12)', count: ageGroups.children.count, color: 'bg-blue-500', icon: Sparkles },
                                         { label: 'Teens (13-19)', count: ageGroups.teens.count, color: 'bg-green-500', icon: Zap },
@@ -1012,23 +1026,23 @@ export default function SoulsWonPage() {
                                             <div 
                                                 key={group.label} 
                                                 className={cn(
-                                                    "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left text-left text-left",
+                                                    "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden",
                                                     "hover:border-primary/20"
                                                 )}
                                                 onClick={() => setSelectedFilterGroup({ type: 'age', value: group.label })}
                                             >
-                                                <div className="flex items-center justify-between text-left text-left text-left">
-                                                    <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left text-left text-left">
-                                                        <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left text-left text-left" />
+                                                <div className="flex items-center justify-between">
+                                                    <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10">
+                                                        <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
                                                     </div>
-                                                    <span className="font-black text-lg text-primary tracking-tighter text-left text-left text-left">{group.count}</span>
+                                                    <span className="font-black text-lg text-primary tracking-tighter">{group.count}</span>
                                                 </div>
-                                                <div className="space-y-1 text-left text-left text-left">
-                                                    <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">
-                                                        <span className="text-left text-left text-left">{group.label}</span>
-                                                        <span className="text-left text-left text-left">{Math.round(percent)}%</span>
+                                                <div className="space-y-1">
+                                                    <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                                                        <span>{group.label}</span>
+                                                        <span>{Math.round(percent)}%</span>
                                                     </div>
-                                                    <Progress value={percent} className="h-1.5 bg-muted text-left text-left text-left" indicatorClassName={group.color} />
+                                                    <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} />
                                                 </div>
                                             </div>
                                         );
@@ -1039,19 +1053,19 @@ export default function SoulsWonPage() {
                     </div>
 
                     {/* Gender Demographics */}
-                    <div className="space-y-4 text-left text-left text-left">
-                        <div className="flex items-center gap-3 text-left text-left text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left">
-                                <Users className="h-5 w-5 text-primary text-left text-left text-left" />
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
+                                <Users className="h-5 w-5 text-primary" />
                             </div>
-                            <div className="min-w-0 text-left text-left text-left">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left">GENDER BALANCE</h2>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left">Kingdom Workforce Diversity</p>
+                            <div className="min-w-0">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">GENDER BALANCE</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Kingdom Workforce Diversity</p>
                             </div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left text-left">
-                            <CardContent className="p-6 sm:p-8 text-left text-left text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left text-left text-left">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
+                            <CardContent className="p-6 sm:p-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                                     {[
                                         { label: 'Male', count: genderStats.male.count, color: 'bg-blue-600' },
                                         { label: 'Female', count: genderStats.female.count, color: 'bg-rose-500' },
@@ -1061,16 +1075,16 @@ export default function SoulsWonPage() {
                                         return (
                                             <div 
                                               key={stat.label} 
-                                              className="space-y-3 p-6 rounded-2xl bg-background shadow-sm border text-left text-left text-left cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
+                                              className="space-y-3 p-6 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
                                               onClick={() => setSelectedFilterGroup({ type: 'gender', value: stat.label })}
                                             >
-                                                <div className="flex justify-between items-baseline text-left text-left text-left">
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">{stat.label}</p>
-                                                    <span className="text-2xl font-black text-primary tracking-tighter text-left text-left text-left">{stat.count}</span>
+                                                <div className="flex justify-between items-baseline">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{stat.label}</p>
+                                                    <span className="text-2xl font-black text-primary tracking-tighter">{stat.count}</span>
                                                 </div>
-                                                <div className="space-y-1.5 text-left text-left text-left">
-                                                    <Progress value={percent} className="h-2 bg-muted text-left text-left text-left" indicatorClassName={stat.color} />
-                                                    <p className="text-right text-[9px] font-black text-muted-foreground/60 uppercase text-left text-left text-left">{Math.round(percent)}% OF HARVEST</p>
+                                                <div className="space-y-1.5">
+                                                    <Progress value={percent} className="h-2 bg-muted" indicatorClassName={stat.color} />
+                                                    <p className="text-right text-[9px] font-black text-muted-foreground/60 uppercase">{Math.round(percent)}% OF HARVEST</p>
                                                 </div>
                                             </div>
                                         );
@@ -1081,39 +1095,40 @@ export default function SoulsWonPage() {
                     </div>
 
                     {/* Marital Demographics */}
-                    <div className="space-y-4 text-left text-left text-left">
-                        <div className="flex items-center gap-3 text-left text-left text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left">
-                                <Heart className="h-5 w-5 text-primary text-left text-left text-left" />
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
+                                <Heart className="h-5 w-5 text-primary" />
                             </div>
-                            <div className="min-w-0 text-left text-left text-left">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left">MARITAL DEMOGRAPHICS</h2>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left">Family & Status Insights</p>
+                            <div className="min-w-0">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">MARITAL DEMOGRAPHICS</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Family & Status Insights</p>
                             </div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left text-left">
-                            <CardContent className="p-6 sm:p-8 text-left text-left text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left text-left text-left">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
+                            <CardContent className="p-6 sm:p-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {[
-                                        { label: 'MARRIED', count: maritalStats.married.count, color: 'bg-emerald-500', icon: Target },
+                                        { label: 'Married', count: maritalStats.married.count, color: 'bg-emerald-500', icon: Target },
                                         { label: 'Singles', count: maritalStats.single.count, color: 'bg-primary', icon: Sparkles },
                                         { label: 'Divorced', count: maritalStats.divorced.count, color: 'bg-slate-500', icon: HelpCircle },
                                         { label: 'Widowers', count: maritalStats.widowed.count, color: 'bg-indigo-600', icon: Award },
+                                        { label: 'Not Assigned', count: maritalStats.notAssigned.count, color: 'bg-slate-400', icon: CircleAlert },
                                     ].map(stat => {
                                         const percent = totalSoulsCount > 0 ? (stat.count / totalSoulsCount) * 100 : 0;
                                         return (
                                             <div 
                                               key={stat.label} 
-                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border text-left text-left text-left cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
+                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
                                               onClick={() => setSelectedFilterGroup({ type: 'marital', value: stat.label })}
                                             >
-                                                <div className="flex justify-between items-center text-left text-left text-left">
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">{stat.label}</p>
-                                                    <span className="text-xl font-black text-primary tracking-tighter text-left text-left text-left">{stat.count}</span>
+                                                <div className="flex justify-between items-center">
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{stat.label}</p>
+                                                    <span className="text-xl font-black text-primary tracking-tighter">{stat.count}</span>
                                                 </div>
-                                                <div className="space-y-1.5 text-left text-left text-left">
-                                                    <Progress value={percent} className="h-1.5 bg-muted text-left text-left text-left" indicatorClassName={stat.color} />
-                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left text-left text-left">{Math.round(percent)}%</p>
+                                                <div className="space-y-1.5">
+                                                    <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={stat.color} />
+                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase">{Math.round(percent)}%</p>
                                                 </div>
                                             </div>
                                         );
@@ -1124,39 +1139,40 @@ export default function SoulsWonPage() {
                     </div>
 
                     {/* Kingdom Compassion Demographics */}
-                    <div className="space-y-4 text-left text-left text-left">
-                        <div className="flex items-center gap-3 text-left text-left text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left">
-                                <HandHeart className="h-5 w-5 text-primary text-left text-left text-left" />
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
+                                <HandHeart className="h-5 w-5 text-primary" />
                             </div>
-                            <div className="min-w-0 text-left text-left text-left">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left">KINGDOM COMPASSION</h2>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left">Less Privileged & Outreach Insights</p>
+                            <div className="min-w-0">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">KINGDOM COMPASSION</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Social Standing & Support Insights</p>
                             </div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left text-left">
-                            <CardContent className="p-6 sm:p-8 text-left text-left text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left text-left text-left">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
+                            <CardContent className="p-6 sm:p-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {[
                                         { label: 'Orphans', count: compassionStats.orphans.count, color: 'bg-orange-500', icon: Heart },
                                         { label: 'Less Privileged', count: compassionStats.lessPrivileged.count, color: 'bg-emerald-600', icon: ShieldCheck },
-                                        { label: 'Street Outreach', count: compassionStats.street.count, color: 'bg-blue-600', icon: Target },
+                                        { label: 'Well-to-do', count: compassionStats.wellToDo.count, color: 'bg-blue-500', icon: Target },
                                         { label: 'Needs Support', count: compassionStats.needsSupport.count, color: 'bg-rose-500', icon: Zap },
+                                        { label: 'Not Assigned', count: compassionStats.notAssigned.count, color: 'bg-slate-400', icon: CircleAlert },
                                     ].map(stat => {
                                         const percent = totalSoulsCount > 0 ? (stat.count / totalSoulsCount) * 100 : 0;
                                         return (
                                             <div 
                                               key={stat.label} 
-                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border text-left text-left text-left cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
+                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
                                               onClick={() => setSelectedFilterGroup({ type: 'compassion', value: stat.label })}
                                             >
-                                                <div className="flex justify-between items-center text-left text-left text-left">
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">{stat.label}</p>
-                                                    <span className="text-xl font-black text-primary tracking-tighter text-left text-left text-left">{stat.count}</span>
+                                                <div className="flex justify-between items-center">
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{stat.label}</p>
+                                                    <span className="text-xl font-black text-primary tracking-tighter">{stat.count}</span>
                                                 </div>
-                                                <div className="space-y-1.5 text-left text-left text-left">
-                                                    <Progress value={percent} className="h-1.5 bg-muted text-left text-left text-left" indicatorClassName={stat.color} />
-                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left text-left text-left">{Math.round(percent)}%</p>
+                                                <div className="space-y-1.5">
+                                                    <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={stat.color} />
+                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase">{Math.round(percent)}%</p>
                                                 </div>
                                             </div>
                                         );
@@ -1172,7 +1188,7 @@ export default function SoulsWonPage() {
                         souls={souls || []}
                         campaigns={campaigns || []}
                         fellowships={fellowships || []}
-                        className="rounded-3xl text-left text-left"
+                        className="rounded-3xl"
                     />
                 </div>
 
@@ -1180,8 +1196,8 @@ export default function SoulsWonPage() {
                     <SoulsWonTable 
                         souls={filteredSouls || []} 
                         loading={loading}
-                        selectedId={selectedSoulId}
-                        onSelect={setSelectedSoulId}
+                        selectedId={selectedId}
+                        onSelect={setSelectedId}
                         onFollowUp={handleOpenFollowUp}
                         onViewHistory={handleOpenHistory}
                         onExportSingle={handleExportSingleSoul}
@@ -1194,7 +1210,7 @@ export default function SoulsWonPage() {
             </div>
 
             <div className="lg:col-span-4 text-left text-left text-left">
-                <FeedSidebar mode="harvest" className="text-left text-left" />
+                <FeedSidebar mode="harvest" />
             </div>
         </div>
 
@@ -1381,7 +1397,7 @@ export default function SoulsWonPage() {
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
                                 <DialogHeader className="text-left text-left text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-left text-left text-left text-left text-left">Update soul identity and mission details.</DialogDescription>

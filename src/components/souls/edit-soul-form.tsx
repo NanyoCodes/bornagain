@@ -455,6 +455,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
                     </FormControl>
                     <SelectContent className="rounded-2xl">
                       <SelectItem value="Normal" className="rounded-xl">Normal</SelectItem>
+                      <SelectItem value="Well-to-do" className="rounded-xl">Well-to-do</SelectItem>
                       <SelectItem value="Orphan" className="rounded-xl">Orphan</SelectItem>
                       <SelectItem value="Less Privileged" className="rounded-xl">Less Privileged</SelectItem>
                       <SelectItem value="Homeless" className="rounded-xl">Homeless</SelectItem>

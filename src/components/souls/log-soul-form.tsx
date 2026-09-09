@@ -374,7 +374,7 @@ export function LogSoulForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Gender</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
                         <SelectValue placeholder="Select Gender" />
@@ -395,7 +395,7 @@ export function LogSoulForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Relationship to Mobilizer</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
                         <SelectValue placeholder="Relationship" />
@@ -423,7 +423,7 @@ export function LogSoulForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Marital Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                         <SelectValue placeholder="Select Status" />
@@ -448,7 +448,7 @@ export function LogSoulForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Work Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left">
                         <SelectValue placeholder="Select Work" />
@@ -482,6 +482,7 @@ export function LogSoulForm({
                     </FormControl>
                     <SelectContent className="rounded-2xl">
                       <SelectItem value="Normal" className="rounded-xl">Normal</SelectItem>
+                      <SelectItem value="Well-to-do" className="rounded-xl">Well-to-do</SelectItem>
                       <SelectItem value="Orphan" className="rounded-xl">Orphan</SelectItem>
                       <SelectItem value="Less Privileged" className="rounded-xl">Less Privileged</SelectItem>
                       <SelectItem value="Homeless" className="rounded-xl">Homeless</SelectItem>

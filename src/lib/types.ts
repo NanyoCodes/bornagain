@@ -297,7 +297,7 @@ export type SoulNeedsAssessment = {
   updatedAt?: Timestamp;
 };
 
-export type SoulSocialStatus = 'Normal' | 'Orphan' | 'Less Privileged' | 'Homeless' | 'Other';
+export type SoulSocialStatus = 'Normal' | 'Orphan' | 'Less Privileged' | 'Homeless' | 'Well-to-do' | 'Other';
 
 export type Soul = {
   id: string;
