@@ -104,8 +104,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, safeToDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -449,7 +449,7 @@ function ShareWordDialog({
         <Button 
           onClick={handleShareSelected} 
           disabled={selectedVerses.length === 0}
-          className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
+          className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 text-left"
         >
           PREPARE SHARE ({selectedVerses.length})
         </Button>
@@ -1077,6 +1077,12 @@ function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left text-left">{soul.workStatus || 'N/A'}</p>
                     </div>
                 </div>
+                {soul.hobbies && (
+                   <div className="space-y-1 text-left">
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Kingdom Interests</p>
+                        <p className="text-[11px] sm:text-xs font-medium italic text-primary leading-tight">{soul.hobbies}</p>
+                   </div>
+                )}
             </div>
 
             <Separator className="opacity-20 text-left text-left text-left" />
@@ -1142,6 +1148,87 @@ function SoulProfileContent({
             </div>
 
             <Separator className="opacity-20 text-left text-left text-left" />
+
+            <div className="space-y-4 text-left text-left text-left">
+                <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left">Spiritual Milestones</p>
+                <div className="grid grid-cols-2 gap-2 text-left text-left text-left">
+                    {[
+                        { label: 'Church', val: soul.attendingChurch, icon: Church },
+                        { label: 'Word Study', val: soul.inBibleStudy, icon: BookOpen },
+                        { label: 'Prayer', val: soul.attendingPrayer, icon: Zap },
+                        { label: 'Service', val: soul.inServiceDepartment, icon: ShieldCheck },
+                    ].map(milestone => (
+                        <div key={milestone.label} className={cn(
+                            "flex items-center gap-2 p-2 rounded-xl border transition-all text-left",
+                            milestone.val ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted/10 border-transparent text-muted-foreground/40"
+                        )}>
+                            <milestone.icon className="h-3 w-3 text-left text-left text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-tight text-left text-left text-left">{milestone.label}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <Separator className="opacity-20 text-left text-left text-left" />
+            
+            <div className="space-y-3 p-5 bg-muted/20 rounded-[2rem] border-2 border-dashed border-primary/10 shadow-inner text-left">
+                <div className="flex items-center justify-between text-left">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-1 text-left">
+                        <ClipboardList className="h-3.5 w-3.5 text-left" /> Assessed Needs
+                    </p>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onAssess(soul)}>
+                        <Edit className="h-4 w-4 text-left" />
+                    </Button>
+                </div>
+                {needs ? (
+                    <div className="space-y-4 text-left">
+                        {needs.generalImpression && <p className="text-xs text-muted-foreground italic leading-relaxed text-balance text-left">&ldquo;{needs.generalImpression}&rdquo;</p>}
+                        
+                        <div className="grid grid-cols-2 gap-3 text-left">
+                            {needs.emotionalNeeds && (
+                                <div className="space-y-1 text-left">
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-red-500/10 text-red-600 border-none px-1.5 uppercase font-black text-left">Emotional</Badge>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.emotionalNeeds}</p>
+                                </div>
+                            )}
+                            {needs.physicalNeeds && (
+                                <div className="space-y-1 text-left">
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-amber-500/10 text-amber-600 border-none px-1.5 uppercase font-black text-left">Physical</Badge>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.physicalNeeds}</p>
+                                </div>
+                            )}
+                            {needs.financialNeeds && (
+                                <div className="space-y-1 text-left">
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-green-500/10 text-green-600 border-none px-1.5 uppercase font-black text-left">Financial</Badge>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.financialNeeds}</p>
+                                </div>
+                            )}
+                            {needs.socialNeeds && (
+                                <div className="space-y-1 text-left">
+                                    <Badge variant="secondary" className="text-[7px] h-4 bg-indigo-500/10 text-indigo-600 border-none px-1.5 uppercase font-black text-left">Social</Badge>
+                                    <p className="text-[10px] text-muted-foreground line-clamp-2 text-left">{needs.socialNeeds}</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {needs.followUpPlan && (
+                            <div className="pt-2 border-t border-primary/10 text-left">
+                                <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5 text-left">
+                                    <Target className="h-2.5 w-2.5 text-left" /> Strategy
+                                </p>
+                                <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="py-4 text-center text-left">
+                        <Button variant="outline" size="sm" className="h-8 rounded-xl text-[9px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 text-left" onClick={() => onAssess(soul)}>
+                            BEGIN ASSESSMENT
+                        </Button>
+                    </div>
+                )}
+            </div>
+
             <div className="space-y-4 text-left text-left text-left">
                 <div className="flex items-center justify-between text-left text-left text-left text-left">
                     <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left text-left text-left">
@@ -1222,9 +1309,9 @@ function SoulProfileContent({
               </div>
               <div className="p-6 text-left text-left text-left text-left">
                   <Tabs defaultValue="suitors" className="w-full text-left text-left text-left text-left">
-                      <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-11 mb-6 text-left text-left text-left text-left text-left">
-                          <TabsTrigger value="suitors" className="rounded-xl font-bold text-xs uppercase tracking-widest text-left text-left text-left text-left text-left">Divine Pairs</TabsTrigger>
-                          <TabsTrigger value="activities" className="rounded-xl font-bold text-xs uppercase tracking-widest h-full text-left text-left text-left text-left text-left">Strategies</TabsTrigger>
+                      <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-11 mb-6 text-left text-left text-left text-left">
+                          <TabsTrigger value="suitors" className="rounded-xl font-bold text-xs uppercase tracking-widest text-left text-left text-left text-left">Divine Pairs</TabsTrigger>
+                          <TabsTrigger value="activities" className="rounded-xl font-bold text-xs uppercase tracking-widest h-full text-left text-left text-left text-left">Strategies</TabsTrigger>
                       </TabsList>
                       <TabsContent value="suitors" className="outline-none text-left text-left text-left text-left">
                           <ScrollArea className="h-64 text-left text-left text-left text-left">
@@ -1395,7 +1482,7 @@ function SoulProfileContent({
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left text-left text-left text-left text-left">
           <DialogHeader className="text-center space-y-2 text-left text-left text-left text-left text-left text-left">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left text-left">
-                  <Share2 className="h-7 w-7 text-primary text-center text-left text-left text-left text-left text-left text-left" />
+                  <Share2 className="h-7 w-7 text-primary text-center text-left text-left text-left text-left text-left" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left text-left text-left text-left text-left">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center text-left text-left text-left text-left text-left">Where would you like to share {soul.firstName}'s info?</DialogDescription>
@@ -1510,7 +1597,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
                         <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left text-left">
                             {soul.firstName} {soul.lastName}
                         </div>
-                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left text-left"><Church className="h-3 w-3 shrink-0 text-left text-left" />{soul.church}</div>}
+                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left text-left" ><Church className="h-3 w-3 shrink-0 text-left text-left" />{soul.church}</div>}
                     </div>
                 </div>
             </TableCell>
@@ -1598,7 +1685,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                 </div>
             ) : (
                 <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left text-left text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left text-left text-left">
                         <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left text-left text-left text-left">
                             <Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left text-left text-left text-left" />
                             Harvest Dashboard

@@ -304,6 +304,7 @@ export type Soul = {
   lastName: string;
   nickname?: string;
   spouseName?: string;
+  hobbies?: string | null;
   photoURL?: string | null;
   email?: string;
   phone?: string;

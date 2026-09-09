@@ -37,6 +37,7 @@ const formSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters.").max(50, "Name is too long."),
   nickname: z.string().max(20, "Nickname is too long.").optional(),
   spouseName: z.string().max(100, "Spouse name is too long.").optional(),
+  hobbies: z.string().max(500, "Hobbies too long.").optional(),
   photoURL: z.string().optional(),
   gender: z.string().optional(),
   nationality: z.string().optional(),
@@ -98,6 +99,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       lastName: soul.lastName || "",
       nickname: soul.nickname || "",
       spouseName: soul.spouseName || "",
+      hobbies: soul.hobbies || "",
       photoURL: soul.photoURL || "",
       gender: soul.gender || "",
       nationality: soul.nationality || "",
@@ -133,6 +135,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
             lastName: soul.lastName || "",
             nickname: soul.nickname || "",
             spouseName: soul.spouseName || "",
+            hobbies: soul.hobbies || "",
             photoURL: soul.photoURL || "",
             gender: soul.gender || "",
             nationality: soul.nationality || "",
@@ -196,6 +199,7 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
       lastName: values.lastName,
       nickname: values.nickname || null,
       spouseName: values.maritalStatus === 'Married' ? values.spouseName : null,
+      hobbies: values.hobbies || null,
       photoURL: values.photoURL || null,
       gender: values.gender || null,
       nationality: values.nationality || null,
@@ -540,6 +544,20 @@ export function EditSoulForm({ soul, onSoulUpdated, fellowships, campaigns }: Ed
               )}
             />
         </div>
+
+        <FormField
+            control={form.control}
+            name="hobbies"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Kingdom Interests & Hobbies</FormLabel>
+                <FormControl>
+                    <Textarea placeholder="What does this soul enjoy? (e.g. Football, singing...)" {...field} value={field.value || ""} className="rounded-2xl bg-muted/20 border-none shadow-inner font-bold min-h-[80px]"/>
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+        />
 
         <FormField
           control={form.control}
