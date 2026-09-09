@@ -466,8 +466,8 @@ function BottomNavBar() {
     );
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)] text-left">
+        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1 text-left">
           {bottomNavItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -475,17 +475,17 @@ function BottomNavBar() {
                 key={item.href}
                 href={item.href}
                 prefetch={true}
-                className="relative flex flex-1 flex-col items-center justify-center min-w-0"
+                className="relative flex flex-1 flex-col items-center justify-center min-w-0 text-left"
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex flex-col items-center justify-center rounded-xl px-1 py-1 min-h-[56px] w-full"
+                  className="relative flex flex-col items-center justify-center rounded-xl px-1 py-1 min-h-[56px] w-full text-left"
                   whileTap={{ scale: 0.85 }}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="nav-active-pill"
-                      className="absolute inset-0 bg-primary rounded-xl"
+                      className="absolute inset-0 bg-primary rounded-xl text-left"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -496,14 +496,14 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10 flex flex-col items-center",
+                      "relative z-10 flex flex-col items-center text-left",
                       isActive ? "text-white" : "text-muted-foreground"
                     )}
                   >
-                    <item.icon className={cn("h-6 w-6 mb-1", !isActive && item.color)} />
+                    <item.icon className={cn("h-6 w-6 mb-1 text-left", !isActive && item.color)} />
                     <span className={cn(
-                        "text-[8px] font-black uppercase tracking-tighter transition-all leading-none text-center",
-                        isActive ? "opacity-100" : "opacity-60"
+                        "text-[8px] font-black uppercase tracking-tighter transition-all leading-none text-center text-left",
+                        isActive ? "opacity-100 text-left" : "opacity-60 text-left"
                     )}>
                         {item.label}
                     </span>
@@ -637,14 +637,14 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center text-left">
         <div className="relative mb-8 mx-auto w-fit text-left">
             <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
-            <div className="absolute inset-0 flex items-center justify-center text-left">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left" />
+            <div className="absolute inset-0 flex items-center justify-center text-left text-left">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left text-left" />
             </div>
         </div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left">
+        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left text-left">
             Kingdom Network Active
         </p>
       </div>
@@ -702,9 +702,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <Sheet open={!!isProfileIncomplete}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
             <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
-              <SheetHeader className="text-left">
-                <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
+              <SheetHeader className="text-left text-left">
+                <SheetTitle className="text-xl font-bold text-left text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-6 text-left">
@@ -717,8 +717,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
             <div className="p-6 border-b bg-muted/10 text-left">
               <DialogHeader className="text-left">
-                  <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
-                  <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                  <DialogTitle className="text-2xl font-bold text-left text-left">Complete Your Profile</DialogTitle>
+                  <DialogDescription className="text-sm text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
             <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
@@ -736,8 +736,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SearchProvider>
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
-                <div className="relative mx-auto w-fit text-left text-left text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left" />
+                <div className="relative mx-auto w-fit text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
                 </div>
             </div>
         }>
