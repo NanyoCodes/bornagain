@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -537,6 +536,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     setMounted(true); 
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
 
+    // Boot splash logic
     const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
     const lastShown = typeof window !== 'undefined' ? localStorage.getItem('testify_splash_last_shown') : null;
     const forceSplash = typeof window !== 'undefined' ? sessionStorage.getItem('testify_force_splash') === 'true' : false;
@@ -554,13 +554,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     } else {
         setContentVisible(true);
     }
-  }, [pathname]);
-
-  const handleDismissSplash = () => {
-    setShowSplash(false);
-    localStorage.setItem('testify_splash_last_shown', Date.now().toString());
-    setContentVisible(true);
-  };
+  }, []);
 
   useEffect(() => {
     if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
@@ -653,7 +647,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   }
 
   const isProfileIncomplete = !!(user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim()));
-  const showBottomNav = !isTakeoverPage;
 
   return (
     <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
@@ -687,7 +680,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           >
               <div className={cn(
               "mx-auto h-full", 
-              !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
+              (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
               )}>
                   <PageTransition>{children}</PageTransition>
               </div>
@@ -695,7 +688,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           </div>
       </motion.div>
 
-      {user && showBottomNav && <BottomNavBar />}
+      {user && <BottomNavBar />}
       
       {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
       
