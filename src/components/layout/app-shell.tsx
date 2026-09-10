@@ -168,8 +168,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
   if (showMobileSearch) {
     return (
       <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300 text-left">
-        <div className="flex w-full items-center gap-3 text-left">
-          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors text-left">
+        <div className="flex w-full items-center gap-3 text-left text-left">
+          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors text-left text-left text-left">
             <ArrowLeft className="h-6 w-6 text-left" />
           </Button>
           <form className="w-full text-left" onSubmit={(e) => e.preventDefault()}>
@@ -639,7 +639,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left text-left">
+        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left text-left text-left">
             Kingdom Network Active
         </p>
       </div>
@@ -696,12 +696,12 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <Sheet open={!!isProfileIncomplete}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
             <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
-              <SheetHeader className="text-left text-left">
-                <SheetTitle className="text-xl font-bold text-left text-left">Complete Your Profile</SheetTitle>
-                <SheetDescription className="text-xs text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
+              <SheetHeader className="text-left text-left text-left">
+                <SheetTitle className="text-xl font-bold text-left text-left text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left text-left text-left text-left">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6 text-left">
+            <div className="flex-grow overflow-y-auto p-6 text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </SheetContent>
@@ -710,9 +710,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <Dialog open={!!isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
             <div className="p-6 border-b bg-muted/10 text-left">
-              <DialogHeader className="text-left">
-                  <DialogTitle className="text-2xl font-bold text-left text-left">Complete Your Profile</DialogTitle>
-                  <DialogDescription className="text-sm text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+              <DialogHeader className="text-left text-left">
+                <DialogTitle className="text-2xl font-bold text-left text-left text-left">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm text-left text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
             <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
@@ -731,7 +731,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
                 <div className="relative mx-auto w-fit text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
                 </div>
             </div>
         }>
