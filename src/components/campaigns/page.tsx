@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
@@ -23,13 +24,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
+} from "@/components/ui/drawer";
 import { CampaignCard } from "@/components/campaigns/campaign-card";
 import type { Campaign, UserProfile, JoinedCampaign, Testimony } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
@@ -54,9 +54,9 @@ function CampaignSkeletons() {
   return (
     <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto">
       {[...Array(3)].map((_, i) => (
-        <Card key={i} className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm">
-          <CardContent className="p-6 space-y-4">
-            <div className="space-y-2">
+        <Card key={i} className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm text-left">
+          <CardContent className="p-6 space-y-4 text-left">
+            <div className="space-y-2 text-left">
               <Skeleton className="h-6 w-3/4" />
               <Skeleton className="h-4 w-1/2" />
             </div>
@@ -93,30 +93,6 @@ const getStatus = (campaign: { _startDate: Date | null, _endDate: Date | null, s
     if (startDateTime > now) return 2; // Upcoming
     return 1; // Ongoing
   };
-
-const getFullStartDate = (campaign: { _startDate: Date | null, startTime?: string}) => {
-    if (!campaign._startDate) return null;
-    const d = new Date(campaign._startDate);
-    if (campaign.startTime && /^\d{2}:\d{2}$/.test(campaign.startTime)) {
-        const [hours, minutes] = campaign.startTime.split(':').map(Number);
-        d.setHours(hours, minutes, 0, 0);
-    } else {
-        d.setHours(0, 0, 0, 0);
-    }
-    return d;
-};
-const getFullEndDate = (campaign: { _endDate: Date | null, endTime?: string}) => {
-    if (!campaign._endDate) return null;
-    const d = new Date(campaign._endDate);
-    if (campaign.endTime && /^\d{2}:\d{2}$/.test(campaign.endTime)) {
-        const [hours, minutes] = campaign.endTime.split(':').map(Number);
-        d.setHours(hours, minutes, 59, 999);
-    } else {
-        d.setHours(23, 59, 59, 999);
-    }
-    return d;
-};
-
 
 export default function CampaignsPage() {
   const { user, loading: userLoading } = useUser();
@@ -169,7 +145,7 @@ export default function CampaignsPage() {
 
   const joinedCampaignsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, 'users', user.uid, 'joinedCampaigns'));
+    return query(collection(firestore, `users/${user.uid}/joinedCampaigns`));
   }, [user?.uid, firestore]);
   const { data: joinedCampaigns, loading: joinedCampaignsLoading } = useCollection<JoinedCampaign>(joinedCampaignsQuery);
   const joinedCampaignIds = useMemo(() => new Set(joinedCampaigns?.map(c => c.id)), [joinedCampaigns]);
@@ -203,7 +179,7 @@ export default function CampaignsPage() {
     try {
         setCampaignToDelete(null);
         await updateDoc(campaignRef, deleteData);
-        toast({ title: 'Campaign Deleted', description: 'The campaign has been successfully deleted.' });
+        toast({ title: 'Campaign Deleted' });
     } catch (error) {
         const permissionError = new FirestorePermissionError({
             path: campaignRef.path,
@@ -235,8 +211,6 @@ export default function CampaignsPage() {
       return {
         ...tempCampaign,
         _status: getStatus(tempCampaign, now),
-        _fullStartDate: getFullStartDate(tempCampaign),
-        _fullEndDate: getFullEndDate(tempCampaign),
         _distance: distance,
       }
     });
@@ -298,28 +272,6 @@ export default function CampaignsPage() {
             } else if (b._distance != null) {
                 return 1;
             }
-
-            const fullStartDateA = a._fullStartDate;
-            const fullStartDateB = b._fullStartDate;
-
-            if (fullStartDateA && fullStartDateB) {
-                const timeDiff = fullStartDateA.getTime() - fullStartDateB.getTime();
-                if (timeDiff !== 0) return timeDiff;
-            }
-            if (fullStartDateA) return -1;
-            if (fullStartDateB) return 1;
-        }
-
-        if (a._status === 3) {
-            const fullEndDateA = a._fullEndDate;
-            const fullEndDateB = b._fullEndDate;
-
-            if (fullEndDateA && fullEndDateB) {
-                const timeDiff = fullEndDateB.getTime() - fullEndDateA.getTime();
-                if (timeDiff !== 0) return timeDiff;
-            }
-            if (fullEndDateA) return -1;
-            if (fullEndDateB) return 1;
         }
 
         const createdAtA = safeToDate(a.createdAt)?.getTime() ?? 0;
@@ -329,7 +281,7 @@ export default function CampaignsPage() {
 
   }, [processedCampaigns, searchTerm, mounted, filter, user?.uid, statusFilter, joinedCampaignIds]);
 
-  const formContent = userProfile ? <CreateCampaignForm onCampaignCreated={handleCampaignCreated} userProfile={userProfile} /> : <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin"/></div>;
+  const formContent = userProfile ? <CreateCampaignForm onCampaignCreated={handleCampaignCreated} userProfile={userProfile} /> : <div className="flex justify-center p-8 text-left"><Loader2 className="h-8 w-8 animate-spin" /></div>;
 
   let noResultsMessage = "No campaigns found.";
     if (filter === 'created') {
@@ -339,64 +291,64 @@ export default function CampaignsPage() {
     }
 
   return (
-    <div className="space-y-8 w-full max-w-2xl mx-auto">
-      {/* Responsive Single-Row Interaction Box */}
-      <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0">
-        <CardContent className="p-3 sm:p-4">
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+    <div className="space-y-8 w-full max-w-2xl mx-auto text-left">
+      {/* Interaction Box */}
+      <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-lg border-x-0 sm:border-x -mx-4 sm:mx-0 text-left">
+        <CardContent className="p-3 sm:p-4 text-left">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-left">
             <Button 
               variant="outline" 
-              className="w-full sm:flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm"
+              className="w-full sm:flex-1 justify-start text-muted-foreground font-normal rounded-full h-10 sm:h-11 px-4 hover:bg-muted/50 transition-colors text-sm text-left"
               onClick={() => setIsCreateOpen(true)}
               disabled={!user || profileLoading}
             >
-              <span className="truncate">
+              <span className="truncate text-left">
                 {profileLoading ? "Preparing mission field..." : "Launch a mission for the Kingdom?"}
               </span>
             </Button>
-            <div className="flex w-full sm:w-auto items-center gap-2">
+            <div className="flex w-full sm:w-auto items-center gap-2 text-left">
               <Button 
                 variant="secondary" 
                 size="sm" 
-                className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full"
+                className="flex-1 sm:flex-none h-10 sm:h-11 px-4 rounded-full text-left"
                 onClick={() => setIsCreateOpen(true)}
                 disabled={!user || profileLoading}
               >
                 {profileLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />
                 ) : (
-                  <Target className="mr-2 h-4 w-4" />
+                  <Target className="mr-2 h-4 w-4 text-left" />
                 )}
-                <span className="text-xs sm:text-sm font-medium">New Campaign</span>
+                <span className="text-xs sm:text-sm font-medium text-left">New Campaign</span>
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="flex flex-wrap gap-4 items-center justify-between px-1">
-        <Tabs value={filter} onValueChange={setFilter}>
-            <TabsList>
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="created">Mine</TabsTrigger>
-                <TabsTrigger value="joined">Joined</TabsTrigger>
+      <div className="flex flex-wrap gap-4 items-center justify-between px-1 text-left">
+        <Tabs value={filter} onValueChange={setFilter} className="text-left">
+            <TabsList className="text-left">
+                <TabsTrigger value="all" className="text-left">All</TabsTrigger>
+                <TabsTrigger value="created" className="text-left">Mine</TabsTrigger>
+                <TabsTrigger value="joined" className="text-left">Joined</TabsTrigger>
             </TabsList>
         </Tabs>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[150px] h-11">
-                <SelectValue placeholder="Status" />
+            <SelectTrigger className="w-full sm:w-[150px] h-11 text-left">
+                <SelectValue placeholder="Status" className="text-left" />
             </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="ongoing">Ongoing</SelectItem>
-                <SelectItem value="upcoming">Upcoming</SelectItem>
-                <SelectItem value="past">Past</SelectItem>
+            <SelectContent className="text-left">
+                <SelectItem value="all" className="text-left">All Status</SelectItem>
+                <SelectItem value="ongoing" className="text-left">Ongoing</SelectItem>
+                <SelectItem value="upcoming" className="text-left">Upcoming</SelectItem>
+                <SelectItem value="past" className="text-left">Past</SelectItem>
             </SelectContent>
         </Select>
       </div>
 
 
-      <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0">
+      <div className="flex flex-col gap-0 w-full -mx-4 sm:mx-0 text-left">
         {loading && <CampaignSkeletons />}
         {!loading && sortedAndFilteredCampaigns?.map((campaign) => (
           <CampaignCard 
@@ -413,10 +365,10 @@ export default function CampaignsPage() {
           />
         ))}
          {!loading && sortedAndFilteredCampaigns?.length === 0 && (
-          <div className="col-span-full text-center py-24 px-8 flex flex-col items-center">
-            <Target className="h-16 w-16 text-muted-foreground opacity-10 mb-6" />
-            <h3 className="text-xl font-bold font-headline uppercase tracking-tight">{noResultsMessage}</h3>
-            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-pretty">
+          <div className="col-span-full text-center py-24 px-8 flex flex-col items-center text-left">
+            <Target className="h-16 w-16 text-muted-foreground opacity-10 mb-6 text-left" />
+            <h3 className="text-xl font-bold font-headline uppercase tracking-tight text-left">{noResultsMessage}</h3>
+            <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-pretty text-left">
               {filter === 'created'
                 ? 'Why not start a new one to reach your community?'
                 : filter === 'joined' ? 'Explore all campaigns and join one!' : 'Try a different search term or create a new campaign.'}
@@ -427,16 +379,16 @@ export default function CampaignsPage() {
       
       {campaignToManage && (
         mounted && isMobile ? (
-          <Sheet open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-              <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                <SheetHeader className="text-left">
-                    <SheetTitle className="text-2xl font-black font-headline">Manage Campaign</SheetTitle>
-                    <SheetDescription className="text-sm font-medium mt-1">Update mission progress and details.</SheetDescription>
-                </SheetHeader>
+          <Drawer open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left">
+              <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                <DrawerHeader className="text-left">
+                    <DrawerTitle className="text-2xl font-black font-headline text-left">Manage Campaign</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Update mission progress and details.</DrawerDescription>
+                </DrawerHeader>
               </div>
-              <ScrollArea className="flex-1 min-h-0">
-                <div className="p-8">
+              <ScrollArea className="flex-1 min-h-0 text-left">
+                <div className="p-8 text-left">
                     <ManageCampaignForm 
                     campaign={campaignToManage} 
                     onCampaignUpdated={() => { setCampaignToManage(null); }} 
@@ -447,19 +399,19 @@ export default function CampaignsPage() {
                     />
                 </div>
               </ScrollArea>
-            </SheetContent>
-          </Sheet>
+            </DrawerContent>
+          </Drawer>
         ) : (
           <Dialog open={!!campaignToManage} onOpenChange={(open) => !open && setCampaignToManage(null)}>
-            <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl shadow-2xl border-none">
-               <div className="p-6 border-b bg-muted/10 shrink-0">
-                    <DialogHeader>
+            <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl shadow-2xl border-none text-left">
+               <div className="p-6 border-b bg-muted/10 shrink-0 text-left">
+                    <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-bold font-headline text-left">Manage Campaign</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Update mission progress and details.</DialogDescription>
                     </DialogHeader>
                 </div>
-              <ScrollArea className="flex-1 min-h-0">
-                <div className="p-6">
+              <ScrollArea className="flex-1 min-h-0 text-left text-left">
+                <div className="p-6 text-left text-left">
                     <ManageCampaignForm 
                     campaign={campaignToManage} 
                     onCampaignUpdated={() => { setCampaignToManage(null); }}
@@ -477,17 +429,17 @@ export default function CampaignsPage() {
 
       {campaignToDelete && (
         <AlertDialog open={!!campaignToDelete} onOpenChange={(open) => !open && setCampaignToDelete(null)}>
-          <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl">
-            <AlertDialogHeader>
+          <AlertDialogContent className="w-[90vw] max-w-lg rounded-[2rem] p-8 border-none shadow-2xl text-left">
+            <AlertDialogHeader className="text-left">
                 <AlertDialogTitle className="text-2xl font-black font-headline text-left">Delete Campaign?</AlertDialogTitle>
                 <AlertDialogDescription className="text-sm font-medium text-left">
                     This will permanently remove the mission from the global record. This action cannot be undone.
                 </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter className="gap-3 mt-6">
-                <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold">Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold">
-                    {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <AlertDialogFooter className="gap-3 mt-6 text-left">
+                <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteCampaign} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
+                    {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                     Confirm Deletion
                 </AlertDialogAction>
             </AlertDialogFooter>
@@ -497,17 +449,17 @@ export default function CampaignsPage() {
 
       {campaignForSoul && (
         <Dialog open={!!campaignForSoul} onOpenChange={(open) => !open && setCampaignForSoul(null)}>
-            <DialogContent className="sm:max-w-lg max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
-                <div className="p-6 border-b bg-muted/10 shrink-0">
-                    <DialogHeader>
+            <DialogContent className="sm:max-w-lg max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
+                <div className="p-6 border-b bg-muted/10 shrink-0 text-left">
+                    <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-bold font-headline text-left">Log Harvest</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">
                             Record the details of the person won during this mission.
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="flex-1 min-h-0">
-                    <div className="p-6">
+                <ScrollArea className="flex-1 min-h-0 text-left">
+                    <div className="p-6 text-left">
                         <LogSoulForm
                             onSoulLogged={handleSoulLogged}
                             defaultCampaign={campaignForSoul}
@@ -522,17 +474,17 @@ export default function CampaignsPage() {
       
       {campaignForTestimony && userProfile && (
         <Dialog open={!!campaignForTestimony} onOpenChange={(open) => !open && setCampaignForTestimony(null)}>
-            <DialogContent className="sm:max-w-lg max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
-                <div className="p-6 border-b bg-muted/10 shrink-0">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold font-headline text-left">Share Victory</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">
+            <DialogContent className="sm:max-w-lg max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left">
+                <div className="p-6 border-b bg-muted/10 shrink-0 text-left">
+                    <DialogHeader className="text-left">
+                        <DialogTitle className="text-2xl font-bold font-headline text-left text-left">Share Victory</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left">
                             What has God done during "{campaignForTestimony.title}"?
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="flex-1 min-h-0">
-                    <div className="p-6">
+                <ScrollArea className="flex-1 min-h-0 text-left">
+                    <div className="p-6 text-left">
                     <CreateTestimonyForm
                             userProfile={userProfile}
                             onTestimonyCreated={handleTestimonyCreated}
@@ -546,34 +498,34 @@ export default function CampaignsPage() {
 
       {isCreateOpen && (
         mounted && isMobile ? (
-          <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-              <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                <SheetHeader className="text-left">
-                  <SheetTitle className="text-2xl font-black font-headline uppercase">Launch Mission</SheetTitle>
-                  <SheetDescription className="text-sm font-medium mt-1 text-left">Fill in the details below to organize your soul-winning efforts.</SheetDescription>
-                </SheetHeader>
+          <Drawer open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left">
+              <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                <DrawerHeader className="text-left">
+                  <DrawerTitle className="text-2xl font-black font-headline uppercase text-left">Launch Mission</DrawerTitle>
+                  <DrawerDescription className="text-sm font-medium mt-1 text-left">Fill in the details below to organize your soul-winning efforts.</DrawerDescription>
+                </DrawerHeader>
               </div>
-              <ScrollArea className="flex-1 min-h-0">
-                <div className="p-8">
+              <ScrollArea className="flex-1 min-h-0 text-left">
+                <div className="p-8 text-left">
                   {formContent}
                 </div>
               </ScrollArea>
-            </SheetContent>
-          </Sheet>
+            </DrawerContent>
+          </Drawer>
         ) : (
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
-              <div className="p-8 border-b bg-muted/10 shrink-0">
-                  <DialogHeader>
+            <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl text-left text-left">
+              <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                  <DialogHeader className="text-left">
                       <DialogTitle className="text-2xl font-bold font-headline uppercase text-left">Create a New Mission</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left">
                           Fill in the details below to organize your soul-winning efforts.
                       </DialogDescription>
                   </DialogHeader>
               </div>
-              <ScrollArea className="flex-1 min-h-0">
-                  <div className="p-8">
+              <ScrollArea className="flex-1 min-h-0 text-left text-left">
+                  <div className="p-8 text-left">
                       {formContent}
                   </div>
               </ScrollArea>
