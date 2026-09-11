@@ -16,8 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useMemo, useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { Loader2, Lock } from "lucide-react";
 import type { Campaign, Soul, UserProfile, Fellowship, SoulRelationship } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
 import { format, differenceInYears } from "date-fns";
@@ -156,7 +156,45 @@ export function LogSoulForm({
     },
   });
 
-  const { control, setValue, getValues } = form;
+  const { control, setValue, getValues, reset } = form;
+
+  // React to prop changes (especially for 'Add Child' feature)
+  useEffect(() => {
+    reset({
+      firstName: "",
+      lastName: defaultLastName || "",
+      nickname: "",
+      spouseName: "",
+      hobbies: "",
+      photoURL: "",
+      gender: "",
+      nationality: "",
+      dateOfBirth: null,
+      marriageDate: null,
+      age: null,
+      maritalStatus: "",
+      workStatus: "",
+      socialStatus: "Normal",
+      email: "",
+      phone: "",
+      church: "",
+      relationship: defaultRelationship || "Other",
+      locationWonCity: defaultLocation?.city || "",
+      locationWonState: defaultLocation?.state || "",
+      locationWonCountry: defaultLocation?.country || "",
+      locationWonStreet: defaultLocation?.street || "",
+      locationWonLandmark: defaultLocation?.landmark || "",
+      locationWonLatitude: defaultLocation?.latitude || null,
+      locationWonLongitude: defaultLocation?.longitude || null,
+      source: defaultCampaign ? "Campaign" : "Personal",
+      sourceDetails: defaultCampaign ? defaultCampaign.title : "",
+      initialNote: defaultParentNames?.length ? `Added as child of ${defaultParentNames.join(' & ')}.` : "",
+      wonAt: new Date(),
+      parentIds: defaultParentIds || [],
+      parentNames: defaultParentNames || [],
+      isHistoryPrivate: false,
+    });
+  }, [defaultLastName, defaultLocation, defaultParentIds, defaultParentNames, defaultRelationship, defaultCampaign, reset]);
 
   const sourceValue = useWatch({ control, name: "source" });
   const dobValue = useWatch({ control, name: "dateOfBirth" });
@@ -836,4 +874,3 @@ export function LogSoulForm({
     </Form>
   );
 }
-

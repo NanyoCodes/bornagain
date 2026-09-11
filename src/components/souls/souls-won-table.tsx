@@ -816,7 +816,7 @@ function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.maritalStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Nickname</p>
+                        <p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest">Nickname</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.nickname || 'N/A'}</p>
                     </div>
                 </div>
@@ -1321,7 +1321,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start text-left">
-        <div className="flex-1 w-full text-left text-left">
+        <div className="flex-1 w-full text-left">
             {isMobile ? (
                 <div className="space-y-px">
                     {souls.map((soul) => (
@@ -1330,7 +1330,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                 </div>
             ) : (
                 <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left">
                         <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
                             <Heart className="h-6 w-6 text-primary fill-current text-left" />
                             Harvest Dashboard
@@ -1339,7 +1339,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                     </CardHeader>
                     <CardContent className="p-0 text-left">
                         <div className="overflow-x-auto text-left">
-                            <Table className="text-left text-left">
+                            <Table className="text-left">
                                 <TableHeader className="bg-muted/10 text-left">
                                     <TableRow className="hover:bg-transparent text-left">
                                         <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
@@ -1365,9 +1365,9 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
         {/* Tablet/Mobile Pop-up */}
         <Drawer open={!!selectedSoulId && !!selectedSoul && (isMobile || (mounted && typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && setSelectedSoulId(null)}>
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                    <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                    <DrawerHeader className="text-left flex-shrink-0 text-left text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left text-left">
                             <Sparkles className="h-4 w-4 text-primary text-left text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span>
                         </div>
