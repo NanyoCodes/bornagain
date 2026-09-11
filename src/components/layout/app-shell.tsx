@@ -162,16 +162,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
-  const testimoniesQuery = useMemo(() => firestore ? query(collection(firestore, 'testimonies'), limit(15)) : null, [firestore]);
-  const prayersQuery = useMemo(() => firestore ? query(collection(firestore, 'prayerRequests'), limit(15)) : null, [firestore]);
-  const campaignsQuery = useMemo(() => firestore ? query(collection(firestore, 'campaigns'), where('status', '==', 'active'), limit(15)) : null, [firestore]);
-  const fellowshipsQuery = useMemo(() => firestore ? query(collection(firestore, 'fellowships'), where('status', '==', 'active'), limit(15)) : null, [firestore]);
+  const allTestimoniesQuery = useMemo(() => firestore ? query(collection(firestore, 'testimonies'), limit(15)) : null, [firestore]);
+  const allPrayersQuery = useMemo(() => firestore ? query(collection(firestore, 'prayerRequests'), limit(15)) : null, [firestore]);
+  const allCampaignsQuery = useMemo(() => firestore ? query(collection(firestore, 'campaigns'), where('status', '==', 'active'), limit(15)) : null, [firestore]);
+  const allFellowshipsQuery = useMemo(() => firestore ? query(collection(firestore, 'fellowships'), where('status', '==', 'active'), limit(15)) : null, [firestore]);
   const soulsQuery = useMemo(() => (user && firestore) ? query(collection(firestore, 'users', user.uid, 'souls'), limit(15)) : null, [user, firestore]);
 
-  const { data: allTestimonies } = useCollection<Testimony>(testimoniesQuery);
-  const { data: allPrayers } = useCollection<PrayerRequest>(prayersQuery);
-  const { data: allCampaigns } = useCollection<Campaign>(campaignsQuery);
-  const { data: allFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+  const { data: allTestimonies } = useCollection<Testimony>(allTestimoniesQuery);
+  const { data: allPrayers } = useCollection<PrayerRequest>(allPrayersQuery);
+  const { data: allCampaigns } = useCollection<Campaign>(allCampaignsQuery);
+  const { data: allFellowships } = useCollection<Fellowship>(allFellowshipsQuery);
   const { data: allSouls } = useCollection<Soul>(soulsQuery);
 
   const suggestions = useMemo(() => {
@@ -245,7 +245,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         <ScrollArea className="flex-1">
             <div className="p-6 space-y-8">
                 {suggestions.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="space-y-4 text-left">
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Kingdom Suggestions</p>
                         <div className="space-y-2">
                             {suggestions.map(s => (

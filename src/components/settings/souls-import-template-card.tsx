@@ -373,7 +373,7 @@ export function SoulsImportTemplateCard() {
 
   const contactsListEl = (
     <div className="flex flex-col h-full text-left">
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0">
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                     <Smartphone className="h-5 w-5 text-primary" />
