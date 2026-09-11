@@ -21,7 +21,8 @@ import {
   TrendingUp,
   Sparkles,
   Award,
-  ChevronRight
+  ChevronRight,
+  ShieldAlert
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
@@ -120,18 +121,18 @@ export default function GuidePage() {
   };
 
   return (
-    <div className="space-y-12 max-w-4xl mx-auto pb-24">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-            <h1 className="text-3xl md:text-5xl font-black font-headline tracking-tight flex items-center gap-3">
+    <div className="space-y-12 max-w-4xl mx-auto pb-24 text-left">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 text-left">
+        <div className="space-y-1 text-left">
+            <h1 className="text-3xl md:text-5xl font-black font-headline tracking-tight flex items-center gap-3 text-left">
             <BookOpen className="h-8 w-8 text-primary" />
             App Guide
             </h1>
-            <p className="text-muted-foreground italic text-sm md:text-base font-medium">
+            <p className="text-muted-foreground italic text-sm md:text-base font-medium text-left">
             Equipping the Kingdom workforce for a global harvest.
             </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 text-left">
             <Badge variant="secondary" className="px-3 py-1 font-bold uppercase tracking-widest text-[10px]">Dashboard Guide</Badge>
             <Badge className="bg-primary/20 text-primary border-primary/20 px-3 py-1 font-bold uppercase tracking-widest text-[10px]">Kingdom Force</Badge>
         </div>
@@ -139,21 +140,21 @@ export default function GuidePage() {
 
       <Separator />
 
-      <section className="space-y-8">
-        <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2">
+      <section className="space-y-8 text-left">
+        <h2 className="text-2xl font-black font-headline uppercase flex items-center gap-2 text-left">
           <Sparkles className="h-6 w-6 text-blue-500" /> Getting Started Path
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
             {gettingStartedItems.map((item) => (
-                <Card key={item.step} className="bg-muted/30 border-2 border-dashed relative group">
-                    <CardHeader className="p-4 pb-2">
+                <Card key={item.step} className="bg-muted/30 border-2 border-dashed relative group text-left">
+                    <CardHeader className="p-4 pb-2 text-left">
                         <div className={cn("h-10 w-10 rounded-2xl bg-background flex items-center justify-center mb-3 border shadow-sm transition-transform group-hover:scale-110", item.bg)}>
                             <item.icon className={cn("h-5 w-5", item.color)} />
                         </div>
-                        <CardTitle className="text-sm font-black tracking-tight">{item.title}</CardTitle>
+                        <CardTitle className="text-sm font-black tracking-tight text-left">{item.title}</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-4 pt-0">
-                        <p className="text-xs text-muted-foreground font-medium leading-relaxed">{item.desc}</p>
+                    <CardContent className="p-4 pt-0 text-left">
+                        <p className="text-xs text-muted-foreground font-medium leading-relaxed text-left">{item.desc}</p>
                     </CardContent>
                     <span className="absolute top-2 right-4 text-3xl font-black text-foreground/5 italic">{item.step}</span>
                 </Card>
@@ -161,32 +162,32 @@ export default function GuidePage() {
         </div>
       </section>
 
-      <section className="space-y-12">
-        <div className="space-y-2">
-            <h2 className="text-2xl font-black font-headline uppercase tracking-tight">The Believer's Journey</h2>
-            <p className="text-sm text-muted-foreground font-medium">Maximize your Kingdom impact using the full platform.</p>
+      <section className="space-y-12 text-left">
+        <div className="space-y-2 text-left">
+            <h2 className="text-2xl font-black font-headline uppercase tracking-tight text-left">The Believer's Journey</h2>
+            <p className="text-sm text-muted-foreground font-medium text-left">Maximize your Kingdom impact using the full platform.</p>
         </div>
 
-        <div className="space-y-12">
+        <div className="space-y-12 text-left">
             {journeyPhases.map((phase, idx) => (
-                <div key={idx} className="space-y-6">
-                    <div className="flex items-center gap-5">
-                        <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border-2", phase.bgColor)}>
+                <div key={idx} className="space-y-6 text-left">
+                    <div className="flex items-center gap-5 text-left">
+                        <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border-2 text-left", phase.bgColor)}>
                             <phase.icon className={cn("h-7 w-7", phase.color)} />
                         </div>
-                        <div>
-                            <h3 className="text-lg font-black tracking-tight">{phase.title}</h3>
-                            <p className="text-sm text-muted-foreground font-medium">{phase.description}</p>
+                        <div className="text-left">
+                            <h3 className="text-lg font-black tracking-tight text-left">{phase.title}</h3>
+                            <p className="text-sm text-muted-foreground font-medium text-left">{phase.description}</p>
                         </div>
                     </div>
-                    <div className="grid gap-4 sm:grid-cols-2 ml-2 sm:ml-20">
+                    <div className="grid gap-4 sm:grid-cols-2 ml-2 sm:ml-20 text-left">
                         {phase.items.map((item, i) => (
-                            <Card key={i} className="border-none shadow-none bg-muted/20 rounded-2xl">
-                                <CardHeader className="p-6 pb-2">
-                                    <CardTitle className="text-xs font-black uppercase tracking-widest text-primary">{item.title}</CardTitle>
+                            <Card key={i} className="border-none shadow-none bg-muted/20 rounded-2xl text-left">
+                                <CardHeader className="p-6 pb-2 text-left">
+                                    <CardTitle className="text-xs font-black uppercase tracking-widest text-primary text-left">{item.title}</CardTitle>
                                 </CardHeader>
-                                <CardContent className="p-6 pt-0">
-                                    <p className="text-sm leading-relaxed text-muted-foreground font-medium">{item.content}</p>
+                                <CardContent className="p-6 pt-0 text-left">
+                                    <p className="text-sm leading-relaxed text-muted-foreground font-medium text-left">{item.content}</p>
                                 </CardContent>
                             </Card>
                         ))}
@@ -196,69 +197,70 @@ export default function GuidePage() {
         </div>
       </section>
 
-      <section className="space-y-6">
-        <div className="flex items-center gap-2">
-            <ShieldCheck className="h-6 w-6 text-primary" />
-            <h2 className="text-xl font-black font-headline uppercase tracking-tight">Advanced Features</h2>
+      <section className="space-y-6 text-left">
+        <div className="flex items-center gap-2 text-left">
+            <ShieldAlert className="h-6 w-6 text-primary text-left" />
+            <h2 className="text-xl font-black font-headline uppercase tracking-tight text-left">Technical Verification</h2>
         </div>
-        <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="referrals" className="border rounded-2xl px-6 bg-card mb-4 shadow-sm overflow-hidden">
+        <Accordion type="single" collapsible className="w-full text-left">
+            <AccordionItem value="google-verification" className="border rounded-2xl px-6 bg-amber-500/5 mb-4 shadow-sm overflow-hidden text-left">
+                <AccordionTrigger className="hover:no-underline font-bold text-sm text-left">Why do I see a "Google hasn't verified this app" warning?</AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground leading-relaxed font-medium text-left">
+                    <p className="mb-4 text-left">This is a standard security measure for new applications using Google services like Contact Sync. While we are in testing mode, you can safely bypass this by clicking <strong>"Advanced"</strong> and then <strong>"Go to testifyglobal.com (unsafe)"</strong>.</p>
+                    <p className="text-left">Organizers can remove this warning permanently by following the <Link href="/verification-guide" className="text-primary font-bold hover:underline">Official Verification Guide</Link> in the project documentation.</p>
+                </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="referrals" className="border rounded-2xl px-6 bg-card mb-4 shadow-sm overflow-hidden text-left">
                 <AccordionTrigger className="hover:no-underline font-bold text-sm text-left">How do I refer other believers?</AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground leading-relaxed font-medium">
+                <AccordionContent className="text-sm text-muted-foreground leading-relaxed font-medium text-left">
                     Testify is most powerful when used collectively. Use the "Share App" button to invite pastors, youth leaders, and friends. A connected network is a prepared network.
                 </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="insights" className="border rounded-2xl px-6 bg-card mb-4 shadow-sm overflow-hidden">
+            <AccordionItem value="insights" className="border rounded-2xl px-6 bg-card mb-4 shadow-sm overflow-hidden text-left">
                 <AccordionTrigger className="hover:no-underline font-bold text-sm text-left">What are AI Follow-up Insights?</AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground leading-relaxed font-medium">
+                <AccordionContent className="text-sm text-muted-foreground leading-relaxed font-medium text-left">
                     In the "Souls Won" section, the AI assistant analyzes convert history to suggest personalized next steps and natural-sounding messages for you to send.
-                </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="amen" className="border rounded-2xl px-6 bg-card mb-4 shadow-sm overflow-hidden">
-                <AccordionTrigger className="hover:no-underline font-bold text-sm text-left">The power of Amen, Hallelujah, Celebrate and Comments</AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground leading-relaxed font-medium">
-                    Interaction on the testimonies feed isn't just social—it's spiritual support. Marking a story with an "Amen" lets the author know you are standing with them in faith, while "Hallelujah" and "Celebrate" signal that their story has ignited your own joy. Leaving a comment allows you to directly speak words of life and encouragement to your brethren.
                 </AccordionContent>
             </AccordionItem>
         </Accordion>
       </section>
       
-      <section className="mt-16 p-8 rounded-[2.5rem] bg-primary/5 border-2 border-dashed border-primary/20 text-center relative overflow-hidden">
-        <div className="absolute -top-4 -right-4 p-4 opacity-5 rotate-12">
-            <Flame className="h-32 w-32 text-primary" />
+      <section className="mt-16 p-8 rounded-[2.5rem] bg-primary/5 border-2 border-dashed border-primary/20 text-center relative overflow-hidden text-left">
+        <div className="absolute -top-4 -right-4 p-4 opacity-5 rotate-12 text-left">
+            <Flame className="h-32 w-32 text-primary text-left" />
         </div>
-        <div className="max-w-md mx-auto space-y-6 relative z-10">
-            <h3 className="font-black text-3xl font-headline tracking-tight uppercase">Ready to mobilize?</h3>
-            <p className="text-sm text-muted-foreground font-medium">Connect more believers to the harvest network by sharing this platform.</p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4 w-full px-4">
-                <Button asChild variant="outline" className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
-                    <Link href="/dashboard/marketplace">MEALS CENTER</Link>
+        <div className="max-w-md mx-auto space-y-6 relative z-10 text-left">
+            <h3 className="font-black text-3xl font-headline tracking-tight uppercase text-center">Ready to mobilize?</h3>
+            <p className="text-sm text-muted-foreground font-medium text-center">Connect more believers to the harvest network by sharing this platform.</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 w-full px-4 text-left">
+                <Button asChild variant="outline" className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left">
+                    <Link href="/dashboard/marketplace" className="text-left">MEALS CENTER</Link>
                 </Button>
-                <Button asChild variant="outline" className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg">
-                    <Link href="/dashboard/marketplace/gifts">KINDNESS CENTER</Link>
+                <Button asChild variant="outline" className="w-full sm:w-auto rounded-2xl h-12 px-8 font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5 shadow-lg text-left">
+                    <Link href="/dashboard/marketplace/gifts" className="text-left">KINDNESS CENTER</Link>
                 </Button>
             </div>
         </div>
       </section>
 
-      <footer className="text-center pt-12 border-t mt-12 px-8">
+      <footer className="text-center pt-12 border-t mt-12 px-8 text-left">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-6">
-                <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic">
+            <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
+                <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-left">
                     Testify is built for believers to share the greatness of Jesus Christ.
                 </p>
             </div>
-            <div className="space-y-4">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Platform</h4>
-                <ul className="space-y-3">
-                    <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Glory Feed</Link></li>
-                    <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Mission Hub</Link></li>
-                    <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Harvest Growth</Link></li>
-                    <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Directory</Link></li>
+            <div className="space-y-4 text-left">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Platform</h4>
+                <ul className="space-y-3 text-left">
+                    <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Glory Feed</Link></li>
+                    <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Mission Hub</Link></li>
+                    <li><Link href="/growth" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Harvest Growth</Link></li>
+                    <li><Link href="/fellowships" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Directory</Link></li>
                 </ul>
             </div>
         </div>
-        <p className="text-xs text-muted-foreground italic font-medium">
+        <p className="text-xs text-muted-foreground italic font-medium text-center">
           "But ye shall receive power, after that the Holy Ghost is come upon you: and ye shall be witnesses unto me both in Jerusalem, and in all Judaea, and in Samaria, and unto the uttermost part of the earth." — Acts 1:8
         </p>
       </footer>

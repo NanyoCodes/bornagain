@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Collaborative Bible Journaling & Group Sync - 2025-06-16T11:00:00Z
+    // Deployment trigger: Subcollection permissions and Shared Journal authorization - 2025-06-16T14:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -124,7 +124,7 @@ service cloud.firestore {
       }
 
       match /fellowships/{id} {
-        allow read, write: if isOwner(userId);
+        allow get, list, write: if isOwner(userId);
       }
     }
 
@@ -218,7 +218,7 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
       allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || string(resource.data.authorId).split('/').pop() == request.auth.uid);
       allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.auth.uid) || 
+        (resource.data.authorId == request.authorId) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 
