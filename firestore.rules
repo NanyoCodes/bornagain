@@ -76,6 +76,10 @@ service cloud.firestore {
         ))
       );
 
+      match /fellowships/{fId} {
+        allow get, list, write: if isOwner(userId);
+      }
+
       match /strongholds/{id} {
         allow read, write: if isOwner(userId);
       }
@@ -139,7 +143,7 @@ service cloud.firestore {
       match /posts/{postId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isOwner(resource.data.authorId));
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isOwner(resource.data.authorId));
         allow update: if isAuthenticated() && (
           (resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
@@ -171,7 +175,7 @@ service cloud.firestore {
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
         allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/foundational_armor/$(armorIdx)).data.authorId == request.auth.uid);
         allow update: if isAuthenticated() && (
-          (request.resource.data.authorId == request.auth.uid) ||
+          (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
         );
       }
@@ -198,9 +202,9 @@ service cloud.firestore {
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || string(resource.data.authorId).split('/').pop() == request.auth.uid);
       allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.auth.uid) || 
+        (resource.data.authorId == request.authorId) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 

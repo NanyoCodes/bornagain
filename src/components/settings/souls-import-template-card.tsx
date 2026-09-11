@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -35,7 +36,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface GoogleContact {
     resourceName: string;
@@ -361,7 +361,7 @@ export function SoulsImportTemplateCard() {
   const contactsListEl = (
     <div className="flex flex-col h-full text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-3 mb-2 text-left">
                 <Smartphone className="h-5 w-5 text-primary" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Network Sync</span>
             </div>
@@ -451,7 +451,7 @@ export function SoulsImportTemplateCard() {
   );
 
   return (
-    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10 text-left">
+    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10 text-left text-left">
       <CardHeader className="p-6 sm:p-8">
         <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
@@ -515,12 +515,20 @@ export function SoulsImportTemplateCard() {
             isMobile ? (
                 <Drawer open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
                     <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <DrawerHeader className="sr-only">
+                            <DrawerTitle>Contact Import Hub</DrawerTitle>
+                            <DrawerDescription>Select contacts to synchronize with your harvest dashboard.</DrawerDescription>
+                        </DrawerHeader>
                         {contactsListEl}
                     </DrawerContent>
                 </Drawer>
             ) : (
                 <Dialog open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                        <DialogHeader className="sr-only">
+                            <DialogTitle>Contact Import Hub</DialogTitle>
+                            <DialogDescription>Select contacts to synchronize with your harvest dashboard.</DialogDescription>
+                        </DialogHeader>
                         {contactsListEl}
                     </DialogContent>
                 </Dialog>
