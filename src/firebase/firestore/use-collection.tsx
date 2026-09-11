@@ -26,26 +26,34 @@ export function useCollection<T extends { id: string }>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  const activeQuery = useRef<Query<DocumentData> | null>(null);
+  // Use a state to store the "active" query that we are subscribed to.
+  // This allows us to compare the incoming query logically using queryEqual.
+  const [activeQuery, setActiveQuery] = useState<Query<DocumentData> | null>(null);
 
   useEffect(() => {
     if (!query) {
+      if (activeQuery !== null) setActiveQuery(null);
+      return;
+    }
+
+    // Check if the new query is logically equal to the current subscription.
+    // This prevents infinite loops when query objects are recreated on every render.
+    if (!activeQuery || !queryEqual(query, activeQuery)) {
+      setActiveQuery(query);
+    }
+  }, [query, activeQuery]);
+
+  useEffect(() => {
+    if (!activeQuery) {
       setData(null);
       setLoading(false);
       return;
     }
 
-    // Use queryEqual to check if the new query is logically identical to the existing one.
-    // This prevents infinite loops when query objects are recreated on every render.
-    if (activeQuery.current && queryEqual(query, activeQuery.current)) {
-      return;
-    }
-
-    activeQuery.current = query;
     setLoading(true);
     
     const unsubscribe = onSnapshot(
-      query,
+      activeQuery,
       (snapshot) => {
         const result: T[] = snapshot.docs.map(doc => ({ 
           id: doc.id, 
@@ -58,7 +66,7 @@ export function useCollection<T extends { id: string }>(
       },
       async (err) => {
         if (err.code === 'permission-denied') {
-          const path = (query as any)._query?.path?.canonicalString() ?? 'unknown collection';
+          const path = (activeQuery as any)._query?.path?.canonicalString() ?? 'unknown collection';
           const permissionError = new FirestorePermissionError({
             path,
             operation: 'list',
@@ -73,7 +81,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [query, user, options?.snapshotOptions]);
+  }, [activeQuery, user, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
