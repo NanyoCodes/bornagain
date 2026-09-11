@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -29,6 +30,7 @@ import {
 } from "lucide-react";
 import { 
   Dialog, 
+  DialogTrigger,
   DialogContent, 
   DialogHeader, 
   DialogTitle, 

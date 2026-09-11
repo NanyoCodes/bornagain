@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -816,7 +817,7 @@ function SoulProfileContent({
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.maritalStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-[7px) font-black uppercase text-muted-foreground/60 tracking-widest">Nickname</p>
+                        <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest">Nickname</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.nickname || 'N/A'}</p>
                     </div>
                 </div>
@@ -1091,10 +1092,10 @@ function SoulProfileContent({
             <DialogDescription className="text-sm font-medium">How would you like to encourage {soul.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
-            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
+            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
               <WhatsAppIcon className="h-5 w-5" /> WhatsApp
             </Button>
-            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
+            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
               <MessageSquare className="h-5 w-5" /> Standard SMS
             </Button>
           </div>
@@ -1366,18 +1367,18 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
         <Drawer open={!!selectedSoulId && !!selectedSoul && (isMobile || (mounted && typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && setSelectedSoulId(null)}>
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                    <DrawerHeader className="text-left flex-shrink-0 text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span>
+                    <DrawerHeader className="text-left flex-shrink-0 text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left">
+                            <Sparkles className="h-4 w-4 text-primary text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
                         </div>
-                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
+                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                     </DrawerHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left">
                     <div className="p-6 pb-24 text-left">
                         {profileView}
                     </div>
