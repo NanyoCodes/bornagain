@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '../ui/button';
-import { Newspaper, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const splashScriptures = [
@@ -92,14 +92,13 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 1.4, duration: 1 }}
-            className="w-full max-w-[200px] pt-4 text-left"
+            className="w-auto pt-4 text-left"
           >
             <Button 
               onClick={onDismiss}
-              className="w-full h-11 rounded-full font-black tracking-widest uppercase shadow-lg shadow-primary/20 text-[10px] group text-left"
+              className="w-auto h-11 px-8 rounded-full font-black tracking-widest uppercase shadow-lg shadow-primary/20 text-[10px] group text-left"
             >
-              <Newspaper className="mr-2 h-4 w-4 transition-transform group-hover:scale-110 text-left" />
-              DISMISS
+              Share the Greatness of GOD
             </Button>
           </motion.div>
         )}

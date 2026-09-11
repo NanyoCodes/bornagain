@@ -157,103 +157,103 @@ function FilteredSoulList({
                 <Accordion type="single" collapsible key={soul.id} className="w-full text-left text-left text-left">
                     <AccordionItem value={soul.id} className="border rounded-[1.5rem] bg-card overflow-hidden shadow-sm transition-all hover:border-primary/20 text-left text-left text-left">
                         <AccordionTrigger className="flex items-center justify-between p-3 sm:p-4 hover:no-underline group text-left text-left text-left">
-                            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left text-left text-left">
-                                <div className="flex -space-x-3 shrink-0 text-left text-left text-left">
-                                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm ring-1 ring-primary/5 text-left text-left">
-                                        <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left text-left" />
-                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
+                            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left text-left text-left text-left">
+                                <div className="flex -space-x-3 shrink-0 text-left text-left text-left text-left">
+                                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm ring-1 ring-primary/5 text-left text-left text-left">
+                                        <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left text-left text-left" />
+                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left text-left text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
-                                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm ring-1 ring-primary/5 text-left text-left">
-                                        <AvatarImage src={spouse.photoURL || undefined} className="object-cover text-left text-left" />
-                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left text-left">{spouse.firstName?.charAt(0)}</AvatarFallback>
+                                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm ring-1 ring-primary/5 text-left text-left text-left">
+                                        <AvatarImage src={spouse.photoURL || undefined} className="object-cover text-left text-left text-left" />
+                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left text-left text-left">{spouse.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                 </div>
-                                <div className="min-w-0 flex-1 space-y-1 text-left text-left text-left">
-                                    <p className="font-black text-[12px] sm:text-base uppercase tracking-tight leading-tight text-balance break-words [overflow-wrap:anywhere] text-left text-left">
+                                <div className="min-w-0 flex-1 space-y-1 text-left text-left text-left text-left">
+                                    <p className="font-black text-[12px] sm:text-base uppercase tracking-tight leading-tight text-balance break-words [overflow-wrap:anywhere] text-left text-left text-left">
                                         {soul.firstName} & {spouse.firstName}
                                     </p>
-                                    <div className="flex items-center gap-1.5 flex-wrap text-left text-left">
-                                        <Badge variant="outline" className="h-4 px-1 text-[7px] sm:text-[8px] font-black uppercase border-primary/20 text-primary bg-primary/5 leading-none text-left text-left">
+                                    <div className="flex items-center gap-1.5 flex-wrap text-left text-left text-left">
+                                        <Badge variant="outline" className="h-4 px-1 text-[7px] sm:text-[8px] font-black uppercase border-primary/20 text-primary bg-primary/5 leading-none text-left text-left text-left">
                                             Family Unit
                                         </Badge>
-                                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left text-left text-left">
+                                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left text-left text-left text-left">
                                             Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                                         </span>
                                     </div>
                                 </div>
                             </div>
                         </AccordionTrigger>
-                        <AccordionContent className="px-3 sm:px-4 pb-4 space-y-4 animate-in slide-in-from-top-2 duration-300 text-left text-left">
-                            <div className="space-y-3 text-left text-left">
-                                <div className="flex items-center justify-between px-1 text-left text-left">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Parents</p>
+                        <AccordionContent className="px-3 sm:px-4 pb-4 space-y-4 animate-in slide-in-from-top-2 duration-300 text-left text-left text-left">
+                            <div className="space-y-3 text-left text-left text-left">
+                                <div className="flex items-center justify-between px-1 text-left text-left text-left">
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">Parents</p>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left text-left text-left">
                                     <Button 
                                         variant="outline" 
-                                        className="justify-start h-14 gap-3 px-3 rounded-xl hover:bg-primary/5 border-dashed text-left text-left"
+                                        className="justify-start h-14 gap-3 px-3 rounded-xl hover:bg-primary/5 border-dashed text-left text-left text-left"
                                         onClick={() => onSelectSoul(soul)}
                                     >
-                                        <Avatar className="h-8 w-8 border shrink-0 text-left text-left"><AvatarFallback className="font-bold bg-background text-left"> {soul.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <div className="min-w-0 flex-1 text-left text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left text-left">{name}</p></div>
-                                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left text-left" />
+                                        <Avatar className="h-8 w-8 border shrink-0 text-left text-left text-left"><AvatarFallback className="font-bold bg-background text-left text-left"> {soul.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                        <div className="min-w-0 flex-1 text-left text-left text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left text-left text-left">{name}</p></div>
+                                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left text-left text-left" />
                                     </Button>
                                     <Button 
                                         variant="outline" 
-                                        className="justify-start h-14 gap-3 px-3 rounded-xl hover:bg-primary/5 border-dashed text-left text-left"
+                                        className="justify-start h-14 gap-3 px-3 rounded-xl hover:bg-primary/5 border-dashed text-left text-left text-left"
                                         onClick={() => onSelectSoul(spouse)}
                                     >
-                                        <Avatar className="h-8 w-8 border shrink-0 text-left text-left"><AvatarFallback className="font-bold bg-background text-left text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <div className="min-w-0 flex-1 text-left text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left text-left">{spouseName}</p></div>
-                                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left text-left" />
+                                        <Avatar className="h-8 w-8 border shrink-0 text-left text-left text-left"><AvatarFallback className="font-bold bg-background text-left text-left text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                        <div className="min-w-0 flex-1 text-left text-left text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left text-left text-left">{spouseName}</p></div>
+                                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left text-left text-left" />
                                     </Button>
                                 </div>
                             </div>
 
-                            <div className="space-y-3 text-left text-left">
-                                <div className="flex items-center justify-between px-1 text-left text-left text-left">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">Children ({children.length})</p>
+                            <div className="space-y-3 text-left text-left text-left">
+                                <div className="flex items-center justify-between px-1 text-left text-left text-left text-left">
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Children ({children.length})</p>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button 
                                                 variant="ghost" 
                                                 size="sm" 
-                                                className="h-6 text-[8px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left text-left"
+                                                className="h-6 text-[8px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left text-left text-left"
                                             >
-                                                <PlusCircle className="mr-1 h-3 w-3 text-left text-left" /> ADD CHILD
+                                                <PlusCircle className="mr-1 h-3 w-3 text-left text-left text-left" /> ADD CHILD
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="rounded-xl shadow-xl w-48 text-left text-left">
-                                            <DropdownMenuItem className="text-xs font-bold text-left text-left" onSelect={() => onAddChild([soul, spouse])}>
+                                        <DropdownMenuContent align="end" className="rounded-xl shadow-xl w-48 text-left text-left text-left">
+                                            <DropdownMenuItem className="text-xs font-bold text-left text-left text-left" onSelect={() => onAddChild([soul, spouse])}>
                                                 Log New Record
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem className="text-xs font-bold text-left text-left" onSelect={() => onLinkExistingChild([soul, spouse])}>
+                                            <DropdownMenuItem className="text-xs font-bold text-left text-left text-left" onSelect={() => onLinkExistingChild([soul, spouse])}>
                                                 Link Existing Soul
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
-                                <div className="space-y-2 text-left text-left">
+                                <div className="space-y-2 text-left text-left text-left">
                                     {children.map(child => (
                                         <Button 
                                             key={child.id}
                                             variant="ghost" 
-                                            className="w-full justify-start h-14 gap-3 px-3 rounded-xl bg-muted/20 hover:bg-primary/5 text-left text-left"
+                                            className="w-full justify-start h-14 gap-3 px-3 rounded-xl bg-muted/20 hover:bg-primary/5 text-left text-left text-left"
                                             onClick={() => onSelectSoul(child)}
                                         >
-                                            <Avatar className="h-8 w-8 border shrink-0 text-left text-left">
-                                                <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left text-left">{child.firstName.charAt(0)}</AvatarFallback>
+                                            <Avatar className="h-8 w-8 border shrink-0 text-left text-left text-left">
+                                                <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left text-left text-left">{child.firstName.charAt(0)}</AvatarFallback>
                                             </Avatar>
-                                            <div className="min-w-0 flex-1 text-left text-left">
-                                                <p className="font-bold text-xs truncate uppercase tracking-tight text-left text-left">{child.firstName} {child.lastName}</p>
-                                                <p className="text-[8px] font-black text-muted-foreground uppercase opacity-60 text-left text-left">{child.age ? `${child.age} Years` : 'Age N/A'}</p>
+                                            <div className="min-w-0 flex-1 text-left text-left text-left">
+                                                <p className="font-bold text-xs truncate uppercase tracking-tight text-left text-left text-left">{child.firstName} {child.lastName}</p>
+                                                <p className="text-[8px] font-black text-muted-foreground uppercase opacity-60 text-left text-left text-left">{child.age ? `${child.age} Years` : 'Age N/A'}</p>
                                             </div>
-                                            <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left text-left" />
+                                            <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left text-left text-left" />
                                         </Button>
                                     ))}
                                     {children.length === 0 && (
-                                        <div className="py-8 text-center bg-muted/10 rounded-2xl border border-dashed text-left text-left text-left text-left">
-                                            <p className="text-[10px] text-muted-foreground italic text-left text-left text-left text-left text-left">No children linked to this unit.</p>
+                                        <div className="py-8 text-center bg-muted/10 rounded-2xl border border-dashed text-left text-left text-left text-left text-left">
+                                            <p className="text-[10px] text-muted-foreground italic text-left text-left text-left text-left text-left text-left">No children linked to this unit.</p>
                                         </div>
                                     )}
                                 </div>
@@ -269,32 +269,32 @@ function FilteredSoulList({
             key={soul.id} 
             variant="ghost"
             onClick={() => onSelectSoul(soul)}
-            className="flex items-center justify-between p-3 sm:p-4 h-auto rounded-[1.5rem] hover:bg-primary/5 transition-all border bg-card group w-full text-left active:scale-[0.98] shadow-sm relative overflow-hidden text-left"
+            className="flex items-center justify-between p-3 sm:p-4 h-auto rounded-[1.5rem] hover:bg-primary/5 transition-all border bg-card group w-full text-left active:scale-[0.98] shadow-sm relative overflow-hidden text-left text-left"
           >
-            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left text-left text-left text-left">
-                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0 text-left text-left text-left text-left">
-                    <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left text-left text-left text-left text-left" />
-                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs sm:text-sm text-left text-left text-left text-left">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left text-left text-left text-left text-left">
+                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0 text-left text-left text-left text-left text-left">
+                    <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left text-left text-left text-left text-left text-left" />
+                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs sm:text-sm text-left text-left text-left text-left text-left">
                         {soul.firstName?.charAt(0) || 'S'}
                     </AvatarFallback>
                 </Avatar>
-                <div className="min-w-0 flex-1 space-y-1 text-left text-left text-left">
-                    <div className="flex items-center gap-2 flex-wrap text-left text-left text-left">
-                        <p className="font-black text-[13px] sm:text-base uppercase tracking-tight truncate leading-tight text-left text-left text-left">
+                <div className="min-w-0 flex-1 space-y-1 text-left text-left text-left text-left">
+                    <div className="flex items-center gap-2 flex-wrap text-left text-left text-left text-left">
+                        <p className="font-black text-[13px] sm:text-base uppercase tracking-tight truncate leading-tight text-left text-left text-left text-left">
                             {name}
                         </p>
                     </div>
-                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-left text-left text-left">
-                        <Badge variant="secondary" className="h-4 px-1 text-[7px] sm:text-[8px] uppercase font-black tracking-widest bg-muted/50 border-none leading-none text-left text-left text-left text-left">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-left text-left text-left text-left">
+                        <Badge variant="secondary" className="h-4 px-1 text-[7px] sm:text-[8px] uppercase font-black tracking-widest bg-muted/50 border-none leading-none text-left text-left text-left text-left text-left">
                             {soul.status}
                         </Badge>
-                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left text-left text-left text-left">
+                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left text-left text-left text-left text-left">
                             {soul.age ? `${soul.age} Yrs • ` : ''}Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                         </span>
                     </div>
                 </div>
             </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0 ml-2 text-left text-left" />
+            <ArrowRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0 ml-2 text-left text-left text-left" />
           </Button>
         );
       })}
@@ -929,57 +929,57 @@ export default function SoulsWonPage() {
   }, [souls, searchTerm]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto text-left">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-            <div className="lg:col-span-8 space-y-8 pb-32">
-                <header className="px-4 sm:px-0 space-y-6 pt-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                        <div className="space-y-1">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase">MY HARVEST</h1>
-                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2">
-                                <ClipboardList className="h-4 w-4 text-primary" /> Logged Records
+    <div className="w-full max-w-7xl mx-auto text-left text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
+            <div className="lg:col-span-8 space-y-8 pb-32 text-left">
+                <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
+                        <div className="space-y-1 text-left">
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY HARVEST</h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
+                                <ClipboardList className="h-4 w-4 text-primary text-left" /> Logged Records
                             </p>
                         </div>
-                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap w-full sm:w-auto">
+                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap w-full sm:w-auto text-left">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none">
-                                        <Download className="mr-2 h-4 w-4" /> EXPORT
+                                    <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none text-left">
+                                        <Download className="mr-2 h-4 w-4 text-left" /> EXPORT
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl">
-                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Select Format</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5">
-                                        <Download className="mr-2 h-4 w-4 opacity-40" /> CSV (Excel)
+                                <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl text-left">
+                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Select Format</DropdownMenuLabel>
+                                    <DropdownMenuSeparator className="text-left" />
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left">
+                                        <Download className="mr-2 h-4 w-4 opacity-40 text-left" /> CSV (Excel)
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5">
-                                        <Download className="mr-2 h-4 w-4 text-primary" /> PDF Report
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5 text-left">
+                                        <Download className="mr-2 h-4 w-4 text-primary text-left" /> PDF Report
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <Button onClick={() => { setChildImportConfig(null); setIsLogDialogOpen(true); }} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none">
-                                <PlusCircle className="mr-2 h-4 w-4" /> ADD SOUL
+                            <Button onClick={() => { setChildImportConfig(null); setIsLogDialogOpen(true); }} className="rounded-2xl font-black uppercase tracking-widest h-12 shadow-xl shadow-primary/20 flex-1 sm:flex-none text-left">
+                                <PlusCircle className="mr-2 h-4 w-4 text-left" /> ADD SOUL
                             </Button>
                         </div>
                     </div>
                 </header>
 
                 {soulsWithPhotos.length > 0 && (
-                    <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700">
-                        <div className="flex items-center justify-between mb-4 px-1">
-                            <div className="flex items-center gap-2">
-                                <ImageIcon className="h-4 w-4 text-primary" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">GALLERY OF MY SOULS</h3>
+                    <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700 text-left">
+                        <div className="flex items-center justify-between mb-4 px-1 text-left">
+                            <div className="flex items-center gap-2 text-left">
+                                <ImageIcon className="h-4 w-4 text-primary text-left" />
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left">GALLERY OF MY SOULS</h3>
                             </div>
                         </div>
                         <div 
-                            className="overflow-hidden relative w-full"
+                            className="overflow-hidden relative w-full text-left"
                             onMouseEnter={() => setIsGalleryPaused(true)}
                             onMouseLeave={() => setIsGalleryPaused(false)}
                         >
                             <motion.div 
-                                className="flex gap-4 w-max"
+                                className="flex gap-4 w-max text-left"
                                 animate={{ x: isGalleryPaused ? undefined : ["0%", "-33.3333333%"] }}
                                 transition={{
                                     x: {
@@ -991,24 +991,24 @@ export default function SoulsWonPage() {
                                 }}
                             >
                                 {duplicatedSouls.map((s, idx) => (
-                                    <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0">
+                                    <div key={`${s.id}-${idx}`} className="basis-[140px] sm:basis-[180px] shrink-0 text-left">
                                         <Dialog>
                                             <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-[0.98] transition-all">
+                                                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border-4 border-background shadow-xl cursor-pointer group active:scale-[0.98] transition-all text-left">
                                                     <Image 
                                                         src={s.photoURL!} 
                                                         alt={s.firstName} 
                                                         fill 
-                                                        className="object-cover transition-transform group-hover:scale-110 duration-500" 
+                                                        className="object-cover transition-transform group-hover:scale-110 duration-500 text-left" 
                                                         unoptimized 
                                                     />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                                                    <div className="absolute bottom-3 left-3 right-3 text-white">
-                                                        <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight">
-                                                            {s.nickname || s.firstName} {s.age && <span className="opacity-60 ml-1">({s.age})</span>}
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
+                                                    <div className="absolute bottom-3 left-3 right-3 text-white text-left">
+                                                        <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight text-left">
+                                                            {s.nickname || s.firstName} {s.age && <span className="opacity-60 ml-1 text-left">({s.age})</span>}
                                                         </p>
                                                         <Badge className={cn(
-                                                            "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1 shadow-sm",
+                                                            "text-white h-3.5 px-1 text-[7px] font-black uppercase border-none mt-1 shadow-sm text-left",
                                                             s.status === 'New' ? "bg-amber-500" : 
                                                             s.status === 'Contacted' ? "bg-blue-500" : 
                                                             "bg-green-500"
@@ -1016,15 +1016,15 @@ export default function SoulsWonPage() {
                                                     </div>
                                                 </div>
                                             </DialogTrigger>
-                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                                                <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
-                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
+                                                <DialogHeader className="sr-only text-left text-left"><DialogTitle className="text-left text-left">Soul Photo</DialogTitle></DialogHeader>
+                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left">
+                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
                                                         <Image 
                                                             src={s.photoURL!} 
                                                             alt={s.firstName} 
                                                             fill 
-                                                            className="object-contain shadow-2xl ring-4 ring-white/10" 
+                                                            className="object-contain shadow-2xl ring-4 ring-white/10 text-left text-left" 
                                                             unoptimized 
                                                         />
                                                     </div>
@@ -1038,20 +1038,20 @@ export default function SoulsWonPage() {
                     </div>
                 )}
 
-                <div className="px-4 sm:px-0 space-y-12">
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
-                                <BarChart3 className="h-5 w-5 text-primary" />
+                <div className="px-4 sm:px-0 space-y-12 text-left">
+                    <div className="space-y-4 text-left">
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
+                                <BarChart3 className="h-5 w-5 text-primary text-left" />
                             </div>
-                            <div className="min-w-0">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">DEMOGRAPHICS</h2>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Age Analysis</p>
+                            <div className="min-w-0 text-left">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">DEMOGRAPHICS</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Age Analysis</p>
                             </div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
-                            <CardContent className="p-6 sm:p-8 space-y-6">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
+                            <CardContent className="p-6 sm:p-8 space-y-6 text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                                     {[
                                         { label: 'Children (0-12)', count: ageGroups.children.count, color: 'bg-blue-500', icon: Sparkles },
                                         { label: 'Teens (13-19)', count: ageGroups.teens.count, color: 'bg-green-500', icon: Zap },
@@ -1067,23 +1067,23 @@ export default function SoulsWonPage() {
                                             <div 
                                                 key={group.label} 
                                                 className={cn(
-                                                    "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden",
+                                                    "space-y-3 p-4 rounded-2xl bg-background shadow-sm border group transition-all cursor-pointer relative overflow-hidden text-left",
                                                     "hover:border-primary/20"
                                                 )}
                                                 onClick={() => setSelectedFilterGroup({ type: 'age', value: group.label })}
                                             >
-                                                <div className="flex items-center justify-between">
-                                                    <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10">
-                                                        <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                                                <div className="flex items-center justify-between text-left">
+                                                    <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left">
+                                                        <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left" />
                                                     </div>
-                                                    <span className="font-black text-lg text-primary tracking-tighter">{group.count}</span>
+                                                    <span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span>
                                                 </div>
-                                                <div className="space-y-1">
-                                                    <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-                                                        <span>{group.label}</span>
-                                                        <span>{Math.round(percent)}%</span>
+                                                <div className="space-y-1 text-left">
+                                                    <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">
+                                                        <span className="text-left">{group.label}</span>
+                                                        <span className="text-left">{Math.round(percent)}%</span>
                                                     </div>
-                                                    <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={group.color} />
+                                                    <Progress value={percent} className="h-1.5 bg-muted text-left" indicatorClassName={group.color} />
                                                 </div>
                                             </div>
                                         );
@@ -1093,19 +1093,19 @@ export default function SoulsWonPage() {
                         </Card>
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
-                                <Users className="h-5 w-5 text-primary" />
+                    <div className="space-y-4 text-left">
+                        <div className="flex items-center gap-3 text-left text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left">
+                                <Users className="h-5 w-5 text-primary text-left text-left" />
                             </div>
-                            <div className="min-w-0">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">GENDER BALANCE</h2>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Kingdom Workforce Diversity</p>
+                            <div className="min-w-0 text-left text-left">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left">GENDER BALANCE</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left text-left">Kingdom Workforce Diversity</p>
                             </div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
-                            <CardContent className="p-6 sm:p-8">
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left text-left text-left">
+                            <CardContent className="p-6 sm:p-8 text-left text-left text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left text-left text-left text-left">
                                     {[
                                         { label: 'Male', count: genderStats.male.count, color: 'bg-blue-600' },
                                         { label: 'Female', count: genderStats.female.count, color: 'bg-rose-500' },
@@ -1115,16 +1115,16 @@ export default function SoulsWonPage() {
                                         return (
                                             <div 
                                               key={stat.label} 
-                                              className="space-y-3 p-6 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
+                                              className="space-y-3 p-6 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left text-left text-left"
                                               onClick={() => setSelectedFilterGroup({ type: 'gender', value: stat.label })}
                                             >
-                                                <div className="flex justify-between items-baseline">
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{stat.label}</p>
-                                                    <span className="text-2xl font-black text-primary tracking-tighter">{stat.count}</span>
+                                                <div className="flex justify-between items-baseline text-left text-left text-left">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">{stat.label}</p>
+                                                    <span className="text-2xl font-black text-primary tracking-tighter text-left text-left">{stat.count}</span>
                                                 </div>
-                                                <div className="space-y-1.5">
-                                                    <Progress value={percent} className="h-2 bg-muted" indicatorClassName={stat.color} />
-                                                    <p className="text-right text-[9px] font-black text-muted-foreground/60 uppercase">{Math.round(percent)}% OF HARVEST</p>
+                                                <div className="space-y-1.5 text-left text-left text-left">
+                                                    <Progress value={percent} className="h-2 bg-muted text-left text-left" indicatorClassName={stat.color} />
+                                                    <p className="text-right text-[9px] font-black text-muted-foreground/60 uppercase text-left text-left">{Math.round(percent)}% OF HARVEST</p>
                                                 </div>
                                             </div>
                                         );
@@ -1134,19 +1134,19 @@ export default function SoulsWonPage() {
                         </Card>
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
-                                <Heart className="h-5 w-5 text-primary" />
+                    <div className="space-y-4 text-left">
+                        <div className="flex items-center gap-3 text-left text-left text-left text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left text-left">
+                                <Heart className="h-5 w-5 text-primary text-left text-left text-left text-left" />
                             </div>
-                            <div className="min-w-0">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">MARITAL DEMOGRAPHICS</h2>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Family & Status Insights</p>
+                            <div className="min-w-0 text-left text-left text-left text-left">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left text-left">MARITAL DEMOGRAPHICS</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left text-left">Family & Status Insights</p>
                             </div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
-                            <CardContent className="p-6 sm:p-8">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left text-left text-left">
+                            <CardContent className="p-6 sm:p-8 text-left text-left text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left text-left text-left text-left text-left">
                                     {[
                                         { label: 'Married', count: maritalStats.married.count, color: 'bg-emerald-500', icon: Target },
                                         { label: 'Singles', count: maritalStats.single.count, color: 'bg-primary', icon: Sparkles },
@@ -1158,16 +1158,16 @@ export default function SoulsWonPage() {
                                         return (
                                             <div 
                                               key={stat.label} 
-                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
+                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left text-left text-left text-left text-left"
                                               onClick={() => setSelectedFilterGroup({ type: 'marital', value: stat.label })}
                                             >
-                                                <div className="flex justify-between items-center">
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{stat.label}</p>
-                                                    <span className="text-xl font-black text-primary tracking-tighter">{stat.count}</span>
+                                                <div className="flex justify-between items-center text-left text-left text-left text-left text-left">
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">{stat.label}</p>
+                                                    <span className="text-xl font-black text-primary tracking-tighter text-left text-left text-left text-left">{stat.count}</span>
                                                 </div>
-                                                <div className="space-y-1.5">
-                                                    <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={stat.color} />
-                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase">{Math.round(percent)}%</p>
+                                                <div className="space-y-1.5 text-left text-left text-left text-left text-left">
+                                                    <Progress value={percent} className="h-1.5 bg-muted text-left text-left text-left text-left text-left" indicatorClassName={stat.color} />
+                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left text-left text-left text-left">{Math.round(percent)}%</p>
                                                 </div>
                                             </div>
                                         );
@@ -1177,19 +1177,19 @@ export default function SoulsWonPage() {
                         </Card>
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
-                                <HandHeart className="h-5 w-5 text-primary" />
+                    <div className="space-y-4 text-left">
+                        <div className="flex items-center gap-3 text-left text-left text-left text-left text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left text-left text-left">
+                                <HandHeart className="h-5 w-5 text-primary text-left text-left text-left text-left text-left" />
                             </div>
-                            <div className="min-w-0">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight">KINGDOM COMPASSION</h2>
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">Social Standing & Support Insights</p>
+                            <div className="min-w-0 text-left text-left text-left text-left text-left">
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left text-left text-left">KINGDOM COMPASSION</h2>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left text-left text-left">Social Standing & Support Insights</p>
                             </div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden">
-                            <CardContent className="p-6 sm:p-8">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left text-left text-left text-left">
+                            <CardContent className="p-6 sm:p-8 text-left text-left text-left text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left text-left text-left text-left text-left text-left">
                                     {[
                                         { label: 'Orphans', count: compassionStats.orphans.count, color: 'bg-orange-500', icon: Heart },
                                         { label: 'Less Privileged', count: compassionStats.lessPrivileged.count, color: 'bg-emerald-600', icon: ShieldCheck },
@@ -1201,16 +1201,16 @@ export default function SoulsWonPage() {
                                         return (
                                             <div 
                                               key={stat.label} 
-                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
+                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left text-left text-left text-left text-left text-left"
                                               onClick={() => setSelectedFilterGroup({ type: 'compassion', value: stat.label })}
                                             >
-                                                <div className="flex justify-between items-center">
-                                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{stat.label}</p>
-                                                    <span className="text-xl font-black text-primary tracking-tighter">{stat.count}</span>
+                                                <div className="flex justify-between items-center text-left text-left text-left text-left text-left text-left">
+                                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left">{stat.label}</p>
+                                                    <span className="text-xl font-black text-primary tracking-tighter text-left text-left text-left text-left text-left">{stat.count}</span>
                                                 </div>
-                                                <div className="space-y-1.5">
-                                                    <Progress value={percent} className="h-1.5 bg-muted" indicatorClassName={stat.color} />
-                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase">{Math.round(percent)}%</p>
+                                                <div className="space-y-1.5 text-left text-left text-left text-left text-left text-left">
+                                                    <Progress value={percent} className="h-1.5 bg-muted text-left text-left text-left text-left text-left text-left" indicatorClassName={stat.color} />
+                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left text-left text-left text-left text-left">{Math.round(percent)}%</p>
                                                 </div>
                                             </div>
                                         );
@@ -1221,7 +1221,7 @@ export default function SoulsWonPage() {
                     </div>
                 </div>
 
-                <div className="px-4 sm:px-0 text-left">
+                <div className="px-4 sm:px-0 text-left text-left">
                     <RelationshipCircleTracker 
                         souls={souls || []}
                         campaigns={campaigns || []}
@@ -1230,7 +1230,7 @@ export default function SoulsWonPage() {
                     />
                 </div>
 
-                <div className="-mx-4 sm:mx-0 text-left">
+                <div className="-mx-4 sm:mx-0 text-left text-left">
                     <SoulsWonTable 
                         souls={filteredSouls || []} 
                         loading={loading}
@@ -1247,7 +1247,7 @@ export default function SoulsWonPage() {
                 </div>
             </div>
 
-            <div className="lg:col-span-4 text-left">
+            <div className="lg:col-span-4 text-left text-left">
                 <FeedSidebar mode="harvest" />
             </div>
         </div>
@@ -1255,19 +1255,19 @@ export default function SoulsWonPage() {
         {mounted && (
             isMobile ? (
                 <Drawer open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left">
-                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left">
-                                <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left text-left">
+                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
+                                <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Harvest Demographic</span>
                             </div>
-                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left">
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
+                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                             </DrawerHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left text-left">
-                            <div className="p-4 sm:p-8 text-left text-left">
+                        <ScrollArea className="flex-grow text-left text-left text-left">
+                            <div className="p-4 sm:p-8 text-left text-left text-left">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
@@ -1285,19 +1285,19 @@ export default function SoulsWonPage() {
                 </Drawer>
             ) : (
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
-                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left">
-                                <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left" />
+                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
+                                <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left" />
                             </div>
-                            <DialogHeader className="text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
-                                <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this demographic group.</DialogDescription>
+                            <DialogHeader className="text-left text-left text-left text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
+                                <DialogDescription className="text-sm font-medium text-left text-left text-left">Viewing all souls within this demographic group.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="max-h-[60vh] text-left text-left">
-                            <div className="p-4 sm:p-8 text-left text-left">
+                        <ScrollArea className="max-h-[60vh] text-left text-left text-left">
+                            <div className="p-4 sm:p-8 text-left text-left text-left">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
@@ -1317,30 +1317,30 @@ export default function SoulsWonPage() {
         )}
 
         <Dialog open={isLinkChildDialogOpen} onOpenChange={setIsLinkChildDialogOpen}>
-            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 text-left text-left">
-                    <DialogHeader className="text-left text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Link Existing Soul</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Select an existing soul to add as a child to the selected parents.</DialogDescription>
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                    <DialogHeader className="text-left text-left text-left">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase text-left text-left">Link Existing Soul</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left text-left text-left">Select an existing soul to add as a child to the selected parents.</DialogDescription>
                     </DialogHeader>
                 </div>
-                <div className="p-6 text-left">
-                    <ScrollArea className="h-80 text-left text-left">
-                        <div className="space-y-2 text-left text-left text-left">
+                <div className="p-6 text-left text-left">
+                    <ScrollArea className="h-80 text-left text-left text-left">
+                        <div className="space-y-2 text-left text-left text-left text-left">
                             {souls?.filter(s => !s.parentIds?.length && !linkingParents?.some(p => p.id === s.id)).map(s => (
                                 <Button 
                                     key={s.id} 
                                     variant="ghost" 
-                                    className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group text-left flex items-center"
+                                    className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group text-left flex items-center text-left"
                                     onClick={() => handleLinkExistingChild(s)}
                                     disabled={isUploading}
                                 >
-                                    <Avatar className="h-8 w-8 border shrink-0 text-left"><AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-center flex items-center justify-center w-full h-full text-left">{s.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                    <span className="font-bold text-sm uppercase tracking-tight text-left">{s.firstName} {s.lastName}</span>
+                                    <Avatar className="h-8 w-8 border shrink-0 text-left text-left text-left"><AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-center flex items-center justify-center w-full h-full text-left text-left">{s.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                    <span className="font-bold text-sm uppercase tracking-tight text-left text-left">{s.firstName} {s.lastName}</span>
                                 </Button>
                             ))}
                             {souls?.filter(s => !s.parentIds?.length && !linkingParents?.some(p => p.id === s.id)).length === 0 && (
-                                <p className="text-center text-xs text-muted-foreground py-12 text-left">No available unlinked souls found.</p>
+                                <p className="text-center text-xs text-muted-foreground py-12 text-left text-left">No available unlinked souls found.</p>
                             )}
                         </div>
                     </ScrollArea>
@@ -1360,17 +1360,17 @@ export default function SoulsWonPage() {
         <SoulAssessmentDialog soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
-                <AlertDialogHeader className="text-left text-left">
-                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
+                <AlertDialogHeader className="text-left text-left text-left">
+                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left">Delete Record?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left">
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+                <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
                         Confirm Removal
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -1381,11 +1381,11 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                                <DrawerHeader className="text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm text-left text-left text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left">
                                 <LogSoulForm 
                                     onSoulLogged={() => { setIsLogDialogOpen(false); setChildImportConfig(null); }} 
                                     fellowships={fellowships || []} 
@@ -1400,11 +1400,11 @@ export default function SoulsWonPage() {
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle><DrawerDescription className="text-sm text-left">Update soul identity and mission details.</DrawerDescription></DrawerHeader>
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                                <DrawerHeader className="text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Edit Record</DrawerTitle><DrawerDescription className="text-sm text-left text-left text-left">Update soul identity and mission details.</DrawerDescription></DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left text-left text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DrawerContent>
@@ -1413,14 +1413,14 @@ export default function SoulsWonPage() {
             ) : (
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                                <DialogHeader className="text-left text-left text-left text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline text-left">Add New Soul</DialogTitle>
-                                    <DialogDescription className="text-left">Record a new life won for Christ.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
+                                <DialogHeader className="text-left text-left text-left text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DialogTitle>
+                                    <DialogDescription className="text-left text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left text-left">
                                 <LogSoulForm 
                                     onSoulLogged={() => { setIsLogDialogOpen(false); setChildImportConfig(null); }} 
                                     fellowships={fellowships || []} 
@@ -1435,14 +1435,14 @@ export default function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                                <DialogHeader className="text-left text-left text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
-                                    <DialogDescription className="text-left">Update soul identity and mission details.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
+                                <DialogHeader className="text-left text-left text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left">Edit Record</DialogTitle>
+                                    <DialogDescription className="text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DialogContent>

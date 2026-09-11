@@ -148,7 +148,7 @@ function CartButton() {
   );
 }
 
-function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendors }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, userVendors: VendorProfile[] | null }) {
+function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean }) {
   const { user } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
@@ -390,25 +390,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                   </DropdownMenuItem>
                 </div>
 
-                {userVendors && userVendors.length > 0 && (
-                   <>
-                    <DropdownMenuSeparator className="text-left" />
-                    <div className="p-1 space-y-1 text-left">
-                      <p className="text-[9px] font-black uppercase text-primary/60 px-3 py-1.5 tracking-[0.2em] text-left">My Storefronts</p>
-                      {userVendors.map(v => (
-                        <DropdownMenuItem key={v.id} asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                          <Link href={`/marketplace/vendors/${v.id}`} className="flex items-center gap-3 w-full text-left">
-                            <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 text-left">
-                              <Package className="h-3.5 w-3.5 text-primary text-left" />
-                            </div>
-                            <span className="text-[11px] font-black uppercase tracking-tight truncate text-left">{v.businessName}</span>
-                          </Link>
-                        </DropdownMenuItem>
-                      ))}
-                    </div>
-                   </>
-                )}
-
                 <DropdownMenuSeparator className="text-left" />
                 
                 <div className="p-1 space-y-1 text-left">
@@ -447,7 +428,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
               <Link href="/login" className="text-left">Sign In</Link>
             </Button>
             <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
-              <Link href="/" className="text-left">Get Started</Link>
+              <Link href="/signup" className="text-left">Join Movement</Link>
             </Button>
           </div>
         ) : (
@@ -599,7 +580,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   const unreadChatNotificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', CHAT_NOTIFICATION_TYPES), where('isRead', '==', false));
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
   }, [user?.uid, firestore]);
   const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotificationsQuery);
 
@@ -608,12 +589,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', SYSTEM_NOTIFICATION_TYPES), where('isRead', '==', false));
   }, [user?.uid, firestore]);
   const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotificationsQuery);
-
-  const userVendorsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, 'vendors'), where('userId', '==', user.uid));
-  }, [user?.uid, firestore]);
-  const { data: userVendors } = useCollection<VendorProfile>(userVendorsQuery);
 
   useEffect(() => {
     if (!authLoading && !user && !isPublicRoute) router.push('/login');
@@ -673,7 +648,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
                 unreadChatCount={unreadChatNotifications?.length || 0} 
                 unreadNotifCount={unreadOtherNotifications?.length || 0}
                 isPublicRoute={isPublicRoute}
-                userVendors={userVendors || null}
             />
             )}
           </Suspense>

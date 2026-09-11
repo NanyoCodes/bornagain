@@ -31,7 +31,7 @@ import {
   writeBatch,
   collectionGroup,
 } from 'firebase/firestore';
-import type { Note, NoteCategory, BibleHighlight, ReadingHistoryItem, UserProfile } from '@/lib/types';
+import type { Note, NoteCategory, BibleHighlight, ReadingHistoryItem, UserProfile, DailyDevotional, TestimonyComment } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay } from 'date-fns';
 import {
@@ -166,7 +166,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
                     </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
-                    <AlertDialogHeader className="text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline text-left">Delete highlight?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium text-left">This action cannot be undone and will remove your revelation from the journal.</AlertDialogDescription>
                     </AlertDialogHeader>
@@ -411,7 +411,7 @@ export default function BibleReaderPage() {
             return; 
         }
         setActiveHighlightId(null);
-        const newSelection = selectedVerses.includes(verseNumber) ? selectedVerses.filter(v => v !== verseNumber) : [...selectedVerses, verseNumber].sort((a, b) => a - b);
+        const newSelection = selectedVerses.includes(verseNumber) ? selectedVerses.filter(v => v !== verseNumber) : [...selectedVerses, verseNumber].sort((a, b) => t - b);
         setSelectedVerses(newSelection);
         const targetVerseNum = newSelection[0] || verseNumber;
         const verseElement = document.getElementById(`verse-${targetVerseNum}`);
@@ -610,7 +610,7 @@ export default function BibleReaderPage() {
             {view === 'read' && (
                 <div className="flex-grow flex flex-col min-h-0 text-left">
                     <div className="flex items-center justify-between gap-3 p-2 sm:px-6 bg-muted/20 border-b sticky top-0 z-20 backdrop-blur-sm text-left">
-                        <div className="flex items-center gap-1.5 min-w-0 text-left">
+                        <div className="flex items-center gap-1.5 min-w-0 text-left text-left">
                             <Select value={selectedBookName} onValueChange={setSelectedBookName}>
                                 <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-black text-xs sm:text-sm rounded-full hover:bg-accent transition-colors text-left text-left">
                                   <SelectValue className="text-left" />
@@ -635,7 +635,7 @@ export default function BibleReaderPage() {
                                   <ScrollArea className="h-72 text-left">
                                     <div className="grid grid-cols-5 gap-1 p-3 text-left">
                                       {selectedBook?.chapters.map(c => (
-                                        <Button key={c.chapter} variant={c.chapter === selectedChapterNumber ? "default" : "ghost"} size="sm" className={cn("h-10 w-10 font-black text-xs rounded-xl text-left", c.chapter === selectedChapterNumber ? "shadow-md text-left" : "")} onClick={() => { setSelectedChapterNumber(c.chapter); setIsChapterPopoverOpen(false); }}>
+                                        <Button key={c.chapter} variant={c.chapter === selectedChapterNumber ? "default" : "ghost"} size="sm" className={cn("h-10 w-10 font-black text-xs rounded-xl text-left", c.chapter === selectedChapterNumber ? "shadow-md text-left" : "")} onClick={() => { handleSelectChapter(c.chapter); }}>
                                             {c.chapter}
                                         </Button>
                                       ))}
@@ -705,11 +705,11 @@ export default function BibleReaderPage() {
                             </ScrollArea>
                         </div>
                         <div className="hidden lg:flex lg:w-96 flex-col border-l bg-muted/10 p-6 min-h-0 text-left overflow-hidden text-left">
-                            <h3 className="font-headline font-black uppercase tracking-tight text-xl mb-4 flex items-center gap-2.5 text-left">
-                                <Highlighter className="h-5 w-5 text-primary text-left" />
+                            <h3 className="font-headline font-black uppercase tracking-tight text-xl mb-4 flex items-center gap-2.5 text-left text-left">
+                                <Highlighter className="h-5 w-5 text-primary text-left text-left" />
                                 Shared Journal
                             </h3>
-                            <ScrollArea className="flex-grow pr-4 -mr-4 text-left">
+                            <ScrollArea className="flex-grow pr-4 -mr-4 text-left text-left text-left">
                                 {NotesList}
                             </ScrollArea>
                         </div>
@@ -725,7 +725,7 @@ export default function BibleReaderPage() {
                             <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Shared Journal</DrawerTitle>
                             <DrawerDescription className="text-xs font-medium text-left">Study the Word together with your accountability alliance.</DrawerDescription>
                         </DrawerHeader>
-                        <div className="flex-grow overflow-y-auto p-4 sm:p-6 bg-muted/5 text-left">
+                        <div className="flex-grow overflow-y-auto p-4 sm:p-6 bg-muted/5 text-left text-left text-left">
                             {NotesList}
                         </div>
                       </DrawerContent>
