@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   onSnapshot, 
   queryEqual, 
@@ -26,30 +26,28 @@ export function useCollection<T extends { id: string }>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  const [activeQuery, setActiveQuery] = useState<Query<DocumentData> | null>(null);
+  // Use a ref to track the current query to avoid infinite loops
+  // with logically identical but referentially different queries.
+  const queryRef = useRef<Query<DocumentData> | null>(null);
 
   useEffect(() => {
     if (!query) {
-      if (activeQuery !== null) setActiveQuery(null);
-      return;
-    }
-
-    if (!activeQuery || !queryEqual(query, activeQuery)) {
-      setActiveQuery(query);
-    }
-  }, [query, activeQuery]);
-
-  useEffect(() => {
-    if (!activeQuery) {
       setData(null);
       setLoading(false);
+      queryRef.current = null;
       return;
     }
 
+    // Identify if the new query is logically equivalent to the current one
+    if (queryRef.current && queryEqual(query, queryRef.current)) {
+      return;
+    }
+
+    queryRef.current = query;
     setLoading(true);
     
     const unsubscribe = onSnapshot(
-      activeQuery,
+      query,
       (snapshot) => {
         const result: T[] = snapshot.docs.map(doc => ({ 
           id: doc.id, 
@@ -62,7 +60,8 @@ export function useCollection<T extends { id: string }>(
       },
       async (err) => {
         if (err.code === 'permission-denied') {
-          const path = (activeQuery as any)._query?.path?.canonicalString() ?? 'unknown collection';
+          // Attempt to extract the path from the internal query object for debugging context
+          const path = (query as any)._query?.path?.canonicalString() || 'unknown path';
           const permissionError = new FirestorePermissionError({
             path,
             operation: 'list',
@@ -77,7 +76,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [activeQuery, user, options?.snapshotOptions]);
+  }, [query, user, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

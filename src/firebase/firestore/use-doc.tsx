@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   onSnapshot, 
   refEqual, 
@@ -26,30 +26,26 @@ export function useDoc<T>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  const [activeRef, setActiveRef] = useState<DocumentReference<DocumentData> | null>(null);
+  // Stabilize reference comparison to prevent infinite loops
+  const activeRef = useRef<DocumentReference<DocumentData> | null>(null);
 
   useEffect(() => {
     if (!docRef) {
-      if (activeRef !== null) setActiveRef(null);
-      return;
-    }
-
-    if (!activeRef || !refEqual(docRef, activeRef)) {
-      setActiveRef(docRef);
-    }
-  }, [docRef, activeRef]);
-
-  useEffect(() => {
-    if (!activeRef) {
       setLoading(false);
       setData(null);
+      activeRef.current = null;
       return;
     }
 
+    if (activeRef.current && refEqual(docRef, activeRef.current)) {
+      return;
+    }
+
+    activeRef.current = docRef;
     setLoading(true);
     
     const unsubscribe = onSnapshot(
-      activeRef,
+      docRef,
       (doc) => {
         const newDocData = doc.exists()
           ? ({
@@ -65,7 +61,7 @@ export function useDoc<T>(
       async (err) => {
         if (err.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
-              path: activeRef.path,
+              path: docRef.path,
               operation: 'get',
             }, user);
             errorEmitter.emit('permission-error', permissionError);
@@ -78,7 +74,7 @@ export function useDoc<T>(
     );
 
     return () => unsubscribe();
-  }, [activeRef, user, options?.snapshotOptions]);
+  }, [docRef, user, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
