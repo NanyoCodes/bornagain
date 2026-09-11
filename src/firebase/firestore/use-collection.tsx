@@ -1,8 +1,14 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import type { Query, DocumentData, SnapshotOptions, FirestoreError } from 'firebase/firestore';
-import { onSnapshot } from 'firebase/firestore';
+import { 
+  onSnapshot, 
+  queryEqual, 
+  type Query, 
+  type DocumentData, 
+  type SnapshotOptions, 
+  type FirestoreError 
+} from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError } from '../errors';
 import { useUser } from '../auth/use-user';
@@ -31,8 +37,8 @@ export function useCollection<T extends { id: string }>(
     }
 
     // Check if the new query is logically equal to the current subscription
-    // We use a defensive check for isEqual to avoid TypeErrors in proxied environments
-    if (activeQuery.current && (query as any).isEqual && (query as any).isEqual(activeQuery.current)) {
+    // using the SDK's queryEqual utility.
+    if (activeQuery.current && queryEqual(query, activeQuery.current)) {
       return;
     }
 
@@ -51,7 +57,7 @@ export function useCollection<T extends { id: string }>(
         setLoading(false);
         setError(null);
       },
-      (err) => {
+      async (err) => {
         if (err.code === 'permission-denied') {
           const permissionError = new FirestorePermissionError({
             path: (query as any)._query?.path?.canonicalString() ?? 'unknown collection',
@@ -69,7 +75,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [query, user, JSON.stringify(options?.snapshotOptions)]);
+  }, [query, user, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

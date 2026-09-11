@@ -1,8 +1,14 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import type { DocumentReference, DocumentData, SnapshotOptions, FirestoreError } from 'firebase/firestore';
-import { onSnapshot } from 'firebase/firestore';
+import { 
+  onSnapshot, 
+  refEqual, 
+  type DocumentReference, 
+  type DocumentData, 
+  type SnapshotOptions, 
+  type FirestoreError 
+} from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError } from '../errors';
 import { useUser } from '../auth/use-user';
@@ -31,8 +37,7 @@ export function useDoc<T>(
     }
 
     // Check if the new ref is logically equal to the current subscription
-    // We use a defensive check for isEqual to avoid TypeErrors in proxied environments
-    if (activeRef.current && (docRef as any).isEqual && (docRef as any).isEqual(activeRef.current)) {
+    if (activeRef.current && refEqual(docRef, activeRef.current)) {
       return;
     }
 
@@ -53,7 +58,7 @@ export function useDoc<T>(
         setLoading(false);
         setError(null);
       },
-      (err) => {
+      async (err) => {
         if (err.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
               path: docRef.path,
@@ -71,7 +76,7 @@ export function useDoc<T>(
     );
 
     return () => unsubscribe();
-  }, [docRef, user, JSON.stringify(options?.snapshotOptions)]);
+  }, [docRef, user, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

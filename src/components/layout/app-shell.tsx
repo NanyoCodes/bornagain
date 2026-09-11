@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useState, useRef, Suspense, useCallback } from "react";
+import React, { useEffect, useMemo, useState, useRef, useCallback, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -162,11 +162,23 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   // Suggestions Collections
-  const { data: allTestimonies } = useCollection<Testimony>(query(collection(firestore, 'testimonies'), limit(20)));
-  const { data: allPrayers } = useCollection<PrayerRequest>(query(collection(firestore, 'prayerRequests'), limit(20)));
-  const { data: allCampaigns } = useCollection<Campaign>(query(collection(firestore, 'campaigns'), where('status', '==', 'active'), limit(20)));
-  const { data: allFellowships } = useCollection<Fellowship>(query(collection(firestore, 'fellowships'), where('status', '==', 'active'), limit(20)));
-  const { data: allSouls } = useCollection<Soul>(user ? query(collection(firestore, 'users', user.uid, 'souls'), limit(20)) : null);
+  const testimoniesRef = useMemo(() => firestore ? collection(firestore, 'testimonies') : null, [firestore]);
+  const prayersRef = useMemo(() => firestore ? collection(firestore, 'prayerRequests') : null, [firestore]);
+  const campaignsRef = useMemo(() => firestore ? collection(firestore, 'campaigns') : null, [firestore]);
+  const fellowshipsRef = useMemo(() => firestore ? collection(firestore, 'fellowships') : null, [firestore]);
+  const soulsRef = useMemo(() => (user && firestore) ? collection(firestore, 'users', user.uid, 'souls') : null, [user, firestore]);
+
+  const testimoniesQuery = useMemo(() => testimoniesRef ? query(testimoniesRef, limit(20)) : null, [testimoniesRef]);
+  const prayersQuery = useMemo(() => prayersRef ? query(prayersRef, limit(20)) : null, [prayersRef]);
+  const campaignsQuery = useMemo(() => campaignsRef ? query(campaignsRef, where('status', '==', 'active'), limit(20)) : null, [campaignsRef]);
+  const fellowshipsQuery = useMemo(() => fellowshipsRef ? query(fellowshipsRef, where('status', '==', 'active'), limit(20)) : null, [fellowshipsRef]);
+  const soulsQuery = useMemo(() => soulsRef ? query(soulsRef, limit(20)) : null, [soulsRef]);
+
+  const { data: allTestimonies } = useCollection<Testimony>(testimoniesQuery);
+  const { data: allPrayers } = useCollection<PrayerRequest>(prayersQuery);
+  const { data: allCampaigns } = useCollection<Campaign>(campaignsQuery);
+  const { data: allFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+  const { data: allSouls } = useCollection<Soul>(soulsQuery);
 
   const suggestions = useMemo(() => {
     if (!searchTerm || searchTerm.length < 2) return [];
@@ -581,6 +593,8 @@ function BottomNavBar() {
     );
 }
 
+const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
+
 function ShellInner({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useUser();
   const { userProfile, loading: profileLoading } = useUserProfile();
@@ -607,7 +621,6 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
 
     // Boot splash logic
-    const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
     const lastShown = typeof window !== 'undefined' ? localStorage.getItem('testify_splash_last_shown') : null;
     const forceSplash = typeof window !== 'undefined' ? sessionStorage.getItem('testify_force_splash') === 'true' : false;
     const now = Date.now();
