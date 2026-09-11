@@ -152,7 +152,7 @@ function CartButton() {
 }
 
 function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean }) {
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
   const { userProfile } = useUserProfile();
   const pathname = usePathname();
   const auth = useAuth();
@@ -165,14 +165,14 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   // Suggested Queries for Search Suggestions
   const allTestimoniesQuery = useMemo(() => firestore ? query(collection(firestore, 'testimonies'), limit(15)) : null, [firestore]);
   const allPrayersQuery = useMemo(() => firestore ? query(collection(firestore, 'prayerRequests'), limit(15)) : null, [firestore]);
-  const allActiveCampaignsQuery = useMemo(() => firestore ? query(collection(firestore, 'campaigns'), where('status', '==', 'active'), limit(15)) : null, [firestore]);
-  const allActiveFellowshipsQuery = useMemo(() => firestore ? query(collection(firestore, 'fellowships'), where('status', '==', 'active'), limit(15)) : null, [firestore]);
+  const allCampaignsQuery = useMemo(() => firestore ? query(collection(firestore, 'campaigns'), where('status', '==', 'active'), limit(15)) : null, [firestore]);
+  const allFellowshipsQuery = useMemo(() => firestore ? query(collection(firestore, 'fellowships'), where('status', '==', 'active'), limit(15)) : null, [firestore]);
   const soulsQuery = useMemo(() => (user && firestore) ? query(collection(firestore, 'users', user.uid, 'souls'), limit(15)) : null, [user, firestore]);
 
   const { data: allTestimonies } = useCollection<Testimony>(allTestimoniesQuery);
   const { data: allPrayers } = useCollection<PrayerRequest>(allPrayersQuery);
-  const { data: allCampaigns } = useCollection<Campaign>(allActiveCampaignsQuery);
-  const { data: allFellowships } = useCollection<Fellowship>(allActiveFellowshipsQuery);
+  const { data: allCampaigns } = useCollection<Campaign>(allCampaignsQuery);
+  const { data: allFellowships } = useCollection<Fellowship>(allFellowshipsQuery);
   const { data: allSouls } = useCollection<Soul>(soulsQuery);
 
   const suggestions = useMemo(() => {
@@ -253,21 +253,21 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                                 <Button 
                                     key={s.id} 
                                     variant="ghost" 
-                                    className="w-full justify-start h-14 rounded-2xl gap-4 hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all"
+                                    className="w-full justify-start h-14 rounded-2xl gap-4 hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all text-left"
                                     onClick={() => {
                                         router.push(s.link);
                                         setShowMobileSearch(false);
                                         setSearchTerm('');
                                     }}
                                 >
-                                    <div className="h-9 w-9 rounded-xl bg-muted group-hover:bg-primary/10 flex items-center justify-center shrink-0 transition-colors">
-                                        <s.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                                    <div className="h-9 w-9 rounded-xl bg-muted group-hover:bg-primary/10 flex items-center justify-center shrink-0 transition-colors text-left">
+                                        <s.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left" />
                                     </div>
-                                    <div className="min-w-0 flex-1">
-                                        <p className="font-black text-sm uppercase tracking-tight truncate">{s.title}</p>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">{s.type}</p>
+                                    <div className="min-w-0 flex-1 text-left">
+                                        <p className="font-black text-sm uppercase tracking-tight truncate text-left">{s.title}</p>
+                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">{s.type}</p>
                                     </div>
-                                    <ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity" />
+                                    <ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity text-left" />
                                 </Button>
                             ))}
                         </div>
@@ -285,8 +285,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                         <div className="h-16 w-16 bg-primary/5 rounded-full flex items-center justify-center mb-6">
                             <Sparkles className="h-8 w-8 text-primary opacity-20" />
                         </div>
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-30 text-center text-balance">Kingdom Search</h3>
-                        <p className="text-sm text-muted-foreground max-w-[250px] mx-auto mt-2 italic leading-relaxed font-medium text-center text-balance">Search for souls, campaigns, testimonies or fellowship groups in the harvest network.</p>
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-30 text-center text-balance text-left">Kingdom Search</h3>
+                        <p className="text-sm text-muted-foreground max-w-[250px] mx-auto mt-2 italic leading-relaxed font-medium text-center text-balance text-left">Search for souls, campaigns, testimonies or fellowship groups in the harvest network.</p>
                     </div>
                 )}
             </div>
@@ -388,123 +388,123 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal p-4">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-black leading-tight truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
-                    <p className="text-[10px] text-muted-foreground truncate font-bold uppercase tracking-wider">{user.email}</p>
+              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar text-left" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal p-4 text-left">
+                  <div className="flex flex-col space-y-1 text-left text-left">
+                    <p className="text-sm font-black leading-tight truncate uppercase tracking-tight text-left">{user.displayName || 'User'}</p>
+                    <p className="text-[10px] text-muted-foreground truncate font-bold uppercase tracking-wider text-left">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
                 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1 space-y-1">
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/profile" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                        <User className="h-3.5 w-3.5" />
+                <div className="p-1 space-y-1 text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/profile" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
+                        <User className="h-3.5 w-3.5 text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Profile Identity</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Profile Identity</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/accountability" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                        <HeartHandshake className="h-3.5 w-3.5" />
+                    <Link href="/accountability" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
+                        <HeartHandshake className="h-3.5 w-3.5 text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Partners</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Partners</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/settings" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                        <Settings className="h-3.5 w-3.5" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/settings" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
+                        <Settings className="h-3.5 w-3.5 text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Settings</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Settings</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1 space-y-1">
+                <div className="p-1 space-y-1 text-left text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Kingdom Hubs</p>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/victory-hub" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left text-left">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
+                        <ShieldCheck className="h-3.5 w-3.5 text-primary text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/fellowships" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Users className="h-3.5 w-3.5 text-primary" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/fellowships" className="flex items-center gap-3 w-full text-left text-left text-left">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
+                        <Users className="h-3.5 w-3.5 text-primary text-left text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left">Fellowship Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/events" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <CalendarDays className="h-3.5 w-3.5 text-primary" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/events" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
+                        <CalendarDays className="h-3.5 w-3.5 text-primary text-left text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Events Hub</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Events Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/marketplace" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                        <Store className="h-3.5 w-3.5 text-blue-600" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/marketplace" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center text-left">
+                        <Store className="h-3.5 w-3.5 text-blue-600 text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Meals Provision</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-                        <Gift className="h-3.5 w-3.5 text-indigo-600" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
+                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-left">
+                        <Gift className="h-3.5 w-3.5 text-indigo-600 text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                        <Package className="h-3.5 w-3.5" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
+                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left">
+                        <Package className="h-3.5 w-3.5 text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1 space-y-1">
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                      <Link href="/guide" className="flex items-center gap-3 w-full">
-                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                          <Info className="h-3.5 w-3.5" />
+                <div className="p-1 space-y-1 text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                      <Link href="/guide" className="flex items-center gap-3 w-full text-left text-left">
+                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
+                          <Info className="h-3.5 w-3.5 text-left" />
                         </div>
                         <span className="text-[11px] font-bold uppercase tracking-widest text-left">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
-                      <Link href="/resources" className="flex items-center gap-3 w-full">
-                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                          <BookMarked className="h-3.5 w-3.5" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                      <Link href="/resources" className="flex items-center gap-3 w-full text-left text-left">
+                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left">
+                          <BookMarked className="h-3.5 w-3.5 text-left" />
                         </div>
                         <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kingdom Library</span>
                       </Link>
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1">
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer">
-                    <LogOut className="mr-3 h-4 w-4" />
+                <div className="p-1 text-left">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer text-left">
+                    <LogOut className="mr-3 h-4 w-4 text-left" />
                     <span className="text-[11px] font-black uppercase tracking-[0.2em] text-left">Sign Out</span>
                   </DropdownMenuItem>
                 </div>
@@ -512,16 +512,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </DropdownMenu>
           </>
         ) : showGuestButtons ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-left">
             <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold">
-              <Link href="/login">Sign In</Link>
+              <Link href="/login" className="text-left">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20">
-              <Link href="/signup">Join Movement</Link>
+            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
+              <Link href="/signup" className="text-left">Join Movement</Link>
             </Button>
           </div>
         ) : (
-          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
+          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted text-left" />
         )}
       </div>
     </header>
@@ -537,8 +537,8 @@ function BottomNavBar() {
     );
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4.5rem] h-auto items-center justify-around px-1 py-1">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)] text-left">
+        <div className="flex min-h-[4.5rem] h-auto items-center justify-around px-1 py-1 text-left">
           {bottomNavItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -546,11 +546,11 @@ function BottomNavBar() {
                 key={item.href}
                 href={item.href}
                 prefetch={true}
-                className="relative flex flex-1 flex-col items-center justify-center min-w-0"
+                className="relative flex flex-1 flex-col items-center justify-center min-w-0 text-left"
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex flex-col items-center justify-center rounded-xl px-1 py-1 min-h-[56px] w-full"
+                  className="relative flex flex-col items-center justify-center rounded-xl px-1 py-1 min-h-[56px] w-full text-left"
                   whileTap={{ scale: 0.85 }}
                 >
                   {isActive && (
@@ -567,13 +567,13 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10 flex flex-col items-center justify-center",
+                      "relative z-10 flex flex-col items-center justify-center text-left",
                       isActive ? "text-white" : "text-muted-foreground"
                     )}
                   >
                     <item.icon className={cn("h-6 w-6 mb-1", !isActive && item.color)} />
                     <span className={cn(
-                        "text-[8px] font-black uppercase tracking-tighter transition-all leading-none text-center",
+                        "text-[8px] font-black uppercase tracking-tighter transition-all leading-none text-center text-left",
                         isActive ? "opacity-100" : "opacity-60"
                     )}>
                         {item.label}
@@ -705,9 +705,6 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
 
   const isProfileIncomplete = !!(user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim()));
 
-  // Bottom Nav is shown on regular pages and on chat module pages
-  const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
-
   return (
     <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
       <AnimatePresence>
@@ -751,14 +748,14 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       
       {user && mounted && isMobile ? (
         <Drawer open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
-              <DrawerHeader className="text-left">
+          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
+              <DrawerHeader className="text-left text-left">
                 <DrawerTitle className="text-xl font-bold text-left">Complete Your Profile</DrawerTitle>
                 <DrawerDescription className="text-xs text-left">Join the global movement by introducing yourself.</DrawerDescription>
               </DrawerHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-8">
+            <div className="flex-grow overflow-y-auto p-8 text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DrawerContent>
@@ -766,10 +763,10 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
-            <div className="p-6 border-b bg-muted/10">
+            <div className="p-6 border-b bg-muted/10 text-left">
               <DialogHeader className="text-left">
-                <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
-                <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+                <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
             <div className="p-6 max-h-[70vh] overflow-y-auto text-left">

@@ -33,6 +33,7 @@ import type { SoulRelationship } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -467,48 +468,49 @@ export function SoulsImportTemplateCard() {
                 <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight text-left">
                 <FileSpreadsheet className="h-5 w-5 text-primary" /> Harvest Mobilization
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm font-medium text-left">
+                <CardDescription className="text-xs sm:text-sm font-medium text-left text-left">
                 Synchronize bulk convert data by uploading a spreadsheet or importing from Google.
                 </CardDescription>
             </div>
             <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 h-6 px-3 font-black uppercase text-[9px] tracking-widest hidden sm:flex">Bulk Sync</Badge>
         </div>
       </CardHeader>
-      <CardContent className="px-6 sm:p-8 pt-0 space-y-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Button onClick={handleDownloadTemplate} variant="outline" className="h-11 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left">
+      <CardContent className="px-6 sm:p-8 pt-0 space-y-8 text-left">
+        <div className="flex flex-wrap gap-3">
+            <Button onClick={handleDownloadTemplate} variant="outline" className="h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left">
                 <Download className="mr-2 h-4 w-4" />
-                GET CSV TEMPLATE
+                TEMPLATE
             </Button>
             
             <Button 
                 onClick={handleGoogleContactsImport} 
                 disabled={isFetchingContacts}
                 variant="outline"
-                className="h-11 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left"
+                className="h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left"
             >
                 {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Smartphone className="mr-2 h-4 w-4" />}
-                IMPORT GOOGLE CONTACTS
+                GOOGLE SYNC
             </Button>
-        </div>
 
-        <div className="relative">
-            <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept=".csv" 
-                onChange={handleFileUpload}
-                disabled={isUploading}
-            />
-            <Button 
-                onClick={() => fileInputRef.current?.click()} 
-                disabled={isUploading}
-                className="w-full h-11 rounded-xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
-            >
-                {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                UPLOAD CUSTOM CSV LIST
-            </Button>
+            <div className="relative">
+                <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept=".csv" 
+                    onChange={handleFileUpload}
+                    disabled={isUploading}
+                />
+                <Button 
+                    onClick={() => fileInputRef.current?.click()} 
+                    disabled={isUploading}
+                    variant="outline"
+                    className="h-10 px-4 rounded-xl font-black border-primary/20 text-primary hover:bg-primary/5 shadow-sm uppercase tracking-widest text-[10px] text-left"
+                >
+                    {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                    CSV UPLOAD
+                </Button>
+            </div>
         </div>
 
         <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4 text-left">
@@ -523,7 +525,7 @@ export function SoulsImportTemplateCard() {
         {isContactsDialogOpen && (
             isMobile ? (
                 <Drawer open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                         <DrawerHeader className="sr-only">
                             <DrawerTitle>Network Sync</DrawerTitle>
                             <DrawerDescription>Select contacts to synchronize.</DrawerDescription>
