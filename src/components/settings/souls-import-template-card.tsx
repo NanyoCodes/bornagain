@@ -361,11 +361,11 @@ export function SoulsImportTemplateCard() {
     <div className="flex flex-col h-full text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
             <div className="flex items-center gap-3 mb-2 text-left">
-                <Smartphone className="h-5 w-5 text-primary text-left" />
-                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Network Sync</span>
+                <Smartphone className="h-5 w-5 text-primary" />
+                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Network Sync</span>
             </div>
-            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Contacts</h3>
-            <div className="relative mt-6 text-left">
+            <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Select Contacts</h3>
+            <div className="relative mt-6">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                 <Input 
                     placeholder="Search your contacts..." 
@@ -405,12 +405,12 @@ export function SoulsImportTemplateCard() {
                             />
                             <Avatar className="h-10 w-10 border shadow-sm shrink-0">
                                 <AvatarImage src={contact.photoURL} />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-center flex items-center justify-center w-full h-full">{contact.firstName.charAt(0)}</AvatarFallback>
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-center flex items-center justify-center w-full h-full text-left">{contact.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 text-left">
                                 <p className="font-black text-sm uppercase tracking-tight truncate text-left">{contact.firstName} {contact.lastName}</p>
                                 <div className="flex items-center gap-3 mt-1 opacity-60 text-left">
-                                    {contact.phone && <p className="text-[10px] font-bold truncate flex items-center gap-1 text-left"><Smartphone className="h-2.5 w-2.5 text-left" /> {contact.phone}</p>}
+                                    {contact.phone && <p className="text-[10px] font-bold truncate flex items-center gap-1 text-left"><Smartphone className="h-2.5 w-2.5" /> {contact.phone}</p>}
                                 </div>
                             </div>
                         </div>
@@ -419,8 +419,8 @@ export function SoulsImportTemplateCard() {
                         )}
                     </div>
                 )) : (
-                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4">
-                        <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-4 text-left" />
+                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4 text-left">
+                        <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-4" />
                         <p className="text-sm text-muted-foreground font-medium italic text-left">No matching contacts found.</p>
                     </div>
                 )}
@@ -429,19 +429,19 @@ export function SoulsImportTemplateCard() {
 
         <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-4 shrink-0 text-left">
             <div className="flex-1 min-w-0 flex items-center gap-3 text-left">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-left">
-                    <span className="font-black text-primary text-sm text-left">{selectedContactIds.size}</span>
+                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+                    <span className="font-black text-primary text-sm">{selectedContactIds.size}</span>
                 </div>
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-tight text-left">Souls Ready for Sync</p>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-tight">Souls Ready for Sync</p>
             </div>
-            <div className="flex gap-2 text-left">
+            <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setIsContactsDialogOpen(false)} className="rounded-xl h-11 px-6 font-bold text-left">Cancel</Button>
                 <Button 
                     onClick={handleImportSelected} 
                     disabled={selectedContactIds.size === 0 || isUploading}
                     className="rounded-xl h-11 px-8 font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-left"
                 >
-                    {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+                    {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     IMPORT SELECTED
                 </Button>
             </div>
@@ -454,10 +454,10 @@ export function SoulsImportTemplateCard() {
       <CardHeader className="p-6 sm:p-8 text-left">
         <div className="flex items-center justify-between gap-4 text-left">
             <div className="space-y-1 text-left">
-                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight text-left">
-                <FileSpreadsheet className="h-5 w-5 text-primary text-left" /> Harvest Mobilization
+                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight">
+                <FileSpreadsheet className="h-5 w-5 text-primary" /> Harvest Mobilization
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm font-medium text-left">
+                <CardDescription className="text-xs sm:text-sm font-medium">
                 Synchronize bulk convert data by uploading a spreadsheet or importing from Google.
                 </CardDescription>
             </div>
@@ -467,7 +467,7 @@ export function SoulsImportTemplateCard() {
       <CardContent className="px-6 sm:p-8 pt-0 space-y-8 text-left">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
             <Button onClick={handleDownloadTemplate} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left">
-                <Download className="mr-2 h-4 w-4 text-left" />
+                <Download className="mr-2 h-4 w-4" />
                 GET CSV TEMPLATE
             </Button>
             
@@ -477,7 +477,7 @@ export function SoulsImportTemplateCard() {
                 variant="outline"
                 className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left"
             >
-                {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Smartphone className="mr-2 h-4 w-4 text-left" />}
+                {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Smartphone className="mr-2 h-4 w-4" />}
                 IMPORT GOOGLE CONTACTS
             </Button>
         </div>
@@ -496,13 +496,13 @@ export function SoulsImportTemplateCard() {
                 disabled={isUploading}
                 className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
             >
-                {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Upload className="mr-2 h-4 w-4 text-left" />}
+                {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
                 UPLOAD CUSTOM CSV LIST
             </Button>
         </div>
 
         <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4 text-left">
-            <Info className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left" />
+            <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
             <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
                 Standardize your follow-up data. Import your existing contacts or use our template to organize outreach results for professional tracking.
             </p>
