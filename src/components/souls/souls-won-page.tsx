@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -157,8 +156,8 @@ function FilteredSoulList({
             return (
                 <Accordion type="single" collapsible key={soul.id} className="w-full text-left">
                     <AccordionItem value={soul.id} className="border rounded-[1.5rem] bg-card overflow-hidden shadow-sm transition-all hover:border-primary/20 text-left">
-                        <AccordionTrigger className="flex items-center justify-between p-3 sm:p-4 hover:no-underline group text-left">
-                            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left">
+                        <AccordionTrigger className="flex items-center justify-between p-3 sm:p-4 hover:no-underline group text-left text-left">
+                            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left text-left text-left">
                                 <div className="flex -space-x-3 shrink-0 text-left">
                                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm ring-1 ring-primary/5 text-left">
                                         <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
@@ -169,30 +168,30 @@ function FilteredSoulList({
                                         <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left">{spouse.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                 </div>
-                                <div className="min-w-0 flex-1 space-y-1 text-left text-left">
+                                <div className="min-w-0 flex-1 space-y-1 text-left text-left text-left">
                                     <p className="font-black text-[12px] sm:text-base uppercase tracking-tight leading-tight text-balance break-words [overflow-wrap:anywhere] text-left text-left">
                                         {soul.firstName} & {spouse.firstName}
                                     </p>
                                     <div className="flex items-center gap-1.5 flex-wrap text-left text-left">
-                                        <Badge variant="outline" className="h-4 px-1 text-[7px] sm:text-[8px] font-black uppercase border-primary/20 text-primary bg-primary/5 leading-none text-left text-left">
+                                        <Badge variant="outline" className="h-4 px-1 text-[7px] sm:text-[8px] font-black uppercase border-primary/20 text-primary bg-primary/5 leading-none text-left">
                                             Family Unit
                                         </Badge>
                                         <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left">
-                                            {soul.age && spouse.age ? `${soul.age} & ${spouse.age} Yrs • ` : (soul.age || spouse.age) ? `${soul.age || spouse.age} Yrs • ` : ''}Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
+                                            Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                                         </span>
                                     </div>
                                 </div>
                             </div>
                         </AccordionTrigger>
-                        <AccordionContent className="px-3 sm:px-4 pb-4 space-y-4 animate-in slide-in-from-top-2 duration-300 text-left">
+                        <AccordionContent className="px-3 sm:px-4 pb-4 space-y-4 animate-in slide-in-from-top-2 duration-300 text-left text-left">
                             <div className="space-y-3 text-left">
-                                <div className="flex items-center justify-between px-1 text-left">
+                                <div className="flex items-center justify-between px-1 text-left text-left">
                                     <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Parents</p>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
                                     <Button 
                                         variant="outline" 
-                                        className="justify-start h-14 gap-3 px-3 rounded-xl hover:bg-primary/5 border-dashed text-left"
+                                        className="justify-start h-14 gap-3 px-3 rounded-xl hover:bg-primary/5 border-dashed text-left text-left"
                                         onClick={() => onSelectSoul(soul)}
                                     >
                                         <Avatar className="h-8 w-8 border shrink-0 text-left"><AvatarFallback className="font-bold bg-background text-left">{soul.firstName.charAt(0)}</AvatarFallback></Avatar>
@@ -212,14 +211,14 @@ function FilteredSoulList({
                             </div>
 
                             <div className="space-y-3 text-left">
-                                <div className="flex items-center justify-between px-1 text-left">
+                                <div className="flex items-center justify-between px-1 text-left text-left">
                                     <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Children ({children.length})</p>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button 
                                                 variant="ghost" 
                                                 size="sm" 
-                                                className="h-6 text-[8px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left"
+                                                className="h-6 text-[8px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left text-left"
                                             >
                                                 <PlusCircle className="mr-1 h-3 w-3 text-left" /> ADD CHILD
                                             </Button>
@@ -273,29 +272,29 @@ function FilteredSoulList({
             className="flex items-center justify-between p-3 sm:p-4 h-auto rounded-[1.5rem] hover:bg-primary/5 transition-all border bg-card group w-full text-left active:scale-[0.98] shadow-sm relative overflow-hidden text-left"
           >
             <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left text-left text-left">
-                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0 text-left text-left text-left">
-                    <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left text-left text-left" />
-                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs sm:text-sm text-left text-left text-left">
+                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0 text-left text-left">
+                    <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left text-left" />
+                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs sm:text-sm text-left text-left">
                         {soul.firstName?.charAt(0) || 'S'}
                     </AvatarFallback>
                 </Avatar>
-                <div className="min-w-0 flex-1 space-y-1 text-left text-left text-left">
-                    <div className="flex items-center gap-2 flex-wrap text-left text-left text-left">
-                        <p className="font-black text-[13px] sm:text-base uppercase tracking-tight truncate leading-tight text-left text-left text-left">
+                <div className="min-w-0 flex-1 space-y-1 text-left text-left">
+                    <div className="flex items-center gap-2 flex-wrap text-left text-left">
+                        <p className="font-black text-[13px] sm:text-base uppercase tracking-tight truncate leading-tight text-left text-left">
                             {name}
                         </p>
                     </div>
-                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-left text-left text-left">
-                        <Badge variant="secondary" className="h-4 px-1 text-[7px] sm:text-[8px] uppercase font-black tracking-widest bg-muted/50 border-none leading-none text-left text-left text-left">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-left text-left">
+                        <Badge variant="secondary" className="h-4 px-1 text-[7px] sm:text-[8px] uppercase font-black tracking-widest bg-muted/50 border-none leading-none text-left text-left">
                             {soul.status}
                         </Badge>
-                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left text-left">
+                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left">
                             {soul.age ? `${soul.age} Yrs • ` : ''}Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                         </span>
                     </div>
                 </div>
             </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0 ml-2 text-left text-left text-left" />
+            <ArrowRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0 ml-2 text-left" />
           </Button>
         );
       })}
@@ -1287,17 +1286,17 @@ export default function SoulsWonPage() {
             ) : (
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left" />
                             </div>
-                            <DialogHeader className="text-left">
+                            <DialogHeader className="text-left text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this demographic group.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="max-h-[60vh] text-left">
+                        <ScrollArea className="max-h-[60vh] text-left text-left">
                             <div className="p-4 sm:p-8 text-left text-left text-left">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
@@ -1354,6 +1353,7 @@ export default function SoulsWonPage() {
             isOpen={!!followUpSoulId} 
             onOpenChange={(isOpen) => !isOpen && setFollowUpSoulId(null)} 
             onFollowUpLogged={() => setFollowUpSoulId(null)} 
+            userProfile={userProfile}
         />
         <ViewHistoryDialog soul={soulForHistory} isOpen={!!historySoulId} onOpenChange={(isOpen) => !isOpen && setHistorySoulId(null)} />
         <AssignFellowshipDialog soul={soulToAssign} fellowships={fellowships || []} isOpen={!!assignSoulId} onOpenChange={(isOpen) => !isOpen && setAssignSoulId(null)} onAssignGroup={handleAssignGroup} />
@@ -1367,7 +1367,7 @@ export default function SoulsWonPage() {
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6 text-left">
+                <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
@@ -1414,13 +1414,13 @@ export default function SoulsWonPage() {
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <DialogHeader className="text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Add New Soul</DialogTitle>
-                                    <DialogDescription className="text-left">Record a new life won for Christ.</DialogDescription>
+                                    <DialogDescription className="text-left text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left">
                                 <LogSoulForm 
                                     onSoulLogged={() => { setIsLogDialogOpen(false); setChildImportConfig(null); }} 
                                     fellowships={fellowships || []} 
@@ -1435,14 +1435,14 @@ export default function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <DialogHeader className="text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
-                                    <DialogDescription className="text-left">Update soul identity and mission details.</DialogDescription>
+                                    <DialogDescription className="text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DialogContent>

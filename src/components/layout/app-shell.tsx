@@ -173,7 +173,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
             <ArrowLeft className="h-6 w-6 text-left" />
           </Button>
           <form className="w-full text-left" onSubmit={(e) => e.preventDefault()}>
-            <div className="relative text-left">
+            <div className="relative text-left text-left">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50 text-left" />
               <Input
                 type="search"
@@ -197,9 +197,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
       <div className="flex shrink-0 w-auto text-left">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
           {logo && (
-            <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent text-left">
+            <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent text-left text-left">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left" />
-              <AvatarFallback className="text-left">T</AvatarFallback>
+              <AvatarFallback className="text-left text-left text-left">T</AvatarFallback>
             </Avatar>
           )}
         </Link>
@@ -236,7 +236,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left text-left">
         <div className="hidden lg:block min-w-0 text-left">
             <form onSubmit={(e) => e.preventDefault()} className="text-left">
-              <div className="relative text-left text-left">
+              <div className="relative text-left">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                 <Input
                   type="search"
@@ -286,20 +286,20 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 shrink-0 text-left text-left">
-                  <Avatar className="h-10 w-10 border shadow-sm text-left">
+                  <Avatar className="h-10 w-10 border shadow-sm text-left text-left">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover text-left" />
                     <AvatarFallback className="text-xs font-bold text-left"> {user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
                     <span className="absolute top-0 right-0 flex h-3 w-3 text-left">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 text-left"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background text-left"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 text-left text-left"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 border-2 border-background text-left text-left"></span>
                     </span>
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar text-left text-left" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal p-4 text-left text-left">
+              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar text-left text-left text-left" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal p-4 text-left text-left text-left">
                   <div className="flex flex-col space-y-1 text-left text-left">
                     <p className="text-sm font-black leading-tight truncate uppercase tracking-tight text-left">{user.displayName || 'User'}</p>
                     <p className="text-[10px] text-muted-foreground truncate font-bold uppercase tracking-wider text-left">{user.email}</p>
@@ -308,26 +308,26 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                 
                 <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1 space-y-1 text-left">
+                <div className="p-1 space-y-1 text-left text-left text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/profile" className="flex items-center gap-3 w-full text-left">
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
                         <User className="h-3.5 w-3.5 text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Profile Identity</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Profile Identity</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/accountability" className="flex items-center gap-3 w-full text-left">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
-                        <HeartHandshake className="h-3.5 w-3.5 text-left" />
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left">
+                        <HeartHandshake className="h-3.5 w-3.5 text-left text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Partners</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Partners</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/settings" className="flex items-center gap-3 w-full text-left">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
+                    <Link href="/settings" className="flex items-center gap-3 w-full text-left text-left">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left">
                         <Settings className="h-3.5 w-3.5 text-left" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left">Settings</span>
@@ -337,54 +337,54 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
 
                 <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1 space-y-1 text-left">
+                <div className="p-1 space-y-1 text-left text-left text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left">
+                    <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
                         <ShieldCheck className="h-3.5 w-3.5 text-primary text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Victory Hub</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/fellowships" className="flex items-center gap-3 w-full text-left">
+                    <Link href="/fellowships" className="flex items-center gap-3 w-full text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
                         <Users className="h-3.5 w-3.5 text-primary text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Fellowship Hub</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Fellowship Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/events" className="flex items-center gap-3 w-full text-left">
+                    <Link href="/events" className="flex items-center gap-3 w-full text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
                         <CalendarDays className="h-3.5 w-3.5 text-primary text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Events Hub</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Events Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/marketplace" className="flex items-center gap-3 w-full text-left">
-                      <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center text-left">
-                        <Store className="h-3.5 w-3.5 text-blue-600 text-left" />
+                    <Link href="/marketplace" className="flex items-center gap-3 w-full text-left text-left text-left">
+                      <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center text-left text-left">
+                        <Store className="h-3.5 w-3.5 text-blue-600 text-left text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Meals Provision</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full text-left">
-                      <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-left">
-                        <Gift className="h-3.5 w-3.5 text-indigo-600 text-left" />
+                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full text-left text-left text-left">
+                      <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-left text-left">
+                        <Gift className="h-3.5 w-3.5 text-indigo-600 text-left text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kindness Gifts</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
-                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full text-left">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
-                        <Package className="h-3.5 w-3.5 text-left" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
+                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full text-left text-left">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left">
+                        <Package className="h-3.5 w-3.5 text-left text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Order Tracker</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left text-left">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
@@ -410,29 +410,29 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
 
                 <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1 space-y-1 text-left text-left">
+                <div className="p-1 space-y-1 text-left text-left text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
                       <Link href="/guide" className="flex items-center gap-3 w-full text-left">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
                           <Info className="h-3.5 w-3.5 text-left" />
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">App Guide</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
-                      <Link href="/resources" className="flex items-center gap-3 w-full text-left">
+                      <Link href="/resources" className="flex items-center gap-3 w-full text-left text-left">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
                           <BookMarked className="h-3.5 w-3.5 text-left text-left" />
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kingdom Library</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Kingdom Library</span>
                       </Link>
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator className="text-left text-left" />
+                <DropdownMenuSeparator className="text-left" />
                 
-                <div className="p-1 text-left text-left">
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer text-left">
+                <div className="p-1 text-left">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer text-left text-left">
                     <LogOut className="mr-3 h-4 w-4 text-left" />
                     <span className="text-[11px] font-black uppercase tracking-[0.2em] text-left text-left">Sign Out</span>
                   </DropdownMenuItem>
@@ -450,7 +450,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
             </Button>
           </div>
         ) : (
-          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted text-left text-left" />
+          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted text-left text-left text-left" />
         )}
       </div>
     </header>
@@ -496,14 +496,14 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10 flex flex-col items-center text-left",
+                      "relative z-10 flex flex-col items-center text-left text-left",
                       isActive ? "text-white" : "text-muted-foreground"
                     )}
                   >
                     <item.icon className={cn("h-6 w-6 mb-1 text-left", !isActive && item.color)} />
                     <span className={cn(
                         "text-[8px] font-black uppercase tracking-tighter transition-all leading-none text-center text-left",
-                        isActive ? "opacity-100 text-left" : "opacity-60 text-left"
+                        isActive ? "opacity-100 text-left" : "opacity-60 text-left text-left"
                     )}>
                         {item.label}
                     </span>
@@ -531,6 +531,12 @@ function ShellInner({ children }: { children: React.ReactNode }) {
   
   const [showSplash, setShowSplash] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
+
+  const handleDismissSplash = useCallback(() => {
+    setShowSplash(false);
+    localStorage.setItem('testify_splash_last_shown', Date.now().toString());
+    setContentVisible(true);
+  }, []);
 
   useEffect(() => { 
     setMounted(true); 
@@ -631,9 +637,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center">
         <div className="relative mx-auto w-fit text-left">
-            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
             <div className="absolute inset-0 flex items-center justify-center text-left">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left" />
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left text-left" />
             </div>
         </div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
@@ -658,7 +664,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: contentVisible ? 1 : 0 }}
           transition={{ duration: 1 }}
-          className="flex-1 flex flex-col min-h-0 text-left"
+          className="flex-1 flex flex-col min-h-0 text-left text-left"
       >
           <Suspense fallback={null}>
             {!isTakeoverPage && (
@@ -694,11 +700,11 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       
       {user && mounted && isMobile ? (
         <Drawer open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left">
+          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left text-left">
             <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
-              <DrawerHeader className="text-left text-left text-left">
-                <DrawerTitle className="text-xl font-bold text-left">Complete Your Profile</DrawerTitle>
-                <DrawerDescription className="text-xs text-left">Join the global movement by introducing yourself.</DrawerDescription>
+              <DrawerHeader className="text-left text-left text-left text-left">
+                <DrawerTitle className="text-xl font-bold text-left text-left">Complete Your Profile</DrawerTitle>
+                <DrawerDescription className="text-xs text-left text-left">Join the global movement by introducing yourself.</DrawerDescription>
               </DrawerHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-6 text-left">
@@ -708,9 +714,9 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         </Drawer>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
-            <div className="p-6 border-b bg-muted/10 text-left">
-              <DialogHeader className="text-left">
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left text-left">
+              <DialogHeader className="text-left text-left text-left">
                 <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
                 <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
@@ -729,9 +735,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
-                <div className="relative mx-auto w-fit text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left">
+                <div className="relative mx-auto w-fit text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
                 </div>
             </div>
         }>
