@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Query, DocumentData, SnapshotOptions, FirestoreError } from 'firebase/firestore';
 import { onSnapshot } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
@@ -19,23 +19,35 @@ export function useCollection<T extends { id: string }>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
+  
+  // Use a ref to track the actual query instance to prevent infinite loops
+  // if the query is created inline in a component.
+  const activeQuery = useRef<Query<DocumentData> | null>(null);
 
   useEffect(() => {
     if (!query) {
-      setLoading(false);
       setData(null);
+      setLoading(false);
       return;
     }
 
+    // Check if the new query is logically equal to the current subscription
+    if (activeQuery.current && query.isEqual(activeQuery.current)) {
+      return;
+    }
+
+    activeQuery.current = query;
     setLoading(true);
     
     const unsubscribe = onSnapshot(
       query,
       (snapshot) => {
-        const result: T[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(options?.snapshotOptions) } as T));
+        const result: T[] = snapshot.docs.map(doc => ({ 
+          id: doc.id, 
+          ...doc.data(options?.snapshotOptions) 
+        } as T));
         
         setData(result);
-
         setLoading(false);
         setError(null);
       },
@@ -56,9 +68,8 @@ export function useCollection<T extends { id: string }>(
       }
     );
 
-    // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-    // The user object and a stable version of options are included in the dependency array.
+    // Stringify options to ensure stable dependency check
   }, [query, user, JSON.stringify(options?.snapshotOptions)]);
 
   return { data, loading, error };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { DocumentReference, DocumentData, SnapshotOptions, FirestoreError } from 'firebase/firestore';
 import { onSnapshot } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
@@ -19,6 +19,9 @@ export function useDoc<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
+  
+  // Use a ref to track the actual reference instance to prevent infinite loops
+  const activeRef = useRef<DocumentReference<DocumentData> | null>(null);
 
   useEffect(() => {
     if (!docRef) {
@@ -27,7 +30,14 @@ export function useDoc<T>(
       return;
     }
 
+    // Check if the new ref is logically equal to the current subscription
+    if (activeRef.current && docRef.isEqual(activeRef.current)) {
+      return;
+    }
+
+    activeRef.current = docRef;
     setLoading(true);
+    
     const unsubscribe = onSnapshot(
       docRef,
       (doc) => {
@@ -39,7 +49,6 @@ export function useDoc<T>(
           : null;
 
         setData(newDocData);
-        
         setLoading(false);
         setError(null);
       },
@@ -51,7 +60,6 @@ export function useDoc<T>(
             }, user);
             errorEmitter.emit('permission-error', permissionError);
         } else {
-            // For other types of Firestore errors (e.g., network, invalid query)
             console.error("Firestore error in useDoc:", err);
         }
         
@@ -61,9 +69,7 @@ export function useDoc<T>(
       }
     );
 
-    // Clean up the listener when the component unmounts or dependencies change.
     return () => unsubscribe();
-    // The user object and a stable version of options are included in the dependency array.
   }, [docRef, user, JSON.stringify(options?.snapshotOptions)]);
 
   return { data, loading, error };

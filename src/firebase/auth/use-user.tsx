@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import type { User } from 'firebase/auth';
 import { onIdTokenChanged } from 'firebase/auth';
 import { useAuth } from '../provider';
@@ -15,12 +14,12 @@ export function useUser() {
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(
       auth,
-      (user) => {
-        setUser(user);
+      (currentUser) => {
+        setUser(currentUser);
         setLoading(false);
       },
-      (error) => {
-        setError(error);
+      (err) => {
+        setError(err);
         setLoading(false);
       }
     );
@@ -28,5 +27,6 @@ export function useUser() {
     return () => unsubscribe();
   }, [auth]);
 
-  return { user, loading, error };
+  // Memoize the return value to prevent unnecessary re-renders in hooks that depend on it
+  return useMemo(() => ({ user, loading, error }), [user, loading, error]);
 }

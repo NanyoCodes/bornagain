@@ -40,8 +40,11 @@ function ProfileProvider({ children }: { children: React.ReactNode }) {
 
   const { data: userProfile, loading } = useDoc<UserProfile>(userDocRef);
 
+  // Memoize context value to prevent infinite render loops
+  const contextValue = useMemo(() => ({ userProfile, loading }), [userProfile, loading]);
+
   return (
-    <ProfileContext.Provider value={{ userProfile, loading }}>
+    <ProfileContext.Provider value={contextValue}>
       <BirthdayChecker />
       {children}
     </ProfileContext.Provider>
@@ -70,6 +73,9 @@ export function FirebaseClientProvider({ children }: { children: React.ReactNode
     configureAuth();
   }, []);
 
+  // Memoize context value to prevent infinite render loops in child components
+  const firebaseValue = useMemo(() => ({ app, auth, firestore, storage }), []);
+
   // We wait for persistence to be configured before rendering the app
   // to prevent potential session loss or race conditions on the first load.
   if (!isPersistenceSet) {
@@ -77,7 +83,7 @@ export function FirebaseClientProvider({ children }: { children: React.ReactNode
   }
 
   return (
-    <FirebaseProvider value={{ app, auth, firestore, storage }}>
+    <FirebaseProvider value={firebaseValue}>
       <ProfileProvider>
         <FirebaseErrorListener />
         {children}
