@@ -35,6 +35,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface GoogleContact {
     resourceName: string;
@@ -477,7 +478,7 @@ export function SoulsImportTemplateCard() {
                 variant="outline"
                 className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left text-left"
             >
-                {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Smartphone className="mr-2 h-4 w-4 text-left" />}
+                {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Smartphone className="mr-2 h-4 w-4 text-left" />}
                 IMPORT GOOGLE CONTACTS
             </Button>
         </div>
@@ -496,7 +497,7 @@ export function SoulsImportTemplateCard() {
                 disabled={isUploading}
                 className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left"
             >
-                {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Upload className="mr-2 h-4 w-4 text-left" />}
+                {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Upload className="mr-2 h-4 w-4 text-left" />}
                 UPLOAD CUSTOM CSV LIST
             </Button>
         </div>
