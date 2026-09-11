@@ -96,7 +96,7 @@ export function SplashScreen({ onDismiss }: SplashScreenProps) {
           >
             <Button 
               onClick={onDismiss}
-              className="w-auto h-11 px-8 rounded-full font-black tracking-widest uppercase shadow-lg shadow-primary/20 text-[10px] group text-left"
+              className="w-auto h-11 px-10 rounded-full font-black tracking-widest uppercase shadow-xl shadow-primary/20 text-[10px] group text-left border-2 border-primary/20 hover:scale-105 transition-transform"
             >
               Share the Greatness of GOD
             </Button>

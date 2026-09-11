@@ -530,7 +530,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
     const forceSplash = typeof window !== 'undefined' ? sessionStorage.getItem('testify_force_splash') === 'true' : false;
     const now = Date.now();
 
-    if (forceSplash || !lastShown || now - parseInt(lastShown || '0', 10) > SPLASH_COoldOWN) {
+    if (forceSplash || !lastShown || now - parseInt(lastShown || '0', 10) > SPLASH_COOLDOWN) {
         if (forceSplash) sessionStorage.removeItem('testify_force_splash');
         setShowSplash(true);
         const timer = setTimeout(() => {

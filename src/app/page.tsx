@@ -104,6 +104,8 @@ export default function LandingPage() {
     );
   }
 
+  const isLoggedIn = !!user;
+
   return (
     <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative text-left">
       {/* Navigation */}
@@ -118,7 +120,7 @@ export default function LandingPage() {
             )}
           </Link>
           <div className="flex items-center gap-2 sm:gap-4 text-left">
-            {user ? (
+            {isLoggedIn ? (
                 <Button asChild className="rounded-full px-5 sm:px-6 font-black tracking-widest uppercase text-[10px] sm:text-xs h-10 sm:h-11 shadow-lg shadow-primary/20 text-left">
                     <Link href="/testimonies">GO TO DASHBOARD</Link>
                 </Button>
@@ -171,8 +173,8 @@ export default function LandingPage() {
                 className="flex flex-col sm:flex-row gap-3 sm:gap-4 text-left"
               >
                 <Button asChild size="lg" className="h-12 px-8 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest w-full sm:w-auto text-left">
-                  <Link href={user ? "/testimonies" : "/signup"}>
-                    {user ? "OPEN DASHBOARD" : "Get Started Free"} <ArrowRight className="ml-2 h-5 w-5 text-left" />
+                  <Link href={isLoggedIn ? "/testimonies" : "/signup"}>
+                    {isLoggedIn ? "OPEN DASHBOARD" : "Get Started Free"} <ArrowRight className="ml-2 h-5 w-5 text-left" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="h-12 px-8 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 w-full sm:w-auto text-left">
@@ -413,8 +415,8 @@ export default function LandingPage() {
               </p>
               <div className="flex justify-center pt-2 sm:pt-4 text-left">
                 <Button asChild size="lg" className="h-10 px-8 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto text-left">
-                  <Link href={user ? "/testimonies" : "/signup"}>
-                    {user ? "OPEN DASHBOARD" : "START TESTIFYING"} <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6 text-left" />
+                  <Link href={isLoggedIn ? "/testimonies" : "/signup"}>
+                    {isLoggedIn ? "OPEN DASHBOARD" : "START TESTIFYING"} <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6 text-left" />
                   </Link>
                 </Button>
               </div>

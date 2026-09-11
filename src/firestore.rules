@@ -129,10 +129,7 @@ service cloud.firestore {
     }
 
     match /{path=**}/bibleHighlights/{highlightId} {
-      allow list: if isAuthenticated() && (
-        resource.data.userId == request.auth.uid ||
-        resource.data.get('isPrivate', false) == false
-      );
+      allow list: if isAuthenticated();
     }
 
     match /events/{eventId} {
