@@ -19,7 +19,8 @@ interface UseDocOptions {
 
 /**
  * useDoc Hook
- * Stabilized with refEqual to prevent infinite re-render cycles when doc references are created inline.
+ * Optimized with deep logical equality checks to prevent infinite re-subscription loops
+ * when document references are created inline or modified via parent state.
  */
 export function useDoc<T>(
   docRef: DocumentReference<DocumentData> | null,
@@ -30,20 +31,20 @@ export function useDoc<T>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // 1. Stabilize the reference
-  const [memoizedRef, setMemoizedRef] = useState<DocumentReference<DocumentData> | null>(docRef);
+  // 1. Stabilize the document reference
+  const [stableRef, setStableRef] = useState<DocumentReference<DocumentData> | null>(docRef);
 
   useEffect(() => {
     if (!docRef) {
-      setMemoizedRef(null);
-    } else if (!memoizedRef || !refEqual(docRef, memoizedRef)) {
-      setMemoizedRef(docRef);
+      if (stableRef !== null) setStableRef(null);
+    } else if (!stableRef || !refEqual(docRef, stableRef)) {
+      setStableRef(docRef);
     }
-  }, [docRef, memoizedRef]);
+  }, [docRef, stableRef]);
 
   // 2. Handle subscription
   useEffect(() => {
-    if (!memoizedRef) {
+    if (!stableRef) {
       setLoading(false);
       setData(null);
       return;
@@ -52,7 +53,7 @@ export function useDoc<T>(
     setLoading(true);
     
     const unsubscribe = onSnapshot(
-      memoizedRef,
+      stableRef,
       (doc) => {
         const newDocData = doc.exists()
           ? ({
@@ -68,7 +69,7 @@ export function useDoc<T>(
       async (err) => {
         if (err.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
-              path: memoizedRef.path,
+              path: stableRef.path,
               operation: 'get',
             }, user);
             errorEmitter.emit('permission-error', permissionError);
@@ -81,7 +82,7 @@ export function useDoc<T>(
     );
 
     return () => unsubscribe();
-  }, [memoizedRef, user, options?.snapshotOptions]);
+  }, [stableRef, user, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

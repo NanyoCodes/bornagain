@@ -19,7 +19,8 @@ interface UseCollectionOptions {
 
 /**
  * useCollection Hook
- * Stabilized with logical equality checks to prevent infinite re-subscription loops.
+ * Optimized with deep logical equality checks to prevent infinite re-subscription loops
+ * that occur when query objects are recreated on every render.
  */
 export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,
@@ -30,20 +31,20 @@ export function useCollection<T extends { id: string }>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // 1. Stabilize the query reference to prevent infinite effect triggers
-  const [memoizedQuery, setMemoizedQuery] = useState<Query<DocumentData> | null>(query);
+  // 1. Stabilize the query reference using logical equality
+  const [stableQuery, setStableQuery] = useState<Query<DocumentData> | null>(query);
 
   useEffect(() => {
     if (!query) {
-      setMemoizedQuery(null);
-    } else if (!memoizedQuery || !queryEqual(query, memoizedQuery)) {
-      setMemoizedQuery(query);
+      if (stableQuery !== null) setStableQuery(null);
+    } else if (!stableQuery || !queryEqual(query, stableQuery)) {
+      setStableQuery(query);
     }
-  }, [query, memoizedQuery]);
+  }, [query, stableQuery]);
 
   // 2. Handle subscription only when the logical query actually changes
   useEffect(() => {
-    if (!memoizedQuery) {
+    if (!stableQuery) {
       setData(null);
       setLoading(false);
       return;
@@ -52,7 +53,7 @@ export function useCollection<T extends { id: string }>(
     setLoading(true);
     
     const unsubscribe = onSnapshot(
-      memoizedQuery,
+      stableQuery,
       (snapshot) => {
         const result: T[] = snapshot.docs.map(doc => ({ 
           id: doc.id, 
@@ -65,7 +66,8 @@ export function useCollection<T extends { id: string }>(
       },
       async (err) => {
         if (err.code === 'permission-denied') {
-          const path = (memoizedQuery as any)._query?.path?.canonicalString() || 'unknown path';
+          // Attempt to extract the path from the query object (internal API check)
+          const path = (stableQuery as any)._query?.path?.canonicalString() || 'unknown path';
           const permissionError = new FirestorePermissionError({
             path,
             operation: 'list',
@@ -80,7 +82,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [memoizedQuery, user, options?.snapshotOptions]);
+  }, [stableQuery, user, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
