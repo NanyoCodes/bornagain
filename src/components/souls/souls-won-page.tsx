@@ -27,7 +27,8 @@ import {
   Plus,
   Users,
   Heart,
-  Info
+  Info,
+  ChevronDown
 } from "lucide-react";
 import { 
   Dialog, 
@@ -108,7 +109,7 @@ const LogSoulForm = dynamic(() => import('@/components/souls/log-soul-form').the
 const EditSoulForm = dynamic(() => import('@/components/souls/edit-soul-form').then(m => m.EditSoulForm), { ssr: false });
 const SoulAssessmentDialog = dynamic(() => import('@/components/souls/soul-assessment-dialog').then(m => m.SoulAssessmentDialog), { ssr: false });
 
-function FilteredSoulList({ souls, onSelectSoul }: { souls: any[], onSelectSoul: (soul: Soul) => void }) {
+function FilteredSoulList({ souls, allSouls, onSelectSoul }: { souls: any[], allSouls: Soul[], onSelectSoul: (soul: Soul) => void }) {
   if (! souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
@@ -120,59 +121,102 @@ function FilteredSoulList({ souls, onSelectSoul }: { souls: any[], onSelectSoul:
   return (
     <div className="space-y-3 pb-6 text-left">
       {souls.map((item) => {
-        // Handle family units vs individuals
         const soul = item;
         const isFamily = !!item.spouseRecord;
         const wonAt = safeToDate(soul.wonAt);
+        const householdChildren = isFamily ? allSouls.filter(s => soul.childrenIds?.includes(s.id)) : [];
         
         return (
-          <Button 
-            key={soul.id} 
-            variant="ghost"
-            onClick={() => onSelectSoul(soul)}
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98] relative"
-          >
-            <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-                <Avatar aria-hidden="true" className="h-12 w-12 border shadow-sm shrink-0 text-left">
-                    <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
-                    <AvatarFallback className="font-black bg-primary/10 text-primary text-sm text-left">{soul.firstName?.charAt(0) || 'S'}</AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 text-left flex-1 text-left">
-                    <div className="flex items-center gap-2 text-left flex-wrap">
-                        <p className="font-black text-sm sm:text-base truncate uppercase tracking-tight text-left">
-                            {soul.firstName} {soul.lastName}
-                            {isFamily && (
-                                <span className="text-primary/60 ml-1.5 lowercase text-left">
-                                    & {item.spouseRecord.firstName}
-                                </span>
-                            )}
-                        </p>
-                        <Badge variant="outline" className="text-[8px] h-4 px-1.5 uppercase font-black tracking-tighter shrink-0 text-left ml-auto sm:ml-0 bg-background/50 text-left">{soul.status}</Badge>
-                    </div>
-                    <div className="flex flex-col gap-1 mt-1">
-                        <div className="flex items-center gap-3 text-muted-foreground">
-                            <p className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap text-left">
-                                Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
-                            </p>
-                            {isFamily && (
-                                 <Badge variant="secondary" className="h-3.5 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none text-left">Family Unit</Badge>
-                            )}
-                        </div>
-                        <div className="flex flex-wrap items-center gap-3 text-[9px] font-black uppercase tracking-widest text-primary/70">
-                            {soul.age && <span className="flex items-center gap-1"><Info className="h-2.5 w-2.5" /> Age: {soul.age}</span>}
-                            {isFamily && item.spouseRecord?.age && <span className="flex items-center gap-1 opacity-60"><Info className="h-2.5 w-2.5" /> Spouse: {item.spouseRecord.age}</span>}
-                        </div>
-                        {soul.hobbies && (
-                             <p className="text-[10px] text-muted-foreground line-clamp-1 italic font-medium mt-0.5 text-left">
-                                 <Sparkles className="inline h-2.5 w-2.5 mr-1 text-primary" />
-                                 {soul.hobbies}
-                             </p>
+          <div key={soul.id} className="relative">
+            <Button 
+                variant="ghost"
+                onClick={() => onSelectSoul(soul)}
+                className="flex items-center justify-between p-3 rounded-2xl hover:bg-primary/5 transition-all border bg-background/50 group w-full text-left h-auto active:scale-[0.98] relative"
+            >
+                <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                    <div className="flex -space-x-3 shrink-0">
+                        <Avatar className="h-12 w-12 border-2 border-background shadow-md">
+                            <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        {isFamily && (
+                            <Avatar className="h-12 w-12 border-2 border-background shadow-md ring-2 ring-primary/5">
+                                <AvatarImage src={item.spouseRecord.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs">{item.spouseRecord.firstName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
                         )}
                     </div>
+                    <div className="min-w-0 flex-1 text-left">
+                        <div className="flex items-center gap-2 text-left flex-wrap">
+                            <p className="font-black text-sm sm:text-base truncate uppercase tracking-tight text-left">
+                                {soul.firstName} {soul.lastName}
+                                {isFamily && (
+                                    <span className="text-primary/60 ml-1.5 lowercase text-left">
+                                        & {item.spouseRecord.firstName}
+                                    </span>
+                                )}
+                            </p>
+                            <Badge variant="outline" className="text-[8px] h-4 px-1.5 uppercase font-black tracking-tighter shrink-0 text-left ml-auto sm:ml-0 bg-background/50 text-left">{soul.status}</Badge>
+                        </div>
+                        <div className="flex flex-col gap-1 mt-1">
+                            <div className="flex items-center gap-3 text-muted-foreground">
+                                <p className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap text-left">
+                                    Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
+                                </p>
+                                {isFamily && (
+                                    <Badge variant="secondary" className="h-3.5 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none text-left">Family Unit</Badge>
+                                )}
+                            </div>
+                            <div className="flex flex-wrap items-center gap-3 text-[9px] font-black uppercase tracking-widest text-primary/70">
+                                {soul.age && <span className="flex items-center gap-1"><Info className="h-2.5 w-2.5" /> Age: {soul.age}</span>}
+                                {isFamily && item.spouseRecord?.age && <span className="flex items-center gap-1 opacity-60"><Info className="h-2.5 w-2.5" /> Spouse: {item.spouseRecord.age}</span>}
+                            </div>
+                            <div className="flex flex-wrap gap-x-4 gap-y-1">
+                                {soul.hobbies && (
+                                    <p className="text-[10px] text-muted-foreground line-clamp-1 italic font-medium mt-0.5 text-left">
+                                        <Sparkles className="inline h-2.5 w-2.5 mr-1 text-primary" />
+                                        {soul.hobbies}
+                                    </p>
+                                )}
+                                {isFamily && item.spouseRecord?.hobbies && (
+                                    <p className="text-[10px] text-muted-foreground/60 line-clamp-1 italic font-medium mt-0.5 text-left">
+                                        <Sparkles className="inline h-2.5 w-2.5 mr-1 text-primary/40" />
+                                        Spouse: {item.spouseRecord.hobbies}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 ml-2 text-left" />
-          </Button>
+                <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 ml-2 text-left" />
+            </Button>
+            
+            {isFamily && (householdChildren.length > 0 || !!item.spouseRecord) && (
+                <div className="absolute top-2 right-10">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full bg-background/80 backdrop-blur-sm border shadow-sm" onClick={e => e.stopPropagation()}>
+                                <Users className="h-3.5 w-3.5 text-primary" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-xl">
+                            <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Household Members</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={() => onSelectSoul(item.spouseRecord)} className="gap-2">
+                                <Avatar className="h-5 w-5 border"><AvatarImage src={item.spouseRecord.photoURL} /><AvatarFallback className="text-[8px]">{item.spouseRecord.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                <span className="text-xs font-bold uppercase truncate">{item.spouseRecord.firstName} (Spouse)</span>
+                            </DropdownMenuItem>
+                            {householdChildren.map(child => (
+                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="gap-2">
+                                    <Avatar className="h-5 w-5 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                    <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            )}
+          </div>
         );
       })}
     </div>
@@ -314,7 +358,6 @@ export default function SoulsWonPage() {
       const status = s.maritalStatus;
       if (status === 'Married') {
           if (!processedIds.has(s.id)) {
-              // Attempt to find spouse in the list to avoid double-counting the family unit
               const spouse = souls.find(other => {
                 if (other.id === s.id || other.maritalStatus !== 'Married') return false;
                 
@@ -747,10 +790,10 @@ export default function SoulsWonPage() {
                     {/* Age Demographics */}
                     <div className="space-y-4 text-left text-left">
                         <div className="flex items-center gap-3 text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left">
                                 <BarChart3 className="h-5 w-5 text-primary text-left" />
                             </div>
-                            <div className="min-w-0 text-left">
+                            <div className="min-w-0 text-left text-left">
                                 <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">DEMOGRAPHICS</h2>
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Age Analysis</p>
                             </div>
@@ -924,20 +967,21 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <Drawer open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left text-left">
+                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Harvest Demographic</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Harvest Demographic</span>
                             </div>
-                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left">
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
+                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                             </DrawerHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left text-left">
-                            <div className="p-4 sm:p-8 text-left text-left">
+                        <ScrollArea className="flex-grow text-left text-left text-left">
+                            <div className="p-4 sm:p-8 text-left text-left text-left">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
+                                  allSouls={souls || []}
                                   onSelectSoul={(soul) => {
                                     setSelectedFilterGroup(null);
                                     setSelectedSoulId(soul.id);
@@ -951,19 +995,20 @@ export default function SoulsWonPage() {
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Demographic View</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Demographic View</span>
                             </div>
-                            <DialogHeader className="text-left text-left text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
-                                <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Viewing all souls within this demographic group.</DialogDescription>
+                            <DialogHeader className="text-left text-left text-left text-left text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
+                                <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Viewing all souls within this demographic group.</DialogDescription>
                             </DialogHeader>
                         </div>
-                        <ScrollArea className="max-h-[60vh] text-left text-left text-left">
-                            <div className="p-4 sm:p-8 text-left text-left text-left">
+                        <ScrollArea className="max-h-[60vh] text-left text-left text-left text-left">
+                            <div className="p-4 sm:p-8 text-left text-left text-left text-left">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
+                                  allSouls={souls || []}
                                   onSelectSoul={(soul) => {
                                     setSelectedFilterGroup(null);
                                     setSelectedSoulId(soul.id);
@@ -987,17 +1032,17 @@ export default function SoulsWonPage() {
         <SoulAssessmentDialog soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left">
-                <AlertDialogHeader className="text-left text-left text-left text-left">
-                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left">Delete Record?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left">
+                <AlertDialogHeader className="text-left text-left text-left text-left text-left">
+                    <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left text-left text-left text-left text-left">Delete Record?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left">
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left">
-                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left text-left">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left">
-                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
+                <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left">
+                    <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left text-left text-left">
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left" />}
                         Confirm Removal
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -1008,21 +1053,21 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <>
                     <Sheet open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
-                                <SheetHeader className="text-left text-left text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm text-left text-left text-left text-left text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
+                                <SheetHeader className="text-left text-left text-left text-left text-left text-left text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm text-left text-left text-left text-left text-left text-left text-left">Record a new life won for Christ.</SheetDescription></SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left text-left text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={fellowships || []} campaigns={campaigns || []} />
                             </ScrollArea>
                         </SheetContent>
                     </Sheet>
                     <Sheet open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
-                                <SheetHeader className="text-left text-left text-left text-left text-left text-left text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left text-left text-left text-left text-left text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
+                        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <SheetHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left text-left text-left">Edit Record</SheetTitle><SheetDescription className="text-sm text-left text-left text-left text-left text-left text-left text-left text-left">Update soul identity and mission details.</SheetDescription></SheetHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </SheetContent>
@@ -1031,27 +1076,27 @@ export default function SoulsWonPage() {
             ) : (
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                                <DialogHeader className="text-left text-left text-left text-left text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Add New Soul</DialogTitle>
-                                    <DialogDescription className="text-left text-left text-left text-left text-left">Record a new life won for Christ.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left">Add New Soul</DialogTitle>
+                                    <DialogDescription className="text-left text-left text-left text-left text-left text-left text-left text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left text-left text-left text-left text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={fellowships || []} campaigns={campaigns || []} />
                             </ScrollArea>
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
-                                <DialogHeader className="text-left text-left text-left text-left text-left text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left">Edit Record</DialogTitle>
-                                    <DialogDescription className="text-left text-left text-left text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left text-left text-left">Edit Record</DialogTitle>
+                                    <DialogDescription className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left text-left text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DialogContent>
