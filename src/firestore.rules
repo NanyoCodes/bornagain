@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Group directory & Bible shared access - 2025-03-06T10:00:00Z
+    // Deployment trigger: Unification and private event security - 2025-06-15T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -53,12 +53,6 @@ service cloud.firestore {
              get(/databases/$(database)/documents/events/$(eId)).data.organizerId == request.auth.uid;
     }
 
-    function isAccountabilityPartner(userId) {
-      return isAuthenticated() && 
-             exists(/databases/$(database)/documents/users/$(userId)) &&
-             request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.get('partnerIds', []);
-    }
-
     function canAccessChatDoc(chatData) {
       return isAuthenticated() && (
         request.auth.uid in chatData.get('participantIds', []) ||
@@ -78,9 +72,13 @@ service cloud.firestore {
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline', 'photoURL', 'firstName', 'lastName', 'fullName_lowercase', 'name_tokens', 'bio', 'personalMessage', 'maritalStatus', 'workStatus', 'organizationName', 'roleInOrganization', 'videoTestimonies', 'dateOfBirth', 'location', 'phone', 'defaultMeetingLink']) && (
           isOwner(userId) ||
           exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
-          isAccountabilityPartner(userId)
+          (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
         ))
       );
+
+      match /fellowships/{fId} {
+        allow get, list, write: if isOwner(userId);
+      }
 
       match /strongholds/{id} {
         allow read, write: if isOwner(userId);
@@ -102,17 +100,7 @@ service cloud.firestore {
       }
 
       match /bibleHighlights/{highlightId} {
-        allow read: if isOwner(userId) || (
-          isAuthenticated() && 
-          resource.data.get('isPrivate', false) == false && 
-          isAccountabilityPartner(userId)
-        );
-        allow write: if isOwner(userId);
-        
-        match /comments/{commentId} {
-          allow read, create: if isAuthenticated() && (isOwner(userId) || isAccountabilityPartner(userId));
-          allow update, delete: if isAuthenticated() && (request.auth.uid == resource.data.authorId || isOwner(userId));
-        }
+        allow read, write: if isOwner(userId);
       }
 
       match /notes/{noteId} {
@@ -120,8 +108,7 @@ service cloud.firestore {
       }
 
       match /notifications/{notificationId} {
-        allow read: if isOwner(userId);
-        allow update, delete: if isOwner(userId);
+        allow read, update, delete: if isOwner(userId);
         allow create: if isAuthenticated();
       }
 
@@ -132,14 +119,6 @@ service cloud.firestore {
       match /joinedEvents/{eventId} {
         allow get, list, write: if isOwner(userId);
       }
-
-      match /fellowships/{fId} {
-        allow get, list: if isOwner(userId);
-      }
-    }
-
-    match /{path=**}/bibleHighlights/{highlightId} {
-      allow list: if isAuthenticated();
     }
 
     match /events/{eventId} {
@@ -245,7 +224,7 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.auth.uid == request.resource.data.authorId;
       allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
       allow update: if isAuthenticated() && ( 
-        (request.resource.data.authorId == request.authorId) ||
+        (request.resource.data.authorId == request.auth.uid) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
         (resource.data.get('answeredTestimonyId', '') != '' && (
           request.resource.data.status == 'pending' || 
