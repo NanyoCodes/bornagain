@@ -426,85 +426,85 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1 text-left">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Kingdom Hubs</p>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left">
+                <div className="p-1 space-y-1">
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Kingdom Hubs</p>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/victory-hub" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <ShieldCheck className="h-3.5 w-3.5 text-primary" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/fellowships" className="flex items-center gap-3 w-full text-left">
-                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
-                        <Users className="h-3.5 w-3.5 text-primary text-left" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/fellowships" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Users className="h-3.5 w-3.5 text-primary" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Fellowship Hub</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest">Fellowship Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/events" className="flex items-center gap-3 w-full text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/events" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <CalendarDays className="h-3.5 w-3.5 text-primary" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest">Events Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/marketplace" className="flex items-center gap-3 w-full text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/marketplace" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
                         <Store className="h-3.5 w-3.5 text-blue-600" />
                       </div>
                       <span className="text-[11px] font-bold uppercase tracking-widest">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full text-left">
-                      <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-left">
-                        <Gift className="h-3.5 w-3.5 text-indigo-600 text-left" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                        <Gift className="h-3.5 w-3.5 text-indigo-600" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kindness Gifts</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full text-left">
-                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
-                        <Package className="h-3.5 w-3.5 text-left" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                        <Package className="h-3.5 w-3.5" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Order Tracker</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 space-y-1 text-left">
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                      <Link href="/guide" className="flex items-center gap-3 w-full text-left">
-                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
-                          <Info className="h-3.5 w-3.5 text-left" />
+                <div className="p-1 space-y-1">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                      <Link href="/guide" className="flex items-center gap-3 w-full">
+                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                          <Info className="h-3.5 w-3.5" />
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">App Guide</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                      <Link href="/resources" className="flex items-center gap-3 w-full text-left">
-                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
-                          <BookMarked className="h-3.5 w-3.5 text-left" />
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                      <Link href="/resources" className="flex items-center gap-3 w-full">
+                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                          <BookMarked className="h-3.5 w-3.5" />
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kingdom Library</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest">Kingdom Library</span>
                       </Link>
                   </DropdownMenuItem>
                 </div>
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 text-left">
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer text-left">
-                    <LogOut className="mr-3 h-4 w-4 text-left" />
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-left">Sign Out</span>
+                <div className="p-1">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer">
+                    <LogOut className="mr-3 h-4 w-4" />
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">Sign Out</span>
                   </DropdownMenuItem>
                 </div>
               </DropdownMenuContent>
@@ -512,15 +512,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
           </>
         ) : showGuestButtons ? (
           <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold text-left">
-              <Link href="/login" className="text-left">Sign In</Link>
+            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold">
+              <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
-              <Link href="/signup" className="text-left">Join Movement</Link>
+            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20">
+              <Link href="/signup">Join Movement</Link>
             </Button>
           </div>
         ) : (
-          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted text-left" />
+          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
         )}
       </div>
     </header>
@@ -536,8 +536,8 @@ function BottomNavBar() {
     );
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)] text-left">
-        <div className="flex min-h-[4.5rem] h-auto items-center justify-around px-1 py-1 text-left text-left">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
+        <div className="flex min-h-[4.5rem] h-auto items-center justify-around px-1 py-1">
           {bottomNavItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -545,17 +545,17 @@ function BottomNavBar() {
                 key={item.href}
                 href={item.href}
                 prefetch={true}
-                className="relative flex flex-1 flex-col items-center justify-center min-w-0 text-left"
+                className="relative flex flex-1 flex-col items-center justify-center min-w-0"
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex flex-col items-center justify-center rounded-xl px-1 py-1 min-h-[56px] w-full text-left"
+                  className="relative flex flex-col items-center justify-center rounded-xl px-1 py-1 min-h-[56px] w-full"
                   whileTap={{ scale: 0.85 }}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="nav-active-pill"
-                      className="absolute inset-0 bg-primary rounded-xl text-left"
+                      className="absolute inset-0 bg-primary rounded-xl"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -566,13 +566,13 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10 flex flex-col items-center justify-center text-left",
+                      "relative z-10 flex flex-col items-center justify-center",
                       isActive ? "text-white" : "text-muted-foreground"
                     )}
                   >
                     <item.icon className={cn("h-6 w-6 mb-1", !isActive && item.color)} />
                     <span className={cn(
-                        "text-[8px] font-black uppercase tracking-tighter transition-all leading-none text-center text-left",
+                        "text-[8px] font-black uppercase tracking-tighter transition-all leading-none text-center",
                         isActive ? "opacity-100" : "opacity-60"
                     )}>
                         {item.label}
@@ -685,17 +685,17 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
 
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
-        <div className="relative mb-8 mx-auto w-fit text-left text-left">
-            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left text-left" />
-            <div className="absolute inset-0 flex items-center justify-center text-left text-left">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left text-left" />
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
+        <div className="relative mb-8 mx-auto w-fit">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             </div>
         </div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8 text-left text-left">
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center text-left text-left">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center">
             Kingdom Network Active
         </p>
       </div>
@@ -708,7 +708,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
 
   return (
-    <div className={cn("flex w-full flex-col overflow-x-hidden text-left", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+    <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
       <AnimatePresence>
           {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
       </AnimatePresence>
@@ -717,7 +717,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           initial={{ opacity: 0 }}
           animate={{ opacity: contentVisible ? 1 : 0 }}
           transition={{ duration: 1 }}
-          className="flex-1 flex flex-col min-h-0 text-left text-left"
+          className="flex-1 flex flex-col min-h-0"
       >
           {!isTakeoverPage && (
             <AppHeader 
@@ -726,7 +726,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
                 isPublicRoute={isPublicRoute}
             />
           )}
-          <div className="flex-1 relative min-h-0 text-left text-left">
+          <div className="flex-1 relative min-h-0">
           <main 
               ref={scrollContainerRef}
               className={cn(
@@ -735,7 +735,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
               )}
           >
               <div className={cn(
-              "mx-auto h-full text-left", 
+              "mx-auto h-full", 
               (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
               )}>
                   <PageTransition>{children}</PageTransition>
@@ -750,28 +750,28 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       
       {user && mounted && isMobile ? (
         <Drawer open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left">
-              <DrawerHeader className="text-left text-left">
-                <DrawerTitle className="text-xl font-bold text-left">Complete Your Profile</DrawerTitle>
-                <DrawerDescription className="text-xs text-left">Join the global movement by introducing yourself.</DrawerDescription>
+          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
+              <DrawerHeader className="text-left">
+                <DrawerTitle className="text-xl font-bold">Complete Your Profile</DrawerTitle>
+                <DrawerDescription className="text-xs">Join the global movement by introducing yourself.</DrawerDescription>
               </DrawerHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-8 text-left text-left">
+            <div className="flex-grow overflow-y-auto p-8">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DrawerContent>
         </Drawer>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
-            <div className="p-6 border-b bg-muted/10 text-left text-left">
-              <DialogHeader className="text-left text-left">
-                <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
-                <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
+            <div className="p-6 border-b bg-muted/10">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -804,8 +804,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SearchProvider>
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
-                <div className="relative mx-auto w-fit text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
+                <div className="relative mx-auto w-fit">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary" />
                 </div>
             </div>
         }>
