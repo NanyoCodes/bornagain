@@ -21,7 +21,6 @@ export function useCollection<T extends { id: string }>(
   const { user } = useUser();
   
   // Use a ref to track the actual query instance to prevent infinite loops
-  // if the query is created inline in a component.
   const activeQuery = useRef<Query<DocumentData> | null>(null);
 
   useEffect(() => {
@@ -32,7 +31,8 @@ export function useCollection<T extends { id: string }>(
     }
 
     // Check if the new query is logically equal to the current subscription
-    if (activeQuery.current && query.isEqual(activeQuery.current)) {
+    // We use a defensive check for isEqual to avoid TypeErrors in proxied environments
+    if (activeQuery.current && (query as any).isEqual && (query as any).isEqual(activeQuery.current)) {
       return;
     }
 
@@ -69,7 +69,6 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-    // Stringify options to ensure stable dependency check
   }, [query, user, JSON.stringify(options?.snapshotOptions)]);
 
   return { data, loading, error };
