@@ -25,7 +25,9 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useUserProfile, useAuth } from '@/firebase';
 import { collection, doc, writeBatch, serverTimestamp, arrayUnion } from 'firebase/firestore';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
+import { initializeApp, deleteApp } from 'firebase/app';
+import { firebaseConfig } from '@/firebase/config';
 import Papa from 'papaparse';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -33,14 +35,13 @@ import type { SoulRelationship } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Label } from '@/components/ui/label';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 
 interface GoogleContact {
     resourceName: string;
@@ -141,9 +142,16 @@ export function SoulsImportTemplateCard() {
 
     const provider = new GoogleAuthProvider();
     provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+    provider.setCustomParameters({ prompt: 'select_account' });
 
+    let tempApp;
     try {
-        const result = await signInWithPopup(auth, provider);
+        // Use a temporary Firebase app to avoid switching the primary user session
+        const appName = `temp-contacts-${Date.now()}`;
+        tempApp = initializeApp(firebaseConfig, appName);
+        const tempAuth = getAuth(tempApp);
+
+        const result = await signInWithPopup(tempAuth, provider);
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential?.accessToken;
 
@@ -163,7 +171,7 @@ export function SoulsImportTemplateCard() {
             });
 
             if (!response.ok) {
-                if (response.status === 403) throw new Error("People API not enabled in Google Console.");
+                if (response.status === 403) throw new Error("People API not enabled or access denied.");
                 throw new Error(`Google API error: ${response.status}`);
             }
 
@@ -191,7 +199,11 @@ export function SoulsImportTemplateCard() {
 
         setContacts(allMappedContacts);
         setIsContactsDialogOpen(true);
+        
+        // Cleanup the temporary app
+        await deleteApp(tempApp);
     } catch (error: any) {
+        if (tempApp) await deleteApp(tempApp);
         console.error("Google Contacts Import Error:", error);
         if (error.code !== 'auth/popup-closed-by-user') {
             toast({ 
@@ -384,76 +396,76 @@ export function SoulsImportTemplateCard() {
   const contactsListEl = (
     <div className="flex flex-col h-full text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center justify-between mb-2 text-left">
-                <div className="flex items-center gap-2 text-left">
-                    <Smartphone className="h-5 w-5 text-primary text-left" />
-                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Network Sync</span>
+            <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                    <Smartphone className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Network Sync</span>
                 </div>
                 <Button 
                     onClick={handleImportSelected} 
                     disabled={selectedContactIds.size === 0 || isUploading}
                     size="sm"
-                    className="rounded-xl h-9 px-6 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-[10px] text-left"
+                    className="rounded-xl h-9 px-6 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-[10px]"
                 >
-                    {isUploading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left" /> : <Send className="mr-1.5 h-3.5 w-3.5 text-left" />}
+                    {isUploading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Send className="mr-1.5 h-3.5 w-3.5" />}
                     IMPORT SELECTED
                 </Button>
             </div>
-            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Contacts</h3>
-            <div className="relative mt-6 text-left">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
+            <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Select Contacts</h3>
+            <div className="relative mt-6">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
                 <Input 
                     placeholder="Search your contacts..." 
                     value={contactSearch}
                     onChange={e => setContactSearch(e.target.value)}
-                    className="h-12 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left"
+                    className="h-12 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
                 />
             </div>
         </div>
 
-        <ScrollArea className="flex-grow min-h-0 text-left">
+        <ScrollArea className="flex-grow min-h-0">
             <div className="p-4 space-y-1 text-left">
                 {filteredContacts.length > 0 ? filteredContacts.map(contact => (
                     <div 
                         key={contact.resourceName}
                         className={cn(
-                            "flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer group text-left",
+                            "flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer group",
                             selectedContactIds.has(contact.resourceName) ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20" : "bg-transparent border-transparent hover:bg-muted/50"
                         )}
                         onClick={() => handleToggleContact(contact.resourceName)}
                     >
-                        <div className="flex items-center gap-4 min-w-0 text-left">
+                        <div className="flex items-center gap-4 min-w-0">
                             <Checkbox 
                                 checked={selectedContactIds.has(contact.resourceName)}
                                 onCheckedChange={() => handleToggleContact(contact.resourceName)}
-                                className="rounded-md border-muted-foreground/30 text-left"
+                                className="rounded-md border-muted-foreground/30"
                             />
-                            <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
-                                <AvatarImage src={contact.photoURL} className="text-left" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs flex items-center justify-center h-full w-full text-left text-left">{contact.firstName.charAt(0)}</AvatarFallback>
+                            <Avatar className="h-10 w-10 border shadow-sm shrink-0">
+                                <AvatarImage src={contact.photoURL} />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs flex items-center justify-center h-full w-full">{contact.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0 text-left text-left">
-                                <p className="font-black text-sm uppercase tracking-tight truncate text-left">{contact.firstName} {contact.lastName}</p>
-                                <div className="flex items-center gap-3 mt-1 opacity-60 text-left">
-                                    {contact.phone && <p className="text-[10px] font-bold truncate flex items-center gap-1 text-left"><Smartphone className="h-2.5 w-2.5 text-left" /> {contact.phone}</p>}
+                            <div className="min-w-0">
+                                <p className="font-black text-sm uppercase tracking-tight truncate">{contact.firstName} {contact.lastName}</p>
+                                <div className="flex items-center gap-3 mt-1 opacity-60">
+                                    {contact.phone && <p className="text-[10px] font-bold truncate flex items-center gap-1"><Smartphone className="h-2.5 w-2.5" /> {contact.phone}</p>}
                                 </div>
                             </div>
                         </div>
                         {selectedContactIds.has(contact.resourceName) && (
-                            <div className="shrink-0 bg-primary/10 p-1 rounded-full text-left text-left"><UserCheck className="h-4 w-4 text-primary text-left" /></div>
+                            <div className="shrink-0 bg-primary/10 p-1 rounded-full"><UserCheck className="h-4 w-4 text-primary" /></div>
                         )}
                     </div>
                 )) : (
-                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4 text-left">
-                        <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-4 text-left" />
-                        <p className="text-sm text-muted-foreground font-medium italic text-left">No matching contacts found.</p>
+                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4">
+                        <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-4" />
+                        <p className="text-sm text-muted-foreground font-medium italic">No matching contacts found.</p>
                     </div>
                 )}
             </div>
         </ScrollArea>
-        <div className="p-8 border-t bg-muted/5 flex items-center justify-center gap-2 shrink-0 text-left">
-            <Info className="h-3 w-3 text-muted-foreground text-left" />
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
+        <div className="p-8 border-t bg-muted/5 flex items-center justify-center gap-2 shrink-0">
+            <Info className="h-3 w-3 text-muted-foreground" />
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                 Selected: {selectedContactIds.size} / {filteredContacts.length}
             </p>
         </div>
@@ -462,23 +474,23 @@ export function SoulsImportTemplateCard() {
 
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10 text-left">
-      <CardHeader className="p-6 sm:p-8 text-left text-left">
-        <div className="flex items-center justify-between gap-4 text-left">
-            <div className="space-y-1 text-left text-left">
-                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight text-left text-left">
-                <FileSpreadsheet className="h-5 w-5 text-primary text-left" /> Harvest Mobilization
+      <CardHeader className="p-6 sm:p-8 text-left">
+        <div className="flex items-center justify-between gap-4">
+            <div className="space-y-1">
+                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight">
+                <FileSpreadsheet className="h-5 w-5 text-primary" /> Harvest Mobilization
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm font-medium text-left text-left text-left">
+                <CardDescription className="text-xs sm:text-sm font-medium text-left">
                 Synchronize bulk convert data by uploading a spreadsheet or importing from Google.
                 </CardDescription>
             </div>
-            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 h-6 px-3 font-black uppercase text-[9px] tracking-widest hidden sm:flex text-left">Bulk Sync</Badge>
+            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 h-6 px-3 font-black uppercase text-[9px] tracking-widest hidden sm:flex">Bulk Sync</Badge>
         </div>
       </CardHeader>
-      <CardContent className="px-6 sm:p-8 pt-0 space-y-8 text-left text-left">
-        <div className="flex flex-wrap gap-3 text-left">
-            <Button onClick={handleDownloadTemplate} variant="outline" className="h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left">
-                <Download className="mr-2 h-4 w-4 text-left" />
+      <CardContent className="px-6 sm:p-8 pt-0 space-y-8 text-left">
+        <div className="flex flex-wrap gap-3">
+            <Button onClick={handleDownloadTemplate} variant="outline" className="h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm">
+                <Download className="mr-2 h-4 w-4" />
                 TEMPLATE
             </Button>
             
@@ -486,13 +498,13 @@ export function SoulsImportTemplateCard() {
                 onClick={handleGoogleContactsImport} 
                 disabled={isFetchingContacts}
                 variant="outline"
-                className="h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left"
+                className="h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm"
             >
-                {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Smartphone className="mr-2 h-4 w-4 text-left" />}
+                {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Smartphone className="mr-2 h-4 w-4" />}
                 GOOGLE SYNC
             </Button>
 
-            <div className="relative text-left">
+            <div className="relative">
                 <input 
                     type="file" 
                     ref={fileInputRef} 
@@ -505,26 +517,26 @@ export function SoulsImportTemplateCard() {
                     onClick={() => fileInputRef.current?.click()} 
                     disabled={isUploading}
                     variant="outline"
-                    className="h-10 px-4 rounded-xl font-black border-primary/20 text-primary hover:bg-primary/5 shadow-sm uppercase tracking-widest text-[10px] text-left"
+                    className="h-10 px-4 rounded-xl font-black border-primary/20 text-primary hover:bg-primary/5 shadow-sm uppercase tracking-widest text-[10px]"
                 >
-                    {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" /> : <Upload className="mr-2 h-4 w-4 text-left" />}
+                    {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
                     CSV UPLOAD
                 </Button>
             </div>
         </div>
 
-        <div className="space-y-4 text-left">
-            <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4 text-left text-left">
-                <Info className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left" />
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
+        <div className="space-y-4">
+            <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4">
+                <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                     Standardize your follow-up data. Import your existing contacts or use our template to organize outreach results for professional tracking.
                 </p>
             </div>
 
-            <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 flex items-start gap-3 text-left text-left">
-                <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5 text-left" />
-                <div className="space-y-1 text-left text-left">
-                    <p className="text-[10px] font-black uppercase text-amber-700 tracking-widest text-left">Verification Status: Testing</p>
+            <div className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20 flex items-start gap-3">
+                <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase text-amber-700 tracking-widest">Verification Status: Testing</p>
                     <p className="text-[9px] text-amber-700/80 leading-relaxed font-medium text-left">
                         The Google Contacts import is currently in testing. If you see a warning, click <span className="font-bold">"Advanced"</span> and then <span className="font-bold">"Go to testifyglobal.com (unsafe)"</span> to proceed with the sync.
                     </p>
@@ -537,20 +549,20 @@ export function SoulsImportTemplateCard() {
         {isContactsDialogOpen && (
             isMobile ? (
                 <Drawer open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                        <DrawerHeader className="sr-only text-left text-left text-left text-left">
-                            <DrawerTitle className="text-left text-left text-left text-left">Network Sync</DrawerTitle>
-                            <DrawerDescription className="text-left text-left text-left text-left">Select contacts to synchronize.</DrawerDescription>
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <DrawerHeader className="sr-only">
+                            <DrawerTitle>Network Sync</DrawerTitle>
+                            <DrawerDescription>Select contacts to synchronize.</DrawerDescription>
                         </DrawerHeader>
                         {contactsListEl}
                     </DrawerContent>
                 </Drawer>
             ) : (
                 <Dialog open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
-                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
-                        <DialogHeader className="sr-only text-left text-left text-left">
-                            <DialogTitle className="text-left text-left text-left">Network Sync</DialogTitle>
-                            <DialogDescription className="text-left text-left text-left text-left text-left">Select contacts to synchronize.</DialogDescription>
+                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                        <DialogHeader className="sr-only">
+                            <DialogTitle>Network Sync</DialogTitle>
+                            <DialogDescription>Select contacts to synchronize.</DialogDescription>
                         </DialogHeader>
                         {contactsListEl}
                     </DialogContent>
