@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   onSnapshot, 
   queryEqual, 
@@ -66,7 +66,6 @@ export function useCollection<T extends { id: string }>(
       },
       async (err) => {
         if (err.code === 'permission-denied') {
-          // Attempt to extract the path from the query object (internal API check)
           const path = (stableQuery as any)._query?.path?.canonicalString() || 'unknown path';
           const permissionError = new FirestorePermissionError({
             path,
