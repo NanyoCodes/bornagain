@@ -57,7 +57,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest } from "@/lib/types";
+import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest, SoulRelationship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment } from "firebase/firestore";
@@ -201,7 +201,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                         <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
                                     </div>
                                 </DropdownMenuItem>
-                            )}
+                            ))}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold">
                                 <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
@@ -1070,10 +1070,7 @@ export default function SoulsWonPage() {
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left">
-                                  <DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle>
-                                  <DrawerDescription className="text-sm text-left">Record a new life won for Christ.</DrawerDescription>
-                                </DrawerHeader>
+                                <DrawerHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</SheetDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 <LogSoulForm 
@@ -1088,10 +1085,7 @@ export default function SoulsWonPage() {
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left">
-                                  <DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle>
-                                  <DrawerDescription className="text-sm text-left">Update soul identity and mission details.</DrawerDescription>
-                                </DrawerHeader>
+                                <DrawerHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left">Edit Record</SheetTitle><SheetDescription className="text-sm font-medium mt-1 text-left text-left">Update soul identity and mission details.</SheetDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
