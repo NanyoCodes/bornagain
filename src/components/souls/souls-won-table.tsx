@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -77,8 +76,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { 
@@ -348,7 +347,7 @@ function ShareWordDialog({
   );
 
   const renderBooks = (
-    <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
+    <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2 text-left">
       {bibleData.map(book => (
         <Button key={book.name} variant="outline" className="h-12 sm:h-14 rounded-xl font-bold uppercase text-[9px] sm:text-xs" onClick={() => handleSelectBook(book.name)}>
           {book.name}
@@ -358,7 +357,7 @@ function ShareWordDialog({
   );
 
   const renderChapters = (
-    <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2">
+    <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2 text-left">
        {selectedBookName && bibleData.find(b => b.name === selectedBookName)?.chapters.map(ch => (
          <Button key={ch.chapter} variant="outline" className="h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-lg font-black text-xs sm:text-sm" onClick={() => handleSelectChapter(ch.chapter)}>
            {ch.chapter}
@@ -368,7 +367,7 @@ function ShareWordDialog({
   );
 
   const renderVerses = (
-    <div className="space-y-4 pb-12">
+    <div className="space-y-4 pb-12 text-left">
        <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left">
           <p className="text-[10px] font-black uppercase text-primary mb-1">SELECTED FOR SHARING</p>
           <p className="text-xs font-bold text-muted-foreground text-left">
@@ -1127,18 +1126,18 @@ function SoulProfileContent({
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
           <DialogHeader className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
-                  <Share2 className="h-7 w-7 text-primary" />
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
+                  <Share2 className="h-7 w-7 text-primary text-center" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Share Details</DialogTitle>
-            <DialogDescription className="text-sm font-medium">Where would you like to share {soul.firstName}'s info?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
-              <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
+          <div className="flex flex-col gap-3 pt-6 text-center">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center">
+              <WhatsAppIcon className="h-5 w-5 text-center" /> WhatsApp External
             </Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
-              <HeartHandshake className="h-5 w-5" /> Partner on App
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center">
+              <HeartHandshake className="h-5 w-5 text-center" /> Partner on App
             </Button>
           </div>
         </DialogContent>
@@ -1188,64 +1187,191 @@ function SoulProfileContent({
   );
 }
 
-const SoulCard = React.memo(({ soul, allSouls, onClick }: { 
+const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: { 
   soul: Soul; 
   allSouls: Soul[];
   onClick: () => void;
+  onAddChild: (p1: Soul, p2?: Soul | null) => void;
 }) => {
+    const isFamily = soul.maritalStatus === 'Married';
+    const spouse = isFamily ? allSouls.find(s => {
+        if (s.id === soul.id || s.maritalStatus !== 'Married') return false;
+        const otherFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+        const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
+        const soulSpouse = (soul.spouseName || "").toLowerCase();
+        const otherSpouse = (s.spouseName || "").toLowerCase();
+        return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
+               (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
+    }) : null;
+
+    const householdChildren = allSouls.filter(s => soul.childrenIds?.includes(s.id));
+
     return (
         <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left">
             <div className="flex items-center justify-between p-4 gap-4">
                 <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0")}>
-                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
-                            {soul.firstName?.charAt(0) || 'S'}
-                        </AvatarFallback>
-                    </Avatar>
+                    <div className="flex -space-x-3 shrink-0">
+                        <Avatar className={cn("h-10 w-10 border shadow-inner")}>
+                            <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+                                {soul.firstName?.charAt(0) || 'S'}
+                            </AvatarFallback>
+                        </Avatar>
+                        {spouse && (
+                            <Avatar className="h-10 w-10 border-2 border-background shadow-md">
+                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs">
+                                    {spouse.firstName?.charAt(0) || 'S'}
+                                </AvatarFallback>
+                            </Avatar>
+                        )}
+                    </div>
                     <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                             <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight text-left">
-                              {soul.firstName || 'Unknown'} {soul.lastName || ''}
+                              {soul.firstName} {soul.lastName}
+                              {spouse && <span className="text-primary/60 lowercase ml-1"> & {spouse.firstName}</span>}
                             </p>
                         </div>
                         <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left">
                             <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
-                            {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0">Fellowship</Badge>}
+                            {isFamily && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0">Household</Badge>}
                         </div>
                     </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-20" />
+                <div className="flex items-center gap-2 shrink-0">
+                    {isFamily && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary" onClick={(e) => e.stopPropagation()}>
+                                    <Users className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl">
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Household Hub</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onSelect={onClick} className="rounded-lg py-2.5">
+                                    <User className="mr-2 h-4 w-4" /> View Primary Profile
+                                </DropdownMenuItem>
+                                {spouse && (
+                                    <DropdownMenuItem onSelect={() => onClick()} className="rounded-lg py-2.5">
+                                        <div className="flex items-center gap-2">
+                                            <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                )}
+                                {householdChildren.map(child => (
+                                    <DropdownMenuItem key={child.id} onSelect={() => onClick()} className="rounded-lg py-2.5">
+                                        <div className="flex items-center gap-2">
+                                            <Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                ))}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold">
+                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
+                    <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-20" />
+                </div>
             </div>
         </Card>
     );
 });
 SoulCard.displayName = "SoulCard";
 
-const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: { 
+const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddChild }: { 
   soul: Soul; 
+  allSouls: Soul[];
   isSelected: boolean;
   onSelect: () => void;
+  onAddChild: (p1: Soul, p2?: Soul | null) => void;
 }) => {
+    const isFamily = soul.maritalStatus === 'Married';
+    const spouse = isFamily ? allSouls.find(s => {
+        if (s.id === soul.id || s.maritalStatus !== 'Married') return false;
+        const otherFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+        const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
+        const soulSpouse = (soul.spouseName || "").toLowerCase();
+        const otherSpouse = (s.spouseName || "").toLowerCase();
+        return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
+               (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
+    }) : null;
+
+    const householdChildren = allSouls.filter(s => soul.childrenIds?.includes(s.id));
+
     return (
         <TableRow 
             className={cn("border-b hover:bg-muted/30 transition-colors cursor-pointer", isSelected && "bg-primary/[0.03]")}
             onClick={() => onSelect()}
         >
             <TableCell className="font-medium p-4 text-left">
-                <div className="flex items-center gap-4 text-left">
-                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0")}>
-                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
-                            {soul.firstName?.charAt(0) || 'S'}
-                        </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0">
-                        <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left">
-                            {soul.firstName} {soul.lastName}
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 text-left">
+                        <div className="flex -space-x-3 shrink-0">
+                            <Avatar className={cn("h-10 w-10 border shadow-inner")}>
+                                <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+                                    {soul.firstName?.charAt(0) || 'S'}
+                                </AvatarFallback>
+                            </Avatar>
+                            {spouse && (
+                                <Avatar className="h-10 w-10 border-2 border-background shadow-md">
+                                    <AvatarImage src={spouse.photoURL || undefined} className="object-cover" />
+                                    <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs">
+                                        {spouse.firstName?.charAt(0) || 'S'}
+                                    </AvatarFallback>
+                                </Avatar>
+                            )}
                         </div>
-                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
+                        <div className="min-w-0 text-left">
+                            <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left">
+                                {soul.firstName} {soul.lastName}
+                                {spouse && <span className="text-primary/60 lowercase ml-1"> & {spouse.firstName}</span>}
+                            </div>
+                            {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
+                        </div>
                     </div>
+                    {isFamily && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary" onClick={(e) => e.stopPropagation()}>
+                                    <Users className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl">
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Household Hub</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onSelect={onSelect} className="rounded-lg py-2.5">
+                                    <User className="mr-2 h-4 w-4" /> View Primary Profile
+                                </DropdownMenuItem>
+                                {spouse && (
+                                    <DropdownMenuItem onSelect={() => onSelect()} className="rounded-lg py-2.5">
+                                        <div className="flex items-center gap-2">
+                                            <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                )}
+                                {householdChildren.map(child => (
+                                    <DropdownMenuItem key={child.id} onSelect={() => onSelect()} className="rounded-lg py-2.5">
+                                        <div className="flex items-center gap-2">
+                                            <Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
+                                        </div>
+                                    </DropdownMenuItem>
+                                ))}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold">
+                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
                 </div>
             </TableCell>
         </TableRow>
@@ -1253,7 +1379,7 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
 });
 SoulTableRow.displayName = "SoulTableRow";
 
-export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulId, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: {
+export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulId, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess, onAddChild }: {
   souls: Soul[];
   loading: boolean;
   selectedSoulId: string | null;
@@ -1265,6 +1391,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
   onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
   onAssess: (soul: Soul) => void;
+  onAddChild: (p1: Soul, p2?: Soul | null) => void;
 }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
@@ -1326,7 +1453,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
             {isMobile ? (
                 <div className="space-y-px">
                     {souls.map((soul) => (
-                        <SoulCard key={soul.id} soul={soul} allSouls={souls} onClick={() => setSelectedSoulId(soul.id)} />
+                        <SoulCard key={soul.id} soul={soul} allSouls={souls} onClick={() => setSelectedSoulId(soul.id)} onAddChild={onAddChild} />
                     ))}
                 </div>
             ) : (
@@ -1351,8 +1478,10 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                                     <SoulTableRow 
                                         key={soul.id} 
                                         soul={soul} 
+                                        allSouls={souls}
                                         isSelected={selectedSoulId === soul.id}
                                         onSelect={() => setSelectedSoulId(soul.id)}
+                                        onAddChild={onAddChild}
                                     />
                                     ))}
                                 </TableBody>
@@ -1413,3 +1542,4 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
     </div>
   );
 }
+

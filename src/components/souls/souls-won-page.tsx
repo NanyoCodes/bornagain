@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -202,7 +201,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                         <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
                                     </div>
                                 </DropdownMenuItem>
-                            ))}
+                            )}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold">
                                 <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
@@ -360,11 +359,11 @@ export default function SoulsWonPage() {
               const spouse = souls.find(other => {
                 if (other.id === s.id || other.maritalStatus !== 'Married') return false;
                 const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-                const sFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
-                const sSpouse = (s.spouseName || "").toLowerCase();
+                const soulFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+                const soulSpouse = (s.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
-                return (sSpouse === otherFullName || sSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === sFullName || otherSpouse === s.firstName.toLowerCase());
+                return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
+                       (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
               });
 
               if (spouse) {
@@ -966,6 +965,7 @@ export default function SoulsWonPage() {
                         onEdit={handleOpenEdit}
                         onDelete={handleOpenDelete}
                         onAssess={handleOpenAssessment}
+                        onAddChild={handleAddChild}
                     />
                 </div>
             </div>
@@ -1138,3 +1138,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+
