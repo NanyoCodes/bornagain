@@ -151,7 +151,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul }: { souls: any[], all
                         )}
                     </div>
                     <div className="min-w-0 flex-1 text-left">
-                        <div className="flex items-center gap-2 text-left flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap text-left">
                             <p className="font-black text-sm sm:text-base truncate uppercase tracking-tight text-left">
                                 {soul.firstName} {soul.lastName}
                                 {spouse && (
@@ -160,7 +160,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul }: { souls: any[], all
                                     </span>
                                 )}
                             </p>
-                            <Badge variant="outline" className="text-[8px] h-4 px-1.5 uppercase font-black tracking-tighter shrink-0 ml-auto sm:ml-0 bg-background/50">{soul.status}</Badge>
+                            <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 ml-auto sm:ml-0 bg-background/50">{soul.status}</Badge>
                         </div>
                         <div className="flex flex-col gap-1 mt-1 text-left">
                             <div className="flex items-center gap-3 text-muted-foreground">
@@ -353,12 +353,12 @@ export default function SoulsWonPage() {
               const spouse = souls.find(other => {
                 if (other.id === s.id || other.maritalStatus !== 'Married') return false;
                 const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-                const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
-                const soulSpouse = (soul.spouseName || "").toLowerCase();
+                const sFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+                const sSpouse = (s.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
 
                 return (sSpouse === otherFullName || sSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
+                       (otherSpouse === sFullName || otherSpouse === s.firstName.toLowerCase());
               });
 
               if (spouse) {
@@ -756,7 +756,7 @@ export default function SoulsWonPage() {
                                                 </div>
                                             </DialogTrigger>
                                             <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
-                                                <DialogHeader className="sr-only text-left"><DialogTitle className="text-left">Soul Photo</DialogTitle></DialogHeader>
+                                                <DialogHeader className="sr-only text-left"><DialogTitle className="text-left text-left">Soul Photo</DialogTitle></DialogHeader>
                                                 <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
                                                     <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
                                                         <Image 
@@ -963,9 +963,9 @@ export default function SoulsWonPage() {
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
                             </div>
-                            <DrawerHeader className="text-left flex-shrink-0">
+                            <DrawerHeader className="text-left flex-shrink-0 text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                             </DrawerHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left">
@@ -1047,7 +1047,7 @@ export default function SoulsWonPage() {
                     <Drawer open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
+                                <DrawerHeader className="text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 <LogSoulForm onSoulLogged={() => setIsLogDialogOpen(false)} fellowships={fellowships || []} campaigns={campaigns || []} />
