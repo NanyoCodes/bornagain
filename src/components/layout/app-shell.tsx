@@ -225,7 +225,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   
   if (showMobileSearch) {
     return (
-      <header className="sticky top-0 z-50 flex h-dvh w-full flex-col bg-background pt-[env(safe-area-inset-top)] animate-in fade-in duration-300">
+      <header className="sticky top-0 z-50 flex h-dvh w-full flex-col bg-background pt-[env(safe-area-inset-top)] animate-in fade-in duration-300 text-left">
         <div className="flex h-16 items-center gap-3 px-4 border-b shrink-0">
           <Button variant="ghost" size="icon" onClick={() => { setShowMobileSearch(false); setSearchTerm(''); }} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors">
             <ArrowLeft className="h-6 w-6" />
@@ -246,14 +246,14 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         <ScrollArea className="flex-1">
             <div className="p-6 space-y-8">
                 {suggestions.length > 0 ? (
-                    <div className="space-y-4 text-left text-left">
+                    <div className="space-y-4 text-left">
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Kingdom Suggestions</p>
-                        <div className="space-y-2 text-left">
+                        <div className="space-y-2">
                             {suggestions.map(s => (
                                 <Button 
                                     key={s.id} 
                                     variant="ghost" 
-                                    className="w-full justify-start h-14 rounded-2xl gap-4 hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all text-left"
+                                    className="w-full justify-start h-14 rounded-2xl gap-4 hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all"
                                     onClick={() => {
                                         router.push(s.link);
                                         setShowMobileSearch(false);
@@ -263,9 +263,9 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                                     <div className="h-9 w-9 rounded-xl bg-muted group-hover:bg-primary/10 flex items-center justify-center shrink-0 transition-colors">
                                         <s.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
                                     </div>
-                                    <div className="min-w-0 flex-1 text-left">
-                                        <p className="font-black text-sm uppercase tracking-tight truncate text-left">{s.title}</p>
-                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">{s.type}</p>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-black text-sm uppercase tracking-tight truncate">{s.title}</p>
+                                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">{s.type}</p>
                                     </div>
                                     <ChevronRight className="h-4 w-4 text-muted-foreground opacity-20 group-hover:opacity-100 transition-opacity" />
                                 </Button>
@@ -278,15 +278,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                             <Search className="h-8 w-8 text-muted-foreground opacity-10" />
                         </div>
                         <p className="text-base font-black uppercase tracking-tight opacity-40">No Matches Found</p>
-                        <p className="text-xs text-muted-foreground italic mt-2">Try searching for a different keyword or name.</p>
+                        <p className="text-xs text-muted-foreground italic mt-2 text-center text-balance">Try searching for a different keyword or name.</p>
                     </div>
                 ) : (
-                    <div className="py-20 text-center flex flex-col items-center text-left">
+                    <div className="py-20 text-center flex flex-col items-center">
                         <div className="h-16 w-16 bg-primary/5 rounded-full flex items-center justify-center mb-6">
                             <Sparkles className="h-8 w-8 text-primary opacity-20" />
                         </div>
-                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-30">Kingdom Search</h3>
-                        <p className="text-sm text-muted-foreground max-w-[250px] mx-auto mt-2 italic leading-relaxed font-medium">Search for souls, campaigns, testimonies or fellowship groups in the harvest network.</p>
+                        <h3 className="text-xl font-black font-headline uppercase tracking-tight opacity-30 text-center text-balance">Kingdom Search</h3>
+                        <p className="text-sm text-muted-foreground max-w-[250px] mx-auto mt-2 italic leading-relaxed font-medium text-center text-balance">Search for souls, campaigns, testimonies or fellowship groups in the harvest network.</p>
                     </div>
                 )}
             </div>
@@ -404,15 +404,15 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                         <User className="h-3.5 w-3.5" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Profile Identity</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Profile Identity</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
                     <Link href="/accountability" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                         <HeartHandshake className="h-3.5 w-3.5" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Partners</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Partners</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
@@ -420,7 +420,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                         <Settings className="h-3.5 w-3.5" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Settings</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Settings</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
@@ -428,13 +428,13 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1">
-                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Kingdom Hubs</p>
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                     <Link href="/victory-hub" className="flex items-center gap-3 w-full">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <ShieldCheck className="h-3.5 w-3.5 text-primary" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Victory Hub</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Victory Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
@@ -442,7 +442,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Users className="h-3.5 w-3.5 text-primary" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Fellowship Hub</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Fellowship Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
@@ -450,7 +450,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
                         <CalendarDays className="h-3.5 w-3.5 text-primary" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Events Hub</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Events Hub</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
@@ -458,7 +458,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                       <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
                         <Store className="h-3.5 w-3.5 text-blue-600" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Meals Provision</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
@@ -466,7 +466,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                       <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center">
                         <Gift className="h-3.5 w-3.5 text-indigo-600" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Kindness Gifts</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kindness Gifts</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
@@ -474,7 +474,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                         <Package className="h-3.5 w-3.5" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Order Tracker</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Order Tracker</span>
                     </Link>
                   </DropdownMenuItem>
                 </div>
@@ -487,7 +487,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                           <Info className="h-3.5 w-3.5" />
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest">App Guide</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
@@ -495,7 +495,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
                           <BookMarked className="h-3.5 w-3.5" />
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-widest">Kingdom Library</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kingdom Library</span>
                       </Link>
                   </DropdownMenuItem>
                 </div>
@@ -505,7 +505,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                 <div className="p-1">
                   <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer">
                     <LogOut className="mr-3 h-4 w-4" />
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">Sign Out</span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-left">Sign Out</span>
                   </DropdownMenuItem>
                 </div>
               </DropdownMenuContent>
@@ -754,8 +754,8 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
               <DrawerHeader className="text-left">
-                <DrawerTitle className="text-xl font-bold">Complete Your Profile</DrawerTitle>
-                <DrawerDescription className="text-xs">Join the global movement by introducing yourself.</DrawerDescription>
+                <DrawerTitle className="text-xl font-bold text-left">Complete Your Profile</DrawerTitle>
+                <DrawerDescription className="text-xs text-left">Join the global movement by introducing yourself.</DrawerDescription>
               </DrawerHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8">
@@ -765,14 +765,14 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         </Drawer>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
             <div className="p-6 border-b bg-muted/10">
-              <DialogHeader>
+              <DialogHeader className="text-left">
                 <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
                 <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -804,7 +804,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
                 <div className="relative mx-auto w-fit">
                     <Loader2 className="h-10 w-10 animate-spin text-primary" />
                 </div>
