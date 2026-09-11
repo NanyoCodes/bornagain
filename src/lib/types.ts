@@ -16,6 +16,7 @@ export type BibleHighlight = {
   note?: string;
   createdAt: Timestamp;
   updatedAt?: Timestamp;
+  isPrivate?: boolean;
 };
 
 export type NoteCategory = 'Personal' | 'Church' | 'Revelation' | 'Other';
@@ -352,6 +353,7 @@ export type Soul = {
   needsAssessment?: SoulNeedsAssessment;
   parentIds?: string[];
   parentNames?: string[];
+  childrenIds?: string[];
   isHistoryPrivate?: boolean;
 };
 
@@ -395,29 +397,15 @@ export type ChatMessage = {
 export type Notification = {
   id: string;
   userId: string;
-  type: 'campaign_join' | 'new_chat_message' | 'accountability_nudge' | 'accountability_request' | 'request_accepted' | 'request_declined' | 'accountability_partner_removed' | 'new_soul_in_fellowship' | 'soul_unassigned_from_fellowship' | 'new_order' | 'order_update' | 'birthday_reminder';
+  type: 'campaign_join' | 'new_chat_message' | 'accountability_nudge' | 'accountability_request' | 'request_accepted' | 'request_declined' | 'accountability_partner_removed' | 'new_soul_in_fellowship' | 'soul_unassigned_from_fellowship' | 'new_order' | 'order_update' | 'birthday_reminder' | 'pending_provision';
   title: string;
   message: string;
   link?: string;
   isRead: boolean;
   createdAt: Timestamp;
   targetId?: string;
-};
-
-export type AccountabilityRequest = {
-  id: string;
-  fromUserId: string;
-  fromUserFirstName: string;
-  fromUserLastName: string;
-  fromUserPhotoURL?: string;
-  toUserId: string;
-  toUserFirstName: string;
-  toUserLastName: string;
-  toUserPhotoURL?: string;
-  status: 'pending' | 'accepted' | 'declined';
-  createdAt: Timestamp;
-  respondedAt?: Timestamp;
-  participantIds: string[];
+  actionId?: string;
+  soulId?: string;
 };
 
 export type Mail = {

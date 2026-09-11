@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useCollection } from '@/firebase';
-import { collection, query, doc, updateDoc, writeBatch, where, getDoc, serverTimestamp, arrayRemove } from 'firebase/firestore';
+import { collection, query, doc, updateDoc, writeBatch, where, getDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import type { Notification, Soul } from '@/lib/types';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -28,7 +28,8 @@ const NOTIFICATION_TYPES = [
   'soul_unassigned_from_fellowship',
   'new_order',
   'order_update',
-  'birthday_reminder'
+  'birthday_reminder',
+  'pending_provision'
 ];
 
 function getNotificationIcon(type: string, actionId?: string) {
@@ -68,79 +69,7 @@ export default function NotificationsPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
-
-  const [pendingProvisions, setPendingProvisions] = useState<any[]>([]);
   const [filter, setFilter] = useState('all');
-
-  const checkPending = useCallback(() => {
-    if (typeof window === 'undefined' || !user?.uid) return;
-    const key = `testify_pending_provisions_${user.uid}`;
-    const stored = localStorage.getItem(key);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setPendingProvisions(Array.isArray(parsed) ? parsed : []);
-      } catch (e) { setPendingProvisions([]); }
-    } else { setPendingProvisions([]); }
-  }, [user?.uid]);
-
-  useEffect(() => {
-    checkPending();
-    window.addEventListener('testify_pending_action_update', checkPending);
-    window.addEventListener('storage', checkPending);
-    return () => {
-      window.removeEventListener('testify_pending_action_update', checkPending);
-      window.removeEventListener('storage', checkPending);
-    };
-  }, [checkPending]);
-
-  const handleRemovePending = async (e: React.MouseEvent, soulId: string, actionId: string) => {
-    e.stopPropagation();
-    if (!user?.uid) return;
-    
-    const key = `testify_pending_provisions_${user.uid}`;
-    // 1. Update local storage
-    if (typeof window !== 'undefined') {
-        const stored = localStorage.getItem(key);
-        if (stored) {
-            try {
-                let provisions = JSON.parse(stored);
-                if (Array.isArray(provisions)) {
-                    provisions = provisions.filter((p: any) => !(p.soulId === soulId && p.actionId === actionId));
-                    if (provisions.length === 0) {
-                        localStorage.removeItem(key);
-                    } else {
-                        localStorage.setItem(key, JSON.stringify(provisions));
-                    }
-                    window.dispatchEvent(new Event('testify_pending_action_update'));
-                }
-            } catch (e) {
-                localStorage.removeItem(key);
-            }
-        }
-    }
-
-    // 2. Sync with Firestore - Remove only the "Initiated" soul history record
-    if (!firestore) return;
-
-    try {
-        const soulUserRef = doc(firestore, 'users', user.uid, 'souls', soulId);
-        const globalSoulRef = doc(firestore, 'souls', soulId);
-
-        const soulDoc = await getDoc(soulUserRef);
-        if (soulDoc.exists()) {
-            const soulData = soulDoc.data() as Soul;
-            const updatedLog = (soulData.followUpLog || []).filter(log => 
-                !(log.actions?.includes(actionId) && log.note?.includes('Initiated'))
-            );
-            
-            await updateDoc(soulUserRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
-            await updateDoc(globalSoulRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
-        }
-    } catch (error) {
-        console.error("Failed to sync pending removal:", error);
-    }
-  };
 
   const notificationsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -153,7 +82,7 @@ export default function NotificationsPage() {
   const { data: notificationsData, loading } = useCollection<Notification>(notificationsQuery);
 
   const notifications = useMemo(() => {
-    if (!notificationsData) return null;
+    if (!notificationsData) return [];
     return [...notificationsData].sort((a, b) => {
         const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
         const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
@@ -162,25 +91,7 @@ export default function NotificationsPage() {
   }, [notificationsData]);
 
   const allDisplayItems = useMemo(() => {
-    const items = notifications ? [...notifications] : [];
-    
-    const virtualNotifs = pendingProvisions.map(p => ({
-        id: `pending-${p.soulId}-${p.actionId}`,
-        userId: user?.uid || '',
-        type: 'pending_provision',
-        title: `Pending act of kindness: ${p.soulName}`,
-        message: `You initiated a ${p.actionId === 'shared_meal' ? 'meal' : 'gift'} provision but haven't fulfilled it yet. Click to finish the order.`,
-        link: p.actionId === 'shared_meal' 
-            ? `/marketplace?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`
-            : `/marketplace/gifts?soulId=${p.soulId}&soulName=${encodeURIComponent(p.soulName)}&actionId=${p.actionId}`,
-        isRead: false,
-        createdAt: { toDate: () => new Date(p.timestamp || Date.now()) } as any,
-        isVirtual: true,
-        actionId: p.actionId,
-        soulId: p.soulId
-    }));
-
-    let combined = [...virtualNotifs, ...items];
+    let combined = [...notifications];
 
     if (filter === 'kindness') {
         return combined.filter(i => 
@@ -199,12 +110,43 @@ export default function NotificationsPage() {
     }
 
     return combined;
-  }, [notifications, pendingProvisions, user?.uid, filter]);
+  }, [notifications, filter]);
+
+  const handleRemovePending = async (e: React.MouseEvent, notification: any) => {
+    e.stopPropagation();
+    if (!user?.uid || !firestore || !notification.soulId) return;
+    
+    try {
+        const batch = writeBatch(firestore);
+        
+        // 1. Delete the notification
+        batch.delete(doc(firestore, `users/${user.uid}/notifications`, notification.id));
+
+        // 2. Remove "Initiated" log entry from soul
+        const soulUserRef = doc(firestore, 'users', user.uid, 'souls', notification.soulId);
+        const globalSoulRef = doc(firestore, 'souls', notification.soulId);
+
+        const soulDoc = await getDoc(soulUserRef);
+        if (soulDoc.exists()) {
+            const soulData = soulDoc.data() as Soul;
+            const updatedLog = (soulData.followUpLog || []).filter(log => 
+                !(log.actions?.includes(notification.actionId) && log.note?.includes('Initiated'))
+            );
+            
+            batch.update(soulUserRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
+            batch.update(globalSoulRef, { followUpLog: updatedLog, lastUpdatedAt: serverTimestamp() });
+        }
+
+        await batch.commit();
+    } catch (error) {
+        console.error("Failed to sync pending removal:", error);
+    }
+  };
 
   const handleNotificationClick = (notification: any) => {
     if (!user || !firestore) return;
     
-    if (!notification.isVirtual && !notification.isRead) {
+    if (notification.type !== 'pending_provision' && !notification.isRead) {
       const notifRef = doc(firestore, `users/${user.uid}/notifications`, notification.id);
       updateDoc(notifRef, { isRead: true }).catch(() => {
          const permissionError = new FirestorePermissionError({
@@ -222,7 +164,7 @@ export default function NotificationsPage() {
   
   const handleMarkAllAsRead = () => {
     if (!user || !firestore || !notifications) return;
-    const unreadNotificationsList = notifications.filter(n => !n.isRead);
+    const unreadNotificationsList = notifications.filter(n => !n.isRead && n.type !== 'pending_provision');
     if (unreadNotificationsList.length === 0) return;
 
     const batch = writeBatch(firestore);
@@ -240,7 +182,7 @@ export default function NotificationsPage() {
     });
   };
   
-  const unreadCount = useMemo(() => notifications?.filter(n => !n.isRead).length ?? 0, [notifications]);
+  const unreadCount = useMemo(() => notifications?.filter(n => !n.isRead && n.type !== 'pending_provision').length ?? 0, [notifications]);
 
   return (
     <div className="flex flex-col h-full w-full bg-background overflow-hidden text-left">
@@ -314,7 +256,7 @@ export default function NotificationsPage() {
                     <div className="divide-y text-left">
                         {!loading && user && allDisplayItems.map(notification => {
                             const createdAt = safeToDate(notification.createdAt);
-                            const isVirtual = (notification as any).isVirtual;
+                            const isPendingAction = notification.type === 'pending_provision';
                             
                             return (
                                 <div key={notification.id} className="relative text-left">
@@ -322,13 +264,13 @@ export default function NotificationsPage() {
                                         onClick={() => handleNotificationClick(notification)}
                                         className={cn(
                                             "w-full text-left p-3.5 sm:p-6 transition-all hover:bg-muted/50 active:bg-muted/80 relative border-l-4 overflow-hidden text-left",
-                                            isVirtual ? "bg-primary/[0.05] border-l-primary shadow-inner" : (!notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent")
+                                            isPendingAction ? "bg-primary/[0.05] border-l-primary shadow-inner" : (!notification.isRead ? "bg-primary/[0.03] border-l-primary" : "opacity-60 border-l-transparent")
                                         )}
                                     >
                                         <div className="flex items-start gap-2.5 sm:gap-5 text-left">
                                             <div className={cn(
                                                 "mt-0.5 shrink-0 p-2 sm:p-2.5 rounded-xl border shadow-sm text-left",
-                                                isVirtual ? "bg-primary text-white border-none scale-110 shadow-lg" : "bg-background"
+                                                isPendingAction ? "bg-primary text-white border-none scale-110 shadow-lg" : "bg-background"
                                             )}>
                                                 {getNotificationIcon(notification.type, (notification as any).actionId)}
                                             </div>
@@ -336,12 +278,12 @@ export default function NotificationsPage() {
                                                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1 text-left">
                                                     <p className={cn(
                                                         "font-bold text-sm sm:text-base leading-snug break-words pr-8 sm:pr-0 text-left", 
-                                                        isVirtual ? "text-primary" : (!notification.isRead ? "text-foreground" : "text-muted-foreground")
+                                                        isPendingAction ? "text-primary" : (!notification.isRead ? "text-foreground" : "text-muted-foreground")
                                                     )}>
                                                         {notification.title}
                                                     </p>
                                                     <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-tighter text-muted-foreground whitespace-nowrap shrink-0 text-left">
-                                                        {isVirtual ? 'ACTION REQUIRED' : (createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : '')}
+                                                        {isPendingAction ? 'ACTION REQUIRED' : (createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : '')}
                                                     </span>
                                                 </div>
                                                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance text-left">
@@ -353,25 +295,25 @@ export default function NotificationsPage() {
                                                     </p>
                                                 )}
                                             </div>
-                                            {(!notification.isRead || isVirtual) && (
+                                            {(!notification.isRead || isPendingAction) && (
                                                 <div className="shrink-0 flex items-center h-full pt-1.5 sm:pt-2 text-left">
                                                     <div className={cn(
                                                         "h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,116,22,0.5)] text-left",
-                                                        isVirtual ? "bg-primary scale-125" : "bg-primary"
+                                                        isPendingAction ? "bg-primary scale-125" : "bg-primary"
                                                     )} />
                                                 </div>
                                             )}
                                         </div>
                                     </button>
                                     
-                                    {isVirtual && (
+                                    {isPendingAction && (
                                         <Button 
                                             variant="ghost" 
                                             size="icon" 
                                             className="absolute top-2 right-2 sm:top-4 sm:right-4 h-8 w-8 rounded-full text-muted-foreground/30 hover:text-destructive hover:bg-destructive/10 z-10 text-left"
-                                            onClick={(e) => handleRemovePending(e, (notification as any).soulId, (notification as any).actionId)}
+                                            onClick={(e) => handleRemovePending(e, notification)}
                                         >
-                                            <X className="h-4 w-4 text-left" />
+                                            <X className="h-4 w-4 text-left text-left" />
                                         </Button>
                                     )}
                                 </div>

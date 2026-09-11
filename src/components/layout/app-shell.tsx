@@ -81,7 +81,8 @@ const SYSTEM_NOTIFICATION_TYPES = [
   'soul_unassigned_from_fellowship', 
   'new_order', 
   'order_update',
-  'birthday_reminder'
+  'birthday_reminder',
+  'pending_provision'
 ];
 
 const inspirationalMessages = [
@@ -325,8 +326,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Partners</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/settings" className="flex items-center gap-3 w-full text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
+                    <Link href="/settings" className="flex items-center gap-3 w-full text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left">
                         <Settings className="h-3.5 w-3.5 text-left" />
                       </div>
@@ -363,7 +364,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Events Hub</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/marketplace" className="flex items-center gap-3 w-full text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center text-left text-left">
                         <Store className="h-3.5 w-3.5 text-blue-600 text-left text-left" />
@@ -371,7 +372,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, userVendo
                       <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left">Meals Provision</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
                     <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full text-left text-left text-left">
                       <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-left text-left">
                         <Gift className="h-3.5 w-3.5 text-indigo-600 text-left text-left" />

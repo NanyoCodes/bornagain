@@ -192,7 +192,7 @@ function ShareWordDialog({
     <div className="space-y-8 sm:space-y-10 text-left">
       <div className="space-y-4">
         <div className="relative">
-            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-50" />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-50 text-left" />
             <Input 
                 placeholder="Search Bible (e.g. John 3:16)..." 
                 value={bibleSearch}
@@ -224,7 +224,7 @@ function ShareWordDialog({
                             <span className="font-black text-[9px] sm:text-xs uppercase tracking-widest text-primary">{res.reference}</span>
                             <Send className="h-3.5 w-3.5 sm:h-4 w-4 text-primary opacity-40" />
                         </div>
-                        <p className="text-xs sm:text-base text-muted-foreground leading-relaxed italic line-clamp-4">"{res.text.trim()}"</p>
+                        <p className="text-xs sm:text-base text-muted-foreground leading-relaxed italic line-clamp-4 text-left">"{res.text.trim()}"</p>
                     </Button>
                 ))}
             </div>
@@ -317,8 +317,8 @@ function ShareWordDialog({
     </div>
   );
 
-  const title = view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBookName}: Select Chapter` : `${selectedBookName} ${selectedChapter}`;
-  const desc = view === 'hub' ? `Equip ${soul?.firstName} with the living Word.` : `Browsing ${selectedBookName || 'Bible'} for the harvest.`;
+  const titleText = view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBookName}: Select Chapter` : `${selectedBookName} ${selectedChapter}`;
+  const descText = view === 'hub' ? `Equip ${soul?.firstName} with the living Word.` : `Browsing ${selectedBookName || 'Bible'} for the harvest.`;
 
   const header = (
     <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left">
@@ -330,12 +330,12 @@ function ShareWordDialog({
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
             )}
-            <Target className="h-5 w-5 text-primary text-left" />
+            <Target className="h-5 w-5 text-primary text-left text-left" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
           </div>
           <DialogHeader className="text-left text-left">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{title}</DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm font-medium text-left text-left">{desc}</DialogDescription>
+            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{titleText}</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm font-medium text-left text-left">{descText}</DialogDescription>
           </DialogHeader>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}>
@@ -422,17 +422,17 @@ function SoulSelectionDialog({
 
     const body = (
         <div className="p-6 space-y-6 text-left">
-            <div className="relative text-left">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50 text-left" />
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearchTerm(e.target.value)}
-                    className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left"
+                    onChange={e => setSearch(e.target.value)}
+                    className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
-            <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[40vh]")}>
-                <div className="p-2 space-y-1.5 text-left">
+            <ScrollArea className={cn("border rounded-3xl bg-muted/5", isMobile ? "h-[50vh]" : "h-[40vh]")}>
+                <div className="p-2 space-y-1.5">
                     {filteredSouls.length > 0 ? (
                         filteredSouls.map(soul => {
                             const lastLog = (soul.followUpLog || []).sort((a,b) => (safeToDate(b.date)?.getTime() || 0) - (safeToDate(a.date)?.getTime() || 0))[0];
@@ -442,36 +442,36 @@ function SoulSelectionDialog({
                                 <Button 
                                     key={soul.id} 
                                     variant="ghost" 
-                                    className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group text-left"
+                                    className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group"
                                     onClick={() => onSelect(soul)}
                                     disabled={isLoading}
                                 >
-                                    <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left">
-                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-left text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                    <Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm">
+                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{soul.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
-                                    <div className="text-left min-w-0 flex-1 text-left">
-                                        <div className="flex items-center gap-2 text-left">
-                                            <p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p>
+                                    <div className="text-left min-w-0 flex-1">
+                                        <div className="flex items-center gap-2">
+                                            <p className="font-black text-sm uppercase tracking-tight">{soul.firstName} {soul.lastName}</p>
                                             {reachedToday && (
-                                                <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-black bg-green-500/10 text-green-600 border-none leading-none text-left">
+                                                <Badge variant="secondary" className="h-4 px-1.5 text-[7px] font-black bg-green-500/10 text-green-600 border-none leading-none">
                                                     Reached Today
                                                 </Badge>
                                             )}
                                         </div>
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p>
+                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p>
                                     </div>
-                                    <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-left">
-                                        <PlusCircle className="h-4 w-4 text-left" />
+                                    <div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <PlusCircle className="h-4 w-4" />
                                     </div>
                                 </Button>
                             );
                         })
                     ) : (
-                        <div className="text-center py-16 px-8 space-y-3 text-left">
-                            <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left">
-                                <Users className="h-6 w-6 text-muted-foreground opacity-20 text-left" />
+                        <div className="text-center py-16 px-8 space-y-3">
+                            <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
+                                <Users className="h-6 w-6 text-muted-foreground opacity-20" />
                             </div>
-                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-left">
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60">
                                 {search ? "No matches found" : "Log your first soul to begin tracking"}
                             </p>
                         </div>
@@ -486,9 +486,9 @@ function SoulSelectionDialog({
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b bg-muted/10 shrink-0 flex-shrink-0 text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left">
-                            <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase text-left">Who did you {actionLabel.toLowerCase()}?</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left">Select a convert to link this action.</SheetDescription>
+                        <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+                            <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Who did you {actionLabel.toLowerCase()}?</SheetTitle>
+                            <SheetDescription className="text-sm font-medium mt-1">Select a convert to link this action.</SheetDescription>
                         </SheetHeader>
                     </div>
                     {body}
@@ -502,8 +502,8 @@ function SoulSelectionDialog({
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
                 <div className="p-8 border-b bg-muted/10 text-left text-left">
                     <DialogHeader className="text-left text-left">
-                        <DialogTitle className="text-2xl font-black font-headline tracking-tight text-left">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left text-left">Select a convert to link this action to their record.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline tracking-tight">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
+                        <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
                     </DialogHeader>
                 </div>
                 {body}
@@ -694,15 +694,27 @@ export function RelationshipTrackerCard() {
 
     if (selectedActionId === 'shared_meal' || selectedActionId === 'gave_gift') {
         setIsSoulDialogOpen(false);
-        const provisionKey = `testify_pending_provisions_${user.uid}`;
-        const stored = localStorage.getItem(provisionKey);
-        let current = stored ? JSON.parse(stored) : [];
-        if (!Array.isArray(current)) current = [];
-        if (!current.some((p: any) => p.soulId === soul.id && p.actionId === selectedActionId)) {
-            current.push({ soulId: soul.id, soulName: `${soul.firstName} ${soul.lastName}`, actionId: selectedActionId, timestamp: Date.now() });
-            localStorage.setItem(provisionKey, JSON.stringify(current));
-            window.dispatchEvent(new Event('testify_pending_action_update'));
-        }
+        
+        const provisionNotificationRef = doc(collection(firestore, `users/${user.uid}/notifications`));
+        const pendingActionData = {
+          userId: user.uid,
+          type: 'pending_provision',
+          title: `Pending offering: ${soul.firstName}`,
+          message: `You initiated a ${selectedActionId === 'shared_meal' ? 'meal' : 'gift'} provision but haven't fulfilled it yet. Click to finish the order.`,
+          link: selectedActionId === 'shared_meal' 
+              ? `/marketplace?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`
+              : `/marketplace/gifts?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`,
+          isRead: false,
+          createdAt: serverTimestamp(),
+          actionId: selectedActionId,
+          soulId: soul.id,
+          soulName: soul.firstName
+        };
+
+        addDoc(collection(firestore, `users/${user.uid}/notifications`), pendingActionData).catch(err => {
+            console.error("Failed to sync pending action notification:", err);
+        });
+
         finalizeRelationalLog(soul, 'Initiated provision offering');
         const mPath = selectedActionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
         router.push(`${mPath}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${selectedActionId}`);
@@ -1019,7 +1031,7 @@ export function RelationshipTrackerCard() {
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
-                    onChange={e => setCustomPrayerText(e.target.value)} 
+                    onChange={e => setCustomPrayerText(e.target.value)} // Reusing customPrayerText temporarily for simple local state
                     className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
                 />
             </div>
@@ -1068,7 +1080,7 @@ export function RelationshipTrackerCard() {
                           >
                               <Avatar className="h-8 w-8 border shrink-0 text-left">
                                   <AvatarImage src={p.photoURL} className="text-left" />
-                                  <AvatarFallback className="font-bold text-[10px] text-center flex items-center justify-center w-full h-full">{p.firstName?.charAt(0)}</AvatarFallback>
+                                  <AvatarFallback className="font-black text-[10px] text-center flex items-center justify-center w-full h-full">{p.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
                           </Button>
