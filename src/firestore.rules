@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: CollectionGroup fix & User fellowship list - 2025-03-05T20:00:00Z
+    // Deployment trigger: CollectionGroup fix & User fellowship list - 2025-03-05T21:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -134,7 +134,7 @@ service cloud.firestore {
       }
 
       match /fellowships/{fId} {
-        allow read, list: if isOwner(userId);
+        allow get, list: if isOwner(userId);
       }
     }
 

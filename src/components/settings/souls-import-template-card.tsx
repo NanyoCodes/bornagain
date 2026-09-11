@@ -17,7 +17,8 @@ import {
     X,
     Globe,
     CheckCircle2,
-    ShieldAlert
+    ShieldAlert,
+    ChevronRight
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useUserProfile, useAuth } from '@/firebase';
@@ -144,38 +145,48 @@ export function SoulsImportTemplateCard() {
 
         if (!token) throw new Error("Could not obtain access token.");
 
-        const response = await fetch(
-            'https://people.googleapis.com/v1/people/me/connections?personFields=names,emailAddresses,phoneNumbers,photos&pageSize=100',
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const allMappedContacts: GoogleContact[] = [];
+        let nextPageToken: string | undefined = undefined;
 
-        if (!response.ok) {
-            if (response.status === 403) {
-                throw new Error("People API not enabled. Please enable 'Google People API' in your Google Cloud Console.");
+        // Ensure all contacts are synced by paginating through the API
+        do {
+            const url = new URL('https://people.googleapis.com/v1/people/me/connections');
+            url.searchParams.append('personFields', 'names,emailAddresses,phoneNumbers,photos');
+            url.searchParams.append('pageSize', '1000');
+            if (nextPageToken) url.searchParams.append('pageToken', nextPageToken);
+
+            const response = await fetch(url.toString(), {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                if (response.status === 403) throw new Error("People API not enabled in Cloud Console.");
+                throw new Error(`Google API returned ${response.status}`);
             }
-            throw new Error(`Failed to fetch Google contacts: ${response.status}`);
-        }
 
-        const data = await response.json();
-        const connections = data.connections || [];
+            const data = await response.json();
+            const connections = data.connections || [];
 
-        const mappedContacts: GoogleContact[] = connections.map((c: any) => {
-            const nameObj = c.names?.[0];
-            const emailObj = c.emailAddresses?.[0];
-            const phoneObj = c.phoneNumbers?.[0];
-            const photoObj = c.photos?.[0];
+            connections.forEach((c: any) => {
+                const nameObj = c.names?.[0];
+                const emailObj = c.emailAddresses?.[0];
+                const phoneObj = c.phoneNumbers?.[0];
+                const photoObj = c.photos?.[0];
 
-            return {
-                resourceName: c.resourceName,
-                firstName: nameObj?.givenName || 'Unnamed',
-                lastName: nameObj?.familyName || '',
-                email: emailObj?.value || '',
-                phone: phoneObj?.value || '',
-                photoURL: photoObj?.url || '',
-            };
-        });
+                allMappedContacts.push({
+                    resourceName: c.resourceName,
+                    firstName: nameObj?.givenName || 'Unnamed',
+                    lastName: nameObj?.familyName || '',
+                    email: emailObj?.value || '',
+                    phone: phoneObj?.value || '',
+                    photoURL: photoObj?.url || '',
+                });
+            });
 
-        setContacts(mappedContacts);
+            nextPageToken = data.nextPageToken;
+        } while (nextPageToken);
+
+        setContacts(allMappedContacts);
         setIsContactsDialogOpen(true);
     } catch (error: any) {
         console.error("Google Contacts Import Error:", error);
@@ -361,7 +372,7 @@ export function SoulsImportTemplateCard() {
   const contactsListEl = (
     <div className="flex flex-col h-full text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center gap-3 mb-2 text-left">
+            <div className="flex items-center gap-3 mb-2">
                 <Smartphone className="h-5 w-5 text-primary" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Network Sync</span>
             </div>
@@ -379,16 +390,6 @@ export function SoulsImportTemplateCard() {
 
         <ScrollArea className="flex-grow min-h-[300px]">
             <div className="p-4 space-y-1">
-                <div className="p-4 mb-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-                    <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                    <div className="space-y-1">
-                        <p className="text-[11px] font-black uppercase text-amber-700 tracking-tight">Google Verification Pending</p>
-                        <p className="text-[10px] text-amber-800/80 leading-relaxed">
-                            You may see a warning about "Unverified App". Click **Advanced** and then **Go to testifyglobal.com (unsafe)** to bypass this while we finalize official verification.
-                        </p>
-                    </div>
-                </div>
-
                 {filteredContacts.length > 0 ? filteredContacts.map(contact => (
                     <div 
                         key={contact.resourceName}
@@ -451,7 +452,7 @@ export function SoulsImportTemplateCard() {
   );
 
   return (
-    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10 text-left text-left">
+    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10 text-left">
       <CardHeader className="p-6 sm:p-8">
         <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
