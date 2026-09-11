@@ -17,6 +17,10 @@ interface UseCollectionOptions {
   snapshotOptions?: SnapshotOptions;
 }
 
+/**
+ * useCollection Hook
+ * Stabilized with logical equality checks to prevent infinite re-subscription loops.
+ */
 export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,
   options?: UseCollectionOptions
@@ -26,29 +30,29 @@ export function useCollection<T extends { id: string }>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // Use a ref to track the current query to avoid infinite loops
-  // with logically identical but referentially different queries.
-  const queryRef = useRef<Query<DocumentData> | null>(null);
+  // 1. Stabilize the query reference to prevent infinite effect triggers
+  const [memoizedQuery, setMemoizedQuery] = useState<Query<DocumentData> | null>(query);
 
   useEffect(() => {
     if (!query) {
+      setMemoizedQuery(null);
+    } else if (!memoizedQuery || !queryEqual(query, memoizedQuery)) {
+      setMemoizedQuery(query);
+    }
+  }, [query, memoizedQuery]);
+
+  // 2. Handle subscription only when the logical query actually changes
+  useEffect(() => {
+    if (!memoizedQuery) {
       setData(null);
       setLoading(false);
-      queryRef.current = null;
       return;
     }
 
-    // Identify if the new query is logically equivalent to the current one
-    // This is the critical fix for "Maximum update depth exceeded" errors
-    if (queryRef.current && queryEqual(query, queryRef.current)) {
-      return;
-    }
-
-    queryRef.current = query;
     setLoading(true);
     
     const unsubscribe = onSnapshot(
-      query,
+      memoizedQuery,
       (snapshot) => {
         const result: T[] = snapshot.docs.map(doc => ({ 
           id: doc.id, 
@@ -61,8 +65,7 @@ export function useCollection<T extends { id: string }>(
       },
       async (err) => {
         if (err.code === 'permission-denied') {
-          // Attempt to extract the path from the internal query object for debugging context
-          const path = (query as any)._query?.path?.canonicalString() || 'unknown path';
+          const path = (memoizedQuery as any)._query?.path?.canonicalString() || 'unknown path';
           const permissionError = new FirestorePermissionError({
             path,
             operation: 'list',
@@ -77,7 +80,7 @@ export function useCollection<T extends { id: string }>(
     );
 
     return () => unsubscribe();
-  }, [query, user, options?.snapshotOptions]);
+  }, [memoizedQuery, user, options?.snapshotOptions]);
 
   return { data, loading, error };
 }

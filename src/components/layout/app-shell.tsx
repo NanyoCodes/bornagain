@@ -162,6 +162,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
+  // Suggested Queries for Search Suggestions
   const allTestimoniesQuery = useMemo(() => firestore ? query(collection(firestore, 'testimonies'), limit(15)) : null, [firestore]);
   const allPrayersQuery = useMemo(() => firestore ? query(collection(firestore, 'prayerRequests'), limit(15)) : null, [firestore]);
   const allActiveCampaignsQuery = useMemo(() => firestore ? query(collection(firestore, 'campaigns'), where('status', '==', 'active'), limit(15)) : null, [firestore]);
@@ -245,7 +246,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
         <ScrollArea className="flex-1">
             <div className="p-6 space-y-8">
                 {suggestions.length > 0 ? (
-                    <div className="space-y-4 text-left">
+                    <div className="space-y-4 text-left text-left">
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Kingdom Suggestions</p>
                         <div className="space-y-2 text-left">
                             {suggestions.map(s => (
@@ -280,7 +281,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                         <p className="text-xs text-muted-foreground italic mt-2">Try searching for a different keyword or name.</p>
                     </div>
                 ) : (
-                    <div className="py-20 text-center flex flex-col items-center">
+                    <div className="py-20 text-center flex flex-col items-center text-left">
                         <div className="h-16 w-16 bg-primary/5 rounded-full flex items-center justify-center mb-6">
                             <Sparkles className="h-8 w-8 text-primary opacity-20" />
                         </div>
@@ -803,7 +804,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
                 <div className="relative mx-auto w-fit">
                     <Loader2 className="h-10 w-10 animate-spin text-primary" />
                 </div>

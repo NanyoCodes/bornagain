@@ -372,7 +372,7 @@ export function SoulsImportTemplateCard() {
       list = list.filter(c => `${c.firstName} ${c.lastName}`.toLowerCase().includes(term));
     }
     
-    // Sort alphabetically by first name
+    // Sort alphabetically by first name (A-Z)
     return list.sort((a, b) => {
         const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
         const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
@@ -464,10 +464,10 @@ export function SoulsImportTemplateCard() {
       <CardHeader className="p-6 sm:p-8">
         <div className="flex items-center justify-between gap-4">
             <div className="space-y-1 text-left">
-                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight text-left">
+                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight">
                 <FileSpreadsheet className="h-5 w-5 text-primary" /> Harvest Mobilization
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm font-medium text-left">
+                <CardDescription className="text-xs sm:text-sm font-medium">
                 Synchronize bulk convert data by uploading a spreadsheet or importing from Google.
                 </CardDescription>
             </div>
@@ -476,7 +476,7 @@ export function SoulsImportTemplateCard() {
       </CardHeader>
       <CardContent className="px-6 sm:p-8 pt-0 space-y-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Button onClick={handleDownloadTemplate} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left">
+            <Button onClick={handleDownloadTemplate} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm">
                 <Download className="mr-2 h-4 w-4" />
                 GET CSV TEMPLATE
             </Button>
@@ -485,14 +485,14 @@ export function SoulsImportTemplateCard() {
                 onClick={handleGoogleContactsImport} 
                 disabled={isFetchingContacts}
                 variant="outline"
-                className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left"
+                className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm"
             >
                 {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Smartphone className="mr-2 h-4 w-4" />}
                 IMPORT GOOGLE CONTACTS
             </Button>
         </div>
 
-        <div className="relative text-left">
+        <div className="relative">
             <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -504,16 +504,16 @@ export function SoulsImportTemplateCard() {
             <Button 
                 onClick={() => fileInputRef.current?.click()} 
                 disabled={isUploading}
-                className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
+                className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
             >
                 {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
                 UPLOAD CUSTOM CSV LIST
             </Button>
         </div>
 
-        <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4 text-left">
+        <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4">
             <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-            <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
+            <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                 Standardize your follow-up data. Import your existing contacts or use our template to organize outreach results for professional tracking.
             </p>
         </div>

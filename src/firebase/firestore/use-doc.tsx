@@ -17,6 +17,10 @@ interface UseDocOptions {
   snapshotOptions?: SnapshotOptions;
 }
 
+/**
+ * useDoc Hook
+ * Stabilized with refEqual to prevent infinite re-render cycles when doc references are created inline.
+ */
 export function useDoc<T>(
   docRef: DocumentReference<DocumentData> | null,
   options?: UseDocOptions
@@ -26,27 +30,29 @@ export function useDoc<T>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // Stabilize reference comparison to prevent infinite loops
-  const activeRef = useRef<DocumentReference<DocumentData> | null>(null);
+  // 1. Stabilize the reference
+  const [memoizedRef, setMemoizedRef] = useState<DocumentReference<DocumentData> | null>(docRef);
 
   useEffect(() => {
     if (!docRef) {
+      setMemoizedRef(null);
+    } else if (!memoizedRef || !refEqual(docRef, memoizedRef)) {
+      setMemoizedRef(docRef);
+    }
+  }, [docRef, memoizedRef]);
+
+  // 2. Handle subscription
+  useEffect(() => {
+    if (!memoizedRef) {
       setLoading(false);
       setData(null);
-      activeRef.current = null;
       return;
     }
 
-    // This is the critical fix for "Maximum update depth exceeded" errors
-    if (activeRef.current && refEqual(docRef, activeRef.current)) {
-      return;
-    }
-
-    activeRef.current = docRef;
     setLoading(true);
     
     const unsubscribe = onSnapshot(
-      docRef,
+      memoizedRef,
       (doc) => {
         const newDocData = doc.exists()
           ? ({
@@ -62,7 +68,7 @@ export function useDoc<T>(
       async (err) => {
         if (err.code === 'permission-denied') {
             const permissionError = new FirestorePermissionError({
-              path: docRef.path,
+              path: memoizedRef.path,
               operation: 'get',
             }, user);
             errorEmitter.emit('permission-error', permissionError);
@@ -75,7 +81,7 @@ export function useDoc<T>(
     );
 
     return () => unsubscribe();
-  }, [docRef, user, options?.snapshotOptions]);
+  }, [memoizedRef, user, options?.snapshotOptions]);
 
   return { data, loading, error };
 }
