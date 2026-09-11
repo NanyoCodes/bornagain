@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -1010,7 +1011,7 @@ export default function SoulsWonPage() {
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
+                                <span className="text-[10px) font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
@@ -1070,7 +1071,7 @@ export default function SoulsWonPage() {
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</SheetDescription></DrawerHeader>
+                                <DrawerHeader className="text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 <LogSoulForm 
@@ -1085,7 +1086,7 @@ export default function SoulsWonPage() {
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left">Edit Record</SheetTitle><SheetDescription className="text-sm font-medium mt-1 text-left text-left">Update soul identity and mission details.</SheetDescription></DrawerHeader>
+                                <DrawerHeader className="text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Edit Record</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Update soul identity and mission details.</DrawerDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
@@ -1132,4 +1133,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-
