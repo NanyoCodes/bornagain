@@ -19,8 +19,7 @@ interface UseCollectionOptions {
 
 /**
  * useCollection Hook
- * Optimized with deep logical equality checks to prevent infinite re-subscription loops
- * that occur when query objects are recreated on every render.
+ * Optimized with deep logical equality checks to prevent infinite re-subscription loops.
  */
 export function useCollection<T extends { id: string }>(
   query: Query<DocumentData> | null,

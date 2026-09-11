@@ -19,8 +19,7 @@ interface UseDocOptions {
 
 /**
  * useDoc Hook
- * Optimized with deep logical equality checks to prevent infinite re-subscription loops
- * when document references are created inline or modified via parent state.
+ * Optimized with deep logical equality checks to prevent infinite re-subscription loops.
  */
 export function useDoc<T>(
   docRef: DocumentReference<DocumentData> | null,

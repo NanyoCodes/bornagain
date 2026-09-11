@@ -162,7 +162,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
-  // Suggested Queries for Search Suggestions - Stabilized with useMemo
+  // Suggested Queries for Search Suggestions
   const allTestimoniesQuery = useMemo(() => firestore ? query(collection(firestore, 'testimonies'), limit(15)) : null, [firestore]);
   const allPrayersQuery = useMemo(() => firestore ? query(collection(firestore, 'prayerRequests'), limit(15)) : null, [firestore]);
   const allActiveCampaignsQuery = useMemo(() => firestore ? query(collection(firestore, 'campaigns'), where('status', '==', 'active'), limit(15)) : null, [firestore]);
