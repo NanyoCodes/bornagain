@@ -366,9 +366,18 @@ export function SoulsImportTemplateCard() {
   };
 
   const filteredContacts = useMemo(() => {
-    if (!contactSearch) return contacts;
-    const term = contactSearch.toLowerCase();
-    return contacts.filter(c => `${c.firstName} ${c.lastName}`.toLowerCase().includes(term));
+    let list = [...contacts];
+    if (contactSearch) {
+      const term = contactSearch.toLowerCase();
+      list = list.filter(c => `${c.firstName} ${c.lastName}`.toLowerCase().includes(term));
+    }
+    
+    // Sort alphabetically by first name
+    return list.sort((a, b) => {
+        const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+        const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
   }, [contacts, contactSearch]);
 
   const contactsListEl = (
@@ -454,11 +463,11 @@ export function SoulsImportTemplateCard() {
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10 text-left">
       <CardHeader className="p-6 sm:p-8">
         <div className="flex items-center justify-between gap-4">
-            <div className="space-y-1">
-                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight">
+            <div className="space-y-1 text-left">
+                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight text-left">
                 <FileSpreadsheet className="h-5 w-5 text-primary" /> Harvest Mobilization
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm font-medium">
+                <CardDescription className="text-xs sm:text-sm font-medium text-left">
                 Synchronize bulk convert data by uploading a spreadsheet or importing from Google.
                 </CardDescription>
             </div>
@@ -467,7 +476,7 @@ export function SoulsImportTemplateCard() {
       </CardHeader>
       <CardContent className="px-6 sm:p-8 pt-0 space-y-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Button onClick={handleDownloadTemplate} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm">
+            <Button onClick={handleDownloadTemplate} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left">
                 <Download className="mr-2 h-4 w-4" />
                 GET CSV TEMPLATE
             </Button>
@@ -476,14 +485,14 @@ export function SoulsImportTemplateCard() {
                 onClick={handleGoogleContactsImport} 
                 disabled={isFetchingContacts}
                 variant="outline"
-                className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm"
+                className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left"
             >
                 {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Smartphone className="mr-2 h-4 w-4" />}
                 IMPORT GOOGLE CONTACTS
             </Button>
         </div>
 
-        <div className="relative">
+        <div className="relative text-left">
             <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -495,16 +504,16 @@ export function SoulsImportTemplateCard() {
             <Button 
                 onClick={() => fileInputRef.current?.click()} 
                 disabled={isUploading}
-                className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
+                className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
             >
                 {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
                 UPLOAD CUSTOM CSV LIST
             </Button>
         </div>
 
-        <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4">
+        <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4 text-left">
             <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-            <p className="text-xs text-muted-foreground leading-relaxed font-medium">
+            <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
                 Standardize your follow-up data. Import your existing contacts or use our template to organize outreach results for professional tracking.
             </p>
         </div>
@@ -514,7 +523,7 @@ export function SoulsImportTemplateCard() {
         {isContactsDialogOpen && (
             isMobile ? (
                 <Drawer open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <DrawerHeader className="sr-only">
                             <DrawerTitle>Network Sync</DrawerTitle>
                             <DrawerDescription>Select contacts to synchronize.</DrawerDescription>
@@ -524,7 +533,7 @@ export function SoulsImportTemplateCard() {
                 </Drawer>
             ) : (
                 <Dialog open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
-                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <DialogHeader className="sr-only">
                             <DialogTitle>Network Sync</DialogTitle>
                             <DialogDescription>Select contacts to synchronize.</DialogDescription>
