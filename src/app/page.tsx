@@ -137,9 +137,9 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-3 sm:px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[9px] sm:text-[10px] whitespace-nowrap text-left">
                   GLORIFYING GOD
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left text-left">
-                  Testify the <br className="hidden sm:block" />
-                  Greatness of GOD.<br className="hidden sm:block" />
+                <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left text-left text-left">
+                  Testify the <br className="hidden sm:block text-left text-left" />
+                  Greatness of GOD.<br className="hidden sm:block text-left text-left" />
                   <span className="text-primary">Join the Harvest.</span>
                 </h1>
                 <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-white/80 font-medium max-w-xl leading-relaxed italic text-pretty text-left">
@@ -387,7 +387,7 @@ export default function LandingPage() {
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 text-left text-left">
             <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8 text-left text-left">
-              <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-left text-left text-left">
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-left text-left text-left text-left">
                 The Harvest is Plentiful.<br className="hidden sm:block text-left text-left" />
                 Ready to Labor?
               </h2>

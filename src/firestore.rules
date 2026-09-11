@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Authorized collaborative study for accountability alliances - 2025-06-15T15:00:00Z
+    // Deployment trigger: Unified directory access and collaborative Bible journaling - 2025-06-15T16:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;

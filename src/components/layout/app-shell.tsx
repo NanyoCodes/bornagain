@@ -706,6 +706,9 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
 
   const isProfileIncomplete = !!(user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim()));
 
+  // Bottom Nav is shown on regular pages and on chat module pages
+  const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
+
   return (
     <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
       <AnimatePresence>
