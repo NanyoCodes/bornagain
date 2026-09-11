@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Collaborative Bible Journaling & Sync - 2025-06-16T10:30:00Z
+    // Deployment trigger: Collaborative Bible Journaling & Group Sync - 2025-06-16T11:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -121,6 +121,10 @@ service cloud.firestore {
 
       match /joinedEvents/{eventId} {
         allow get, list, write: if isOwner(userId);
+      }
+
+      match /fellowships/{id} {
+        allow read, write: if isOwner(userId);
       }
     }
 
