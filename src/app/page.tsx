@@ -397,7 +397,7 @@ export default function LandingPage() {
                 Join thousands of believers who are using technology to fulfill the mission of Jesus Christ. 
                 Record miracles, reach cities, and track the greatness of God.
               </p>
-              <div className="flex justify-center pt-2 sm:pt-4 text-left text-left text-left text-left">
+              <div className="flex justify-center pt-2 sm:pt-4 text-left text-left text-left text-left text-left">
                 <Button asChild size="lg" className="h-10 px-8 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto text-left text-left text-left text-left text-left">
                   <Link href={isLoggedIn ? "/testimonies" : "/signup"} className="text-left text-left text-left text-left">
                     {isLoggedIn ? "OPEN DASHBOARD" : "START TESTIFYING"} <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6 text-left text-left text-left" />

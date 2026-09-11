@@ -44,11 +44,9 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { PasswordSettingsCard } from '@/components/settings/password-settings-card';
 import { useFontSize } from '@/components/font-size-provider';
 import { PwaInstallCard } from '@/components/settings/pwa-install-card';
-import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { SoulsImportTemplateCard } from './souls-import-template-card';
 
 const notificationFormSchema = z.object({
   newCampaignsInArea: z.boolean().default(false),
@@ -341,7 +339,6 @@ export function SettingsPageContent() {
             <ProfileSettingsCard />
             <VisualEnvironmentCard userProfile={userProfile} userId={user.uid} />
             <ChurchSettingsCard userProfile={userProfile} userId={user.uid} />
-            <SoulsImportTemplateCard />
             <PwaInstallCard />
             <NotificationSettingsForm userProfile={userProfile} userId={user.uid} />
             <PasswordSettingsCard />
