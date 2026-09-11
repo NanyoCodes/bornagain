@@ -178,8 +178,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 
   const { data: allTestimonies } = useCollection<Testimony>(testimoniesQuery);
   const { data: allPrayers } = useCollection<PrayerRequest>(prayersQuery);
-  const { data: allCampaigns } = useCollection<Campaign>(campaignsQuery);
-  const { data: allFellowships } = useCollection<Fellowship>(fellowshipsQuery);
+  const { data: allCampaigns } = useCollection<Campaign>(allCampaignsQuery);
+  const { data: allFellowships } = useCollection<Fellowship>(allFellowshipsQuery);
   const { data: allSouls } = useCollection<Soul>( soulsQuery);
 
   const suggestions = useMemo(() => {
@@ -574,7 +574,7 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10",
+                      "relative z-10 flex flex-col items-center justify-center",
                       isActive ? "text-white" : "text-muted-foreground"
                     )}
                   >

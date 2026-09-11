@@ -515,20 +515,24 @@ export function SoulsImportTemplateCard() {
             isMobile ? (
                 <Drawer open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
                     <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <DrawerHeader className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Network Sync</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Select contacts to synchronize with your harvest dashboard.</DrawerDescription>
-                        </DrawerHeader>
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
+                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Network Sync</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Select contacts to synchronize with your harvest dashboard.</DrawerDescription>
+                            </DrawerHeader>
+                        </div>
                         {contactsListEl}
                     </DrawerContent>
                 </Drawer>
             ) : (
                 <Dialog open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                        <DialogHeader className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Network Sync</DialogTitle>
-                            <DialogDescription className="text-sm font-medium mt-1 text-left">Select contacts to synchronize with your harvest dashboard.</DialogDescription>
-                        </DialogHeader>
+                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+                            <DialogHeader className="text-left text-left text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Network Sync</DialogTitle>
+                                <DialogDescription className="text-sm font-medium mt-1 text-left">Select contacts to synchronize with your harvest dashboard.</DialogDescription>
+                            </DialogHeader>
+                        </div>
                         {contactsListEl}
                     </DialogContent>
                 </Dialog>

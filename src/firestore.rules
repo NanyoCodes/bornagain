@@ -102,6 +102,18 @@ service cloud.firestore {
       match /bibleHighlights/{highlightId} {
         allow read, write: if isOwner(userId);
       }
+      
+      // Authorized shared study for accountability alliances
+      match /{allPaths=**}/bibleHighlights/{highlightId} {
+        allow read: if isAuthenticated() && (
+          resource.data.userId == request.auth.uid || 
+          (
+            resource.data.get('isPrivate', false) == false && 
+            exists(/databases/$(database)/documents/users/$(resource.data.userId)) &&
+            request.auth.uid in get(/databases/$(database)/documents/users/$(resource.data.userId)).data.get('partnerIds', [])
+          )
+        );
+      }
 
       match /notes/{noteId} {
         allow read, write: if isOwner(userId);
@@ -163,7 +175,7 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isOwner(resource.data.authorId));
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
@@ -183,8 +195,8 @@ service cloud.firestore {
       match /resources/{resourceId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && request.resource.data.authorId == request.authorId;
-        allow update: if isAuthenticated() && request.resource.data.authorId == request.authorId;
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isOwner(resource.data.authorId));
+        allow update: if isAuthenticated() && (resource.data.authorId == request.authorId || isOwner(resource.data.authorId));
       }
     }
     

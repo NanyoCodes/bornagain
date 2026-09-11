@@ -357,6 +357,7 @@ export default function LandingPage() {
                           </p>
                           <div className="flex items-center gap-3 text-left">
                             <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shrink-0 text-left">
+                              <AvatarImage src={t.authorAvatarUrl || undefined} className="object-cover text-left" />
                               <AvatarFallback className="text-[10px] sm:text-xs bg-primary/10 text-primary font-black uppercase text-left">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 text-left">
