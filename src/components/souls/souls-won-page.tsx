@@ -101,13 +101,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul }: { souls: any[], all
   if (! souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic">No souls found matching this criteria.</p>
+        <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 pb-6">
+    <div className="space-y-3 pb-6 text-left">
       {souls.map((item) => {
         const soul = item;
         const isFamily = soul.maritalStatus === 'Married';
@@ -126,88 +126,88 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul }: { souls: any[], all
         const householdChildren = allSouls.filter(s => soul.childrenIds?.includes(s.id));
         
         return (
-          <div key={soul.id} className="relative">
+          <div key={soul.id} className="relative text-left">
             <div className="flex items-center justify-between p-3 rounded-2xl border bg-background/50 group w-full text-left relative">
                 <button 
                     onClick={() => onSelectSoul(soul)}
-                    className="flex items-center gap-3 min-w-0 flex-1 text-left active:scale-[0.98] transition-all"
+                    className="flex items-center gap-3 min-w-0 flex-1 text-left active:scale-[0.98] transition-all text-left"
                 >
-                    <div className="flex -space-x-3 shrink-0">
-                        <Avatar className="h-12 w-12 border-2 border-background shadow-md">
-                            <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0)}</AvatarFallback>
+                    <div className="flex -space-x-3 shrink-0 text-left">
+                        <Avatar className="h-12 w-12 border-2 border-background shadow-md text-left">
+                            <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
+                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         {spouse && (
-                            <Avatar className="h-12 w-12 border-2 border-background shadow-md ring-2 ring-primary/5">
-                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover" />
-                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs">{spouse.firstName?.charAt(0)}</AvatarFallback>
+                            <Avatar className="h-12 w-12 border-2 border-background shadow-md ring-2 ring-primary/5 text-left">
+                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover text-left" />
+                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs text-left">{spouse.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         )}
                     </div>
-                    <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-black text-sm sm:text-base truncate uppercase tracking-tight">
+                    <div className="min-w-0 flex-1 text-left">
+                        <div className="flex items-center gap-2 flex-wrap text-left">
+                            <p className="font-black text-sm sm:text-base truncate uppercase tracking-tight text-left">
                                 {soul.firstName} {soul.lastName}
                                 {spouse && (
-                                    <span className="text-primary/60 ml-1.5 lowercase hidden sm:inline">
+                                    <span className="text-primary/60 ml-1.5 lowercase hidden sm:inline text-left">
                                         & {spouse.firstName}
                                     </span>
                                 )}
                             </p>
-                            <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 bg-background/50">{soul.status}</Badge>
+                            <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 bg-background/50 text-left">{soul.status}</Badge>
                         </div>
                         {spouse && (
-                            <span className="text-primary/60 text-[10px] lowercase block sm:hidden leading-none mt-0.5">
+                            <span className="text-primary/60 text-[10px] lowercase block sm:hidden leading-none mt-0.5 text-left">
                                 & {spouse.firstName}
                             </span>
                         )}
-                        <div className="flex flex-col gap-1 mt-1">
-                            <div className="flex items-center gap-3 text-muted-foreground">
-                                <p className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">
+                        <div className="flex flex-col gap-1 mt-1 text-left">
+                            <div className="flex items-center gap-3 text-muted-foreground text-left">
+                                <p className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap text-left">
                                     Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
                                 </p>
                                 {isFamily && (
-                                    <Badge variant="secondary" className="h-3.5 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none">Family Unit</Badge>
+                                    <Badge variant="secondary" className="h-3.5 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none text-left">Family Unit</Badge>
                                 )}
                             </div>
                         </div>
                     </div>
                 </button>
-                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                <div className="flex items-center gap-1.5 shrink-0 ml-2 text-left">
                     {isFamily && (spouse || householdChildren.length > 0) && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary">
-                                    <Users className="h-4 w-4" />
+                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary text-left">
+                                    <Users className="h-4 w-4 text-left" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Household Hub</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5">
-                                    <User className="mr-2 h-4 w-4" /> View Primary Profile
+                            <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
+                                <DropdownMenuSeparator className="text-left" />
+                                <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
+                                    <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
                                 </DropdownMenuItem>
                                 {spouse && (
-                                    <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5">
-                                        <div className="flex items-center gap-2">
-                                            <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
+                                    <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left">
+                                        <div className="flex items-center gap-2 text-left">
+                                            <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} className="text-left" /><AvatarFallback className="text-[8px] text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 )}
                                 {householdChildren.map(child => (
-                                    <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5">
-                                        <div className="flex items-center gap-2">
-                                            <Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
+                                    <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left">
+                                        <div className="flex items-center gap-2 text-left">
+                                            <Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL} className="text-left" /><AvatarFallback className="text-[8px] text-left">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 ))}
                             </DropdownMenuContent>
                         </DropdownMenu>
                     )}
-                    <Button variant="ghost" size="icon" onClick={() => onSelectSoul(soul)} className="h-9 w-9 rounded-full text-muted-foreground group-hover:text-primary transition-colors">
-                        <ArrowRight className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" onClick={() => onSelectSoul(soul)} className="h-9 w-9 rounded-full text-muted-foreground group-hover:text-primary transition-colors text-left">
+                        <ArrowRight className="h-4 w-4 text-left" />
                     </Button>
                 </div>
             </div>
@@ -356,11 +356,11 @@ export default function SoulsWonPage() {
               const spouse = souls.find(other => {
                 if (other.id === s.id || other.maritalStatus !== 'Married') return false;
                 const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-                const sFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+                const soulFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
                 const soulSpouse = (s.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
                 return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === sFullName || otherSpouse === s.firstName.toLowerCase());
+                       (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
               });
 
               if (spouse) {
@@ -779,9 +779,9 @@ export default function SoulsWonPage() {
                     </div>
                 )}
 
-                <div className="px-4 sm:px-0 space-y-12 text-left text-left">
+                <div className="px-4 sm:px-0 space-y-12 text-left text-left text-left">
                     {/* Age Demographics */}
-                    <div className="space-y-4 text-left text-left">
+                    <div className="space-y-4 text-left text-left text-left">
                         <div className="flex items-center gap-3 text-left text-left text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left">
                                 <BarChart3 className="h-5 w-5 text-primary text-left text-left" />
@@ -879,7 +879,7 @@ export default function SoulsWonPage() {
 
                     {/* Marital Demographics */}
                     <div className="space-y-4 text-left text-left text-left text-left">
-                        <div className="flex items-center gap-3 text-left text-left text-left text-left text-left text-left">
+                        <div className="flex items-center gap-3 text-left text-left text-left text-left text-left text-left text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left text-left text-left text-left text-left">
                                 <Heart className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left text-left" />
                             </div>
@@ -967,7 +967,7 @@ export default function SoulsWonPage() {
                             </div>
                             <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left text-left text-left text-left text-left text-left text-left text-left text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                             </DrawerHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
