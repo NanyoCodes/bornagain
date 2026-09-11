@@ -172,8 +172,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 
   const testimoniesQuery = useMemo(() => testimoniesRef ? query(testimoniesRef, limit(20)) : null, [testimoniesRef]);
   const prayersQuery = useMemo(() => prayersRef ? query(prayersRef, limit(20)) : null, [prayersRef]);
-  const campaignsQuery = useMemo(() => campaignsRef ? query(campaignsRef, where('status', '==', 'active'), limit(20)) : null, [campaignsRef]);
-  const fellowshipsQuery = useMemo(() => fellowshipsRef ? query(fellowshipsRef, where('status', '==', 'active'), limit(20)) : null, [fellowshipsRef]);
+  const allCampaignsQuery = useMemo(() => campaignsRef ? query(campaignsRef, where('status', '==', 'active'), limit(20)) : null, [campaignsRef]);
+  const allFellowshipsQuery = useMemo(() => fellowshipsRef ? query(fellowshipsRef, where('status', '==', 'active'), limit(20)) : null, [fellowshipsRef]);
   const soulsQuery = useMemo(() => soulsRef ? query(soulsRef, limit(20)) : null, [soulsRef]);
 
   const { data: allTestimonies } = useCollection<Testimony>(testimoniesQuery);
@@ -712,6 +712,9 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   }
 
   const isProfileIncomplete = !!(user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim()));
+
+  // Bottom Nav is shown on regular pages and on chat module pages
+  const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
 
   return (
     <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
