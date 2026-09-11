@@ -360,12 +360,12 @@ export function SoulsImportTemplateCard() {
 
   const contactsListEl = (
     <div className="flex flex-col h-full text-left">
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center gap-3 mb-2 text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
+            <div className="flex items-center gap-3 mb-2 text-left text-left">
                 <Smartphone className="h-5 w-5 text-primary text-left" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Network Sync</span>
             </div>
-            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Contacts</h3>
+            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Contacts</h3>
             <div className="relative mt-6 text-left">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                 <Input 
@@ -381,7 +381,7 @@ export function SoulsImportTemplateCard() {
             <div className="p-4 space-y-1 text-left">
                 <div className="p-4 mb-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 text-left">
                     <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5 text-left" />
-                    <div className="space-y-1 text-left">
+                    <div className="space-y-1 text-left text-left">
                         <p className="text-[11px] font-black uppercase text-amber-700 tracking-tight text-left">Google Verification Pending</p>
                         <p className="text-[10px] text-amber-800/80 leading-relaxed text-left">
                             You may see a warning about "Unverified App". Click **Advanced** and then **Go to testifyglobal.com (unsafe)** to bypass this while we finalize official verification.
@@ -398,7 +398,7 @@ export function SoulsImportTemplateCard() {
                         )}
                         onClick={() => handleToggleContact(contact.resourceName)}
                     >
-                        <div className="flex items-center gap-4 min-w-0 text-left text-left">
+                        <div className="flex items-center gap-4 min-w-0 text-left text-left text-left">
                             <Checkbox 
                                 checked={selectedContactIds.has(contact.resourceName)}
                                 onCheckedChange={() => handleToggleContact(contact.resourceName)}
@@ -408,9 +408,9 @@ export function SoulsImportTemplateCard() {
                                 <AvatarImage src={contact.photoURL} className="text-left" />
                                 <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-center flex items-center justify-center w-full h-full text-left">{contact.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0 text-left text-left">
+                            <div className="min-w-0 text-left text-left text-left">
                                 <p className="font-black text-sm uppercase tracking-tight truncate text-left">{contact.firstName} {contact.lastName}</p>
-                                <div className="flex items-center gap-3 mt-1 opacity-60 text-left">
+                                <div className="flex items-center gap-3 mt-1 opacity-60 text-left text-left">
                                     {contact.phone && <p className="text-[10px] font-bold truncate flex items-center gap-1 text-left"><Smartphone className="h-2.5 w-2.5 text-left" /> {contact.phone}</p>}
                                 </div>
                             </div>
@@ -420,7 +420,7 @@ export function SoulsImportTemplateCard() {
                         )}
                     </div>
                 )) : (
-                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4 text-left">
+                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4 text-left text-left">
                         <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-4 text-left" />
                         <p className="text-sm text-muted-foreground font-medium italic text-left">No matching contacts found.</p>
                     </div>
@@ -428,21 +428,21 @@ export function SoulsImportTemplateCard() {
             </div>
         </ScrollArea>
 
-        <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-4 shrink-0 text-left">
-            <div className="flex-1 min-w-0 flex items-center gap-3 text-left">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-left text-left">
+        <div className="p-8 border-t bg-muted/5 flex flex-col sm:flex-row gap-4 shrink-0 text-left text-left">
+            <div className="flex-1 min-w-0 flex items-center gap-3 text-left text-left">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20 text-left text-left text-left">
                     <span className="font-black text-primary text-sm text-left"> {selectedContactIds.size}</span>
                 </div>
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest leading-tight text-left">Souls Ready for Sync</p>
             </div>
-            <div className="flex gap-2 text-left">
-                <Button variant="outline" onClick={() => setIsContactsDialogOpen(false)} className="rounded-xl h-11 px-6 font-bold text-left">Cancel</Button>
+            <div className="flex gap-2 text-left text-left">
+                <Button variant="outline" onClick={() => setIsContactsDialogOpen(false)} className="rounded-xl h-11 px-6 font-bold text-left text-left">Cancel</Button>
                 <Button 
                     onClick={handleImportSelected} 
                     disabled={selectedContactIds.size === 0 || isUploading}
-                    className="rounded-xl h-11 px-8 font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-left"
+                    className="rounded-xl h-11 px-8 font-black uppercase tracking-widest shadow-xl shadow-primary/20 text-left text-left"
                 >
-                    {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                    {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}
                     IMPORT SELECTED
                 </Button>
             </div>
@@ -451,23 +451,23 @@ export function SoulsImportTemplateCard() {
   );
 
   return (
-    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10 text-left">
-      <CardHeader className="p-6 sm:p-8 text-left">
-        <div className="flex items-center justify-between gap-4 text-left">
-            <div className="space-y-1 text-left">
-                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight text-left">
-                <FileSpreadsheet className="h-5 w-5 text-primary text-left" /> Harvest Mobilization
+    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10 text-left text-left">
+      <CardHeader className="p-6 sm:p-8 text-left text-left">
+        <div className="flex items-center justify-between gap-4 text-left text-left">
+            <div className="space-y-1 text-left text-left">
+                <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight text-left text-left">
+                <FileSpreadsheet className="h-5 w-5 text-primary text-left text-left" /> Harvest Mobilization
                 </CardTitle>
-                <CardDescription className="text-xs sm:text-sm font-medium text-left">
+                <CardDescription className="text-xs sm:text-sm font-medium text-left text-left">
                 Synchronize bulk convert data by uploading a spreadsheet or importing from Google.
                 </CardDescription>
             </div>
             <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 h-6 px-3 font-black uppercase text-[9px] tracking-widest hidden sm:flex text-left">Bulk Sync</Badge>
         </div>
       </CardHeader>
-      <CardContent className="px-6 sm:p-8 pt-0 space-y-8 text-left">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-            <Button onClick={handleDownloadTemplate} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left text-left">
+      <CardContent className="px-6 sm:p-8 pt-0 space-y-8 text-left text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left text-left">
+            <Button onClick={handleDownloadTemplate} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left text-left text-left">
                 <Download className="mr-2 h-4 w-4 text-left" />
                 GET CSV TEMPLATE
             </Button>
@@ -476,14 +476,14 @@ export function SoulsImportTemplateCard() {
                 onClick={handleGoogleContactsImport} 
                 disabled={isFetchingContacts}
                 variant="outline"
-                className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left text-left"
+                className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left text-left text-left"
             >
-                {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Smartphone className="mr-2 h-4 w-4 text-left" />}
+                {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" /> : <Smartphone className="mr-2 h-4 w-4 text-left text-left" />}
                 IMPORT GOOGLE CONTACTS
             </Button>
         </div>
 
-        <div className="relative text-left">
+        <div className="relative text-left text-left">
             <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -495,16 +495,16 @@ export function SoulsImportTemplateCard() {
             <Button 
                 onClick={() => fileInputRef.current?.click()} 
                 disabled={isUploading}
-                className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left"
+                className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left text-left"
             >
-                {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Upload className="mr-2 h-4 w-4 text-left" />}
+                {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" /> : <Upload className="mr-2 h-4 w-4 text-left text-left" />}
                 UPLOAD CUSTOM CSV LIST
             </Button>
         </div>
 
-        <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4 text-left">
+        <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4 text-left text-left">
             <Info className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left" />
-            <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
+            <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left text-left">
                 Standardize your follow-up data. Import your existing contacts or use our template to organize outreach results for professional tracking.
             </p>
         </div>
@@ -514,13 +514,13 @@ export function SoulsImportTemplateCard() {
         {isContactsDialogOpen && (
             isMobile ? (
                 <Drawer open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left text-left">
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left text-left text-left text-left">
                         {contactsListEl}
                     </DrawerContent>
                 </Drawer>
             ) : (
                 <Dialog open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
-                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
                         {contactsListEl}
                     </DialogContent>
                 </Dialog>
