@@ -81,7 +81,7 @@ export default function LandingPage() {
 
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-left text-left">
+      <div className="flex min-h-screen items-center justify-center bg-background text-left">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     );
@@ -90,14 +90,14 @@ export default function LandingPage() {
   const isLoggedIn = !!user;
 
   return (
-    <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative text-left text-left">
+    <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative text-left">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b text-left text-left">
+      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b text-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between text-left">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
             {logo && (
-              <Avatar className="h-14 w-14 md:h-16 md:w-16 text-left">
-                <AvatarImage src={logo.imageUrl} alt="Testify Logo" className="text-left" />
+              <Avatar className="h-14 w-14 md:h-16 md:w-16 text-left text-left">
+                <AvatarImage src={logo.imageUrl} alt="Testify Logo" className="text-left text-left" />
                 <AvatarFallback>T</AvatarFallback>
               </Avatar>
             )}
@@ -125,7 +125,7 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section className="relative h-[85vh] min-h-[500px] sm:min-h-[600px] flex items-center overflow-hidden bg-zinc-950 text-left">
           <div className="absolute inset-0 z-0 text-left">
-             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent text-left text-left" />
+             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent text-left" />
           </div>
           
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-left">
@@ -139,10 +139,10 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-3 sm:px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[9px] sm:text-[10px] whitespace-nowrap text-left">
                   GLORIFYING GOD
                 </Badge>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left">
-                  Testify the <br className="hidden sm:block text-left" />
-                  Greatness of GOD.<br className="hidden sm:block text-left" />
-                  <span className="text-primary text-left">Join the Harvest.</span>
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left text-left text-left">
+                  Testify the <br className="hidden sm:block text-left text-left" />
+                  Greatness of GOD.<br className="hidden sm:block text-left text-left" />
+                  <span className="text-primary text-left text-left">Join the Harvest.</span>
                 </h1>
                 <p className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-white/80 font-medium max-w-xl leading-relaxed italic text-pretty text-left">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
@@ -189,7 +189,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 className="space-y-8 text-left"
               >
-                <div className="space-y-4 text-left">
+                <div className="space-y-4 text-left text-left">
                   <div className="flex items-center gap-3 text-left">
                     <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-left">
                       <Globe className="h-5 w-5 text-primary text-left" />
@@ -201,7 +201,7 @@ export default function LandingPage() {
                   </p>
                 </div>
 
-                <div className="space-y-4 text-left">
+                <div className="space-y-4 text-left text-left">
                   <div className="flex items-center gap-3 text-left">
                     <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-left">
                       <Sparkles className="h-5 w-5 text-primary text-left" />
@@ -227,11 +227,11 @@ export default function LandingPage() {
                   <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left">Founder's Story</h2>
                 </div>
                 <Card className="rounded-[2.5rem] border-l-8 border-l-primary bg-muted/20 border-none shadow-sm relative overflow-hidden text-left">
-                   <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-left">
-                      <Quote className="h-24 w-24 text-primary text-left" />
+                   <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-left text-left">
+                      <Quote className="h-24 w-24 text-primary text-left text-left" />
                    </div>
                    <CardContent className="p-8 sm:p-10 text-left">
-                      <p className="italic text-muted-foreground text-base sm:text-lg leading-relaxed text-left text-left">
+                      <p className="italic text-muted-foreground text-base sm:text-lg leading-relaxed text-left">
                         "I believe that technology is a divine gift for this final harvest. Seeing the need for accountability and collective encouragement in evangelism, I was led to create a space where every soul won is celebrated and every miracle is recorded for God's glory. God is great, and His power in Jesus Christ is moving through the earth like never before. Testify is a testimony in itself of God's provision for His people."
                       </p>
                       <p className="mt-6 text-sm font-black uppercase tracking-widest text-primary text-left">— Nanyo Theophilus</p>
@@ -247,8 +247,8 @@ export default function LandingPage() {
                  viewport={{ once: true }}
                  className="space-y-3 text-left"
                >
-                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-left">
-                   <ShieldCheck className="h-4 w-4 text-primary text-left" /> Moderation
+                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-left text-left">
+                   <ShieldCheck className="h-4 w-4 text-primary text-left text-left" /> Moderation
                  </h3>
                  <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
                    Faith-aligned content only. All posts are screened to ensure a respectful, edifying environment for the Body of Christ.
@@ -261,8 +261,8 @@ export default function LandingPage() {
                  transition={{ delay: 0.1 }}
                  className="space-y-3 text-left"
                >
-                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-left">
-                   <Zap className="h-4 w-4 text-primary text-left" /> Integrity
+                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-left text-left">
+                   <Zap className="h-4 w-4 text-primary text-left text-left" /> Integrity
                  </h3>
                  <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
                    We prioritize community verification and accountability to ensure shared miracle stories are genuine and God-glorifying.
@@ -275,8 +275,8 @@ export default function LandingPage() {
                  transition={{ delay: 0.2 }}
                  className="space-y-3 text-left"
                >
-                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-left">
-                   <HeartHandshake className="h-4 w-4 text-primary text-left" /> Partnerships
+                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-left text-left">
+                   <HeartHandshake className="h-4 w-4 text-primary text-left text-left" /> Partnerships
                  </h3>
                  <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
                    Working with local churches and missionary groups to provide reporting tools for outreach teams globally.
@@ -298,10 +298,10 @@ export default function LandingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
               {features.map((feature, i) => (
-                <Card key={i} className="rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 duration-300 text-left text-left">
+                <Card key={i} className="rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 duration-300 text-left">
                   <CardHeader className="p-6 sm:p-8 text-left">
-                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-left", feature.bgColor)}>
-                      <feature.icon className={cn("h-6 w-6", feature.color)} />
+                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-left text-left", feature.bgColor)}>
+                      <feature.icon className={cn("h-6 w-6 text-left", feature.color)} />
                     </div>
                     <CardTitle className="text-xl font-black font-headline uppercase tracking-tight text-left">{feature.title}</CardTitle>
                   </CardHeader>
@@ -318,15 +318,15 @@ export default function LandingPage() {
 
         {/* Glory Feed Section */}
         <section className="py-16 sm:py-24 relative overflow-hidden text-left">
-          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left">
+          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left text-left">
             <Flame className="h-64 w-64 text-left" />
           </div>
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 items-center text-left">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 items-center text-left text-left">
               <div className="space-y-6 sm:space-y-8 text-center lg:text-left text-left">
-                <div className="space-y-4 text-left">
-                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3 py-1 text-left">The Digital Altar</Badge>
+                <div className="space-y-4 text-left text-left">
+                  <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[9px] sm:text-[10px] px-3 py-1 text-left text-left">The Digital Altar</Badge>
                   <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight sm:leading-none uppercase tracking-tighter text-balance text-left">See God <br className="hidden sm:block text-left" />In Action</h2>
                   <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-md mx-auto lg:mx-0 font-medium text-left">
                     Miracles aren't just for the Bible. Read real-time stories from believers around the world seeing the power of Jesus Christ today.
@@ -340,7 +340,7 @@ export default function LandingPage() {
 
               <div className="space-y-4 sm:space-y-6 text-left">
                 {loadingTestimonies ? (
-                  <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left" /></div>
+                  <div className="flex justify-center text-left text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left" /></div>
                 ) : testimonies?.map((t, idx) => (
                   <motion.div 
                     key={t.id}
@@ -348,12 +348,12 @@ export default function LandingPage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
-                    className="text-left"
+                    className="text-left text-left"
                   >
-                    <Card className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left text-left">
+                    <Card className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left">
                       <CardContent className="p-5 sm:p-6 flex gap-4 text-left">
                         <Quote className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-20 shrink-0 mt-1 text-left" />
-                        <div className="min-w-0 text-left">
+                        <div className="min-w-0 text-left text-left">
                           <p className="text-sm sm:text-base italic text-muted-foreground line-clamp-2 leading-relaxed mb-4 text-left">
                             "{t.content}"
                           </p>
@@ -396,7 +396,7 @@ export default function LandingPage() {
                 Join thousands of believers who are using technology to fulfill the mission of Jesus Christ. 
                 Record miracles, reach cities, and track the greatness of God.
               </p>
-              <div className="flex justify-center pt-2 sm:pt-4 text-left text-left">
+              <div className="flex justify-center pt-2 sm:pt-4 text-left text-left text-left">
                 <Button asChild size="lg" className="h-10 px-8 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto text-left">
                   <Link href={isLoggedIn ? "/testimonies" : "/signup"}>
                     {isLoggedIn ? "OPEN DASHBOARD" : "START TESTIFYING"} <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6 text-left" />
@@ -409,15 +409,15 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-muted/50 border-t py-12 sm:py-16 relative text-left">
+      <footer className="bg-muted/50 border-t py-12 sm:py-16 relative text-left text-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
                 {logo && (
                   <Avatar className="h-12 w-12 text-left text-left">
-                    <AvatarImage src={logo.imageUrl} alt="Logo" className="text-left" />
-                    <AvatarFallback className="text-left text-left">T</AvatarFallback>
+                    <AvatarImage src={logo.imageUrl} alt="Logo" className="text-left text-left" />
+                    <AvatarFallback>T</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
@@ -448,7 +448,7 @@ export default function LandingPage() {
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Ministry</h4>
               <ul className="space-y-3 text-left">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Our Story</Link></li>
-                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left text-left">Partner With Us</Link></li>
+                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Partner With Us</Link></li>
                 <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">App Guide</Link></li>
                 <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Resources</Link></li>
                 <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Terms</Link></li>
@@ -471,4 +471,3 @@ export default function LandingPage() {
     </div>
   );
 }
-

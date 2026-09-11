@@ -26,7 +26,6 @@ export function useDoc<T>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // Use a ref to track the actual reference instance to prevent infinite loops
   const activeRef = useRef<DocumentReference<DocumentData> | null>(null);
 
   useEffect(() => {
@@ -36,8 +35,6 @@ export function useDoc<T>(
       return;
     }
 
-    // Check if the new ref is logically equal to the current subscription
-    // using the SDK's refEqual utility to prevent unnecessary re-runs.
     if (activeRef.current && refEqual(docRef, activeRef.current)) {
       return;
     }
@@ -66,8 +63,6 @@ export function useDoc<T>(
               operation: 'get',
             }, user);
             errorEmitter.emit('permission-error', permissionError);
-        } else {
-            console.error("Firestore error in useDoc:", err);
         }
         
         setError(err);

@@ -26,7 +26,6 @@ export function useCollection<T extends { id: string }>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // Use a ref to track the actual query instance to prevent infinite loops
   const activeQuery = useRef<Query<DocumentData> | null>(null);
 
   useEffect(() => {
@@ -36,8 +35,6 @@ export function useCollection<T extends { id: string }>(
       return;
     }
 
-    // Check if the new query is logically equal to the current subscription
-    // using the SDK's queryEqual utility to prevent unnecessary re-runs.
     if (activeQuery.current && queryEqual(query, activeQuery.current)) {
       return;
     }
@@ -64,8 +61,6 @@ export function useCollection<T extends { id: string }>(
             operation: 'list',
           }, user);
           errorEmitter.emit('permission-error', permissionError);
-        } else {
-          console.error("Firestore error in useCollection:", err);
         }
         
         setError(err);
