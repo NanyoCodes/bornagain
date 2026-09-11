@@ -69,7 +69,6 @@ const navItems = [
   { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
 ];
 
-const CHAT_NOTIFICATION_TYPES = ['new_chat_message'];
 const SYSTEM_NOTIFICATION_TYPES = [
   'campaign_join', 
   'accountability_nudge', 
@@ -235,21 +234,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
       </nav>
         
       <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left">
-        <div className="hidden lg:block min-w-0 text-left">
-            <form onSubmit={(e) => e.preventDefault()} className="text-left">
-              <div className="relative text-left">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
-                <Input
-                  type="search"
-                  placeholder={searchPlaceholder}
-                  className="pl-8 w-[140px] xl:w-[200px] h-10 rounded-xl bg-muted/20 border-none text-[12px] transition-all focus:w-[180px] xl:focus:w-[260px] text-left"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </form>
-        </div>
-        
         {isSearchVisible && (
           <Button variant="ghost" size="icon" className="lg:hidden h-11 w-11 rounded-full transition-transform active:scale-95 text-left" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-6 w-6 text-left" />
@@ -611,17 +595,17 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center">
-        <div className="relative mx-auto w-fit text-left">
-            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
-            <div className="absolute inset-0 flex items-center justify-center text-left">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left" />
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-center text-left text-left">
+        <div className="relative mx-auto w-fit text-left text-left text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left text-left" />
+            <div className="absolute inset-0 flex items-center justify-center text-left text-left text-left">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left text-left text-left" />
             </div>
         </div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 text-left">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left">
+        <p className="mt-4 text-[9px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-left text-left">
             Kingdom Network Active
         </p>
       </div>
@@ -640,7 +624,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: contentVisible ? 1 : 0 }}
           transition={{ duration: 1 }}
-          className="flex-1 flex flex-col min-h-0 text-left"
+          className="flex-1 flex flex-col min-h-0 text-left text-left"
       >
           <Suspense fallback={null}>
             {!isTakeoverPage && (
@@ -651,7 +635,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
             />
             )}
           </Suspense>
-          <div className="flex-1 relative min-h-0 text-left">
+          <div className="flex-1 relative min-h-0 text-left text-left">
           <main 
               ref={scrollContainerRef}
               className={cn(
@@ -675,28 +659,28 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       
       {user && mounted && isMobile ? (
         <Drawer open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
-              <DrawerHeader className="text-left">
-                <DrawerTitle className="text-xl font-bold text-left">Complete Your Profile</DrawerTitle>
-                <DrawerDescription className="text-xs text-left">Join the global movement by introducing yourself.</DrawerDescription>
+          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left text-left">
+            <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left">
+              <DrawerHeader className="text-left text-left">
+                <DrawerTitle className="text-xl font-bold text-left text-left">Complete Your Profile</DrawerTitle>
+                <DrawerDescription className="text-xs text-left text-left">Join the global movement by introducing yourself.</DrawerDescription>
               </DrawerHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6 text-left">
+            <div className="flex-grow overflow-y-auto p-6 text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DrawerContent>
         </Drawer>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
-            <div className="p-6 border-b bg-muted/10 text-left">
-              <DialogHeader className="text-left">
-                <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
-                <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left">
+              <DialogHeader className="text-left text-left">
+                <DialogTitle className="text-2xl font-bold text-left text-left">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -710,9 +694,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SearchProvider>
         <Suspense fallback={
-            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left">
-                <div className="relative mx-auto w-fit text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left" />
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left">
+                <div className="relative mx-auto w-fit text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
                 </div>
             </div>
         }>

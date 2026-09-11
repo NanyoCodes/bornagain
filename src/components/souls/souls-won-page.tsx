@@ -155,20 +155,20 @@ function FilteredSoulList({
 
             return (
                 <Accordion type="single" collapsible key={soul.id} className="w-full text-left">
-                    <AccordionItem value={soul.id} className="border rounded-[1.5rem] bg-card overflow-hidden shadow-sm transition-all hover:border-primary/20 text-left">
+                    <AccordionItem value={soul.id} className="border rounded-[1.5rem] bg-card overflow-hidden shadow-sm transition-all hover:border-primary/20 text-left text-left">
                         <AccordionTrigger className="flex items-center justify-between p-3 sm:p-4 hover:no-underline group text-left">
-                            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left">
-                                <div className="flex -space-x-3 shrink-0 text-left">
+                            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left text-left">
+                                <div className="flex -space-x-3 shrink-0 text-left text-left">
                                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm ring-1 ring-primary/5 text-left">
                                         <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
-                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left"> {soul.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm ring-1 ring-primary/5 text-left">
                                         <AvatarImage src={spouse.photoURL || undefined} className="object-cover text-left" />
                                         <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left">{spouse.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                 </div>
-                                <div className="min-w-0 flex-1 space-y-1 text-left">
+                                <div className="min-w-0 flex-1 space-y-1 text-left text-left">
                                     <p className="font-black text-[12px] sm:text-base uppercase tracking-tight leading-tight text-balance break-words [overflow-wrap:anywhere] text-left">
                                         {soul.firstName} & {spouse.firstName}
                                     </p>
@@ -184,19 +184,19 @@ function FilteredSoulList({
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="px-3 sm:px-4 pb-4 space-y-4 animate-in slide-in-from-top-2 duration-300 text-left">
-                            <div className="space-y-3 text-left">
+                            <div className="space-y-3 text-left text-left">
                                 <div className="flex items-center justify-between px-1 text-left">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Parents</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Parents</p>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left text-left">
                                     <Button 
                                         variant="outline" 
                                         className="justify-start h-14 gap-3 px-3 rounded-xl hover:bg-primary/5 border-dashed text-left"
                                         onClick={() => onSelectSoul(soul)}
                                     >
                                         <Avatar className="h-8 w-8 border shrink-0 text-left"><AvatarFallback className="font-bold bg-background text-left"> {soul.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <div className="min-w-0 flex-1 text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left">{name}</p></div>
-                                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left" />
+                                        <div className="min-w-0 flex-1 text-left text-left text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left">{name}</p></div>
+                                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left text-left" />
                                     </Button>
                                     <Button 
                                         variant="outline" 
@@ -204,7 +204,7 @@ function FilteredSoulList({
                                         onClick={() => onSelectSoul(spouse)}
                                     >
                                         <Avatar className="h-8 w-8 border shrink-0 text-left"><AvatarFallback className="font-bold bg-background text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <div className="min-w-0 flex-1 text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left">{spouseName}</p></div>
+                                        <div className="min-w-0 flex-1 text-left text-left text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left">{spouseName}</p></div>
                                         <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left" />
                                     </Button>
                                 </div>
@@ -212,7 +212,7 @@ function FilteredSoulList({
 
                             <div className="space-y-3 text-left">
                                 <div className="flex items-center justify-between px-1 text-left">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Children ({children.length})</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Children ({children.length})</p>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button 
@@ -223,7 +223,7 @@ function FilteredSoulList({
                                                 <PlusCircle className="mr-1 h-3 w-3 text-left" /> ADD CHILD
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="rounded-xl shadow-xl w-48 text-left">
+                                        <DropdownMenuContent align="end" className="rounded-xl shadow-xl w-48 text-left text-left">
                                             <DropdownMenuItem className="text-xs font-bold text-left" onSelect={() => onAddChild([soul, spouse])}>
                                                 Log New Record
                                             </DropdownMenuItem>
@@ -241,9 +241,7 @@ function FilteredSoulList({
                                             className="w-full justify-start h-14 gap-3 px-3 rounded-xl bg-muted/20 hover:bg-primary/5 text-left"
                                             onClick={() => onSelectSoul(child)}
                                         >
-                                            <Avatar className="h-8 w-8 border shrink-0 text-left">
-                                                <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left">{child.firstName.charAt(0)}</AvatarFallback>
-                                            </Avatar>
+                                            <Avatar className="h-8 w-8 border shrink-0 text-left"><AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
                                             <div className="min-w-0 flex-1 text-left">
                                                 <p className="font-bold text-xs truncate uppercase tracking-tight text-left">{child.firstName} {child.lastName}</p>
                                                 <p className="text-[8px] font-black text-muted-foreground uppercase opacity-60 text-left">{child.age ? `${child.age} Years` : 'Age N/A'}</p>
@@ -272,23 +270,23 @@ function FilteredSoulList({
             className="flex items-center justify-between p-3 sm:p-4 h-auto rounded-[1.5rem] hover:bg-primary/5 transition-all border bg-card group w-full text-left active:scale-[0.98] shadow-sm relative overflow-hidden text-left"
           >
             <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left">
-                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0 text-left">
+                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0 text-left text-left">
                     <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
                     <AvatarFallback className="font-black bg-primary/10 text-primary text-xs sm:text-sm text-left">
                         {soul.firstName?.charAt(0) || 'S'}
                     </AvatarFallback>
                 </Avatar>
-                <div className="min-w-0 flex-1 space-y-1 text-left">
-                    <div className="flex items-center gap-2 flex-wrap text-left">
-                        <p className="font-black text-[13px] sm:text-base uppercase tracking-tight truncate leading-tight text-left">
+                <div className="min-w-0 flex-1 space-y-1 text-left text-left">
+                    <div className="flex items-center gap-2 flex-wrap text-left text-left">
+                        <p className="font-black text-[13px] sm:text-base uppercase tracking-tight truncate leading-tight text-left text-left">
                             {name}
                         </p>
                     </div>
                     <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-left">
-                        <Badge variant="secondary" className="h-4 px-1 text-[7px] sm:text-[8px] uppercase font-black tracking-widest bg-muted/50 border-none leading-none text-left">
+                        <Badge variant="secondary" className="h-4 px-1 text-[7px] sm:text-[8px] uppercase font-black tracking-widest bg-muted/50 border-none leading-none text-left text-left">
                             {soul.status}
                         </Badge>
-                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left">
+                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left">
                             {soul.age ? `${soul.age} Yrs • ` : ''}Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                         </span>
                     </div>
@@ -1019,7 +1017,7 @@ export default function SoulsWonPage() {
                                             <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center text-left">
                                                 <DialogHeader className="sr-only text-left"><DialogTitle className="text-left">Soul Photo</DialogTitle></DialogHeader>
                                                 <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left">
-                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left">
+                                                    <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left text-left">
                                                         <Image 
                                                             src={s.photoURL!} 
                                                             alt={s.firstName} 
@@ -1380,7 +1378,7 @@ export default function SoulsWonPage() {
         {mounted && (
             isMobile ? (
                 <>
-                    <Drawer open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+                    <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setChildImportConfig(null); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <DrawerHeader className="text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
@@ -1412,7 +1410,7 @@ export default function SoulsWonPage() {
                 </>
             ) : (
                 <>
-                    <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
+                    <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setChildImportConfig(null); }}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <DialogHeader className="text-left text-left">

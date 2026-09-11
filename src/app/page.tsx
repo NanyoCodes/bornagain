@@ -94,16 +94,6 @@ export default function LandingPage() {
     );
   }
 
-  // If user is verified, we are redirecting (logic in useEffect). 
-  // Show loader while redirect happens to prevent flash of guest content.
-  if (user && user.emailVerified) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-left">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   const isLoggedIn = !!user;
 
   return (
@@ -248,10 +238,10 @@ export default function LandingPage() {
                       <Quote className="h-24 w-24 text-primary text-left" />
                    </div>
                    <CardContent className="p-8 sm:p-10 text-left">
-                      <p className="italic text-muted-foreground text-base sm:text-lg leading-relaxed text-left">
+                      <p className="italic text-muted-foreground text-base sm:text-lg leading-relaxed text-left text-left">
                         "I believe that technology is a divine gift for this final harvest. Seeing the need for accountability and collective encouragement in evangelism, I was led to create a space where every soul won is celebrated and every miracle is recorded for God's glory. God is great, and His power in Jesus Christ is moving through the earth like never before. Testify is a testimony in itself of God's provision for His people."
                       </p>
-                      <p className="mt-6 text-sm font-black uppercase tracking-widest text-primary text-left">— Nanyo Theophilus</p>
+                      <p className="mt-6 text-sm font-black uppercase tracking-widest text-primary text-left text-left text-left">— Nanyo Theophilus</p>
                    </CardContent>
                 </Card>
               </motion.div>
@@ -367,16 +357,16 @@ export default function LandingPage() {
                     transition={{ delay: idx * 0.1 }}
                     className="text-left"
                   >
-                    <Card className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left">
+                    <Card className="rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left text-left">
                       <CardContent className="p-5 sm:p-6 flex gap-4 text-left">
-                        <Quote className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-20 shrink-0 mt-1 text-left" />
+                        <Quote className="h-6 w-6 sm:h-8 sm:w-8 text-primary opacity-20 shrink-0 mt-1 text-left text-left" />
                         <div className="min-w-0 text-left">
                           <p className="text-sm sm:text-base italic text-muted-foreground line-clamp-2 leading-relaxed mb-4 text-left">
                             "{t.content}"
                           </p>
                           <div className="flex items-center gap-3 text-left">
-                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shrink-0 text-left">
-                              <AvatarFallback className="text-[10px] sm:text-xs bg-primary/10 text-primary font-black uppercase text-left">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
+                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shrink-0 text-left text-left">
+                              <AvatarFallback className="text-[10px] sm:text-xs bg-primary/10 text-primary font-black uppercase text-left text-left">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 text-left">
                               <p className="text-[10px] sm:text-xs font-black uppercase tracking-tight truncate text-left">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
@@ -405,15 +395,15 @@ export default function LandingPage() {
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 text-left">
             <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8 text-left">
-              <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-left">
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-left text-left">
                 The Harvest is Plentiful.<br className="hidden sm:block text-left" />
                 Ready to Labor?
               </h2>
-              <p className="text-base sm:text-lg md:text-xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-left">
+              <p className="text-base sm:text-lg md:text-xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-left text-left text-left">
                 Join thousands of believers who are using technology to fulfill the mission of Jesus Christ. 
                 Record miracles, reach cities, and track the greatness of God.
               </p>
-              <div className="flex justify-center pt-2 sm:pt-4 text-left">
+              <div className="flex justify-center pt-2 sm:pt-4 text-left text-left text-left text-left">
                 <Button asChild size="lg" className="h-10 px-8 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto text-left">
                   <Link href={isLoggedIn ? "/testimonies" : "/signup"}>
                     {isLoggedIn ? "OPEN DASHBOARD" : "START TESTIFYING"} <ArrowRight className="ml-3 h-5 w-5 sm:h-6 sm:w-6 text-left" />
