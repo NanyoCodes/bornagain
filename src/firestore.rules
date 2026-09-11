@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Unification and cross-device sync - 2025-06-15T16:30:00Z
+    // Deployment trigger: Unification and collaborative study - 2025-06-15T18:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;

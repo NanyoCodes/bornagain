@@ -103,7 +103,7 @@ import Papa from 'papaparse';
 import Link from 'next/link';
 
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
-  loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,
+  loading: () => <div className="flex justify-center p-12 text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-left text-left" /></div>,
   ssr: false
 });
 
@@ -131,7 +131,7 @@ function FilteredSoulList({
 }) {
   if (!souls || souls.length === 0) {
     return (
-      <div className="text-center py-10 px-6">
+      <div className="text-center py-10 px-6 text-left">
         <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
       </div>
     );
@@ -154,18 +154,18 @@ function FilteredSoulList({
             );
 
             return (
-                <Accordion type="single" collapsible key={soul.id} className="w-full text-left">
-                    <AccordionItem value={soul.id} className="border rounded-[1.5rem] bg-card overflow-hidden shadow-sm transition-all hover:border-primary/20 text-left">
-                        <AccordionTrigger className="flex items-center justify-between p-3 sm:p-4 hover:no-underline group text-left text-left">
+                <Accordion type="single" collapsible key={soul.id} className="w-full text-left text-left text-left">
+                    <AccordionItem value={soul.id} className="border rounded-[1.5rem] bg-card overflow-hidden shadow-sm transition-all hover:border-primary/20 text-left text-left text-left">
+                        <AccordionTrigger className="flex items-center justify-between p-3 sm:p-4 hover:no-underline group text-left text-left text-left">
                             <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left text-left text-left">
-                                <div className="flex -space-x-3 shrink-0 text-left">
-                                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm ring-1 ring-primary/5 text-left">
-                                        <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
-                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
+                                <div className="flex -space-x-3 shrink-0 text-left text-left text-left">
+                                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm ring-1 ring-primary/5 text-left text-left">
+                                        <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left text-left" />
+                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
-                                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm ring-1 ring-primary/5 text-left">
-                                        <AvatarImage src={spouse.photoURL || undefined} className="object-cover text-left" />
-                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left">{spouse.firstName?.charAt(0)}</AvatarFallback>
+                                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm ring-1 ring-primary/5 text-left text-left">
+                                        <AvatarImage src={spouse.photoURL || undefined} className="object-cover text-left text-left" />
+                                        <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left text-left">{spouse.firstName?.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                 </div>
                                 <div className="min-w-0 flex-1 space-y-1 text-left text-left text-left">
@@ -173,10 +173,10 @@ function FilteredSoulList({
                                         {soul.firstName} & {spouse.firstName}
                                     </p>
                                     <div className="flex items-center gap-1.5 flex-wrap text-left text-left">
-                                        <Badge variant="outline" className="h-4 px-1 text-[7px] sm:text-[8px] font-black uppercase border-primary/20 text-primary bg-primary/5 leading-none text-left">
+                                        <Badge variant="outline" className="h-4 px-1 text-[7px] sm:text-[8px] font-black uppercase border-primary/20 text-primary bg-primary/5 leading-none text-left text-left">
                                             Family Unit
                                         </Badge>
-                                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left">
+                                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left text-left text-left">
                                             Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                                         </span>
                                     </div>
@@ -184,35 +184,35 @@ function FilteredSoulList({
                             </div>
                         </AccordionTrigger>
                         <AccordionContent className="px-3 sm:px-4 pb-4 space-y-4 animate-in slide-in-from-top-2 duration-300 text-left text-left">
-                            <div className="space-y-3 text-left">
+                            <div className="space-y-3 text-left text-left">
                                 <div className="flex items-center justify-between px-1 text-left text-left">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Parents</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Parents</p>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left text-left">
                                     <Button 
                                         variant="outline" 
                                         className="justify-start h-14 gap-3 px-3 rounded-xl hover:bg-primary/5 border-dashed text-left text-left"
                                         onClick={() => onSelectSoul(soul)}
                                     >
-                                        <Avatar className="h-8 w-8 border shrink-0 text-left"><AvatarFallback className="font-bold bg-background text-left">{soul.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <div className="min-w-0 flex-1 text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left">{name}</p></div>
-                                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left" />
+                                        <Avatar className="h-8 w-8 border shrink-0 text-left text-left"><AvatarFallback className="font-bold bg-background text-left"> {soul.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                        <div className="min-w-0 flex-1 text-left text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left text-left">{name}</p></div>
+                                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left text-left" />
                                     </Button>
                                     <Button 
                                         variant="outline" 
-                                        className="justify-start h-14 gap-3 px-3 rounded-xl hover:bg-primary/5 border-dashed text-left"
+                                        className="justify-start h-14 gap-3 px-3 rounded-xl hover:bg-primary/5 border-dashed text-left text-left"
                                         onClick={() => onSelectSoul(spouse)}
                                     >
-                                        <Avatar className="h-8 w-8 border shrink-0 text-left"><AvatarFallback className="font-bold bg-background text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <div className="min-w-0 flex-1 text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left">{spouseName}</p></div>
-                                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left" />
+                                        <Avatar className="h-8 w-8 border shrink-0 text-left text-left"><AvatarFallback className="font-bold bg-background text-left text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                        <div className="min-w-0 flex-1 text-left text-left"><p className="font-bold text-xs truncate uppercase tracking-tight text-left text-left">{spouseName}</p></div>
+                                        <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left text-left" />
                                     </Button>
                                 </div>
                             </div>
 
-                            <div className="space-y-3 text-left">
-                                <div className="flex items-center justify-between px-1 text-left text-left">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Children ({children.length})</p>
+                            <div className="space-y-3 text-left text-left">
+                                <div className="flex items-center justify-between px-1 text-left text-left text-left">
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">Children ({children.length})</p>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button 
@@ -220,40 +220,40 @@ function FilteredSoulList({
                                                 size="sm" 
                                                 className="h-6 text-[8px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 text-left text-left"
                                             >
-                                                <PlusCircle className="mr-1 h-3 w-3 text-left" /> ADD CHILD
+                                                <PlusCircle className="mr-1 h-3 w-3 text-left text-left" /> ADD CHILD
                                             </Button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="rounded-xl shadow-xl w-48 text-left">
-                                            <DropdownMenuItem className="text-xs font-bold text-left" onSelect={() => onAddChild([soul, spouse])}>
+                                        <DropdownMenuContent align="end" className="rounded-xl shadow-xl w-48 text-left text-left">
+                                            <DropdownMenuItem className="text-xs font-bold text-left text-left" onSelect={() => onAddChild([soul, spouse])}>
                                                 Log New Record
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem className="text-xs font-bold text-left" onSelect={() => onLinkExistingChild([soul, spouse])}>
+                                            <DropdownMenuItem className="text-xs font-bold text-left text-left" onSelect={() => onLinkExistingChild([soul, spouse])}>
                                                 Link Existing Soul
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
-                                <div className="space-y-2 text-left">
+                                <div className="space-y-2 text-left text-left">
                                     {children.map(child => (
                                         <Button 
                                             key={child.id}
                                             variant="ghost" 
-                                            className="w-full justify-start h-14 gap-3 px-3 rounded-xl bg-muted/20 hover:bg-primary/5 text-left"
+                                            className="w-full justify-start h-14 gap-3 px-3 rounded-xl bg-muted/20 hover:bg-primary/5 text-left text-left"
                                             onClick={() => onSelectSoul(child)}
                                         >
-                                            <Avatar className="h-8 w-8 border shrink-0 text-left">
-                                                <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left">{child.firstName.charAt(0)}</AvatarFallback>
+                                            <Avatar className="h-8 w-8 border shrink-0 text-left text-left">
+                                                <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] text-left text-left">{child.firstName.charAt(0)}</AvatarFallback>
                                             </Avatar>
-                                            <div className="min-w-0 flex-1 text-left">
-                                                <p className="font-bold text-xs truncate uppercase tracking-tight text-left">{child.firstName} {child.lastName}</p>
-                                                <p className="text-[8px] font-black text-muted-foreground uppercase opacity-60 text-left">{child.age ? `${child.age} Years` : 'Age N/A'}</p>
+                                            <div className="min-w-0 flex-1 text-left text-left">
+                                                <p className="font-bold text-xs truncate uppercase tracking-tight text-left text-left">{child.firstName} {child.lastName}</p>
+                                                <p className="text-[8px] font-black text-muted-foreground uppercase opacity-60 text-left text-left">{child.age ? `${child.age} Years` : 'Age N/A'}</p>
                                             </div>
-                                            <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left" />
+                                            <ArrowRight className="h-3 w-3 ml-auto text-muted-foreground opacity-30 text-left text-left" />
                                         </Button>
                                     ))}
                                     {children.length === 0 && (
-                                        <div className="py-8 text-center bg-muted/10 rounded-2xl border border-dashed text-left">
-                                            <p className="text-[10px] text-muted-foreground italic text-left">No children linked to this unit.</p>
+                                        <div className="py-8 text-center bg-muted/10 rounded-2xl border border-dashed text-left text-left text-left text-left">
+                                            <p className="text-[10px] text-muted-foreground italic text-left text-left text-left text-left text-left">No children linked to this unit.</p>
                                         </div>
                                     )}
                                 </div>
@@ -271,30 +271,30 @@ function FilteredSoulList({
             onClick={() => onSelectSoul(soul)}
             className="flex items-center justify-between p-3 sm:p-4 h-auto rounded-[1.5rem] hover:bg-primary/5 transition-all border bg-card group w-full text-left active:scale-[0.98] shadow-sm relative overflow-hidden text-left"
           >
-            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left text-left text-left">
-                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0 text-left text-left">
-                    <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left text-left" />
-                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs sm:text-sm text-left text-left">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 text-left text-left text-left text-left">
+                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm shrink-0 text-left text-left text-left text-left">
+                    <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left text-left text-left text-left text-left" />
+                    <AvatarFallback className="font-black bg-primary/10 text-primary text-xs sm:text-sm text-left text-left text-left text-left">
                         {soul.firstName?.charAt(0) || 'S'}
                     </AvatarFallback>
                 </Avatar>
-                <div className="min-w-0 flex-1 space-y-1 text-left text-left">
-                    <div className="flex items-center gap-2 flex-wrap text-left text-left">
-                        <p className="font-black text-[13px] sm:text-base uppercase tracking-tight truncate leading-tight text-left text-left">
+                <div className="min-w-0 flex-1 space-y-1 text-left text-left text-left">
+                    <div className="flex items-center gap-2 flex-wrap text-left text-left text-left">
+                        <p className="font-black text-[13px] sm:text-base uppercase tracking-tight truncate leading-tight text-left text-left text-left">
                             {name}
                         </p>
                     </div>
-                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-left text-left">
-                        <Badge variant="secondary" className="h-4 px-1 text-[7px] sm:text-[8px] uppercase font-black tracking-widest bg-muted/50 border-none leading-none text-left text-left">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-left text-left text-left">
+                        <Badge variant="secondary" className="h-4 px-1 text-[7px] sm:text-[8px] uppercase font-black tracking-widest bg-muted/50 border-none leading-none text-left text-left text-left text-left">
                             {soul.status}
                         </Badge>
-                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left">
+                        <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground/60 uppercase tracking-tighter whitespace-nowrap text-left text-left text-left text-left text-left">
                             {soul.age ? `${soul.age} Yrs • ` : ''}Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                         </span>
                     </div>
                 </div>
             </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0 ml-2 text-left" />
+            <ArrowRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0 ml-2 text-left text-left" />
           </Button>
         );
       })}
@@ -1256,18 +1256,18 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <Drawer open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DrawerContent className="h-[95dvh] flex flex-col p-0 text-left">
-                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                        <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
                             </div>
-                            <DrawerHeader className="text-left flex-shrink-0">
+                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
                                 <DrawerDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                             </DrawerHeader>
                         </div>
-                        <ScrollArea className="flex-grow text-left">
-                            <div className="p-4 sm:p-8 text-left">
+                        <ScrollArea className="flex-grow text-left text-left">
+                            <div className="p-4 sm:p-8 text-left text-left">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
@@ -1291,13 +1291,13 @@ export default function SoulsWonPage() {
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left" />
                             </div>
-                            <DialogHeader className="text-left text-left text-left">
+                            <DialogHeader className="text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this demographic group.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="max-h-[60vh] text-left text-left">
-                            <div className="p-4 sm:p-8 text-left text-left text-left">
+                            <div className="p-4 sm:p-8 text-left text-left">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
@@ -1318,20 +1318,20 @@ export default function SoulsWonPage() {
 
         <Dialog open={isLinkChildDialogOpen} onOpenChange={setIsLinkChildDialogOpen}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
+                <div className="p-8 border-b bg-muted/10 text-left text-left">
+                    <DialogHeader className="text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Link Existing Soul</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Select an existing soul to add as a child to the selected parents.</DialogDescription>
                     </DialogHeader>
                 </div>
                 <div className="p-6 text-left">
-                    <ScrollArea className="h-80 text-left">
-                        <div className="space-y-2 text-left">
+                    <ScrollArea className="h-80 text-left text-left">
+                        <div className="space-y-2 text-left text-left text-left">
                             {souls?.filter(s => !s.parentIds?.length && !linkingParents?.some(p => p.id === s.id)).map(s => (
                                 <Button 
                                     key={s.id} 
                                     variant="ghost" 
-                                    className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group text-left"
+                                    className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group text-left flex items-center"
                                     onClick={() => handleLinkExistingChild(s)}
                                     disabled={isUploading}
                                 >
@@ -1360,10 +1360,10 @@ export default function SoulsWonPage() {
         <SoulAssessmentDialog soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                <AlertDialogHeader className="text-left">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
+                <AlertDialogHeader className="text-left text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
+                    <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -1385,7 +1385,7 @@ export default function SoulsWonPage() {
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <DrawerHeader className="text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left">
                                 <LogSoulForm 
                                     onSoulLogged={() => { setIsLogDialogOpen(false); setChildImportConfig(null); }} 
                                     fellowships={fellowships || []} 
@@ -1404,7 +1404,7 @@ export default function SoulsWonPage() {
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DrawerHeader className="text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle><DrawerDescription className="text-sm text-left">Update soul identity and mission details.</DrawerDescription></DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DrawerContent>
@@ -1414,13 +1414,13 @@ export default function SoulsWonPage() {
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={setIsLogDialogOpen}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <DialogHeader className="text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                                <DialogHeader className="text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Add New Soul</DialogTitle>
-                                    <DialogDescription className="text-left text-left">Record a new life won for Christ.</DialogDescription>
+                                    <DialogDescription className="text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left">
                                 <LogSoulForm 
                                     onSoulLogged={() => { setIsLogDialogOpen(false); setChildImportConfig(null); }} 
                                     fellowships={fellowships || []} 
@@ -1435,14 +1435,14 @@ export default function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <DialogHeader className="text-left text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                                <DialogHeader className="text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
-                                    <DialogDescription className="text-left text-left">Update soul identity and mission details.</DialogDescription>
+                                    <DialogDescription className="text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DialogContent>
