@@ -39,6 +39,7 @@ export function useCollection<T extends { id: string }>(
     }
 
     // Identify if the new query is logically equivalent to the current one
+    // This is the critical fix for "Maximum update depth exceeded" errors
     if (queryRef.current && queryEqual(query, queryRef.current)) {
       return;
     }

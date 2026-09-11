@@ -37,6 +37,7 @@ export function useDoc<T>(
       return;
     }
 
+    // This is the critical fix for "Maximum update depth exceeded" errors
     if (activeRef.current && refEqual(docRef, activeRef.current)) {
       return;
     }

@@ -226,8 +226,8 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   
   if (showMobileSearch) {
     return (
-      <header className="sticky top-0 z-50 flex h-dvh w-full flex-col bg-background pt-[env(safe-area-inset-top)] animate-in fade-in duration-300 text-left">
-        <div className="flex h-16 items-center gap-3 px-4 border-b shrink-0 text-left">
+      <header className="sticky top-0 z-50 flex h-dvh w-full flex-col bg-background pt-[env(safe-area-inset-top)] animate-in fade-in duration-300">
+        <div className="flex h-16 items-center gap-3 px-4 border-b shrink-0">
           <Button variant="ghost" size="icon" onClick={() => { setShowMobileSearch(false); setSearchTerm(''); }} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors">
             <ArrowLeft className="h-6 w-6" />
           </Button>

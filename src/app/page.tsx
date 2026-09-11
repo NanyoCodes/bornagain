@@ -220,13 +220,15 @@ export default function LandingPage() {
               >
                 <div className="flex items-center gap-3 text-left text-left text-left text-left text-left">
                   <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-left text-left text-left text-left text-left">
-                    <Award className="h-5 w-5 text-primary text-left text-left text-left text-left" />
+                    <Award className="h-5 w-5 text-primary text-left text-left text-left text-left text-left">
+                      <Quote className="h-4 w-4" />
+                    </Award>
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Founder's Story</h2>
                 </div>
                 <Card className="rounded-[2.5rem] border-l-8 border-l-primary bg-muted/20 border-none shadow-sm relative overflow-hidden text-left text-left text-left text-left">
                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none text-left text-left text-left text-left">
-                      <Quote className="h-24 w-24 text-primary text-left text-left text-left" />
+                      <Quote className="h-24 w-24 text-primary" />
                    </div>
                    <CardContent className="p-8 sm:p-10 text-left text-left text-left">
                       <p className="italic text-muted-foreground text-base sm:text-lg leading-relaxed text-left text-left text-left">
