@@ -35,8 +35,8 @@ export function useCollection<T extends { id: string }>(
       return;
     }
 
-    // Check if the new query is logically equal to the current subscription
-    // This is critical to avoid infinite re-renders when query objects are recreated.
+    // Use queryEqual to check if the new query is logically identical to the existing one.
+    // This prevents infinite loops when query objects are recreated on every render.
     if (activeQuery.current && queryEqual(query, activeQuery.current)) {
       return;
     }

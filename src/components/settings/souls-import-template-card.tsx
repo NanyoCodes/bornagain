@@ -151,6 +151,7 @@ export function SoulsImportTemplateCard() {
         const allMappedContacts: GoogleContact[] = [];
         let nextPageToken: string | undefined = undefined;
 
+        // Recursive pagination to ensure ALL contacts are retrieved
         do {
             const url = new URL('https://people.googleapis.com/v1/people/me/connections');
             url.searchParams.append('personFields', 'names,emailAddresses,phoneNumbers,photos');
@@ -162,8 +163,8 @@ export function SoulsImportTemplateCard() {
             });
 
             if (!response.ok) {
-                if (response.status === 403) throw new Error("People API not enabled.");
-                throw new Error(`Google API returned ${response.status}`);
+                if (response.status === 403) throw new Error("People API not enabled in Google Console.");
+                throw new Error(`Google API error: ${response.status}`);
             }
 
             const data = await response.json();
@@ -196,7 +197,7 @@ export function SoulsImportTemplateCard() {
             toast({ 
                 variant: 'destructive', 
                 title: 'Import Failed', 
-                description: error.message || 'Check your permissions.' 
+                description: error.message || 'Please check your connection and try again.' 
             });
         }
     } finally {
@@ -374,76 +375,76 @@ export function SoulsImportTemplateCard() {
   const contactsListEl = (
     <div className="flex flex-col h-full text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center justify-between mb-2 text-left">
-                <div className="flex items-center gap-2 text-left">
-                    <Smartphone className="h-5 w-5 text-primary text-left" />
-                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Network Sync</span>
+            <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                    <Smartphone className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Network Sync</span>
                 </div>
                 <Button 
                     onClick={handleImportSelected} 
                     disabled={selectedContactIds.size === 0 || isUploading}
                     size="sm"
-                    className="rounded-xl h-9 px-6 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-[10px] text-left"
+                    className="rounded-xl h-9 px-6 font-black uppercase tracking-widest shadow-lg shadow-primary/20 text-[10px]"
                 >
-                    {isUploading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left" /> : <Send className="mr-1.5 h-3.5 w-3.5 text-left" />}
+                    {isUploading ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Send className="mr-1.5 h-3.5 w-3.5" />}
                     IMPORT SELECTED
                 </Button>
             </div>
-            <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Contacts</h3>
-            <div className="relative mt-6 text-left">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
+            <h3 className="text-2xl font-black font-headline uppercase tracking-tight">Select Contacts</h3>
+            <div className="relative mt-6">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
                 <Input 
                     placeholder="Search your contacts..." 
                     value={contactSearch}
                     onChange={e => setContactSearch(e.target.value)}
-                    className="h-12 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left"
+                    className="h-12 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
                 />
             </div>
         </div>
 
-        <ScrollArea className="flex-grow min-h-0 text-left">
-            <div className="p-4 space-y-1 text-left">
+        <ScrollArea className="flex-grow min-h-0">
+            <div className="p-4 space-y-1">
                 {filteredContacts.length > 0 ? filteredContacts.map(contact => (
                     <div 
                         key={contact.resourceName}
                         className={cn(
-                            "flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer group text-left",
+                            "flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer group",
                             selectedContactIds.has(contact.resourceName) ? "bg-primary/5 border-primary/40 ring-1 ring-primary/20" : "bg-transparent border-transparent hover:bg-muted/50"
                         )}
                         onClick={() => handleToggleContact(contact.resourceName)}
                     >
-                        <div className="flex items-center gap-4 min-w-0 text-left">
+                        <div className="flex items-center gap-4 min-w-0">
                             <Checkbox 
                                 checked={selectedContactIds.has(contact.resourceName)}
                                 onCheckedChange={() => handleToggleContact(contact.resourceName)}
-                                className="rounded-md border-muted-foreground/30 text-left"
+                                className="rounded-md border-muted-foreground/30"
                             />
-                            <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
-                                <AvatarImage src={contact.photoURL} className="text-left" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-center flex items-center justify-center w-full h-full text-left">{contact.firstName.charAt(0)}</AvatarFallback>
+                            <Avatar className="h-10 w-10 border shadow-sm shrink-0">
+                                <AvatarImage src={contact.photoURL} />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-center flex items-center justify-center w-full h-full">{contact.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0 text-left">
-                                <p className="font-black text-sm uppercase tracking-tight truncate text-left">{contact.firstName} {contact.lastName}</p>
-                                <div className="flex items-center gap-3 mt-1 opacity-60 text-left">
-                                    {contact.phone && <p className="text-[10px] font-bold truncate flex items-center gap-1 text-left"><Smartphone className="h-2.5 w-2.5 text-left" /> {contact.phone}</p>}
+                            <div className="min-w-0">
+                                <p className="font-black text-sm uppercase tracking-tight truncate">{contact.firstName} {contact.lastName}</p>
+                                <div className="flex items-center gap-3 mt-1 opacity-60">
+                                    {contact.phone && <p className="text-[10px] font-bold truncate flex items-center gap-1"><Smartphone className="h-2.5 w-2.5" /> {contact.phone}</p>}
                                 </div>
                             </div>
                         </div>
                         {selectedContactIds.has(contact.resourceName) && (
-                            <div className="shrink-0 bg-primary/10 p-1 rounded-full text-left"><UserCheck className="h-4 w-4 text-primary text-left" /></div>
+                            <div className="shrink-0 bg-primary/10 p-1 rounded-full"><UserCheck className="h-4 w-4 text-primary" /></div>
                         )}
                     </div>
                 )) : (
-                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4 text-left">
-                        <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-4 text-left" />
-                        <p className="text-sm text-muted-foreground font-medium italic text-left">No matching contacts found.</p>
+                    <div className="text-center py-20 bg-muted/5 rounded-3xl border-2 border-dashed mx-4">
+                        <Users className="h-10 w-10 text-muted-foreground/10 mx-auto mb-4" />
+                        <p className="text-sm text-muted-foreground font-medium italic">No matching contacts found.</p>
                     </div>
                 )}
             </div>
         </ScrollArea>
-        <div className="p-8 border-t bg-muted/5 flex items-center justify-center gap-2 shrink-0 text-left">
-            <Info className="h-3 w-3 text-muted-foreground text-left" />
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">
+        <div className="p-8 border-t bg-muted/5 flex items-center justify-center gap-2 shrink-0">
+            <Info className="h-3 w-3 text-muted-foreground" />
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                 Selected: {selectedContactIds.size} / {filteredContacts.length}
             </p>
         </div>
@@ -453,22 +454,22 @@ export function SoulsImportTemplateCard() {
   return (
     <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10 text-left">
       <CardHeader className="p-6 sm:p-8 text-left">
-        <div className="flex items-center justify-between gap-4 text-left">
-            <div className="space-y-1 text-left">
+        <div className="flex items-center justify-between gap-4">
+            <div className="space-y-1">
                 <CardTitle className="flex items-center gap-2 text-lg font-bold font-headline uppercase tracking-tight text-left">
-                <FileSpreadsheet className="h-5 w-5 text-primary text-left" /> Harvest Mobilization
+                <FileSpreadsheet className="h-5 w-5 text-primary" /> Harvest Mobilization
                 </CardTitle>
                 <CardDescription className="text-xs sm:text-sm font-medium text-left">
                 Synchronize bulk convert data by uploading a spreadsheet or importing from Google.
                 </CardDescription>
             </div>
-            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 h-6 px-3 font-black uppercase text-[9px] tracking-widest hidden sm:flex text-left">Bulk Sync</Badge>
+            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 h-6 px-3 font-black uppercase text-[9px] tracking-widest hidden sm:flex">Bulk Sync</Badge>
         </div>
       </CardHeader>
       <CardContent className="px-6 sm:p-8 pt-0 space-y-8 text-left">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-            <Button onClick={handleDownloadTemplate} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left">
-                <Download className="mr-2 h-4 w-4 text-left" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Button onClick={handleDownloadTemplate} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm">
+                <Download className="mr-2 h-4 w-4" />
                 GET CSV TEMPLATE
             </Button>
             
@@ -476,14 +477,14 @@ export function SoulsImportTemplateCard() {
                 onClick={handleGoogleContactsImport} 
                 disabled={isFetchingContacts}
                 variant="outline"
-                className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm text-left"
+                className="h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-sm"
             >
-                {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Smartphone className="mr-2 h-4 w-4 text-left" />}
+                {isFetchingContacts ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Smartphone className="mr-2 h-4 w-4" />}
                 IMPORT GOOGLE CONTACTS
             </Button>
         </div>
 
-        <div className="relative text-left">
+        <div className="relative">
             <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -495,16 +496,16 @@ export function SoulsImportTemplateCard() {
             <Button 
                 onClick={() => fileInputRef.current?.click()} 
                 disabled={isUploading}
-                className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
+                className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
             >
-                {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Upload className="mr-2 h-4 w-4 text-left" />}
+                {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
                 UPLOAD CUSTOM CSV LIST
             </Button>
         </div>
 
-        <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4 text-left">
-            <Info className="h-5 w-5 text-primary shrink-0 mt-0.5 text-left" />
-            <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
+        <div className="bg-muted/10 p-5 rounded-2xl border-2 border-dashed flex items-start gap-4">
+            <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+            <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                 Standardize your follow-up data. Import your existing contacts or use our template to organize outreach results for professional tracking.
             </p>
         </div>
@@ -515,24 +516,20 @@ export function SoulsImportTemplateCard() {
             isMobile ? (
                 <Drawer open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
                     <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Network Sync</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Select contacts to synchronize with your harvest dashboard.</DrawerDescription>
-                            </DrawerHeader>
-                        </div>
+                        <DrawerHeader className="sr-only">
+                            <DrawerTitle>Network Sync</DrawerTitle>
+                            <DrawerDescription>Select contacts to synchronize.</DrawerDescription>
+                        </DrawerHeader>
                         {contactsListEl}
                     </DrawerContent>
                 </Drawer>
             ) : (
                 <Dialog open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-                            <DialogHeader className="text-left text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Network Sync</DialogTitle>
-                                <DialogDescription className="text-sm font-medium mt-1 text-left">Select contacts to synchronize with your harvest dashboard.</DialogDescription>
-                            </DialogHeader>
-                        </div>
+                        <DialogHeader className="sr-only">
+                            <DialogTitle>Network Sync</DialogTitle>
+                            <DialogDescription>Select contacts to synchronize.</DialogDescription>
+                        </DialogHeader>
                         {contactsListEl}
                     </DialogContent>
                 </Dialog>

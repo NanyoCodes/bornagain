@@ -35,7 +35,7 @@ export function useDoc<T>(
       return;
     }
 
-    // Check if the new reference is logically equal to the current subscription
+    // Use refEqual to check if the new reference is logically identical to the existing one.
     if (activeRef.current && refEqual(docRef, activeRef.current)) {
       return;
     }
