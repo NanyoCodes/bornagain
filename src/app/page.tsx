@@ -101,20 +101,12 @@ export default function LandingPage() {
             )}
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
-            {!isLoggedIn ? (
-                <>
-                    <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold">
-                        <Link href="/login">Sign In</Link>
-                    </Button>
-                    <Button asChild className="rounded-full px-3 sm:px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-8 sm:h-9">
-                        <Link href="/signup">Join Movement</Link>
-                    </Button>
-                </>
-            ) : (
-                <Button asChild className="rounded-full px-3 sm:px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-8 sm:h-9">
-                    <Link href="/testimonies">Return to Feed</Link>
-                </Button>
-            )}
+            <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold">
+                <Link href="/login">Sign In</Link>
+            </Button>
+            <Button asChild className="rounded-full px-3 sm:px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-8 sm:h-9">
+                <Link href="/signup">Join Movement</Link>
+            </Button>
           </div>
         </div>
       </nav>
@@ -296,7 +288,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-left">
               {features.map((feature, i) => (
                 <Card key={i} className="rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 duration-300 text-left">
-                  <CardHeader className="p-6 sm:p-8 text-left text-left text-left">
+                  <CardHeader className="p-6 sm:p-8 text-left text-left text-left text-left">
                     <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4", feature.bgColor)}>
                       <feature.icon className={cn("h-6 w-6", feature.color)} />
                     </div>
