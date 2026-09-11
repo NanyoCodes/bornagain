@@ -30,8 +30,8 @@ export function useCollection<T extends { id: string }>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // 1. Stabilize the query reference using logical equality
-  const [stableQuery, setStableQuery] = useState<Query<DocumentData> | null>(query);
+  // Stabilize the query reference using logical equality to prevent infinite loops
+  const [stableQuery, setStableQuery] = useState<Query<DocumentData> | null>(null);
 
   useEffect(() => {
     if (!query) {
@@ -41,7 +41,7 @@ export function useCollection<T extends { id: string }>(
     }
   }, [query, stableQuery]);
 
-  // 2. Handle subscription only when the logical query actually changes
+  // Handle subscription only when the logical query actually changes
   useEffect(() => {
     if (!stableQuery) {
       setData(null);

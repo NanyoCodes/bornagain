@@ -30,8 +30,8 @@ export function useDoc<T>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // 1. Stabilize the document reference
-  const [stableRef, setStableRef] = useState<DocumentReference<DocumentData> | null>(docRef);
+  // Stabilize the document reference
+  const [stableRef, setStableRef] = useState<DocumentReference<DocumentData> | null>(null);
 
   useEffect(() => {
     if (!docRef) {
@@ -41,7 +41,7 @@ export function useDoc<T>(
     }
   }, [docRef, stableRef]);
 
-  // 2. Handle subscription
+  // Handle subscription
   useEffect(() => {
     if (!stableRef) {
       setLoading(false);

@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerTrigger } from '@/components/ui/drawer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn, safeToDate } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -130,8 +130,8 @@ export function RelationshipCircleTracker({
     const dialogContent = selectedCategoryName && (
         <>
             {isMobile ? (
-                <Sheet open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
-                    <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <Drawer open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
+                    <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-6 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <div className="flex items-center justify-between gap-4 text-left">
                                 <div className="min-w-0 text-left">
@@ -139,8 +139,8 @@ export function RelationshipCircleTracker({
                                         <Users className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Directory</span>
                                     </div>
-                                    <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight text-left">{selectedCategoryName} Circle</SheetTitle>
-                                    <SheetDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Viewing all converts in your {selectedCategoryName.toLowerCase()} group.</SheetDescription>
+                                    <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase leading-tight text-left">{selectedCategoryName} Circle</DrawerTitle>
+                                    <DrawerDescription className="text-xs sm:text-sm font-medium mt-1 text-left">Viewing all converts in your {selectedCategoryName.toLowerCase()} group.</DrawerDescription>
                                 </div>
                                 <Button 
                                     onClick={(e) => handleOpenLogFromCircle(e, selectedCategoryName)}
@@ -159,8 +159,8 @@ export function RelationshipCircleTracker({
                                 <div className="h-24" />
                             </ScrollArea>
                         </div>
-                    </SheetContent>
-                </Sheet>
+                    </DrawerContent>
+                </Drawer>
             ) : (
                 <Dialog open={!!selectedCategoryName && !isLogSoulOpen} onOpenChange={(open) => !open && setSelectedCategoryName(null)}>
                     <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
@@ -194,13 +194,13 @@ export function RelationshipCircleTracker({
 
     const logSoulView = isLogSoulOpen && (
         isMobile ? (
-            <Sheet open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
-                <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <Drawer open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left text-left">
-                            <SheetTitle className="text-2xl font-black font-headline text-left">Log {selectedCategoryName} Soul</SheetTitle>
-                            <SheetDescription className="text-sm font-medium text-left">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</SheetDescription>
-                        </SheetHeader>
+                        <DrawerHeader className="text-left text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline text-left">Log {selectedCategoryName} Soul</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium text-left">Record a new life won in your {selectedCategoryName?.toLowerCase()} circle.</DrawerDescription>
+                        </DrawerHeader>
                     </div>
                     <div className="flex-grow overflow-y-auto p-8 text-left">
                         <LogSoulForm 
@@ -210,8 +210,8 @@ export function RelationshipCircleTracker({
                             defaultRelationship={relationshipType}
                         />
                     </div>
-                </SheetContent>
-            </Sheet>
+                </DrawerContent>
+            </Drawer>
         ) : (
             <Dialog open={isLogSoulOpen} onOpenChange={setIsLogSoulOpen}>
                 <DialogContent className="sm:max-w-lg text-left">
