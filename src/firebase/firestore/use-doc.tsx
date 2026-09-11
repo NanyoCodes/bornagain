@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   onSnapshot, 
   refEqual, 
@@ -26,7 +26,6 @@ export function useDoc<T>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // Logicially stabilize the reference
   const [activeRef, setActiveRef] = useState<DocumentReference<DocumentData> | null>(null);
 
   useEffect(() => {

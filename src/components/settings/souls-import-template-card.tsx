@@ -151,7 +151,6 @@ export function SoulsImportTemplateCard() {
         const allMappedContacts: GoogleContact[] = [];
         let nextPageToken: string | undefined = undefined;
 
-        // Recursive pagination to ensure ALL contacts are retrieved
         do {
             const url = new URL('https://people.googleapis.com/v1/people/me/connections');
             url.searchParams.append('personFields', 'names,emailAddresses,phoneNumbers,photos');
@@ -373,8 +372,8 @@ export function SoulsImportTemplateCard() {
   }, [contacts, contactSearch]);
 
   const contactsListEl = (
-    <div className="flex flex-col h-full text-left">
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+    <div className="flex flex-col h-full">
+        <div className="p-8 border-b bg-muted/10 shrink-0">
             <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                     <Smartphone className="h-5 w-5 text-primary" />
@@ -452,7 +451,7 @@ export function SoulsImportTemplateCard() {
   );
 
   return (
-    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10 text-left">
+    <Card className="rounded-none sm:rounded-3xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden border-l-4 border-l-primary/10">
       <CardHeader className="p-6 sm:p-8">
         <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
@@ -515,7 +514,7 @@ export function SoulsImportTemplateCard() {
         {isContactsDialogOpen && (
             isMobile ? (
                 <Drawer open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <DrawerHeader className="sr-only">
                             <DrawerTitle>Network Sync</DrawerTitle>
                             <DrawerDescription>Select contacts to synchronize.</DrawerDescription>
@@ -525,7 +524,7 @@ export function SoulsImportTemplateCard() {
                 </Drawer>
             ) : (
                 <Dialog open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
-                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
                         <DialogHeader className="sr-only">
                             <DialogTitle>Network Sync</DialogTitle>
                             <DialogDescription>Select contacts to synchronize.</DialogDescription>

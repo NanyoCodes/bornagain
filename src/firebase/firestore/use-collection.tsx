@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   onSnapshot, 
   queryEqual, 
@@ -26,8 +26,6 @@ export function useCollection<T extends { id: string }>(
   const [error, setError] = useState<FirestoreError | null>(null);
   const { user } = useUser();
   
-  // Use a state to store the "active" query that we are subscribed to.
-  // This allows us to compare the incoming query logically using queryEqual.
   const [activeQuery, setActiveQuery] = useState<Query<DocumentData> | null>(null);
 
   useEffect(() => {
@@ -36,8 +34,6 @@ export function useCollection<T extends { id: string }>(
       return;
     }
 
-    // Check if the new query is logically equal to the current subscription.
-    // This prevents infinite loops when query objects are recreated on every render.
     if (!activeQuery || !queryEqual(query, activeQuery)) {
       setActiveQuery(query);
     }
