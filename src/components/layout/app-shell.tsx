@@ -462,7 +462,7 @@ function BottomNavBar() {
                     }}
                     transition={{ duration: 0.2 }}
                     className={cn(
-                      "relative z-10 flex flex-col items-center text-left",
+                      "relative z-10",
                       isActive ? "text-white" : "text-muted-foreground"
                     )}
                   >
@@ -653,7 +653,7 @@ function ShellInner({ children }: { children: React.ReactNode }) {
           </div>
       </motion.div>
 
-      {user && <BottomNavBar />}
+      {user && !isTakeoverPage && <BottomNavBar />}
       
       {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
       
@@ -661,12 +661,12 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <Drawer open={!!isProfileIncomplete} onOpenChange={() => {}}>
           <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left text-left">
             <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left">
-              <DrawerHeader className="text-left text-left">
+              <DrawerHeader className="text-left text-left text-left">
                 <DrawerTitle className="text-xl font-bold text-left text-left">Complete Your Profile</DrawerTitle>
                 <DrawerDescription className="text-xs text-left text-left">Join the global movement by introducing yourself.</DrawerDescription>
               </DrawerHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-6 text-left text-left">
+            <div className="flex-grow overflow-y-auto p-6 text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DrawerContent>
@@ -674,13 +674,13 @@ function ShellInner({ children }: { children: React.ReactNode }) {
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
-            <div className="p-6 border-b bg-muted/10 text-left text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left text-left">
               <DialogHeader className="text-left text-left">
                 <DialogTitle className="text-2xl font-bold text-left text-left">Complete Your Profile</DialogTitle>
                 <DialogDescription className="text-sm text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
@@ -695,8 +695,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SearchProvider>
         <Suspense fallback={
             <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left">
-                <div className="relative mx-auto w-fit text-left text-left">
-                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
+                <div className="relative mx-auto w-fit text-left text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left text-left" />
                 </div>
             </div>
         }>
