@@ -44,7 +44,8 @@ import {
   ImageIcon,
   PlayCircle,
   Lock,
-  Info
+  Info,
+  User
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput, MealGiftStatus } from "@/lib/types";
@@ -885,7 +886,7 @@ function SoulProfileContent({
                         <Edit className="h-4 w-4 text-left text-left" />
                     </Button>
                 </div>
-                <div className="space-y-3 text-left text-left">
+                <div className="space-y-3 text-left text-left text-left">
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left text-left text-left">
                         <HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left text-left text-left" />
                         <div className="min-w-0 text-left text-left text-left">
@@ -1025,8 +1026,7 @@ function SoulProfileContent({
                     <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left" /> DELETE RECORD
                 </Button>
             </div>
-        </CardContent>
-      </Card>
+        </Card>
 
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
           <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
@@ -1229,10 +1229,6 @@ const SoulCard = React.memo(({ soul, allSouls, onClick }: {
                             {soul.age && <span className="text-left text-left text-left">Age: {soul.age}</span>}
                             {spouse?.age && <span className="text-left text-left text-left">Spouse: {spouse.age}</span>}
                         </div>
-                        <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1 text-left text-left text-left">
-                            {soul.hobbies && <p className="text-[9px] text-muted-foreground italic truncate max-w-[120px] text-left text-left text-left text-left text-left"><Sparkles className="inline h-2.5 w-2.5 mr-1 text-primary text-left text-left text-left" />{soul.hobbies}</p>}
-                            {spouse?.hobbies && <p className="text-[9px] text-muted-foreground/60 italic truncate max-w-[120px] text-left text-left text-left text-left text-left"><Sparkles className="inline h-2.5 w-2.5 mr-1 text-primary/40 text-left text-left text-left" />{spouse.hobbies}</p>}
-                        </div>
                     </div>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-20 text-left text-left text-left text-left" />
@@ -1430,7 +1426,7 @@ export function SoulsWonTable({
                             <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left text-left text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left text-left">Identity Hub</span>
                         </div>
-                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
+                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
