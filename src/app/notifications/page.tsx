@@ -119,10 +119,10 @@ export default function NotificationsPage() {
     try {
         const batch = writeBatch(firestore);
         
-        // 1. Delete the notification
+        // 1. Delete the notification from Firestore (Cloud-synced)
         batch.delete(doc(firestore, `users/${user.uid}/notifications`, notification.id));
 
-        // 2. Remove "Initiated" log entry from soul
+        // 2. Remove "Initiated" log entry from soul records
         const soulUserRef = doc(firestore, 'users', user.uid, 'souls', notification.soulId);
         const globalSoulRef = doc(firestore, 'souls', notification.soulId);
 
@@ -138,6 +138,7 @@ export default function NotificationsPage() {
         }
 
         await batch.commit();
+        toast({ title: 'Reminder Cleared' });
     } catch (error) {
         console.error("Failed to sync pending removal:", error);
     }

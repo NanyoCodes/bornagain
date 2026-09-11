@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Unification and cross-device sync - 2025-06-15T16:00:00Z
+    // Deployment trigger: Unification and cross-device sync - 2025-06-15T16:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -98,7 +98,7 @@ service cloud.firestore {
       }
 
       match /bibleHighlights/{highlightId} {
-        allow read: if isOwner(userId) || (isAuthenticated() && resource.data.get('isPrivate', false) == false && request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.get('partnerIds', []));
+        allow read: if isOwner(userId) || (isAuthenticated() && resource.data.get('isPrivate', false) == false);
         allow write: if isOwner(userId);
         
         match /comments/{commentId} {
@@ -129,7 +129,7 @@ service cloud.firestore {
     match /{path=**}/bibleHighlights/{highlightId} {
       allow list: if isAuthenticated() && (
         resource.data.userId == request.auth.uid ||
-        (resource.data.get('isPrivate', false) == false && request.auth.uid in get(/databases/$(database)/documents/users/$(resource.data.userId)).data.get('partnerIds', []))
+        resource.data.get('isPrivate', false) == false
       );
     }
 
