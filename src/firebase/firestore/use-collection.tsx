@@ -37,11 +37,6 @@ export function useCollection<T extends { id: string }>(
 
     // Check if the new query is logically equal to the current subscription
     // This is critical to avoid infinite re-renders when query objects are recreated.
-    if (activeQuery.current && typeof query.isEqual === 'function' && query.isEqual(activeQuery.current)) {
-      return;
-    }
-    
-    // Alternative check using SDK utility if direct method fails
     if (activeQuery.current && queryEqual(query, activeQuery.current)) {
       return;
     }
@@ -63,8 +58,9 @@ export function useCollection<T extends { id: string }>(
       },
       async (err) => {
         if (err.code === 'permission-denied') {
+          const path = (query as any)._query?.path?.canonicalString() ?? 'unknown collection';
           const permissionError = new FirestorePermissionError({
-            path: (query as any)._query?.path?.canonicalString() ?? 'unknown collection',
+            path,
             operation: 'list',
           }, user);
           errorEmitter.emit('permission-error', permissionError);
