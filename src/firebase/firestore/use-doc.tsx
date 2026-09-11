@@ -37,7 +37,8 @@ export function useDoc<T>(
     }
 
     // Check if the new ref is logically equal to the current subscription
-    if (activeRef.current && typeof (docRef as any).isEqual === 'function' && (docRef as any).isEqual(activeRef.current)) {
+    // using the SDK's refEqual utility to prevent unnecessary re-runs.
+    if (activeRef.current && refEqual(docRef, activeRef.current)) {
       return;
     }
 

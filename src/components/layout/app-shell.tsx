@@ -268,7 +268,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                                     <div className="h-9 w-9 rounded-xl bg-muted group-hover:bg-primary/10 flex items-center justify-center shrink-0 transition-colors text-left">
                                         <s.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left" />
                                     </div>
-                                    <div className="min-w-0 flex-1 text-left text-left">
+                                    <div className="min-w-0 flex-1 text-left">
                                         <p className="font-black text-sm uppercase tracking-tight truncate">{s.title}</p>
                                         <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">{s.type}</p>
                                     </div>
@@ -435,7 +435,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                 <div className="p-1 space-y-1 text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Kingdom Hubs</p>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
-                    <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left text-left">
+                    <Link href="/victory-hub" className="flex items-center gap-3 w-full text-left">
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-left">
                         <ShieldCheck className="h-3.5 w-3.5 text-primary" />
                       </div>
@@ -507,7 +507,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 
                 <DropdownMenuSeparator />
                 
-                <div className="p-1 text-left">
+                <div className="p-1 text-left text-left">
                   <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer text-left">
                     <LogOut className="mr-3 h-4 w-4 text-left" />
                     <span className="text-[11px] font-black uppercase tracking-[0.2em] text-left">Sign Out</span>

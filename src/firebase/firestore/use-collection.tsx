@@ -37,8 +37,8 @@ export function useCollection<T extends { id: string }>(
     }
 
     // Check if the new query is logically equal to the current subscription
-    // using the SDK's queryEqual utility.
-    if (activeQuery.current && typeof (query as any).isEqual === 'function' && (query as any).isEqual(activeQuery.current)) {
+    // using the SDK's queryEqual utility to prevent unnecessary re-runs.
+    if (activeQuery.current && queryEqual(query, activeQuery.current)) {
       return;
     }
 

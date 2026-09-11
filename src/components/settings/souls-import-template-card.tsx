@@ -148,7 +148,7 @@ export function SoulsImportTemplateCard() {
         const allMappedContacts: GoogleContact[] = [];
         let nextPageToken: string | undefined = undefined;
 
-        // Ensure all contacts are synced by paginating through the API
+        // Recursive fetch to ensure ALL contacts are synced
         do {
             const url = new URL('https://people.googleapis.com/v1/people/me/connections');
             url.searchParams.append('personFields', 'names,emailAddresses,phoneNumbers,photos');
@@ -516,9 +516,9 @@ export function SoulsImportTemplateCard() {
             isMobile ? (
                 <Drawer open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
                     <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                        <DrawerHeader className="sr-only">
-                            <DrawerTitle>Contact Import Hub</DrawerTitle>
-                            <DrawerDescription>Select contacts to synchronize with your harvest dashboard.</DrawerDescription>
+                        <DrawerHeader className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Contact Import Hub</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1">Select contacts to synchronize with your harvest dashboard.</DrawerDescription>
                         </DrawerHeader>
                         {contactsListEl}
                     </DrawerContent>
@@ -526,9 +526,9 @@ export function SoulsImportTemplateCard() {
             ) : (
                 <Dialog open={isContactsDialogOpen} onOpenChange={setIsContactsDialogOpen}>
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
-                        <DialogHeader className="sr-only">
-                            <DialogTitle>Contact Import Hub</DialogTitle>
-                            <DialogDescription>Select contacts to synchronize with your harvest dashboard.</DialogDescription>
+                        <DialogHeader className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Contact Import Hub</DialogTitle>
+                            <DialogDescription className="text-sm font-medium mt-1">Select contacts to synchronize with your harvest dashboard.</DialogDescription>
                         </DialogHeader>
                         {contactsListEl}
                     </DialogContent>
