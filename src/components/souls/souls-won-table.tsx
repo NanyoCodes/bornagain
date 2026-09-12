@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -133,6 +134,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -740,6 +742,7 @@ function SoulProfileContent({
   };
 
   return (
+    <>
     <div className="space-y-6 text-left">
       <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
         <CardHeader className="p-8 pb-4 text-center text-left">
@@ -1050,9 +1053,8 @@ function SoulProfileContent({
                     <Trash2 className="mr-2 h-4 w-4" /> DELETE RECORD
                 </Button>
             </div>
-        </CardContent>
-      </Card>
-
+        </Card>
+      </div>
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
           <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10 text-left">
@@ -1145,15 +1147,15 @@ function SoulProfileContent({
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
                   <Share2 className="h-7 w-7 text-primary text-left" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Share Details</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left">Where would you like to share {soul.firstName}'s info?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left text-left">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left">
-              <WhatsAppIcon className="h-5 w-5 text-left text-left" /> WhatsApp External
+          <div className="flex flex-col gap-3 pt-6 text-left">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
+              <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External
             </Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left text-left">
-              <HeartHandshake className="h-5 w-5 text-left text-left" /> Partner on App
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
+              <HeartHandshake className="h-5 w-5 text-left" /> Partner on App
             </Button>
           </div>
         </DialogContent>
@@ -1200,6 +1202,7 @@ function SoulProfileContent({
           onSelectVerse={handleVerseSelected}
       />
     </div>
+    </>
   );
 }
 
@@ -1548,7 +1551,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                         </p>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left">
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left">
                         <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left">Select a record to preview identity</p>
                     </div>
@@ -1558,4 +1561,3 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
     </div>
   );
 }
-

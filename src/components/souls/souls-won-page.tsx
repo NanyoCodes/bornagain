@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -70,7 +71,6 @@ import { safeToDate, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -86,6 +86,7 @@ import { RelationshipCircleTracker } from "@/components/souls/relationship-circl
 import { SoulsImportTemplateCard } from "@/components/settings/souls-import-template-card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Papa from 'papaparse';
+import { Checkbox } from "@/components/ui/checkbox";
 
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
   loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,
@@ -1137,3 +1138,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+

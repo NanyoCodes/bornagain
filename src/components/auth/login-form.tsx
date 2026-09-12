@@ -1,3 +1,4 @@
+
 "use client";
 
 /**
@@ -180,7 +181,6 @@ export function LoginForm() {
       router.push("/testimonies");
     } catch (error) {
       const authError = error as AuthError;
-      console.error('Email sign in error:', authError);
       
       let description = "An unexpected error occurred. Please try again.";
       

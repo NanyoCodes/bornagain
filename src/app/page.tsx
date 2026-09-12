@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -66,13 +67,11 @@ export default function LandingPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useUser();
   const firestore = useFirestore();
-  const [isRedirecting, setIsRedirecting] = useState(false);
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 
   // Redirect away if already logged in
   useEffect(() => {
     if (!authLoading && user) {
-      setIsRedirecting(true);
       router.replace('/testimonies');
     }
   }, [user, authLoading, router]);
@@ -83,7 +82,9 @@ export default function LandingPage() {
   
   const { data: testimonies, loading: loadingTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
-  if (authLoading || user || isRedirecting) {
+  // Return a clean loader if we're authenticated or still checking, 
+  // preventing the landing page from flickering.
+  if (authLoading || user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
