@@ -180,14 +180,14 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 <Users className="h-4 w-4 text-left" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left text-left">
+                        <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
                             <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
                             <DropdownMenuSeparator className="text-left" />
-                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left text-left">
+                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
                                 <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
                             </DropdownMenuItem>
                             {spouse && (
-                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left text-left">
+                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left">
                                     <div className="flex items-center gap-2 text-left">
                                         <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
                                         <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
@@ -195,7 +195,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 </DropdownMenuItem>
                             )}
                             {householdChildren.map(child => (
-                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left text-left">
+                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left">
                                     <div className="flex items-center gap-2 text-left">
                                         <Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
                                         <span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span>
@@ -203,7 +203,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 </DropdownMenuItem>
                             ))}
                             <DropdownMenuSeparator className="text-left" />
-                            <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left">
+                            <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
                                 <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -352,39 +352,39 @@ export default function SoulsWonPage() {
 
     const processedIds = new Set<string>();
 
-    souls.forEach(s => {
-      const status = s.maritalStatus;
+    souls.forEach(soul => {
+      const status = soul.maritalStatus;
       if (status === 'Married') {
-          if (!processedIds.has(s.id)) {
-              const spouse = souls.find(other => {
-                if (other.id === s.id || other.maritalStatus !== 'Married') return false;
-                const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-                const sFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
-                const sSpouse = (s.spouseName || "").toLowerCase();
-                const otherSpouse = (other.spouseName || "").toLowerCase();
-                return (sSpouse === otherFullName || sSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === sFullName || otherSpouse === s.firstName.toLowerCase());
+          if (!processedIds.has(soul.id)) {
+              const spouse = souls.find(s => {
+                if (s.id === soul.id || s.maritalStatus !== 'Married') return false;
+                const otherFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+                const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
+                const soulSpouse = (soul.spouseName || "").toLowerCase();
+                const otherSpouse = (s.spouseName || "").toLowerCase();
+                return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
+                       (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
               });
 
               if (spouse) {
                 processedIds.add(spouse.id);
-                stats.married.list.push({ ...s, spouseRecord: spouse });
+                stats.married.list.push({ ...soul, spouseRecord: spouse });
               } else {
-                stats.married.list.push(s);
+                stats.married.list.push(soul);
               }
               
-              processedIds.add(s.id);
+              processedIds.add(soul.id);
               stats.married.count++;
           }
       } else if (status === 'Single') {
           stats.single.count++;
-          stats.single.list.push(s);
+          stats.single.list.push(soul);
       } else if (status === 'Divorced') {
           stats.divorced.count++;
-          stats.divorced.list.push(s);
+          stats.divorced.list.push(soul);
       } else if (status === 'Widowed') {
           stats.widowed.count++;
-          stats.widowed.list.push(s);
+          stats.widowed.list.push(soul);
       }
       stats.total++;
     });
@@ -855,6 +855,7 @@ export default function SoulsWonPage() {
                         </Card>
                     </div>
 
+                    {/* Gender Demographics */}
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
@@ -896,6 +897,7 @@ export default function SoulsWonPage() {
                         </Card>
                     </div>
 
+                    {/* Marital Demographics */}
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
@@ -1047,14 +1049,14 @@ export default function SoulsWonPage() {
         <SoulAssessmentDialog soul={soulToAssess} isOpen={!!assessmentSoulId} onOpenChange={(isOpen) => !isOpen && setAssessmentSoulId(null)} />
 
         <AlertDialog open={!!deleteSoulId} onOpenChange={(open) => !open && setDeleteSoulId(null)}>
-            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
+            <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
                 <AlertDialogHeader className="text-left text-left">
                     <AlertDialogTitle className="text-2xl font-black font-headline leading-tight text-left">Delete Record?</AlertDialogTitle>
                     <AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6 text-left">
+                <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}

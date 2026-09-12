@@ -31,7 +31,7 @@ import {
   writeBatch,
   collectionGroup,
 } from 'firebase/firestore';
-import type { BibleHighlight, ReadingHistoryItem, UserProfile, TestimonyComment } from '@/lib/types';
+import type { BibleHighlight, ReadingHistoryItem, UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay } from 'date-fns';
 import {
@@ -72,6 +72,12 @@ import { Label } from '@/components/ui/label';
 
 type FontSize = 'sm' | 'base' | 'lg' | 'xl';
 const fontSizes: FontSize[] = ['sm', 'base', 'lg', 'xl'];
+
+const bibleVersions = [
+    { id: 'kjv', name: 'King James Version' },
+    { id: 'web', name: 'World English Bible' },
+    { id: 'bbe', name: 'Bible in Basic English' },
+];
 
 const getHighlightClass = (color?: string, isPartner?: boolean) => {
     if (isPartner) return 'bg-purple-200/40 dark:bg-purple-900/30 ring-1 ring-purple-500/20';
@@ -516,7 +522,7 @@ export default function BibleReaderPage() {
                                 isSelected ? "border-primary bg-primary/[0.03] shadow-lg" : "border-transparent bg-muted/20 hover:bg-muted/30"
                             )}>
                                 <CardHeader className="p-4 text-left text-left">
-                                    <div className="flex items-center justify-between gap-3 text-left">
+                                    <div className="flex items-center gap-3 text-left text-left">
                                         <div className="flex items-center gap-2 text-left">
                                             <Avatar className="h-6 w-6 border text-left text-left">
                                                 <AvatarFallback className="text-[8px] font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left">U</AvatarFallback>
