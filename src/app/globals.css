@@ -36,7 +36,7 @@
     --status-contacted: 221 83% 53%;
     --status-established: 25 95% 53%;
     --app-bg-image: linear-gradient(135deg, #09090b 0%, #18181b 100%);
-    --app-bg-overlay: 0.95;
+    --app-bg-overlay: 0.8;
   }
 
   .dark {
@@ -103,10 +103,6 @@
       linear-gradient(to bottom, hsl(var(--background) / var(--app-bg-overlay)), hsl(var(--background) / var(--app-bg-overlay))),
       var(--app-bg-image);
   }
-  
-  .pac-container {
-    @apply z-[9999];
-  }
 }
 
 @layer utilities {
@@ -144,11 +140,5 @@
   .verse-selected {
     @apply bg-destructive/20;
     transition: background-color 0.5s ease-out;
-  }
-  [contenteditable][placeholder]:empty:before {
-    content: attr(placeholder);
-    color: hsl(var(--muted-foreground));
-    pointer-events: none;
-    display: block;
   }
 }

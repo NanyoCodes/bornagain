@@ -166,15 +166,16 @@ export default function RootLayout({
                   const lastReload = parseInt(localStorage.getItem(lastReloadKey) || '0', 10);
                   const reloadCount = parseInt(localStorage.getItem(reloadCountKey) || '0', 10);
 
-                  if (now - lastReload < 30000 && reloadCount >= 2) {
-                    console.error('Persistent fatal error detected. Stopping auto-refresh.');
+                  // Conservative threshold to prevent "Page not responding"
+                  if (now - lastReload < 60000 && reloadCount >= 3) {
+                    console.error('Persistent network error detected. Please check your internet connection.');
                     return;
                   }
 
                   localStorage.setItem(lastReloadKey, now.toString());
-                  localStorage.setItem(reloadCountKey, (now - lastReload > 30000 ? 1 : reloadCount + 1).toString());
+                  localStorage.setItem(reloadCountKey, (now - lastReload > 60000 ? 1 : reloadCount + 1).toString());
                   
-                  window.location.reload();
+                  setTimeout(() => window.location.reload(), 1000);
                   e.stopImmediatePropagation();
                 }
               }, true);
