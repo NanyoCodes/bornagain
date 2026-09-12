@@ -138,17 +138,17 @@ export function LoginForm() {
     }
     try {
       const userCredential = await signInWithEmailAndPassword(auth, values.email.trim(), values.password);
-      const user = userCredential.user;
+      const loggedUser = userCredential.user;
 
-      if (!user.emailVerified) {
-        setUserForVerification(user);
+      if (!loggedUser.emailVerified) {
+        setUserForVerification(loggedUser);
         setIsVerificationDialogOpen(true);
         setIsLoading(false);
         return;
       }
 
-      const userDocRef = doc(firestore, "users", user.uid);
-      const nameParts = user.displayName?.split(' ') || [];
+      const userDocRef = doc(firestore, "users", loggedUser.uid);
+      const nameParts = loggedUser.displayName?.split(' ') || [];
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ');
       const fullName = `${firstName} ${lastName}`;
@@ -159,8 +159,8 @@ export function LoginForm() {
         lastName: lastName,
         fullName_lowercase: fullName.toLowerCase(),
         name_tokens: nameTokens,
-        email: user.email,
-        photoURL: user.photoURL,
+        email: loggedUser.email,
+        photoURL: loggedUser.photoURL,
       };
 
       setDoc(userDocRef, userData, { merge: true }).catch((serverError) => {
@@ -168,7 +168,7 @@ export function LoginForm() {
           path: userDocRef.path,
           operation: 'write',
           requestResourceData: userData,
-        }, user);
+        }, loggedUser);
         errorEmitter.emit('permission-error', permissionError);
       });
 
@@ -243,7 +243,7 @@ export function LoginForm() {
                         Forgot password?
                       </Link>
                   </div>
-                <div className="relative text-left">
+                <div className="relative text-left text-left">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground text-left" />
                   <FormControl className="text-left">
                     <Input type="password" placeholder="********" {...field} className="pl-10 h-11 rounded-xl text-left" />

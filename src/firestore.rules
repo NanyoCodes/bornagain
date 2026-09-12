@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Fixed request.authorId typos and unified bible highlights - 2025-06-15T21:00:00Z
+    // Deployment trigger: Fixed request.authorId typos and unified bible highlights - 2025-06-15T21:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -212,7 +212,7 @@ service cloud.firestore {
       match /comments/{commentId} {
           allow get, list: if true;
           allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-          allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
           allow update: if isAuthenticated() && (
             (request.resource.data.authorId == request.auth.uid) ||
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
@@ -288,7 +288,7 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
               (request.resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
