@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -25,7 +26,8 @@ import {
   Users,
   Heart,
   User,
-  Plus
+  Plus,
+  Search
 } from "lucide-react";
 import { 
   Dialog, 
@@ -60,12 +62,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { Soul, Campaign, Fellowship, UserProfile, AccountabilityRequest, SoulRelationship } from "@/lib/types";
 import { useCollection, useFirestore, useUser } from "@/firebase";
 import { useDoc } from "@/firebase/firestore/use-doc";
-import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment } from "firebase/firestore";
+import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch, deleteField, where, getDocs, increment, arrayUnion } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { format } from "date-fns";
 import { safeToDate, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -182,13 +183,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
-                            <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
+                            <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Household Hub</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
+                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5">
                                 <User className="mr-2 h-4 w-4" /> View Primary Profile
                             </DropdownMenuItem>
                             {spouse && (
-                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left">
+                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5">
                                     <div className="flex items-center gap-2">
                                         <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
                                         <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
@@ -196,7 +197,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 </DropdownMenuItem>
                             )}
                             {householdChildren.map(child => (
-                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left">
+                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5">
                                     <div className="flex items-center gap-2">
                                         <Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
                                         <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
@@ -204,7 +205,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 </DropdownMenuItem>
                             ))}
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
+                            <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold">
                                 <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -1142,3 +1143,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+

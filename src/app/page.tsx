@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -149,25 +150,25 @@ export default function LandingPage() {
         <section className="py-24 bg-background">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-              <div className="space-y-8">
+              <div className="space-y-8 text-left">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
                       <Globe className="h-5 w-5 text-primary" />
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase text-left">Our Mission</h2>
+                    <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase">Our Mission</h2>
                   </div>
-                  <p className="text-muted-foreground text-lg leading-relaxed text-left">
+                  <p className="text-muted-foreground text-lg leading-relaxed">
                     Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
                   </p>
                 </div>
               </div>
               <Card className="rounded-[2.5rem] border-l-8 border-l-primary bg-muted/20 border-none shadow-sm overflow-hidden text-left">
                    <CardContent className="p-10">
-                      <p className="italic text-muted-foreground text-lg leading-relaxed text-left">
+                      <p className="italic text-muted-foreground text-lg leading-relaxed">
                         "I believe technology is a divine gift for this final harvest. Seeing the need for accountability in evangelism, I was led to create a space where every miracle is recorded for God's glory."
                       </p>
-                      <p className="mt-6 text-sm font-black uppercase tracking-widest text-primary text-left">— Nanyo Theophilus</p>
+                      <p className="mt-6 text-sm font-black uppercase tracking-widest text-primary">— Nanyo Theophilus</p>
                    </CardContent>
                 </Card>
             </div>
@@ -185,14 +186,14 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {features.map((f, i) => (
                 <Card key={i} className="rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 duration-300 text-left">
-                  <CardHeader className="p-8 text-left">
+                  <CardHeader className="p-8">
                     <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4", f.bgColor)}>
                       <f.icon className={cn("h-6 w-6", f.color)} />
                     </div>
-                    <CardTitle className="text-xl font-black font-headline uppercase text-left">{f.title}</CardTitle>
+                    <CardTitle className="text-xl font-black font-headline uppercase">{f.title}</CardTitle>
                   </CardHeader>
-                  <CardContent className="px-8 pb-8 text-left">
-                    <p className="text-muted-foreground leading-relaxed text-sm text-left">{f.description}</p>
+                  <CardContent className="px-8 pb-8">
+                    <p className="text-muted-foreground leading-relaxed text-sm">{f.description}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -203,8 +204,8 @@ export default function LandingPage() {
 
       <footer className="bg-muted/50 border-t py-16 text-left">
         <div className="max-w-7xl mx-auto px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12">
+            <div className="col-span-1 sm:col-span-2 space-y-6">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 {logo && (
                   <Avatar className="h-12 w-12">
@@ -213,22 +214,22 @@ export default function LandingPage() {
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm max-w-sm italic text-left">
+              <p className="text-muted-foreground text-sm max-w-sm italic">
                 Testify is built for believers to share the greatness of Jesus Christ.
               </p>
             </div>
-            <div className="space-y-4 text-left">
+            <div className="space-y-4">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Platform</h4>
               <ul className="space-y-3">
-                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Glory Feed</Link></li>
-                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Mission Hub</Link></li>
+                <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Glory Feed</Link></li>
+                <li><Link href="/campaigns" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Mission Hub</Link></li>
               </ul>
             </div>
-            <div className="space-y-4 text-left">
+            <div className="space-y-4">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Ministry</h4>
               <ul className="space-y-3">
-                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Our Story</Link></li>
-                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Terms</Link></li>
+                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Our Story</Link></li>
+                <li><Link href="/terms-of-service" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold">Terms</Link></li>
               </ul>
             </div>
           </div>
