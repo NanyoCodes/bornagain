@@ -68,7 +68,7 @@ export default function LandingPage() {
   const firestore = useFirestore();
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 
-  // Redirect away if already logged in
+  // Silent redirect for authenticated users
   useEffect(() => {
     if (!authLoading && user) {
       router.replace('/testimonies');
@@ -81,8 +81,7 @@ export default function LandingPage() {
   
   const { data: testimonies, loading: loadingTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
-  // Return a clean loader if we're authenticated or still checking, 
-  // preventing the landing page from flickering.
+  // Return a clean loader during auth check and redirection to prevent flickering
   if (authLoading || user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -123,12 +122,12 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[10px]">
                   GLORIFYING GOD
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter">
+                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance">
                   Testify the <br className="hidden sm:block" />
                   Greatness of GOD.<br className="hidden sm:block" />
                   <span className="text-primary">Join the Harvest.</span>
                 </h1>
-                <p className="mt-6 text-lg sm:text-xl text-white/80 font-medium max-w-xl italic leading-relaxed">
+                <p className="mt-6 text-lg sm:text-xl text-white/80 font-medium max-w-xl italic leading-relaxed text-pretty">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
                 </p>
               </motion.div>
@@ -156,14 +155,14 @@ export default function LandingPage() {
                     </div>
                     <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase">Our Mission</h2>
                   </div>
-                  <p className="text-muted-foreground text-lg leading-relaxed">
+                  <p className="text-muted-foreground text-lg leading-relaxed text-pretty">
                     Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
                   </p>
                 </div>
               </div>
               <Card className="rounded-[2.5rem] border-l-8 border-l-primary bg-muted/20 border-none shadow-sm overflow-hidden text-left">
                    <CardContent className="p-10">
-                      <p className="italic text-muted-foreground text-lg leading-relaxed">
+                      <p className="italic text-muted-foreground text-lg leading-relaxed text-justify">
                         "I believe technology is a divine gift for this final harvest. Seeing the need for accountability in evangelism, I was led to create a space where every miracle is recorded for God's glory."
                       </p>
                       <p className="mt-6 text-sm font-black uppercase tracking-widest text-primary">— Nanyo Theophilus</p>
@@ -176,9 +175,9 @@ export default function LandingPage() {
         <section className="py-24 bg-muted/30">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16 space-y-4">
-              <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase">Kingdom Ready Workforce</h2>
+              <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-balance">Kingdom Ready Workforce</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Equipping believers with the tools needed to fulfill the Great Commission.
+                Equipping believers with the tools needed to fulfill the Great Commission in a digital age.
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

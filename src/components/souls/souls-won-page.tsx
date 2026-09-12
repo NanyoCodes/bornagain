@@ -24,7 +24,9 @@ import {
   ClipboardList,
   Users,
   Heart,
-  User
+  User,
+  MoreHorizontal,
+  Smartphone
 } from "lucide-react";
 import { 
   Dialog, 
@@ -43,7 +45,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
     Drawer,
@@ -184,11 +185,11 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                         <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
                             <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
                             <DropdownMenuSeparator className="text-left" />
-                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left text-left text-left">
-                                <User className="mr-2 h-4 w-4 text-left text-left" /> View Primary Profile
+                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
+                                <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
                             </DropdownMenuItem>
                             {spouse && (
-                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left text-left text-left text-left">
+                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left">
                                     <div className="flex items-center gap-2 text-left">
                                         <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
                                         <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
@@ -196,7 +197,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 </DropdownMenuItem>
                             )}
                             {householdChildren.map(child => (
-                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left text-left text-left">
+                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left">
                                     <div className="flex items-center gap-2 text-left">
                                         <Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
                                         <span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span>
