@@ -1129,9 +1129,9 @@ function SoulProfileContent({
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
-          <DialogHeader className="text-center space-y-2 text-center">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
-                  <Share2 className="h-7 w-7 text-primary text-center" />
+          <DialogHeader className="text-center space-y-2">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                  <Share2 className="h-7 w-7 text-primary" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
@@ -1254,28 +1254,28 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                             <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left text-left">
                                 <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Household Hub</DropdownMenuLabel>
                                 <DropdownMenuSeparator className="text-left text-left" />
-                                <DropdownMenuItem onSelect={onClick} className="rounded-lg py-2.5 text-left text-left text-left text-left">
-                                    <User className="mr-2 h-4 w-4 text-left text-left text-left" /> View Primary Profile
+                                <DropdownMenuItem onSelect={onClick} className="rounded-lg py-2.5 text-left text-left text-left text-left text-left">
+                                    <User className="mr-2 h-4 w-4 text-left text-left text-left text-left" /> View Primary Profile
                                 </DropdownMenuItem>
                                 {spouse && (
-                                    <DropdownMenuItem onSelect={() => onClick()} className="rounded-lg py-2.5 text-left text-left text-left text-left text-left">
-                                        <div className="flex items-center gap-2 text-left text-left">
-                                            <Avatar className="h-6 w-6 border text-left text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate text-left text-left">{spouse.firstName} (Spouse)</span>
+                                    <DropdownMenuItem onSelect={() => onClick()} className="rounded-lg py-2.5 text-left text-left text-left text-left text-left text-left">
+                                        <div className="flex items-center gap-2 text-left text-left text-left">
+                                            <Avatar className="h-6 w-6 border text-left text-left text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left text-left text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate text-left text-left text-left">{spouse.firstName} (Spouse)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 )}
                                 {householdChildren.map(child => (
-                                    <DropdownMenuItem key={child.id} onSelect={() => onClick()} className="rounded-lg py-2.5 text-left text-left text-left text-left text-left">
-                                        <div className="flex items-center gap-2 text-left text-left">
-                                            <Avatar className="h-6 w-6 border text-left text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left text-left">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate text-left text-left">{child.firstName} (Child)</span>
+                                    <DropdownMenuItem key={child.id} onSelect={() => onClick()} className="rounded-lg py-2.5 text-left text-left text-left text-left text-left text-left">
+                                        <div className="flex items-center gap-2 text-left text-left text-left">
+                                            <Avatar className="h-6 w-6 border text-left text-left text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left text-left text-left">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate text-left text-left text-left">{child.firstName} (Child)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 ))}
                                 <DropdownMenuSeparator className="text-left text-left" />
-                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left">
-                                    <PlusCircle className="mr-2 h-4 w-4 text-left text-left" /> Add Child to Household
+                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left text-left">
+                                    <PlusCircle className="mr-2 h-4 w-4 text-left text-left text-left" /> Add Child to Household
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -1299,7 +1299,7 @@ const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddCh
     const spouse = isFamily ? allSouls.find(s => {
         if (s.id === soul.id || s.maritalStatus !== 'Married') return false;
         const otherFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
-        const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
+        const soulFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
         const soulSpouse = (soul.spouseName || "").toLowerCase();
         const otherSpouse = (s.spouseName || "").toLowerCase();
         return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&

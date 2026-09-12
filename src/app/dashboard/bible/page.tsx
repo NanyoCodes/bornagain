@@ -31,6 +31,7 @@ import {
   setDoc,
   writeBatch,
   collectionGroup,
+  limit,
 } from 'firebase/firestore';
 import type { BibleHighlight, ReadingHistoryItem, UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -52,8 +53,6 @@ import {
   X,
   ChevronRight,
   Sparkles,
-  PartyPopper,
-  HandHeart,
   BookMarked
 } from 'lucide-react';
 import { getBibleChapter, type BibleChapterOutput } from '@/ai/flows/get-bible-chapter-flow';
@@ -67,7 +66,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { CommentSection } from '@/components/testimonies/comment-section';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
 
@@ -81,13 +80,13 @@ const bibleVersions = [
 ];
 
 const getHighlightClass = (color?: string, isPartner?: boolean) => {
-    if (isPartner) return 'bg-purple-200/40 dark:bg-purple-900/30 ring-1 ring-purple-500/20';
+    if (isPartner) return 'bg-primary/10 ring-1 ring-primary/20 border-b-2 border-primary/30';
     if (!color) return 'bg-blue-200/60 dark:bg-blue-800/50';
     return `highlight-${color}`;
 };
 
 const getNoteCardClass = (color?: string, isPartner?: boolean) => {
-    if (isPartner) return 'border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/20';
+    if (isPartner) return 'border-primary/20 bg-primary/[0.02]';
     if (!color) return 'note-card-blue';
     return `note-card-${color}`;
 };
@@ -287,31 +286,36 @@ export default function BibleReaderPage() {
   }, [selectedBookName]);
 
   const myHighlightsQuery = useMemo(() => {
-    if (!user || !chapterContent) return null;
+    if (!user || !firestore) return null;
+    // Acting as a feed: fetch all highlights for this user
     return query(
-      collection(firestore, 'users', user.uid, 'bibleHighlights'), 
-      where('book', '==', chapterContent.book), 
-      where('chapter', '==', chapterContent.chapter)
+      collection(firestore, 'users', user.uid, 'bibleHighlights'),
+      orderBy('createdAt', 'desc')
     );
-  }, [user, firestore, chapterContent]);
+  }, [user, firestore]);
   const { data: myHighlights } = useCollection<BibleHighlight>(myHighlightsQuery);
 
   const allianceHighlightsQuery = useMemo(() => {
-    if (!user || !userProfile?.partnerIds?.length || !chapterContent) return null;
+    if (!user || !userProfile?.partnerIds?.length || !firestore) return null;
+    // Acting as a feed: fetch latest partner highlights across all books
     return query(
         collectionGroup(firestore, 'bibleHighlights'),
-        where('book', '==', chapterContent.book),
-        where('chapter', '==', chapterContent.chapter),
         where('userId', 'in', userProfile.partnerIds),
-        where('isPrivate', '==', false)
+        where('isPrivate', '==', false),
+        limit(50)
     );
-  }, [user, userProfile?.partnerIds, firestore, chapterContent]);
-  const { data: allianceHighlights } = useCollection<BibleHighlight>(allianceHighlightsQuery);
+  }, [user, userProfile?.partnerIds, firestore]);
+  const { data: allianceHighlightsRaw } = useCollection<BibleHighlight>(allianceHighlightsQuery);
+
+  const allianceHighlights = useMemo(() => {
+      if (!allianceHighlightsRaw) return [];
+      return [...allianceHighlightsRaw].sort((a, b) => (safeToDate(b.createdAt)?.getTime() || 0) - (safeToDate(a.createdAt)?.getTime() || 0));
+  }, [allianceHighlightsRaw]);
 
   const combinedHighlights = useMemo(() => {
     const list = [...(myHighlights || [])];
     const alliance = [...(allianceHighlights || [])];
-    return [...list, ...alliance].sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+    return [...list, ...alliance].sort((a, b) => (safeToDate(b.createdAt)?.getTime() || 0) - (safeToDate(a.createdAt)?.getTime() || 0));
   }, [myHighlights, allianceHighlights]);
 
   const unfinishedHighlight = useMemo(() => myHighlights?.find(h => !h.note), [myHighlights]);
@@ -319,10 +323,23 @@ export default function BibleReaderPage() {
   
   const highlightsMap = useMemo(() => {
     const map = new Map<number, BibleHighlight>();
-    allianceHighlights?.forEach(h => h.verses.forEach(v => map.set(v, h)));
-    myHighlights?.forEach(h => h.verses.forEach(v => map.set(v, h)));
+    if (!chapterContent) return map;
+
+    const currentBook = chapterContent.book;
+    const currentChapter = chapterContent.chapter;
+
+    allianceHighlights?.forEach(h => {
+        if (h.book === currentBook && h.chapter === currentChapter) {
+            h.verses.forEach(v => map.set(v, h));
+        }
+    });
+    myHighlights?.forEach(h => {
+        if (h.book === currentBook && h.chapter === currentChapter) {
+            h.verses.forEach(v => map.set(v, h));
+        }
+    });
     return map;
-  }, [myHighlights, allianceHighlights]);
+  }, [myHighlights, allianceHighlights, chapterContent]);
   
   useEffect(() => {
     if (!isInitialized) return;
@@ -491,7 +508,7 @@ export default function BibleReaderPage() {
         <div className="space-y-4 p-1 text-left">
             <div className="space-y-3 text-left">
                 <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1 text-left">My Revelations</Label>
-                {myHighlights?.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)).map(h => (
+                {myHighlights?.sort((a, b) => (safeToDate(b.createdAt)?.getTime() || 0) - (safeToDate(a.createdAt)?.getTime() || 0)).map(h => (
                     h.id === activeHighlightId ? (
                         <NoteEditor highlight={h} key={h.id} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
                     ) : (
@@ -513,10 +530,12 @@ export default function BibleReaderPage() {
 
             {allianceHighlights && allianceHighlights.length > 0 && (
                 <div className="space-y-3 pt-6 border-t border-dashed text-left">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary ml-1 text-left">Shared Journal</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-primary ml-1 text-left">Alliance Feed</Label>
                     {allianceHighlights.map(h => {
                         const isSelected = h.id === activeHighlightId;
+                        const partnerInfo = userProfile?.accountabilityPartners?.find(p => p.userId === h.userId);
                         const commentPath = `users/${h.userId}/bibleHighlights/${h.id}/comments`;
+                        
                         return (
                             <Card key={h.id} className={cn(
                                 "border-2 rounded-2xl overflow-hidden transition-all duration-300 text-left",
@@ -524,24 +543,27 @@ export default function BibleReaderPage() {
                             )}>
                                 <CardHeader className="p-4 text-left">
                                     <div className="flex items-center gap-3 text-left">
-                                        <div className="flex items-center gap-2 text-left">
-                                            <Avatar className="h-6 w-6 border text-left">
-                                                <AvatarFallback className="text-[8px] font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left">U</AvatarFallback>
-                                            </Avatar>
-                                            <CardTitle className="text-xs font-black uppercase tracking-widest text-left">{getVerseReference(h)}</CardTitle>
+                                        <Avatar className="h-8 w-8 border text-left">
+                                            <AvatarImage src={partnerInfo?.photoURL} />
+                                            <AvatarFallback className="text-[10px] font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left">
+                                                {partnerInfo?.firstName?.charAt(0) || 'P'}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="min-w-0 flex-1 text-left">
+                                            <p className="text-[10px] font-black uppercase text-primary/60 truncate">{partnerInfo?.firstName || 'Partner'}</p>
+                                            <CardTitle className="text-xs font-black uppercase tracking-widest text-left truncate">{getVerseReference(h)}</CardTitle>
                                         </div>
-                                        <Badge variant="secondary" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/10 text-primary border-none text-left">Partner</Badge>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="px-4 pb-4 space-y-4 text-left">
-                                    <p className="text-sm text-muted-foreground italic leading-relaxed text-left">&ldquo;{h.note}&rdquo;</p>
+                                    <p className="text-sm text-muted-foreground italic leading-relaxed text-left">&ldquo;{h.note || 'Contemplating the Word...'}&rdquo;</p>
                                     
                                     <Accordion type="single" collapsible className="w-full text-left">
                                         <AccordionItem value="responses" className="border-none text-left">
                                             <AccordionTrigger className="p-0 h-auto hover:no-underline text-left">
                                                 <div className="flex items-center gap-2 text-[10px] font-black uppercase text-primary/60 text-left">
                                                     <MessageSquare className="h-3.5 w-3.5 text-left" />
-                                                    Response Hub
+                                                    Responses
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent className="pt-4 text-left">
@@ -565,7 +587,7 @@ export default function BibleReaderPage() {
                   <Button variant="outline" size="icon" onClick={() => router.back()} className="rounded-full h-9 w-9 sm:h-10 sm:w-10 border shadow-sm text-left"><ArrowLeft className="h-5 w-5 text-left" /></Button>
                   <div className="hidden sm:flex items-center gap-2 text-left">
                     <BookOpen className="h-5 w-5 text-primary text-left" />
-                    <span className="font-headline font-black text-lg uppercase tracking-tight text-left">Bible</span>
+                    <span className="font-headline font-black text-lg uppercase tracking-tight text-left">Bible Reader</span>
                   </div>
                 </div>
                 
@@ -593,7 +615,7 @@ export default function BibleReaderPage() {
                                 <span className="sr-only text-left">Read</span>
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase text-left">Read Bible</p></TooltipContent>
+                        <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase text-left">Read Word</p></TooltipContent>
                     </Tooltip>
                    </TooltipProvider>
 
@@ -624,7 +646,7 @@ export default function BibleReaderPage() {
                             
                             <Separator orientation="vertical" className="h-4 mx-1 text-left" />
 
-                            <Popover open={isChapterPopoverOpen} onOpenChange={setIsChapterPopoverOpen}>
+                            <Popover open={isChapterPopoverOpen} onOpenChange={isChapterPopoverOpen ? () => setIsChapterPopoverOpen(false) : () => setIsChapterPopoverOpen(true)}>
                                 <PopoverTrigger asChild>
                                   <Button variant="ghost" size="sm" className="h-9 px-3 font-bold text-xs sm:text-sm rounded-full hover:bg-background/80 shadow-sm border-none text-left">
                                     Chapter {selectedChapterNumber}
@@ -692,7 +714,7 @@ export default function BibleReaderPage() {
                                                 <Card className="border-amber-500/50 bg-amber-500/5 p-4 w-full sm:w-auto shadow-inner rounded-2xl text-left">
                                                 <div className="flex items-center justify-between gap-8 text-left">
                                                     <div className="space-y-0.5 text-left">
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 text-left">Reflection Pending</p>
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 text-left">Revelation Pending</p>
                                                     <p className="text-xs text-muted-foreground text-left">Add a note to your highlight.</p>
                                                     </div>
                                                     <Button size="sm" variant="outline" onClick={() => setActiveHighlightId(unfinishedHighlight.id)} className="rounded-xl h-9 font-bold px-4 text-left">Go to Note</Button>
@@ -711,7 +733,7 @@ export default function BibleReaderPage() {
                         <div className="hidden lg:flex lg:w-96 flex-col border-l bg-muted/10 p-6 min-h-0 text-left overflow-hidden">
                             <h3 className="font-headline font-black uppercase tracking-tight text-xl mb-4 flex items-center gap-2.5 text-left">
                                 <Highlighter className="h-5 w-5 text-primary text-left" />
-                                Shared Journal
+                                Revelation Hub
                             </h3>
                             <ScrollArea className="flex-grow pr-4 -mr-4 text-left">
                                 {NotesList}
@@ -724,9 +746,9 @@ export default function BibleReaderPage() {
                         <DrawerHeader className="p-8 border-b flex-shrink-0 bg-muted/20 text-left">
                             <div className="flex items-center gap-2.5 mb-1 text-left">
                                 <Highlighter className="h-5 w-5 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Revelation</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Journal</span>
                             </div>
-                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Shared Journal</DrawerTitle>
+                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Revelation Feed</DrawerTitle>
                             <DrawerDescription className="text-xs font-medium text-left">Study the Word together with your accountability alliance.</DrawerDescription>
                         </DrawerHeader>
                         <div className="flex-grow overflow-y-auto p-4 sm:p-6 bg-muted/5 text-left">
@@ -749,14 +771,16 @@ export default function BibleReaderPage() {
                                 <div className="space-y-6 text-left">
                                     <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 text-left">
                                         <div className="flex items-center gap-3 mb-4 text-left">
-                                            <Avatar className="h-10 w-10 border text-left"><AvatarFallback className="font-bold text-center flex items-center justify-center w-full h-full text-left">P</AvatarFallback></Avatar>
+                                            <Avatar className="h-10 w-10 border text-left">
+                                                <AvatarFallback className="font-bold text-center flex items-center justify-center w-full h-full text-left">P</AvatarFallback>
+                                            </Avatar>
                                             <div className="text-left">
                                                 <p className="text-sm font-black uppercase text-left">Partner Revelation</p>
                                                 <p className="text-[10px] text-muted-foreground uppercase font-bold text-left">{getVerseReference(activeHighlight)}</p>
                                             </div>
                                         </div>
                                         <p className="text-base italic leading-relaxed text-muted-foreground text-left">
-                                            &ldquo;{activeHighlight.note}&rdquo;
+                                            &ldquo;{activeHighlight.note || 'Contemplating the truth...'}&rdquo;
                                         </p>
                                     </div>
                                     <div className="space-y-4 text-left">
