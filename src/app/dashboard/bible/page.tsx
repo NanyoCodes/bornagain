@@ -522,25 +522,25 @@ export default function BibleReaderPage() {
                                 "border-2 rounded-2xl overflow-hidden transition-all duration-300 text-left",
                                 isSelected ? "border-primary bg-primary/[0.03] shadow-lg" : "border-transparent bg-muted/20 hover:bg-muted/30"
                             )}>
-                                <CardHeader className="p-4 text-left text-left">
-                                    <div className="flex items-center gap-3 text-left text-left">
-                                        <div className="flex items-center gap-2 text-left">
-                                            <Avatar className="h-6 w-6 border text-left text-left">
-                                                <AvatarFallback className="text-[8px] font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left">U</AvatarFallback>
+                                <CardHeader className="p-4 text-left text-left text-left">
+                                    <div className="flex items-center gap-3 text-left text-left text-left">
+                                        <div className="flex items-center gap-2 text-left text-left">
+                                            <Avatar className="h-6 w-6 border text-left text-left text-left">
+                                                <AvatarFallback className="text-[8px] font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full text-left text-left">U</AvatarFallback>
                                             </Avatar>
-                                            <CardTitle className="text-xs font-black uppercase tracking-widest text-left">{getVerseReference(h)}</CardTitle>
+                                            <CardTitle className="text-xs font-black uppercase tracking-widest text-left text-left">{getVerseReference(h)}</CardTitle>
                                         </div>
                                         <Badge variant="secondary" className="h-4 px-1 text-[7px] font-black uppercase bg-primary/10 text-primary border-none text-left">Partner</Badge>
                                     </div>
                                 </CardHeader>
-                                <CardContent className="px-4 pb-4 space-y-4 text-left text-left text-left">
-                                    <p className="text-sm text-muted-foreground italic leading-relaxed text-left">&ldquo;{h.note}&rdquo;</p>
+                                <CardContent className="px-4 pb-4 space-y-4 text-left text-left text-left text-left">
+                                    <p className="text-sm text-muted-foreground italic leading-relaxed text-left text-left">&ldquo;{h.note}&rdquo;</p>
                                     
                                     <Accordion type="single" collapsible className="w-full text-left">
                                         <AccordionItem value="responses" className="border-none text-left">
                                             <AccordionTrigger className="p-0 h-auto hover:no-underline text-left">
-                                                <div className="flex items-center gap-2 text-[10px] font-black uppercase text-primary/60 text-left">
-                                                    <MessageSquare className="h-3.5 w-3.5 text-left" />
+                                                <div className="flex items-center gap-2 text-[10px] font-black uppercase text-primary/60 text-left text-left">
+                                                    <MessageSquare className="h-3.5 w-3.5 text-left text-left" />
                                                     Response Hub
                                                 </div>
                                             </AccordionTrigger>
@@ -721,7 +721,7 @@ export default function BibleReaderPage() {
                     
                     <Drawer open={isJournalSheetOpen} onOpenChange={setIsJournalSheetOpen}>
                       <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2rem] text-left">
-                        <DrawerHeader className="p-8 border-b shrink-0 bg-muted/20 text-left">
+                        <DrawerHeader className="p-8 border-b flex-shrink-0 bg-muted/20 text-left">
                             <div className="flex items-center gap-2.5 mb-1 text-left">
                                 <Highlighter className="h-5 w-5 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Revelation</span>
