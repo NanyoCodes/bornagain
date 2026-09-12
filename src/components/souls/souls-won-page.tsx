@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -44,7 +45,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/components/ui/alertDialog";
 import {
     Drawer,
     DrawerContent,
@@ -185,21 +186,21 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                             <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
-                                <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
+                                <User className="mr-2 h-4 w-4" /> View Primary Profile
                             </DropdownMenuItem>
                             {spouse && (
-                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left text-left">
-                                    <div className="flex items-center gap-2 text-left">
-                                        <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
+                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left">
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                        <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
                                     </div>
                                 </DropdownMenuItem>
                             )}
                             {householdChildren.map(child => (
-                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left text-left">
-                                    <div className="flex items-center gap-2 text-left">
-                                        <Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span>
+                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left">
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                        <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
                                     </div>
                                 </DropdownMenuItem>
                             ))}
@@ -291,26 +292,26 @@ export default function SoulsWonPage() {
 
     if (!souls) return stats;
 
-    souls.forEach(soul => {
-      const age = soul.age;
+    souls.forEach(s => {
+      const age = s.age;
       if (age === null || age === undefined) {
         stats.unknown.count++;
-        stats.unknown.list.push(soul);
+        stats.unknown.list.push(s);
       } else if (age <= 12) {
         stats.children.count++;
-        stats.children.list.push(soul);
+        stats.children.list.push(s);
       } else if (age <= 19) {
         stats.teens.count++;
-        stats.teens.list.push(soul);
+        stats.teens.list.push(s);
       } else if (age <= 33) {
         stats.youngAdults.count++;
-        stats.youngAdults.list.push(soul);
+        stats.youngAdults.list.push(s);
       } else if (age <= 55) {
         stats.adults.count++;
-        stats.adults.list.push(soul);
+        stats.adults.list.push(s);
       } else {
         stats.seniors.count++;
-        stats.seniors.list.push(soul);
+        stats.seniors.list.push(s);
       }
     });
 
@@ -357,12 +358,15 @@ export default function SoulsWonPage() {
       const status = s.maritalStatus;
       if (status === 'Married') {
           if (!processedIds.has(s.id)) {
+              // Attempt to find spouse in the list to avoid double-counting the family unit
               const spouse = souls.find(other => {
                 if (other.id === s.id || other.maritalStatus !== 'Married') return false;
+                
                 const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
                 const sFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
                 const sSpouse = (s.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
+
                 return (sSpouse === otherFullName || sSpouse === other.firstName.toLowerCase()) &&
                        (otherSpouse === sFullName || otherSpouse === s.firstName.toLowerCase());
               });
@@ -443,12 +447,12 @@ export default function SoulsWonPage() {
 
   const loading = soulsLoading || profileLoading;
 
-  const handleOpenFollowUp = useCallback((soul: Soul) => setFollowUpSoulId(soul.id), []);
-  const handleOpenHistory = useCallback((soul: Soul) => setHistorySoulId(soul.id), []);
-  const handleOpenAssign = useCallback((soul: Soul) => setAssignSoulId(soul.id), []);
-  const handleOpenEdit = useCallback((soul: Soul) => setEditSoulId(soul.id), []);
-  const handleOpenDelete = useCallback((soul: Soul) => setDeleteSoulId(soul.id), []);
-  const handleOpenAssessment = useCallback((soul: Soul) => setAssessmentSoulId(soul.id), []);
+  const handleOpenFollowUp = useCallback((s: Soul) => setFollowUpSoulId(s.id), []);
+  const handleOpenHistory = useCallback((s: Soul) => setHistorySoulId(s.id), []);
+  const handleOpenAssign = useCallback((s: Soul) => setAssignSoulId(s.id), []);
+  const handleOpenEdit = useCallback((s: Soul) => setEditSoulId(s.id), []);
+  const handleOpenDelete = useCallback((s: Soul) => setDeleteSoulId(s.id), []);
+  const handleOpenAssessment = useCallback((s: Soul) => setAssessmentSoulId(s.id), []);
 
   const handleAddChild = useCallback((p1: Soul, p2?: Soul | null) => {
     const parentNames = [p1.firstName];
@@ -560,19 +564,19 @@ export default function SoulsWonPage() {
     toast({ title: "Report Ready", description: "Download started." });
   };
 
-  const handleExportSingleSoul = useCallback(async (soul: Soul, formatType: 'csv' | 'pdf') => {
-      const wonAt = safeToDate(soul.wonAt);
+  const handleExportSingleSoul = useCallback(async (s: Soul, formatType: 'csv' | 'pdf') => {
+      const wonAt = safeToDate(s.wonAt);
       const data = [
-          ["First Name", soul.firstName],
-          ["Last Name", soul.lastName || ''],
-          ["Gender", soul.gender || 'N/A'],
-          ["Status", soul.status],
+          ["First Name", s.firstName],
+          ["Last Name", s.lastName || ''],
+          ["Gender", s.gender || 'N/A'],
+          ["Status", s.status],
           ["Date Won", wonAt ? format(wonAt, 'PPP') : 'N/A'],
-          ["Source", soul.source],
-          ["Phone", soul.phone || 'N/A'],
-          ["Email", soul.email || 'N/A'],
-          ["Home Church", soul.church || 'N/A'],
-          ["Location", [soul.locationWon?.city, soul.locationWon?.country].filter(Boolean).join(', ') || 'N/A']
+          ["Source", s.source],
+          ["Phone", s.phone || 'N/A'],
+          ["Email", s.email || 'N/A'],
+          ["Home Church", s.church || 'N/A'],
+          ["Location", [s.locationWon?.city, s.locationWon?.country].filter(Boolean).join(', ') || 'N/A']
       ];
 
       if (formatType === 'pdf') {
@@ -595,7 +599,7 @@ export default function SoulsWonPage() {
           docObj.setFontSize(10);
           docObj.setFont('helvetica', 'normal');
           docObj.setTextColor(100);
-          docObj.text(`Full Record: ${soul.firstName} ${soul.lastName || ''}`, 14, 32);
+          docObj.text(`Full Record: ${s.firstName} ${s.lastName || ''}`, 14, 32);
           docObj.text(`Log Date: ${format(new Date(), 'PPP')}`, 196, 32, { align: 'right' });
 
           autoTable(docObj, {
@@ -607,14 +611,14 @@ export default function SoulsWonPage() {
               styles: { cellPadding: 5 }
           });
           
-          docObj.save(`record-${soul.firstName.toLowerCase()}.pdf`);
+          docObj.save(`record-${s.firstName.toLowerCase()}.pdf`);
       } else {
           const csv = Papa.unparse({ fields: ["Field", "Detail"], data });
           const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
           const url = URL.createObjectURL(blob);
           const link = document.createElement("a");
           link.setAttribute("href", url);
-          link.setAttribute("download", `record-${soul.firstName.toLowerCase()}.csv`);
+          link.setAttribute("download", `record-${s.firstName.toLowerCase()}.csv`);
           link.click();
           URL.revokeObjectURL(url);
       }
@@ -642,11 +646,11 @@ export default function SoulsWonPage() {
     });
   };
 
-  const handleAssignGroup = (soul: Soul, fellowshipId: string, groupType: 'Fellowship' | 'Association') => {
+  const handleAssignGroup = (s: Soul, fellowshipId: string, groupType: 'Fellowship' | 'Association') => {
     if (!user || !firestore) return;
 
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, soul.id);
-    const globalSoulRef = doc(firestore, 'souls', soul.id);
+    const soulRef = doc(firestore, `users/${user.uid}/souls`, s.id);
+    const globalSoulRef = doc(firestore, 'souls', s.id);
     const selectedGroup = fellowships?.find(f => f.id === fellowshipId);
     
     const updateData: { [key: string]: any } = {
@@ -683,10 +687,10 @@ export default function SoulsWonPage() {
     if (!searchTerm) return souls;
     
     const term = searchTerm.toLowerCase();
-    return souls.filter(soul => 
-      `${soul.firstName} ${soul.lastName}`.toLowerCase().includes(term) ||
-      (soul.nickname && soul.nickname.toLowerCase().includes(term)) ||
-      (soul.phone && soul.phone.toLowerCase().includes(term))
+    return souls.filter(s => 
+      `${s.firstName} ${s.lastName}`.toLowerCase().includes(term) ||
+      (s.nickname && s.nickname.toLowerCase().includes(term)) ||
+      (s.phone && s.phone.toLowerCase().includes(term))
     );
   }, [souls, searchTerm]);
 
@@ -801,7 +805,7 @@ export default function SoulsWonPage() {
                 )}
 
                 <div className="px-4 sm:px-0 space-y-12 text-left">
-                    {/* Demographics Analyzers */}
+                    {/* Age Demographics */}
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
@@ -995,9 +999,9 @@ export default function SoulsWonPage() {
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
-                                  onSelectSoul={(soul) => {
+                                  onSelectSoul={(s) => {
                                     setSelectedFilterGroup(null);
-                                    setSelectedSoulId(soul.id);
+                                    setSelectedSoulId(s.id);
                                   }} 
                                   onAddChild={handleAddChild}
                                 />
@@ -1023,9 +1027,9 @@ export default function SoulsWonPage() {
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
-                                  onSelectSoul={(soul) => {
+                                  onSelectSoul={(s) => {
                                     setSelectedFilterGroup(null);
-                                    setSelectedSoulId(soul.id);
+                                    setSelectedSoulId(s.id);
                                   }} 
                                   onAddChild={handleAddChild}
                                 />
@@ -1071,7 +1075,10 @@ export default function SoulsWonPage() {
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
+                                <DrawerHeader className="text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
+                                </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 <LogSoulForm 
@@ -1086,7 +1093,10 @@ export default function SoulsWonPage() {
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Edit Record</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Update soul identity and mission details.</DrawerDescription></DrawerHeader>
+                                <DrawerHeader className="text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Update soul identity and mission details.</DrawerDescription>
+                                </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
@@ -1099,7 +1109,7 @@ export default function SoulsWonPage() {
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="text-left">
+                                <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
@@ -1117,7 +1127,7 @@ export default function SoulsWonPage() {
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="text-left">
+                                <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
@@ -1133,3 +1143,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+
