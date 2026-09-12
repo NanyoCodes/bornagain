@@ -790,7 +790,7 @@ function SoulProfileContent({
                                 <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Select Format</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')}>CSV Export</DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem>
+                                <DropdownMenuItem onExportSingle={() => onExportSingle(soul, 'pdf')}>PDF Report</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onEdit(soul)}>
@@ -1299,7 +1299,7 @@ const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddCh
     const spouse = isFamily ? allSouls.find(s => {
         if (s.id === soul.id || s.maritalStatus !== 'Married') return false;
         const otherFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
-        const soulFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+        const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
         const soulSpouse = (soul.spouseName || "").toLowerCase();
         const otherSpouse = (s.spouseName || "").toLowerCase();
         return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
@@ -1546,3 +1546,4 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
     </div>
   );
 }
+

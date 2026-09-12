@@ -32,6 +32,7 @@ import {
   writeBatch,
   collectionGroup,
   limit,
+  orderBy,
 } from 'firebase/firestore';
 import type { BibleHighlight, ReadingHistoryItem, UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -287,7 +288,6 @@ export default function BibleReaderPage() {
 
   const myHighlightsQuery = useMemo(() => {
     if (!user || !firestore) return null;
-    // Acting as a feed: fetch all highlights for this user
     return query(
       collection(firestore, 'users', user.uid, 'bibleHighlights'),
       orderBy('createdAt', 'desc')
@@ -297,7 +297,6 @@ export default function BibleReaderPage() {
 
   const allianceHighlightsQuery = useMemo(() => {
     if (!user || !userProfile?.partnerIds?.length || !firestore) return null;
-    // Acting as a feed: fetch latest partner highlights across all books
     return query(
         collectionGroup(firestore, 'bibleHighlights'),
         where('userId', 'in', userProfile.partnerIds),
@@ -861,3 +860,4 @@ export default function BibleReaderPage() {
         </div>
     );
 }
+
