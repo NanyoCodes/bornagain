@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -45,7 +44,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alertDialog";
+} from "@/components/ui/alert-dialog";
 import {
     Drawer,
     DrawerContent,
@@ -714,8 +713,8 @@ export default function SoulsWonPage() {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl text-left">
-                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Select Format</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
+                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Select Format</DropdownMenuLabel>
+                                    <DropdownMenuSeparator className="text-left" />
                                     <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left">
                                         <Download className="mr-2 h-4 w-4 opacity-40" /> CSV (Excel)
                                     </DropdownMenuItem>
@@ -1143,4 +1142,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-

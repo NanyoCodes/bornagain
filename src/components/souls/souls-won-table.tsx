@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -727,6 +726,12 @@ function SoulProfileContent({
     return Array.from(uniqueMap.values());
   }, [currentUserProfile?.accountabilityPartners]);
 
+  const handleVerseSelected = (verseMessage: string) => {
+    setCustomMessageText(verseMessage);
+    setIsStudyWordOpen(false);
+    setIsCommChannelDialogOpen(true);
+  };
+
   return (
     <div className="space-y-6 text-left">
       <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
@@ -1149,7 +1154,7 @@ function SoulProfileContent({
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+              <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
                   <DialogHeader className="text-left text-left text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left text-left text-left">Which partner should receive these details?</DialogDescription>
@@ -1231,7 +1236,7 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                         )}
                     </div>
                     <div className="min-w-0 text-left">
-                        <div className="flex items-center gap-2 flex-wrap text-left">
+                        <div className="flex items-center gap-2 text-left flex-wrap text-left">
                             <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight text-left">
                               {soul.firstName} {soul.lastName}
                               {spouse && <span className="text-primary/60 lowercase ml-1"> & {spouse.firstName}</span>}
@@ -1252,7 +1257,7 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Household Hub</DropdownMenuLabel>
                                 <DropdownMenuSeparator className="text-left" />
                                 <DropdownMenuItem onSelect={onClick} className="rounded-lg py-2.5 text-left text-left">
                                     <User className="mr-2 h-4 w-4 text-left text-left" /> View Primary Profile
@@ -1273,9 +1278,9 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                                         </div>
                                     </DropdownMenuItem>
                                 ))}
-                                <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
-                                    <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
+                                <DropdownMenuSeparator className="text-left text-left" />
+                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left">
+                                    <PlusCircle className="mr-2 h-4 w-4 text-left text-left" /> Add Child to Household
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -1546,4 +1551,3 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
     </div>
   );
 }
-
