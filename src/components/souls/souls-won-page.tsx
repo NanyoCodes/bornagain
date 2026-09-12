@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -65,7 +64,8 @@ import { collection, query, orderBy, doc, updateDoc, serverTimestamp, writeBatch
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSearch } from "@/context/search-context";
-import { format } from "date-fns";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { safeToDate, cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -181,30 +181,30 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 <Users className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl">
-                            <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Household Hub</DropdownMenuLabel>
+                        <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
+                            <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5">
-                                <User className="mr-2 h-4 w-4" /> View Primary Profile
+                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
+                                <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
                             </DropdownMenuItem>
                             {spouse && (
-                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5">
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
+                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left text-left">
+                                    <div className="flex items-center gap-2 text-left">
+                                        <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                        <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
                                     </div>
                                 </DropdownMenuItem>
                             )}
                             {householdChildren.map(child => (
-                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5">
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
+                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left text-left">
+                                    <div className="flex items-center gap-2 text-left">
+                                        <Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                        <span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span>
                                     </div>
                                 </DropdownMenuItem>
                             ))}
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold">
+                            <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
                                 <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -360,11 +360,11 @@ export default function SoulsWonPage() {
               const spouse = souls.find(other => {
                 if (other.id === s.id || other.maritalStatus !== 'Married') return false;
                 const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-                const soulFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
-                const soulSpouse = (s.spouseName || "").toLowerCase();
+                const sFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+                const sSpouse = (s.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
-                return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
+                return (sSpouse === otherFullName || sSpouse === other.firstName.toLowerCase()) &&
+                       (otherSpouse === sFullName || otherSpouse === s.firstName.toLowerCase());
               });
 
               if (spouse) {
@@ -1011,7 +1011,7 @@ export default function SoulsWonPage() {
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
-                                <span className="text-[10px) font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
