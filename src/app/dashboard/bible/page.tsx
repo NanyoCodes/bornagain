@@ -493,7 +493,7 @@ export default function BibleReaderPage() {
                 <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1 text-left text-left">My Revelations</Label>
                 {myHighlights?.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)).map(h => (
                     h.id === activeHighlightId ? (
-                        <NoteEditor key={h.id} highlight={h} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
+                        <NoteEditor highlight={h} key={h.id} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
                     ) : (
                         <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50 border-l-4 rounded-xl shadow-sm border-l-primary text-left text-left", getNoteCardClass(h.color))}>
                             <CardHeader className="p-4 text-left">

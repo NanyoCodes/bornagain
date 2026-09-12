@@ -65,7 +65,16 @@ export function useCollection<T extends { id: string }>(
       },
       async (err) => {
         if (err.code === 'permission-denied') {
-          const path = (stableQuery as any)._query?.path?.canonicalString() || 'unknown path';
+          // Attempt to extract the path for better debugging
+          let path = 'unknown path';
+          try {
+              if ((stableQuery as any).path) {
+                  path = (stableQuery as any).path;
+              } else if ((stableQuery as any)._query?.path) {
+                  path = (stableQuery as any)._query.path.canonicalString();
+              }
+          } catch (e) {}
+
           const permissionError = new FirestorePermissionError({
             path,
             operation: 'list',

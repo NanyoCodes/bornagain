@@ -43,6 +43,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
     Drawer,
@@ -183,11 +184,11 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                         <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
                             <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
                             <DropdownMenuSeparator className="text-left" />
-                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
-                                <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
+                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left text-left text-left">
+                                <User className="mr-2 h-4 w-4 text-left text-left" /> View Primary Profile
                             </DropdownMenuItem>
                             {spouse && (
-                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left">
+                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left text-left text-left text-left">
                                     <div className="flex items-center gap-2 text-left">
                                         <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
                                         <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
@@ -195,7 +196,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 </DropdownMenuItem>
                             )}
                             {householdChildren.map(child => (
-                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left">
+                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left text-left text-left">
                                     <div className="flex items-center gap-2 text-left">
                                         <Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
                                         <span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span>
@@ -352,39 +353,39 @@ export default function SoulsWonPage() {
 
     const processedIds = new Set<string>();
 
-    souls.forEach(soul => {
-      const status = soul.maritalStatus;
+    souls.forEach(s => {
+      const status = s.maritalStatus;
       if (status === 'Married') {
-          if (!processedIds.has(soul.id)) {
-              const spouse = souls.find(s => {
-                if (s.id === soul.id || s.maritalStatus !== 'Married') return false;
-                const otherFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
-                const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
-                const soulSpouse = (soul.spouseName || "").toLowerCase();
-                const otherSpouse = (s.spouseName || "").toLowerCase();
-                return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
+          if (!processedIds.has(s.id)) {
+              const spouse = souls.find(other => {
+                if (other.id === s.id || other.maritalStatus !== 'Married') return false;
+                const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
+                const soulFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+                const soulSpouse = (s.spouseName || "").toLowerCase();
+                const otherSpouse = (other.spouseName || "").toLowerCase();
+                return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
+                       (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
               });
 
               if (spouse) {
                 processedIds.add(spouse.id);
-                stats.married.list.push({ ...soul, spouseRecord: spouse });
+                stats.married.list.push({ ...s, spouseRecord: spouse });
               } else {
-                stats.married.list.push(soul);
+                stats.married.list.push(s);
               }
               
-              processedIds.add(soul.id);
+              processedIds.add(s.id);
               stats.married.count++;
           }
       } else if (status === 'Single') {
           stats.single.count++;
-          stats.single.list.push(soul);
+          stats.single.list.push(s);
       } else if (status === 'Divorced') {
           stats.divorced.count++;
-          stats.divorced.list.push(soul);
+          stats.divorced.list.push(s);
       } else if (status === 'Widowed') {
           stats.widowed.count++;
-          stats.widowed.list.push(soul);
+          stats.widowed.list.push(s);
       }
       stats.total++;
     });
@@ -1072,7 +1073,10 @@ export default function SoulsWonPage() {
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
+                                <DrawerHeader className="text-left text-left text-left">
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</DrawerDescription>
+                                </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 <LogSoulForm 
