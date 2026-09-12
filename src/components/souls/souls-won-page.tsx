@@ -178,7 +178,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary">
-                                <Users className="h-4 w-4" />
+                                <Users className="h-4 w-4 text-left" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
@@ -362,12 +362,12 @@ export default function SoulsWonPage() {
                 if (other.id === s.id || other.maritalStatus !== 'Married') return false;
                 
                 const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-                const sFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
-                const sSpouse = (s.spouseName || "").toLowerCase();
+                const soulFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+                const soulSpouse = (s.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
 
-                return (sSpouse === otherFullName || sSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === sFullName || otherSpouse === s.firstName.toLowerCase());
+                return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
+                       (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
               });
 
               if (spouse) {
@@ -1074,10 +1074,7 @@ export default function SoulsWonPage() {
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</DrawerDescription>
-                                </DrawerHeader>
+                                <DrawerHeader className="text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 <LogSoulForm 

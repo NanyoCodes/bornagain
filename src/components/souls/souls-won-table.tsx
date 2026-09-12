@@ -468,7 +468,7 @@ function ShareWordDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">
+      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
         {header}
         {body}
         {footer || (
@@ -1199,7 +1199,7 @@ function SoulProfileContent({
           soul={soul}
           onSelectVerse={handleVerseSelected}
       />
-    </>
+    </div>
   );
 }
 
