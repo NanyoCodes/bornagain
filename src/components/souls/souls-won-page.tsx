@@ -24,9 +24,7 @@ import {
   ClipboardList,
   Users,
   Heart,
-  User,
-  Plus,
-  Search
+  User
 } from "lucide-react";
 import { 
   Dialog, 
@@ -86,6 +84,7 @@ import { SoulsImportTemplateCard } from "@/components/settings/souls-import-temp
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Papa from 'papaparse';
 import { Checkbox } from "@/components/ui/checkbox";
+import Image from "next/image";
 
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
   loading: () => <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin" /></div>,
@@ -133,62 +132,62 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                     onClick={() => onSelectSoul(soul)}
                     className="flex items-center gap-3 min-w-0 flex-1 text-left active:scale-[0.98] transition-all"
                 >
-                    <div className="flex -space-x-3 shrink-0">
-                        <Avatar className="h-12 w-12 border-2 border-background shadow-md">
-                            <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0)}</AvatarFallback>
+                    <div className="flex -space-x-3 shrink-0 text-left">
+                        <Avatar className="h-12 w-12 border-2 border-background shadow-md text-left">
+                            <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
+                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         {spouse && (
-                            <Avatar className="h-12 w-12 border-2 border-background shadow-md ring-2 ring-primary/5">
-                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover" />
-                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs">{spouse.firstName?.charAt(0)}</AvatarFallback>
+                            <Avatar className="h-12 w-12 border-2 border-background shadow-md ring-2 ring-primary/5 text-left">
+                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover text-left" />
+                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs text-left">{spouse.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         )}
                     </div>
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-1 text-left">
                         <div className="flex items-center gap-2 flex-wrap text-left">
-                            <p className="font-black text-sm sm:text-base truncate uppercase tracking-tight">
+                            <p className="font-black text-sm sm:text-base truncate uppercase tracking-tight text-left">
                                 {soul.firstName} {soul.lastName}
                                 {spouse && (
-                                    <span className="text-primary/60 ml-1.5 hidden sm:inline">
+                                    <span className="text-primary/60 ml-1.5 hidden sm:inline text-left">
                                         & {spouse.firstName}
                                     </span>
                                 )}
                             </p>
-                            <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 bg-background/50">{soul.status}</Badge>
+                            <Badge variant="outline" className="text-[8px] h-4 px-1 uppercase font-black tracking-tighter shrink-0 bg-background/50 text-left">{soul.status}</Badge>
                         </div>
                         {spouse && (
-                            <span className="text-primary/60 text-[10px] block sm:hidden leading-none mt-0.5">
+                            <span className="text-primary/60 text-[10px] block sm:hidden leading-none mt-0.5 text-left">
                                 & {spouse.firstName}
                             </span>
                         )}
                         <div className="flex flex-col gap-1 mt-1 text-left">
                             <div className="flex items-center gap-3 text-muted-foreground text-left">
-                                <p className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">
+                                <p className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap text-left">
                                     Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
                                 </p>
                                 {isFamily && (
-                                    <Badge variant="secondary" className="h-3.5 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none">Family Unit</Badge>
+                                    <Badge variant="secondary" className="h-3.5 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none text-left">Family Unit</Badge>
                                 )}
                             </div>
                         </div>
                     </div>
                 </button>
-                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                <div className="flex items-center gap-1.5 shrink-0 ml-2 text-left">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary">
+                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary text-left">
                                 <Users className="h-4 w-4 text-left" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
+                        <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left text-left">
                             <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
                             <DropdownMenuSeparator className="text-left" />
-                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
+                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left text-left">
                                 <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
                             </DropdownMenuItem>
                             {spouse && (
-                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left">
+                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left text-left">
                                     <div className="flex items-center gap-2 text-left">
                                         <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
                                         <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
@@ -196,7 +195,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 </DropdownMenuItem>
                             )}
                             {householdChildren.map(child => (
-                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left">
+                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left text-left">
                                     <div className="flex items-center gap-2 text-left">
                                         <Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
                                         <span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span>
@@ -204,13 +203,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 </DropdownMenuItem>
                             ))}
                             <DropdownMenuSeparator className="text-left" />
-                            <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
+                            <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left">
                                 <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button variant="ghost" size="icon" onClick={() => onSelectSoul(soul)} className="h-9 w-9 rounded-full text-muted-foreground group-hover:text-primary transition-colors">
-                        <ArrowRight className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" onClick={() => onSelectSoul(soul)} className="h-9 w-9 rounded-full text-muted-foreground group-hover:text-primary transition-colors text-left">
+                        <ArrowRight className="h-4 w-4 text-left" />
                     </Button>
                 </div>
             </div>
@@ -357,15 +356,14 @@ export default function SoulsWonPage() {
       const status = s.maritalStatus;
       if (status === 'Married') {
           if (!processedIds.has(s.id)) {
-              // Attempt to find spouse in the list to avoid double-counting the family unit
               const spouse = souls.find(other => {
                 if (other.id === s.id || other.maritalStatus !== 'Married') return false;
                 const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-                const soulFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
-                const soulSpouse = (s.spouseName || "").toLowerCase();
+                const sFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+                const sSpouse = (s.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
-                return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
+                return (sSpouse === otherFullName || sSpouse === other.firstName.toLowerCase()) &&
+                       (otherSpouse === sFullName || otherSpouse === s.firstName.toLowerCase());
               });
 
               if (spouse) {
@@ -762,7 +760,7 @@ export default function SoulsWonPage() {
                                                         src={s.photoURL!} 
                                                         alt={s.firstName} 
                                                         fill 
-                                                        className="object-cover transition-transform group-hover:media:scale-110 duration-500" 
+                                                        className="object-cover transition-transform group-hover:scale-110 duration-500" 
                                                         unoptimized 
                                                     />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
