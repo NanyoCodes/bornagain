@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -45,7 +44,8 @@ import {
   Lock,
   MoreHorizontal,
   Share2,
-  User
+  User,
+  Smartphone
 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Soul, FollowUpStatus, UserProfile, Chat, BibleChapterOutput, MealGiftStatus } from "@/lib/types";
@@ -1055,6 +1055,7 @@ function SoulProfileContent({
             </div>
         </Card>
       </div>
+
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
           <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10 text-left">
@@ -1187,7 +1188,7 @@ function SoulProfileContent({
                           </Button>
                       ))}
                       {uniquePartners.length === 0 && (
-                          <p className="text-center text-xs text-muted-foreground py-12 text-left">No partners found. Connect with some in Settings!</p>
+                          <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
                       )}
                   </div>
               </ScrollArea>
@@ -1199,9 +1200,8 @@ function SoulProfileContent({
           isOpen={isStudyWordOpen}
           onOpenChange={setIsStudyWordOpen}
           soul={soul}
-          onSelectVerse={handleVerseSelected}
+          onSelectVerse={(v) => { setCustomMessageText(v); setIsStudyWordOpen(false); setIsCommChannelDialogOpen(true); }}
       />
-    </div>
     </>
   );
 }

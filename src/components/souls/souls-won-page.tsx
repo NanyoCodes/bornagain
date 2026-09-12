@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -763,7 +762,7 @@ export default function SoulsWonPage() {
                                                         src={s.photoURL!} 
                                                         alt={s.firstName} 
                                                         fill 
-                                                        className="object-cover transition-transform group-hover:scale-110 duration-500" 
+                                                        className="object-cover transition-transform group-hover:media:scale-110 duration-500" 
                                                         unoptimized 
                                                     />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
@@ -1138,4 +1137,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-
