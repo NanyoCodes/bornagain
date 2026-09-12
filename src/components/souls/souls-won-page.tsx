@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -104,7 +103,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic">No souls found matching this criteria.</p>
+        <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
       </div>
     );
   }
@@ -147,7 +146,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                         )}
                     </div>
                     <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap text-left">
                             <p className="font-black text-sm sm:text-base truncate uppercase tracking-tight">
                                 {soul.firstName} {soul.lastName}
                                 {spouse && (
@@ -163,8 +162,8 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 & {spouse.firstName}
                             </span>
                         )}
-                        <div className="flex flex-col gap-1 mt-1">
-                            <div className="flex items-center gap-3 text-muted-foreground">
+                        <div className="flex flex-col gap-1 mt-1 text-left">
+                            <div className="flex items-center gap-3 text-muted-foreground text-left">
                                 <p className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">
                                     Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
                                 </p>
@@ -183,30 +182,30 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
-                            <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Household Hub</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5">
-                                <User className="mr-2 h-4 w-4" /> View Primary Profile
+                            <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
+                            <DropdownMenuSeparator className="text-left" />
+                            <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5 text-left">
+                                <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
                             </DropdownMenuItem>
                             {spouse && (
-                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5">
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
+                                <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left">
+                                    <div className="flex items-center gap-2 text-left">
+                                        <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                        <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
                                     </div>
                                 </DropdownMenuItem>
                             )}
                             {householdChildren.map(child => (
-                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5">
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
-                                        <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
+                                <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left">
+                                    <div className="flex items-center gap-2 text-left">
+                                        <Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
+                                        <span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span>
                                     </div>
                                 </DropdownMenuItem>
                             ))}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold">
-                                <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
+                            <DropdownMenuSeparator className="text-left" />
+                            <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
+                                <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -1076,8 +1075,8 @@ export default function SoulsWonPage() {
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                                 <DrawerHeader className="text-left text-left">
-                                    <DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle>
-                                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Record a new life won for Christ.</DrawerDescription>
+                                    <DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle>
+                                    <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Record a new life won for Christ.</DrawerDescription>
                                 </DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
@@ -1143,4 +1142,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-

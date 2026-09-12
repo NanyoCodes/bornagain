@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -70,7 +69,7 @@ export default function LandingPage() {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const logo = PlaceHolderImages.find((img) => img.id === 'logo');
 
-  // Silent redirect for authenticated users to avoid landing page flash
+  // Redirect away if already logged in
   useEffect(() => {
     if (!authLoading && user) {
       setIsRedirecting(true);
@@ -84,7 +83,6 @@ export default function LandingPage() {
   
   const { data: testimonies, loading: loadingTestimonies } = useCollection<Testimony>(testimoniesQuery);
 
-  // Return loader while checking auth or redirecting
   if (authLoading || user || isRedirecting) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -148,9 +146,9 @@ export default function LandingPage() {
         </section>
 
         <section className="py-24 bg-background">
-          <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-7xl mx-auto px-6 text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-              <div className="space-y-8 text-left">
+              <div className="space-y-8">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">

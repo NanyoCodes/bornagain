@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -98,6 +97,13 @@ import {
     DrawerTitle,
     DrawerDescription,
 } from "@/components/ui/drawer";
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetDescription,
+} from "@/components/ui/sheet";
 import {
   Table,
   TableBody,
@@ -734,7 +740,7 @@ function SoulProfileContent({
   };
 
   return (
-    <>
+    <div className="space-y-6 text-left">
       <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
         <CardHeader className="p-8 pb-4 text-center text-left">
             <div className="relative inline-block mx-auto mb-4 text-left">
@@ -782,25 +788,25 @@ function SoulProfileContent({
         <CardContent className="p-8 pt-0 space-y-6 text-left">
             <Separator className="opacity-50 text-left" />
             
-            <div className="space-y-4 text-left text-left text-left text-left">
-                <div className="flex items-center justify-between text-left text-left text-left text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left text-left">Spiritual Identity</p>
-                    <div className="flex items-center gap-1 text-left text-left text-left text-left">
+            <div className="space-y-4 text-left">
+                <div className="flex items-center justify-between text-left">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Spiritual Identity</p>
+                    <div className="flex items-center gap-1 text-left">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left">
+                                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10">
                                     <Download className="h-4 w-4 text-left" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-xl text-left text-left text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">Select Format</DropdownMenuLabel>
-                                <DropdownMenuSeparator className="text-left text-left text-left" />
-                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')} className="text-left text-left text-left">CSV Export</DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')} className="text-left text-left text-left">PDF Report</DropdownMenuItem>
+                            <DropdownMenuContent align="end" className="w-40 rounded-xl shadow-xl text-left">
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Select Format</DropdownMenuLabel>
+                                <DropdownMenuSeparator className="text-left" />
+                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'csv')} className="text-left">CSV Export</DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => onExportSingle(soul, 'pdf')} className="text-left">PDF Report</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left" onClick={() => onEdit(soul)}>
-                            <Edit className="h-4 w-4 text-left text-left text-left text-left" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onEdit(soul)}>
+                            <Edit className="h-4 w-4 text-left" />
                         </Button>
                     </div>
                 </div>
@@ -819,7 +825,7 @@ function SoulProfileContent({
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p>
-                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.relationship || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.workStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Rel. Status</p>
@@ -834,11 +840,11 @@ function SoulProfileContent({
 
             <Separator className="opacity-20 text-left" />
 
-            <div className="space-y-3 text-left text-left text-left text-left text-left">
-                <div className="flex items-center justify-between text-left text-left text-left text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left text-left text-left">Contact Identity</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left text-left" onClick={() => onEdit(soul)}>
-                        <Edit className="h-4 w-4 text-left text-left text-left text-left text-left" />
+            <div className="space-y-3 text-left">
+                <div className="flex items-center justify-between text-left">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Contact Identity</p>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onEdit(soul)}>
+                        <Edit className="h-4 w-4 text-left" />
                     </Button>
                 </div>
                 <div className="space-y-2 text-left">
@@ -897,26 +903,26 @@ function SoulProfileContent({
 
             <Separator className="opacity-20 text-left" />
 
-            <div className="space-y-4 text-left text-left text-left text-left text-left text-left">
-                <div className="flex items-center justify-between text-left text-left text-left text-left text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left text-left text-left text-left">Kingdom Placement</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left text-left text-left text-left text-left text-left" onClick={() => onOpenAssignDialog(soul)}>
-                        <Edit className="h-4 w-4 text-left text-left text-left text-left text-left text-left" />
+            <div className="space-y-4 text-left">
+                <div className="flex items-center justify-between text-left">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left">Kingdom Placement</p>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-primary hover:bg-primary/10 text-left" onClick={() => onOpenAssignDialog(soul)}>
+                        <Edit className="h-4 w-4 text-left" />
                     </Button>
                 </div>
-                <div className="space-y-3 text-left text-left text-left text-left text-left text-left text-left">
-                    <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left text-left">
-                        <HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left text-left" />
-                        <div className="min-w-0 text-left text-left">
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left">Fellowship</p>
-                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left">{soul.fellowshipName || 'No Fellowship'}</p>
+                <div className="space-y-3 text-left">
+                    <div className="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary/10 text-left">
+                        <HeartHandshake className="h-4 w-4 text-primary shrink-0 text-left" />
+                        <div className="min-w-0 text-left">
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Fellowship</p>
+                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.fellowshipName || 'No Fellowship'}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left text-left">
-                        <Users className="h-4 w-4 text-blue-500 shrink-0 text-left text-left" />
-                        <div className="min-w-0 text-left text-left text-left">
-                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left text-left text-left">Association</p>
-                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left text-left text-left">{soul.associationName || 'No Association'}</p>
+                    <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10 text-left">
+                        <Users className="h-4 w-4 text-blue-500 shrink-0 text-left" />
+                        <div className="min-w-0 text-left">
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Association</p>
+                            <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.associationName || 'No Association'}</p>
                         </div>
                     </div>
                 </div>
@@ -946,11 +952,11 @@ function SoulProfileContent({
 
             <Separator className="opacity-20 text-left" />
             <div className="space-y-4 text-left">
-                <div className="flex items-center justify-between text-left text-left text-left text-left text-left">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left text-left text-left">
-                        <History className="h-3.5 w-3.5 text-left text-left text-left" /> Interaction History
+                <div className="flex items-center justify-between text-left">
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left">
+                        <History className="h-3.5 w-3.5 text-left" /> Interaction History
                     </p>
-                    <Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5 text-left text-left" onClick={() => onViewHistory(soul)}>
+                    <Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5 text-left" onClick={() => onViewHistory(soul)}>
                         View All
                     </Button>
                 </div>
@@ -1036,35 +1042,35 @@ function SoulProfileContent({
                 )}
             </div>
 
-            <div className="pt-2 text-left space-y-3 text-left text-left text-left text-left">
-                <Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 text-left text-left text-left" onClick={() => onFollowUp(soul)}>
+            <div className="pt-2 text-left space-y-3">
+                <Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 text-left" onClick={() => onFollowUp(soul)}>
                     LOG FOLLOW-UP
                 </Button>
-                <Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px] text-left text-left text-left" onClick={() => onDelete(soul)}>
-                    <Trash2 className="mr-2 h-4 w-4 text-left text-left" /> DELETE RECORD
+                <Button variant="ghost" className="w-full h-11 text-destructive font-bold uppercase tracking-widest text-[10px]" onClick={() => onDelete(soul)}>
+                    <Trash2 className="mr-2 h-4 w-4" /> DELETE RECORD
                 </Button>
             </div>
         </CardContent>
       </Card>
 
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
-          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
-                  <DialogHeader className="text-left text-left text-left text-left text-left text-left">
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Kingdom Intercession</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Draft a powerful prayer for {soul.firstName}.</DialogDescription>
+          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+              <div className="p-8 border-b bg-muted/10 text-left">
+                  <DialogHeader>
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left">Draft a powerful prayer for {soul.firstName}.</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="p-8 space-y-6 text-left text-left text-left text-left text-left">
-                <div className="space-y-3 text-left text-left text-left text-left">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left">Select Focus</label>
-                    <div className="flex flex-wrap gap-2 text-left text-left text-left text-left text-left">
+              <div className="p-8 space-y-6 text-left">
+                <div className="space-y-3 text-left">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Focus</label>
+                    <div className="flex flex-wrap gap-2 text-left">
                         {prayerTemplates.map(t => (
                             <Button 
                                 key={t.id} 
                                 variant="outline" 
                                 size="sm" 
-                                className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary text-left text-left text-left text-left"
+                                className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary text-left"
                                 onClick={() => setCustomMessageText(resolveTemplate(t.text, soul))}
                             >
                                 {t.label}
@@ -1072,18 +1078,18 @@ function SoulProfileContent({
                         ))}
                     </div>
                 </div>
-                  <div className="space-y-2 text-left text-left text-left text-left">
-                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left">Customize Message</Label>
+                  <div className="space-y-2 text-left">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Message</Label>
                       <Textarea 
                           value={customMessageText}
                           onChange={e => setCustomMessageText(e.target.value)}
-                          className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left text-left text-left text-left"
+                          className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left"
                       />
                   </div>
                   <Button 
                       onClick={() => handlePrayerCustomizationConfirm(customMessageText)} 
                       disabled={!customMessageText.trim()} 
-                      className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left text-left text-left"
+                      className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left"
                   >
                       CONTINUE TO CHANNEL
                   </Button>
@@ -1092,94 +1098,94 @@ function SoulProfileContent({
       </Dialog>
 
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left text-left text-left">
-          <DialogHeader className="text-center space-y-2 text-left text-left text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left text-left text-left">
-                  <MessageSquare className="h-7 w-7 text-primary text-left text-left text-left" />
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
+          <DialogHeader className="text-center space-y-2 text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
+                  <MessageSquare className="h-7 w-7 text-primary text-left" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left text-left text-left">Message Hub</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left text-left text-left">How would you like to encourage {soul.firstName}?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left text-left text-left text-left">
-            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left text-left">
-              <WhatsAppIcon className="h-5 w-5 text-left text-left text-left" /> WhatsApp
+          <div className="flex flex-col gap-3 pt-6 text-left">
+            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
+              <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp
             </Button>
-            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left text-left text-left">
-              <MessageSquare className="h-5 w-5 text-left text-left text-left" /> Standard SMS
+            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
+              <MessageSquare className="h-5 w-5 text-left" /> Standard SMS
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
-          <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
-            <DialogHeader className="text-left text-left text-left text-left">
-              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Support Provided</DialogTitle>
-              <DialogDescription className="text-sm font-medium text-left text-left text-left">Describe how you supported {soul.firstName}.</DialogDescription>
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+          <div className="p-8 border-b bg-muted/10 text-left">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
+              <DialogDescription className="text-sm font-medium text-left">Describe how you supported {soul.firstName}.</DialogDescription>
             </DialogHeader>
           </div>
-          <div className="p-8 space-y-6 text-left text-left text-left">
-            <div className="space-y-2 text-left text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Support Details</Label>
+          <div className="p-8 space-y-6 text-left">
+            <div className="space-y-2 text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomMessageText(e.target.value)} 
-                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left text-left"
+                    className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
                 />
             </div>
-            <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-12 rounded-xl font-bold text-left text-left text-left">Confirm Service</Button>
+            <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-12 rounded-xl font-bold text-left">Confirm Service</Button>
           </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left text-left text-left text-left">
-          <DialogHeader className="text-center space-y-2 text-left text-left text-left text-left text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left text-left text-left text-left">
-                  <Share2 className="h-7 w-7 text-primary text-left text-left text-left text-left" />
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
+          <DialogHeader className="text-center space-y-2 text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-left">
+                  <Share2 className="h-7 w-7 text-primary text-left" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left text-left text-left text-left">Share Details</DialogTitle>
-            <DialogDescription className="text-sm font-medium text-center text-left text-left text-left text-left">Where would you like to share {soul.firstName}'s info?</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-6 text-left text-left text-left text-left text-left">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left text-left text-left">
-              <WhatsAppIcon className="h-5 w-5 text-left text-left text-left text-left" /> WhatsApp External
+          <div className="flex flex-col gap-3 pt-6 text-left">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
+              <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External
             </Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left text-left text-left text-left">
-              <HeartHandshake className="h-5 w-5 text-left text-left text-left text-left" /> Partner on App
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
+              <HeartHandshake className="h-5 w-5 text-left" /> Partner on App
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
-                  <DialogHeader className="text-left text-left text-left text-left text-left">
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Select Partner</DialogTitle>
-                      <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Which partner should receive these details?</DialogDescription>
+          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+              <div className="p-8 border-b bg-muted/10 text-left">
+                  <DialogHeader className="text-left text-left">
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="p-6 text-left text-left text-left">
-              <ScrollArea className="h-64 text-left text-left text-left">
-                  <div className="space-y-2 text-left text-left text-left">
+              <div className="p-6 text-left">
+              <ScrollArea className="h-64 text-left">
+                  <div className="space-y-2 text-left">
                       {uniquePartners.map(p => (
                           <Button 
                               key={p.userId} 
                               variant="ghost" 
-                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center text-left text-left text-left"
+                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center"
                               onClick={() => handleShareToPartner(p)}
                           >
-                              <Avatar className="h-8 w-8 border shrink-0 text-left text-left text-left">
-                                  <AvatarImage src={p.photoURL} className="text-left text-left text-left" />
-                                  <AvatarFallback className="font-bold text-[10px] text-left text-left text-left">{p.firstName?.charAt(0)}</AvatarFallback>
+                              <Avatar className="h-8 w-8 border shrink-0">
+                                  <AvatarImage src={p.photoURL} />
+                                  <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
-                              <span className="font-bold text-sm group-hover:text-primary transition-colors text-left text-left text-left">{p.firstName} {p.lastName}</span>
+                              <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
                           </Button>
                       ))}
                       {uniquePartners.length === 0 && (
-                          <p className="text-center text-xs text-muted-foreground py-12 text-left text-left text-left">No partners found. Connect with some in Settings!</p>
+                          <p className="text-center text-xs text-muted-foreground py-12 text-left">No partners found. Connect with some in Settings!</p>
                       )}
                   </div>
               </ScrollArea>
@@ -1220,7 +1226,7 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
         <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left">
             <div className="flex items-center justify-between p-4 gap-4 text-left">
                 <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-                    <div className="flex -space-x-3 shrink-0 text-left">
+                    <div className="flex -space-x-3 shrink-0">
                         <Avatar className={cn("h-10 w-10 border shadow-inner")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
@@ -1237,19 +1243,19 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                         )}
                     </div>
                     <div className="min-w-0 text-left">
-                        <div className="flex items-center gap-2 text-left flex-wrap text-left">
+                        <div className="flex items-center gap-2 text-left flex-wrap">
                             <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight text-left">
                               {soul.firstName} {soul.lastName}
                               {spouse && <span className="text-primary/60 lowercase ml-1"> & {spouse.firstName}</span>}
                             </p>
                         </div>
-                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left text-left text-left">
+                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left">
                             <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                             {isFamily && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0 text-left">Household</Badge>}
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0 text-left">
+                <div className="flex items-center gap-2 shrink-0">
                     {isFamily && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -1258,13 +1264,13 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Household Hub</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
                                 <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onSelect={onClick} className="rounded-lg py-2.5 text-left text-left">
-                                    <User className="mr-2 h-4 w-4 text-left text-left" /> View Primary Profile
+                                <DropdownMenuItem onSelect={onClick} className="rounded-lg py-2.5 text-left">
+                                    <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
                                 </DropdownMenuItem>
                                 {spouse && (
-                                    <DropdownMenuItem onSelect={() => onClick()} className="rounded-lg py-2.5 text-left text-left">
+                                    <DropdownMenuItem onSelect={() => onClick()} className="rounded-lg py-2.5 text-left">
                                         <div className="flex items-center gap-2 text-left">
                                             <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
                                             <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
@@ -1272,16 +1278,16 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                                     </DropdownMenuItem>
                                 )}
                                 {householdChildren.map(child => (
-                                    <DropdownMenuItem key={child.id} onSelect={() => onClick()} className="rounded-lg py-2.5 text-left text-left">
+                                    <DropdownMenuItem key={child.id} onSelect={() => onClick()} className="rounded-lg py-2.5 text-left">
                                         <div className="flex items-center gap-2 text-left">
                                             <Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
                                             <span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 ))}
-                                <DropdownMenuSeparator className="text-left text-left" />
-                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left">
-                                    <PlusCircle className="mr-2 h-4 w-4 text-left text-left" /> Add Child to Household
+                                <DropdownMenuSeparator className="text-left" />
+                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
+                                    <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -1321,8 +1327,8 @@ const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddCh
         >
             <TableCell className="font-medium p-4 text-left">
                 <div className="flex items-center justify-between gap-4 text-left">
-                    <div className="flex items-center gap-4 text-left text-left text-left">
-                        <div className="flex -space-x-3 shrink-0 text-left">
+                    <div className="flex items-center gap-4 text-left">
+                        <div className="flex -space-x-3 shrink-0">
                             <Avatar className={cn("h-10 w-10 border shadow-inner")}>
                                 <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                                 <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
@@ -1339,11 +1345,11 @@ const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddCh
                             )}
                         </div>
                         <div className="min-w-0 text-left">
-                            <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left text-left">
+                            <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left">
                                 {soul.firstName} {soul.lastName}
                                 {spouse && <span className="text-primary/60 lowercase ml-1"> & {spouse.firstName}</span>}
                             </div>
-                            {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left text-left text-left"><Church className="h-3 w-3 shrink-0 text-left text-left" />{soul.church}</div>}
+                            {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left"><Church className="h-3 w-3 shrink-0 text-left" />{soul.church}</div>}
                         </div>
                     </div>
                     {isFamily && (
@@ -1354,13 +1360,13 @@ const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddCh
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Household Hub</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
                                 <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onSelect={onSelect} className="rounded-lg py-2.5 text-left text-left">
-                                    <User className="mr-2 h-4 w-4 text-left text-left" /> View Primary Profile
+                                <DropdownMenuItem onSelect={onSelect} className="rounded-lg py-2.5 text-left">
+                                    <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
                                 </DropdownMenuItem>
                                 {spouse && (
-                                    <DropdownMenuItem onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left text-left">
+                                    <DropdownMenuItem onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left">
                                         <div className="flex items-center gap-2 text-left">
                                             <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left">{spouse.firstName.charAt(0)}</AvatarFallback></Avatar>
                                             <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
@@ -1368,16 +1374,16 @@ const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddCh
                                     </DropdownMenuItem>
                                 )}
                                 {householdChildren.map(child => (
-                                    <DropdownMenuItem key={child.id} onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left text-left">
+                                    <DropdownMenuItem key={child.id} onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left">
                                         <div className="flex items-center gap-2 text-left">
                                             <Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left">{child.firstName.charAt(0)}</AvatarFallback></Avatar>
                                             <span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 ))}
-                                <DropdownMenuSeparator className="text-left text-left" />
-                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left">
-                                    <PlusCircle className="mr-2 h-4 w-4 text-left text-left" /> Add Child to Household
+                                <DropdownMenuSeparator className="text-left" />
+                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
+                                    <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -1416,7 +1422,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
 
   if (loading || !mounted) {
     return (
-        <div className="space-y-4 text-left text-left">
+        <div className="space-y-4 text-left">
             {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-center space-x-4 p-4 border-b last:border-0 bg-card/50 backdrop-blur-sm rounded-xl text-left">
                     <Skeleton className="h-12 w-12 rounded-full text-left" />
@@ -1431,7 +1437,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
   if (souls.length === 0) {
     return (
         <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left">
-            <CardContent className="text-left text-left">
+            <CardContent className="text-left">
                 <div className="text-center py-24 flex flex-col items-center text-left">
                     <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border-2 border-primary/20 text-left">
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40 text-left" />
@@ -1459,9 +1465,9 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start text-left">
-        <div className="flex-1 w-full text-left text-left text-left">
+        <div className="flex-1 w-full text-left">
             {isMobile ? (
-                <div className="space-y-px text-left text-left">
+                <div className="space-y-px text-left">
                     {souls.map((soul) => (
                         <SoulCard key={soul.id} soul={soul} allSouls={souls} onClick={() => setSelectedSoulId(soul.id)} onAddChild={onAddChild} />
                     ))}
@@ -1475,15 +1481,15 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                         </CardTitle>
                         <CardDescription className="text-base font-medium text-left">Keep track of spiritual development and community integration.</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-0 text-left text-left">
-                        <div className="overflow-x-auto text-left text-left">
-                            <Table className="text-left text-left">
-                                <TableHeader className="bg-muted/10 text-left text-left">
-                                    <TableRow className="hover:bg-transparent text-left text-left">
-                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Soul Identity</TableHead>
+                    <CardContent className="p-0 text-left">
+                        <div className="overflow-x-auto text-left">
+                            <Table className="text-left">
+                                <TableHeader className="bg-muted/10 text-left">
+                                    <TableRow className="hover:bg-transparent text-left">
+                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
                                     </TableRow>
                                 </TableHeader>
-                                <TableBody className="text-left text-left">
+                                <TableBody className="text-left">
                                     {souls.map((soul) => (
                                     <SoulTableRow 
                                         key={soul.id} 
@@ -1505,20 +1511,20 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
         {/* Tablet/Mobile Pop-up */}
         <Drawer open={!!selectedSoulId && !!selectedSoul && (isMobile || (mounted && typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && setSelectedSoulId(null)}>
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                    <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left text-left text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span>
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                    <DrawerHeader className="text-left flex-shrink-0 text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left">
+                            <Sparkles className="h-4 w-4 text-primary text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
                         </div>
-                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
+                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left">
-                    <div className="p-6 pb-24 text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left">
                         {profileView}
                     </div>
                 </ScrollArea>
@@ -1526,7 +1532,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
         </Drawer>
 
         {/* Desktop Detailed Preview Panel (Large screens only) */}
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left text-left text-left">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left">
             <AnimatePresence>
                 {selectedSoul ? (
                     <motion.div
@@ -1534,17 +1540,17 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="space-y-6 text-left text-left text-left"
+                        className="space-y-6 text-left"
                     >
                         {profileView}
-                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left text-left text-left">
+                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left">
                             {selectedSoul.firstName} {selectedSoul.lastName}
                         </p>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left text-left">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left">Select a record to preview identity</p>
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left">
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>
@@ -1552,4 +1558,3 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
     </div>
   );
 }
-
