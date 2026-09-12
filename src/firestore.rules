@@ -292,9 +292,9 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
-              (request.resource.data.authorId == request.authorId) ||
+              (request.resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }
