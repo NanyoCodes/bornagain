@@ -104,6 +104,10 @@ service cloud.firestore {
         allow write: if isOwner(userId);
       }
 
+      match /bibleHighlights/{highlightId} {
+        allow read, write: if isOwner(userId);
+      }
+
       match /notes/{noteId} {
         allow read, write: if isOwner(userId);
       }
@@ -205,7 +209,7 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
       allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid);
       allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.auth.uid) || 
+        (request.resource.data.authorId == request.auth.uid) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 
@@ -328,7 +332,7 @@ service cloud.firestore {
           resource.data.get('isPrivate', false) == false
         );
         allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-        allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+        allow update, delete: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
     }
 
     match /mail/{mailId} {

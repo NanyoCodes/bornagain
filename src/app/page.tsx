@@ -93,7 +93,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative text-left">
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b text-left">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between text-left text-left">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between text-left">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
             {logo && (
               <Avatar className="h-10 w-10 sm:h-11 sm:w-11 text-left">
@@ -103,10 +103,10 @@ export default function LandingPage() {
             )}
           </Link>
           <div className="flex items-center gap-2 sm:gap-4 text-left">
-            <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold text-left text-left">
+            <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold text-left">
               <Link href="/login" className="text-left">Sign In</Link>
             </Button>
-            <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9 text-left text-left">
+            <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9 text-left">
               <Link href="/signup" className="text-left">Join Movement</Link>
             </Button>
           </div>
@@ -114,29 +114,29 @@ export default function LandingPage() {
       </nav>
 
       <main className="flex-grow pt-16 text-left">
-        <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden bg-zinc-950 text-left text-left">
+        <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden bg-zinc-950 text-left">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent text-left" />
           <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-left">
             <div className="max-w-3xl space-y-8 text-center sm:text-left text-left">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-left text-left">
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-left">
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[10px] text-left">
                   GLORIFYING GOD
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left text-left">
+                <h1 className="text-4xl sm:text-6xl md:text-8xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left">
                   Testify the <br className="hidden sm:block text-left" />
                   Greatness of GOD.<br className="hidden sm:block text-left" />
                   <span className="text-primary text-left">Join the Harvest.</span>
                 </h1>
-                <p className="mt-6 text-lg sm:text-xl text-white/80 font-medium max-w-xl italic leading-relaxed text-pretty text-left text-left">
+                <p className="mt-6 text-lg sm:text-xl text-white/80 font-medium max-w-xl italic leading-relaxed text-pretty text-left">
                   "And they overcame him by the blood of the Lamb, and by the word of their testimony..." — Revelation 12:11
                 </p>
               </motion.div>
 
               <div className="flex flex-col sm:flex-row gap-4 text-left">
-                <Button asChild size="lg" className="h-12 px-8 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest text-left text-left">
+                <Button asChild size="lg" className="h-12 px-8 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest text-left">
                   <Link href="/signup" className="text-left">Get Started Free <ArrowRight className="ml-2 h-5 w-5 text-left" /></Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-12 px-8 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 text-left text-left">
+                <Button asChild variant="outline" size="lg" className="h-12 px-8 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 text-left">
                   <Link href="/about" className="text-left">Our Mission</Link>
                 </Button>
               </div>
@@ -145,7 +145,7 @@ export default function LandingPage() {
         </section>
 
         <section className="py-24 bg-background text-left">
-          <div className="max-w-7xl mx-auto px-6 text-left text-left">
+          <div className="max-w-7xl mx-auto px-6 text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 text-left">
               <div className="space-y-8 text-left">
                 <div className="space-y-4 text-left">
@@ -160,7 +160,7 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-              <Card className="rounded-[2.5rem] border-l-8 border-l-primary bg-muted/20 border-none shadow-sm overflow-hidden text-left text-left">
+              <Card className="rounded-[2.5rem] border-l-8 border-l-primary bg-muted/20 border-none shadow-sm overflow-hidden text-left">
                    <CardContent className="p-10 text-left">
                       <p className="italic text-muted-foreground text-lg leading-relaxed text-justify text-left">
                         "I believe technology is a divine gift for this final harvest. Seeing the need for accountability in evangelism, I was led to create a space where every miracle is recorded for God's glory."
@@ -182,8 +182,8 @@ export default function LandingPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-left">
               {features.map((f, i) => (
-                <Card key={i} className="rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 duration-300 text-left text-left">
-                  <CardHeader className="p-8 text-left text-left">
+                <Card key={i} className="rounded-[2rem] border-none shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 duration-300 text-left">
+                  <CardHeader className="p-8 text-left">
                     <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-4", f.bgColor)}>
                       <f.icon className={cn("h-6 w-6", f.color)} />
                     </div>
@@ -199,8 +199,8 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="bg-muted/50 border-t py-16 text-left text-left">
-        <div className="max-w-7xl mx-auto px-8 text-left text-left">
+      <footer className="bg-muted/50 border-t py-16 text-left">
+        <div className="max-w-7xl mx-auto px-8 text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
@@ -231,7 +231,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="h-px w-full bg-muted opacity-50 mb-8 text-left" />
-          <div className="text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left text-left">
+          <div className="text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left">
             © {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.
           </div>
         </div>
