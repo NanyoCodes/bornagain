@@ -681,7 +681,7 @@ export default function BibleReaderPage() {
                         </div>
                     </div>
                     <div className="flex-grow flex gap-0 min-h-0 text-left overflow-hidden">
-                        <div className="flex-1 min-h-0 flex flex-col overflow-hidden text-left">
+                        <div className="flex-1 min-0 flex flex-col overflow-hidden text-left">
                             <ScrollArea ref={scrollAreaRef} className="flex-grow border-none relative h-full text-left">
                                 {isLoadingChapter && (
                                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 z-20 gap-2 text-left">

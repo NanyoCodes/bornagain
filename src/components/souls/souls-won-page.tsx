@@ -121,7 +121,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
             const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
             const soulSpouse = (soul.spouseName || "").toLowerCase();
             const otherSpouse = (s.spouseName || "").toLowerCase();
-            return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
+            return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
                    (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
         }) : null;
 
@@ -135,7 +135,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                     className="flex items-center gap-3 min-w-0 flex-1 text-left active:scale-[0.98] transition-all"
                 >
                     <div className="flex -space-x-3 shrink-0 text-left">
-                        <Avatar className="h-12 w-12 border-2 border-background shadow-md text-left">
+                        <Avatar className={cn("h-12 w-12 border-2 border-background shadow-md text-left")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
