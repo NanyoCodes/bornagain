@@ -133,7 +133,7 @@ import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
 import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -143,6 +143,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 const iconMap: Record<string, any> = {
@@ -318,7 +319,7 @@ function ShareWordDialog({
                         onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference, `${window.location.origin}/dashboard/bible`))}
                     >
                         <div className="flex items-center justify-between w-full">
-                            <span className="font-black text-[9px] sm:text-xs uppercase tracking-widest text-primary">{res.reference}</span>
+                            <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{res.reference}</span>
                             <Send className="h-3.5 w-3.5 sm:h-4 w-4 text-primary opacity-40" />
                         </div>
                         <p className="text-xs sm:text-base text-muted-foreground leading-relaxed italic line-clamp-4 text-left">"{res.text.trim()}"</p>
@@ -971,22 +972,12 @@ function SoulProfileContent({
                         sortedHistory.slice(0, 3).map((log, index) => {
                             const date = safeToDate(log.date);
                             return (
-                                <div key={index} className="relative pl-4 border-l-2 border-primary/20">
-                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">
+                                <div key={index} className="relative pl-4 border-l-2 border-primary/20 text-left">
+                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left">
                                         {date ? format(date, "MMM d, yyyy") : 'Recently'}
                                         {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName.split(' ')[0]}</span>}
                                     </p>
-                                    {log.actions && log.actions.length > 0 && (
-                                        <div className="flex flex-wrap gap-1 mb-2">
-                                            {log.actions.map(aId => {
-                                                const action = actionItems.find(a => a.id === aId);
-                                                return action ? (
-                                                    <Badge key={aId} variant="outline" className="h-3.5 px-1.5 text-[7px] font-black uppercase bg-background border-primary/10">{action.label}</Badge>
-                                                ) : null;
-                                            })}
-                                        </div>
-                                    )}
-                                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic">
+                                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left">
                                         &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                     </p>
                                 </div>
@@ -1241,8 +1232,8 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
     return (
         <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left">
             <div className="flex items-center justify-between p-4 gap-4 text-left">
-                <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
-                    <div className="flex -space-x-3 shrink-0 text-left">
+                <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left">
+                    <div className="flex -space-x-3 shrink-0 text-left text-left">
                         <Avatar className={cn("h-10 w-10 border shadow-inner")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
@@ -1258,20 +1249,20 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                             </Avatar>
                         )}
                     </div>
-                    <div className="min-w-0 flex-1 text-left">
-                        <div className="flex items-center gap-2 flex-wrap text-left">
+                    <div className="min-w-0 flex-1 text-left text-left">
+                        <div className="flex items-center gap-2 flex-wrap text-left text-left">
                             <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight flex-1 text-left">
                               {soul.firstName || 'Unknown'} {soul.lastName || ''}
                               {spouse && <span className="text-primary/60 ml-1"> & {spouse.firstName}</span>}
                             </p>
                             <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                         </div>
-                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left">
+                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left text-left text-left">
                             {isFamily && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0 text-left">Household</Badge>}
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0 text-left" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-2 shrink-0 text-left text-left" onClick={(e) => e.stopPropagation()}>
                     {isFamily && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -1557,14 +1548,14 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                         className="space-y-6 text-left"
                     >
                         {profileView}
-                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left">
+                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left">
                             {selectedSoul.firstName} {selectedSoul.lastName}
                         </p>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left">Select a record to preview identity</p>
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left">
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>
