@@ -7,6 +7,7 @@ export const actionItems = [
   { id: 'visited_home', label: 'Visit' },
   { id: 'introduced_friend', label: 'Introduce to a partner' },
   { id: 'gave_gift', label: 'Give a gift to' },
+  { id: 'matchmaking', label: 'Propose Matchmaking for' },
   { id: 'phone_call', label: 'Call' },
   { id: 'text_message', label: 'Message' },
   { id: 'helped_with_need', label: 'Help with a need' },

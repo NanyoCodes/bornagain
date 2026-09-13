@@ -156,6 +156,7 @@ const iconMap: Record<string, any> = {
     'text_message': MessageSquare,
     'helped_with_need': Heart,
     'invited_to_event': Calendar,
+    'matchmaking': HeartHandshake,
 };
 
 const getStatusClasses = (status: FollowUpStatus | undefined): string => {
@@ -746,7 +747,7 @@ function SoulProfileContent({
 
   return (
     <div className="space-y-6 text-left">
-      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-4 border-t-primary/20 text-left">
+      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
         <CardHeader className="p-8 pb-4 text-center">
             <div className="relative inline-block mx-auto mb-4">
                 <Dialog>
@@ -760,7 +761,7 @@ function SoulProfileContent({
                         <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                             <DialogHeader className="sr-only text-left text-left"><DialogTitle className="text-left text-left">Soul Photo</DialogTitle></DialogHeader>
                             <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
@@ -975,6 +976,16 @@ function SoulProfileContent({
                                         {date ? format(date, "MMM d, yyyy") : 'Recently'}
                                         {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName.split(' ')[0]}</span>}
                                     </p>
+                                    {log.actions && log.actions.length > 0 && (
+                                        <div className="flex flex-wrap gap-1 mb-2">
+                                            {log.actions.map(aId => {
+                                                const action = actionItems.find(a => a.id === aId);
+                                                return action ? (
+                                                    <Badge key={aId} variant="outline" className="h-3.5 px-1.5 text-[7px] font-black uppercase bg-background border-primary/10">{action.label}</Badge>
+                                                ) : null;
+                                            })}
+                                        </div>
+                                    )}
                                     <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic">
                                         &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                     </p>
@@ -1469,32 +1480,32 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
   );
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start">
-        <div className="flex-1 w-full">
+    <div className="flex flex-col lg:flex-row gap-8 items-start text-left">
+        <div className="flex-1 w-full text-left">
             {isMobile ? (
-                <div className="space-y-px">
+                <div className="space-y-px text-left">
                     {souls.map((soul) => (
                         <SoulCard key={soul.id} soul={soul} allSouls={souls} onClick={() => setSelectedSoulId(soul.id)} onAddChild={onAddChild} />
                     ))}
                 </div>
             ) : (
-                <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden">
-                    <CardHeader className="p-8 border-b bg-muted/5">
+                <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left">
                         <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
                             <Heart className="h-6 w-6 text-primary fill-current" />
                             Harvest Dashboard
                         </CardTitle>
                         <CardDescription className="text-base font-medium text-left">Keep track of spiritual development and community integration.</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-0">
-                        <div className="overflow-x-auto">
-                            <Table>
+                    <CardContent className="p-0 text-left">
+                        <div className="overflow-x-auto text-left">
+                            <Table className="text-left">
                                 <TableHeader className="bg-muted/10">
                                     <TableRow className="hover:bg-transparent">
-                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Soul Identity</TableHead>
+                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
                                     </TableRow>
                                 </TableHeader>
-                                <TableBody>
+                                <TableBody className="text-left">
                                     {souls.map((soul) => (
                                     <SoulTableRow 
                                         key={soul.id} 
@@ -1524,18 +1535,18 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                         <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left">
-                    <div className="p-6 pb-24">
+                    <div className="p-6 pb-24 text-left">
                         {profileView}
                     </div>
                 </ScrollArea>
             </DrawerContent>
         </Drawer>
 
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left">
             <AnimatePresence>
                 {selectedSoul ? (
                     <motion.div
@@ -1551,7 +1562,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                         </p>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5">
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">
                         <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance">Select a record to preview identity</p>
                     </div>

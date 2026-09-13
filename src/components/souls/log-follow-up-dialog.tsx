@@ -37,7 +37,8 @@ import {
   X,
   Share2,
   Share,
-  HeartHandshake
+  HeartHandshake,
+  Hourglass
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,6 +48,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { format } from "date-fns";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -59,6 +61,7 @@ const iconMap: Record<string, any> = {
     'text_message': MessageSquare,
     'helped_with_need': Heart,
     'invited_to_event': Calendar,
+    'matchmaking': HeartHandshake,
 };
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -564,13 +567,13 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
   const CommDialog = (
     <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
-      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
         <DialogHeader className="text-center space-y-2">
-            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                 <MessageSquare className="h-7 w-7 text-primary" />
             </div>
           <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Message Hub</DialogTitle>
-          <DialogDescription className="text-sm font-medium">How would you like to encourage {soul?.firstName}?</DialogDescription>
+          <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul?.firstName}?</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-3 pt-6">
           <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
@@ -586,7 +589,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
   const NeedDialog = (
     <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-      <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
+      <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
         <div className="p-8 border-b bg-muted/10">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DialogTitle>
@@ -595,7 +598,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
         </div>
         <div className="p-8 space-y-6">
           <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
               <Textarea 
                   placeholder="e.g. Provided food items, helped with bill..." 
                   onChange={e => setCustomPrayerText(e.target.value)} // Reusing customPrayerText temporarily for simple local state
@@ -612,7 +615,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
       <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
         <DialogHeader className="text-center space-y-2">
-            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                 <Share className="h-7 w-7 text-primary" />
             </div>
           <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Share Details</DialogTitle>
@@ -669,7 +672,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+        <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
           {soul && (
             <>
               <div className="p-8 border-b flex-shrink-0 bg-muted/10">
@@ -708,7 +711,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-lg flex flex-col max-h-[90vh] p-0 rounded-3xl overflow-hidden">
+        <DialogContent className="sm:max-w-lg flex flex-col max-h-[90vh] p-0 rounded-3xl overflow-hidden text-left">
           {soul && (
             <>
               <div className="p-6 border-b shrink-0 bg-muted/10">

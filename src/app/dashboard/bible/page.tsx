@@ -34,7 +34,7 @@ import {
   limit,
   orderBy,
 } from 'firebase/firestore';
-import type { BibleHighlight, ReadingHistoryItem, UserProfile, TestimonyComment } from '@/lib/types';
+import type { BibleHighlight, ReadingHistoryItem, UserProfile } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { format, isSameDay } from 'date-fns';
 import {
