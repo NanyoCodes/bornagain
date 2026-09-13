@@ -846,7 +846,7 @@ export default function BibleReaderPage() {
                                         </div>
                                     </div>
                                 )) : (
-                                    <div className="text-center py-32 flex flex-col items-center text-left">
+                                    <div className="text-center py-32 flex flex-col items-center text-left text-left">
                                         <History className="h-16 w-16 text-muted-foreground/10 mb-4" />
                                         <h3 className="font-black uppercase tracking-tight text-xl opacity-30 text-left">No Records</h3>
                                         <p className="text-sm text-muted-foreground mt-2 italic px-12 text-balance leading-relaxed text-center">

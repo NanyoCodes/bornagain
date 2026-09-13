@@ -405,8 +405,8 @@ function ShareWordDialog({
              )}
              onClick={() => toggleVerse(v.verse)}
             >
-              <sup className="text-[10px] font-black mr-2 opacity-40">{v.verse}</sup>
-              <span className="text-sm leading-relaxed">{v.text}</span>
+              <sup className="text-[10px] font-black mr-2 opacity-40 text-left">{v.verse}</sup>
+              <span className="text-sm leading-relaxed text-left">{v.text}</span>
            </div>
          ))}
        </div>
@@ -1155,7 +1155,7 @@ function SoulProfileContent({
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
             <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
-              <WhatsAppIcon className="h-5 w-5 text-center" /> WhatsApp External
+              <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
             </Button>
             <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
               <HeartHandshake className="h-5 w-5" /> Partner on App
