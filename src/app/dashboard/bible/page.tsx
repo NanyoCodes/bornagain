@@ -707,7 +707,7 @@ export default function BibleReaderPage() {
                                         </div>
                                         {selectedVerses.length > 0 && toolbarPos && (
                                             <div className="absolute z-30 transition-all pointer-events-none" style={{ top: `${toolbarPos.top}px`, left: `${toolbarPos.left}px`, transform: 'translate(-50%, -120%)' }}>
-                                                <Button size="default" className="pointer-events-auto shadow-xl h-10 px-6 rounded-full font-black uppercase tracking-widest text-[10px]" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>{isProcessingHighlight ? <Loader2 className="h-4 w-4 animate-spin" /> : <Highlighter className="mr-2 h-4 w-4" />}Highlight & Note</Button>
+                                                <Button size="default" className="pointer-events-auto shadow-xl h-10 px-6 rounded-full font-black uppercase tracking-widest text-[10px]" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>{isProcessingHighlight ? <Loader2 className="h-4 w-4 animate-spin text-primary" /> : <Highlighter className="mr-2 h-4 w-4" />}Highlight & Note</Button>
                                             </div>
                                         )}
                                         <div className="mt-16 flex flex-col sm:flex-row gap-6 items-center justify-between pb-32 text-left text-left">
@@ -846,7 +846,7 @@ export default function BibleReaderPage() {
                                         </div>
                                     </div>
                                 )) : (
-                                    <div className="text-center py-32 flex flex-col items-center text-left text-left">
+                                    <div className="text-center py-32 flex flex-col items-center text-left text-left text-left">
                                         <History className="h-16 w-16 text-muted-foreground/10 mb-4" />
                                         <h3 className="font-black uppercase tracking-tight text-xl opacity-30 text-left">No Records</h3>
                                         <p className="text-sm text-muted-foreground mt-2 italic px-12 text-balance leading-relaxed text-center">

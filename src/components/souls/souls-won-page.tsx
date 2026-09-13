@@ -116,13 +116,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
         const isFamily = soul.maritalStatus === 'Married';
         const wonAt = safeToDate(soul.wonAt);
         
-        const spouse = isFamily ? allSouls.find(s => {
-            if (s.id === soul.id || s.maritalStatus !== 'Married') return false;
-            const otherFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+        const spouse = isFamily ? allSouls.find(other => {
+            if (other.id === soul.id || other.maritalStatus !== 'Married') return false;
+            const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
             const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
             const soulSpouse = (soul.spouseName || "").toLowerCase();
-            const otherSpouse = (s.spouseName || "").toLowerCase();
-            return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
+            const otherSpouse = (other.spouseName || "").toLowerCase();
+            return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
                    (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
         }) : null;
 
@@ -366,7 +366,7 @@ export default function SoulsWonPage() {
                 const soulSpouse = (s.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
                 return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
+                       (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
               });
 
               if (spouse) {
@@ -977,7 +977,7 @@ export default function SoulsWonPage() {
                 </div>
             </div>
 
-            <div className="lg:col-span-4 text-left text-left text-left">
+            <div className="lg:col-span-4 text-left text-left text-left text-left">
                 <FeedSidebar mode="harvest" />
             </div>
         </div>
@@ -1013,10 +1013,10 @@ export default function SoulsWonPage() {
                 </Drawer>
             ) : (
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
-                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
+                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                                <BarChart3 className="h-4 w-4 text-primary text-left text-left" />
+                                <BarChart3 className="h-4 w-4 text-primary text-left text-left text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left text-left">
@@ -1110,8 +1110,8 @@ export default function SoulsWonPage() {
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                                <DialogHeader className="text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                                <DialogHeader className="text-left text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-left text-left text-left text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
@@ -1128,7 +1128,7 @@ export default function SoulsWonPage() {
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                                 <DialogHeader className="text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-left text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
