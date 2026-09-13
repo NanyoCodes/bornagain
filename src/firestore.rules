@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Fixed security rules and unified bible highlights - 2025-06-18T12:00:00Z
+    // Deployment trigger: Fixed security rule typos and shared journal list access - 2025-06-18T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -294,7 +294,7 @@ service cloud.firestore {
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
             allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
-              (request.resource.data.authorId == request.auth.uid) ||
+              (request.resource.data.authorId == request.authorId) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }
