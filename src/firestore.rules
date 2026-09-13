@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Fixed typos and shared bible highlights - 2025-06-20T12:00:00Z
+    // Deployment trigger: Fixed rule typos and verified shared highlights - 2025-06-25T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;

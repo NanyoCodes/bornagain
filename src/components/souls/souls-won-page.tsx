@@ -116,13 +116,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
         const isFamily = soul.maritalStatus === 'Married';
         const wonAt = safeToDate(soul.wonAt);
         
-        const spouse = isFamily ? allSouls.find(other => {
-            if (other.id === soul.id || other.maritalStatus !== 'Married') return false;
-            const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
+        const spouse = isFamily ? allSouls.find(s => {
+            if (s.id === soul.id || s.maritalStatus !== 'Married') return false;
+            const otherFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
             const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
             const soulSpouse = (soul.spouseName || "").toLowerCase();
-            const otherSpouse = (other.spouseName || "").toLowerCase();
-            return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
+            const otherSpouse = (s.spouseName || "").toLowerCase();
+            return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
                    (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
         }) : null;
 
@@ -963,7 +963,7 @@ export default function SoulsWonPage() {
                     <SoulsWonTable 
                         souls={filteredSouls || []} 
                         loading={loading}
-                        selectedSoulId={selectedId}
+                        selectedSoulId={selectedSoulId}
                         setSelectedSoulId={setSelectedId}
                         onFollowUp={handleOpenFollowUp}
                         onViewHistory={handleOpenHistory}
@@ -987,7 +987,7 @@ export default function SoulsWonPage() {
                 <Drawer open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
                     <DrawerContent className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                         <div className="p-4 sm:p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                            <div className="flex items-center gap-2 mb-2 text-left">
+                            <div className="flex items-center gap-2 mb-2 text-left text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Harvest Demographic</span>
                             </div>
@@ -1129,7 +1129,7 @@ export default function SoulsWonPage() {
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                                <DialogHeader className="text-left text-left">
+                                <DialogHeader className="text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
