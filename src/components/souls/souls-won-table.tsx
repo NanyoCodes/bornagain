@@ -1101,7 +1101,7 @@ function SoulProfileContent({
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                   <MessageSquare className="h-7 w-7 text-primary" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Message Hub</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
@@ -1158,7 +1158,7 @@ function SoulProfileContent({
       </Dialog>
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
               <div className="p-8 border-b bg-muted/10">
                   <DialogHeader>
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
@@ -1201,88 +1201,29 @@ function SoulProfileContent({
   );
 }
 
-const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: { 
+const SoulCard = React.memo(({ soul, onClick }: { 
   soul: Soul; 
-  allSouls: Soul[];
   onClick: () => void;
-  onAddChild: (p1: Soul, p2?: Soul | null) => void;
 }) => {
-    const isFamily = soul.maritalStatus === 'Married';
-    const spouse = isFamily ? allSouls.find(s => {
-        if (s.id === soul.id || s.maritalStatus !== 'Married') return false;
-        const otherFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
-        const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
-        const soulSpouse = (soul.spouseName || "").toLowerCase();
-        const otherSpouse = (s.spouseName || "").toLowerCase();
-        return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
-               (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
-    }) : null;
-
-    const householdChildren = allSouls.filter(child => soul.childrenIds?.includes(child.id));
-
     return (
         <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left">
             <div className="flex items-center justify-between p-4 gap-4">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className="flex -space-x-4 shrink-0">
-                        <Avatar className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-inner")}>
-                            <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
-                                {soul.firstName?.charAt(0) || 'S'}
-                            </AvatarFallback>
-                        </Avatar>
-                        {spouse && (
-                            <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md">
-                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover" />
-                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs">
-                                    {spouse.firstName?.charAt(0) || 'S'}
-                                </AvatarFallback>
-                            </Avatar>
-                        )}
-                    </div>
-                    <div className="min-w-0 flex-1">
+                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0")}>
+                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+                            {soul.firstName?.charAt(0) || 'S'}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight flex-1">
+                            <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight">
                               {soul.firstName || 'Unknown'} {soul.lastName || ''}
-                              {soul.age && <span className="text-muted-foreground/60 ml-1">({soul.age})</span>}
-                              {spouse && <span className="text-primary/60 ml-1"> & {spouse.firstName}</span>}
                             </p>
-                            <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                         </div>
                         <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
-                            {isFamily && (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                        <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0 cursor-pointer hover:bg-primary/10 transition-colors">
-                                            Household Hub <ChevronDown className="ml-1 h-2 w-2" />
-                                        </Badge>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="start" className="w-56 rounded-2xl shadow-xl text-left">
-                                        <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Members</DropdownMenuLabel>
-                                        <DropdownMenuSeparator className="text-left" />
-                                        <DropdownMenuItem onSelect={onClick} className="rounded-lg py-2.5">
-                                            <User className="mr-2 h-4 w-4 text-left" /> Primary: {soul.firstName}
-                                        </DropdownMenuItem>
-                                        {spouse && (
-                                            <DropdownMenuItem onSelect={() => onClick()} className="rounded-lg py-2.5 text-left">
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">S</AvatarFallback></Avatar>
-                                                    <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
-                                                </div>
-                                            </DropdownMenuItem>
-                                        )}
-                                        {householdChildren.map(child => (
-                                            <DropdownMenuItem key={child.id} onSelect={() => onClick()} className="rounded-lg py-2.5 text-left">
-                                                <div className="flex items-center gap-2"><Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span></div>
-                                            </DropdownMenuItem>
-                                        ))}
-                                        <DropdownMenuSeparator className="text-left" />
-                                        <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
-                                            <PlusCircle className="mr-2 h-4 w-4" /> Add Child
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            )}
+                            <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                            {soul.fellowshipName && <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0">Fellowship</Badge>}
                         </div>
                     </div>
                 </div>
@@ -1293,94 +1234,30 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
 });
 SoulCard.displayName = "SoulCard";
 
-const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddChild }: { 
+const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: { 
   soul: Soul; 
-  allSouls: Soul[];
   isSelected: boolean;
   onSelect: () => void;
-  onAddChild: (p1: Soul, p2?: Soul | null) => void;
 }) => {
-    const isFamily = soul.maritalStatus === 'Married';
-    const spouse = isFamily ? allSouls.find(other => {
-        if (other.id === soul.id || other.maritalStatus !== 'Married') return false;
-        const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-        const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
-        const soulSpouse = (soul.spouseName || "").toLowerCase();
-        const otherSpouse = (other.spouseName || "").toLowerCase();
-        return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
-               (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
-    }) : null;
-
-    const householdChildren = allSouls.filter(child => soul.childrenIds?.includes(child.id));
-
     return (
         <TableRow 
-            className={cn("border-b hover:bg-muted/50 transition-colors cursor-pointer text-left", isSelected && "bg-primary/[0.03]")}
+            className={cn("border-b hover:bg-muted/30 transition-colors cursor-pointer text-left", isSelected && "bg-primary/[0.03]")}
             onClick={() => onSelect()}
         >
-            <TableCell className="p-4 text-left">
-                <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="flex -space-x-3 shrink-0">
-                            <Avatar className={cn("h-10 w-10 border shadow-inner")}>
-                                <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
-                                    {soul.firstName?.charAt(0) || 'S'}
-                                </AvatarFallback>
-                            </Avatar>
-                            {spouse && (
-                                <Avatar className="h-10 w-10 border-2 border-background shadow-md">
-                                    <AvatarImage src={spouse.photoURL || undefined} className="object-cover" />
-                                    <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs">
-                                        {spouse.firstName?.charAt(0) || 'S'}
-                                    </AvatarFallback>
-                                </Avatar>
-                            )}
+            <TableCell className="font-medium p-4">
+                <div className="flex items-center gap-4">
+                    <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0")}>
+                        <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
+                        <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+                            {soul.firstName?.charAt(0) || 'S'}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                        <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight">
+                            {soul.firstName} {soul.lastName}
                         </div>
-                        <div className="min-w-0">
-                            <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight">
-                                {soul.firstName} {soul.lastName}
-                                {soul.age && <span className="text-muted-foreground/60 ml-2">({soul.age})</span>}
-                                {spouse && <span className="text-primary/60 ml-1"> & {spouse.firstName}</span>}
-                            </div>
-                            {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
-                        </div>
+                        {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
                     </div>
-                    {isFamily && (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary">
-                                    <Users className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Household Hub</DropdownMenuLabel>
-                                <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onSelect={onSelect} className="rounded-lg py-2.5">
-                                    <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
-                                </DropdownMenuItem>
-                                {spouse && (
-                                    <DropdownMenuItem onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left text-left">
-                                        <div className="flex items-center gap-2">
-                                            <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">S</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
-                                        </div>
-                                    </DropdownMenuItem>
-                                )}
-                                {householdChildren.map(child => (
-                                    <DropdownMenuItem key={child.id} onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left text-left">
-                                        <div className="flex items-center gap-2 text-left"><Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">C</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
-                                        </div>
-                                    </DropdownMenuItem>
-                                ))}
-                                <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
-                                    <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    )}
                 </div>
             </TableCell>
         </TableRow>
@@ -1388,11 +1265,11 @@ const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddCh
 });
 SoulTableRow.displayName = "SoulTableRow";
 
-export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulId, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess, onAddChild }: {
+export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess }: {
   souls: Soul[];
   loading: boolean;
-  selectedSoulId: string | null;
-  setSelectedSoulId: (id: string | null) => void;
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
   onFollowUp: (soul: Soul) => void;
   onViewHistory: (soul: Soul) => void;
   onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
@@ -1400,7 +1277,6 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
   onEdit: (soul: Soul) => void;
   onDelete: (soul: Soul) => void;
   onAssess: (soul: Soul) => void;
-  onAddChild: (p1: Soul, p2?: Soul | null) => void;
 }) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
@@ -1410,16 +1286,16 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
   }, []);
 
   const selectedSoul = React.useMemo(() => 
-    souls.find(s => s.id === selectedSoulId) || null
-  , [souls, selectedSoulId]);
+    souls.find(s => s.id === selectedId) || null
+  , [souls, selectedId]);
 
   if (loading || !mounted) {
     return (
-        <div className="space-y-4 text-left">
+        <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center space-x-4 p-4 border-b last:border-0 bg-card/50 backdrop-blur-sm rounded-xl text-left text-left text-left">
-                    <Avatar className="h-12 w-12 border"><AvatarFallback><Skeleton className="h-12 w-12 rounded-full" /></AvatarFallback></Avatar>
-                    <div className="space-y-2 flex-1"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-1/2" /></div>
+                <div key={i} className="flex items-center space-x-4 p-4 border-b last:border-0 bg-card/50 backdrop-blur-sm rounded-xl">
+                    <Skeleton className="h-12 w-12 rounded-full" />
+                    <div className="space-y-2 flex-1 text-left"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-1/2" /></div>
                     <Skeleton className="h-9 w-24 rounded-xl" />
                 </div>
             ))}
@@ -1432,7 +1308,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
         <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left">
             <CardContent>
                 <div className="text-center py-24 flex flex-col items-center">
-                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border-2 border-primary/20">
+                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20">
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40" />
                     </div>
                     <h3 className="text-xl font-black font-headline uppercase tracking-tight">Your Harvest Field</h3>
@@ -1458,39 +1334,37 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start text-left">
-        <div className="flex-1 w-full text-left">
+        <div className="flex-1 w-full">
             {isMobile ? (
-                <div className="space-y-px text-left text-left">
+                <div className="space-y-px">
                     {souls.map((soul) => (
-                        <SoulCard key={soul.id} soul={soul} allSouls={souls} onClick={() => setSelectedSoulId(soul.id)} onAddChild={onAddChild} />
+                        <SoulCard key={soul.id} soul={soul} onClick={() => onSelect(soul.id)} />
                     ))}
                 </div>
             ) : (
                 <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5 text-left">
-                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5">
+                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase">
                             <Heart className="h-6 w-6 text-primary fill-current" />
                             Harvest Dashboard
                         </CardTitle>
-                        <CardDescription className="text-base font-medium text-left">Keep track of spiritual development and community integration.</CardDescription>
+                        <CardDescription className="text-base font-medium">Keep track of spiritual development and community integration.</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-0 text-left">
-                        <div className="overflow-x-auto text-left">
-                            <Table className="text-left">
-                                <TableHeader className="bg-muted/10 text-left">
-                                    <TableRow className="hover:bg-transparent text-left">
-                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">Soul Identity</TableHead>
+                    <CardContent className="p-0">
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader className="bg-muted/10">
+                                    <TableRow className="hover:bg-transparent">
+                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Soul Identity</TableHead>
                                     </TableRow>
                                 </TableHeader>
-                                <TableBody className="text-left text-left">
+                                <TableBody>
                                     {souls.map((soul) => (
                                     <SoulTableRow 
                                         key={soul.id} 
                                         soul={soul} 
-                                        allSouls={souls}
-                                        isSelected={selectedSoulId === soul.id}
-                                        onSelect={() => setSelectedSoulId(soul.id)}
-                                        onAddChild={onAddChild}
+                                        isSelected={selectedId === soul.id}
+                                        onSelect={() => onSelect(soul.id)}
                                     />
                                     ))}
                                 </TableBody>
@@ -1501,47 +1375,49 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
             )}
         </div>
 
-        <Drawer open={!!selectedSoulId && !!selectedSoul && (isMobile || (mounted && typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && setSelectedSoulId(null)}>
-            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                    <DrawerHeader className="text-left flex-shrink-0 text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span>
+        {/* Tablet/Mobile Pop-up */}
+        <Sheet open={!!selectedId && !!selectedSoul && (isMobile || window.innerWidth < 1024)} onOpenChange={(open) => !open && onSelect(null)}>
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10">
+                    <SheetHeader className="text-left flex-shrink-0">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity Hub</span>
                         </div>
-                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">
+                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
-                        </DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
-                    </DrawerHeader>
+                        </SheetTitle>
+                        <SheetDescription className="text-sm font-medium mt-1">Full spiritual snapshot for the harvest workforce.</SheetDescription>
+                    </SheetHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left">
-                    <div className="p-6 pb-24 text-left text-left">
+                <ScrollArea className="flex-grow min-h-0">
+                    <div className="p-6 pb-24">
                         {profileView}
                     </div>
                 </ScrollArea>
-            </DrawerContent>
-        </Drawer>
+            </SheetContent>
+        </Sheet>
 
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left text-left">
+        {/* Desktop Detailed Preview Panel (Large screens only) */}
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left">
             <AnimatePresence>
                 {selectedSoul ? (
                     <motion.div
-                        key={selectedSoulId}
+                        key={selectedId}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="space-y-6 text-left"
+                        className="space-y-6"
                     >
                         {profileView}
-                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left">
+                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center">
                             {selectedSoul.firstName} {selectedSoul.lastName}
                         </p>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left">Select a record to preview identity</p>
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5">
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>
