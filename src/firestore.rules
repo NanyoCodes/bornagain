@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Typo corrections and shared journal feed permissions - 2025-03-05T18:00:00Z
+    // Deployment trigger: Ownership rule bug fixes - 2025-03-05T19:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -174,7 +174,7 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
