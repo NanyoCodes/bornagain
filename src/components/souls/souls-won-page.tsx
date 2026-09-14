@@ -904,7 +904,7 @@ export default function SoulsWonPage() {
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
-                                <Heart className="h-5 w-5 text-primary text-left text-left" />
+                                <Heart className="h-5 w-5 text-primary text-left" />
                             </div>
                             <div className="min-w-0 text-left">
                                 <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">MARITAL DEMOGRAPHICS</h2>
