@@ -26,7 +26,8 @@ import {
   Heart,
   User,
   MoreHorizontal,
-  Smartphone
+  Smartphone,
+  ChevronDown
 } from "lucide-react";
 import { 
   Dialog, 
@@ -135,13 +136,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                     onClick={() => onSelectSoul(soul)}
                     className="flex items-center gap-3 min-w-0 flex-1 text-left active:scale-[0.98] transition-all"
                 >
-                    <div className="flex -space-x-3 shrink-0">
-                        <Avatar className={cn("h-12 w-12 border-2 border-background shadow-md")}>
+                    <div className="flex -space-x-4 shrink-0">
+                        <Avatar className={cn("h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         {spouse && (
-                            <Avatar className="h-12 w-12 border-2 border-background shadow-md ring-2 ring-primary/5">
+                            <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0">
                                 <AvatarImage src={spouse.photoURL || undefined} className="object-cover" />
                                 <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs">{spouse.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
@@ -151,49 +152,42 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                         <div className="flex items-center gap-2 flex-wrap">
                             <p className="font-black text-sm sm:text-base truncate uppercase tracking-tight max-w-full">
                                 {soul.firstName} {soul.lastName}
-                                {spouse && (
-                                    <span className="text-primary/60 ml-1.5 hidden sm:inline">
-                                        & {spouse.firstName}
-                                    </span>
-                                )}
                                 {soul.age && (
-                                    <span className="text-muted-foreground/60 ml-1.5">
+                                    <span className="text-muted-foreground/60 ml-1.5 font-bold">
                                         ({soul.age})
                                     </span>
                                 )}
                             </p>
-                            <Badge variant="outline" className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left", soul.status === 'New' ? 'text-amber-600 border-amber-200 bg-amber-50' : soul.status === 'Contacted' ? 'text-blue-600 border-blue-200 bg-blue-50' : 'text-green-600 border-green-200 bg-green-50')}>{soul.status}</Badge>
+                            <Badge variant="outline" className={cn("h-5 px-1.5 text-[8px] sm:text-[9px] uppercase font-black tracking-widest bg-background/50", soul.status === 'New' ? 'text-amber-600 border-amber-200' : soul.status === 'Contacted' ? 'text-blue-600 border-blue-200' : 'text-green-600 border-green-200')}>{soul.status}</Badge>
                         </div>
                         {spouse && (
-                            <span className="text-primary/60 text-[10px] block sm:hidden leading-none mt-0.5 font-bold">
+                            <span className="text-primary/60 text-[10px] block font-bold leading-tight truncate">
                                 & {spouse.firstName}
                             </span>
                         )}
-                        <div className="flex flex-col gap-1 mt-1">
-                            <div className="flex items-center gap-3 text-muted-foreground flex-wrap">
-                                <p className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap">
-                                    Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
-                                </p>
-                                {isFamily && (
-                                    <Badge variant="secondary" className="h-3.5 px-1.5 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none">Family Unit</Badge>
-                                )}
-                            </div>
+                        <div className="flex flex-col gap-0.5 mt-0.5">
+                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
+                                Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
+                            </p>
+                            {isFamily && (
+                                <Badge variant="secondary" className="h-3.5 px-1 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none w-fit">Family Unit</Badge>
+                            )}
                         </div>
                     </div>
                 </button>
-                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                <div className="flex items-center gap-1 shrink-0 ml-2">
                     {isFamily && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary">
+                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary hover:bg-primary/10">
                                     <Users className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
+                            <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left">
                                 <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Household Hub</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onSelect={() => onSelectSoul(soul)} className="rounded-lg py-2.5">
-                                    <User className="mr-2 h-4 w-4" /> View Primary Profile
+                                    <User className="mr-2 h-4 w-4" /> View {soul.firstName}
                                 </DropdownMenuItem>
                                 {spouse && (
                                     <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5">
@@ -868,7 +862,7 @@ export default function SoulsWonPage() {
                     {/* Gender Demographics */}
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left">
                                 <Users className="h-5 w-5 text-primary text-left" />
                             </div>
                             <div className="min-w-0 text-left">
@@ -891,12 +885,12 @@ export default function SoulsWonPage() {
                                               className="space-y-3 p-6 rounded-2xl bg-background shadow-sm border text-left cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
                                               onClick={() => setSelectedFilterGroup({ type: 'gender', value: stat.label })}
                                             >
-                                                <div className="flex justify-between items-baseline text-left">
+                                                <div className="flex justify-between items-baseline text-left text-left">
                                                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left">{stat.label}</p>
                                                     <span className="text-2xl font-black text-primary tracking-tighter text-left">{stat.count}</span>
                                                 </div>
                                                 <div className="space-y-1.5 text-left">
-                                                    <Progress value={percent} className="h-2 bg-muted text-left" indicatorClassName={stat.color} />
+                                                    <Progress value={percent} className="h-2 bg-muted text-left text-left" indicatorClassName={stat.color} />
                                                     <p className="text-right text-[9px] font-black text-muted-foreground/60 uppercase text-left">{Math.round(percent)}% OF HARVEST</p>
                                                 </div>
                                             </div>
@@ -913,14 +907,14 @@ export default function SoulsWonPage() {
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
                                 <Heart className="h-5 w-5 text-primary text-left" />
                             </div>
-                            <div className="min-w-0 text-left">
+                            <div className="min-w-0 text-left text-left">
                                 <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left">MARITAL DEMOGRAPHICS</h2>
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left">Family & Status Insights</p>
                             </div>
                         </div>
-                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left">
-                            <CardContent className="p-6 sm:p-8 text-left">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+                        <Card className="rounded-[2rem] bg-muted/20 border-none shadow-inner overflow-hidden text-left text-left">
+                            <CardContent className="p-6 sm:p-8 text-left text-left">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left text-left">
                                     {[
                                         { label: 'Families', count: maritalStats.married.count, color: 'bg-emerald-500', icon: Target },
                                         { label: 'Singles', count: maritalStats.single.count, color: 'bg-primary', icon: Sparkles },
@@ -931,16 +925,16 @@ export default function SoulsWonPage() {
                                         return (
                                             <div 
                                               key={stat.label} 
-                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border text-left cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98]"
+                                              className="space-y-3 p-5 rounded-2xl bg-background shadow-sm border text-left cursor-pointer hover:border-primary/20 transition-all active:scale-[0.98] text-left"
                                               onClick={() => setSelectedFilterGroup({ type: 'marital', value: stat.label })}
                                             >
                                                 <div className="flex justify-between items-center text-left">
                                                     <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">{stat.label}</p>
                                                     <span className="text-xl font-black text-primary tracking-tighter text-left">{stat.count}</span>
                                                 </div>
-                                                <div className="space-y-1.5 text-left">
-                                                    <Progress value={percent} className="h-1.5 bg-muted text-left" indicatorClassName={stat.color} />
-                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left">{Math.round(percent)}%</p>
+                                                <div className="space-y-1.5 text-left text-left">
+                                                    <Progress value={percent} className="h-1.5 bg-muted text-left text-left text-left" indicatorClassName={stat.color} />
+                                                    <p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left text-left">{Math.round(percent)}%</p>
                                                 </div>
                                             </div>
                                         );
@@ -996,13 +990,13 @@ export default function SoulsWonPage() {
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Demographic</span>
                             </div>
-                            <DrawerHeader className="text-left flex-shrink-0 text-left">
+                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight text-left">{selectedFilterGroup?.value} Directory</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                             </DrawerHeader>
                         </div>
                         <ScrollArea className="flex-grow text-left">
-                            <div className="p-4 sm:p-8 text-left">
+                            <div className="p-4 sm:p-8 text-left text-left">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
@@ -1018,7 +1012,7 @@ export default function SoulsWonPage() {
                 </Drawer>
             ) : (
                 <Dialog open={!!selectedFilterGroup} onOpenChange={(open) => !open && setSelectedFilterGroup(null)}>
-                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                    <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10 text-left text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
@@ -1030,7 +1024,7 @@ export default function SoulsWonPage() {
                             </DialogHeader>
                         </div>
                         <ScrollArea className="max-h-[60vh] text-left">
-                            <div className="p-4 sm:p-8 text-left">
+                            <div className="p-4 sm:p-8 text-left text-left">
                                 <FilteredSoulList 
                                   souls={activeFilteredSouls} 
                                   allSouls={souls || []}
@@ -1082,7 +1076,7 @@ export default function SoulsWonPage() {
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
+                                <DrawerHeader className="text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 <LogSoulForm 
@@ -1111,11 +1105,11 @@ export default function SoulsWonPage() {
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-black font-headline text-left">Add New Soul</DialogTitle>
+                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-left text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left">
                                 <LogSoulForm 
                                     onSoulLogged={() => { setIsLogDialogOpen(false); setLogSoulDefaults({}); }} 
                                     fellowships={fellowships || []} 
@@ -1128,12 +1122,12 @@ export default function SoulsWonPage() {
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                                <DialogHeader className="text-left text-left">
+                                <DialogHeader className="text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
-                                    <DialogDescription className="text-left">Update soul identity and mission details.</DialogDescription>
+                                    <DialogDescription className="text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>
                             </div>
-                            <ScrollArea className="max-h-[75vh] p-8 text-left">
+                            <ScrollArea className="max-h-[75vh] p-8 text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DialogContent>
