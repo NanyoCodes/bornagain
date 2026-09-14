@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -638,7 +637,7 @@ export default function BibleReaderPage() {
             {view === 'read' && (
                 <div className="flex-grow flex flex-col min-h-0 text-left">
                     <div className="flex items-center justify-between gap-3 p-2 sm:px-6 bg-muted/20 border-b sticky top-0 z-20 backdrop-blur-sm text-left">
-                        <div className="flex items-center gap-1.5 min-w-0 text-left">
+                        <div className="flex items-center gap-1.5 min-w-0 text-left text-left">
                             <Select value={selectedBookName} onValueChange={setSelectedBookName}>
                                 <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-black text-xs sm:text-sm rounded-full hover:bg-accent transition-colors">
                                   <SelectValue />
@@ -748,12 +747,12 @@ export default function BibleReaderPage() {
                         <DrawerHeader className="p-8 border-b flex-shrink-0 bg-muted/20 text-left">
                             <div className="flex items-center gap-2.5 mb-1 text-left">
                                 <Highlighter className="h-5 w-5 text-primary text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Kingdom Journal</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Kingdom Journal</span>
                             </div>
-                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Revelation Feed</DrawerTitle>
-                            <DrawerDescription className="text-xs font-medium mt-1 text-left">Study the Word together with your accountability alliance.</DrawerDescription>
+                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Revelation Feed</DrawerTitle>
+                            <DrawerDescription className="text-xs font-medium mt-1 text-left text-left">Study the Word together with your accountability alliance.</DrawerDescription>
                         </DrawerHeader>
-                        <div className="flex-grow overflow-y-auto p-4 sm:p-6 bg-muted/5 text-left">
+                        <div className="flex-grow overflow-y-auto p-4 sm:p-6 bg-muted/5 text-left text-left text-left">
                             {NotesList}
                         </div>
                       </DrawerContent>
@@ -761,33 +760,33 @@ export default function BibleReaderPage() {
 
                     {isMobile && activeHighlight && (
                       <Drawer open={!!activeHighlight} onOpenChange={(open) => !open && setActiveHighlightId(null)}>
-                        <DrawerContent className="h-[90dvh] p-0 flex flex-col rounded-t-[2.5rem] border-t-8 border-t-primary/20 text-left">
-                          <DrawerHeader className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                            <DrawerTitle className="text-xl font-black uppercase tracking-tight text-left">Reflect & Journal</DrawerTitle>
-                            <DrawerDescription className="text-xs font-bold text-primary uppercase tracking-widest text-left">{getVerseReference(activeHighlight)}</DrawerDescription>
+                        <DrawerContent className="h-[90dvh] p-0 flex flex-col rounded-t-[2.5rem] border-t-8 border-t-primary/20 text-left text-left">
+                          <DrawerHeader className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                            <DrawerTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left">Reflect & Journal</DrawerTitle>
+                            <DrawerDescription className="text-xs font-bold text-primary uppercase tracking-widest text-left text-left text-left">{getVerseReference(activeHighlight)}</DrawerDescription>
                           </DrawerHeader>
-                          <div className="flex-grow overflow-y-auto p-6 text-left">
+                          <div className="flex-grow overflow-y-auto p-6 text-left text-left">
                             {activeHighlight.userId === user?.uid ? (
                                 <NoteEditor highlight={activeHighlight} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
                             ) : (
-                                <div className="space-y-6 text-left">
-                                    <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 text-left text-left">
-                                        <div className="flex items-center gap-3 mb-4 text-left">
-                                            <Avatar className="h-10 w-10 border text-left">
-                                                <AvatarFallback className="font-bold text-center flex items-center justify-center w-full h-full text-left">P</AvatarFallback>
+                                <div className="space-y-6 text-left text-left">
+                                    <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 text-left text-left text-left">
+                                        <div className="flex items-center gap-3 mb-4 text-left text-left text-left">
+                                            <Avatar className="h-10 w-10 border text-left text-left text-left text-left">
+                                                <AvatarFallback className="font-bold text-center flex items-center justify-center w-full h-full text-left text-left text-left">P</AvatarFallback>
                                             </Avatar>
-                                            <div className="text-left">
-                                                <p className="text-sm font-black uppercase text-left">Partner Revelation</p>
-                                                <p className="text-[10px] text-muted-foreground uppercase font-bold text-left">{getVerseReference(activeHighlight)}</p>
+                                            <div className="text-left text-left">
+                                                <p className="text-sm font-black uppercase text-left text-left">Partner Revelation</p>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-bold text-left text-left">{getVerseReference(activeHighlight)}</p>
                                             </div>
                                         </div>
-                                        <p className="text-base italic leading-relaxed text-muted-foreground text-left">
+                                        <p className="text-base italic leading-relaxed text-muted-foreground text-left text-left">
                                             &ldquo;{activeHighlight.note || 'Contemplating the truth...'}&rdquo;
                                         </p>
                                     </div>
-                                    <div className="space-y-4 text-left text-left text-left">
-                                        <div className="flex items-center gap-2 text-[10px] font-black uppercase text-primary/60 ml-1 text-left text-left">
-                                            <MessageSquare className="h-3.5 w-3.5 text-left" /> Responses
+                                    <div className="space-y-4 text-left text-left text-left text-left">
+                                        <div className="flex items-center gap-2 text-[10px] font-black uppercase text-primary/60 ml-1 text-left text-left text-left text-left text-left">
+                                            <MessageSquare className="h-3.5 w-3.5 text-left text-left" /> Responses
                                         </div>
                                         <CommentSection path={`users/${activeHighlight.userId}/bibleHighlights/${activeHighlight.id}/comments`} inline />
                                     </div>
@@ -808,8 +807,8 @@ export default function BibleReaderPage() {
                                 <History className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                             </div>
                             {historyFilterDate && (
-                                <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-12 w-12 rounded-2xl shadow-md text-left">
-                                    <XCircle className="h-5 w-5 text-left text-left text-left" />
+                                <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-12 w-12 rounded-2xl shadow-md text-left text-left">
+                                    <XCircle className="h-5 w-5 text-left text-left text-left text-left" />
                                 </Button>
                             )}
                         </div>
@@ -833,13 +832,13 @@ export default function BibleReaderPage() {
                                                       <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 shrink-0 group-hover:scale-110 transition-transform text-left">
                                                         <BookOpen className="h-5 w-5 text-primary text-left" />
                                                       </div>
-                                                      <div className="min-w-0 text-left">
-                                                        <p className="font-black text-base uppercase tracking-tight truncate text-left">{i.book} {i.chapter}</p>
-                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{readAt ? format(readAt, 'p') : 'N/A'}</p>
+                                                      <div className="min-w-0 text-left text-left">
+                                                        <p className="font-black text-base uppercase tracking-tight truncate text-left text-left">{i.book} {i.chapter}</p>
+                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left">{readAt ? format(readAt, 'p') : 'N/A'}</p>
                                                       </div>
                                                     </div>
-                                                    <Button variant="ghost" size="icon" onClick={() => { setSelectedBookName(i.book); setSelectedChapterNumber(i.chapter); setView('read'); }} className="rounded-full h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors text-left">
-                                                        <ArrowLeft className="h-4 w-4 rotate-180 text-left" />
+                                                    <Button variant="ghost" size="icon" onClick={() => { setSelectedBookName(i.book); setSelectedChapterNumber(i.chapter); setView('read'); }} className="rounded-full h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors text-left text-left">
+                                                        <ArrowLeft className="h-4 w-4 rotate-180 text-left text-left text-left" />
                                                     </Button>
                                                 </CardHeader>
                                               </Card>
@@ -847,7 +846,7 @@ export default function BibleReaderPage() {
                                         </div>
                                     </div>
                                 )) : (
-                                    <div className="text-center py-32 flex flex-col items-center text-left text-left">
+                                    <div className="text-center py-32 flex flex-col items-center text-left text-left text-left">
                                         <History className="h-16 w-16 text-muted-foreground/10 mb-4 text-left" />
                                         <h3 className="font-black uppercase tracking-tight text-xl opacity-30 text-center text-left">No Records</h3>
                                         <p className="text-sm text-muted-foreground mt-2 italic px-12 text-balance leading-relaxed text-center text-left">
