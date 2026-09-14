@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -320,11 +319,11 @@ function ShareWordDialog({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
-        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
+        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
             <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
             <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Browse Bible</span>
         </Button>
-        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
+        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
             <Link href="/dashboard/bible" className="flex flex-col items-center justify-center">
                 <BookMarked className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
                 <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Open Reader</span>
@@ -332,12 +331,12 @@ function ShareWordDialog({
         </Button>
       </div>
 
-      <div className="space-y-6 text-left">
-        <div className="flex items-center justify-between px-1 text-left">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between px-1">
             <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Kingdom Essential Scriptures</Label>
             <Badge variant="outline" className="h-5 px-2 text-[8px] font-bold text-primary border-primary/20 bg-primary/5 uppercase">Top Weapons</Badge>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {kingdomVerses.map((v, idx) => (
             <Button 
               key={idx} 
@@ -387,7 +386,7 @@ function ShareWordDialog({
        </div>
        <div className="space-y-1 font-serif text-left">
          {loadingVerses ? (
-           <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
+           <div className="flex justify-center py-20 text-left"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20 text-left" /></div>
          ) : chapterContent?.verses.map(v => (
            <div 
              key={v.verse} 
@@ -422,8 +421,8 @@ function ShareWordDialog({
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
           </div>
           <DialogHeader className="text-left text-left">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{titleText}</DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm font-medium text-left">{descText}</DialogDescription>
+            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{titleText}</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm font-medium text-left text-left">{descText}</DialogDescription>
           </DialogHeader>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}>
@@ -434,8 +433,8 @@ function ShareWordDialog({
   );
 
   const body = (
-    <ScrollArea className="flex-grow min-h-[300px] text-left">
-        <div className="p-4 sm:p-10 text-left">
+    <ScrollArea className="flex-grow min-h-[300px] text-left text-left">
+        <div className="p-4 sm:p-10 text-left text-left">
             {view === 'hub' && renderHub}
             {view === 'books' && renderBooks}
             {view === 'chapters' && renderChapters}
@@ -460,7 +459,7 @@ function ShareWordDialog({
   if (isMobile) {
       return (
           <Sheet open={isOpen} onOpenChange={onOpenChange}>
-              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+              <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                   {header}
                   {body}
                   {footer}
@@ -742,8 +741,8 @@ function SoulProfileContent({
   }, [currentUserProfile?.accountabilityPartners]);
 
   return (
-    <div className="space-y-6 text-left">
-      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
+    <div className="space-y-6 text-left text-left text-left">
+      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left text-left text-left">
         <CardHeader className="p-8 pb-4 text-center">
             <div className="relative inline-block mx-auto mb-4">
                 <Dialog>
@@ -756,8 +755,8 @@ function SoulProfileContent({
                     {soul.photoURL && (
                         <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                             <DialogHeader className="sr-only text-left"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
-                            <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
+                            <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left text-left">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left text-left">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
@@ -824,15 +823,15 @@ function SoulProfileContent({
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Relationship</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.relationship || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.relationship || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.workStatus || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.workStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Rel. Status</p>
-                        <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.maritalStatus || 'N/A'}</p>
+                        <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.maritalStatus || 'N/A'}</p>
                     </div>
                     <div className="space-y-1 text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Nickname</p>
@@ -898,7 +897,7 @@ function SoulProfileContent({
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Harvest Context</p>
                 <div className="space-y-1">
                     <p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate">
-                        <Target className="h-3 w-3 text-primary text-left text-left" />
+                        <Target className="h-3 w-3 text-primary text-left text-left text-left" />
                         Source: {soul.source}
                     </p>
                 </div>
@@ -954,35 +953,34 @@ function SoulProfileContent({
             </div>
 
             <Separator className="opacity-20" />
-            <div className="space-y-4">
+            <div className="space-y-4 text-left">
                 <div className="flex items-center justify-between">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left">
-                        <History className="h-3.5 w-3.5 text-left text-left" /> Interaction History
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left text-left text-left">
+                        <History className="h-3.5 w-3.5 text-left text-left text-left text-left" /> Interaction History
                     </p>
                     <Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5" onClick={() => onViewHistory(soul)}>
                         View All
                     </Button>
                 </div>
-                <div className="space-y-4 pl-1">
+                <div className="space-y-4 pl-1 text-left text-left text-left">
                     {sortedHistory.length > 0 ? (
                         sortedHistory.slice(0, 3).map((log, index) => {
                             const date = safeToDate(log.date);
                             return (
-                                <div key={index} className="relative pl-4 border-l-2 border-primary/20 text-left text-left">
-                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left">
+                                <div key={index} className="relative pl-4 border-l-2 border-primary/20 text-left text-left text-left text-left">
+                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left text-left text-left">
                                         {date ? format(date, "MMM d, yyyy") : 'Recently'}
                                         {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName.split(' ')[0]}</span>}
                                     </p>
-                                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left">
+                                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left text-left text-left">
                                         &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                     </p>
-                                    {index < sortedHistory.length - 1 && <Separator className="mt-8 opacity-30 text-left text-left" />}
                                 </div>
                             );
                         })
                     ) : (
-                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left text-left text-left">
-                            <p className="text-sm text-muted-foreground/40 italic text-left text-left text-left">No interactions recorded.</p>
+                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left text-left text-left text-left">
+                            <p className="text-sm text-muted-foreground/40 italic text-left text-left text-left text-left text-left">No interactions recorded.</p>
                         </div>
                     )}
                 </div>
@@ -1031,7 +1029,7 @@ function SoulProfileContent({
                         {needs.followUpPlan && (
                             <div className="pt-2 border-t border-primary/10">
                                 <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5">
-                                    <Target className="h-2.5 w-2.5 text-left text-left" /> Strategy
+                                    <Target className="h-2.5 w-2.5 text-left text-left text-left text-left text-left" /> Strategy
                                 </p>
                                 <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p>
                             </div>
@@ -1082,7 +1080,7 @@ function SoulProfileContent({
                         ))}
                     </div>
                 </div>
-                  <div className="space-y-2 text-left text-left text-left text-left">
+                  <div className="space-y-2 text-left text-left text-left text-left text-left">
                       <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Message</Label>
                       <Textarea 
                           value={customMessageText}
@@ -1104,14 +1102,14 @@ function SoulProfileContent({
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
           <DialogHeader className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
-                  <MessageSquare className="h-7 w-7 text-primary text-center text-left text-left text-left text-left" />
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left text-left">
+                  <MessageSquare className="h-7 w-7 text-primary text-center text-left text-left text-left text-left text-left text-left" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
-            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
+            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left text-left">
               <WhatsAppIcon className="h-5 w-5" /> WhatsApp
             </Button>
             <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
@@ -1130,7 +1128,7 @@ function SoulProfileContent({
             </DialogHeader>
           </div>
           <div className="p-8 space-y-6">
-            <div className="space-y-2 text-left text-left">
+            <div className="space-y-2 text-left text-left text-left text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
@@ -1145,9 +1143,9 @@ function SoulProfileContent({
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
-          <DialogHeader className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left">
-                  <Share2 className="h-7 w-7 text-primary text-left text-left text-left text-left" />
+          <DialogHeader className="text-center space-y-2 text-center text-left text-left text-left text-left text-left text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left text-left">
+                  <Share2 className="h-7 w-7 text-primary text-left text-left text-left text-left text-left text-left text-left" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
@@ -1165,8 +1163,8 @@ function SoulProfileContent({
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
-                  <DialogHeader className="text-left text-left text-left text-left text-left">
+              <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left">
+                  <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
@@ -1221,16 +1219,16 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
         const soulSpouse = (soul.spouseName || "").toLowerCase();
         const otherSpouse = (s.spouseName || "").toLowerCase();
         return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
-               (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
+               (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
     }) : null;
 
     const householdChildren = allSouls.filter(s => soul.childrenIds?.includes(s.id));
 
     return (
-        <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left text-left">
-            <div className="flex items-center justify-between p-4 gap-4 text-left text-left text-left">
-                <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left text-left text-left">
-                    <div className="flex -space-x-4 shrink-0 text-left text-left text-left text-left">
+        <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left text-left text-left text-left">
+            <div className="flex items-center justify-between p-4 gap-4 text-left text-left text-left text-left text-left">
+                <div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left text-left text-left text-left text-left">
+                    <div className="flex -space-x-4 shrink-0 text-left text-left text-left text-left text-left text-left">
                         <Avatar className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-inner")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
@@ -1246,16 +1244,16 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                             </Avatar>
                         )}
                     </div>
-                    <div className="min-w-0 flex-1 text-left text-left text-left text-left">
-                        <div className="flex items-center gap-2 flex-wrap text-left text-left text-left text-left">
-                            <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight flex-1 text-left">
+                    <div className="min-w-0 flex-1 text-left text-left text-left text-left text-left text-left">
+                        <div className="flex items-center gap-2 flex-wrap text-left text-left text-left text-left text-left text-left">
+                            <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight flex-1 text-left text-left">
                               {soul.firstName || 'Unknown'} {soul.lastName || ''}
                               {soul.age && <span className="text-muted-foreground/60 ml-1">({soul.age})</span>}
                               {spouse && <span className="text-primary/60 ml-1"> & {spouse.firstName}</span>}
                             </p>
-                            <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                            <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                         </div>
-                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left text-left text-left text-left">
+                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left text-left text-left text-left text-left text-left">
                             {isFamily && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -1278,16 +1276,16 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                                             </DropdownMenuItem>
                                         )}
                                         {householdChildren.map(child => (
-                                            <DropdownMenuItem key={child.id} onSelect={() => onClick()} className="rounded-lg py-2.5 text-left text-left text-left text-left">
-                                                <div className="flex items-center gap-2 text-left text-left text-left text-left">
-                                                    <Avatar className="h-6 w-6 border text-left text-left text-left text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left text-left text-left text-left text-left">C</AvatarFallback></Avatar>
-                                                    <span className="text-xs font-bold uppercase truncate text-left text-left text-left text-left text-left">{child.firstName} (Child)</span>
+                                            <DropdownMenuItem key={child.id} onSelect={() => onClick()} className="rounded-lg py-2.5 text-left text-left text-left text-left text-left text-left">
+                                                <div className="flex items-center gap-2 text-left text-left text-left text-left text-left text-left">
+                                                    <Avatar className="h-6 w-6 border text-left text-left text-left text-left text-left text-left text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left text-left text-left text-left text-left text-left text-left">C</AvatarFallback></Avatar>
+                                                    <span className="text-xs font-bold uppercase truncate text-left text-left text-left text-left text-left text-left text-left">{child.firstName} (Child)</span>
                                                 </div>
                                             </DropdownMenuItem>
                                         ))}
                                         <DropdownMenuSeparator className="text-left text-left" />
-                                        <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left">
-                                            <PlusCircle className="mr-2 h-4 w-4 text-left text-left" /> Add Child
+                                        <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left text-left text-left">
+                                            <PlusCircle className="mr-2 h-4 w-4 text-left text-left text-left text-left" /> Add Child
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -1328,9 +1326,9 @@ const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddCh
             onClick={() => onSelect()}
         >
             <TableCell className="p-4">
-                <div className="flex items-center justify-between gap-4 text-left text-left text-left">
-                    <div className="flex items-center gap-4 text-left text-left text-left text-left">
-                        <div className="flex -space-x-3 shrink-0 text-left text-left text-left text-left">
+                <div className="flex items-center justify-between gap-4 text-left text-left text-left text-left">
+                    <div className="flex items-center gap-4 text-left text-left text-left text-left text-left">
+                        <div className="flex -space-x-3 shrink-0 text-left text-left text-left text-left text-left">
                             <Avatar className={cn("h-10 w-10 border shadow-inner")}>
                                 <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                                 <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
@@ -1346,8 +1344,8 @@ const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddCh
                                 </Avatar>
                             )}
                         </div>
-                        <div className="min-w-0 text-left text-left text-left text-left">
-                            <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left text-left">
+                        <div className="min-w-0 text-left text-left text-left text-left text-left">
+                            <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left text-left text-left">
                                 {soul.firstName} {soul.lastName}
                                 {soul.age && <span className="text-muted-foreground/60 ml-2">({soul.age})</span>}
                                 {spouse && <span className="text-primary/60 ml-1"> & {spouse.firstName}</span>}
@@ -1362,31 +1360,31 @@ const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddCh
                                     <Users className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left text-left text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">Household Hub</DropdownMenuLabel>
-                                <DropdownMenuSeparator className="text-left text-left" />
-                                <DropdownMenuItem onSelect={onSelect} className="rounded-lg py-2.5 text-left text-left text-left">
-                                    <User className="mr-2 h-4 w-4 text-left text-left" /> View Primary Profile
+                            <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left text-left text-left text-left">
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Household Hub</DropdownMenuLabel>
+                                <DropdownMenuSeparator className="text-left text-left text-left" />
+                                <DropdownMenuItem onSelect={onSelect} className="rounded-lg py-2.5 text-left text-left text-left text-left">
+                                    <User className="mr-2 h-4 w-4 text-left text-left text-left" /> View Primary Profile
                                 </DropdownMenuItem>
                                 {spouse && (
-                                    <DropdownMenuItem onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left text-left text-left text-left text-left">
-                                        <div className="flex items-center gap-2 text-left text-left text-left">
-                                            <Avatar className="h-6 w-6 border text-left text-left text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left text-left text-left">S</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate text-left text-left text-left">{spouse.firstName} (Spouse)</span>
+                                    <DropdownMenuItem onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left text-left text-left text-left text-left text-left">
+                                        <div className="flex items-center gap-2 text-left text-left text-left text-left">
+                                            <Avatar className="h-6 w-6 border text-left text-left text-left text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left text-left text-left text-left">S</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate text-left text-left text-left text-left">{spouse.firstName} (Spouse)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 )}
                                 {householdChildren.map(child => (
-                                    <DropdownMenuItem key={child.id} onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left text-left text-left text-left text-left text-left text-left">
-                                        <div className="flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left">
-                                            <Avatar className="h-6 w-6 border text-left text-left text-left text-left text-left text-left text-left text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left text-left text-left text-left text-left text-left text-left text-left">C</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate text-left text-left text-left text-left text-left text-left text-left text-left">{child.firstName} (Child)</span>
+                                    <DropdownMenuItem key={child.id} onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left text-left text-left text-left text-left text-left text-left text-left">
+                                        <div className="flex items-center gap-2 text-left text-left text-left text-left text-left text-left text-left text-left">
+                                            <Avatar className="h-6 w-6 border text-left text-left text-left text-left text-left text-left text-left text-left text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left text-left text-left text-left text-left text-left text-left text-left text-left">C</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate text-left text-left text-left text-left text-left text-left text-left text-left text-left">{child.firstName} (Child)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 ))}
-                                <DropdownMenuSeparator className="text-left text-left text-left" />
-                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left text-left">
-                                    <PlusCircle className="mr-2 h-4 w-4 text-left text-left text-left" /> Add Child to Household
+                                <DropdownMenuSeparator className="text-left text-left text-left text-left" />
+                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left text-left text-left text-left text-left">
+                                    <PlusCircle className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left" /> Add Child to Household
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -1439,14 +1437,14 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
   
   if (souls.length === 0) {
     return (
-        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left text-left text-left">
+        <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left text-left text-left text-left">
             <CardContent>
-                <div className="text-center py-24 flex flex-col items-center text-left text-left">
-                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border-2 border-primary/20 text-left text-left">
-                        <HeartHandshake className="h-10 w-10 text-primary opacity-40 text-left text-left" />
+                <div className="text-center py-24 flex flex-col items-center text-left text-left text-left">
+                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border-2 border-primary/20 text-left text-left text-left">
+                        <HeartHandshake className="h-10 w-10 text-primary opacity-40 text-left text-left text-left" />
                     </div>
-                    <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left text-left">Your Harvest Field</h3>
-                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center text-left text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
+                    <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Your Harvest Field</h3>
+                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center text-left text-left text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
                 </div>
             </CardContent>
         </Card>
@@ -1467,32 +1465,32 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
   );
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start text-left text-left">
-        <div className="flex-1 w-full text-left text-left">
+    <div className="flex flex-col lg:flex-row gap-8 items-start text-left text-left text-left">
+        <div className="flex-1 w-full text-left text-left text-left">
             {isMobile ? (
-                <div className="space-y-px text-left text-left text-left text-left">
+                <div className="space-y-px text-left text-left text-left text-left text-left">
                     {souls.map((soul) => (
                         <SoulCard key={soul.id} soul={soul} allSouls={souls} onClick={() => setSelectedSoulId(soul.id)} onAddChild={onAddChild} />
                     ))}
                 </div>
             ) : (
-                <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left">
-                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left">
-                            <Heart className="h-6 w-6 text-primary fill-current text-left text-left" />
+                <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left">
+                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left">
+                            <Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left" />
                             Harvest Dashboard
                         </CardTitle>
-                        <CardDescription className="text-base font-medium text-left text-left">Keep track of spiritual development and community integration.</CardDescription>
+                        <CardDescription className="text-base font-medium text-left text-left text-left">Keep track of spiritual development and community integration.</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-0 text-left text-left">
-                        <div className="overflow-x-auto text-left text-left">
-                            <Table className="text-left text-left">
-                                <TableHeader className="bg-muted/10 text-left text-left text-left text-left">
-                                    <TableRow className="hover:bg-transparent text-left text-left">
-                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Soul Identity</TableHead>
+                    <CardContent className="p-0 text-left text-left text-left">
+                        <div className="overflow-x-auto text-left text-left text-left">
+                            <Table className="text-left text-left text-left">
+                                <TableHeader className="bg-muted/10 text-left text-left text-left text-left text-left">
+                                    <TableRow className="hover:bg-transparent text-left text-left text-left">
+                                        <TableHead className="p-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">Soul Identity</TableHead>
                                     </TableRow>
                                 </TableHeader>
-                                <TableBody className="text-left text-left">
+                                <TableBody className="text-left text-left text-left">
                                     {souls.map((soul) => (
                                     <SoulTableRow 
                                         key={soul.id} 
@@ -1512,28 +1510,28 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
         </div>
 
         <Drawer open={!!selectedSoulId && !!selectedSoul && (isMobile || (mounted && typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && setSelectedSoulId(null)}>
-            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
-                    <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left text-left text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span>
+            <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                    <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
+                            <Sparkles className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left">Identity Hub</span>
                         </div>
-                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">
+                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                     </DrawerHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0 text-left text-left">
-                    <div className="p-6 pb-24 text-left text-left text-left text-left">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left text-left text-left">
                         {profileView}
                     </div>
                 </ScrollArea>
             </DrawerContent>
         </Drawer>
 
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left text-left">
             <AnimatePresence>
                 {selectedSoul ? (
                     <motion.div
@@ -1541,17 +1539,17 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="space-y-6 text-left text-left"
+                        className="space-y-6 text-left text-left text-left"
                     >
                         {profileView}
-                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left">
+                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left text-left">
                             {selectedSoul.firstName} {selectedSoul.lastName}
                         </p>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left text-left">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left">Select a record to preview identity</p>
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left text-left text-left">
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left text-left text-left">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>
@@ -1559,4 +1557,3 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
     </div>
   );
 }
-

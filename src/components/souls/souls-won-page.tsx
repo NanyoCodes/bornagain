@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -132,7 +131,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
         
         return (
           <div key={soul.id} className="relative">
-            <div className="flex items-center justify-between p-3 rounded-2xl border bg-background/50 group w-full relative">
+            <div className="flex items-center justify-between p-3 rounded-2xl border bg-background/50 group w-full relative text-left">
                 <button 
                     onClick={() => onSelectSoul(soul)}
                     className="flex items-center gap-3 min-w-0 flex-1 text-left active:scale-[0.98] transition-all"
@@ -367,7 +366,7 @@ export default function SoulsWonPage() {
                 const soulFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
                 const soulSpouse = (s.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
-                return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
+                return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
                        (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
               });
 
@@ -556,7 +555,7 @@ export default function SoulsWonPage() {
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.setAttribute("a", url);
+        link.setAttribute("href", url);
         link.setAttribute("download", `testify-harvest-${format(new Date(), 'yyyy-MM-dd')}.csv`);
         link.click();
         URL.revokeObjectURL(url);
@@ -1139,4 +1138,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-
