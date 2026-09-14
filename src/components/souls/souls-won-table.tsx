@@ -63,7 +63,8 @@ import {
   getDoc, 
   getDocs, 
   where,
-  writeBatch
+  writeBatch,
+  orderBy
 } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import {
@@ -482,8 +483,118 @@ function ShareWordDialog({
   );
 }
 
+function MatchmakingDialog({ 
+    isOpen, 
+    onOpenChange, 
+    sourceSoul, 
+    allSouls, 
+    onMatchConfirmed 
+}: { 
+    isOpen: boolean; 
+    onOpenChange: (open: boolean) => void; 
+    sourceSoul: Soul; 
+    allSouls: Soul[];
+    onMatchConfirmed: (candidate: Soul) => void;
+}) {
+    const isMobile = useIsMobile();
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const candidates = useMemo(() => {
+        if (!sourceSoul) return [];
+        return allSouls.filter(s => 
+            s.id !== sourceSoul.id && 
+            s.gender && sourceSoul.gender && s.gender !== sourceSoul.gender &&
+            (s.age || 0) >= 18 &&
+            ['Single', 'Divorced', 'Widowed'].includes(s.maritalStatus || '')
+        ).filter(s => {
+            if (!searchTerm) return true;
+            const term = searchTerm.toLowerCase();
+            return `${s.firstName} ${s.lastName}`.toLowerCase().includes(term);
+        }).sort((a,b) => a.firstName.localeCompare(b.firstName));
+    }, [sourceSoul, allSouls, searchTerm]);
+
+    const header = (
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <div className="flex items-center gap-2 mb-2">
+                <HeartHandshake className="h-5 w-5 text-primary" />
+                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Matching</span>
+            </div>
+            <DialogHeader className="text-left">
+                <DialogTitle className="text-2xl font-black font-headline uppercase">Find Match for {sourceSoul.firstName}</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
+            </DialogHeader>
+            <div className="relative mt-6">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
+                <Input 
+                    placeholder="Search candidates..." 
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    className="h-11 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
+                />
+            </div>
+        </div>
+    );
+
+    const body = (
+        <ScrollArea className="flex-grow min-h-0">
+            <div className="p-4 space-y-2 text-left">
+                {candidates.length > 0 ? candidates.map(c => (
+                    <Button 
+                        key={c.id} 
+                        variant="ghost" 
+                        className="w-full justify-start h-16 rounded-2xl gap-4 hover:bg-primary/5 group"
+                        onClick={() => onMatchConfirmed(c)}
+                    >
+                        <Avatar className="h-10 w-10 border shadow-sm shrink-0">
+                            <AvatarImage src={c.photoURL || undefined} className="object-cover" />
+                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{c.firstName?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0 flex-1 text-left">
+                            <p className="font-black text-sm uppercase tracking-tight truncate">{c.firstName} {c.lastName} ({c.age})</p>
+                            <div className="flex items-center gap-2 mt-0.5 opacity-60">
+                                <Badge variant="outline" className="h-4 text-[7px] uppercase font-bold tracking-widest">{c.maritalStatus}</Badge>
+                                <p className="text-[9px] font-bold uppercase truncate">{c.church || 'Global Network'}</p>
+                            </div>
+                        </div>
+                        <ArrowRight className="h-4 w-4 opacity-20 group-hover:opacity-100 transition-opacity" />
+                    </Button>
+                )) : (
+                    <div className="py-20 text-center flex flex-col items-center">
+                        <Users className="h-12 w-12 text-muted-foreground/10 mb-4" />
+                        <p className="text-sm text-muted-foreground italic">No eligible candidates found in your harvest.</p>
+                    </div>
+                )}
+            </div>
+        </ScrollArea>
+    );
+
+    if (isMobile) {
+        return (
+            <Sheet open={isOpen} onOpenChange={onOpenChange}>
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                    {header}
+                    {body}
+                    <div className="p-8 border-t shrink-0">
+                        <Button variant="outline" className="w-full rounded-xl h-12 font-bold" onClick={() => onOpenChange(false)}>Cancel</Button>
+                    </div>
+                </SheetContent>
+            </Sheet>
+        );
+    }
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-md max-h-[85dvh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left">
+                {header}
+                {body}
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 function SoulProfileContent({ 
   soul, 
+  allSouls = [],
   onFollowUp,
   onViewHistory,
   onEdit,
@@ -493,6 +604,7 @@ function SoulProfileContent({
   onDelete
 }: { 
   soul: Soul; 
+  allSouls?: Soul[];
   onFollowUp: (s: Soul) => void;
   onViewHistory: (s: Soul) => void;
   onEdit: (s: Soul) => void;
@@ -513,6 +625,7 @@ function SoulProfileContent({
   const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = React.useState(false);
   const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = React.useState(false);
   const [isStudyWordOpen, setIsStudyWordOpen] = React.useState(false);
+  const [isMatchmakingOpen, setIsMatchmakingOpen] = React.useState(false);
   const [customMessageText, setCustomMessageText] = React.useState('');
   const [clickedActionId, setClickedActionId] = React.useState<string | null>(null);
   const [isActionSubmitting, setIsActionSubmitting] = React.useState(false);
@@ -594,6 +707,9 @@ function SoulProfileContent({
     }
 
     switch (actionId) {
+        case 'matchmaking':
+            setIsMatchmakingOpen(true);
+            return;
         case 'prayed_together':
             setCustomMessageText(resolveTemplate(prayerTemplates[0].text, soul));
             setIsPrayerCustomizationOpen(true);
@@ -640,14 +756,25 @@ function SoulProfileContent({
             const mPath = actionId === 'shared_meal' ? '/dashboard/marketplace' : '/dashboard/marketplace/gifts';
             router.push(`${mPath}?soulId=${soul.id}&soulName=${encodeURIComponent(soul.firstName)}&actionId=${actionId}`);
             return;
-        case 'matchmaking':
-            await finalizeRelationalLog(soul, 'Initiated matchmaking coordination with partners');
-            router.push('/chats');
-            toast({ title: 'Lead Confirmed', description: 'Leads to conversations for coordination.' });
-            return;
         default:
             await finalizeRelationalLog(soul);
     }
+  };
+
+  const handleMatchConfirmed = async (candidate: Soul) => {
+      if (!user || !firestore || !soul || !currentUserProfile) return;
+      setIsMatchmakingOpen(false);
+      
+      const message = `KINGDOM MATCHMAKING: I am initiating coordination for a potential Kingdom match between ${soul.firstName} and ${candidate.firstName}. Let's discuss follow-up and spiritual readiness.`;
+      
+      try {
+          // Open chat with yourself/partners to coordinate
+          router.push('/chats');
+          await finalizeRelationalLog(soul, `Initiated matchmaking with ${candidate.firstName}`);
+          toast({ title: 'Lead Established', description: 'Proceeding to conversations for coordination.' });
+      } catch (e) {
+          toast({ variant: 'destructive', title: 'Action Failed' });
+      }
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
@@ -754,7 +881,7 @@ function SoulProfileContent({
                         <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                             <DialogHeader className="sr-only text-center"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
                             <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left text-left">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
@@ -785,7 +912,7 @@ function SoulProfileContent({
                 </div>
             </div>
         </CardHeader>
-        <CardContent className="p-8 pt-0 space-y-6 text-left">
+        <CardContent className="p-8 pt-0 space-y-6 text-left text-left">
             <Separator className="opacity-50" />
             
             <div className="space-y-4">
@@ -1053,8 +1180,8 @@ function SoulProfileContent({
 
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
           <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10">
-                  <DialogHeader>
+              <div className="p-8 border-b bg-muted/10 text-left text-left">
+                  <DialogHeader className="text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
                       <DialogDescription className="text-sm font-medium">Draft a powerful prayer for {soul.firstName}.</DialogDescription>
                   </DialogHeader>
@@ -1097,11 +1224,11 @@ function SoulProfileContent({
 
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
-          <DialogHeader className="text-center space-y-2">
+          <DialogHeader className="text-center space-y-2 text-left">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
-                  <MessageSquare className="h-7 w-7 text-primary" />
+                  <MessageSquare className="h-7 w-7 text-primary text-center" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Message Hub</DialogTitle>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
@@ -1117,8 +1244,8 @@ function SoulProfileContent({
 
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
         <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-          <div className="p-8 border-b bg-muted/10">
-            <DialogHeader>
+          <div className="p-8 border-b bg-muted/10 text-left text-left">
+            <DialogHeader className="text-left text-left">
               <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DialogTitle>
               <DialogDescription className="text-sm font-medium">Describe how you supported {soul.firstName}.</DialogDescription>
             </DialogHeader>
@@ -1139,18 +1266,18 @@ function SoulProfileContent({
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
-          <DialogHeader className="text-center space-y-2">
+          <DialogHeader className="text-center space-y-2 text-center text-left">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
-                  <Share2 className="h-7 w-7 text-primary" />
+                  <Share2 className="h-7 w-7 text-primary text-center" />
               </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Share Details</DialogTitle>
+            <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
-            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+            <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-center">
               <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
             </Button>
-            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+            <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-center">
               <HeartHandshake className="h-5 w-5" /> Partner on App
             </Button>
           </div>
@@ -1158,9 +1285,9 @@ function SoulProfileContent({
       </Dialog>
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
-              <div className="p-8 border-b bg-muted/10">
-                  <DialogHeader>
+          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+              <div className="p-8 border-b bg-muted/10 text-left text-left">
+                  <DialogHeader className="text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
@@ -1172,7 +1299,7 @@ function SoulProfileContent({
                           <Button 
                               key={p.userId} 
                               variant="ghost" 
-                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center"
+                              className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group"
                               onClick={() => handleShareToPartner(p)}
                           >
                               <Avatar className="h-8 w-8 border shrink-0">
@@ -1196,6 +1323,14 @@ function SoulProfileContent({
           onOpenChange={setIsStudyWordOpen}
           soul={soul}
           onSelectVerse={(v) => { setCustomMessageText(v); setIsStudyWordOpen(false); setIsCommChannelDialogOpen(true); }}
+      />
+
+      <MatchmakingDialog 
+          isOpen={isMatchmakingOpen}
+          onOpenChange={setIsMatchmakingOpen}
+          sourceSoul={soul}
+          allSouls={allSouls}
+          onMatchConfirmed={handleMatchConfirmed}
       />
     </div>
   );
@@ -1323,6 +1458,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
   const profileView = selectedSoul && (
     <SoulProfileContent 
         soul={selectedSoul} 
+        allSouls={souls}
         onFollowUp={onFollowUp} 
         onViewHistory={onViewHistory}
         onEdit={onEdit} 
@@ -1343,8 +1479,8 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                     ))}
                 </div>
             ) : (
-                <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5">
+                <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left">
                         <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase">
                             <Heart className="h-6 w-6 text-primary fill-current" />
                             Harvest Dashboard
@@ -1378,21 +1514,21 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
 
         {/* Tablet/Mobile Pop-up */}
         <Sheet open={!!selectedId && !!selectedSoul && (isMobile || window.innerWidth < 1024)} onOpenChange={(open) => !open && onSelect(null)}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10">
-                    <SheetHeader className="text-left flex-shrink-0">
+            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
+                    <SheetHeader className="text-left flex-shrink-0 text-left">
                         <div className="flex items-center gap-2 mb-2">
                             <Sparkles className="h-4 w-4 text-primary" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity Hub</span>
                         </div>
-                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
+                        <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </SheetTitle>
                         <SheetDescription className="text-sm font-medium mt-1">Full spiritual snapshot for the harvest workforce.</SheetDescription>
                     </SheetHeader>
                 </div>
-                <ScrollArea className="flex-grow min-h-0">
-                    <div className="p-6 pb-24">
+                <ScrollArea className="flex-grow min-h-0 text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left">
                         {profileView}
                     </div>
                 </ScrollArea>

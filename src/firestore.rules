@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Typo corrections and shared journal feed permissions - 2025-03-05T16:00:00Z
+    // Deployment trigger: Typo corrections and shared journal feed permissions - 2025-03-05T17:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -154,18 +154,18 @@ service cloud.firestore {
       match /posts/{postId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && isOwner(resource.data.authorId);
+        allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
         allow update: if isAuthenticated() && (
-          isOwner(resource.data.authorId) ||
+          (resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
         );
 
         match /comments/{commentId} {
           allow get, list: if isAuthenticated();
           allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-          allow delete: if isAuthenticated() && (isOwner(resource.data.authorId) || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
           allow update: if isAuthenticated() && (
-            isOwner(resource.data.authorId) ||
+            (resource.data.authorId == request.auth.uid) ||
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
           );
         }
@@ -174,9 +174,9 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && isOwner(resource.data.authorId);
+        allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
         allow update: if isAuthenticated() && (
-          isOwner(resource.data.authorId) ||
+          (resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
         );
       }
@@ -184,9 +184,9 @@ service cloud.firestore {
       match /foundational_armor/{armorIdx}/comments/{commentId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (isOwner(resource.data.authorId) || get(/databases/$(database)/documents/victoryCircles/$(category)/foundational_armor/$(armorIdx)).data.authorId == request.auth.uid);
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/victoryCircles/$(category)/foundational_armor/$(armorIdx)).data.authorId == request.auth.uid);
         allow update: if isAuthenticated() && (
-          isOwner(resource.data.authorId) ||
+          (resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
         );
       }
@@ -194,8 +194,8 @@ service cloud.firestore {
       match /resources/{resourceId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && isOwner(resource.data.authorId);
-        allow update: if isAuthenticated() && isOwner(resource.data.authorId);
+        allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+        allow update: if isAuthenticated() && resource.data.authorId == request.auth.uid;
       }
     }
     
@@ -203,7 +203,7 @@ service cloud.firestore {
       allow get, list: if isAuthenticated();
       allow create: if isAuthenticated() && request.resource.data.get('userId', '') == request.auth.uid;
       allow update, delete: if isAuthenticated() && (
-        isOwner(resource.data.userId) || 
+        (resource.data.get('userId', '') == request.auth.uid) || 
         isFellowshipMember(resource.data.get('fellowshipId', '')) ||
         isFellowshipMember(resource.data.get('associationId', ''))
       );
@@ -212,18 +212,18 @@ service cloud.firestore {
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && isOwner(resource.data.authorId);
+      allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
       allow update: if isAuthenticated() && ( 
-        isOwner(resource.data.authorId) || 
+        (resource.data.authorId == request.auth.uid) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 
       match /comments/{commentId} {
           allow get, list: if true;
           allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-          allow delete: if isAuthenticated() && (isOwner(resource.data.authorId) || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
           allow update: if isAuthenticated() && (
-            isOwner(resource.data.authorId) ||
+            (resource.data.authorId == request.auth.uid) ||
             (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
           );
       }
@@ -232,9 +232,9 @@ service cloud.firestore {
     match /prayerRequests/{requestId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.auth.uid == request.resource.data.authorId;
-      allow delete: if isAuthenticated() && isOwner(resource.data.authorId);
+      allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
       allow update: if isAuthenticated() && ( 
-        isOwner(resource.data.authorId) ||
+        (resource.data.authorId == request.auth.uid) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
         (resource.data.get('answeredTestimonyId', '') != '' && (
           request.resource.data.status == 'pending' || 
@@ -280,10 +280,10 @@ service cloud.firestore {
       allow get, list: if true;
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
-        isOwner(resource.data.organizerId) ||
+        (resource.data.organizerId == request.auth.uid) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount', 'hasGroupChat', 'status']))
       );
-      allow delete: if isAuthenticated() && isOwner(resource.data.organizerId);
+      allow delete: if isAuthenticated() && resource.data.organizerId == request.auth.uid;
 
       match /members/{memberId} {
         allow read, list: if isAuthenticated();
@@ -297,9 +297,9 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (isOwner(resource.data.authorId) || isFellowshipOrganizer(fellowshipId));
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
-              isOwner(resource.data.authorId) ||
+              (resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }
@@ -309,7 +309,7 @@ service cloud.firestore {
     match /vendors/{vendorId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+      allow update, delete: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
 
       match /meals/{mealId} {
         allow get, list: if true;

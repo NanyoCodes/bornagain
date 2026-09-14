@@ -31,6 +31,8 @@ const AvatarImage = React.forwardRef<
     return null
   }
 
+  // We discard priority and unoptimized to prevent them from leaking to the DOM img tag
+  // as they are Next.js specific props that Radix might pass through.
   return (
     <AvatarPrimitive.Image
       ref={ref}
