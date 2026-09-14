@@ -136,12 +136,12 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                 >
                     <div className="flex -space-x-3 sm:-space-x-4 shrink-0">
                         <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0")}>
-                            <AvatarImage src={s.photoURL || undefined} className="object-cover" unoptimized />
+                            <AvatarImage src={s.photoURL || undefined} className="object-cover" />
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs">{s.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         {spouse && (
                             <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0">
-                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover" unoptimized />
+                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover" />
                                 <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-[10px] sm:text-xs">{spouse.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         )}
@@ -190,14 +190,14 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 {spouse && (
                                     <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5">
                                         <div className="flex items-center gap-2">
-                                            <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} unoptimized /><AvatarFallback className="text-[8px]">S</AvatarFallback></Avatar>
+                                            <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">S</AvatarFallback></Avatar>
                                             <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 )}
                                 {householdChildren.map(child => (
                                     <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5">
-                                        <div className="flex items-center gap-2"><Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} unoptimized /><AvatarFallback className="text-[8px]">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span></div>
+                                        <div className="flex items-center gap-2"><Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span></div>
                                     </DropdownMenuItem>
                                 ))}
                                 <DropdownMenuSeparator />

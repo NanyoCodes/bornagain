@@ -584,85 +584,85 @@ export default function BibleReaderPage() {
     return (
         <div className="h-dvh flex flex-col bg-background overflow-hidden text-left">
             <div className="shrink-0 flex items-center justify-between p-4 md:px-8 border-b bg-background/80 backdrop-blur-md z-10 gap-4 text-left">
-                <div className="flex items-center gap-3 text-left">
-                  <Button variant="outline" size="icon" onClick={() => router.back()} className="rounded-full h-9 w-9 sm:h-10 sm:w-10 border shadow-sm text-left"><ArrowLeft className="h-5 w-5 text-left" /></Button>
-                  <div className="hidden sm:flex items-center gap-2 text-left">
-                    <BookOpen className="h-5 w-5 text-primary text-left" />
-                    <span className="font-headline font-black text-lg uppercase tracking-tight text-left">Bible Reader</span>
+                <div className="flex items-center gap-3 text-left text-left">
+                  <Button variant="outline" size="icon" onClick={() => router.back()} className="rounded-full h-9 w-9 sm:h-10 sm:w-10 border shadow-sm text-left text-left"><ArrowLeft className="h-5 w-5 text-left text-left" /></Button>
+                  <div className="hidden sm:flex items-center gap-2 text-left text-left">
+                    <BookOpen className="h-5 w-5 text-primary text-left text-left" />
+                    <span className="font-headline font-black text-lg uppercase tracking-tight text-left text-left">Bible Reader</span>
                   </div>
                 </div>
                 
                 {view === 'read' && (
-                  <div className="flex items-center gap-2 text-left">
+                  <div className="flex items-center gap-2 text-left text-left">
                       <Select value={selectedVersion} onValueChange={setSelectedVersion}>
-                          <SelectTrigger className="w-[80px] h-9 border-none bg-muted/50 hover:bg-muted font-bold text-[10px] uppercase tracking-widest rounded-lg text-left"><SelectValue className="text-left" /></SelectTrigger>
-                          <SelectContent className="rounded-xl text-left">
-                              {bibleVersions.map(v => <SelectItem key={v.id} value={v.id} className="text-xs text-left">{v.id.toUpperCase()}</SelectItem>)}
+                          <SelectTrigger className="w-[80px] h-9 border-none bg-muted/50 hover:bg-muted font-bold text-[10px] uppercase tracking-widest rounded-lg text-left text-left"><SelectValue className="text-left text-left" /></SelectTrigger>
+                          <SelectContent className="rounded-xl text-left text-left">
+                              {bibleVersions.map(v => <SelectItem key={v.id} value={v.id} className="text-xs text-left text-left">{v.id.toUpperCase()}</SelectItem>)}
                           </SelectContent>
                       </Select>
-                      <div className="flex items-center gap-1 border rounded-full p-0.5 bg-muted/30 text-left">
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : fontSizes[fontSizes.indexOf(f)-1] as FontSize)}><Minus className="h-3.5 w-3.5 text-left" /></Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : fontSizes[fontSizes.indexOf(f)+1] as FontSize)}><Plus className="h-3.5 w-3.5 text-left" /></Button>
+                      <div className="flex items-center gap-1 border rounded-full p-0.5 bg-muted/30 text-left text-left">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left text-left" onClick={() => setFontSize(f => f === 'sm' ? 'sm' : fontSizes[fontSizes.indexOf(f)-1] as FontSize)}><Minus className="h-3.5 w-3.5 text-left text-left" /></Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-left text-left" onClick={() => setFontSize(f => f === 'xl' ? 'xl' : fontSizes[fontSizes.indexOf(f)+1] as FontSize)}><Plus className="h-3.5 w-3.5 text-left text-left" /></Button>
                       </div>
                   </div>
                 )}
 
-                <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-full text-left">
+                <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-full text-left text-left">
                    <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                           <Button variant={view === 'read' ? 'secondary' : 'ghost'} size="sm" onClick={() => setView('read')} className={cn("h-8 w-10 sm:w-12 rounded-full p-0 text-left", view === 'read' && "shadow-sm")}>
-                                <BookOpen className="h-4 w-4 text-left" />
-                                <span className="sr-only text-left">Read</span>
+                           <Button variant={view === 'read' ? 'secondary' : 'ghost'} size="sm" onClick={() => setView('read')} className={cn("h-8 w-10 sm:w-12 rounded-full p-0 text-left text-left", view === 'read' && "shadow-sm")}>
+                                <BookOpen className="h-4 w-4 text-left text-left" />
+                                <span className="sr-only text-left text-left">Read</span>
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase text-left">Read Word</p></TooltipContent>
+                        <TooltipContent className="text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left">Read Word</p></TooltipContent>
                     </Tooltip>
                    </TooltipProvider>
 
                    <TooltipProvider>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant={view === 'history' ? 'secondary' : 'ghost'} size="sm" onClick={() => setView('history')} className={cn("h-8 w-10 sm:w-12 rounded-full p-0 text-left", view === 'history' && "shadow-sm")}>
-                                <History className="h-4 w-4 text-left" />
-                                <span className="sr-only text-left">History</span>
+                            <Button variant={view === 'history' ? 'secondary' : 'ghost'} size="sm" onClick={() => setView('history')} className={cn("h-8 w-10 sm:w-12 rounded-full p-0 text-left text-left", view === 'history' && "shadow-sm")}>
+                                <History className="h-4 w-4 text-left text-left" />
+                                <span className="sr-only text-left text-left">History</span>
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase text-left">Study History</p></TooltipContent>
+                        <TooltipContent className="text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left">Study History</p></TooltipContent>
                     </Tooltip>
                    </TooltipProvider>
                 </div>
             </div>
 
             {view === 'read' && (
-                <div className="flex-grow flex flex-col min-h-0 text-left text-left">
-                    <div className="flex items-center justify-between gap-3 p-2 sm:px-6 bg-muted/20 border-b sticky top-0 z-20 backdrop-blur-sm text-left text-left">
-                        <div className="flex items-center gap-1.5 min-w-0 text-left text-left text-left">
+                <div className="flex-grow flex flex-col min-h-0 text-left text-left text-left text-left">
+                    <div className="flex items-center justify-between gap-3 p-2 sm:px-6 bg-muted/20 border-b sticky top-0 z-20 backdrop-blur-sm text-left text-left text-left text-left">
+                        <div className="flex items-center gap-1.5 min-w-0 text-left text-left text-left text-left text-left text-left">
                             <Select value={selectedBookName} onValueChange={setSelectedBookName}>
-                                <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-black text-xs sm:text-sm rounded-full hover:bg-accent transition-colors text-left text-left">
-                                  <SelectValue className="text-left text-left" />
+                                <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-black text-xs sm:text-sm rounded-full hover:bg-accent transition-colors text-left text-left text-left text-left">
+                                  <SelectValue className="text-left text-left text-left text-left" />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[300px] rounded-2xl text-left text-left">{bibleData.map(book => <SelectItem key={book.name} value={book.name} className="text-xs uppercase font-bold text-left">{book.name}</SelectItem>)}</SelectContent>
+                                <SelectContent className="max-h-[300px] rounded-2xl text-left text-left text-left text-left">{bibleData.map(book => <SelectItem key={book.name} value={book.name} className="text-xs uppercase font-bold text-left text-left text-left text-left">{book.name}</SelectItem>)}</SelectContent>
                             </Select>
                             
-                            <Separator orientation="vertical" className="h-4 mx-1 text-left text-left" />
+                            <Separator orientation="vertical" className="h-4 mx-1 text-left text-left text-left text-left" />
 
                             <Popover open={isChapterPopoverOpen} onOpenChange={isChapterPopoverOpen ? (o) => setIsChapterPopoverOpen(o) : undefined}>
                                 <PopoverTrigger asChild>
-                                  <Button variant="ghost" size="sm" onClick={() => setIsChapterPopoverOpen(true)} className="h-9 px-3 font-bold text-xs sm:text-sm rounded-full hover:bg-background/80 shadow-sm border-none text-left text-left">
+                                  <Button variant="ghost" size="sm" onClick={() => setIsChapterPopoverOpen(true)} className="h-9 px-3 font-bold text-xs sm:text-sm rounded-full hover:bg-background/80 shadow-sm border-none text-left text-left text-left text-left">
                                     Chapter {selectedChapterNumber}
-                                    <ChevronDown className="ml-1.5 h-3.5 w-3.5 opacity-50 text-left text-left" />
+                                    <ChevronDown className="ml-1.5 h-3.5 w-3.5 opacity-50 text-left text-left text-left text-left" />
                                   </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-[280px] p-0 shadow-2xl border-primary/10 rounded-[1.5rem] text-left text-left" align="start">
-                                    <div className="p-4 bg-muted/20 border-b flex items-center justify-between text-left text-left text-left">
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left"> {selectedBookName}</span>
-                                        <span className="text-[9px] font-black text-primary bg-primary/10 px-1.5 rounded text-left text-left"> {selectedBook?.chapters.length} CHS</span>
+                                <PopoverContent className="w-[280px] p-0 shadow-2xl border-primary/10 rounded-[1.5rem] text-left text-left text-left text-left" align="start">
+                                    <div className="p-4 bg-muted/20 border-b flex items-center justify-between text-left text-left text-left text-left text-left">
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left text-left"> {selectedBookName}</span>
+                                        <span className="text-[9px] font-black text-primary bg-primary/10 px-1.5 rounded text-left text-left text-left text-left text-left"> {selectedBook?.chapters.length} CHS</span>
                                     </div>
-                                  <ScrollArea className="h-72 text-left text-left text-left">
-                                    <div className="grid grid-cols-5 gap-1 p-3 text-left text-left text-left">
+                                  <ScrollArea className="h-72 text-left text-left text-left text-left text-left">
+                                    <div className="grid grid-cols-5 gap-1 p-3 text-left text-left text-left text-left text-left">
                                       {selectedBook?.chapters.map(c => (
-                                        <Button key={c.chapter} variant={c.chapter === selectedChapterNumber ? "default" : "ghost"} size="sm" className={cn("h-10 w-10 font-black text-xs rounded-xl text-left text-left", c.chapter === selectedChapterNumber ? "shadow-md text-left" : "")} onClick={() => { handleSelectChapter(c.chapter); }}>
+                                        <Button key={c.chapter} variant={c.chapter === selectedChapterNumber ? "default" : "ghost"} size="sm" className={cn("h-10 w-10 font-black text-xs rounded-xl text-left text-left text-left text-left", c.chapter === selectedChapterNumber ? "shadow-md text-left text-left" : "")} onClick={() => { handleSelectChapter(c.chapter); }}>
                                             {c.chapter}
                                         </Button>
                                       ))}
@@ -672,58 +672,58 @@ export default function BibleReaderPage() {
                             </Popover>
                         </div>
 
-                        <div className="flex items-center gap-2 text-left text-left">
-                            <Button variant="outline" size="sm" className="hidden sm:flex gap-2 rounded-full bg-background border-primary/20 hover:bg-primary/5 h-9 text-left text-left" onClick={() => setIsJournalSheetOpen(true)}>
-                                <Highlighter className="h-4 w-4 text-primary text-left text-left" />
-                                <span className="font-black uppercase tracking-widest text-[9px] text-left text-left">Journal Hub</span>
+                        <div className="flex items-center gap-2 text-left text-left text-left text-left">
+                            <Button variant="outline" size="sm" className="hidden sm:flex gap-2 rounded-full bg-background border-primary/20 hover:bg-primary/5 h-9 text-left text-left text-left text-left" onClick={() => setIsJournalSheetOpen(true)}>
+                                <Highlighter className="h-4 w-4 text-primary text-left text-left text-left text-left" />
+                                <span className="font-black uppercase tracking-widest text-[9px] text-left text-left text-left text-left">Journal Hub</span>
                             </Button>
-                            <Button variant="ghost" size="icon" className="sm:hidden rounded-full bg-background shadow-sm border h-9 w-9 text-primary text-left text-left" onClick={() => setIsJournalSheetOpen(true)}>
-                              <Highlighter className="h-4 w-4 text-left text-left" />
+                            <Button variant="ghost" size="icon" className="sm:hidden rounded-full bg-background shadow-sm border h-9 w-9 text-primary text-left text-left text-left text-left" onClick={() => setIsJournalSheetOpen(true)}>
+                              <Highlighter className="h-4 w-4 text-left text-left text-left text-left" />
                             </Button>
                         </div>
                     </div>
-                    <div className="flex-grow flex gap-0 min-h-0 text-left text-left overflow-hidden">
-                        <div className="flex-1 min-0 flex flex-col overflow-hidden text-left text-left text-left">
-                            <ScrollArea ref={scrollAreaRef} className="flex-grow border-none relative h-full text-left text-left text-left">
+                    <div className="flex-grow flex gap-0 min-h-0 text-left text-left text-left text-left overflow-hidden">
+                        <div className="flex-1 min-0 flex flex-col overflow-hidden text-left text-left text-left text-left text-left">
+                            <ScrollArea ref={scrollAreaRef} className="flex-grow border-none relative h-full text-left text-left text-left text-left text-left">
                                 {(isLoadingChapter || !isInitialized) && (
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 z-20 gap-2 text-left text-left">
-                                        <Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left" />
-                                        <p className="text-[10px] font-black uppercase tracking-widest animate-pulse text-left text-left text-left">Accessing records...</p>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 z-20 gap-2 text-left text-left text-left text-left">
+                                        <Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left text-left text-left" />
+                                        <p className="text-[10px] font-black uppercase tracking-widest animate-pulse text-left text-left text-left text-left text-left">Accessing records...</p>
                                     </div>
                                 )}
                                 {!isLoadingChapter && chapterContent && (
-                                    <div className="max-w-4xl mx-auto px-6 sm:px-12 py-8 text-left text-left text-left">
-                                        <div className={cn("space-y-4 font-serif leading-relaxed text-foreground/90 text-left text-left", fontSizeClasses[fontSize])}>
+                                    <div className="max-w-4xl mx-auto px-6 sm:px-12 py-8 text-left text-left text-left text-left text-left">
+                                        <div className={cn("space-y-4 font-serif leading-relaxed text-foreground/90 text-left text-left text-left text-left", fontSizeClasses[fontSize])}>
                                             {chapterContent.verses.map(v => {
                                                 const h = highlightsMap.get(v.verse);
                                                 const isPartnerHighlight = h && h.userId !== user?.uid;
                                                 return (
-                                                    <div key={v.verse} id={`verse-${v.verse}`} className={cn('rounded px-2 py-1 cursor-pointer transition-colors relative text-left text-left', h && getHighlightClass(h.color, isPartnerHighlight), selectedVerses.includes(v.verse) && 'bg-primary/20', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
-                                                        <sup className={cn("mr-2 text-muted-foreground/60 font-sans font-bold select-none text-left text-left", subFontSizeClasses[fontSize])}>{v.verse}</sup>
+                                                    <div key={v.verse} id={`verse-${v.verse}`} className={cn('rounded px-2 py-1 cursor-pointer transition-colors relative text-left text-left text-left text-left', h && getHighlightClass(h.color, isPartnerHighlight), selectedVerses.includes(v.verse) && 'bg-primary/20', activeHighlight?.verses.includes(v.verse) && 'ring-2 ring-primary')} onClick={() => handleVerseClick(v.verse)}>
+                                                        <sup className={cn("mr-2 text-muted-foreground/60 font-sans font-bold select-none text-left text-left text-left text-left", subFontSizeClasses[fontSize])}>{v.verse}</sup>
                                                         {v.text}
                                                     </div>
                                                 );
                                             })}
                                         </div>
                                         {selectedVerses.length > 0 && toolbarPos && (
-                                            <div className="absolute z-30 transition-all pointer-events-none text-left text-left" style={{ top: `${toolbarPos.top}px`, left: `${toolbarPos.left}px`, transform: 'translate(-50%, -120%)' }}>
-                                                <Button size="default" className="pointer-events-auto shadow-xl h-10 px-6 rounded-full font-black uppercase tracking-widest text-[10px] text-left text-left" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>{isProcessingHighlight ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left text-left" /> : <Highlighter className="mr-2 h-4 w-4 text-left text-left" />}Highlight & Note</Button>
+                                            <div className="absolute z-30 transition-all pointer-events-none text-left text-left text-left text-left" style={{ top: `${toolbarPos.top}px`, left: `${toolbarPos.left}px`, transform: 'translate(-50%, -120%)' }}>
+                                                <Button size="default" className="pointer-events-auto shadow-xl h-10 px-6 rounded-full font-black uppercase tracking-widest text-[10px] text-left text-left text-left text-left" onClick={handleSaveHighlight} disabled={isProcessingHighlight}>{isProcessingHighlight ? <Loader2 className="h-4 w-4 animate-spin text-primary text-left text-left text-left text-left" /> : <Highlighter className="mr-2 h-4 w-4 text-left text-left text-left text-left" />}Highlight & Note</Button>
                                             </div>
                                         )}
-                                        <div className="mt-16 flex flex-col sm:flex-row gap-6 items-center justify-between pb-32 text-left text-left text-left text-left">
+                                        <div className="mt-16 flex flex-col sm:flex-row gap-6 items-center justify-between pb-32 text-left text-left text-left text-left text-left text-left text-left">
                                             {unfinishedHighlight && (
-                                                <Card className="border-amber-500/50 bg-amber-500/5 p-4 w-full sm:w-auto shadow-inner rounded-2xl text-left text-left text-left text-left">
-                                                <div className="flex items-center justify-between gap-8 text-left text-left text-left">
-                                                    <div className="space-y-0.5 text-left text-left text-left">
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 text-left text-left">Revelation Pending</p>
-                                                    <p className="text-xs text-muted-foreground text-left text-left">Add a note to your highlight.</p>
+                                                <Card className="border-amber-500/50 bg-amber-500/5 p-4 w-full sm:w-auto shadow-inner rounded-2xl text-left text-left text-left text-left text-left text-left text-left">
+                                                <div className="flex items-center justify-between gap-8 text-left text-left text-left text-left text-left text-left">
+                                                    <div className="space-y-0.5 text-left text-left text-left text-left text-left text-left">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 text-left text-left text-left text-left">Revelation Pending</p>
+                                                    <p className="text-xs text-muted-foreground text-left text-left text-left text-left">Add a note to your highlight.</p>
                                                     </div>
-                                                    <Button size="sm" variant="outline" onClick={() => setActiveHighlightId(unfinishedHighlight.id)} className="rounded-xl h-9 font-bold px-4 text-left text-left">Go to Note</Button>
+                                                    <Button size="sm" variant="outline" onClick={() => setActiveHighlightId(unfinishedHighlight.id)} className="rounded-xl h-9 font-bold px-4 text-left text-left text-left text-left">Go to Note</Button>
                                                 </div>
                                                 </Card>
                                             )}
-                                            <Button onClick={handleMarkAsRead} disabled={isSubmitting} size="lg" className="w-full sm:w-auto font-black uppercase tracking-[0.2em] h-14 px-12 shadow-xl shadow-primary/20 rounded-2xl text-xs text-left text-left">
-                                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
+                                            <Button onClick={handleMarkAsRead} disabled={isSubmitting} size="lg" className="w-full sm:w-auto font-black uppercase tracking-[0.2em] h-14 px-12 shadow-xl shadow-primary/20 rounded-2xl text-xs text-left text-left text-left text-left">
+                                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" />}
                                                 FINISH CHAPTER
                                             </Button>
                                         </div>
@@ -731,28 +731,28 @@ export default function BibleReaderPage() {
                                 )}
                             </ScrollArea>
                         </div>
-                        <div className="hidden lg:flex lg:w-96 flex-col border-l bg-muted/10 p-6 min-h-0 overflow-hidden text-left text-left text-left">
-                            <h3 className="font-headline font-black uppercase tracking-tight text-xl mb-4 flex items-center gap-2.5 text-left text-left text-left">
-                                <Highlighter className="h-5 w-5 text-primary text-left text-left text-left" />
+                        <div className="hidden lg:flex lg:w-96 flex-col border-l bg-muted/10 p-6 min-h-0 overflow-hidden text-left text-left text-left text-left">
+                            <h3 className="font-headline font-black uppercase tracking-tight text-xl mb-4 flex items-center gap-2.5 text-left text-left text-left text-left text-left text-left">
+                                <Highlighter className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left" />
                                 Revelation Hub
                             </h3>
-                            <ScrollArea className="flex-grow pr-4 -mr-4 text-left text-left">
+                            <ScrollArea className="flex-grow pr-4 -mr-4 text-left text-left text-left text-left">
                                 {NotesList}
                             </ScrollArea>
                         </div>
                     </div>
                     
                     <Drawer open={isJournalSheetOpen} onOpenChange={isJournalSheetOpen ? (o) => setIsJournalSheetOpen(o) : undefined}>
-                      <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2rem] text-left text-left">
-                        <DrawerHeader className="p-8 border-b flex-shrink-0 bg-muted/20 text-left text-left text-left">
-                            <div className="flex items-center gap-2.5 mb-1 text-left text-left">
-                                <Highlighter className="h-5 w-5 text-primary text-left text-left text-left" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Kingdom Journal</span>
+                      <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2rem] text-left text-left text-left text-left">
+                        <DrawerHeader className="p-8 border-b flex-shrink-0 bg-muted/20 text-left text-left text-left text-left text-left text-left">
+                            <div className="flex items-center gap-2.5 mb-1 text-left text-left text-left text-left">
+                                <Highlighter className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left text-left">Kingdom Journal</span>
                             </div>
-                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Revelation Feed</DrawerTitle>
-                            <DrawerDescription className="text-xs font-medium mt-1 text-left text-left text-left text-left text-left text-left">Study the Word together with your accountability alliance.</DrawerDescription>
+                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left">Revelation Feed</DrawerTitle>
+                            <DrawerDescription className="text-xs font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Study the Word together with your accountability alliance.</DrawerDescription>
                         </DrawerHeader>
-                        <div className="flex-grow overflow-y-auto p-4 sm:p-6 bg-muted/5 text-left text-left">
+                        <div className="flex-grow overflow-y-auto p-4 sm:p-6 bg-muted/5 text-left text-left text-left text-left">
                             {NotesList}
                         </div>
                       </DrawerContent>
@@ -760,33 +760,33 @@ export default function BibleReaderPage() {
 
                     {isMobile && activeHighlight && (
                       <Drawer open={!!activeHighlight} onOpenChange={(open) => !open && setActiveHighlightId(null)}>
-                        <DrawerContent className="h-[90dvh] p-0 flex flex-col rounded-t-[2.5rem] border-t-8 border-t-primary/20 text-left text-left">
-                          <DrawerHeader className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                            <DrawerTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Reflect & Journal</DrawerTitle>
-                            <DrawerDescription className="text-xs font-bold text-primary uppercase tracking-widest text-left text-left">{getVerseReference(activeHighlight)}</DrawerDescription>
+                        <DrawerContent className="h-[90dvh] p-0 flex flex-col rounded-t-[2.5rem] border-t-8 border-t-primary/20 text-left text-left text-left text-left">
+                          <DrawerHeader className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                            <DrawerTitle className="text-xl font-black uppercase tracking-tight text-left text-left text-left text-left">Reflect & Journal</DrawerTitle>
+                            <DrawerDescription className="text-xs font-bold text-primary uppercase tracking-widest text-left text-left text-left text-left">{getVerseReference(activeHighlight)}</DrawerDescription>
                           </DrawerHeader>
-                          <div className="flex-grow overflow-y-auto p-6 text-left text-left">
+                          <div className="flex-grow overflow-y-auto p-6 text-left text-left text-left text-left">
                             {activeHighlight.userId === user?.uid ? (
                                 <NoteEditor highlight={activeHighlight} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
                             ) : (
-                                <div className="space-y-6 text-left text-left text-left">
-                                    <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 text-left text-left">
-                                        <div className="flex items-center gap-3 mb-4 text-left text-left text-left text-left">
-                                            <Avatar className="h-10 w-10 border text-left text-left text-left">
-                                                <AvatarFallback className="font-bold text-center flex items-center justify-center w-full h-full text-left text-left">P</AvatarFallback>
+                                <div className="space-y-6 text-left text-left text-left text-left text-left">
+                                    <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 text-left text-left text-left text-left">
+                                        <div className="flex items-center gap-3 mb-4 text-left text-left text-left text-left text-left text-left text-left text-left">
+                                            <Avatar className="h-10 w-10 border text-left text-left text-left text-left text-left text-left">
+                                                <AvatarFallback className="font-bold text-center flex items-center justify-center w-full h-full text-left text-left text-left text-left">P</AvatarFallback>
                                             </Avatar>
-                                            <div className="text-left text-left text-left">
-                                                <p className="text-sm font-black uppercase text-left text-left text-left">Partner Revelation</p>
-                                                <p className="text-[10px] text-muted-foreground uppercase font-bold text-left text-left text-left">{getVerseReference(activeHighlight)}</p>
+                                            <div className="text-left text-left text-left text-left text-left">
+                                                <p className="text-sm font-black uppercase text-left text-left text-left text-left text-left">Partner Revelation</p>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-bold text-left text-left text-left text-left text-left">{getVerseReference(activeHighlight)}</p>
                                             </div>
                                         </div>
-                                        <p className="text-base italic leading-relaxed text-muted-foreground text-left text-left text-left">
+                                        <p className="text-base italic leading-relaxed text-muted-foreground text-left text-left text-left text-left text-left">
                                             &ldquo;{activeHighlight.note || 'Contemplating the truth...'}&rdquo;
                                         </p>
                                     </div>
-                                    <div className="space-y-4 text-left text-left text-left text-left">
-                                        <div className="flex items-center gap-2 text-[10px] font-black uppercase text-primary/60 ml-1 text-left text-left text-left">
-                                            <MessageSquare className="h-3.5 w-3.5 text-left text-left text-left" /> Responses
+                                    <div className="space-y-4 text-left text-left text-left text-left text-left text-left text-left">
+                                        <div className="flex items-center gap-2 text-[10px] font-black uppercase text-primary/60 ml-1 text-left text-left text-left text-left text-left text-left">
+                                            <MessageSquare className="h-3.5 w-3.5 text-left text-left text-left text-left text-left" /> Responses
                                         </div>
                                         <CommentSection path={`users/${activeHighlight.userId}/bibleHighlights/${activeHighlight.id}/comments`} inline />
                                     </div>
@@ -799,46 +799,46 @@ export default function BibleReaderPage() {
                 </div>
             )}
             {view === 'history' && (
-                <div className="flex-grow flex flex-col min-h-0 bg-muted/5 overflow-hidden text-left text-left">
-                    <div className="max-w-3xl mx-auto w-full flex-grow flex flex-col p-4 md:p-8 min-h-0 text-left text-left">
-                        <div className="flex items-center gap-3 mb-8 shrink-0 text-left text-left">
-                            <div className="relative flex-1 text-left text-left">
-                                <Input type="date" value={historyFilterDate} onChange={(e) => setHistoryFilterDate(e.target.value)} className="h-12 pl-10 rounded-2xl bg-background shadow-inner border-none font-bold text-left text-left" />
-                                <History className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left text-left" />
+                <div className="flex-grow flex flex-col min-h-0 bg-muted/5 overflow-hidden text-left text-left text-left text-left">
+                    <div className="max-w-3xl mx-auto w-full flex-grow flex flex-col p-4 md:p-8 min-h-0 text-left text-left text-left text-left text-left">
+                        <div className="flex items-center gap-3 mb-8 shrink-0 text-left text-left text-left text-left">
+                            <div className="relative flex-1 text-left text-left text-left text-left">
+                                <Input type="date" value={historyFilterDate} onChange={(e) => setHistoryFilterDate(e.target.value)} className="h-12 pl-10 rounded-2xl bg-background shadow-inner border-none font-bold text-left text-left text-left text-left" />
+                                <History className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left text-left text-left text-left" />
                             </div>
                             {historyFilterDate && (
-                                <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-12 w-12 rounded-2xl shadow-md text-left text-left text-left">
-                                    <XCircle className="h-5 w-5 text-left text-left text-left" />
+                                <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-12 w-12 rounded-2xl shadow-md text-left text-left text-left text-left text-left text-left text-left">
+                                    <XCircle className="h-5 w-5 text-left text-left text-left text-left text-left text-left text-left" />
                                 </Button>
                             )}
                         </div>
-                        <ScrollArea className="flex-grow pr-4 -mr-4 text-left text-left text-left">
-                            <div className="space-y-12 pb-32 text-left text-left text-left text-left">
+                        <ScrollArea className="flex-grow pr-4 -mr-4 text-left text-left text-left text-left text-left text-left">
+                            <div className="space-y-12 pb-32 text-left text-left text-left text-left text-left text-left text-left text-left">
                                 {historyGroups.length > 0 ? historyGroups.map(g => (
-                                    <div key={g.date.toISOString()} className="space-y-6 text-left text-left text-left text-left">
-                                        <div className="sticky top-0 z-10 py-2 bg-muted/5 text-left text-left text-left text-left text-left">
-                                            <div className="flex items-center gap-4 text-left text-left text-left text-left text-left">
-                                                <span className="font-black text-[10px] uppercase tracking-[0.2em] text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 text-left text-left text-left text-left">{format(g.date, 'PPPP')}</span>
-                                                <div className="h-px bg-muted flex-grow text-left text-left text-left text-left text-left text-left" />
+                                    <div key={g.date.toISOString()} className="space-y-6 text-left text-left text-left text-left text-left text-left text-left text-left">
+                                        <div className="sticky top-0 z-10 py-2 bg-muted/5 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                            <div className="flex items-center gap-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                <span className="font-black text-[10px] uppercase tracking-[0.2em] text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 text-left text-left text-left text-left text-left text-left text-left text-left">{format(g.date, 'PPPP')}</span>
+                                                <div className="h-px bg-muted flex-grow text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                                             </div>
                                         </div>
-                                        <div className="grid gap-3 sm:grid-cols-2 text-left text-left text-left">
+                                        <div className="grid gap-3 sm:grid-cols-2 text-left text-left text-left text-left text-left text-left">
                                           {g.items.map((i, idx) => {
                                             const readAt = safeToDate(i.readAt);
                                             return (
-                                              <Card key={idx} className="border-none shadow-sm hover:shadow-md transition-all rounded-[1.5rem] bg-background/50 backdrop-blur-sm group text-left text-left text-left">
-                                                <CardHeader className="p-5 flex flex-row items-center justify-between space-y-0 text-left text-left text-left">
-                                                    <div className="flex items-center gap-4 min-w-0 text-left text-left text-left">
-                                                      <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 shrink-0 group-hover:scale-110 transition-transform text-left text-left text-left">
-                                                        <BookOpen className="h-5 w-5 text-primary text-left text-left text-left" />
+                                              <Card key={idx} className="border-none shadow-sm hover:shadow-md transition-all rounded-[1.5rem] bg-background/50 backdrop-blur-sm group text-left text-left text-left text-left text-left text-left">
+                                                <CardHeader className="p-5 flex flex-row items-center justify-between space-y-0 text-left text-left text-left text-left text-left text-left">
+                                                    <div className="flex items-center gap-4 min-w-0 text-left text-left text-left text-left text-left text-left">
+                                                      <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 shrink-0 group-hover:scale-110 transition-transform text-left text-left text-left text-left text-left text-left">
+                                                        <BookOpen className="h-5 w-5 text-primary text-left text-left text-left text-left text-left text-left" />
                                                       </div>
-                                                      <div className="min-w-0 text-left text-left text-left text-left text-left">
-                                                        <p className="font-black text-base uppercase tracking-tight truncate text-left text-left text-left text-left">{i.book} {i.chapter}</p>
-                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left">{readAt ? format(readAt, 'p') : 'N/A'}</p>
+                                                      <div className="min-w-0 text-left text-left text-left text-left text-left text-left text-left text-left">
+                                                        <p className="font-black text-base uppercase tracking-tight truncate text-left text-left text-left text-left text-left text-left text-left">{i.book} {i.chapter}</p>
+                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left">{readAt ? format(readAt, 'p') : 'N/A'}</p>
                                                       </div>
                                                     </div>
-                                                    <Button variant="ghost" size="icon" onClick={() => { setSelectedBookName(i.book); setSelectedChapterNumber(i.chapter); setView('read'); }} className="rounded-full h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors text-left text-left text-left">
-                                                        <ArrowLeft className="h-4 w-4 rotate-180 text-left text-left text-left" />
+                                                    <Button variant="ghost" size="icon" onClick={() => { setSelectedBookName(i.book); setSelectedChapterNumber(i.chapter); setView('read'); }} className="rounded-full h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors text-left text-left text-left text-left text-left text-left">
+                                                        <ArrowLeft className="h-4 w-4 rotate-180 text-left text-left text-left text-left text-left text-left" />
                                                     </Button>
                                                 </CardHeader>
                                               </Card>
@@ -846,10 +846,10 @@ export default function BibleReaderPage() {
                                         </div>
                                     </div>
                                 )) : (
-                                    <div className="text-center py-32 flex flex-col items-center text-left text-left text-left text-left">
-                                        <History className="h-16 w-16 text-muted-foreground/10 mb-4 text-left text-left text-left text-left" />
-                                        <h3 className="font-black uppercase tracking-tight text-xl opacity-30 text-center text-left text-left text-left">No Records</h3>
-                                        <p className="text-sm text-muted-foreground mt-2 italic px-12 text-balance leading-relaxed text-center text-left">
+                                    <div className="text-center py-32 flex flex-col items-center text-left text-left text-left text-left text-left text-left">
+                                        <History className="h-16 w-16 text-muted-foreground/10 mb-4 text-left text-left text-left text-left text-left text-left" />
+                                        <h3 className="font-black uppercase tracking-tight text-xl opacity-30 text-center text-left text-left text-left text-left text-left">No Records</h3>
+                                        <p className="text-sm text-muted-foreground mt-2 italic px-12 text-balance leading-relaxed text-center text-left text-left text-left">
                                             {historyFilterDate ? "No study logged for this date." : "Your spiritual milestones will appear here as you meditate on the Word."}
                                         </p>
                                     </div>
