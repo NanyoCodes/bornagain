@@ -87,7 +87,6 @@ import { RelationshipCircleTracker } from "@/components/souls/relationship-circl
 import { SoulsImportTemplateCard } from "@/components/settings/souls-import-template-card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Papa from 'papaparse';
-import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 
 const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
@@ -131,56 +130,56 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
         
         return (
           <div key={soul.id} className="relative">
-            <div className="flex items-center justify-between p-3 rounded-2xl border bg-background/50 group w-full relative text-left">
+            <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl border bg-background/50 group w-full relative text-left gap-2">
                 <button 
                     onClick={() => onSelectSoul(soul)}
-                    className="flex items-center gap-3 min-w-0 flex-1 text-left active:scale-[0.98] transition-all"
+                    className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 text-left active:scale-[0.98] transition-all"
                 >
-                    <div className="flex -space-x-4 shrink-0">
-                        <Avatar className={cn("h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0")}>
+                    <div className="flex -space-x-3 sm:-space-x-4 shrink-0">
+                        <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{soul.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs">{soul.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         {spouse && (
-                            <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0">
+                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0">
                                 <AvatarImage src={spouse.photoURL || undefined} className="object-cover" />
-                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs">{spouse.firstName?.charAt(0)}</AvatarFallback>
+                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-[10px] sm:text-xs">{spouse.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         )}
                     </div>
-                    <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-black text-sm sm:text-base truncate uppercase tracking-tight max-w-full">
+                    <div className="min-w-0 flex-1 pr-1">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                            <p className="font-black text-[13px] sm:text-base truncate uppercase tracking-tight max-w-[150px] sm:max-w-full">
                                 {soul.firstName} {soul.lastName}
                                 {soul.age && (
-                                    <span className="text-muted-foreground/60 ml-1.5 font-bold">
+                                    <span className="text-muted-foreground/60 ml-1 font-bold">
                                         ({soul.age})
                                     </span>
                                 )}
                             </p>
-                            <Badge variant="outline" className={cn("h-5 px-1.5 text-[8px] sm:text-[9px] uppercase font-black tracking-widest bg-background/50", soul.status === 'New' ? 'text-amber-600 border-amber-200' : soul.status === 'Contacted' ? 'text-blue-600 border-blue-200' : 'text-green-600 border-green-200')}>{soul.status}</Badge>
+                            <Badge variant="outline" className={cn("h-4 px-1.5 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 text-left bg-background/50", soul.status === 'New' ? 'text-amber-600 border-amber-200' : soul.status === 'Contacted' ? 'text-blue-600 border-blue-200' : 'text-green-600 border-green-200')}>{soul.status}</Badge>
                         </div>
                         {spouse && (
-                            <span className="text-primary/60 text-[10px] block font-bold leading-tight truncate">
+                            <span className="text-primary/60 text-[9px] sm:text-[10px] block font-bold leading-tight truncate">
                                 & {spouse.firstName}
                             </span>
                         )}
-                        <div className="flex flex-col gap-0.5 mt-0.5">
-                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
-                                Won {wonAt ? format(wonAt, 'PPP') : 'Recently'}
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
+                            <p className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
+                                Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                             </p>
                             {isFamily && (
-                                <Badge variant="secondary" className="h-3.5 px-1 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none w-fit">Family Unit</Badge>
+                                <Badge variant="secondary" className="h-3.5 px-1 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none">Family</Badge>
                             )}
                         </div>
                     </div>
                 </button>
-                <div className="flex items-center gap-1 shrink-0 ml-2">
+                <div className="flex items-center gap-1 shrink-0 ml-1">
                     {isFamily && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary">
-                                    <Users className="h-4 w-4" />
+                                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary/5 text-primary hover:bg-primary/10">
+                                    <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left">
@@ -212,7 +211,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                             </DropdownMenuContent>
                         </DropdownMenu>
                     )}
-                    <Button variant="ghost" size="icon" onClick={() => onSelectSoul(soul)} className="h-9 w-9 rounded-full text-muted-foreground group-hover:text-primary transition-colors">
+                    <Button variant="ghost" size="icon" onClick={() => onSelectSoul(soul)} className="h-8 w-8 sm:h-9 sm:w-9 rounded-full text-muted-foreground hover:text-primary transition-colors">
                         <ArrowRight className="h-4 w-4" />
                     </Button>
                 </div>
@@ -367,7 +366,7 @@ export default function SoulsWonPage() {
                 const soulSpouse = (s.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
                 return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
+                       (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
               });
 
               if (spouse) {
@@ -807,7 +806,7 @@ export default function SoulsWonPage() {
                     {/* Age Demographics */}
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left">
                                 <BarChart3 className="h-5 w-5 text-primary text-left" />
                             </div>
                             <div className="min-w-0 text-left">
@@ -1105,7 +1104,7 @@ export default function SoulsWonPage() {
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                                 <DialogHeader className="text-left">
-                                    <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DialogTitle>
+                                    <DialogTitle className="text-2xl font-bold font-headline text-left text-left text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-left text-left text-left text-left">Record a new life won for Christ.</DialogDescription>
                                 </DialogHeader>
                             </div>
@@ -1138,4 +1137,3 @@ export default function SoulsWonPage() {
     </div>
   );
 }
-
