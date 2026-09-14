@@ -132,8 +132,8 @@ import { Input } from "../ui/input";
 import { getBibleChapter } from "@/ai/flows/get-bible-chapter-flow";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { bibleData } from "@/lib/bible-data";
-import { FirestorePermissionError } from "@/firebase/errors";
 import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -1144,7 +1144,7 @@ function SoulProfileContent({
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
           <DialogHeader className="text-center space-y-2 text-center text-left text-left text-left text-left text-left text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left text-left text-left">
                   <Share2 className="h-7 w-7 text-primary text-left text-left text-left text-left text-left text-left text-left" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
@@ -1583,4 +1583,653 @@ export function SoulsWonTableStandalone({ souls, loading, selectedSoulId, setSel
         onAssess={onAssess}
         onAddChild={onAddChild}
     />;
+}
+```
+- src/firebase/firestore/use-collection.tsx:
+```tsx
+'use client';
+
+import { useState, useEffect } from 'react';
+import { 
+  onSnapshot, 
+  queryEqual, 
+  type Query, 
+  type DocumentData, 
+  type SnapshotOptions, 
+  type FirestoreError 
+} from 'firebase/firestore';
+import { errorEmitter } from '../error-emitter';
+import { FirestorePermissionError } from '../errors';
+import { useUser } from '../auth/use-user';
+
+interface UseCollectionOptions {
+  snapshotOptions?: SnapshotOptions;
+}
+
+/**
+ * useCollection Hook
+ * Optimized with deep logical equality checks to prevent infinite re-subscription loops.
+ */
+export function useCollection<T extends { id: string }>(
+  query: Query<DocumentData> | null,
+  options?: UseCollectionOptions
+) {
+  const [data, setData] = useState<T[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<FirestoreError | null>(null);
+  const { user } = useUser();
+  
+  // Stabilize the query reference using logical equality to prevent infinite loops
+  const [stableQuery, setStableQuery] = useState<Query<DocumentData> | null>(null);
+
+  useEffect(() => {
+    if (!query) {
+      if (stableQuery !== null) setStableQuery(null);
+    } else if (!stableQuery || !queryEqual(query, stableQuery)) {
+      setStableQuery(query);
+    }
+  }, [query, stableQuery]);
+
+  // Handle subscription only when the logical query actually changes
+  useEffect(() => {
+    if (!stableQuery) {
+      setData(null);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    
+    const unsubscribe = onSnapshot(
+      stableQuery,
+      (snapshot) => {
+        const result: T[] = snapshot.docs.map(doc => ({ 
+          id: doc.id, 
+          ...doc.data(options?.snapshotOptions) 
+        } as T));
+        
+        setData(result);
+        setLoading(false);
+        setError(null);
+      },
+      async (err) => {
+        if (err.code === 'permission-denied') {
+          // Attempt to extract the path for better debugging
+          let path = 'unknown path';
+          try {
+              if ((stableQuery as any).path) {
+                  path = (stableQuery as any).path;
+              } else if ((stableQuery as any)._query?.path) {
+                  path = (stableQuery as any)._query.path.canonicalString();
+              }
+          } catch (e) {}
+
+          const permissionError = new FirestorePermissionError({
+            path,
+            operation: 'list',
+          }, user);
+          errorEmitter.emit('permission-error', permissionError);
+        }
+        
+        setError(err);
+        setData(null);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [stableQuery, user, options?.snapshotOptions]);
+
+  return { data, loading, error };
+}
+
+```
+- src/firebase/firestore/use-doc.tsx:
+```tsx
+'use client';
+
+import { useState, useEffect } from 'react';
+import { 
+  onSnapshot, 
+  refEqual, 
+  type DocumentReference, 
+  type DocumentData, 
+  type SnapshotOptions, 
+  type FirestoreError 
+} from 'firebase/firestore';
+import { errorEmitter } from '../error-emitter';
+import { FirestorePermissionError } from '../errors';
+import { useUser } from '../auth/use-user';
+
+interface UseDocOptions {
+  snapshotOptions?: SnapshotOptions;
+}
+
+/**
+ * useDoc Hook
+ * Optimized with deep logical equality checks to prevent infinite re-subscription loops.
+ */
+export function useDoc<T>(
+  docRef: DocumentReference<DocumentData> | null,
+  options?: UseDocOptions
+) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<FirestoreError | null>(null);
+  const { user } = useUser();
+  
+  // Stabilize the document reference
+  const [stableRef, setStableRef] = useState<DocumentReference<DocumentData> | null>(null);
+
+  useEffect(() => {
+    if (!docRef) {
+      if (stableRef !== null) setStableRef(null);
+    } else if (!stableRef || !refEqual(docRef, stableRef)) {
+      setStableRef(docRef);
+    }
+  }, [docRef, stableRef]);
+
+  // Handle subscription
+  useEffect(() => {
+    if (!stableRef) {
+      setLoading(false);
+      setData(null);
+      return;
+    }
+
+    setLoading(true);
+    
+    const unsubscribe = onSnapshot(
+      stableRef,
+      (doc) => {
+        const newDocData = doc.exists()
+          ? ({
+              id: doc.id,
+              ...doc.data(options?.snapshotOptions),
+            } as T)
+          : null;
+
+        setData(newDocData);
+        setLoading(false);
+        setError(null);
+      },
+      async (err) => {
+        if (err.code === 'permission-denied') {
+            const permissionError = new FirestorePermissionError({
+              path: stableRef.path,
+              operation: 'get',
+            }, user);
+            errorEmitter.emit('permission-error', permissionError);
+        }
+        
+        setError(err);
+        setData(null);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [stableRef, user, options?.snapshotOptions]);
+
+  return { data, loading, error };
+}
+
+```
+- src/firebase/index.ts:
+```ts
+
+export * from './init';
+export * from './provider';
+export * from './auth/use-user';
+export * from './firestore/use-collection';
+export * from './firestore/use-doc';
+export { FirebaseClientProvider, useUserProfile } from './client-provider';
+
+```
+- src/firebase/init.ts:
+```ts
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, initializeFirestore, type Firestore } from 'firebase/firestore';
+import { getStorage, type FirebaseStorage } from 'firebase/storage';
+import { firebaseConfig } from './config';
+
+type FirebaseServices = {
+  app: FirebaseApp;
+  auth: Auth;
+  firestore: Firestore;
+  storage: FirebaseStorage;
+};
+
+// Use a module-level variable to store the initialized services.
+let firebaseServices: FirebaseServices | null = null;
+
+export function initializeFirebase(): FirebaseServices {
+  // Return existing services if already initialized on the client.
+  if (typeof window !== 'undefined' && firebaseServices) {
+    return firebaseServices;
+  }
+  
+  const existingApps = getApps();
+  const app = existingApps.length > 0 ? getApp() : initializeApp(firebaseConfig);
+  
+  let firestore: Firestore;
+  // Firestore must be initialized before other services that might implicitly call getFirestore()
+  if (typeof window !== 'undefined') {
+    try {
+      // Attempt to initialize with long polling and disabled fetch streams for proxy/station compatibility.
+      // This is the robust fix for "INTERNAL ASSERTION FAILED: Unexpected state" in proxied environments.
+      firestore = initializeFirestore(app, {
+        experimentalForceLongPolling: true,
+        // @ts-ignore - useFetchStreams is valid in newer Firebase versions to resolve proxy stream issues
+        useFetchStreams: false,
+      });
+    } catch (e: any) {
+      // If Firestore is already initialized, initializeFirestore throws an error.
+      // We then get the existing instance.
+      firestore = getFirestore(app);
+    }
+  } else {
+    // On the server (SSR), use standard initialization.
+    firestore = getFirestore(app);
+  }
+
+  const auth = getAuth(app);
+  const storage = getStorage(app);
+  
+  const services = { app, auth, firestore, storage };
+
+  if (typeof window !== 'undefined') {
+    firebaseServices = services;
+  }
+
+  return services;
+}
+
+```
+- src/firebase/provider.tsx:
+```tsx
+'use client';
+
+import { createContext, useContext } from 'react';
+import type { FirebaseApp } from 'firebase/app';
+import type { Auth } from 'firebase/auth';
+import type { Firestore } from 'firebase/firestore';
+import type { FirebaseStorage } from 'firebase/storage';
+
+export type FirebaseContextValue = {
+  app: FirebaseApp;
+  auth: Auth;
+  firestore: Firestore;
+  storage: FirebaseStorage;
+};
+
+const FirebaseContext = createContext<FirebaseContextValue | undefined>(undefined);
+
+export const FirebaseProvider = FirebaseContext.Provider;
+
+export function useFirebase() {
+  const context = useContext(FirebaseContext);
+  if (context === undefined) {
+    throw new Error('useFirebase must be used within a FirebaseProvider');
+  }
+  return context;
+}
+
+export function useFirebaseApp() {
+  return useFirebase().app;
+}
+
+export function useAuth() {
+  return useFirebase().auth;
+}
+
+export function useFirestore() {
+  return useFirebase().firestore;
+}
+
+export function useStorage() {
+  return useFirebase().storage;
+}
+
+```
+- src/firestore.rules:
+```rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Deployment trigger: Typo correction and collection group security - 2025-06-15T19:45:00Z
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function getRequestId(id1, id2) {
+      return id1 < id2 ? id1 + '_' + id2 : id2 + '_' + id1;
+    }
+
+    function isFellowshipMember(fellowshipId) {
+      return isAuthenticated() && 
+             fellowshipId != null && 
+             fellowshipId is string && 
+             fellowshipId != "" && 
+             fellowshipId != "none" &&
+             exists(/databases/$(database)/documents/fellowships/$(fellowshipId)) &&
+             request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.get('memberIds', []);
+    }
+
+    function isFellowshipOrganizer(fId) {
+      return isAuthenticated() && 
+             fId != null &&
+             fId is string &&
+             fId != "" &&
+             exists(/databases/$(database)/documents/fellowships/$(fId)) &&
+             get(/databases/$(database)/documents/fellowships/$(fId)).data.organizerId == request.auth.uid;
+    }
+
+    function isCampaignOrganizer(cId) {
+      return isAuthenticated() && 
+             cId != null && 
+             cId is string && 
+             cId != "" &&
+             exists(/databases/$(database)/documents/campaigns/$(cId)) &&
+             get(/databases/$(database)/documents/campaigns/$(cId)).data.organizerId == request.auth.uid;
+    }
+
+    function isEventOrganizer(eId) {
+      return isAuthenticated() && 
+             eId != null && 
+             eId is string && 
+             eId != "" && 
+             exists(/databases/$(database)/documents/events/$(eId)) && 
+             get(/databases/$(database)/documents/events/$(eId)).data.organizerId == request.auth.uid;
+    }
+
+    function canAccessChatDoc(chatData) {
+      return isAuthenticated() && (
+        request.auth.uid in chatData.get('participantIds', []) ||
+        (chatData.get('fellowshipId', '') != '' && isFellowshipMember(chatData.get('fellowshipId', ''))) ||
+        (chatData.get('associationId', '') != '' && isFellowshipMember(chatData.get('associationId', ''))) ||
+        (chatData.get('campaignId', '') != '' && exists(/databases/$(database)/documents/campaigns/$(chatData.get('campaignId', ''))/participants/$(request.auth.uid))) ||
+        (chatData.get('eventId', '') != '' && exists(/databases/$(database)/documents/events/$(chatData.get('eventId', ''))/participants/$(request.auth.uid)))
+      );
+    }
+
+    // Collection Group rule for Bible Highlights (Shared Feed)
+    match /{path=**}/bibleHighlights/{highlightId} {
+        allow list: if isAuthenticated();
+        allow get: if isAuthenticated() && (
+          resource.data.userId == request.auth.uid || 
+          resource.data.get('isPrivate', false) == false
+        );
+        allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+        allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    match /users/{userId} {
+      allow read: if true; 
+      allow create, delete: if isOwner(userId);
+
+      allow update: if isAuthenticated() && (
+        isOwner(userId) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline', 'photoURL', 'firstName', 'lastName', 'fullName_lowercase', 'name_tokens', 'bio', 'personalMessage', 'maritalStatus', 'workStatus', 'organizationName', 'roleInOrganization', 'videoTestimonies', 'dateOfBirth', 'location', 'phone', 'defaultMeetingLink']) && (
+          isOwner(userId) ||
+          exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
+          (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
+        ))
+      );
+
+      match /fellowships/{fId} {
+        allow get, list, write: if isOwner(userId);
+      }
+
+      match /strongholds/{id} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /souls/{soulId} {
+        allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
+        allow create, delete: if isOwner(userId);
+        allow update: if isAuthenticated() && (
+          isOwner(userId) || 
+          isFellowshipMember(resource.data.get('fellowshipId', '')) || 
+          isFellowshipMember(resource.data.get('associationId', ''))
+        );
+      }
+      
+      match /disciplineHistory/{logId} {
+        allow read: if isAuthenticated();
+        allow write: if isOwner(userId);
+      }
+
+      match /bibleHighlights/{highlightId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /notes/{noteId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /notifications/{notificationId} {
+        allow read, update, delete: if isOwner(userId);
+        allow create: if isAuthenticated();
+      }
+
+      match /joinedCampaigns/{campaignId} {
+        allow get, list, write: if isOwner(userId);
+      }
+
+      match /joinedEvents/{eventId} {
+        allow get, list, write: if isOwner(userId);
+      }
+    }
+
+    match /events/{eventId} {
+      allow get, list: if (resource.data.get('visibility', 'public') == 'public') || (isAuthenticated() && (request.auth.uid == resource.data.organizerId || request.auth.uid in resource.data.get('participantIds', []) || exists(/databases/$(database)/documents/events/$(eventId)/participants/$(request.auth.uid))));
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        request.auth.uid == resource.data.organizerId ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'hasGroupChat', 'photoURL', 'participantIds'])
+      );
+      allow delete: if isAuthenticated() && resource.data.organizerId == request.auth.uid;
+
+      match /participants/{userId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isOwner(userId) || isEventOrganizer(eventId);
+      }
+    }
+
+    match /victoryCircles/{category} {
+      allow read: if isAuthenticated();
+
+      match /posts/{postId} {
+        allow get, list: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isOwner(resource.data.authorId));
+        allow update: if isAuthenticated() && (
+          (resource.data.authorId == request.auth.uid) ||
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
+        );
+
+        match /comments/{commentId} {
+          allow get, list: if isAuthenticated();
+          allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
+          allow update: if isAuthenticated() && (
+            (request.resource.data.authorId == request.auth.uid) ||
+            (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+          );
+        }
+      }
+      
+      match /armor/{armorId} {
+        allow get, list: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isOwner(resource.data.authorId));
+        allow update: if isAuthenticated() && (
+          (request.resource.data.authorId == request.auth.uid) ||
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
+        );
+      }
+      
+      match /foundational_armor/{armorIdx}/comments/{commentId} {
+        allow get, list: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/victoryCircles/$(category)/foundational_armor/$(armorIdx)).data.authorId == request.auth.uid);
+        allow update: if isAuthenticated() && (
+          (request.resource.data.authorId == request.auth.uid) ||
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+        );
+      }
+      
+      match /resources/{resourceId} {
+        allow get, list: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.auth.uid || isOwner(request.resource.data.authorId));
+        allow update: if isAuthenticated() && (request.resource.data.authorId == request.auth.uid || isOwner(request.resource.data.authorId));
+      }
+    }
+    
+    match /souls/{soulId} {
+      allow get, list: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.get('userId', '') == request.auth.uid;
+      allow update, delete: if isAuthenticated() && (
+        (resource.data.get('userId', '') == request.auth.uid) || 
+        (resource.data.userId == request.auth.uid) || 
+        isFellowshipMember(resource.data.get('fellowshipId', '')) ||
+        isFellowshipMember(resource.data.get('associationId', ''))
+      );
+    }
+
+    match /testimonies/{testimonyId} {
+      allow get, list: if true;
+      allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid);
+      allow update: if isAuthenticated() && ( 
+        (resource.data.authorId == request.auth.uid) || 
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+      );
+
+      match /comments/{commentId} {
+          allow get, list: if true;
+          allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+          allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
+          allow update: if isAuthenticated() && (
+            (request.resource.data.authorId == request.auth.uid) ||
+            (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+          );
+      }
+    }
+    
+    match /prayerRequests/{requestId} {
+      allow get, list: if true;
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.authorId;
+      allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+      allow update: if isAuthenticated() && ( 
+        (request.resource.data.authorId == request.auth.uid) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
+        (resource.data.get('answeredTestimonyId', '') != '' && (
+          request.resource.data.status == 'pending' || 
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'answeredTestimonyId'])
+        ))
+      );
+    }
+
+    match /campaigns/{campaignId} {
+      allow get, list: if true;
+      allow create: if isAuthenticated();
+      allow delete: if false; 
+      allow update: if isAuthenticated() && ( (request.auth.uid == resource.data.organizerId) || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged'])) || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants'])) );
+
+      match /participants/{userId} {
+        allow read: if isAuthenticated();
+        allow write: if isOwner(userId);
+      }
+    }
+    
+    match /chats/{chatId} {
+      allow create: if isAuthenticated();
+      allow read, update: if canAccessChatDoc(resource.data);
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data);
+        allow create: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data) && request.resource.data.senderId == request.auth.uid;
+        allow update, delete: if isOwner(resource.data.senderId)
+          && canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data)
+          && (request.time < resource.data.createdAt + duration.value(24, 'h'));
+      }
+    }
+
+    match /accountabilityRequests/{requestId} {
+      allow read: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+      allow create: if isAuthenticated() && request.resource.data.fromUserId == request.auth.uid;
+      allow update: if isAuthenticated() && (request.auth.uid == request.resource.data.toUserId || request.auth.uid == request.resource.data.fromUserId);
+      allow delete: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+    }
+    
+    match /fellowships/{fellowshipId} {
+      allow get, list: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        (resource.data.organizerId == request.auth.uid) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount', 'hasGroupChat', 'status']))
+      );
+      allow delete: if isAuthenticated() && resource.data.organizerId == request.auth.uid;
+
+      match /members/{memberId} {
+        allow read, list: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+
+      match /devotionals/{date} {
+        allow read: if true;
+        allow create, update, delete: if isAuthenticated() && isFellowshipOrganizer(fellowshipId);
+        
+        match /comments/{commentId} {
+            allow get, list: if true;
+            allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
+            allow update: if isAuthenticated() && (
+              (request.resource.data.authorId == request.auth.uid) ||
+              (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+            );
+        }
+      }
+    }
+
+    match /vendors/{vendorId} {
+      allow get, list: if true;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      match /meals/{mealId} {
+        allow get, list: if true;
+        allow create, update, delete: if isAuthenticated() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid;
+      }
+    }
+
+    match /mealGifts/{giftId} {
+      allow create: if isAuthenticated();
+      allow get, list: if isAuthenticated() && (
+        request.auth.uid == resource.data.get('senderId', '') || 
+        request.auth.uid == resource.data.get('vendorOwnerId', '')
+      );
+      allow update: if isAuthenticated() && (
+        (request.auth.uid == request.resource.data.senderId && request.resource.data.status == 'cancelled' && resource.data.status == 'ordered') ||
+        (request.auth.uid == request.resource.data.vendorOwnerId && request.resource.data.status in ['preparing', 'delivering', 'delivered'] && resource.data.status != 'cancelled')
+      );
+    }
+
+    match /mail/{mailId} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if false;
+    }
+  }
 }
