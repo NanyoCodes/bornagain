@@ -307,7 +307,7 @@ function ShareWordDialog({
                         className="w-full h-auto p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left hover:bg-primary/10 transition-all border-2 border-dashed"
                         onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference, `${window.location.origin}/dashboard/bible`))}
                     >
-                        <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center justify-between w-full text-left">
                             <span className="font-black text-[9px] sm:text-xs uppercase tracking-widest text-primary">{res.reference}</span>
                             <Send className="h-3.5 w-3.5 sm:h-4 w-4 text-primary opacity-40" />
                         </div>
@@ -318,7 +318,7 @@ function ShareWordDialog({
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
         <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
             <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
             <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Browse Bible</span>
@@ -331,7 +331,7 @@ function ShareWordDialog({
         </Button>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-6 text-left">
         <div className="flex items-center justify-between px-1">
             <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Kingdom Essential Scriptures</Label>
             <Badge variant="outline" className="h-5 px-2 text-[8px] font-bold text-primary border-primary/20 bg-primary/5 uppercase">Top Weapons</Badge>
@@ -741,8 +741,8 @@ function SoulProfileContent({
   }, [currentUserProfile?.accountabilityPartners]);
 
   return (
-    <div className="space-y-6 text-left text-left text-left">
-      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left text-left text-left">
+    <div className="space-y-6 text-left">
+      <Card className="rounded-none sm:rounded-[2rem] overflow-hidden border-none shadow-2xl bg-card/50 backdrop-blur-sm border-t-8 border-t-primary/20 text-left">
         <CardHeader className="p-8 pb-4 text-center">
             <div className="relative inline-block mx-auto mb-4">
                 <Dialog>
@@ -755,8 +755,8 @@ function SoulProfileContent({
                     {soul.photoURL && (
                         <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                             <DialogHeader className="sr-only text-left"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
-                            <div className="relative h-full w-full flex items-center justify-center p-4 text-center text-left text-left text-left">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left text-left">
+                            <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
@@ -812,28 +812,28 @@ function SoulProfileContent({
                         </Button>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1 text-left">
+                <div className="grid grid-cols-2 gap-4 text-left">
+                    <div className="space-y-1 text-left text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Full Name</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.firstName} {soul.lastName}</p>
                     </div>
-                    <div className="space-y-1 text-left">
+                    <div className="space-y-1 text-left text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Gender/Age</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left">{soul.gender || 'N/A'} • {soul.age ? `${soul.age} yrs` : 'Age N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left">
+                    <div className="space-y-1 text-left text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Relationship</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.relationship || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left">
+                    <div className="space-y-1 text-left text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Work Status</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.workStatus || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left">
+                    <div className="space-y-1 text-left text-left text-left text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Rel. Status</p>
                         <p className="text-[11px] sm:text-xs font-bold text-left truncate capitalize">{soul.maritalStatus || 'N/A'}</p>
                     </div>
-                    <div className="space-y-1 text-left">
+                    <div className="space-y-1 text-left text-left text-left text-left">
                         <p className="text-[7px] font-black uppercase text-muted-foreground/60 tracking-widest text-left">Nickname</p>
                         <p className="text-[11px] sm:text-xs font-bold truncate capitalize text-left">{soul.nickname || 'N/A'}</p>
                     </div>
@@ -897,7 +897,7 @@ function SoulProfileContent({
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Harvest Context</p>
                 <div className="space-y-1">
                     <p className="text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate">
-                        <Target className="h-3 w-3 text-primary text-left text-left text-left" />
+                        <Target className="h-3 w-3 text-primary text-left text-left text-left text-left" />
                         Source: {soul.source}
                     </p>
                 </div>
@@ -923,7 +923,7 @@ function SoulProfileContent({
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-blue-500/5 border border-blue-500/10">
                         <Users className="h-4 w-4 text-blue-500 shrink-0" />
                         <div className="min-w-0">
-                            <p className="text-[8px) font-black uppercase text-muted-foreground/60 tracking-widest">Association</p>
+                            <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest">Association</p>
                             <p className="text-[11px] sm:text-xs font-bold truncate capitalize">{soul.associationName || 'No Association'}</p>
                         </div>
                     </div>
@@ -955,32 +955,32 @@ function SoulProfileContent({
             <Separator className="opacity-20" />
             <div className="space-y-4 text-left">
                 <div className="flex items-center justify-between">
-                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left text-left text-left">
-                        <History className="h-3.5 w-3.5 text-left text-left text-left text-left" /> Interaction History
+                    <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest flex items-center gap-2 text-left text-left">
+                        <History className="h-3.5 w-3.5 text-left text-left text-left" /> Interaction History
                     </p>
                     <Button variant="ghost" className="h-6 text-[8px] font-black uppercase text-primary hover:bg-primary/5" onClick={() => onViewHistory(soul)}>
                         View All
                     </Button>
                 </div>
-                <div className="space-y-4 pl-1 text-left text-left text-left">
+                <div className="space-y-4 pl-1 text-left">
                     {sortedHistory.length > 0 ? (
                         sortedHistory.slice(0, 3).map((log, index) => {
                             const date = safeToDate(log.date);
                             return (
-                                <div key={index} className="relative pl-4 border-l-2 border-primary/20 text-left text-left text-left text-left">
-                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left text-left text-left">
+                                <div key={index} className="relative pl-4 border-l-2 border-primary/20 text-left text-left">
+                                    <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1 text-left text-left">
                                         {date ? format(date, "MMM d, yyyy") : 'Recently'}
                                         {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName.split(' ')[0]}</span>}
                                     </p>
-                                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left text-left text-left">
+                                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic text-left text-left">
                                         &ldquo;{log.note || 'Interaction logged.'}&rdquo;
                                     </p>
                                 </div>
                             );
                         })
                     ) : (
-                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left text-left text-left text-left">
-                            <p className="text-sm text-muted-foreground/40 italic text-left text-left text-left text-left text-left">No interactions recorded.</p>
+                        <div className="py-4 text-center border border-dashed rounded-xl bg-muted/5 text-left text-left">
+                            <p className="text-sm text-muted-foreground/40 italic text-left text-left">No interactions recorded.</p>
                         </div>
                     )}
                 </div>
@@ -1029,7 +1029,7 @@ function SoulProfileContent({
                         {needs.followUpPlan && (
                             <div className="pt-2 border-t border-primary/10">
                                 <p className="text-[8px] font-black uppercase text-primary/60 mb-1 flex items-center gap-1.5">
-                                    <Target className="h-2.5 w-2.5 text-left text-left text-left text-left text-left" /> Strategy
+                                    <Target className="h-2.5 w-2.5 text-left text-left text-left text-left text-left text-left" /> Strategy
                                 </p>
                                 <p className="text-[10px] text-muted-foreground leading-relaxed italic text-left">{needs.followUpPlan}</p>
                             </div>
@@ -1080,7 +1080,7 @@ function SoulProfileContent({
                         ))}
                     </div>
                 </div>
-                  <div className="space-y-2 text-left text-left text-left text-left text-left">
+                  <div className="space-y-2 text-left text-left text-left text-left text-left text-left">
                       <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Message</Label>
                       <Textarea 
                           value={customMessageText}
@@ -1102,14 +1102,14 @@ function SoulProfileContent({
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
           <DialogHeader className="text-center space-y-2">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left text-left">
-                  <MessageSquare className="h-7 w-7 text-primary text-center text-left text-left text-left text-left text-left text-left" />
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left text-left text-left">
+                  <MessageSquare className="h-7 w-7 text-primary text-center text-left text-left text-left text-left text-left text-left text-left" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
-            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left text-left">
+            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left text-left text-left text-left">
               <WhatsAppIcon className="h-5 w-5" /> WhatsApp
             </Button>
             <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
@@ -1120,7 +1120,7 @@ function SoulProfileContent({
       </Dialog>
 
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
           <div className="p-8 border-b bg-muted/10">
             <DialogHeader>
               <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DialogTitle>
@@ -1128,7 +1128,7 @@ function SoulProfileContent({
             </DialogHeader>
           </div>
           <div className="p-8 space-y-6">
-            <div className="space-y-2 text-left text-left text-left text-left">
+            <div className="space-y-2 text-left text-left text-left text-left text-left text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
@@ -1143,9 +1143,9 @@ function SoulProfileContent({
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
         <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
-          <DialogHeader className="text-center space-y-2 text-center text-left text-left text-left text-left text-left text-left">
-              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left text-left text-left">
-                  <Share2 className="h-7 w-7 text-primary text-left text-left text-left text-left text-left text-left text-left" />
+          <DialogHeader className="text-center space-y-2 text-center text-left text-left text-left text-left text-left text-left text-left">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <Share2 className="h-7 w-7 text-primary text-left text-left text-left text-left text-left text-left text-left text-left" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
@@ -1162,9 +1162,9 @@ function SoulProfileContent({
       </Dialog>
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
-                  <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
+          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left text-left">
+              <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
@@ -1181,7 +1181,7 @@ function SoulProfileContent({
                           >
                               <Avatar className="h-8 w-8 border shrink-0">
                                   <AvatarImage src={p.photoURL} />
-                                  <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
+                                  <AvatarFallback className="font-black text-[10px] text-center flex items-center justify-center w-full h-full">{p.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <span className="font-bold text-sm group-hover:text-primary transition-colors">{p.firstName} {p.lastName}</span>
                           </Button>
@@ -1222,13 +1222,13 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
     }) : null;
 
-    const householdChildren = allSouls.filter(s => soul.childrenIds?.includes(s.id));
+    const householdChildren = allSouls.filter(child => soul.childrenIds?.includes(child.id));
 
     return (
         <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left">
-            <div className="flex items-center justify-between p-4 gap-4">
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className="flex -space-x-4 shrink-0">
+            <div className="flex items-center justify-between p-4 gap-4 text-left">
+                <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
+                    <div className="flex -space-x-4 shrink-0 text-left">
                         <Avatar className={cn("h-11 w-11 sm:h-12 sm:w-12 border shadow-inner")}>
                             <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
@@ -1244,45 +1244,45 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                             </Avatar>
                         )}
                     </div>
-                    <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight flex-1">
+                    <div className="min-w-0 flex-1 text-left">
+                        <div className="flex items-center gap-2 flex-wrap text-left text-left text-left">
+                            <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight flex-1 text-left">
                               {soul.firstName || 'Unknown'} {soul.lastName || ''}
                               {soul.age && <span className="text-muted-foreground/60 ml-1">({soul.age})</span>}
                               {spouse && <span className="text-primary/60 ml-1"> & {spouse.firstName}</span>}
                             </p>
-                            <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
+                            <Badge className={cn("h-5 px-1.5 text-[9px] uppercase font-black tracking-widest text-left", getStatusClasses(soul.status))} variant="outline">{soul.status}</Badge>
                         </div>
-                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5">
+                        <div className="flex flex-wrap gap-1.5 items-center mt-1.5 text-left text-left text-left">
                             {isFamily && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                        <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0 cursor-pointer hover:bg-primary/10 transition-colors">
-                                            Household Hub <ChevronDown className="ml-1 h-2 w-2" />
+                                        <Badge variant="secondary" className="h-5 px-1.5 text-[8px] uppercase font-black tracking-tighter bg-primary/5 text-primary border-primary/20 shrink-0 cursor-pointer hover:bg-primary/10 transition-colors text-left text-left text-left">
+                                            Household Hub <ChevronDown className="ml-1 h-2 w-2 text-left text-left" />
                                         </Badge>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="start" className="w-56 rounded-2xl shadow-xl text-left">
-                                        <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Members</DropdownMenuLabel>
+                                    <DropdownMenuContent align="start" className="w-56 rounded-2xl shadow-xl text-left text-left text-left">
+                                        <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Members</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem onSelect={onClick} className="rounded-lg py-2.5">
-                                            <User className="mr-2 h-4 w-4" /> Primary: {soul.firstName}
+                                        <DropdownMenuItem onSelect={onClick} className="rounded-lg py-2.5 text-left">
+                                            <User className="mr-2 h-4 w-4 text-left" /> Primary: {soul.firstName}
                                         </DropdownMenuItem>
                                         {spouse && (
-                                            <DropdownMenuItem onSelect={() => onClick()} className="rounded-lg py-2.5">
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">S</AvatarFallback></Avatar>
-                                                    <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
+                                            <DropdownMenuItem onSelect={() => onClick()} className="rounded-lg py-2.5 text-left">
+                                                <div className="flex items-center gap-2 text-left">
+                                                    <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left">S</AvatarFallback></Avatar>
+                                                    <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
                                                 </div>
                                             </DropdownMenuItem>
                                         )}
                                         {householdChildren.map(child => (
-                                            <DropdownMenuItem key={child.id} onSelect={() => onClick()} className="rounded-lg py-2.5">
-                                                <div className="flex items-center gap-2"><Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span></div>
+                                            <DropdownMenuItem key={child.id} onSelect={() => onClick()} className="rounded-lg py-2.5 text-left">
+                                                <div className="flex items-center gap-2 text-left"><Avatar className="h-6 w-6 border text-left text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span></div>
                                             </DropdownMenuItem>
                                         ))}
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold">
-                                            <PlusCircle className="mr-2 h-4 w-4" /> Add Child
+                                        <DropdownMenuSeparator className="text-left" />
+                                        <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
+                                            <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -1290,7 +1290,7 @@ const SoulCard = React.memo(({ soul, allSouls, onClick, onAddChild }: {
                         </div>
                     </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-20" />
+                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-20 text-left" />
             </div>
         </Card>
     );
@@ -1305,83 +1305,83 @@ const SoulTableRow = React.memo(({ soul, allSouls, isSelected, onSelect, onAddCh
   onAddChild: (p1: Soul, p2?: Soul | null) => void;
 }) => {
     const isFamily = soul.maritalStatus === 'Married';
-    const spouse = isFamily ? allSouls.find(s => {
-        if (s.id === soul.id || s.maritalStatus !== 'Married') return false;
-        const otherFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+    const spouse = isFamily ? allSouls.find(other => {
+        if (other.id === soul.id || other.maritalStatus !== 'Married') return false;
+        const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
         const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
         const soulSpouse = (soul.spouseName || "").toLowerCase();
-        const otherSpouse = (s.spouseName || "").toLowerCase();
-        return (soulSpouse === otherFullName || soulSpouse === s.firstName.toLowerCase()) &&
+        const otherSpouse = (other.spouseName || "").toLowerCase();
+        return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
                (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
     }) : null;
 
-    const householdChildren = allSouls.filter(s => soul.childrenIds?.includes(s.id));
+    const householdChildren = allSouls.filter(child => soul.childrenIds?.includes(child.id));
 
     return (
         <TableRow 
             className={cn("border-b hover:bg-muted/50 transition-colors cursor-pointer text-left", isSelected && "bg-primary/[0.03]")}
             onClick={() => onSelect()}
         >
-            <TableCell className="p-4">
-                <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="flex -space-x-3 shrink-0">
-                            <Avatar className={cn("h-10 w-10 border shadow-inner")}>
-                                <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
-                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
+            <TableCell className="p-4 text-left">
+                <div className="flex items-center justify-between gap-4 text-left">
+                    <div className="flex items-center gap-4 text-left">
+                        <div className="flex -space-x-3 shrink-0 text-left">
+                            <Avatar className={cn("h-10 w-10 border shadow-inner text-left")}>
+                                <AvatarImage src={soul.photoURL || undefined} className="object-cover text-left" />
+                                <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">
                                     {soul.firstName?.charAt(0) || 'S'}
                                 </AvatarFallback>
                             </Avatar>
                             {spouse && (
-                                <Avatar className="h-10 w-10 border-2 border-background shadow-md">
-                                    <AvatarImage src={spouse.photoURL || undefined} className="object-cover" />
-                                    <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs">
+                                <Avatar className="h-10 w-10 border-2 border-background shadow-md text-left">
+                                    <AvatarImage src={spouse.photoURL || undefined} className="object-cover text-left" />
+                                    <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-xs text-left">
                                         {spouse.firstName?.charAt(0) || 'S'}
                                     </AvatarFallback>
                                 </Avatar>
                             )}
                         </div>
-                        <div className="min-w-0">
-                            <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight">
+                        <div className="min-w-0 text-left">
+                            <div className="font-black text-xs sm:text-sm md:text-base truncate capitalize tracking-tight text-left">
                                 {soul.firstName} {soul.lastName}
                                 {soul.age && <span className="text-muted-foreground/60 ml-2">({soul.age})</span>}
                                 {spouse && <span className="text-primary/60 ml-1"> & {spouse.firstName}</span>}
                             </div>
-                            {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70"><Church className="h-3 w-3 shrink-0" />{soul.church}</div>}
+                            {soul.church && <div className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1 font-medium truncate opacity-70 text-left"><Church className="h-3 w-3 shrink-0 text-left" />{soul.church}</div>}
                         </div>
                     </div>
                     {isFamily && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary">
-                                    <Users className="h-4 w-4" />
+                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-primary/5 text-primary text-left">
+                                    <Users className="h-4 w-4 text-left" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Household Hub</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onSelect={onSelect} className="rounded-lg py-2.5">
-                                    <User className="mr-2 h-4 w-4" /> View Primary Profile
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Household Hub</DropdownMenuLabel>
+                                <DropdownMenuSeparator className="text-left" />
+                                <DropdownMenuItem onSelect={onSelect} className="rounded-lg py-2.5 text-left">
+                                    <User className="mr-2 h-4 w-4 text-left" /> View Primary Profile
                                 </DropdownMenuItem>
                                 {spouse && (
-                                    <DropdownMenuItem onSelect={() => onSelect()} className="rounded-lg py-2.5">
-                                        <div className="flex items-center gap-2">
-                                            <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px]">S</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
+                                    <DropdownMenuItem onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left">
+                                        <div className="flex items-center gap-2 text-left">
+                                            <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL} /><AvatarFallback className="text-[8px] text-left">S</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 )}
                                 {householdChildren.map(child => (
-                                    <DropdownMenuItem key={child.id} onSelect={() => onSelect()} className="rounded-lg py-2.5">
-                                        <div className="flex items-center gap-2">
-                                            <Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px]">C</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span>
+                                    <DropdownMenuItem key={child.id} onSelect={() => onSelect()} className="rounded-lg py-2.5 text-left text-left">
+                                        <div className="flex items-center gap-2 text-left text-left">
+                                            <Avatar className="h-6 w-6 border text-left text-left"><AvatarImage src={child.photoURL} /><AvatarFallback className="text-[8px] text-left text-left">C</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate text-left text-left">{child.firstName} (Child)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 ))}
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold">
-                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
+                                <DropdownMenuSeparator className="text-left" />
+                                <DropdownMenuItem onSelect={() => onAddChild(soul, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
+                                    <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -1420,12 +1420,12 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
 
   if (loading || !mounted) {
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 text-left">
             {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center space-x-4 p-4 border-b last:border-0 bg-card/50 backdrop-blur-sm rounded-xl">
-                    <Skeleton className="h-12 w-12 rounded-full" />
-                    <div className="space-y-2 flex-1"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-1/2" /></div>
-                    <Skeleton className="h-9 w-24 rounded-xl" />
+                <div key={i} className="flex items-center space-x-4 p-4 border-b last:border-0 bg-card/50 backdrop-blur-sm rounded-xl text-left">
+                    <Avatar className="h-12 w-12 border text-left"><AvatarFallback className="text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /></AvatarFallback></Avatar>
+                    <div className="space-y-2 flex-1 text-left text-left"><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-1/2 text-left" /></div>
+                    <Skeleton className="h-9 w-24 rounded-xl text-left" />
                 </div>
             ))}
         </div>
@@ -1435,13 +1435,13 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
   if (souls.length === 0) {
     return (
         <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left">
-            <CardContent>
-                <div className="text-center py-24 flex flex-col items-center">
-                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border-2 border-primary/20">
-                        <HeartHandshake className="h-10 w-10 text-primary opacity-40" />
+            <CardContent className="text-left">
+                <div className="text-center py-24 flex flex-col items-center text-left text-left">
+                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border-2 border-primary/20 text-left text-left">
+                        <HeartHandshake className="h-10 w-10 text-primary opacity-40 text-left text-left" />
                     </div>
-                    <h3 className="text-xl font-black font-headline uppercase tracking-tight">Your Harvest Field</h3>
-                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
+                    <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left text-left">Your Harvest Field</h3>
+                    <p className="text-sm text-muted-foreground italic font-medium max-w-[280px] leading-relaxed opacity-60 text-balance text-center text-left text-left">The souls you lead to Christ will appear here for collaborative discipleship and strategic follow-up.</p>
                 </div>
             </CardContent>
         </Card>
@@ -1465,7 +1465,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
     <div className="flex flex-col lg:flex-row gap-8 items-start text-left">
         <div className="flex-1 w-full text-left">
             {isMobile ? (
-                <div className="space-y-px text-left">
+                <div className="space-y-px text-left text-left text-left">
                     {souls.map((soul) => (
                         <SoulCard key={soul.id} soul={soul} allSouls={souls} onClick={() => setSelectedSoulId(soul.id)} onAddChild={onAddChild} />
                     ))}
@@ -1473,8 +1473,8 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
             ) : (
                 <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left">
                     <CardHeader className="p-8 border-b bg-muted/5 text-left">
-                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left">
-                            <Heart className="h-6 w-6 text-primary fill-current" />
+                        <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left">
+                            <Heart className="h-6 w-6 text-primary fill-current text-left text-left" />
                             Harvest Dashboard
                         </CardTitle>
                         <CardDescription className="text-base font-medium text-left">Keep track of spiritual development and community integration.</CardDescription>
@@ -1509,15 +1509,15 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
         <Drawer open={!!selectedSoulId && !!selectedSoul && (isMobile || (mounted && typeof window !== 'undefined' && window.innerWidth < 1024))} onOpenChange={(open) => !open && setSelectedSoulId(null)}>
             <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                    <DrawerHeader className="text-left flex-shrink-0 text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left">
-                            <Sparkles className="h-4 w-4 text-primary" />
+                    <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left text-left">
+                            <Sparkles className="h-4 w-4 text-primary text-left text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
                         </div>
-                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
+                        <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">
                             {selectedSoul?.firstName} {selectedSoul?.lastName}
                         </DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Full spiritual snapshot for the harvest workforce.</DrawerDescription>
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left">
@@ -1528,7 +1528,7 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
             </DrawerContent>
         </Drawer>
 
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left text-left">
             <AnimatePresence>
                 {selectedSoul ? (
                     <motion.div
@@ -1539,697 +1539,18 @@ export function SoulsWonTable({ souls, loading, selectedSoulId, setSelectedSoulI
                         className="space-y-6 text-left"
                     >
                         {profileView}
-                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center">
+                        <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left">
                             {selectedSoul.firstName} {selectedSoul.lastName}
                         </p>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5">
-                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance">Select a record to preview identity</p>
+                    <div className="text-center py-20 px-8 border-2 border-dashed rounded-[2rem] bg-muted/5 text-left text-left text-left">
+                        <Users className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left text-left text-left" />
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 text-center text-balance text-left text-left">Select a record to preview identity</p>
                     </div>
                 )}
             </AnimatePresence>
         </div>
     </div>
   );
-}
-
-export function SoulsWonTableStandalone({ souls, loading, selectedSoulId, setSelectedSoulId, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess, onAddChild }: {
-  souls: Soul[];
-  loading: boolean;
-  selectedSoulId: string | null;
-  setSelectedSoulId: (id: string | null) => void;
-  onFollowUp: (soul: Soul) => void;
-  onViewHistory: (soul: Soul) => void;
-  onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
-  onOpenAssignDialog: (soul: Soul) => void;
-  onEdit: (soul: Soul) => void;
-  onDelete: (soul: Soul) => void;
-  onAssess: (soul: Soul) => void;
-  onAddChild: (p1: Soul, p2?: Soul | null) => void;
-}) {
-    return <SoulsWonTable 
-        souls={souls} 
-        loading={loading} 
-        selectedSoulId={selectedSoulId} 
-        setSelectedSoulId={setSelectedSoulId} 
-        onFollowUp={onFollowUp} 
-        onViewHistory={onViewHistory} 
-        onExportSingle={onExportSingle} 
-        onOpenAssignDialog={onOpenAssignDialog} 
-        onEdit={onEdit} 
-        onDelete={onDelete} 
-        onAssess={onAssess}
-        onAddChild={onAddChild}
-    />;
-}
-```
-- src/firebase/firestore/use-collection.tsx:
-```tsx
-'use client';
-
-import { useState, useEffect } from 'react';
-import { 
-  onSnapshot, 
-  queryEqual, 
-  type Query, 
-  type DocumentData, 
-  type SnapshotOptions, 
-  type FirestoreError 
-} from 'firebase/firestore';
-import { errorEmitter } from '../error-emitter';
-import { FirestorePermissionError } from '../errors';
-import { useUser } from '../auth/use-user';
-
-interface UseCollectionOptions {
-  snapshotOptions?: SnapshotOptions;
-}
-
-/**
- * useCollection Hook
- * Optimized with deep logical equality checks to prevent infinite re-subscription loops.
- */
-export function useCollection<T extends { id: string }>(
-  query: Query<DocumentData> | null,
-  options?: UseCollectionOptions
-) {
-  const [data, setData] = useState<T[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<FirestoreError | null>(null);
-  const { user } = useUser();
-  
-  // Stabilize the query reference using logical equality to prevent infinite loops
-  const [stableQuery, setStableQuery] = useState<Query<DocumentData> | null>(null);
-
-  useEffect(() => {
-    if (!query) {
-      if (stableQuery !== null) setStableQuery(null);
-    } else if (!stableQuery || !queryEqual(query, stableQuery)) {
-      setStableQuery(query);
-    }
-  }, [query, stableQuery]);
-
-  // Handle subscription only when the logical query actually changes
-  useEffect(() => {
-    if (!stableQuery) {
-      setData(null);
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    
-    const unsubscribe = onSnapshot(
-      stableQuery,
-      (snapshot) => {
-        const result: T[] = snapshot.docs.map(doc => ({ 
-          id: doc.id, 
-          ...doc.data(options?.snapshotOptions) 
-        } as T));
-        
-        setData(result);
-        setLoading(false);
-        setError(null);
-      },
-      async (err) => {
-        if (err.code === 'permission-denied') {
-          // Attempt to extract the path for better debugging
-          let path = 'unknown path';
-          try {
-              if ((stableQuery as any).path) {
-                  path = (stableQuery as any).path;
-              } else if ((stableQuery as any)._query?.path) {
-                  path = (stableQuery as any)._query.path.canonicalString();
-              }
-          } catch (e) {}
-
-          const permissionError = new FirestorePermissionError({
-            path,
-            operation: 'list',
-          }, user);
-          errorEmitter.emit('permission-error', permissionError);
-        }
-        
-        setError(err);
-        setData(null);
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [stableQuery, user, options?.snapshotOptions]);
-
-  return { data, loading, error };
-}
-
-```
-- src/firebase/firestore/use-doc.tsx:
-```tsx
-'use client';
-
-import { useState, useEffect } from 'react';
-import { 
-  onSnapshot, 
-  refEqual, 
-  type DocumentReference, 
-  type DocumentData, 
-  type SnapshotOptions, 
-  type FirestoreError 
-} from 'firebase/firestore';
-import { errorEmitter } from '../error-emitter';
-import { FirestorePermissionError } from '../errors';
-import { useUser } from '../auth/use-user';
-
-interface UseDocOptions {
-  snapshotOptions?: SnapshotOptions;
-}
-
-/**
- * useDoc Hook
- * Optimized with deep logical equality checks to prevent infinite re-subscription loops.
- */
-export function useDoc<T>(
-  docRef: DocumentReference<DocumentData> | null,
-  options?: UseDocOptions
-) {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<FirestoreError | null>(null);
-  const { user } = useUser();
-  
-  // Stabilize the document reference
-  const [stableRef, setStableRef] = useState<DocumentReference<DocumentData> | null>(null);
-
-  useEffect(() => {
-    if (!docRef) {
-      if (stableRef !== null) setStableRef(null);
-    } else if (!stableRef || !refEqual(docRef, stableRef)) {
-      setStableRef(docRef);
-    }
-  }, [docRef, stableRef]);
-
-  // Handle subscription
-  useEffect(() => {
-    if (!stableRef) {
-      setLoading(false);
-      setData(null);
-      return;
-    }
-
-    setLoading(true);
-    
-    const unsubscribe = onSnapshot(
-      stableRef,
-      (doc) => {
-        const newDocData = doc.exists()
-          ? ({
-              id: doc.id,
-              ...doc.data(options?.snapshotOptions),
-            } as T)
-          : null;
-
-        setData(newDocData);
-        setLoading(false);
-        setError(null);
-      },
-      async (err) => {
-        if (err.code === 'permission-denied') {
-            const permissionError = new FirestorePermissionError({
-              path: stableRef.path,
-              operation: 'get',
-            }, user);
-            errorEmitter.emit('permission-error', permissionError);
-        }
-        
-        setError(err);
-        setData(null);
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [stableRef, user, options?.snapshotOptions]);
-
-  return { data, loading, error };
-}
-
-```
-- src/firebase/index.ts:
-```ts
-
-export * from './init';
-export * from './provider';
-export * from './auth/use-user';
-export * from './firestore/use-collection';
-export * from './firestore/use-doc';
-export { FirebaseClientProvider, useUserProfile } from './client-provider';
-
-```
-- src/firebase/init.ts:
-```ts
-import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
-import { getFirestore, initializeFirestore, type Firestore } from 'firebase/firestore';
-import { getStorage, type FirebaseStorage } from 'firebase/storage';
-import { firebaseConfig } from './config';
-
-type FirebaseServices = {
-  app: FirebaseApp;
-  auth: Auth;
-  firestore: Firestore;
-  storage: FirebaseStorage;
-};
-
-// Use a module-level variable to store the initialized services.
-let firebaseServices: FirebaseServices | null = null;
-
-export function initializeFirebase(): FirebaseServices {
-  // Return existing services if already initialized on the client.
-  if (typeof window !== 'undefined' && firebaseServices) {
-    return firebaseServices;
-  }
-  
-  const existingApps = getApps();
-  const app = existingApps.length > 0 ? getApp() : initializeApp(firebaseConfig);
-  
-  let firestore: Firestore;
-  // Firestore must be initialized before other services that might implicitly call getFirestore()
-  if (typeof window !== 'undefined') {
-    try {
-      // Attempt to initialize with long polling and disabled fetch streams for proxy/station compatibility.
-      // This is the robust fix for "INTERNAL ASSERTION FAILED: Unexpected state" in proxied environments.
-      firestore = initializeFirestore(app, {
-        experimentalForceLongPolling: true,
-        // @ts-ignore - useFetchStreams is valid in newer Firebase versions to resolve proxy stream issues
-        useFetchStreams: false,
-      });
-    } catch (e: any) {
-      // If Firestore is already initialized, initializeFirestore throws an error.
-      // We then get the existing instance.
-      firestore = getFirestore(app);
-    }
-  } else {
-    // On the server (SSR), use standard initialization.
-    firestore = getFirestore(app);
-  }
-
-  const auth = getAuth(app);
-  const storage = getStorage(app);
-  
-  const services = { app, auth, firestore, storage };
-
-  if (typeof window !== 'undefined') {
-    firebaseServices = services;
-  }
-
-  return services;
-}
-
-```
-- src/firebase/provider.tsx:
-```tsx
-'use client';
-
-import { createContext, useContext } from 'react';
-import type { FirebaseApp } from 'firebase/app';
-import type { Auth } from 'firebase/auth';
-import type { Firestore } from 'firebase/firestore';
-import type { FirebaseStorage } from 'firebase/storage';
-
-export type FirebaseContextValue = {
-  app: FirebaseApp;
-  auth: Auth;
-  firestore: Firestore;
-  storage: FirebaseStorage;
-};
-
-const FirebaseContext = createContext<FirebaseContextValue | undefined>(undefined);
-
-export const FirebaseProvider = FirebaseContext.Provider;
-
-export function useFirebase() {
-  const context = useContext(FirebaseContext);
-  if (context === undefined) {
-    throw new Error('useFirebase must be used within a FirebaseProvider');
-  }
-  return context;
-}
-
-export function useFirebaseApp() {
-  return useFirebase().app;
-}
-
-export function useAuth() {
-  return useFirebase().auth;
-}
-
-export function useFirestore() {
-  return useFirebase().firestore;
-}
-
-export function useStorage() {
-  return useFirebase().storage;
-}
-
-```
-- src/firestore.rules:
-```rules
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    
-    // Deployment trigger: Typo correction and collection group security - 2025-06-15T19:45:00Z
-    
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-    
-    function getRequestId(id1, id2) {
-      return id1 < id2 ? id1 + '_' + id2 : id2 + '_' + id1;
-    }
-
-    function isFellowshipMember(fellowshipId) {
-      return isAuthenticated() && 
-             fellowshipId != null && 
-             fellowshipId is string && 
-             fellowshipId != "" && 
-             fellowshipId != "none" &&
-             exists(/databases/$(database)/documents/fellowships/$(fellowshipId)) &&
-             request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.get('memberIds', []);
-    }
-
-    function isFellowshipOrganizer(fId) {
-      return isAuthenticated() && 
-             fId != null &&
-             fId is string &&
-             fId != "" &&
-             exists(/databases/$(database)/documents/fellowships/$(fId)) &&
-             get(/databases/$(database)/documents/fellowships/$(fId)).data.organizerId == request.auth.uid;
-    }
-
-    function isCampaignOrganizer(cId) {
-      return isAuthenticated() && 
-             cId != null && 
-             cId is string && 
-             cId != "" &&
-             exists(/databases/$(database)/documents/campaigns/$(cId)) &&
-             get(/databases/$(database)/documents/campaigns/$(cId)).data.organizerId == request.auth.uid;
-    }
-
-    function isEventOrganizer(eId) {
-      return isAuthenticated() && 
-             eId != null && 
-             eId is string && 
-             eId != "" && 
-             exists(/databases/$(database)/documents/events/$(eId)) && 
-             get(/databases/$(database)/documents/events/$(eId)).data.organizerId == request.auth.uid;
-    }
-
-    function canAccessChatDoc(chatData) {
-      return isAuthenticated() && (
-        request.auth.uid in chatData.get('participantIds', []) ||
-        (chatData.get('fellowshipId', '') != '' && isFellowshipMember(chatData.get('fellowshipId', ''))) ||
-        (chatData.get('associationId', '') != '' && isFellowshipMember(chatData.get('associationId', ''))) ||
-        (chatData.get('campaignId', '') != '' && exists(/databases/$(database)/documents/campaigns/$(chatData.get('campaignId', ''))/participants/$(request.auth.uid))) ||
-        (chatData.get('eventId', '') != '' && exists(/databases/$(database)/documents/events/$(chatData.get('eventId', ''))/participants/$(request.auth.uid)))
-      );
-    }
-
-    // Collection Group rule for Bible Highlights (Shared Feed)
-    match /{path=**}/bibleHighlights/{highlightId} {
-        allow list: if isAuthenticated();
-        allow get: if isAuthenticated() && (
-          resource.data.userId == request.auth.uid || 
-          resource.data.get('isPrivate', false) == false
-        );
-        allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-        allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
-    }
-
-    match /users/{userId} {
-      allow read: if true; 
-      allow create, delete: if isOwner(userId);
-
-      allow update: if isAuthenticated() && (
-        isOwner(userId) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accountabilityPartners', 'partnerIds', 'lastActive', 'backgroundImage', 'backgroundOverlayOpacity', 'churchInfo', 'prayerLinks', 'notificationSettings', 'monthlySoulsGoal', 'isVendor', 'dailyDiscipline', 'photoURL', 'firstName', 'lastName', 'fullName_lowercase', 'name_tokens', 'bio', 'personalMessage', 'maritalStatus', 'workStatus', 'organizationName', 'roleInOrganization', 'videoTestimonies', 'dateOfBirth', 'location', 'phone', 'defaultMeetingLink']) && (
-          isOwner(userId) ||
-          exists(/databases/$(database)/documents/accountabilityRequests/$(getRequestId(userId, request.auth.uid))) ||
-          (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
-        ))
-      );
-
-      match /fellowships/{fId} {
-        allow get, list, write: if isOwner(userId);
-      }
-
-      match /strongholds/{id} {
-        allow read, write: if isOwner(userId);
-      }
-
-      match /souls/{soulId} {
-        allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
-        allow create, delete: if isOwner(userId);
-        allow update: if isAuthenticated() && (
-          isOwner(userId) || 
-          isFellowshipMember(resource.data.get('fellowshipId', '')) || 
-          isFellowshipMember(resource.data.get('associationId', ''))
-        );
-      }
-      
-      match /disciplineHistory/{logId} {
-        allow read: if isAuthenticated();
-        allow write: if isOwner(userId);
-      }
-
-      match /bibleHighlights/{highlightId} {
-        allow read, write: if isOwner(userId);
-      }
-
-      match /notes/{noteId} {
-        allow read, write: if isOwner(userId);
-      }
-
-      match /notifications/{notificationId} {
-        allow read, update, delete: if isOwner(userId);
-        allow create: if isAuthenticated();
-      }
-
-      match /joinedCampaigns/{campaignId} {
-        allow get, list, write: if isOwner(userId);
-      }
-
-      match /joinedEvents/{eventId} {
-        allow get, list, write: if isOwner(userId);
-      }
-    }
-
-    match /events/{eventId} {
-      allow get, list: if (resource.data.get('visibility', 'public') == 'public') || (isAuthenticated() && (request.auth.uid == resource.data.organizerId || request.auth.uid in resource.data.get('participantIds', []) || exists(/databases/$(database)/documents/events/$(eventId)/participants/$(request.auth.uid))));
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated() && (
-        request.auth.uid == resource.data.organizerId ||
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'hasGroupChat', 'photoURL', 'participantIds'])
-      );
-      allow delete: if isAuthenticated() && resource.data.organizerId == request.auth.uid;
-
-      match /participants/{userId} {
-        allow read: if isAuthenticated();
-        allow create: if isAuthenticated();
-        allow update, delete: if isOwner(userId) || isEventOrganizer(eventId);
-      }
-    }
-
-    match /victoryCircles/{category} {
-      allow read: if isAuthenticated();
-
-      match /posts/{postId} {
-        allow get, list: if isAuthenticated();
-        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isOwner(resource.data.authorId));
-        allow update: if isAuthenticated() && (
-          (resource.data.authorId == request.auth.uid) ||
-          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
-        );
-
-        match /comments/{commentId} {
-          allow get, list: if isAuthenticated();
-          allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-          allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/victoryCircles/$(category)/posts/$(postId)).data.authorId == request.auth.uid);
-          allow update: if isAuthenticated() && (
-            (request.resource.data.authorId == request.auth.uid) ||
-            (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
-          );
-        }
-      }
-      
-      match /armor/{armorId} {
-        allow get, list: if isAuthenticated();
-        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isOwner(resource.data.authorId));
-        allow update: if isAuthenticated() && (
-          (request.resource.data.authorId == request.auth.uid) ||
-          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
-        );
-      }
-      
-      match /foundational_armor/{armorIdx}/comments/{commentId} {
-        allow get, list: if isAuthenticated();
-        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || get(/databases/$(database)/documents/victoryCircles/$(category)/foundational_armor/$(armorIdx)).data.authorId == request.auth.uid);
-        allow update: if isAuthenticated() && (
-          (request.resource.data.authorId == request.auth.uid) ||
-          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
-        );
-      }
-      
-      match /resources/{resourceId} {
-        allow get, list: if isAuthenticated();
-        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.auth.uid || isOwner(request.resource.data.authorId));
-        allow update: if isAuthenticated() && (request.resource.data.authorId == request.auth.uid || isOwner(request.resource.data.authorId));
-      }
-    }
-    
-    match /souls/{soulId} {
-      allow get, list: if isAuthenticated();
-      allow create: if isAuthenticated() && request.resource.data.get('userId', '') == request.auth.uid;
-      allow update, delete: if isAuthenticated() && (
-        (resource.data.get('userId', '') == request.auth.uid) || 
-        (resource.data.userId == request.auth.uid) || 
-        isFellowshipMember(resource.data.get('fellowshipId', '')) ||
-        isFellowshipMember(resource.data.get('associationId', ''))
-      );
-    }
-
-    match /testimonies/{testimonyId} {
-      allow get, list: if true;
-      allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid);
-      allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.auth.uid) || 
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
-      );
-
-      match /comments/{commentId} {
-          allow get, list: if true;
-          allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-          allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/testimonies/$(testimonyId)).data.authorId == request.auth.uid);
-          allow update: if isAuthenticated() && (
-            (request.resource.data.authorId == request.auth.uid) ||
-            (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
-          );
-      }
-    }
-    
-    match /prayerRequests/{requestId} {
-      allow get, list: if true;
-      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.authorId;
-      allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
-      allow update: if isAuthenticated() && ( 
-        (request.resource.data.authorId == request.auth.uid) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usersWhoPrayed'])) || 
-        (resource.data.get('answeredTestimonyId', '') != '' && (
-          request.resource.data.status == 'pending' || 
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'answeredTestimonyId'])
-        ))
-      );
-    }
-
-    match /campaigns/{campaignId} {
-      allow get, list: if true;
-      allow create: if isAuthenticated();
-      allow delete: if false; 
-      allow update: if isAuthenticated() && ( (request.auth.uid == resource.data.organizerId) || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['soulsLogged'])) || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants'])) );
-
-      match /participants/{userId} {
-        allow read: if isAuthenticated();
-        allow write: if isOwner(userId);
-      }
-    }
-    
-    match /chats/{chatId} {
-      allow create: if isAuthenticated();
-      allow read, update: if canAccessChatDoc(resource.data);
-      allow delete: if false;
-
-      match /messages/{messageId} {
-        allow read: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data);
-        allow create: if canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data) && request.resource.data.senderId == request.auth.uid;
-        allow update, delete: if isOwner(resource.data.senderId)
-          && canAccessChatDoc(get(/databases/$(database)/documents/chats/$(chatId)).data)
-          && (request.time < resource.data.createdAt + duration.value(24, 'h'));
-      }
-    }
-
-    match /accountabilityRequests/{requestId} {
-      allow read: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
-      allow create: if isAuthenticated() && request.resource.data.fromUserId == request.auth.uid;
-      allow update: if isAuthenticated() && (request.auth.uid == request.resource.data.toUserId || request.auth.uid == request.resource.data.fromUserId);
-      allow delete: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
-    }
-    
-    match /fellowships/{fellowshipId} {
-      allow get, list: if true;
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated() && (
-        (resource.data.organizerId == request.auth.uid) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'memberCount', 'hasGroupChat', 'status']))
-      );
-      allow delete: if isAuthenticated() && resource.data.organizerId == request.auth.uid;
-
-      match /members/{memberId} {
-        allow read, list: if isAuthenticated();
-        allow write: if isAuthenticated();
-      }
-
-      match /devotionals/{date} {
-        allow read: if true;
-        allow create, update, delete: if isAuthenticated() && isFellowshipOrganizer(fellowshipId);
-        
-        match /comments/{commentId} {
-            allow get, list: if true;
-            allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
-            allow update: if isAuthenticated() && (
-              (request.resource.data.authorId == request.auth.uid) ||
-              (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
-            );
-        }
-      }
-    }
-
-    match /vendors/{vendorId} {
-      allow get, list: if true;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-
-      match /meals/{mealId} {
-        allow get, list: if true;
-        allow create, update, delete: if isAuthenticated() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid;
-      }
-    }
-
-    match /mealGifts/{giftId} {
-      allow create: if isAuthenticated();
-      allow get, list: if isAuthenticated() && (
-        request.auth.uid == resource.data.get('senderId', '') || 
-        request.auth.uid == resource.data.get('vendorOwnerId', '')
-      );
-      allow update: if isAuthenticated() && (
-        (request.auth.uid == request.resource.data.senderId && request.resource.data.status == 'cancelled' && resource.data.status == 'ordered') ||
-        (request.auth.uid == request.resource.data.vendorOwnerId && request.resource.data.status in ['preparing', 'delivering', 'delivered'] && resource.data.status != 'cancelled')
-      );
-    }
-
-    match /mail/{mailId} {
-      allow create: if isAuthenticated();
-      allow read, update, delete: if false;
-    }
-  }
 }
