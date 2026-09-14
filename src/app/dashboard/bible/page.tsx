@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -184,7 +185,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
                 </AlertDialogContent>
             </AlertDialog>
             <div className="flex items-center gap-2 ml-auto text-left">
-                <Button variant="ghost" size="sm" onClick={onCancel} className="h-9 rounded-xl font-bold px-3 text-[11px] uppercase tracking-wider">Cancel</Button>
+                <Button variant="ghost" size="sm" onSelect={onCancel} className="h-9 rounded-xl font-bold px-3 text-[11px] uppercase tracking-wider">Cancel</Button>
                 <Button size="sm" onClick={handleSave} disabled={isSaving || !note.trim()} className="h-9 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 px-4">
                     {isSaving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
                     SAVE NOTE
@@ -593,7 +594,7 @@ export default function BibleReaderPage() {
                 </div>
                 
                 {view === 'read' && (
-                  <div className="flex items-center gap-2 text-left text-left">
+                  <div className="flex items-center gap-2 text-left">
                       <Select value={selectedVersion} onValueChange={setSelectedVersion}>
                           <SelectTrigger className="w-[80px] h-9 border-none bg-muted/50 hover:bg-muted font-bold text-[10px] uppercase tracking-widest rounded-lg"><SelectValue /></SelectTrigger>
                           <SelectContent className="rounded-xl">
@@ -635,8 +636,8 @@ export default function BibleReaderPage() {
             </div>
 
             {view === 'read' && (
-                <div className="flex-grow flex flex-col min-h-0 text-left text-left">
-                    <div className="flex items-center justify-between gap-3 p-2 sm:px-6 bg-muted/20 border-b sticky top-0 z-20 backdrop-blur-sm text-left text-left">
+                <div className="flex-grow flex flex-col min-h-0 text-left">
+                    <div className="flex items-center justify-between gap-3 p-2 sm:px-6 bg-muted/20 border-b sticky top-0 z-20 backdrop-blur-sm text-left">
                         <div className="flex items-center gap-1.5 min-w-0 text-left">
                             <Select value={selectedBookName} onValueChange={setSelectedBookName}>
                                 <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-black text-xs sm:text-sm rounded-full hover:bg-accent transition-colors">
@@ -682,17 +683,17 @@ export default function BibleReaderPage() {
                             </Button>
                         </div>
                     </div>
-                    <div className="flex-grow flex gap-0 min-h-0 text-left overflow-hidden text-left">
+                    <div className="flex-grow flex gap-0 min-h-0 text-left overflow-hidden">
                         <div className="flex-1 min-0 flex flex-col overflow-hidden text-left">
                             <ScrollArea ref={scrollAreaRef} className="flex-grow border-none relative h-full text-left">
                                 {(isLoadingChapter || !isInitialized) && (
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 z-20 gap-2 text-left">
-                                        <Loader2 className="h-8 w-8 animate-spin text-primary text-left" />
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 z-20 gap-2 text-left text-left">
+                                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                         <p className="text-[10px] font-black uppercase tracking-widest animate-pulse">Accessing records...</p>
                                     </div>
                                 )}
                                 {!isLoadingChapter && chapterContent && (
-                                    <div className="max-w-4xl mx-auto px-6 sm:px-12 py-8 text-left text-left">
+                                    <div className="max-w-4xl mx-auto px-6 sm:px-12 py-8 text-left">
                                         <div className={cn("space-y-4 font-serif leading-relaxed text-foreground/90 text-left", fontSizeClasses[fontSize])}>
                                             {chapterContent.verses.map(v => {
                                                 const h = highlightsMap.get(v.verse);
@@ -731,7 +732,7 @@ export default function BibleReaderPage() {
                                 )}
                             </ScrollArea>
                         </div>
-                        <div className="hidden lg:flex lg:w-96 flex-col border-l bg-muted/10 p-6 min-h-0 overflow-hidden text-left text-left">
+                        <div className="hidden lg:flex lg:w-96 flex-col border-l bg-muted/10 p-6 min-h-0 overflow-hidden text-left">
                             <h3 className="font-headline font-black uppercase tracking-tight text-xl mb-4 flex items-center gap-2.5 text-left">
                                 <Highlighter className="h-5 w-5 text-primary text-left" />
                                 Revelation Hub
@@ -743,7 +744,7 @@ export default function BibleReaderPage() {
                     </div>
                     
                     <Drawer open={isJournalSheetOpen} onOpenChange={isJournalSheetOpen ? (o) => setIsJournalSheetOpen(o) : undefined}>
-                      <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2rem] text-left text-left">
+                      <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2rem] text-left">
                         <DrawerHeader className="p-8 border-b flex-shrink-0 bg-muted/20 text-left">
                             <div className="flex items-center gap-2.5 mb-1 text-left">
                                 <Highlighter className="h-5 w-5 text-primary text-left" />
@@ -760,7 +761,7 @@ export default function BibleReaderPage() {
 
                     {isMobile && activeHighlight && (
                       <Drawer open={!!activeHighlight} onOpenChange={(open) => !open && setActiveHighlightId(null)}>
-                        <DrawerContent className="h-[90dvh] p-0 flex flex-col rounded-t-[2.5rem] border-t-8 border-t-primary/20 text-left text-left">
+                        <DrawerContent className="h-[90dvh] p-0 flex flex-col rounded-t-[2.5rem] border-t-8 border-t-primary/20 text-left">
                           <DrawerHeader className="p-8 border-b shrink-0 bg-muted/10 text-left">
                             <DrawerTitle className="text-xl font-black uppercase tracking-tight text-left">Reflect & Journal</DrawerTitle>
                             <DrawerDescription className="text-xs font-bold text-primary uppercase tracking-widest text-left">{getVerseReference(activeHighlight)}</DrawerDescription>
@@ -784,8 +785,8 @@ export default function BibleReaderPage() {
                                             &ldquo;{activeHighlight.note || 'Contemplating the truth...'}&rdquo;
                                         </p>
                                     </div>
-                                    <div className="space-y-4 text-left text-left">
-                                        <div className="flex items-center gap-2 text-[10px] font-black uppercase text-primary/60 ml-1 text-left">
+                                    <div className="space-y-4 text-left text-left text-left">
+                                        <div className="flex items-center gap-2 text-[10px] font-black uppercase text-primary/60 ml-1 text-left text-left">
                                             <MessageSquare className="h-3.5 w-3.5 text-left" /> Responses
                                         </div>
                                         <CommentSection path={`users/${activeHighlight.userId}/bibleHighlights/${activeHighlight.id}/comments`} inline />
@@ -799,24 +800,24 @@ export default function BibleReaderPage() {
                 </div>
             )}
             {view === 'history' && (
-                <div className="flex-grow flex flex-col min-h-0 bg-muted/5 overflow-hidden text-left text-left">
+                <div className="flex-grow flex flex-col min-h-0 bg-muted/5 overflow-hidden text-left">
                     <div className="max-w-3xl mx-auto w-full flex-grow flex flex-col p-4 md:p-8 min-h-0 text-left">
-                        <div className="flex items-center gap-3 mb-8 shrink-0 text-left text-left">
+                        <div className="flex items-center gap-3 mb-8 shrink-0 text-left">
                             <div className="relative flex-1 text-left">
                                 <Input type="date" value={historyFilterDate} onChange={(e) => setHistoryFilterDate(e.target.value)} className="h-12 pl-10 rounded-2xl bg-background shadow-inner border-none font-bold" />
                                 <History className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                             </div>
                             {historyFilterDate && (
-                                <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-12 w-12 rounded-2xl shadow-md text-left text-left">
-                                    <XCircle className="h-5 w-5 text-left" />
+                                <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-12 w-12 rounded-2xl shadow-md text-left">
+                                    <XCircle className="h-5 w-5 text-left text-left text-left" />
                                 </Button>
                             )}
                         </div>
                         <ScrollArea className="flex-grow pr-4 -mr-4 text-left">
-                            <div className="space-y-12 pb-32 text-left text-left">
+                            <div className="space-y-12 pb-32 text-left">
                                 {historyGroups.length > 0 ? historyGroups.map(g => (
                                     <div key={g.date.toISOString()} className="space-y-6 text-left">
-                                        <div className="sticky top-0 z-10 py-2 bg-muted/5 text-left text-left">
+                                        <div className="sticky top-0 z-10 py-2 bg-muted/5 text-left">
                                             <div className="flex items-center gap-4 text-left">
                                                 <span className="font-black text-[10px] uppercase tracking-[0.2em] text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 text-left">{format(g.date, 'PPPP')}</span>
                                                 <div className="h-px bg-muted flex-grow text-left" />
@@ -826,11 +827,11 @@ export default function BibleReaderPage() {
                                           {g.items.map((i, idx) => {
                                             const readAt = safeToDate(i.readAt);
                                             return (
-                                              <Card key={idx} className="border-none shadow-sm hover:shadow-md transition-all rounded-[1.5rem] bg-background/50 backdrop-blur-sm group text-left text-left">
-                                                <CardHeader className="p-5 flex flex-row items-center justify-between space-y-0 text-left text-left">
-                                                    <div className="flex items-center gap-4 min-w-0 text-left text-left">
+                                              <Card key={idx} className="border-none shadow-sm hover:shadow-md transition-all rounded-[1.5rem] bg-background/50 backdrop-blur-sm group text-left">
+                                                <CardHeader className="p-5 flex flex-row items-center justify-between space-y-0 text-left">
+                                                    <div className="flex items-center gap-4 min-w-0 text-left">
                                                       <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 shrink-0 group-hover:scale-110 transition-transform text-left">
-                                                        <BookOpen className="h-5 w-5 text-primary text-left text-left" />
+                                                        <BookOpen className="h-5 w-5 text-primary text-left" />
                                                       </div>
                                                       <div className="min-w-0 text-left">
                                                         <p className="font-black text-base uppercase tracking-tight truncate text-left">{i.book} {i.chapter}</p>
@@ -846,10 +847,10 @@ export default function BibleReaderPage() {
                                         </div>
                                     </div>
                                 )) : (
-                                    <div className="text-center py-32 flex flex-col items-center text-left">
+                                    <div className="text-center py-32 flex flex-col items-center text-left text-left">
                                         <History className="h-16 w-16 text-muted-foreground/10 mb-4 text-left" />
-                                        <h3 className="font-black uppercase tracking-tight text-xl opacity-30 text-center">No Records</h3>
-                                        <p className="text-sm text-muted-foreground mt-2 italic px-12 text-balance leading-relaxed text-center">
+                                        <h3 className="font-black uppercase tracking-tight text-xl opacity-30 text-center text-left">No Records</h3>
+                                        <p className="text-sm text-muted-foreground mt-2 italic px-12 text-balance leading-relaxed text-center text-left">
                                             {historyFilterDate ? "No study logged for this date." : "Your spiritual milestones will appear here as you meditate on the Word."}
                                         </p>
                                     </div>
@@ -862,3 +863,4 @@ export default function BibleReaderPage() {
         </div>
     );
 }
+
