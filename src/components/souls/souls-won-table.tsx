@@ -1226,7 +1226,7 @@ function SoulProfileContent({
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
           <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10 text-left text-left">
-                  <DialogHeader className="text-left text-left">
+                  <DialogHeader>
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
                       <DialogDescription className="text-sm font-medium">Draft a powerful prayer for {soul.firstName}.</DialogDescription>
                   </DialogHeader>
@@ -1277,10 +1277,10 @@ function SoulProfileContent({
             <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul.firstName}?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 pt-6">
-            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+            <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
               <WhatsAppIcon className="h-5 w-5" /> WhatsApp
             </Button>
-            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+            <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
               <Smartphone className="h-5 w-5" /> Standard SMS
             </Button>
             {soul.userId && (
@@ -1568,7 +1568,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                     <SheetHeader className="text-left flex-shrink-0 text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left">
-                            <Sparkles className="h-4 w-4 text-primary text-left text-left" />
+                            <Sparkles className="h-4 w-4 text-primary text-left" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span>
                         </div>
                         <SheetTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">
@@ -1612,3 +1612,4 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
     </div>
   );
 }
+
