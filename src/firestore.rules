@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Privacy restoration and build stability fix - 2025-06-15T13:30:00Z
+    // Deployment trigger: Unification and private event security - 2025-06-15T15:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
