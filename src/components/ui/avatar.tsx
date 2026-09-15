@@ -29,8 +29,6 @@ const AvatarImage = React.forwardRef<
 >(({ className, priority, unoptimized, ...props }, ref) => {
   // Destructure Next.js specific props to prevent them from leaking to the underlying img tag
   // which causes the "Received true for a non-boolean attribute" warning in the console.
-  const { ...imageProps } = props;
-
   if (!props.src) {
     return null
   }
@@ -39,7 +37,7 @@ const AvatarImage = React.forwardRef<
     <AvatarPrimitive.Image
       ref={ref}
       className={cn("aspect-square h-full w-full object-cover", className)}
-      {...imageProps}
+      {...props}
     />
   )
 })
