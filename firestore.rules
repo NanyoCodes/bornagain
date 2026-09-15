@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Cross-device cart and security fix - 2025-03-05T21:30:00Z
+    // Deployment trigger: Cross-device cart and security fix - 2025-03-05T22:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
