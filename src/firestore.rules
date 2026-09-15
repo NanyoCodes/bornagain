@@ -1,9 +1,8 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Synchronized cart and security restoration - 2025-06-15T18:00:00Z
+    // Deployment trigger: Critical cart and auth uid security restoration - 2025-06-16T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;

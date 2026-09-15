@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -32,14 +31,16 @@ const AvatarImage = React.forwardRef<
     return null
   }
 
-  // Remove Next.js specific props that don't belong on the underlying img element
-  const { ...imgProps } = props;
+  // Clean up Next.js props before passing to primitive
+  const { src, alt, ...rest } = props;
 
   return (
     <AvatarPrimitive.Image
       ref={ref}
       className={cn("aspect-square h-full w-full object-cover", className)}
-      {...imgProps}
+      src={src}
+      alt={alt}
+      {...rest}
     />
   )
 })

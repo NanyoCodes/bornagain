@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from "react";
@@ -321,12 +320,12 @@ function ShareWordDialog({
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
+        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
             <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
             <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Browse Bible</span>
         </Button>
-        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
+        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
             <Link href="/dashboard/bible" className="flex flex-col items-center justify-center">
                 <BookMarked className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
                 <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Open Reader</span>
@@ -334,12 +333,12 @@ function ShareWordDialog({
         </Button>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-6 text-left">
         <div className="flex items-center justify-between px-1">
             <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Kingdom Essential Scriptures</Label>
             <Badge variant="outline" className="h-5 px-2 text-[8px] font-bold text-primary border-primary/20 bg-primary/5 uppercase">Top Weapons</Badge>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-left">
           {kingdomVerses.map((v, idx) => (
             <Button 
               key={idx} 
@@ -380,7 +379,7 @@ function ShareWordDialog({
   );
 
   const renderVerses = (
-    <div className="space-y-4 pb-12 text-left">
+    <div className="space-y-4 pb-12 text-left text-left">
        <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6 text-left">
           <p className="text-[10px] font-black uppercase text-primary mb-1">SELECTED FOR SHARING</p>
           <p className="text-xs font-bold text-muted-foreground">
@@ -420,12 +419,12 @@ function ShareWordDialog({
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
             )}
-            <Target className="h-5 w-5 text-primary text-left text-left" />
+            <Target className="h-5 w-5 text-primary text-left" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
           </div>
-          <DialogHeader className="text-left text-left">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{titleText}</DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm font-medium text-left text-left">{descText}</DialogDescription>
+          <DialogHeader className="text-left">
+            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{titleText}</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm font-medium text-left">{descText}</DialogDescription>
           </DialogHeader>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}>
@@ -517,16 +516,16 @@ function MatchmakingDialog({
     }, [sourceSoul, allSouls, searchTerm]);
 
     const header = (
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
             <div className="flex items-center gap-2 mb-2 text-left">
                 <HeartHandshake className="h-5 w-5 text-primary text-left" />
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Matching</span>
             </div>
-            <DialogHeader className="text-left">
+            <DialogHeader className="text-left text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Find Match for {sourceSoul.firstName}</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1 text-left">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
             </DialogHeader>
-            <div className="relative mt-6 text-left">
+            <div className="relative mt-6 text-left text-left">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                 <Input 
                     placeholder="Search candidates..." 
@@ -539,7 +538,7 @@ function MatchmakingDialog({
     );
 
     const body = (
-        <ScrollArea className="flex-grow min-h-0 text-left">
+        <ScrollArea className="flex-grow min-h-0 text-left text-left">
             <div className="p-4 space-y-2 text-left">
                 {candidates.length > 0 ? candidates.map(c => (
                     <Button 
@@ -549,8 +548,8 @@ function MatchmakingDialog({
                         onClick={() => onMatchConfirmed(c)}
                     >
                         <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
-                            <AvatarImage src={c.photoURL || undefined} className="object-cover text-left" />
-                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{c.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={c.photoURL || undefined} className="object-cover" />
+                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs flex items-center justify-center h-full w-full text-left">{c.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1 text-left">
                             <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">{c.firstName} {c.lastName} ({c.age})</p>
@@ -1338,8 +1337,8 @@ function SoulProfileContent({
       </Dialog>
 
       <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-              <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+          <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
+              <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
                   <DialogHeader className="text-left text-left text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Select Partner</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left text-left text-left">Which partner should receive these details?</DialogDescription>
@@ -1619,7 +1618,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
   );
 }
 
-export function SoulsWonPageContent() {
+export function SoulsWonStandalonePage() {
   return (
     <SoulsWonPage />
   );

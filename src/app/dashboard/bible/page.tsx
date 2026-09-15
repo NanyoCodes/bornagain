@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -132,52 +131,52 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
                 <CardTitle className="text-base font-black uppercase tracking-tight text-left">Reflect & Note</CardTitle>
                 <CardDescription className="font-bold text-primary text-[10px] sm:text-xs uppercase tracking-[0.15em] mt-1 text-left">{getVerseReference(highlight)}</CardDescription>
             </div>
-            <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left">
-                <Edit className="h-4 w-4 text-primary text-left text-left" />
+            <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left">
+                <Edit className="h-4 w-4 text-primary text-left" />
             </div>
         </div>
       </CardHeader>
-      <CardContent className="p-4 sm:p-5 pt-0 space-y-4 text-left text-left">
+      <CardContent className="p-4 sm:p-5 pt-0 space-y-4 text-left">
         <Textarea 
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="What has the Spirit revealed through this Word?"
-            className="text-sm sm:text-base min-h-[140px] focus-visible:ring-primary/20 rounded-xl border-none bg-muted/20 shadow-inner leading-relaxed text-left text-left"
+            className="text-sm sm:text-base min-h-[140px] focus-visible:ring-primary/20 rounded-xl border-none bg-muted/20 shadow-inner leading-relaxed text-left"
             autoFocus
         />
-        <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-transparent text-left text-left">
-            <div className="space-y-0.5 text-left text-left text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-left text-left text-left">
-                    <Lock className="h-3 w-3 text-primary text-left text-left text-left" /> Private Revelation
+        <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-transparent text-left">
+            <div className="space-y-0.5 text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-left">
+                    <Lock className="h-3 w-3 text-primary text-left" /> Private Revelation
                 </Label>
-                <p className="text-[9px] text-muted-foreground text-left text-left">This note is only visible to you.</p>
+                <p className="text-[9px] text-muted-foreground text-left">This note is only visible to you.</p>
             </div>
         </div>
       </CardContent>
-      <CardFooter className="p-4 sm:p-5 pt-0 flex flex-col gap-4 text-left text-left">
-          <div className="flex items-center justify-between w-full gap-2 flex-wrap text-left text-left text-left">
+      <CardFooter className="p-4 sm:p-5 pt-0 flex flex-col gap-4 text-left">
+          <div className="flex items-center justify-between w-full gap-2 flex-wrap text-left">
             <AlertDialog>
                 <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="sm" disabled={isDeleting} className="text-destructive hover:bg-destructive/10 rounded-xl h-9 font-bold px-3 text-[11px] uppercase tracking-wider text-left text-left">
-                        {isDeleting ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left text-left text-left" /> : <Trash2 className="mr-1.5 h-3.5 w-3.5 text-left text-left text-left" />}
+                    <Button variant="ghost" size="sm" disabled={isDeleting} className="text-destructive hover:bg-destructive/10 rounded-xl h-9 font-bold px-3 text-[11px] uppercase tracking-wider text-left">
+                        {isDeleting ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left" /> : <Trash2 className="mr-1.5 h-3.5 w-3.5 text-left" />}
                         Remove Note
                     </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left text-left">
-                        <AlertDialogTitle className="text-left text-left text-left text-left">Delete highlight?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-left text-left text-left text-left">This action cannot be undone and will remove your revelation from the journal.</AlertDialogDescription>
+                <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                    <AlertDialogHeader className="text-left">
+                        <AlertDialogTitle className="text-left">Delete highlight?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-left">This action cannot be undone and will remove your revelation from the journal.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="mt-6 gap-3 text-left text-left text-left text-left">
-                        <AlertDialogCancel className="rounded-xl h-11 text-left text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-white hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left">Confirm Delete</AlertDialogAction>
+                    <AlertDialogFooter className="mt-6 gap-3 text-left">
+                        <AlertDialogCancel className="rounded-xl h-11 text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-white hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">Confirm Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-            <div className="flex items-center gap-2 ml-auto text-left text-left text-left">
-                <Button variant="ghost" size="sm" onClick={onCancel} className="h-9 rounded-xl font-bold px-3 text-[11px] uppercase tracking-wider text-left text-left">Cancel</Button>
-                <Button size="sm" onClick={handleSave} disabled={isSaving || !note.trim()} className="h-9 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 px-4 text-left text-left">
-                    {isSaving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left text-left" />}
+            <div className="flex items-center gap-2 ml-auto text-left">
+                <Button variant="ghost" size="sm" onClick={onCancel} className="h-9 rounded-xl font-bold px-3 text-[11px] uppercase tracking-wider text-left">Cancel</Button>
+                <Button size="sm" onClick={handleSave} disabled={isSaving || !note.trim()} className="h-9 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 px-4 text-left">
+                    {isSaving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left" />}
                     SAVE NOTE
                 </Button>
             </div>
@@ -307,12 +306,13 @@ export default function BibleReaderPage() {
   const activeHighlight = useMemo(() => myHighlights?.find(h => h.id === activeHighlightId), [activeHighlightId, myHighlights]);
   
   const unfinishedHighlight = useMemo(() => {
-    return myHighlights?.find(h => 
-      h.book === selectedBookName && 
-      h.chapter === selectedChapterNumber && 
+    if (!myHighlights || !chapterContent) return null;
+    return myHighlights.find(h => 
+      h.book === chapterContent.book && 
+      h.chapter === chapterContent.chapter && 
       (!h.note || h.note.trim() === '')
     ) || null;
-  }, [myHighlights, selectedBookName, selectedChapterNumber]);
+  }, [myHighlights, chapterContent]);
 
   useEffect(() => {
     if (!isInitialized) return;
@@ -771,3 +771,4 @@ export default function BibleReaderPage() {
         </div>
     );
 }
+
