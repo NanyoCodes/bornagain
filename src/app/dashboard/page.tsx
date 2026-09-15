@@ -6,6 +6,21 @@ import { Loader2 } from 'lucide-react';
 
 export default function DashboardRedirect() {
   const router = useRouter();
-  useEffect(() => { router.replace('/dashboard/testimonies'); }, [router]);
-  return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin" /></div>;
+  useEffect(() => { 
+    router.replace('/testimonies'); 
+  }, [router]);
+
+  return (
+    <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
+      <div className="relative mb-8 mx-auto w-fit">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+        </div>
+      </div>
+      <p className="text-xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-8">
+        Moving to Hub...
+      </p>
+    </div>
+  );
 }

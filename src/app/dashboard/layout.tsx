@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 /**
@@ -12,13 +12,19 @@ import { Loader2 } from 'lucide-react';
 export default function LegacyDashboardRedirectLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
     if (pathname.startsWith('/dashboard')) {
+      setIsRedirecting(true);
       const newPath = pathname.replace('/dashboard', '');
       router.replace(newPath || '/testimonies');
     }
   }, [pathname, router]);
+
+  if (!isRedirecting) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center">
