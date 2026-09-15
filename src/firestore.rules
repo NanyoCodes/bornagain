@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Ownership rule bug fixes - 2025-03-05T19:00:00Z
+    // Deployment trigger: Cross-device cart and security fix - 2025-03-05T21:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -86,6 +86,10 @@ service cloud.firestore {
           (resource.data.get('partnerIds', []).size() > 0 && request.auth.uid in resource.data.partnerIds)
         ))
       );
+
+      match /cart/{itemId} {
+        allow read, write: if isOwner(userId);
+      }
 
       match /fellowships/{fId} {
         allow get, list, write: if isOwner(userId);
@@ -299,7 +303,7 @@ service cloud.firestore {
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
             allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
-              (request.resource.data.authorId == request.authorId) ||
+              (request.resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }

@@ -102,38 +102,14 @@ const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
 function CartButton() {
   const { user } = useUser();
-  const [count, setCount] = useState(0);
+  const firestore = useFirestore();
+  
+  const cartQuery = useMemo(() => (user && firestore) ? query(collection(firestore, 'users', user.uid, 'cart')) : null, [user, firestore]);
+  const { data: cartItems } = useCollection<any>(cartQuery);
 
-  const updateCount = useCallback(() => {
-    if (!user?.uid) return;
-    const key = `testify_marketplace_cart_${user.uid}`;
-    const stored = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
-    if (stored) {
-      try {
-        const cart = JSON.parse(stored);
-        const total = Object.values(cart).reduce((acc: number, item: any) => acc + (item.quantity || 0), 0);
-        setCount(total);
-      } catch (e) {
-        setCount(0);
-      }
-    } else {
-      setCount(0);
-    }
-  }, [user?.uid]);
-
-  useEffect(() => {
-    updateCount();
-    if (typeof window !== 'undefined') {
-      window.addEventListener('testify_marketplace_cart_update', updateCount);
-      window.addEventListener('storage', updateCount);
-    }
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('testify_marketplace_cart_update', updateCount);
-        window.removeEventListener('storage', updateCount);
-      }
-    };
-  }, [updateCount]);
+  const count = useMemo(() => {
+    return cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0;
+  }, [cartItems]);
 
   return (
     <Link href="/marketplace">
@@ -693,10 +669,10 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
                 <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             </div>
         </div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8">
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8 text-left text-left">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center text-left text-left">
             Kingdom Network Active
         </p>
       </div>
@@ -734,7 +710,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           >
               <div className={cn(
               "mx-auto h-full", 
-              (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
+              (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6 text-left" : "w-full flex flex-col" 
               )}>
                   <PageTransition>{children}</PageTransition>
               </div>
@@ -748,28 +724,28 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       
       {user && mounted && isMobile ? (
         <Drawer open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
-              <DrawerHeader className="text-left">
-                <DrawerTitle className="text-xl font-bold">Complete Your Profile</DrawerTitle>
-                <DrawerDescription className="text-xs">Join the global movement by introducing yourself.</DrawerDescription>
+          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
+              <DrawerHeader className="text-left text-left">
+                <DrawerTitle className="text-xl font-bold text-left">Complete Your Profile</DrawerTitle>
+                <DrawerDescription className="text-xs text-left">Join the global movement by introducing yourself.</DrawerDescription>
               </DrawerHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-8">
+            <div className="flex-grow overflow-y-auto p-8 text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DrawerContent>
         </Drawer>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
-            <div className="p-6 border-b bg-muted/10">
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
-                <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
+            <div className="p-6 border-b bg-muted/10 text-left">
+              <DialogHeader className="text-left">
+                <DialogTitle className="text-2xl font-bold text-left">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>

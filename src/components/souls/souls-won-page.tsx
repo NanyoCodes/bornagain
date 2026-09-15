@@ -229,7 +229,7 @@ export default function SoulsWonPage() {
   const [mounted, setMounted] = useState(false);
   const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
   
-  const [selectedSoulId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [followUpSoulId, setFollowUpSoulId] = useState<string | null>(null);
   const [historySoulId, setHistorySoulId] = useState<string | null>(null);
   const [assignSoulId, setAssignSoulId] = useState<string | null>(null);
@@ -955,7 +955,7 @@ export default function SoulsWonPage() {
                     <SoulsWonTable 
                         souls={filteredSouls || []} 
                         loading={loading}
-                        selectedId={selectedSoulId}
+                        selectedId={selectedId}
                         onSelect={setSelectedId}
                         onFollowUp={handleOpenFollowUp}
                         onViewHistory={handleOpenHistory}
