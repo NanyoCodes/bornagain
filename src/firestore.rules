@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Cross-device cart and security fix - 2025-03-05T22:30:00Z
+    // Deployment trigger: Privacy restoration and build stability fix - 2025-06-15T13:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -63,17 +63,6 @@ service cloud.firestore {
       );
     }
 
-    // Collection Group rule for Bible Highlights (Shared Feed)
-    match /{path=**}/bibleHighlights/{highlightId} {
-        allow list: if isAuthenticated();
-        allow get: if isAuthenticated() && (
-          resource.data.userId == request.auth.uid || 
-          resource.data.get('isPrivate', false) == false
-        );
-        allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-        allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
-    }
-
     match /users/{userId} {
       allow read: if true; 
       allow create, delete: if isOwner(userId);
@@ -89,10 +78,6 @@ service cloud.firestore {
 
       match /cart/{itemId} {
         allow read, write: if isOwner(userId);
-      }
-
-      match /fellowships/{fId} {
-        allow get, list, write: if isOwner(userId);
       }
 
       match /strongholds/{id} {

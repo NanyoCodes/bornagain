@@ -216,7 +216,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
   );
 }
 
-export function SoulsWonPage() {
+export default function SoulsWonPage() {
   const router = useRouter();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -620,7 +620,7 @@ export function SoulsWonPage() {
     if (!soulToDelete || !user || !firestore) return;
     setIsDeleting(true);
 
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
+    const soulRef = doc(firestore, `users/${soul.userId}/souls`, soulToDelete.id);
     const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
 
     const batch = writeBatch(firestore);
@@ -1130,5 +1130,3 @@ export function SoulsWonPage() {
     </div>
   );
 }
-
-export default SoulsWonPage;
