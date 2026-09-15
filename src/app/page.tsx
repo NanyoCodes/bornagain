@@ -24,15 +24,14 @@ import {
   MapPin,
   CheckCircle2,
   BookOpen,
-  ArrowUpRight,
   Utensils,
-  PartyPopper,
-  ShieldAlert
+  PlusCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import type { Testimony } from '@/lib/types';
@@ -122,7 +121,7 @@ export default function LandingPage() {
         </section>
 
         {/* Glory Feed Section - Prominent Feature */}
-        <section className="py-24 relative overflow-hidden bg-background">
+        <section className="py-24 relative overflow-hidden bg-background text-left">
           <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left">
             <Flame className="h-64 w-64 text-left" />
           </div>
@@ -307,7 +306,7 @@ export default function LandingPage() {
                         <h3 className="text-xl font-bold uppercase tracking-tight text-left">Discipleship Cycle</h3>
                     </div>
                     <p className="text-sm text-zinc-400 leading-relaxed text-left">
-                        Every convert is a future hosts. We encourage all souls to create accounts, enabling them to eventually host their own fellowships or lead city-wide campaigns. The harvest is anchored by those who reside in the land.
+                        Every convert is a future host. We encourage all souls to create accounts, enabling them to eventually host their own fellowships or lead city-wide campaigns. The harvest is anchored by those who reside in the land.
                     </p>
                     <Separator className="bg-white/10 text-left" />
                     <div className="flex items-center justify-between text-left">
@@ -371,7 +370,7 @@ export default function LandingPage() {
                 <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left">
                   <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left">
                     <Instagram className="h-4 w-4 text-left" />
-                    <span className="sr-only text-left">Instagram</span>
+                    <span className="sr-only">Instagram</span>
                   </Link>
                 </Button>
               </div>

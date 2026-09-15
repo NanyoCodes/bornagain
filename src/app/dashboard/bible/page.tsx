@@ -303,8 +303,6 @@ export default function BibleReaderPage() {
     return map;
   }, [myHighlights, chapterContent]);
 
-  const activeHighlight = useMemo(() => myHighlights?.find(h => h.id === activeHighlightId), [activeHighlightId, myHighlights]);
-  
   const unfinishedHighlight = useMemo(() => {
     if (!myHighlights || !chapterContent) return null;
     return myHighlights.find(h => 
@@ -314,6 +312,8 @@ export default function BibleReaderPage() {
     ) || null;
   }, [myHighlights, chapterContent]);
 
+  const activeHighlight = useMemo(() => myHighlights?.find(h => h.id === activeHighlightId), [activeHighlightId, myHighlights]);
+  
   useEffect(() => {
     if (!isInitialized) return;
     
@@ -486,20 +486,20 @@ export default function BibleReaderPage() {
     }, [readingHistoryList, historyFilterDate]);
 
     const NotesList = (
-        <div className="space-y-4 p-1 text-left">
+        <div className="space-y-4 p-1 text-left text-left">
             <div className="space-y-3 text-left">
                 <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">My Revelations</Label>
                 {myHighlights?.sort((a, b) => (safeToDate(b.createdAt)?.getTime() || 0) - (safeToDate(a.createdAt)?.getTime() || 0)).map(h => (
                     h.id === activeHighlightId ? (
                         <NoteEditor highlight={h} key={h.id} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
                     ) : (
-                        <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50 border-l-4 rounded-xl shadow-sm border-l-primary text-left", getNoteCardClass(h.color))}>
-                            <CardHeader className="p-4 text-left">
-                                <div className="flex justify-between items-start text-left">
-                                    <CardTitle className="text-sm font-black uppercase tracking-tight truncate text-left">{getVerseReference(h)}</CardTitle>
+                        <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50 border-l-4 rounded-xl shadow-sm border-l-primary text-left text-left", getNoteCardClass(h.color))}>
+                            <CardHeader className="p-4 text-left text-left">
+                                <div className="flex justify-between items-start text-left text-left text-left text-left">
+                                    <CardTitle className="text-sm font-black uppercase tracking-tight truncate text-left text-left text-left">{getVerseReference(h)}</CardTitle>
                                 </div>
                             </CardHeader>
-                            {h.note && <CardContent className="p-4 pt-0 text-left"><p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed italic text-left">&ldquo;{h.note}&rdquo;</p></CardContent>}
+                            {h.note && <CardContent className="p-4 pt-0 text-left text-left text-left"><p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed italic text-left">&ldquo;{h.note}&rdquo;</p></CardContent>}
                         </Card>
                     )
                 ))}
@@ -642,11 +642,11 @@ export default function BibleReaderPage() {
                                             {unfinishedHighlight && (
                                                 <Card className="border-amber-500/50 bg-amber-500/5 p-4 w-full sm:w-auto shadow-inner rounded-2xl text-left">
                                                 <div className="flex items-center justify-between gap-8 text-left">
-                                                    <div className="space-y-0.5 text-left">
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 text-left">Revelation Pending</p>
-                                                    <p className="text-xs text-muted-foreground text-left">Add a note to your highlight.</p>
+                                                    <div className="space-y-0.5 text-left text-left">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 text-left text-left text-left">Revelation Pending</p>
+                                                    <p className="text-xs text-muted-foreground text-left text-left">Add a note to your highlight.</p>
                                                     </div>
-                                                    <Button size="sm" variant="outline" onClick={() => setActiveHighlightId(unfinishedHighlight.id)} className="rounded-xl h-9 font-bold px-4 text-left">Go to Note</Button>
+                                                    <Button size="sm" variant="outline" onClick={() => setActiveHighlightId(unfinishedHighlight.id)} className="rounded-xl h-9 font-bold px-4 text-left text-left">Go to Note</Button>
                                                 </div>
                                                 </Card>
                                             )}
