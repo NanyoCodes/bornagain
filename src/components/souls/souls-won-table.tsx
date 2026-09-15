@@ -280,8 +280,8 @@ function ShareWordDialog({
   const renderHub = (
     <div className="space-y-8 sm:space-y-10 text-left">
       <div className="space-y-4">
-        <div className="relative">
-            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-50 text-left" />
+        <div className="relative text-left">
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-50" />
             <Input 
                 placeholder="Search Bible (e.g. John 3:16)..." 
                 value={bibleSearch}
@@ -301,7 +301,7 @@ function ShareWordDialog({
         </div>
 
         {searchResults.length > 0 && (
-            <div className="animate-in fade-in slide-in-from-top-2">
+            <div className="animate-in fade-in slide-in-from-top-2 text-left">
                 {searchResults.map((res, idx) => (
                     <Button 
                         key={idx}
@@ -313,27 +313,27 @@ function ShareWordDialog({
                             <span className="font-black text-[9px] sm:text-xs uppercase tracking-widest text-primary">{res.reference}</span>
                             <Send className="h-3.5 w-3.5 sm:h-4 w-4 text-primary opacity-40" />
                         </div>
-                        <p className="text-xs sm:text-base text-muted-foreground leading-relaxed italic line-clamp-4 text-left">"{res.text.trim()}"</p>
+                        <p className="text-xs sm:text-base text-muted-foreground leading-relaxed italic line-clamp-4">"{res.text.trim()}"</p>
                     </Button>
                 ))}
             </div>
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
+        <Button onClick={() => setView('books')} variant="outline" className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
             <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
-            <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Browse Bible</span>
+            <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest">Browse Bible</span>
         </Button>
-        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4 text-left">
+        <Button variant="outline" asChild className="h-24 sm:h-32 rounded-2xl sm:rounded-[2rem] gap-2 sm:gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center p-4">
             <Link href="/dashboard/bible" className="flex flex-col items-center justify-center">
                 <BookMarked className="h-6 w-6 sm:h-8 sm:w-8 mb-1 group-hover:scale-110 transition-transform" />
-                <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-center">Open Reader</span>
+                <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest">Open Reader</span>
             </Link>
         </Button>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-6 text-left">
         <div className="flex items-center justify-between px-1">
             <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Kingdom Essential Scriptures</Label>
             <Badge variant="outline" className="h-5 px-2 text-[8px] font-bold text-primary border-primary/20 bg-primary/5 uppercase">Top Weapons</Badge>
@@ -350,7 +350,7 @@ function ShareWordDialog({
                   <span className="font-black text-[9px] sm:text-[10px] uppercase tracking-widest text-primary">{v.reference}</span>
                   <PlusCircle className="h-3.5 w-3.5 sm:h-4 w-4 opacity-0 group-hover:opacity-40 transition-opacity" />
               </div>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic line-clamp-2 text-left">{v.text}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic line-clamp-2">{v.text}</p>
             </Button>
           ))}
         </div>
@@ -359,7 +359,7 @@ function ShareWordDialog({
   );
 
   const renderBooks = (
-    <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2 text-left">
+    <div className="p-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
       {bibleData.map(book => (
         <Button key={book.name} variant="outline" className="h-12 sm:h-14 rounded-xl font-bold uppercase text-[9px] sm:text-xs" onClick={() => handleSelectBook(book.name)}>
           {book.name}
@@ -369,7 +369,7 @@ function ShareWordDialog({
   );
 
   const renderChapters = (
-    <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2 text-left">
+    <div className="p-2 grid grid-cols-5 sm:grid-cols-8 gap-2">
        {selectedBookName && bibleData.find(b => b.name === selectedBookName)?.chapters.map(ch => (
          <Button key={ch.chapter} variant="outline" className="h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-lg font-black text-xs sm:text-sm" onClick={() => handleSelectChapter(ch.chapter)}>
            {ch.chapter}
@@ -386,7 +386,7 @@ function ShareWordDialog({
             {selectedBookName} {selectedChapter}:{selectedVerses.join(', ')}
           </p>
        </div>
-       <div className="space-y-1 font-serif">
+       <div className="space-y-1 font-serif text-left">
          {loadingVerses ? (
            <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
          ) : chapterContent?.verses.map(v => (
@@ -398,7 +398,7 @@ function ShareWordDialog({
              )}
              onClick={() => toggleVerse(v.verse)}
             >
-              <sup className="text-[10px] font-black mr-2 opacity-40 text-left">{v.verse}</sup>
+              <sup className="text-[10px] font-black mr-2 opacity-40">{v.verse}</sup>
               <span className="text-sm leading-relaxed text-left">{v.text}</span>
            </div>
          ))}
@@ -516,22 +516,22 @@ function MatchmakingDialog({
     }, [sourceSoul, allSouls, searchTerm]);
 
     const header = (
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
             <div className="flex items-center gap-2 mb-2 text-left">
-                <HeartHandshake className="h-5 w-5 text-primary text-left" />
-                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Matching</span>
+                <HeartHandshake className="h-5 w-5 text-primary" />
+                <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Matching</span>
             </div>
-            <DialogHeader className="text-left text-left text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase text-left text-left">Find Match for {sourceSoul.firstName}</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left text-left">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
+            <DialogHeader className="text-left text-left">
+                <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Find Match for {sourceSoul.firstName}</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-left">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
             </DialogHeader>
             <div className="relative mt-6 text-left">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
                 <Input 
                     placeholder="Search candidates..." 
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    className="h-11 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left"
+                    className="h-11 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold"
                 />
             </div>
         </div>
@@ -539,31 +539,31 @@ function MatchmakingDialog({
 
     const body = (
         <ScrollArea className="flex-grow min-h-0 text-left">
-            <div className="p-4 space-y-2 text-left text-left text-left">
+            <div className="p-4 space-y-2 text-left text-left">
                 {candidates.length > 0 ? candidates.map(c => (
                     <Button 
                         key={c.id} 
                         variant="ghost" 
-                        className="w-full justify-start h-auto min-h-[4rem] rounded-2xl gap-4 hover:bg-primary/5 group p-4 flex flex-row items-center text-left text-left"
+                        className="w-full justify-start h-auto min-h-[4rem] rounded-2xl gap-4 hover:bg-primary/5 group p-4 flex flex-row items-center text-left"
                         onClick={() => onMatchConfirmed(c)}
                     >
-                        <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
-                            <AvatarImage src={c.photoURL || undefined} className="object-cover text-left" unoptimized />
-                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs text-left">{c.firstName?.charAt(0)}</AvatarFallback>
+                        <Avatar className="h-10 w-10 border shadow-sm shrink-0">
+                            <AvatarImage src={c.photoURL || undefined} className="object-cover" unoptimized />
+                            <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">{c.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0 flex-1 text-left text-left text-left">
-                            <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left text-left">{c.firstName} {c.lastName} ({c.age})</p>
+                        <div className="min-w-0 flex-1 text-left text-left">
+                            <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">{c.firstName} {c.lastName} ({c.age})</p>
                             <div className="flex items-center gap-2 mt-0.5 opacity-60 flex-wrap text-left">
-                                <Badge variant="outline" className="h-4 px-1 text-[7px] uppercase font-bold tracking-widest text-left text-left">{c.maritalStatus}</Badge>
-                                <p className="text-[9px] font-bold uppercase truncate text-left text-left">{c.church || 'Global Network'}</p>
+                                <Badge variant="outline" className="h-4 px-1 text-[7px] uppercase font-bold tracking-widest text-left">{c.maritalStatus}</Badge>
+                                <p className="text-[9px] font-bold uppercase truncate text-left">{c.church || 'Global Network'}</p>
                             </div>
                         </div>
-                        <ArrowRight className="h-4 w-4 opacity-20 group-hover:opacity-100 transition-opacity shrink-0 text-left" />
+                        <ArrowRight className="h-4 w-4 opacity-20 group-hover:opacity-100 transition-opacity shrink-0" />
                     </Button>
                 )) : (
-                    <div className="py-20 text-center flex flex-col items-center text-left">
-                        <Users className="h-12 w-12 text-muted-foreground/10 mb-4 text-left" />
-                        <p className="text-sm text-muted-foreground italic text-left">No eligible candidates found in your harvest.</p>
+                    <div className="py-20 text-center flex flex-col items-center">
+                        <Users className="h-12 w-12 text-muted-foreground/10 mb-4" />
+                        <p className="text-sm text-muted-foreground italic">No eligible candidates found in your harvest.</p>
                     </div>
                 )}
             </div>
@@ -576,8 +576,8 @@ function MatchmakingDialog({
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     {header}
                     {body}
-                    <div className="p-8 border-t shrink-0 text-left">
-                        <Button variant="outline" className="w-full rounded-xl h-12 font-bold text-left" onClick={() => onOpenChange(false)}>Cancel</Button>
+                    <div className="p-8 border-t shrink-0">
+                        <Button variant="outline" className="w-full rounded-xl h-12 font-bold" onClick={() => onOpenChange(false)}>Cancel</Button>
                     </div>
                 </SheetContent>
             </Sheet>
@@ -586,7 +586,7 @@ function MatchmakingDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md max-h-[85dvh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left text-left">
+            <DialogContent className="sm:max-w-md max-h-[85dvh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col text-left text-left text-left">
                 {header}
                 {body}
             </DialogContent>

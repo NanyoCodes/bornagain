@@ -102,7 +102,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic text-left text-left">No souls found matching this criteria.</p>
+        <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
       </div>
     );
   }
@@ -134,13 +134,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                 >
                     <div className="flex -space-x-3 sm:-space-x-4 shrink-0 text-left">
                         <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0 text-left")}>
-                            <AvatarImage src={s.photoURL || undefined} className="object-cover text-left" unoptimized />
-                            <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs text-left">{s.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={s.photoURL || undefined} className="object-cover" unoptimized />
+                            <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs">{s.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         {spouse && (
                             <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0 text-left">
-                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover text-left" unoptimized />
-                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-[10px] sm:text-xs text-left">{spouse.firstName?.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover" unoptimized />
+                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-[10px] sm:text-xs">{spouse.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         )}
                     </div>
@@ -154,7 +154,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                     </span>
                                 )}
                             </p>
-                            <Badge variant="outline" className={cn("h-4 px-1.5 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50 text-left", s.status === 'New' ? 'text-amber-600 border-amber-200' : s.status === 'Contacted' ? 'text-blue-600 border-blue-200' : 'text-green-600 border-green-200')}>{s.status}</Badge>
+                            <Badge variant="outline" className={cn("h-4 px-1.5 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50", s.status === 'New' ? 'text-amber-600 border-amber-200' : s.status === 'Contacted' ? 'text-blue-600 border-blue-200' : 'text-green-600 border-green-200')}>{s.status}</Badge>
                         </div>
                         {spouse && (
                             <span className="text-primary/60 text-[9px] sm:text-[10px] block font-bold leading-tight truncate text-left">
@@ -162,11 +162,11 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                             </span>
                         )}
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-left">
-                            <p className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap text-left">
+                            <p className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
                                 Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                             </p>
                             {isFamily && (
-                                <Badge variant="secondary" className="h-3.5 px-1 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none text-left">Family</Badge>
+                                <Badge variant="secondary" className="h-3.5 px-1 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none">Family</Badge>
                             )}
                         </div>
                     </div>
@@ -175,38 +175,38 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                     {isFamily && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary/5 text-primary hover:bg-primary/10 text-left">
-                                    <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-left" />
+                                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary/5 text-primary hover:bg-primary/10">
+                                    <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Members</DropdownMenuLabel>
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Members</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onSelect={() => onSelectSoul(s)} className="rounded-lg py-2.5 text-left">
-                                    <User className="mr-2 h-4 w-4 text-left" /> View {s.firstName}
+                                    <User className="mr-2 h-4 w-4" /> View {s.firstName}
                                 </DropdownMenuItem>
                                 {spouse && (
                                     <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left">
-                                        <div className="flex items-center gap-2 text-left">
-                                            <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouse.photoURL || undefined} unoptimized /><AvatarFallback className="text-[8px] text-left">S</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate text-left">{spouse.firstName} (Spouse)</span>
+                                        <div className="flex items-center gap-2">
+                                            <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL || undefined} unoptimized /><AvatarFallback className="text-[8px]">S</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 )}
                                 {householdChildren.map(child => (
                                     <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left">
-                                        <div className="flex items-center gap-2 text-left"><Avatar className="h-6 w-6 border text-left"><AvatarImage src={child.photoURL || undefined} unoptimized /><AvatarFallback className="text-[8px] text-left">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span></div>
+                                        <div className="flex items-center gap-2"><Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL || undefined} unoptimized /><AvatarFallback className="text-[8px]">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span></div>
                                     </DropdownMenuItem>
                                 ))}
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onSelect={() => onAddChild(s, spouse)} className="rounded-lg py-2.5 text-primary font-bold text-left">
-                                    <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
+                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     )}
-                    <Button variant="ghost" size="icon" onClick={() => onSelectSoul(s)} className="h-8 w-8 sm:h-9 sm:w-9 rounded-full text-muted-foreground hover:text-primary transition-colors text-left">
-                        <ArrowRight className="h-4 w-4 text-left" />
+                    <Button variant="ghost" size="icon" onClick={() => onSelectSoul(s)} className="h-8 w-8 sm:h-9 sm:w-9 rounded-full text-muted-foreground hover:text-primary transition-colors">
+                        <ArrowRight className="h-4 w-4" />
                     </Button>
                 </div>
             </div>
@@ -217,7 +217,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
   );
 }
 
-export default function SoulsWonPage() {
+export function SoulsWonPageContent() {
   const router = useRouter();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -761,7 +761,7 @@ export default function SoulsWonPage() {
                                                         unoptimized 
                                                     />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                                                    <div className="absolute bottom-3 left-3 right-3 text-white text-left text-left">
+                                                    <div className="absolute bottom-3 left-3 right-3 text-white text-left">
                                                         <p className="font-black text-[10px] sm:text-xs uppercase truncate tracking-tight text-left">
                                                             {s.nickname || s.firstName} {s.age && <span className="opacity-60 ml-1">({s.age})</span>}
                                                         </p>
@@ -775,7 +775,7 @@ export default function SoulsWonPage() {
                                                 </div>
                                             </DialogTrigger>
                                             <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
-                                                <DialogHeader className="sr-only text-left text-left"><DialogTitle className="text-left text-left">Soul Photo</DialogTitle></DialogHeader>
+                                                <DialogHeader className="sr-only text-left"><DialogTitle className="text-left">Soul Photo</DialogTitle></DialogHeader>
                                                 <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
                                                     <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
                                                         <Image 
@@ -1011,8 +1011,8 @@ export default function SoulsWonPage() {
                                 <BarChart3 className="h-4 w-4 text-primary text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Demographic View</span>
                             </div>
-                            <DialogHeader className="text-left text-left">
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
+                            <DialogHeader className="text-left text-left text-left">
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Viewing all souls within this demographic group.</DialogDescription>
                             </DialogHeader>
                         </div>
@@ -1068,7 +1068,7 @@ export default function SoulsWonPage() {
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                                 <DrawerHeader className="text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
@@ -1083,7 +1083,7 @@ export default function SoulsWonPage() {
                     </Drawer>
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <DrawerHeader className="text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left">Edit Record</DrawerTitle><DrawerDescription className="text-sm text-left">Update soul identity and mission details.</DrawerDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
@@ -1114,7 +1114,7 @@ export default function SoulsWonPage() {
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                                 <DialogHeader className="text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-left text-left text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
