@@ -24,8 +24,7 @@ import {
   ClipboardList,
   Users,
   Heart,
-  User,
-  MoreHorizontal
+  User
 } from "lucide-react";
 import { 
   Dialog, 
@@ -134,12 +133,12 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                 >
                     <div className="flex -space-x-3 sm:-space-x-4 shrink-0 text-left">
                         <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0 text-left")}>
-                            <AvatarImage src={s.photoURL || undefined} className="object-cover" unoptimized />
+                            <AvatarImage src={s.photoURL || undefined} className="object-cover" />
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs">{s.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         {spouse && (
                             <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0 text-left">
-                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover" unoptimized />
+                                <AvatarImage src={spouse.photoURL || undefined} className="object-cover" />
                                 <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-[10px] sm:text-xs">{spouse.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         )}
@@ -176,7 +175,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                                 <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary/5 text-primary hover:bg-primary/10">
-                                    <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                    <Users className="h-3.5 w-3.5 sm:h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left">
@@ -188,14 +187,14 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 {spouse && (
                                     <DropdownMenuItem onSelect={() => onSelectSoul(spouse)} className="rounded-lg py-2.5 text-left">
                                         <div className="flex items-center gap-2">
-                                            <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL || undefined} unoptimized /><AvatarFallback className="text-[8px]">S</AvatarFallback></Avatar>
+                                            <Avatar className="h-6 w-6 border"><AvatarImage src={spouse.photoURL || undefined} /><AvatarFallback className="text-[8px]">S</AvatarFallback></Avatar>
                                             <span className="text-xs font-bold uppercase truncate">{spouse.firstName} (Spouse)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 )}
                                 {householdChildren.map(child => (
                                     <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left">
-                                        <div className="flex items-center gap-2"><Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL || undefined} unoptimized /><AvatarFallback className="text-[8px]">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span></div>
+                                        <div className="flex items-center gap-2"><Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL || undefined} /><AvatarFallback className="text-[8px]">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span></div>
                                     </DropdownMenuItem>
                                 ))}
                                 <DropdownMenuSeparator />
@@ -217,7 +216,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
   );
 }
 
-export function SoulsWonPageContent() {
+export default function SoulsWonPage() {
   const router = useRouter();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -356,11 +355,11 @@ export function SoulsWonPageContent() {
               const spouse = souls.find(other => {
                 if (other.id === s.id || other.maritalStatus !== 'Married') return false;
                 const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-                const soulFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
-                const soulSpouse = (s.spouseName || "").toLowerCase();
+                const sFullName = `${s.firstName} ${s.lastName}`.toLowerCase();
+                const sSpouse = (s.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
                 return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
+                       (otherSpouse === sFullName || otherSpouse === s.firstName.toLowerCase());
               });
 
               if (spouse) {
@@ -1131,3 +1130,5 @@ export function SoulsWonPageContent() {
     </div>
   );
 }
+
+export default SoulsWonPageContent;
