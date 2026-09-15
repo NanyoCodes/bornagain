@@ -136,7 +136,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
     <Card className={cn("bg-card border shadow-lg w-full rounded-2xl overflow-hidden transition-all duration-300 text-left", getNoteCardClass(highlight.color))}>
       <CardHeader className="p-4 sm:p-5 text-left">
         <div className="flex items-center justify-between gap-4 text-left">
-            <div className="min-w-0 flex-1 text-left text-left">
+            <div className="min-w-0 flex-1 text-left">
                 <CardTitle className="text-base font-black uppercase tracking-tight text-left">Reflect & Note</CardTitle>
                 <CardDescription className="font-bold text-primary text-[10px] sm:text-xs uppercase tracking-[0.15em] mt-1 text-left">{getVerseReference(highlight)}</CardDescription>
             </div>
@@ -145,7 +145,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
             </div>
         </div>
       </CardHeader>
-      <CardContent className="p-4 sm:p-5 pt-0 space-y-4 text-left text-left">
+      <CardContent className="p-4 sm:p-5 pt-0 space-y-4 text-left">
         <Textarea 
             value={note}
             onChange={(e) => setNote(e.target.value)}
@@ -514,7 +514,7 @@ export default function BibleReaderPage() {
                         <NoteEditor highlight={h} key={h.id} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
                     ) : (
                         <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50 border-l-4 rounded-xl shadow-sm border-l-primary text-left", getNoteCardClass(h.color))}>
-                            <CardHeader className="p-4 text-left text-left">
+                            <CardHeader className="p-4 text-left">
                                 <div className="flex justify-between items-start text-left">
                                     <CardTitle className="text-sm font-black uppercase tracking-tight truncate text-left">{getVerseReference(h)}</CardTitle>
                                     {h.isPrivate && <Lock className="h-3 w-3 text-muted-foreground/40 text-left" />}
@@ -550,13 +550,13 @@ export default function BibleReaderPage() {
                                                 {partnerInfo?.firstName?.charAt(0) || 'P'}
                                             </AvatarFallback>
                                         </Avatar>
-                                        <div className="min-w-0 flex-1 text-left text-left">
+                                        <div className="min-w-0 flex-1 text-left">
                                             <p className="text-[10px] font-black uppercase text-primary/60 truncate text-left">{partnerInfo?.firstName || 'Partner'}</p>
                                             <CardTitle className="text-xs font-black uppercase tracking-widest truncate text-left">{getVerseReference(h)}</CardTitle>
                                         </div>
                                     </div>
                                 </CardHeader>
-                                <CardContent className="px-4 pb-4 space-y-4 text-left text-left">
+                                <CardContent className="px-4 pb-4 space-y-4 text-left">
                                     <p className="text-sm text-muted-foreground italic leading-relaxed text-left">&ldquo;{h.note || 'Contemplating the Word...'}&rdquo;</p>
                                     
                                     <Accordion type="single" collapsible className="w-full text-left">
@@ -586,7 +586,7 @@ export default function BibleReaderPage() {
             <div className="shrink-0 flex items-center justify-between p-4 md:px-8 border-b bg-background/80 backdrop-blur-md z-10 gap-4 text-left">
                 <div className="flex items-center gap-3 text-left">
                   <Button variant="outline" size="icon" onClick={() => router.back()} className="rounded-full h-9 w-9 sm:h-10 sm:w-10 border shadow-sm text-left"><ArrowLeft className="h-5 w-5 text-left" /></Button>
-                  <div className="hidden sm:flex items-center gap-2 text-left text-left">
+                  <div className="hidden sm:flex items-center gap-2 text-left">
                     <BookOpen className="h-5 w-5 text-primary text-left" />
                     <span className="font-headline font-black text-lg uppercase tracking-tight text-left">Bible Reader</span>
                   </div>
@@ -639,7 +639,7 @@ export default function BibleReaderPage() {
                     <div className="flex items-center justify-between gap-3 p-2 sm:px-6 bg-muted/20 border-b sticky top-0 z-20 backdrop-blur-sm text-left">
                         <div className="flex items-center gap-1.5 min-w-0 text-left">
                             <Select value={selectedBookName} onValueChange={setSelectedBookName}>
-                                <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-black text-xs sm:text-sm rounded-full hover:bg-accent transition-colors text-left text-left">
+                                <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-black text-xs sm:text-sm rounded-full hover:bg-accent transition-colors text-left">
                                   <SelectValue className="text-left" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px] rounded-2xl text-left">{bibleData.map(book => <SelectItem key={book.name} value={book.name} className="text-xs uppercase font-bold text-left">{book.name}</SelectItem>)}</SelectContent>
@@ -682,7 +682,7 @@ export default function BibleReaderPage() {
                             </Button>
                         </div>
                     </div>
-                    <div className="flex-grow flex gap-0 min-h-0 overflow-hidden text-left">
+                    <div className="flex-grow flex gap-0 min-h-0 overflow-hidden text-left text-left">
                         <div className="flex-1 min-0 flex flex-col overflow-hidden text-left">
                             <ScrollArea ref={scrollAreaRef} className="flex-grow border-none relative h-full text-left">
                                 {(isLoadingChapter || !isInitialized) && (
@@ -713,8 +713,8 @@ export default function BibleReaderPage() {
                                         <div className="mt-16 flex flex-col sm:flex-row gap-6 items-center justify-between pb-32 text-left">
                                             {unfinishedHighlight && (
                                                 <Card className="border-amber-500/50 bg-amber-500/5 p-4 w-full sm:w-auto shadow-inner rounded-2xl text-left">
-                                                <div className="flex items-center justify-between gap-8 text-left">
-                                                    <div className="space-y-0.5 text-left text-left">
+                                                <div className="flex items-center justify-between gap-8 text-left text-left">
+                                                    <div className="space-y-0.5 text-left">
                                                     <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 text-left">Revelation Pending</p>
                                                     <p className="text-xs text-muted-foreground text-left">Add a note to your highlight.</p>
                                                     </div>
@@ -731,7 +731,7 @@ export default function BibleReaderPage() {
                                 )}
                             </ScrollArea>
                         </div>
-                        <div className="hidden lg:flex lg:w-96 flex-col border-l bg-muted/10 p-6 min-h-0 overflow-hidden text-left text-left">
+                        <div className="hidden lg:flex lg:w-96 flex-col border-l bg-muted/10 p-6 min-h-0 overflow-hidden text-left">
                             <h3 className="font-headline font-black uppercase tracking-tight text-xl mb-4 flex items-center gap-2.5 text-left">
                                 <Highlighter className="h-5 w-5 text-primary text-left" />
                                 Revelation Hub
@@ -743,7 +743,7 @@ export default function BibleReaderPage() {
                     </div>
                     
                     <Drawer open={isJournalSheetOpen} onOpenChange={setIsJournalSheetOpen}>
-                      <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2rem] text-left text-left">
+                      <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2rem] text-left">
                         <DrawerHeader className="p-8 border-b flex-shrink-0 bg-muted/20 text-left">
                             <div className="flex items-center gap-2.5 mb-1 text-left">
                                 <Highlighter className="h-5 w-5 text-primary text-left" />
@@ -760,7 +760,7 @@ export default function BibleReaderPage() {
 
                     {isMobile && activeHighlight && (
                       <Drawer open={!!activeHighlight} onOpenChange={(open) => !open && setActiveHighlightId(null)}>
-                        <DrawerContent className="h-[90dvh] p-0 flex flex-col rounded-t-[2.5rem] border-t-8 border-t-primary/20 text-left text-left">
+                        <DrawerContent className="h-[90dvh] p-0 flex flex-col rounded-t-[2.5rem] border-t-8 border-t-primary/20 text-left">
                           <DrawerHeader className="p-8 border-b shrink-0 bg-muted/10 text-left">
                             <DrawerTitle className="text-xl font-black uppercase tracking-tight text-left">Reflect & Journal</DrawerTitle>
                             <DrawerDescription className="text-xs font-bold text-primary uppercase tracking-widest text-left">{getVerseReference(activeHighlight)}</DrawerDescription>
@@ -770,7 +770,7 @@ export default function BibleReaderPage() {
                                 <NoteEditor highlight={activeHighlight} onSave={handleUpdateNote} onDelete={handleDeleteHighlight} onCancel={() => setActiveHighlightId(null)} />
                             ) : (
                                 <div className="space-y-6 text-left">
-                                    <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 text-left text-left">
+                                    <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 text-left">
                                         <div className="flex items-center gap-3 mb-4 text-left">
                                             <Avatar className="h-10 w-10 border text-left">
                                                 <AvatarFallback className="font-bold text-center flex items-center justify-center w-full h-full text-left">P</AvatarFallback>
@@ -784,7 +784,7 @@ export default function BibleReaderPage() {
                                             &ldquo;{activeHighlight.note || 'Contemplating the truth...'}&rdquo;
                                         </p>
                                     </div>
-                                    <div className="space-y-4 text-left">
+                                    <div className="space-y-4 text-left text-left">
                                         <div className="flex items-center gap-2 text-[10px] font-black uppercase text-primary/60 ml-1 text-left">
                                             <MessageSquare className="h-3.5 w-3.5 text-left" /> Responses
                                         </div>
@@ -799,9 +799,9 @@ export default function BibleReaderPage() {
                 </div>
             )}
             {view === 'history' && (
-                <div className="flex-grow flex flex-col min-h-0 bg-muted/5 overflow-hidden text-left text-left">
-                    <div className="max-w-3xl mx-auto w-full flex-grow flex flex-col p-4 md:p-8 min-h-0 text-left text-left">
-                        <div className="flex items-center gap-3 mb-8 shrink-0 text-left text-left">
+                <div className="flex-grow flex flex-col min-h-0 bg-muted/5 overflow-hidden text-left">
+                    <div className="max-w-3xl mx-auto w-full flex-grow flex flex-col p-4 md:p-8 min-h-0 text-left">
+                        <div className="flex items-center gap-3 mb-8 shrink-0 text-left">
                             <div className="relative flex-1 text-left">
                                 <Input type="date" value={historyFilterDate} onChange={(e) => setHistoryFilterDate(e.target.value)} className="h-12 pl-10 rounded-2xl bg-background shadow-inner border-none font-bold text-left" />
                                 <History className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
@@ -813,28 +813,28 @@ export default function BibleReaderPage() {
                             )}
                         </div>
                         <ScrollArea className="flex-grow pr-4 -mr-4 text-left">
-                            <div className="space-y-12 pb-32 text-left text-left">
+                            <div className="space-y-12 pb-32 text-left">
                                 {historyGroups.length > 0 ? historyGroups.map(g => (
-                                    <div key={g.date.toISOString()} className="space-y-6 text-left text-left">
-                                        <div className="sticky top-0 z-10 py-2 bg-muted/5 text-left text-left">
+                                    <div key={g.date.toISOString()} className="space-y-6 text-left">
+                                        <div className="sticky top-0 z-10 py-2 bg-muted/5 text-left">
                                             <div className="flex items-center gap-4 text-left">
                                                 <span className="font-black text-[10px] uppercase tracking-[0.2em] text-primary bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20 text-left">{format(g.date, 'PPPP')}</span>
                                                 <div className="h-px bg-muted flex-grow text-left" />
                                             </div>
                                         </div>
-                                        <div className="grid gap-3 sm:grid-cols-2 text-left text-left">
+                                        <div className="grid gap-3 sm:grid-cols-2 text-left">
                                           {g.items.map((i, idx) => {
                                             const readAt = safeToDate(i.readAt);
                                             return (
                                               <Card key={idx} className="border-none shadow-sm hover:shadow-md transition-all rounded-[1.5rem] bg-background/50 backdrop-blur-sm group text-left">
-                                                <CardHeader className="p-5 flex flex-row items-center justify-between space-y-0 text-left text-left">
-                                                    <div className="flex items-center gap-4 min-w-0 text-left text-left">
-                                                      <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 shrink-0 group-hover:scale-110 transition-transform text-left text-left">
+                                                <CardHeader className="p-5 flex flex-row items-center justify-between space-y-0 text-left">
+                                                    <div className="flex items-center gap-4 min-w-0 text-left">
+                                                      <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 shrink-0 group-hover:scale-110 transition-transform text-left">
                                                         <BookOpen className="h-5 w-5 text-primary text-left" />
                                                       </div>
-                                                      <div className="min-w-0 text-left text-left">
-                                                        <p className="font-black text-base uppercase tracking-tight truncate text-left text-left">{i.book} {i.chapter}</p>
-                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">{readAt ? format(readAt, 'p') : 'N/A'}</p>
+                                                      <div className="min-w-0 text-left">
+                                                        <p className="font-black text-base uppercase tracking-tight truncate text-left">{i.book} {i.chapter}</p>
+                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{readAt ? format(readAt, 'p') : 'N/A'}</p>
                                                       </div>
                                                     </div>
                                                     <Button variant="ghost" size="icon" onClick={() => { setSelectedBookName(i.book); setSelectedChapterNumber(i.chapter); setView('read'); }} className="rounded-full h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors text-left">
