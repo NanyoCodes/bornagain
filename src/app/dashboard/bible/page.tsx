@@ -132,52 +132,52 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
                 <CardTitle className="text-base font-black uppercase tracking-tight text-left">Reflect & Note</CardTitle>
                 <CardDescription className="font-bold text-primary text-[10px] sm:text-xs uppercase tracking-[0.15em] mt-1 text-left">{getVerseReference(highlight)}</CardDescription>
             </div>
-            <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left">
-                <Edit className="h-4 w-4 text-primary text-left" />
+            <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-left text-left">
+                <Edit className="h-4 w-4 text-primary text-left text-left" />
             </div>
         </div>
       </CardHeader>
-      <CardContent className="p-4 sm:p-5 pt-0 space-y-4 text-left">
+      <CardContent className="p-4 sm:p-5 pt-0 space-y-4 text-left text-left">
         <Textarea 
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="What has the Spirit revealed through this Word?"
-            className="text-sm sm:text-base min-h-[140px] focus-visible:ring-primary/20 rounded-xl border-none bg-muted/20 shadow-inner leading-relaxed text-left"
+            className="text-sm sm:text-base min-h-[140px] focus-visible:ring-primary/20 rounded-xl border-none bg-muted/20 shadow-inner leading-relaxed text-left text-left"
             autoFocus
         />
-        <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-transparent text-left">
-            <div className="space-y-0.5 text-left">
-                <Label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-left">
-                    <Lock className="h-3 w-3 text-primary text-left" /> Private Revelation
+        <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-transparent text-left text-left">
+            <div className="space-y-0.5 text-left text-left text-left">
+                <Label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-left text-left text-left">
+                    <Lock className="h-3 w-3 text-primary text-left text-left text-left" /> Private Revelation
                 </Label>
-                <p className="text-[9px] text-muted-foreground text-left">This note is only visible to you.</p>
+                <p className="text-[9px] text-muted-foreground text-left text-left">This note is only visible to you.</p>
             </div>
         </div>
       </CardContent>
-      <CardFooter className="p-4 sm:p-5 pt-0 flex flex-col gap-4 text-left">
-          <div className="flex items-center justify-between w-full gap-2 flex-wrap text-left">
+      <CardFooter className="p-4 sm:p-5 pt-0 flex flex-col gap-4 text-left text-left">
+          <div className="flex items-center justify-between w-full gap-2 flex-wrap text-left text-left text-left">
             <AlertDialog>
                 <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="sm" disabled={isDeleting} className="text-destructive hover:bg-destructive/10 rounded-xl h-9 font-bold px-3 text-[11px] uppercase tracking-wider text-left">
-                        {isDeleting ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left" /> : <Trash2 className="mr-1.5 h-3.5 w-3.5 text-left" />}
+                    <Button variant="ghost" size="sm" disabled={isDeleting} className="text-destructive hover:bg-destructive/10 rounded-xl h-9 font-bold px-3 text-[11px] uppercase tracking-wider text-left text-left">
+                        {isDeleting ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left text-left text-left" /> : <Trash2 className="mr-1.5 h-3.5 w-3.5 text-left text-left text-left" />}
                         Remove Note
                     </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left text-left">
-                        <AlertDialogTitle className="text-left">Delete highlight?</AlertDialogTitle>
-                        <AlertDialogDescription className="text-left">This action cannot be undone and will remove your revelation from the journal.</AlertDialogDescription>
+                <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left text-left">
+                        <AlertDialogTitle className="text-left text-left text-left text-left">Delete highlight?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-left text-left text-left text-left">This action cannot be undone and will remove your revelation from the journal.</AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="mt-6 gap-3 text-left">
-                        <AlertDialogCancel className="rounded-xl h-11 text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-white hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">Confirm Delete</AlertDialogAction>
+                    <AlertDialogFooter className="mt-6 gap-3 text-left text-left text-left text-left">
+                        <AlertDialogCancel className="rounded-xl h-11 text-left text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-white hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left">Confirm Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-            <div className="flex items-center gap-2 ml-auto text-left">
-                <Button variant="ghost" size="sm" onClick={onCancel} className="h-9 rounded-xl font-bold px-3 text-[11px] uppercase tracking-wider text-left">Cancel</Button>
-                <Button size="sm" onClick={handleSave} disabled={isSaving || !note.trim()} className="h-9 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 px-4 text-left">
-                    {isSaving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left" />}
+            <div className="flex items-center gap-2 ml-auto text-left text-left text-left">
+                <Button variant="ghost" size="sm" onClick={onCancel} className="h-9 rounded-xl font-bold px-3 text-[11px] uppercase tracking-wider text-left text-left">Cancel</Button>
+                <Button size="sm" onClick={handleSave} disabled={isSaving || !note.trim()} className="h-9 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 px-4 text-left text-left">
+                    {isSaving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-left text-left" />}
                     SAVE NOTE
                 </Button>
             </div>
@@ -568,7 +568,7 @@ export default function BibleReaderPage() {
                     <div className="flex items-center justify-between gap-3 p-2 sm:px-6 bg-muted/20 border-b sticky top-0 z-20 backdrop-blur-sm text-left">
                         <div className="flex items-center gap-1.5 min-w-0 text-left">
                             <Select value={selectedBookName} onValueChange={setSelectedBookName}>
-                                <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-black text-xs sm:text-sm rounded-full hover:bg-accent transition-colors text-left">
+                                <SelectTrigger className="h-9 px-3 border-none bg-background shadow-sm font-black text-xs sm:text-sm rounded-full hover:bg-accent transition-colors text-left text-left">
                                   <SelectValue className="text-left" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px] rounded-2xl text-left">{bibleData.map(book => <SelectItem key={book.name} value={book.name} className="text-xs uppercase font-bold text-left">{book.name}</SelectItem>)}</SelectContent>
@@ -716,8 +716,8 @@ export default function BibleReaderPage() {
                                 <History className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                             </div>
                             {historyFilterDate && (
-                                <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-12 w-12 rounded-2xl shadow-md text-left">
-                                    <XCircle className="h-5 w-5 text-left" />
+                                <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-12 w-12 rounded-2xl shadow-md text-left text-left">
+                                    <XCircle className="h-5 w-5 text-left text-left" />
                                 </Button>
                             )}
                         </div>
@@ -746,8 +746,8 @@ export default function BibleReaderPage() {
                                                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-left">{readAt ? format(readAt, 'p') : 'N/A'}</p>
                                                       </div>
                                                     </div>
-                                                    <Button variant="ghost" size="icon" onClick={() => { setSelectedBookName(i.book); setSelectedChapterNumber(i.chapter); setView('read'); }} className="rounded-full h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors text-left">
-                                                        <ArrowLeft className="h-4 w-4 rotate-180 text-left" />
+                                                    <Button variant="ghost" size="icon" onClick={() => { setSelectedBookName(i.book); setSelectedChapterNumber(i.chapter); setView('read'); }} className="rounded-full h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors text-left text-left text-left">
+                                                        <ArrowLeft className="h-4 w-4 rotate-180 text-left text-left text-left" />
                                                     </Button>
                                                 </CardHeader>
                                               </Card>

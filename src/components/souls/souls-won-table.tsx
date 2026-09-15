@@ -307,7 +307,7 @@ function ShareWordDialog({
                     <Button 
                         key={idx}
                         variant="outline"
-                        className="w-full h-auto p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left hover:bg-primary/10 transition-all border-2 border-dashed text-left"
+                        className="w-full h-auto p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left hover:bg-primary/10 transition-all border-2 border-dashed"
                         onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference, `${window.location.origin}/dashboard/bible`))}
                     >
                         <div className="flex items-center justify-between w-full">
@@ -1497,7 +1497,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
         <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-none border-b-2 sm:border-b bg-card/50 backdrop-blur-sm border-2 border-dashed text-left text-left text-left">
             <CardContent className="text-left text-left text-left">
                 <div className="text-center py-24 flex flex-col items-center text-left text-left">
-                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20 text-left text-left text-left">
+                    <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-primary/20 text-left text-left text-left text-left">
                         <HeartHandshake className="h-10 w-10 text-primary opacity-40 text-left text-left text-left text-left" />
                     </div>
                     <h3 className="text-xl font-black font-headline uppercase tracking-tight text-left text-left">Your Harvest Field</h3>
@@ -1533,7 +1533,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                 </div>
             ) : (
                 <Card className="rounded-none sm:rounded-xl border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left text-left text-left text-left text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left text-left text-left text-left">
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left text-left text-left text-left text-left">
                         <CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left text-left text-left text-left">
                             <Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left text-left text-left text-left" />
                             Harvest Dashboard
@@ -1581,18 +1581,18 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow min-h-0 text-left text-left text-left text-left text-left text-left text-left">
-                    <div className="p-6 pb-24 text-left text-left text-left text-left text-left text-left">
+                    <div className="p-6 pb-24 text-left text-left text-left text-left text-left text-left text-left">
                         {profileView}
                     </div>
                 </ScrollArea>
-                <div className="p-6 border-t shrink-0 bg-background/80 backdrop-blur-md text-left text-left text-left text-left">
+                <div className="p-6 border-t shrink-0 bg-background/80 backdrop-blur-sm text-left text-left text-left text-left text-left">
                     <Button variant="outline" className="w-full h-12 rounded-2xl font-bold text-left text-center text-left text-left" onClick={() => onSelect(null)}>Close</Button>
                 </div>
             </DrawerContent>
         </Drawer>
 
         {/* Desktop Detailed Preview Panel (Large screens only) */}
-        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left text-left text-left text-left text-left text-left">
+        <div className="hidden lg:block w-[320px] shrink-0 sticky top-24 text-left text-left text-left text-left text-left text-left text-left text-left">
             <AnimatePresence>
                 {selectedSoul ? (
                     <motion.div
@@ -1600,7 +1600,7 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="space-y-6 text-left text-left text-left text-left text-left"
+                        className="space-y-6 text-left text-left text-left text-left text-left text-left"
                     >
                         {profileView}
                         <p className="text-[8px] font-black uppercase text-muted-foreground/40 tracking-[0.3em] text-center text-left text-left">
@@ -1619,8 +1619,10 @@ export function SoulsWonTable({ souls, loading, selectedId, onSelect, onFollowUp
   );
 }
 
-export default function SoulsWonPage() {
+export function SoulsWonPageContent() {
   return (
-    <SoulsWonPageContent />
+    <SoulsWonPage />
   );
 }
+
+export default SoulsWonPage;
