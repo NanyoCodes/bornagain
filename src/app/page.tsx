@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -25,7 +26,10 @@ import {
   CheckCircle2,
   BookOpen,
   Utensils,
-  PlusCircle
+  PlusCircle,
+  MessagesSquare,
+  TrendingUp,
+  Heart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -89,7 +93,7 @@ export default function LandingPage() {
       </nav>
 
       <main className="flex-grow pt-16 text-left">
-        {/* Hero Section - Priortizing God's Goodness */}
+        {/* Hero Section */}
         <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden bg-zinc-950 text-left">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent text-left" />
           <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-left">
@@ -120,7 +124,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Glory Feed Section - Prominent Feature */}
+        {/* Glory Feed Section */}
         <section className="py-24 relative overflow-hidden bg-background text-left">
           <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left">
             <Flame className="h-64 w-64 text-left" />
@@ -180,7 +184,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* The Victory Hub */}
+        {/* Victory Hub Section */}
         <section className="py-24 bg-muted/20 text-left">
           <div className="max-w-7xl mx-auto px-6 text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
@@ -228,7 +232,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Kingdom Provision */}
+        {/* Provision Hub Section */}
         <section className="py-24 bg-background text-left">
           <div className="max-w-7xl mx-auto px-6 text-left">
             <div className="text-center mb-16 space-y-4 text-left">
@@ -275,7 +279,62 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Strategic Mobilization */}
+        {/* Daily Disciplines & Coordination Section */}
+        <section className="py-24 bg-muted/30 text-left">
+          <div className="max-w-7xl mx-auto px-6 text-left">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
+              {/* Daily Disciplines */}
+              <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/80 backdrop-blur-sm text-left">
+                <CardHeader className="p-8 pb-4">
+                  <div className="h-12 w-12 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-4">
+                    <Zap className="h-6 w-6 text-amber-500" />
+                  </div>
+                  <CardTitle className="text-xl font-black uppercase tracking-tight">Daily Disciplines</CardTitle>
+                  <CardDescription className="font-medium text-sm leading-relaxed">Build unshakeable consistency. Track your Prayer, Word Study, and Church Attendance daily.</CardDescription>
+                </CardHeader>
+                <CardFooter className="p-8 pt-0">
+                  <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary">
+                    <Link href="/growth">Explore Growth Tracks <ArrowRight className="ml-2 h-3 w-3" /></Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+
+              {/* Kingdom Conversations */}
+              <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/80 backdrop-blur-sm text-left">
+                <CardHeader className="p-8 pb-4">
+                  <div className="h-12 w-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-4">
+                    <MessagesSquare className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <CardTitle className="text-xl font-black uppercase tracking-tight">Unified Coordination</CardTitle>
+                  <CardDescription className="font-medium text-sm leading-relaxed">Stay connected with your mission team, accountability partners, and Kingdom vendors through secure, real-time chat.</CardDescription>
+                </CardHeader>
+                <CardFooter className="p-8 pt-0">
+                  <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary">
+                    <Link href="/chats">View Messages <ArrowRight className="ml-2 h-3 w-3" /></Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+
+              {/* Accountability */}
+              <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/80 backdrop-blur-sm text-left">
+                <CardHeader className="p-8 pb-4">
+                  <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-4">
+                    <HeartHandshake className="h-6 w-6 text-indigo-600" />
+                  </div>
+                  <CardTitle className="text-xl font-black uppercase tracking-tight">Iron Sharpens Iron</CardTitle>
+                  <CardDescription className="font-medium text-sm leading-relaxed">Connect with accountability partners. Nudge each other to stay sharp and maintain your spiritual fire.</CardDescription>
+                </CardHeader>
+                <CardFooter className="p-8 pt-0">
+                  <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary">
+                    <Link href="/accountability">Find a Partner <ArrowRight className="ml-2 h-3 w-3" /></Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Strategic Mobilization Section */}
         <section className="py-24 bg-zinc-950 text-white text-left">
           <div className="max-w-7xl mx-auto px-6 text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
@@ -413,4 +472,3 @@ export default function LandingPage() {
     </div>
   );
 }
-

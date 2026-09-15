@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -24,7 +25,10 @@ import {
   ClipboardList,
   Users,
   Heart,
-  User
+  User,
+  MessagesSquare,
+  MoreHorizontal,
+  Plus
 } from "lucide-react";
 import { 
   Dialog, 
@@ -858,7 +862,7 @@ export default function SoulsWonPage() {
                                 <Users className="h-5 w-5 text-primary text-left text-left text-left text-left" />
                             </div>
                             <div className="min-w-0 text-left text-left text-left text-left text-left text-left">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left text-left text-left">GENDER BALANCE</h2>
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left text-left text-left text-left">GENDER BALANCE</h2>
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left text-left text-left text-left">Kingdom Workforce Diversity</p>
                             </div>
                         </div>
@@ -900,7 +904,7 @@ export default function SoulsWonPage() {
                                 <Heart className="h-5 w-5 text-primary text-left text-left text-left text-left" />
                             </div>
                             <div className="min-w-0 text-left text-left text-left text-left text-left text-left">
-                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left text-left text-left">MARITAL DEMOGRAPHICS</h2>
+                                <h2 className="text-xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left text-left text-left text-left">MARITAL DEMOGRAPHICS</h2>
                                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 text-left text-left text-left text-left text-left text-left">Family & Status Insights</p>
                             </div>
                         </div>
@@ -1131,8 +1135,3 @@ export default function SoulsWonPage() {
   );
 }
 
-export function SoulsWonStandalonePage() {
-  return (
-    <SoulsWonPage />
-  );
-}
