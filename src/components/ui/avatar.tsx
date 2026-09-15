@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -27,17 +28,18 @@ const AvatarImage = React.forwardRef<
     unoptimized?: boolean | string;
   }
 >(({ className, priority, unoptimized, ...props }, ref) => {
-  // Destructure Next.js specific props to prevent them from leaking to the underlying img tag
-  // which causes the "Received true for a non-boolean attribute" warning in the console.
   if (!props.src) {
     return null
   }
+
+  // Remove Next.js specific props that don't belong on the underlying img element
+  const { ...imgProps } = props;
 
   return (
     <AvatarPrimitive.Image
       ref={ref}
       className={cn("aspect-square h-full w-full object-cover", className)}
-      {...props}
+      {...imgProps}
     />
   )
 })

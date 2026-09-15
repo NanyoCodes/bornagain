@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -163,7 +164,7 @@ function NoteEditor({ highlight, onSave, onDelete, onCancel }: { highlight: Bibl
                     </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="w-[90vw] max-w-md rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left">
+                    <AlertDialogHeader className="text-left text-left">
                         <AlertDialogTitle className="text-left">Delete highlight?</AlertDialogTitle>
                         <AlertDialogDescription className="text-left">This action cannot be undone and will remove your revelation from the journal.</AlertDialogDescription>
                     </AlertDialogHeader>
