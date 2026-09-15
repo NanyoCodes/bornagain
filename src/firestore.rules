@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Ownership logic and Cart permission fix - 2025-06-25T14:00:00Z
+    // Deployment trigger: Cross-device cart and security fix - 2025-03-05T22:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -208,6 +208,7 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.resource.data.get('userId', '') == request.auth.uid;
       allow update, delete: if isAuthenticated() && (
         (resource.data.get('userId', '') == request.auth.uid) || 
+        (resource.data.userId == request.auth.uid) || 
         isFellowshipMember(resource.data.get('fellowshipId', '')) ||
         isFellowshipMember(resource.data.get('associationId', ''))
       );
@@ -216,9 +217,9 @@ service cloud.firestore {
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && resource.data.authorId == request.auth.uid;
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid);
       allow update: if isAuthenticated() && ( 
-        (request.resource.data.authorId == request.auth.uid) || 
+        (resource.data.authorId == request.auth.uid) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 
@@ -301,9 +302,9 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
-              (request.resource.data.authorId == request.authorId) ||
+              (request.resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }
