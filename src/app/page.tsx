@@ -125,7 +125,7 @@ export default function LandingPage() {
           <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-center text-left">
             <div className="flex gap-2 text-left">
                 {[...Array(24)].map((_, i) => (
-                    <div key={i} className="h-1 w-1 rounded-full bg-white/20 text-left" />
+                    <div key={i} className="h-1.5 w-1.5 rounded-full bg-white/20 text-left" />
                 ))}
             </div>
           </div>
@@ -314,7 +314,7 @@ export default function LandingPage() {
                 <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left">
                   <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left">
                     <Instagram className="h-4 w-4 text-left" />
-                    <span className="sr-only text-left">Instagram</span>
+                    <span className="sr-only">Instagram</span>
                   </Link>
                 </Button>
               </div>

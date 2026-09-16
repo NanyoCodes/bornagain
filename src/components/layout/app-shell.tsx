@@ -169,11 +169,11 @@ function CartButton() {
             <DrawerTrigger asChild>{trigger}</DrawerTrigger>
             <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                 <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-                    <div className="flex items-center gap-2 mb-1">
-                        <ShoppingCart className="h-5 w-5 text-primary" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
+                    <div className="flex items-center gap-2 mb-1 text-left">
+                        <ShoppingCart className="h-5 w-5 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Offering</span>
                     </div>
-                    <DrawerHeader className="text-left flex-shrink-0">
+                    <DrawerHeader className="text-left flex-shrink-0 text-left">
                         <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</DrawerTitle>
                         <DrawerDescription className="text-sm font-medium mt-1 text-left">Review items selected for gifting.</DrawerDescription>
                     </DrawerHeader>
