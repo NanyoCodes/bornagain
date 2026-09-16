@@ -154,8 +154,8 @@ function CartButton() {
         ) : (
             <div className="py-12 text-center flex flex-col items-center">
                 <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4" />
-                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Your package is empty</p>
-                <Button variant="link" asChild className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest h-auto p-0">
+                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest text-center">Your package is empty</p>
+                <Button variant="link" asChild className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest h-auto p-0 text-center">
                     <Link href="/marketplace">Explore Provision Hub</Link>
                 </Button>
             </div>
@@ -174,8 +174,8 @@ function CartButton() {
                         <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Kingdom Offering</span>
                     </div>
                     <DrawerHeader className="text-left flex-shrink-0">
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kindness Package</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1">Review items selected for gifting.</DrawerDescription>
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Review items selected for gifting.</DrawerDescription>
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow">{listContent}</ScrollArea>
@@ -188,7 +188,7 @@ function CartButton() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left">
-        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
             <div className="flex items-center gap-2 mb-1 text-left">
                 <ShoppingCart className="h-5 w-5 text-primary text-left" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kindness Package</span>

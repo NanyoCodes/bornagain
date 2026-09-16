@@ -119,7 +119,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
             if (other.id === s.id || other.maritalStatus !== 'Married') return false;
             const otherFull = `${other.firstName} ${other.lastName}`.toLowerCase();
             const sFull = `${s.firstName} ${s.lastName}`.toLowerCase();
-            const sSpouse = (soul.spouseName || "").toLowerCase();
+            const sSpouse = (s.spouseName || "").toLowerCase();
             const otherSpouse = (other.spouseName || "").toLowerCase();
             return (sSpouse === otherFull || sSpouse === other.firstName.toLowerCase()) &&
                    (otherSpouse === sFull || otherSpouse === s.firstName.toLowerCase());
@@ -778,7 +778,7 @@ export default function SoulsWonPage() {
                                             </DialogTrigger>
                                             <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left">
                                                 <DialogHeader className="sr-only text-left text-left"><DialogTitle className="text-left text-left">Soul Photo</DialogTitle></DialogHeader>
-                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
+                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left text-left text-left">
                                                     <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
                                                         <Image 
                                                             src={s.photoURL!} 

@@ -27,7 +27,7 @@ const NOTIFICATION_TYPES = [
   'accountability_partner_removed',
   'new_soul_in_fellowship',
   'soul_unassigned_from_fellowship',
-  'new_order',
+  'new_order', 
   'order_update',
   'birthday_reminder',
   'pending_provision'
@@ -158,7 +158,7 @@ export default function NotificationsPage() {
   return (
     <div className="flex flex-col h-full w-full bg-background overflow-hidden text-left">
       <div className="flex-shrink-0 p-4 sm:p-6 md:p-8 pb-4 text-left">
-        <div className="flex flex-col gap-6 text-left">
+        <div className="flex flex-col gap-6 text-left text-left">
             <div className="flex items-center justify-between gap-4 text-left">
                 <div className="flex items-center gap-4 min-w-0 text-left">
                     <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
@@ -197,13 +197,13 @@ export default function NotificationsPage() {
       </div>
 
       <div className="flex-1 min-h-0 px-0 sm:px-6 md:px-8 pb-4 text-left">
-        <Card className="h-full flex flex-col overflow-hidden border-x-0 sm:border-x rounded-none sm:rounded-3xl shadow-xl bg-card border-y sm:border-y-0 text-left">
+        <Card className="h-full flex flex-col overflow-hidden border-x-0 sm:border-x rounded-none sm:rounded-3xl shadow-xl bg-card border-y sm:border-y-0 text-left text-left">
             <ScrollArea className="flex-1 w-full text-left">
                 <div className="flex flex-col text-left">
                     {loading && (
                         <div className="divide-y p-4 text-left">
                         {[...Array(5)].map((_, i) => (
-                            <div key={i} className="py-6 flex items-start gap-4 text-left">
+                            <div key={i} className="py-6 flex items-start gap-4 text-left text-left">
                                 <Skeleton className="h-10 w-10 rounded-full shrink-0 text-left" />
                                 <div className="flex-1 space-y-2 text-left">
                                     <Skeleton className="h-4 w-3/4 text-left" />
@@ -214,12 +214,12 @@ export default function NotificationsPage() {
                         </div>
                     )}
                     {!loading && allDisplayItems.length === 0 && (
-                        <div className="py-24 text-center px-8 flex flex-col items-center justify-center flex-1 text-left">
+                        <div className="py-24 text-center px-8 flex flex-col items-center justify-center flex-1 text-left text-left">
                             <div className="h-16 w-16 sm:h-20 sm:w-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 text-left">
                                 {filter === 'kindness' ? <Gift className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left" /> : <Bell className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left" />}
                             </div>
                             <h3 className="text-lg sm:text-xl font-bold font-headline uppercase tracking-tight text-left">No {filter !== 'all' ? filter : ''} Alerts</h3>
-                            <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed text-left">
+                            <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed text-left text-left">
                                 Stay focused on the harvest. We'll notify you here about activities in the Kingdom Network.
                             </p>
                         </div>
@@ -246,7 +246,7 @@ export default function NotificationsPage() {
                                                 {getNotificationIcon(notification.type, (notification as any).actionId)}
                                             </div>
                                             <div className="flex-1 min-w-0 space-y-1 text-left">
-                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1 text-left">
+                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1 text-left text-left">
                                                     <p className={cn(
                                                         "font-bold text-sm sm:text-base leading-snug break-words pr-8 sm:pr-0 text-left", 
                                                         isPendingAction ? "text-primary" : (!notification.isRead ? "text-foreground" : "text-muted-foreground")
@@ -257,7 +257,7 @@ export default function NotificationsPage() {
                                                         {isPendingAction ? 'ACTION REQUIRED' : (createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : '')}
                                                     </span>
                                                 </div>
-                                                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance text-left">
+                                                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance text-left text-left">
                                                     {notification.message}
                                                 </p>
                                                 {createdAt && (
@@ -282,7 +282,7 @@ export default function NotificationsPage() {
                     </div>
                     
                     <footer className="p-8 text-center space-y-2 border-t mt-auto text-left">
-                        <p className="text-[9px] sm:text-[10px] text-muted-foreground/40 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 text-left">
+                        <p className="text-[9px] sm:text-[10px] text-muted-foreground/40 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 text-left text-left">
                           <CircleAlert className="h-3 w-3 text-left" /> Notifications are purged after 30 days of inactivity
                         </p>
                     </footer>
