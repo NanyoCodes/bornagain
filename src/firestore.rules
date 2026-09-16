@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Unification and security stabilization - 2025-06-17T15:30:00Z
+    // Deployment trigger: Unification and security stabilization - 2025-06-18T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -266,6 +266,7 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
     }
     
+    fellowshipId
     match /fellowships/{fellowshipId} {
       allow get, list: if true;
       allow create: if isAuthenticated();
@@ -287,9 +288,9 @@ service cloud.firestore {
         match /comments/{commentId} {
             allow get, list: if true;
             allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || isFellowshipOrganizer(fellowshipId));
             allow update: if isAuthenticated() && (
-              (request.resource.data.authorId == request.authorId) ||
+              (request.resource.data.authorId == request.auth.uid) ||
               (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
             );
         }
