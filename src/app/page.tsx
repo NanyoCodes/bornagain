@@ -219,7 +219,7 @@ export default function LandingPage() {
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left text-left">
                 {logo && (
-                  <Avatar className="h-12 w-12 text-left text-left text-left">
+                  <Avatar className="h-12 w-12 text-left text-left text-left text-left">
                     <AvatarImage src={logo.imageUrl} alt="Logo" className="text-left text-left text-left text-left" />
                     <AvatarFallback className="text-left text-left text-left text-left">T</AvatarFallback>
                   </Avatar>
@@ -232,7 +232,7 @@ export default function LandingPage() {
                 <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left text-left">
                   <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left text-left">
                     <Instagram className="h-4 w-4 text-left text-left" />
-                    <span className="sr-only text-left text-left">Instagram</span>
+                    <span className="sr-only">Instagram</span>
                   </Link>
                 </Button>
               </div>
