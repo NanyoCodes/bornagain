@@ -9,12 +9,12 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet';
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from '@/components/ui/drawer';
 import {
   Card,
   CardContent,
@@ -241,39 +241,29 @@ export function PrayerDialog({
     </div>
   );
 
-  const Header = ({ isSheet = false }: { isSheet?: boolean }) =>
-    isSheet ? (
-      <SheetHeader className="text-left">
-        <div className="flex items-center gap-3 mb-1">
-            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
-                <Zap className="h-5 w-5 text-primary fill-current" />
-            </div>
-            <SheetTitle className="text-2xl font-black font-headline">Secret Place</SheetTitle>
-        </div>
-        <SheetDescription className="text-sm font-medium">
-          Communing with the Father in the secret place.
-        </SheetDescription>
-      </SheetHeader>
-    ) : (
-      <DialogHeader>
-        <DialogTitle>A Moment to Pray</DialogTitle>
-        <DialogDescription>
-          Reflect on the Word, join a prayer stream, or manage your links.
-        </DialogDescription>
-      </DialogHeader>
-    );
+  const titleText = "Secret Place";
+  const descText = "Communing with the Father in the secret place.";
 
   if (!mounted) return null;
 
   if (isMobile) {
     return (
-      <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent
-          side="bottom"
+      <Drawer open={isOpen} onOpenChange={onOpenChange}>
+        <DrawerContent
           className="p-0 flex flex-col h-[95dvh] rounded-t-[2.5rem]"
         >
           <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-            <Header isSheet />
+            <DrawerHeader className="text-left">
+                <div className="flex items-center gap-3 mb-1">
+                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                        <Zap className="h-5 w-5 text-primary fill-current" />
+                    </div>
+                    <DrawerTitle className="text-2xl font-black font-headline">{titleText}</DrawerTitle>
+                </div>
+                <DrawerDescription className="text-sm font-medium">
+                {descText}
+                </DrawerDescription>
+            </DrawerHeader>
           </div>
           <ScrollArea className="flex-grow px-8">
             <div className="py-6">
@@ -287,15 +277,15 @@ export function PrayerDialog({
               size="lg"
               className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20"
             >
-              {isCompleting && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+              {isCompleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               MARK AS PRAYED
             </Button>
             <p className="text-[10px] text-center text-muted-foreground mt-4 font-medium tracking-wide">
                 Complete all {prayerPoints.length} focus points to mark as finished.
             </p>
           </div>
-        </SheetContent>
-      </Sheet>
+        </DrawerContent>
+      </Drawer>
     );
   }
 
@@ -303,7 +293,10 @@ export function PrayerDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl flex flex-col h-[85vh] max-h-[85vh] p-0 overflow-hidden">
         <div className="p-6 border-b shrink-0">
-            <Header />
+            <DialogHeader>
+                <DialogTitle>{titleText}</DialogTitle>
+                <DialogDescription>{descText}</DialogDescription>
+            </DialogHeader>
         </div>
         <ScrollArea className="flex-1 min-h-0 px-6">
             <div className="py-6">

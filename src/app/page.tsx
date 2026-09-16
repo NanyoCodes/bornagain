@@ -101,7 +101,7 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[10px] text-left">
                   SHARING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left">
+                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left text-left">
                   Testify of His Power.<br className="hidden sm:block text-left" />
                   Organize the Harvest.<br className="hidden sm:block text-left" />
                   <span className="text-primary text-left">Glorify the King.</span>
@@ -190,7 +190,7 @@ export default function LandingPage() {
                 <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-xl transition-all duration-300 border-b-8 border-b-indigo-500/10 text-left">
                     <CardHeader className="p-8 pb-4 text-left">
                         <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-4 text-left">
-                            <HeartHandshake className="h-6 w-6 text-indigo-600 text-left" />
+                            <HeartHandshake className="h-6 w-6 text-indigo-600" />
                         </div>
                         <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Iron Sharpens Iron</CardTitle>
                         <CardDescription className="font-medium text-sm leading-relaxed text-left">Connect with accountability partners. Nudge each other to stay sharp and maintain your spiritual fire.</CardDescription>
