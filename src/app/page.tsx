@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -235,7 +234,7 @@ export default function LandingPage() {
         {/* Provision Hub Section */}
         <section className="py-24 bg-background text-left">
           <div className="max-w-7xl mx-auto px-6 text-left">
-            <div className="text-center mb-16 space-y-4 text-left">
+            <div className="text-center mb-16 space-y-4 text-left text-left">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-600 font-black text-[10px] uppercase tracking-[0.2em] mb-4 text-left">
                     <Store className="h-3 w-3 text-left" /> Provision & Kindness
                 </div>
@@ -285,48 +284,48 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
               {/* Daily Disciplines */}
               <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/80 backdrop-blur-sm text-left">
-                <CardHeader className="p-8 pb-4">
-                  <div className="h-12 w-12 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-4">
-                    <Zap className="h-6 w-6 text-amber-500" />
+                <CardHeader className="p-8 pb-4 text-left">
+                  <div className="h-12 w-12 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-4 text-left">
+                    <Zap className="h-6 w-6 text-amber-500 text-left" />
                   </div>
-                  <CardTitle className="text-xl font-black uppercase tracking-tight">Daily Disciplines</CardTitle>
-                  <CardDescription className="font-medium text-sm leading-relaxed">Build unshakeable consistency. Track your Prayer, Word Study, and Church Attendance daily.</CardDescription>
+                  <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Daily Disciplines</CardTitle>
+                  <CardDescription className="font-medium text-sm leading-relaxed text-left">Build unshakeable consistency. Track your Prayer, Word Study, and Church Attendance daily.</CardDescription>
                 </CardHeader>
-                <CardFooter className="p-8 pt-0">
-                  <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary">
-                    <Link href="/growth">Explore Growth Tracks <ArrowRight className="ml-2 h-3 w-3" /></Link>
+                <CardFooter className="p-8 pt-0 text-left">
+                  <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary text-left">
+                    <Link href="/growth" className="text-left">Explore Growth Tracks <ArrowRight className="ml-2 h-3 w-3 text-left" /></Link>
                   </Button>
                 </CardFooter>
               </Card>
 
               {/* Kingdom Conversations */}
               <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/80 backdrop-blur-sm text-left">
-                <CardHeader className="p-8 pb-4">
-                  <div className="h-12 w-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-4">
-                    <MessagesSquare className="h-6 w-6 text-blue-500" />
+                <CardHeader className="p-8 pb-4 text-left">
+                  <div className="h-12 w-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-4 text-left">
+                    <MessagesSquare className="h-6 w-6 text-blue-500 text-left" />
                   </div>
-                  <CardTitle className="text-xl font-black uppercase tracking-tight">Unified Coordination</CardTitle>
-                  <CardDescription className="font-medium text-sm leading-relaxed">Stay connected with your mission team, accountability partners, and Kingdom vendors through secure, real-time chat.</CardDescription>
+                  <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Unified Coordination</CardTitle>
+                  <CardDescription className="font-medium text-sm leading-relaxed text-left">Stay connected with your mission team, accountability partners, and Kingdom vendors through secure, real-time chat.</CardDescription>
                 </CardHeader>
-                <CardFooter className="p-8 pt-0">
-                  <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary">
-                    <Link href="/chats">View Messages <ArrowRight className="ml-2 h-3 w-3" /></Link>
+                <CardFooter className="p-8 pt-0 text-left">
+                  <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary text-left">
+                    <Link href="/chats" className="text-left text-left">View Messages <ArrowRight className="ml-2 h-3 w-3 text-left" /></Link>
                   </Button>
                 </CardFooter>
               </Card>
 
               {/* Accountability */}
               <Card className="rounded-[2.5rem] border-none shadow-lg bg-card/80 backdrop-blur-sm text-left">
-                <CardHeader className="p-8 pb-4">
-                  <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-4">
-                    <HeartHandshake className="h-6 w-6 text-indigo-600" />
+                <CardHeader className="p-8 pb-4 text-left">
+                  <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-4 text-left">
+                    <HeartHandshake className="h-6 w-6 text-indigo-600 text-left" />
                   </div>
-                  <CardTitle className="text-xl font-black uppercase tracking-tight">Iron Sharpens Iron</CardTitle>
-                  <CardDescription className="font-medium text-sm leading-relaxed">Connect with accountability partners. Nudge each other to stay sharp and maintain your spiritual fire.</CardDescription>
+                  <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Iron Sharpens Iron</CardTitle>
+                  <CardDescription className="font-medium text-sm leading-relaxed text-left">Connect with accountability partners. Nudge each other to stay sharp and maintain your spiritual fire.</CardDescription>
                 </CardHeader>
-                <CardFooter className="p-8 pt-0">
-                  <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary">
-                    <Link href="/accountability">Find a Partner <ArrowRight className="ml-2 h-3 w-3" /></Link>
+                <CardFooter className="p-8 pt-0 text-left">
+                  <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary text-left">
+                    <Link href="/accountability" className="text-left text-left">Find a Partner <ArrowRight className="ml-2 h-3 w-3 text-left" /></Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -369,11 +368,11 @@ export default function LandingPage() {
                     </p>
                     <Separator className="bg-white/10 text-left" />
                     <div className="flex items-center justify-between text-left">
-                        <div className="text-left">
+                        <div className="text-left text-left">
                             <p className="text-[10px] font-black uppercase tracking-widest text-primary text-left">Become a Host</p>
                             <p className="text-sm font-bold text-left">Start a Fellowship Today</p>
                         </div>
-                        <Button asChild size="icon" className="h-12 w-12 rounded-full text-left"><Link href="/signup" className="text-left"><PlusCircle className="h-6 w-6 text-left" /></Link></Button>
+                        <Button asChild size="icon" className="h-12 w-12 rounded-full text-left"><Link href="/signup" className="text-left text-left"><PlusCircle className="h-6 w-6 text-left" /></Link></Button>
                     </div>
                 </div>
             </div>
@@ -401,7 +400,7 @@ export default function LandingPage() {
               </p>
               <div className="flex justify-center pt-4 text-left">
                 <Button asChild size="lg" className="h-14 px-10 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto text-left">
-                  <Link href="/signup" className="text-left">START TESTIFYING <ArrowRight className="ml-3 h-6 w-6 text-left" /></Link>
+                  <Link href="/signup" className="text-left text-left">START TESTIFYING <ArrowRight className="ml-3 h-6 w-6 text-left" /></Link>
                 </Button>
               </div>
             </div>
