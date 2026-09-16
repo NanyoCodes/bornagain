@@ -216,7 +216,7 @@ export default function LandingPage() {
               <div className="space-y-8 text-center lg:text-left text-left">
                 <div className="space-y-4 text-left">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 text-left">The Digital Altar</Badge>
-                  <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-left">See God In Action</h2>
+                  <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center text-left">See God In Action</h2>
                   <p className="text-muted-foreground text-lg leading-relaxed max-w-md mx-auto lg:mx-0 text-left">
                     Miracles aren't just for the Bible. Read real-time stories from believers around the world seeing the power of Jesus Christ today.
                   </p>

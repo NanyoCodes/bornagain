@@ -104,7 +104,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10">
-        <p className="text-sm text-muted-foreground italic">No souls found matching this criteria.</p>
+        <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
       </div>
     );
   }
@@ -147,7 +147,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                         )}
                     </div>
                     <div className="min-w-0 flex-1 pr-1 text-left">
-                        <div className="flex items-center gap-1.5 flex-wrap text-left">
+                        <div className="flex items-center gap-1.5 flex-wrap text-left text-left">
                             <p className="font-black text-[13px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left">
                                 {s.firstName} {s.lastName}
                                 {s.age && (
@@ -1011,7 +1011,7 @@ export default function SoulsWonPage() {
                     <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2 text-left">
-                                <BarChart3 className="h-4 w-4 text-primary text-left" />
+                                <BarChart3 className="h-4 w-4 text-primary text-left text-left" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left text-left">

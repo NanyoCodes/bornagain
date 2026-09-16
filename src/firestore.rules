@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Unification and security stabilization - 2025-06-18T10:00:00Z
+    // Deployment trigger: Unification and security stabilization - 2025-06-18T12:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -266,7 +266,6 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
     }
     
-    fellowshipId
     match /fellowships/{fellowshipId} {
       allow get, list: if true;
       allow create: if isAuthenticated();

@@ -1241,11 +1241,11 @@ function SoulProfileContent({
                 <div className="space-y-4 pl-1">
                     {sortedHistory.length > 0 ? (
                         sortedHistory.slice(0, 3).map((log, index) => {
-                            const logDate = safeToDate(log.date);
+                            const date = safeToDate(log.date);
                             return (
                                 <div key={index} className="relative pl-4 border-l-2 border-primary/20">
                                     <p className="text-[8px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">
-                                        {logDate ? format(logDate, "MMM d, yyyy") : 'Recently'}
+                                        {date ? format(date, "MMM d, yyyy") : 'Recently'}
                                         {log.memberName && <span className="ml-2 text-primary/40">• By {log.memberName.split(' ')[0]}</span>}
                                     </p>
                                     <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 italic">
@@ -1332,11 +1332,11 @@ function SoulProfileContent({
       </Card>
 
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
-          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10">
                   <DialogHeader>
-                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
-                      <DialogDescription className="text-sm font-medium">Draft a powerful prayer for {soul.firstName}.</DialogDescription>
+                      <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left">Draft a powerful prayer for {soul.firstName}.</DialogDescription>
                   </DialogHeader>
               </div>
               <div className="p-8 space-y-6">
@@ -1423,10 +1423,10 @@ function SoulProfileContent({
       </Dialog>
 
       <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
-        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
+        <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
           <DialogHeader className="text-center space-y-2">
               <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
-                  <Share2 className="h-7 w-7 text-primary text-center" />
+                  <Share2 className="h-7 w-7 text-primary" />
               </div>
             <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
             <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul.firstName}'s info?</DialogDescription>
@@ -1462,7 +1462,7 @@ function SoulProfileContent({
                           >
                               <Avatar className="h-8 w-8 border shrink-0">
                                   <AvatarImage src={p.photoURL} />
-                                  <AvatarFallback className="font-black text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
+                                  <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <span className="font-bold text-sm group-hover:text-primary transition-colors">{p.firstName} {p.lastName}</span>
                           </Button>

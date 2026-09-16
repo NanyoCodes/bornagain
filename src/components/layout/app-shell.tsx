@@ -32,7 +32,8 @@ import {
   Sparkles,
   ChevronRight,
   Heart,
-  X
+  X,
+  Utensils
 } from "lucide-react";
 
 import {
@@ -68,13 +69,14 @@ import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, query, where, serverTimestamp } from "firebase/firestore";
-import type { Notification, VendorProfile } from "@/lib/types";
+import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
@@ -418,6 +420,36 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                 <DropdownMenuSeparator />
                 
                 <div className="p-1 space-y-1">
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em]">Provision & Support</p>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/marketplace" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                        <Utensils className="h-3.5 w-3.5 text-blue-500" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest">Meals Center</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                        <Gift className="h-3.5 w-3.5 text-indigo-600" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest">Kindness Center</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
+                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                        <Package className="h-3.5 w-3.5 text-muted-foreground" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest">Order Hub</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </div>
+
+                <DropdownMenuSeparator />
+                
+                <div className="p-1 space-y-1">
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer">
                       <Link href="/guide" className="flex items-center gap-3 w-full">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
@@ -466,7 +498,6 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 
 function BottomNavBar() {
     const pathname = usePathname();
-    // Simplified bottom nav to ensure key hubs are accessible
     const bottomNavItems = navItems.filter(item => 
         item.label === "GROWTH" || 
         item.label === "Souls" || 

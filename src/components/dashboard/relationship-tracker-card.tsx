@@ -84,6 +84,7 @@ const iconMap: Record<string, any> = {
     'text_message': MessageSquare,
     'helped_with_need': Heart,
     'invited_to_event': Calendar,
+    'matchmaking': HeartHandshake,
 };
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -649,11 +650,11 @@ export function RelationshipTrackerCard() {
 
   const [activeSoul, setActiveSoul] = useState<Soul | null>(null);
   const [isStudyWordOpen, setIsStudyWordOpen] = useState(false);
-  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
-  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
-  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = useState(false);
-  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = useState(false);
-  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
+  const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
+  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = React.useState(false);
+  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = React.useState(false);
+  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = React.useState(false);
+  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = React.useState(false);
   const [isMatchmakingOpen, setIsMatchmakingOpen] = useState(false);
   const [customPrayerText, setCustomPrayerText] = useState('');
   const [clickedActionId, setClickedActionId] = useState<string | null>(null);
@@ -686,7 +687,7 @@ export function RelationshipTrackerCard() {
       setIsSoulDialogOpen(true);
   };
 
-  const resolveTemplate = useCallback((template: string, targetSoul: Soul) => {
+  const resolveTemplate = React.useCallback((template: string, targetSoul: Soul) => {
       const gender = targetSoul.gender?.toLowerCase() || 'other';
       const pronouns = {
           subject: gender === 'female' ? 'she' : 'he',
@@ -1226,11 +1227,11 @@ export function RelationshipTrackerCard() {
             </DialogHeader>
           </div>
           <div className="p-8 space-y-6 text-left">
-            <div className="space-y-2 text-left text-left">
+            <div className="space-y-2 text-left text-left text-left">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
-                    onChange={e => setCustomPrayerText(e.target.value)} 
+                    onChange={e => setCustomPrayerText(e.target.value)} // Reusing customPrayerText temporarily for simple local state
                     className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left"
                 />
             </div>
@@ -1269,7 +1270,7 @@ export function RelationshipTrackerCard() {
               </div>
               <div className="p-6 text-left text-left text-left">
               <ScrollArea className="h-64 text-left text-left text-left">
-                  <div className="space-y-2 text-left text-left text-left text-left">
+                  <div className="space-y-2 text-left text-left text-left text-left text-left">
                       {uniquePartners.map(p => (
                           <Button 
                               key={p.userId} 
@@ -1277,9 +1278,9 @@ export function RelationshipTrackerCard() {
                               className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group flex items-center text-left text-left"
                               onClick={() => handleShareToPartner(p)}
                           >
-                              <Avatar className="h-8 w-8 border shrink-0 text-left text-left">
+                              <Avatar className="h-8 w-8 border shrink-0 text-left text-left text-left">
                                   <AvatarImage src={p.photoURL} className="text-left text-left" />
-                                  <AvatarFallback className="font-black text-[10px] text-center flex items-center justify-center w-full h-full text-left text-left">{p.firstName?.charAt(0)}</AvatarFallback>
+                                  <AvatarFallback className="font-black text-[10px] text-center flex items-center justify-center w-full h-full text-left text-left text-left">{p.firstName?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <span className="font-bold text-sm group-hover:text-primary transition-colors text-left text-left">{p.firstName} {p.lastName}</span>
                           </Button>
@@ -1294,7 +1295,7 @@ export function RelationshipTrackerCard() {
       </Dialog>
 
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
-          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+          <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left">
               <div className="p-8 border-b bg-muted/10 text-left text-left">
                   <DialogHeader className="text-left text-left text-left text-left">
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kingdom Intercession</DialogTitle>
