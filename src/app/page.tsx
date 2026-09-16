@@ -135,7 +135,7 @@ export default function LandingPage() {
                 <div className="space-y-4 text-left">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 text-left">The Digital Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-left">See God In Action</h2>
-                  <p className="text-muted-foreground text-lg leading-relaxed max-w-md mx-auto lg:mx-0 text-left">
+                  <p className="text-muted-foreground text-lg leading-relaxed max-w-md mx-auto lg:mx-0 text-left text-left">
                     Your testimony is a weapon. Share the miracles God is performing in your life and be strengthened by the stories of believers from around the world.
                   </p>
                 </div>
@@ -168,7 +168,7 @@ export default function LandingPage() {
                             <Avatar className="h-10 w-10 border shrink-0 text-left">
                               <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-black uppercase text-left">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0 text-left">
+                            <div className="min-w-0 text-left text-left">
                               <p className="text-xs font-black uppercase tracking-tight truncate text-left">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
                               <p className="text-[9px] font-bold text-primary uppercase tracking-widest truncate text-left">{t.category}</p>
                             </div>
@@ -183,63 +183,15 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Victory Hub Section */}
-        <section className="py-24 bg-muted/20 text-left">
-          <div className="max-w-7xl mx-auto px-6 text-left">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
-                <div className="relative text-left order-2 lg:order-1">
-                    <Card className="rounded-[3rem] border-none shadow-2xl bg-card overflow-hidden text-left">
-                        <div className="p-8 sm:p-12 space-y-6 text-left">
-                            <div className="flex items-center gap-3 text-left">
-                                <Badge className="bg-primary text-white font-black uppercase text-[10px] text-left">COMMUNAL VICTORY</Badge>
-                            </div>
-                            <h3 className="text-2xl font-black font-headline uppercase text-left">Breaking Strongholds</h3>
-                            <p className="text-lg text-muted-foreground leading-relaxed italic text-left">
-                                "Naming my struggle in the circle was terrifying, but the responses of prayer and specific armor from the Word gave me the breakthrough I needed."
-                            </p>
-                            <div className="pt-4 flex items-center gap-3 text-left">
-                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-left"><ShieldCheck className="h-5 w-5 text-primary text-left" /></div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground text-left">Choice-Based Anonymity</span>
-                            </div>
-                        </div>
-                    </Card>
-                </div>
-              <div className="space-y-8 text-left order-1 lg:order-2">
-                <div className="space-y-4 text-left">
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-left">
-                      <Zap className="h-6 w-6 text-primary text-left" />
-                    </div>
-                    <h2 className="text-3xl sm:text-4xl font-black font-headline uppercase text-left">Victory circles</h2>
-                  </div>
-                  <p className="text-muted-foreground text-lg leading-relaxed text-balance text-left">
-                    We overcome by the blood of the Lamb and the word of our testimony. Join a Victory Circle to find strength in transparency and access the communal Armor of the Word.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-4 text-left">
-                    <div className="flex items-start gap-4 text-left">
-                        <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1 text-left" />
-                        <p className="text-sm text-muted-foreground font-medium text-left">Choose between posting as yourself or remaining anonymous for sensitive challenges.</p>
-                    </div>
-                    <div className="flex items-start gap-4 text-left">
-                        <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1 text-left" />
-                        <p className="text-sm text-muted-foreground font-medium text-left">Access shared supply: Video sermons, articles, and bibles specifically for your struggle.</p>
-                    </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Provision Hub Section */}
         <section className="py-24 bg-background text-left">
           <div className="max-w-7xl mx-auto px-6 text-left">
-            <div className="text-center mb-16 space-y-4 text-left text-left">
+            <div className="text-center mb-16 space-y-4 text-left">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-600 font-black text-[10px] uppercase tracking-[0.2em] mb-4 text-left">
                     <Store className="h-3 w-3 text-left" /> Provision & Kindness
                 </div>
               <h2 className="text-3xl sm:text-5xl font-black font-headline tracking-tight uppercase text-balance text-center text-left">Practical Love in Action</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-center text-left">
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-center text-left text-left">
                 Evangelism meets provision. Our Hubs connect believers to Kingdom-aligned vendors to share meals and kindness.
               </p>
             </div>
@@ -293,7 +245,7 @@ export default function LandingPage() {
                 </CardHeader>
                 <CardFooter className="p-8 pt-0 text-left">
                   <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary text-left">
-                    <Link href="/growth" className="text-left">Explore Growth Tracks <ArrowRight className="ml-2 h-3 w-3 text-left" /></Link>
+                    <Link href="/growth" className="text-left text-left">Explore Growth Tracks <ArrowRight className="ml-2 h-3 w-3 text-left" /></Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -309,7 +261,7 @@ export default function LandingPage() {
                 </CardHeader>
                 <CardFooter className="p-8 pt-0 text-left">
                   <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary text-left">
-                    <Link href="/chats" className="text-left text-left">View Messages <ArrowRight className="ml-2 h-3 w-3 text-left" /></Link>
+                    <Link href="/chats" className="text-left text-left text-left">View Messages <ArrowRight className="ml-2 h-3 w-3 text-left" /></Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -323,58 +275,12 @@ export default function LandingPage() {
                   <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Iron Sharpens Iron</CardTitle>
                   <CardDescription className="font-medium text-sm leading-relaxed text-left">Connect with accountability partners. Nudge each other to stay sharp and maintain your spiritual fire.</CardDescription>
                 </CardHeader>
-                <CardFooter className="p-8 pt-0 text-left">
+                <CardFooter className="p-8 pt-0 text-left text-left">
                   <Button asChild variant="link" className="p-0 h-auto font-black uppercase tracking-widest text-[10px] text-primary text-left">
                     <Link href="/accountability" className="text-left text-left">Find a Partner <ArrowRight className="ml-2 h-3 w-3 text-left" /></Link>
                   </Button>
                 </CardFooter>
               </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Strategic Mobilization Section */}
-        <section className="py-24 bg-zinc-950 text-white text-left">
-          <div className="max-w-7xl mx-auto px-6 text-left">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
-                <div className="space-y-12 text-left">
-                    <div className="space-y-4 text-left">
-                        <h2 className="text-3xl sm:text-5xl font-black font-headline uppercase text-left">The Strategic Harvest</h2>
-                        <p className="text-zinc-400 text-lg leading-relaxed text-balance text-left">
-                            Map your impact and preserve the harvest. Assign your converts to fellowships based on where they reside to ensure perpetual local care.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-left">
-                        <div className="space-y-4 text-left">
-                            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-left"><Target className="h-5 w-5 text-white text-left" /></div>
-                            <h4 className="text-lg font-bold uppercase text-left">Mission Hub</h4>
-                            <p className="text-xs text-zinc-500 leading-relaxed text-left">Organize city-wide outreach using real-time field coordination and demographic tracking.</p>
-                        </div>
-                        <div className="space-y-4 text-left">
-                            <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center text-left"><Users className="h-5 w-5 text-white text-left" /></div>
-                            <h4 className="text-lg font-bold uppercase text-left">Fellowship Hub</h4>
-                            <p className="text-xs text-zinc-500 leading-relaxed text-left">Nurture converts in small groups. Feed them daily spiritual nourishment via the group devotional hub.</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-zinc-900/50 p-8 sm:p-12 rounded-[3rem] border border-white/10 space-y-8 text-left">
-                    <div className="flex items-center gap-3 text-left">
-                        <Sparkles className="h-5 w-5 text-primary text-left" />
-                        <h3 className="text-xl font-bold uppercase tracking-tight text-left">Discipleship Cycle</h3>
-                    </div>
-                    <p className="text-sm text-zinc-400 leading-relaxed text-left">
-                        Every convert is a future host. We encourage all souls to create accounts, enabling them to eventually host their own fellowships or lead city-wide campaigns. The harvest is anchored by those who reside in the land.
-                    </p>
-                    <Separator className="bg-white/10 text-left" />
-                    <div className="flex items-center justify-between text-left">
-                        <div className="text-left text-left">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-primary text-left">Become a Host</p>
-                            <p className="text-sm font-bold text-left">Start a Fellowship Today</p>
-                        </div>
-                        <Button asChild size="icon" className="h-12 w-12 rounded-full text-left"><Link href="/signup" className="text-left text-left"><PlusCircle className="h-6 w-6 text-left" /></Link></Button>
-                    </div>
-                </div>
             </div>
           </div>
         </section>
@@ -390,17 +296,17 @@ export default function LandingPage() {
           </div>
           
           <div className="max-w-7xl mx-auto px-6 text-center relative z-10 text-left">
-            <div className="max-w-3xl mx-auto space-y-8 text-left">
+            <div className="max-w-3xl mx-auto space-y-8 text-left text-left">
               <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center text-left">
                 The Harvest is Plentiful. Ready to Labor?
               </h2>
-              <p className="text-lg sm:text-xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-center text-left">
+              <p className="text-lg sm:text-xl text-primary-foreground/90 font-medium leading-relaxed italic text-pretty text-center text-left text-left">
                 Join thousands of believers using technology to fulfill the Great Commission. 
                 Record miracles, reach cities, and track the greatness of God.
               </p>
               <div className="flex justify-center pt-4 text-left">
-                <Button asChild size="lg" className="h-14 px-10 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto text-left">
-                  <Link href="/signup" className="text-left text-left">START TESTIFYING <ArrowRight className="ml-3 h-6 w-6 text-left" /></Link>
+                <Button asChild size="lg" className="h-14 px-10 text-base font-black bg-white text-primary hover:bg-white/90 rounded-2xl shadow-2xl uppercase tracking-widest w-full sm:w-auto text-left text-left">
+                  <Link href="/signup" className="text-left text-left text-left">START TESTIFYING <ArrowRight className="ml-3 h-6 w-6 text-left" /></Link>
                 </Button>
               </div>
             </div>
@@ -409,19 +315,19 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-muted/50 border-t py-16 text-left">
+      <footer className="bg-muted/50 border-t py-16 text-left text-left">
         <div className="max-w-7xl mx-auto px-8 text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
                 {logo && (
                   <Avatar className="h-12 w-12 text-left">
-                    <AvatarImage src={logo.imageUrl} alt="Logo" className="text-left" />
+                    <AvatarImage src={logo.imageUrl} alt="Logo" className="text-left text-left" />
                     <AvatarFallback className="text-left">T</AvatarFallback>
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty text-left">
+              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty text-left text-left">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
               <div className="flex gap-4 text-left">
@@ -446,7 +352,7 @@ export default function LandingPage() {
 
             <div className="space-y-4 text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Ministry</h4>
-              <ul className="space-y-3 text-left">
+              <ul className="space-y-3 text-left text-left">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Our Story</Link></li>
                 <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Partner With Us</Link></li>
                 <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">App Guide</Link></li>
@@ -462,8 +368,8 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left">
             <p className="text-center md:text-left text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.</p>
             <div className="flex gap-6 text-left">
-              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left">Terms</Link>
-              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left">Privacy</Link>
+              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left text-left">Terms</Link>
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left text-left">Privacy</Link>
             </div>
           </div>
         </div>

@@ -729,7 +729,7 @@ export default function SoulsWonPage() {
                     <div className="px-4 sm:px-0 animate-in fade-in slide-in-from-top-4 duration-700 text-left">
                         <div className="flex items-center justify-between mb-4 px-1 text-left">
                             <div className="flex items-center gap-2 text-left">
-                                <ImageIcon className="h-4 w-4 text-primary text-left" />
+                                <ImageIcon className="h-4 w-4 text-primary" />
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left">GALLERY OF MY SOULS</h3>
                             </div>
                         </div>
@@ -839,7 +839,7 @@ export default function SoulsWonPage() {
                                                     </div>
                                                     <span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span>
                                                 </div>
-                                                <div className="space-y-1 text-left text-left text-left">
+                                                <div className="space-y-1 text-left text-left text-left text-left">
                                                     <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">
                                                         <span className="text-left">{group.label}</span>
                                                         <span className="text-left">{Math.round(percent)}%</span>
@@ -927,7 +927,7 @@ export default function SoulsWonPage() {
                                                     <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">{stat.label}</p>
                                                     <span className="text-xl font-black text-primary tracking-tighter text-left">{stat.count}</span>
                                                 </div>
-                                                <div className="space-y-1.5 text-left">
+                                                <div className="space-y-1.5 text-left text-left">
                                                     <Progress value={percent} className="h-1.5 bg-muted text-left" indicatorClassName={stat.color} />
                                                     <p className="text-[8px] font-black text-muted-foreground/40 uppercase text-left">{Math.round(percent)}%</p>
                                                 </div>
@@ -953,7 +953,7 @@ export default function SoulsWonPage() {
                     <SoulsImportTemplateCard />
                 </div>
 
-                <div className="-mx-4 sm:mx-0 text-left text-left">
+                <div className="-mx-4 sm:mx-0 text-left text-left text-left">
                     <SoulsWonTable 
                         souls={filteredSouls || []} 
                         allSouls={souls || []}
@@ -972,7 +972,7 @@ export default function SoulsWonPage() {
                 </div>
             </div>
 
-            <div className="lg:col-span-4 text-left text-left">
+            <div className="lg:col-span-4 text-left text-left text-left">
                 <FeedSidebar mode="harvest" />
             </div>
         </div>
@@ -1016,7 +1016,7 @@ export default function SoulsWonPage() {
                             </div>
                             <DialogHeader className="text-left text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">{selectedFilterGroup?.value} Directory</DialogTitle>
-                                <DialogDescription className="text-sm font-medium text-left text-left text-left text-left">Viewing all souls within this demographic group.</DialogDescription>
+                                <DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left">Viewing all souls within this demographic group.</DialogDescription>
                             </DialogHeader>
                         </div>
                         <ScrollArea className="max-h-[60vh] text-left text-left">
@@ -1058,7 +1058,7 @@ export default function SoulsWonPage() {
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left">Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left">
+                    <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
                         Confirm Removal
                     </AlertDialogAction>
@@ -1070,9 +1070,9 @@ export default function SoulsWonPage() {
             isMobile ? (
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
-                                <DrawerHeader className="text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
+                                <DrawerHeader className="text-left text-left text-left text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left text-left">
                                 <LogSoulForm 
@@ -1089,7 +1089,7 @@ export default function SoulsWonPage() {
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <DrawerHeader className="text-left text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left">Edit Record</DrawerTitle><DrawerDescription className="text-sm text-left">Update soul identity and mission details.</DrawerDescription></DrawerHeader>
                             </div>
-                            <ScrollArea className="flex-grow p-8 text-left text-left">
+                            <ScrollArea className="flex-grow p-8 text-left text-left text-left">
                                 {soulToEdit && <EditSoulForm soul={soulToEdit} onSoulUpdated={() => setEditSoulId(null)} fellowships={fellowships || []} campaigns={campaigns || []} />}
                             </ScrollArea>
                         </DrawerContent>
