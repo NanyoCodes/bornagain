@@ -196,7 +196,7 @@ function ShareWordDialog({
     <div className="space-y-8 sm:space-y-10 text-left">
       <div className="space-y-4 text-left">
         <div className="relative">
-            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-50" />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-50 text-left" />
             <Input 
                 placeholder="Search Bible (e.g. John 3:16)..." 
                 value={bibleSearch}
@@ -434,13 +434,13 @@ function MatchmakingDialog({
 
     const header = (
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center gap-2 mb-2 text-left">
+            <div className="flex items-center gap-2 mb-2">
                 <HeartHandshake className="h-5 w-5 text-primary" />
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Matching</span>
             </div>
             <DialogHeader className="text-left">
-                <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Find Match for {sourceSoul.firstName}</DialogTitle>
-                <DialogDescription className="text-sm font-medium mt-1 text-left">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
+                <DialogTitle className="text-2xl font-black font-headline uppercase">Find Match for {sourceSoul.firstName}</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
             </DialogHeader>
             <div className="relative mt-6">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
@@ -461,7 +461,7 @@ function MatchmakingDialog({
                     <Button 
                         key={c.id} 
                         variant="ghost" 
-                        className="w-full justify-start h-auto min-h-[4rem] rounded-2xl gap-4 hover:bg-primary/5 group p-4 flex flex-row items-center text-left"
+                        className="w-full justify-start h-auto min-h-[4rem] rounded-2xl gap-4 hover:bg-primary/5 group p-4 flex flex-row items-center"
                         onClick={() => onMatchConfirmed(c)}
                     >
                         <Avatar className="h-10 w-10 border shadow-sm shrink-0">
@@ -544,17 +544,17 @@ function SoulSelectionDialog({
     }, [souls, search, actionId]);
 
     const body = (
-        <div className="p-6 space-y-6 text-left">
+        <div className="p-6 space-y-6">
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
-            <ScrollArea className={cn("border rounded-3xl bg-muted/5 text-left", isMobile ? "h-[50vh]" : "h-[40vh]")}>
+            <ScrollArea className={cn("border rounded-3xl bg-muted/5", isMobile ? "h-[50vh]" : "h-[40vh]")}>
                 <div className="p-2 space-y-1.5">
                     {filteredSouls.length > 0 ? (
                         filteredSouls.map(soul => {
@@ -591,7 +591,7 @@ function SoulSelectionDialog({
                             );
                         })
                     ) : (
-                        <div className="text-center py-16 px-8 space-y-3 text-left">
+                        <div className="text-center py-16 px-8 space-y-3">
                             <div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto">
                                 <Users className="h-6 w-6 text-muted-foreground opacity-20" />
                             </div>
@@ -609,10 +609,10 @@ function SoulSelectionDialog({
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[85dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 flex-shrink-0 text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 flex-shrink-0">
                         <SheetHeader className="text-left flex-shrink-0">
                             <SheetTitle className="text-2xl font-black font-headline tracking-tight uppercase">Who did you {actionLabel.toLowerCase()}?</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left">Select a convert to link this action.</SheetDescription>
+                            <SheetDescription className="text-sm font-medium mt-1">Select a convert to link this action.</SheetDescription>
                         </SheetHeader>
                     </div>
                     {body}
@@ -624,10 +624,10 @@ function SoulSelectionDialog({
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 text-left">
+                <div className="p-8 border-b bg-muted/10">
                     <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline tracking-tight">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
+                        <DialogDescription className="text-sm font-medium mt-1">Select a convert to link this action to their record.</DialogDescription>
                     </DialogHeader>
                 </div>
                 {body}
@@ -643,7 +643,7 @@ export function RelationshipTrackerCard() {
   const router = useRouter();
   
   const [completedToday, setCompletedToday] = useState<string[]>([]);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = setTogglingId(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
@@ -723,8 +723,10 @@ export function RelationshipTrackerCard() {
     const broadDiscipline = actionToDisciplineMap[selectedActionId];
 
     const wasCompleted = completedToday.includes(selectedActionId);
-    const newCompleted = [...completedToday];
-    if (!wasCompleted) newCompleted.push(selectedActionId);
+    const newCompleted = wasCompleted
+      ? completedToday.filter((id) => id !== selectedActionId)
+      : [...completedToday, selectedActionId];
+    
     if (broadDiscipline && !newCompleted.includes(broadDiscipline)) newCompleted.push(broadDiscipline);
 
     const userRef = doc(firestore, 'users', user.uid);
@@ -1229,7 +1231,7 @@ export function RelationshipTrackerCard() {
           </div>
           <div className="p-8 space-y-6">
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomPrayerText(e.target.value)} // Reusing customPrayerText temporarily for simple local state
@@ -1350,4 +1352,8 @@ export function RelationshipTrackerCard() {
     />
     </>
   );
+}
+
+function setTogglingId(arg0: null): [any, any] {
+    throw new Error('Function not implemented.');
 }
