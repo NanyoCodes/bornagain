@@ -354,7 +354,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                 <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-black leading-tight truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
-                    <p className="text-[10px] text-muted-foreground truncate font-bold uppercase tracking-wider">{user.email}</p>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
                 

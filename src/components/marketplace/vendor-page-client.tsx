@@ -497,7 +497,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 const chatDocRef = await addDoc(chatsRef, newChatData);
                 chatId = chatDocRef.id;
             }
-            router.push(`/chats/${chatId}`);
+            router.push(`/dashboard/chats/${chatId}`);
 
         } catch (error) {
             console.error("Error initiating chat:", error);
@@ -1134,30 +1134,41 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left">{meal.description || `Verified Kingdom service item.`}</p>
                                     </div>
                                 </CardContent>
-                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left text-left">
-                                    {isOwner && (
-                                        <div className="flex gap-2 w-full text-left">
-                                            <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0 text-left" onClick={() => {
-                                                setItemToEdit(meal);
-                                            }}><Edit className="h-4 w-4 text-primary text-left" /></Button>
-                                            <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4 text-left" /></Button>
-                                        </div>
-                                    )}
-                                    <div className="flex-grow text-left">
-                                        {cartItem ? (
-                                            <div className="flex items-center gap-3 w-full bg-muted/30 rounded-xl p-1 border text-left">
-                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg text-left" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3 text-left" /></Button>
-                                                <span className="flex-1 text-center font-black text-xs text-left">IN PACKAGE</span>
-                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-lg text-left" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3 text-left" /></Button>
-                                            </div>
-                                        ) : (
-                                            <Button 
-                                                onClick={() => addToCart(meal)}
-                                                className="w-full h-11 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/10 transition-all active:scale-95 text-left"
-                                            >
-                                                {soulName ? `ADD FOR ${soulName}` : 'ADD TO PACKAGE'}
-                                            </Button>
+                                <CardFooter className="p-4 sm:p-6 pt-0 flex flex-col gap-3 text-left">
+                                    <div className="flex gap-2 w-full">
+                                        {isOwner && (
+                                            <>
+                                                <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => {
+                                                    setItemPhotoURL(meal.photoURL || '');
+                                                    setItemToEdit(meal);
+                                                }}>
+                                                    <Edit className="h-4 w-4 text-primary" />
+                                                </Button>
+                                                <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10" onClick={() => setItemToDelete(meal)}>
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </>
                                         )}
+                                        <div className="flex-1 min-w-0">
+                                            {cartItem ? (
+                                                <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(meal.id, -1)}>
+                                                        <Minus className="h-3 w-3" />
+                                                    </Button>
+                                                    <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter">IN PACKAGE</span>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(meal.id, 1)}>
+                                                        <Plus className="h-3 w-3" />
+                                                    </Button>
+                                                </div>
+                                            ) : (
+                                                <Button 
+                                                    onClick={() => addToCart(meal)}
+                                                    className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95"
+                                                >
+                                                    {soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}
+                                                </Button>
+                                            )}
+                                        </div>
                                     </div>
                                 </CardFooter>
                             </Card>
