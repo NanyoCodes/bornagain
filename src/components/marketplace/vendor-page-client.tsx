@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDoc, useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc, limit } from 'firebase/firestore';
-import type { VendorProfile, Meal, UserProfile, Chat, MealGift, MealGiftStatus, Soul } from '@/lib/types';
+import type { VendorProfile, Meal, UserProfile, MealGift, MealGiftStatus, Soul } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -50,7 +50,6 @@ import {
     SheetHeader, 
     SheetTitle, 
     SheetDescription,
-    SheetFooter
 } from '@/components/ui/sheet';
 import {
     Drawer,
@@ -199,7 +198,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                             </div>
                         </CardContent>
                         {order.status !== 'cancelled' && (
-                            <CardFooter className="p-2 bg-muted/20 border-t flex gap-1 text-left">
+                            <CardFooter className="p-2 bg-muted/20 border-t flex gap-1 text-left text-left">
                                 {['preparing', 'delivering', 'delivered'].map((status) => (
                                     <Button 
                                         key={status}
@@ -207,7 +206,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                                         size="sm" 
                                         disabled={order.status === status}
                                         className={cn(
-                                            "flex-1 h-7 text-[8px] font-black uppercase tracking-tighter rounded-lg text-left",
+                                            "flex-1 h-7 text-[8px] font-black uppercase tracking-tighter rounded-lg text-left text-left",
                                             order.status === status && "bg-background text-primary shadow-sm"
                                         )}
                                         onClick={() => updateOrderStatus(order.id, status as MealGiftStatus, order.senderId, order.mealName)}
@@ -222,7 +221,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                     </Card>
                 ))
             ) : (
-                <div className="text-center py-20 bg-muted/10 rounded-3xl border-2 border-dashed text-left text-left">
+                <div className="text-center py-20 bg-muted/10 rounded-3xl border-2 border-dashed text-left text-left text-left">
                     <ShoppingBag className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left" />
                     <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest text-center text-left">No orders received yet.</p>
                 </div>
@@ -233,7 +232,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     if (isMobile) {
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
+                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                         <SheetHeader className="text-left flex-shrink-0 text-left">
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Order Hub</SheetTitle>
@@ -546,17 +545,17 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
     const editProfileForm = (
         <form onSubmit={handleUpdateProfile} className="flex flex-col h-full min-h-0 text-left">
             <ScrollArea className="flex-grow min-h-0 text-left">
-                <div className="p-6 sm:p-8 space-y-6 text-left text-left text-left">
-                    <div className="space-y-4 text-left text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Storefront Branding</Label>
+                <div className="p-6 sm:p-8 space-y-6 text-left">
+                    <div className="space-y-4 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Storefront Branding</Label>
                         <ImageUpload initialImageUrl={vendorPhotoURL} onUploadComplete={setVendorPhotoURL} storagePath="vendor-branding" cropAspect={21/9}/>
                     </div>
-                    <div className="space-y-2 text-left text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Business Name</Label>
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Business Name</Label>
                         <Input name="businessName" defaultValue={vendor?.businessName || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
                     </div>
-                    <div className="space-y-2 text-left text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Store Currency</Label>
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Store Currency</Label>
                         <Select onValueChange={setEditCurrency} value={editCurrency}>
                             <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left"><SelectValue placeholder="Select Currency" /></SelectTrigger>
                             <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
@@ -564,10 +563,10 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="space-y-4 text-left text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Location Details</Label>
+                    <div className="space-y-4 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Location Details</Label>
                         <Input value={editAddress} onChange={e => setEditAddress(e.target.value)} placeholder="Street Address" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left" required />
-                        <div className="grid grid-cols-2 gap-4 text-left text-left">
+                        <div className="grid grid-cols-2 gap-4 text-left">
                             <Select onValueChange={setEditCountry} value={editCountry}>
                                 <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left"><SelectValue placeholder="Country" /></SelectTrigger>
                                 <SelectContent className="max-h-[300px] text-left">{countriesList.map(c => <SelectItem key={c.isoCode} value={c.name}>{c.name}</SelectItem>)}</SelectContent>
@@ -579,61 +578,61 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
                         </div>
                         <Input value={editCity} onChange={e => setEditCity(e.target.value)} placeholder="City" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left" required />
                     </div>
-                    <div className="space-y-2 text-left text-left text-left">
-                        <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">About Your Service</Label>
-                        <Textarea id="description" name="description" defaultValue={vendor?.description || ""} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" />
+                    <div className="space-y-2 text-left">
+                        <Label htmlFor="description" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">About Your Service</Label>
+                        <Textarea id="description" name="description" defaultValue={vendor?.description || ""} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
                     </div>
-                    <div className="space-y-2 text-left text-left">
-                        <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Payment Instructions</Label>
+                    <div className="space-y-2 text-left">
+                        <Label htmlFor="paymentDetails" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Payment Instructions</Label>
                         <Textarea id="paymentDetails" name="paymentDetails" defaultValue={vendor?.paymentDetails || ""} placeholder="Bank details..." className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-left" required />
                     </div>
                 </div>
             </ScrollArea>
-            <div className="p-6 sm:p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row mt-auto shrink-0 text-left text-left text-left">
+            <div className="p-6 sm:p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row mt-auto shrink-0 text-left">
                 <Button type="button" variant="outline" onClick={() => setIsEditProfileOpen(false)} className="rounded-xl h-12 flex-1 font-bold text-left">Cancel</Button>
-                <Button type="submit" disabled={isUpdatingProfile} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left">
-                    {isUpdatingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" />}Update Profile
+                <Button type="submit" disabled={isUpdatingProfile} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left">
+                    {isUpdatingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}Update Profile
                 </Button>
             </div>
         </form>
     );
 
     const itemForm = (initialItem?: Meal | null, isEdit = false) => (
-        <form onSubmit={isEdit ? handleUpdateItem : handleAddMeal} className="flex flex-col h-full min-h-0 text-left text-left">
-            <ScrollArea className="flex-1 min-h-0 text-left text-left">
-                <div className="p-6 sm:p-8 space-y-6 text-left text-left text-left text-left">
-                    <div className="space-y-4 text-left text-left text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">{itemLabel} Photo</Label>
+        <form onSubmit={isEdit ? handleUpdateItem : handleAddMeal} className="flex flex-col h-full min-h-0 text-left">
+            <ScrollArea className="flex-1 min-h-0 text-left">
+                <div className="p-6 sm:p-8 space-y-6 text-left">
+                    <div className="space-y-4 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">{itemLabel} Photo</Label>
                         <ImageUpload initialImageUrl={itemPhotoURL} onUploadComplete={setItemPhotoURL} storagePath={storagePath} cropAspect={4/3}/>
                     </div>
-                    <div className="space-y-2 text-left text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">{itemLabel} Name</Label>
-                        <Input name="name" defaultValue={initialItem?.name || ""} placeholder={`e.g., ${isGiftVendor ? 'Study Bible' : 'Jollof Rice'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" required />
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">{itemLabel} Name</Label>
+                        <Input name="name" defaultValue={initialItem?.name || ""} placeholder={`e.g., ${isGiftVendor ? 'Study Bible' : 'Jollof Rice'}`} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-left text-left">
-                        <div className="space-y-2 text-left text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Price ({vendor?.currency})</Label>
-                            <Input name="price" type="number" defaultValue={initialItem?.price} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" required />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                        <div className="space-y-2 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Price ({vendor?.currency})</Label>
+                            <Input name="price" type="number" defaultValue={initialItem?.price} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
                         </div>
-                        <div className="space-y-2 text-left text-left">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Delivery Fee</Label>
-                            <Input name="deliveryFee" type="number" defaultValue={initialItem?.deliveryFee} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left" />
+                        <div className="space-y-2 text-left">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Delivery Fee</Label>
+                            <Input name="deliveryFee" type="number" defaultValue={initialItem?.deliveryFee} placeholder="0.00" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" />
                         </div>
                     </div>
-                    <div className="space-y-2 text-left text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Category</Label>
-                        <Input name="category" defaultValue={initialItem?.category || ""} placeholder={categoryPlaceholder} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" />
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Category</Label>
+                        <Input name="category" defaultValue={initialItem?.category || ""} placeholder={categoryPlaceholder} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
                     </div>
-                    <div className="space-y-2 text-left text-left text-left">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Description</Label>
-                        <Textarea name="description" defaultValue={initialItem?.description || ""} placeholder={descriptionPlaceholder} className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner text-left text-left" />
+                    <div className="space-y-2 text-left">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Description</Label>
+                        <Textarea name="description" defaultValue={initialItem?.description || ""} placeholder={descriptionPlaceholder} className="min-h-[80px] rounded-2xl bg-muted/20 border-none shadow-inner text-left" />
                     </div>
                 </div>
             </ScrollArea>
-            <div className="p-6 sm:p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row shrink-0 text-left text-left text-left">
-                <Button type="button" variant="outline" onClick={() => isEdit ? setItemToEdit(null) : setIsAddMealOpen(false)} className="rounded-xl h-12 flex-1 font-bold text-left text-left">Cancel</Button>
-                <Button type="submit" disabled={isEdit ? isUpdatingItem : isSubmittingMeal} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left text-left text-left">
-                    {(isEdit ? isUpdatingItem : isSubmittingMeal) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left" />}{isEdit ? 'Save Changes' : 'Add Item'}
+            <div className="p-6 sm:p-8 bg-muted/5 border-t gap-3 flex flex-col sm:flex-row shrink-0 text-left">
+                <Button type="button" variant="outline" onClick={() => isEdit ? setItemToEdit(null) : setIsAddMealOpen(false)} className="rounded-xl h-12 flex-1 font-bold text-left">Cancel</Button>
+                <Button type="submit" disabled={isEdit ? isUpdatingItem : isSubmittingMeal} className="rounded-xl h-12 flex-1 font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left">
+                    {(isEdit ? isUpdatingItem : isSubmittingMeal) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}{isEdit ? 'Save Changes' : 'Add Item'}
                 </Button>
             </div>
         </form>
@@ -643,88 +642,88 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
 
     return (
         <div className="w-full text-left">
-            <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left text-left">
-                <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left text-left text-left text-left">
-                    <div className="flex flex-col gap-4 text-left text-left text-left">
-                        <div className="flex items-center gap-4 text-left text-left">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left text-left">
-                                <ArrowLeft className="h-6 w-6 text-left text-left" />
+            <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left">
+                <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
+                    <div className="flex flex-col gap-4 text-left">
+                        <div className="flex items-center gap-4 text-left">
+                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
+                                <ArrowLeft className="h-6 w-6 text-left" />
                             </Button>
-                            <div className="flex-1 min-w-0 text-left text-left">
-                                <div className="flex items-center gap-2.5 mb-1 text-left text-left text-left text-left">
-                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left text-left text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left text-left text-left" />}
-                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left text-left text-left"> {centerLabel}</span>
+                            <div className="flex-1 min-w-0 text-left">
+                                <div className="flex items-center gap-2.5 mb-1 text-left">
+                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left" />}
+                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left"> {centerLabel}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left text-left">
+                        <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left">
                             {vendor.photoURL ? (
                                 <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
                             ) : (
-                                <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left text-left text-left text-left">
-                                    <Store className="h-16 w-16 text-primary opacity-10 text-left text-left text-left" />
-                                    <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mt-2 text-left text-left">Kingdom Hub</p>
+                                <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left">
+                                    <Store className="h-16 w-16 text-primary opacity-10 text-left" />
+                                    <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mt-2 text-left">Kingdom Hub</p>
                                 </div>
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left text-left" />
-                            <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left text-left">
-                                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left text-left">{vendor.businessName}</h1>
-                                <div className="flex items-center gap-2 mt-2 opacity-80 text-left text-left">
-                                    <MapPin className="h-3.5 w-3.5 text-primary text-left text-left" />
-                                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate text-left text-left">{vendor.location || 'Kingdom Network'}</p>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
+                            <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left">
+                                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left">{vendor.businessName}</h1>
+                                <div className="flex items-center gap-2 mt-2 opacity-80 text-left">
+                                    <MapPin className="h-3.5 w-3.5 text-primary text-left" />
+                                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate text-left">{vendor.location || 'Kingdom Network'}</p>
                                 </div>
                             </div>
                             {isOwner && (
-                                <Button variant="outline" size="icon" className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80 text-left text-left" onClick={() => setIsEditProfileOpen(true)}><Camera className="h-5 w-5 text-left text-left" /></Button>
+                                <Button variant="outline" size="icon" className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80 text-left" onClick={() => setIsEditProfileOpen(true)}><Camera className="h-5 w-5 text-left" /></Button>
                             )}
                             {vendor.currency && (
-                                <Badge className="absolute top-4 right-4 rounded-xl bg-primary text-white border-none h-10 px-4 font-black uppercase tracking-widest shadow-xl hidden sm:flex text-left text-left">
-                                    <Globe className="mr-2 h-4 w-4 text-left text-left" /> {vendor.currency}
+                                <Badge className="absolute top-4 right-4 rounded-xl bg-primary text-white border-none h-10 px-4 font-black uppercase tracking-widest shadow-xl hidden sm:flex text-left">
+                                    <Globe className="mr-2 h-4 w-4 text-left" /> {vendor.currency}
                                 </Badge>
                             )}
                         </div>
                     </div>
                     
-                    <div className="flex items-center justify-between gap-4 px-1 text-left text-left text-left text-left text-left">
+                    <div className="flex items-center justify-between gap-4 px-1 text-left">
                         {!isOwner ? (
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0 text-left text-left text-left text-left text-left text-left" onClick={handleInitiateChat} disabled={isChatLoading}>
-                                            {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin text-left text-left text-left text-left" /> : <MessagesSquare className="h-5 w-5 text-left text-left text-left" />}
+                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0 text-left" onClick={handleInitiateChat} disabled={isChatLoading}>
+                                            {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : <MessagesSquare className="h-5 w-5 text-left" />}
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left">Provider Chat</p></TooltipContent>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left"><p className="text-[10px] font-bold uppercase text-left">Provider Chat</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         ) : (
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0 text-left text-left text-left text-left text-left text-left" onClick={() => setIsOrdersOpen(true)}>
-                                            <ShoppingBag className="h-5 w-5 text-left text-left" />
+                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0 text-left" onClick={() => setIsOrdersOpen(true)}>
+                                            <ShoppingBag className="h-5 w-5 text-left" />
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left text-left"><p className="text-[10px] font-bold uppercase text-left text-left">Manage Orders</p></TooltipContent>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left"><p className="text-[10px] font-bold uppercase text-left">Manage Orders</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         )}
                         {isOwner && (
-                            <Button variant="outline" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary text-left text-left">
-                                <Edit className="mr-2 h-4 w-4 text-left text-left" /> MANAGE HUB
+                            <Button variant="outline" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary text-left">
+                                <Edit className="mr-2 h-4 w-4 text-left" /> MANAGE HUB
                             </Button>
                         )}
                     </div>
 
-                    {vendor.description && <p className="text-sm sm:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance max-w-3xl text-left text-left text-left">{vendor.description}</p>}
+                    {vendor.description && <p className="text-sm sm:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance max-w-3xl text-left">{vendor.description}</p>}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left text-left text-left text-left text-left">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
                     {isOwner && (
-                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left text-left text-left text-left" onClick={() => setIsAddMealOpen(true)}>
-                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left text-left text-left text-left text-left text-left"><Plus className="h-6 w-6 text-primary text-left text-left" /></div>
-                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-left text-left"> {addLabel}</h3>
+                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left" onClick={() => setIsAddMealOpen(true)}>
+                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left"><Plus className="h-6 w-6 text-primary text-left" /></div>
+                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-left"> {addLabel}</h3>
                         </Card>
                     )}
 
@@ -732,39 +731,39 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
                         const cartItem = cart[meal.id];
                         const itemSymbol = getCurrencySymbol(meal.currency);
                         return (
-                            <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left text-left">
-                                <CardContent className="p-0 text-left text-left">
-                                    <div className="aspect-[4/3] relative bg-muted text-left text-left text-left text-left text-left text-left text-left">
-                                        {meal.photoURL ? <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover text-left text-left" /> : <div className="w-full h-full flex items-center justify-center text-left text-left text-left text-left text-left text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left text-left" />}</div>}
-                                        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left text-left text-left text-left text-left text-left text-left">
-                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-left text-left">{itemSymbol}{meal.price.toLocaleString()}</Badge>
-                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-left text-left text-left text-left">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
+                            <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
+                                <CardContent className="p-0 text-left">
+                                    <div className="aspect-[4/3] relative bg-muted text-left">
+                                        {meal.photoURL ? <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover text-left" /> : <div className="w-full h-full flex items-center justify-center text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left" />}</div>}
+                                        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left">
+                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-left">{itemSymbol}{meal.price.toLocaleString()}</Badge>
+                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-left">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
                                         </div>
-                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-left text-left text-left text-left text-left"> {cartItem.quantity}</div>}
+                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-left"> {cartItem.quantity}</div>}
                                     </div>
-                                    <div className="p-6 sm:p-8 space-y-4 flex-grow text-left text-left text-left text-left text-left">
-                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight text-left text-left text-left text-left text-left text-left">{meal.name}</h3>
-                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left text-left text-left text-left text-left">{meal.description || `Verified Kingdom service item.`}</p>
+                                    <div className="p-6 sm:p-8 space-y-4 flex-grow text-left">
+                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight text-left">{meal.name}</h3>
+                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left">{meal.description || `Verified Kingdom service item.`}</p>
                                     </div>
                                 </CardContent>
-                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left text-left text-left text-left text-left">
-                                    <div className="flex-1 flex flex-col gap-2 w-full text-left text-left text-left text-left">
-                                        <div className="flex flex-col sm:flex-row items-center gap-2 text-left text-left">
+                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left">
+                                    <div className="flex-1 flex flex-col gap-2 w-full text-left">
+                                        <div className="flex flex-col sm:flex-row items-center gap-2 text-left">
                                             {isOwner && (
-                                                <div className="flex gap-2 w-full sm:w-auto text-left text-left">
-                                                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left text-left" /></Button>
-                                                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4 text-left text-left" /></Button>
+                                                <div className="flex gap-2 w-full sm:w-auto text-left">
+                                                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left" /></Button>
+                                                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4 text-left" /></Button>
                                                 </div>
                                             )}
-                                            <div className="flex-1 min-w-0 w-full text-left text-left">
+                                            <div className="flex-1 min-w-0 w-full text-left">
                                                 {cartItem ? (
-                                                    <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left text-left text-left text-left text-left">
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3 text-left text-left text-left text-left text-left"/></Button>
-                                                        <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-left text-left">IN PACKAGE</span>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3 text-left text-left text-left text-left text-left"/></Button>
+                                                    <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left">
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3 text-left"/></Button>
+                                                        <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-left">IN PACKAGE</span>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3 text-left"/></Button>
                                                     </div>
                                                 ) : (
-                                                    <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95 text-left text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
+                                                    <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95 text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
                                                 )}
                                             </div>
                                         </div>
@@ -776,51 +775,51 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
 
                 {cartCount > 0 && (
-                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10 text-left text-left text-left text-left">
-                        <Button onClick={() => setIsCartOpen(true)} className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8 text-left text-left">
-                            <div className="flex items-center gap-3 text-left text-left"><div className="relative text-left text-left"><ShoppingCart className="h-5 w-5 text-left text-left"/><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center text-left text-left text-left text-left text-left"> {cartCount}</span></div><span className="text-xs text-left text-left">VIEW PACKAGE</span></div>
-                            <span className="text-sm text-left text-left">CHECKOUT</span>
+                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10 text-left">
+                        <Button onClick={() => setIsCartOpen(true)} className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8 text-left">
+                            <div className="flex items-center gap-3 text-left"><div className="relative text-left text-left"><ShoppingCart className="h-5 w-5 text-left" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center text-left"> {cartCount}</span></div><span className="text-xs text-left">VIEW PACKAGE</span></div>
+                            <span className="text-sm text-left">CHECKOUT</span>
                         </Button>
                     </div>
                 )}
             </div>
 
             <Drawer open={isCartOpen} onOpenChange={setIsCartOpen}>
-                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                        <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left text-left"><ShoppingCart className="h-4 w-4 text-primary text-left text-left text-left text-left"/><span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left">Kingdom Provision</span></div>
-                        <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight leading-tight text-left text-left text-left text-left text-left">Kindness Package</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Review selection for {soulName || manualRecipientName || 'Self'}.</DrawerDescription>
+                <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                        <div className="flex items-center gap-2 mb-2 text-left"><ShoppingCart className="h-4 w-4 text-primary text-left"/><span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Provision</span></div>
+                        <DrawerHeader className="text-left flex-shrink-0 text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight leading-tight text-left">Kindness Package</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Review selection for {soulName || manualRecipientName || 'Self'}.</DrawerDescription>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left text-left text-left text-left">
-                        <div className="p-8 space-y-10 text-left text-left text-left text-left">
+                    <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left">
+                        <div className="p-8 space-y-10 text-left">
                             {cartItems.length > 0 ? (
-                                <div className="space-y-10 text-left text-left text-left text-left">
-                                    <div className="space-y-6 text-left text-left">{cartByVendor.map(g => (
-                                        <div key={g.vendorId} className="space-y-3 text-left text-left text-left text-left text-left"><div className="flex items-center justify-between px-1 text-left text-left text-left text-left text-left"><div className="flex items-center gap-2 text-left text-left text-left text-left"><Store className="h-3.5 w-3.5 text-primary text-left text-left text-left text-left"/><h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[200px] text-left text-left text-left text-left text-left"> {g.vendorName}</h4></div><Badge variant="outline" className="text-[8px] h-4 font-black bg-primary/5 text-primary border-primary/20 text-left text-left text-left text-left text-left">{getCurrencySymbol(g.currency)}{(g.subtotal + g.deliveryFee).toLocaleString()} Total</Badge></div><div className="space-y-2 text-left text-left text-left text-left">{g.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group text-left text-left text-left text-left text-left text-left"><div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left text-left text-left text-left"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left text-left text-left text-left text-left text-left text-left">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary text-left text-left text-left text-left"/> : <Utensils className="h-5 w-5 text-primary text-left text-left text-left text-left"/>}</div><div className="min-w-0 flex-1 text-left text-left text-left text-left text-left"><p className="font-black text-sm uppercase tracking-tight truncate text-left text-left text-left text-left text-left">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase text-left text-left text-left text-left text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2 text-left text-left text-left text-left"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left text-left text-left text-left text-left"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left text-left text-left" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3 text-left text-left text-left text-left text-left text-left"/></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center text-left text-left text-left">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left text-left text-left" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3 text-left text-left text-left text-left text-left text-left"/></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left text-left text-left" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4 text-left text-left text-left text-left"/></Button></div></div>))}</div></div>
+                                <div className="space-y-10 text-left">
+                                    <div className="space-y-6 text-left">{cartByVendor.map(g => (
+                                        <div key={g.vendorId} className="space-y-3 text-left"><div className="flex items-center justify-between px-1 text-left"><div className="flex items-center gap-2 text-left"><Store className="h-3.5 w-3.5 text-primary text-left"/><h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[200px] text-left"> {g.vendorName}</h4></div><Badge variant="outline" className="h-5 px-1.5 font-black bg-primary/5 text-primary border-primary/20 text-left">{getCurrencySymbol(g.currency)}{(g.subtotal + g.deliveryFee).toLocaleString()} Total</Badge></div><div className="space-y-2 text-left">{g.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group text-left"><div className="flex items-center gap-3 min-w-0 flex-1 text-left"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary text-left"/> : <Utensils className="h-5 w-5 text-primary text-left"/>}</div><div className="min-w-0 flex-1 text-left"><p className="font-black text-sm uppercase tracking-tight truncate text-left">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2 text-left"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3 text-left"/></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center text-left">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3 text-left"/></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4 text-left"/></Button></div></div>))}</div></div>
                                     ))}</div>
-                                    <div className="space-y-6 text-left text-left text-left text-left"><div className="space-y-2 text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left">Recipient Name</Label><Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left text-left" /></div><div className="space-y-2 text-left text-left text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left text-left">Logistical Instructions</Label><Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left text-left text-left text-left" /></div></div>
+                                    <div className="space-y-6 text-left"><div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Recipient Name</Label><Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div><div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Logistical Instructions</Label><Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left" /></div></div>
                                     
-                                    <div className="p-6 rounded-[2rem] bg-muted/20 border-2 border-dashed border-primary/20 relative overflow-hidden group shadow-inner text-left text-left text-left text-left text-left">
-                                        <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/text:rotate-0 transition-transform text-left text-left text-left text-left">
-                                            <CreditCard className="h-20 w-20 text-primary rotate-12 text-left text-left text-left text-left" />
+                                    <div className="p-6 rounded-[2rem] bg-muted/20 border-2 border-dashed border-primary/20 relative overflow-hidden group shadow-inner text-left">
+                                        <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/text:rotate-0 transition-transform text-left">
+                                            <CreditCard className="h-20 w-20 text-primary rotate-12 text-left" />
                                         </div>
-                                        <div className="relative z-10 space-y-4 text-left text-left text-left text-left text-left">
-                                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left text-left">
-                                                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left text-left text-left" />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left text-left text-left">Checkout Guidance</span>
+                                        <div className="relative z-10 space-y-4 text-left">
+                                            <div className="flex items-center gap-2 mb-2 text-left">
+                                                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
+                                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Checkout Guidance</span>
                                             </div>
-                                            <div className="space-y-3 text-left text-left text-left text-left text-left text-left text-left">
-                                                <div className="flex justify-between items-center text-left text-left text-left text-left">
-                                                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-left text-left text-left text-left">Package subtotal</span>
-                                                    <span className="text-[11px] font-black text-foreground uppercase tracking-tight text-left text-left text-left text-left">Multi-Currency Hub</span>
+                                            <div className="space-y-3 text-left">
+                                                <div className="flex justify-between items-center text-left">
+                                                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-left">Package subtotal</span>
+                                                    <span className="text-[11px] font-black text-foreground uppercase tracking-tight text-left">Multi-Currency Hub</span>
                                                 </div>
-                                                <Separator className="bg-primary/10 text-left text-left text-left text-left" />
-                                                <div className="flex flex-col gap-1 text-left text-left text-left text-left">
-                                                    <p className="text-lg font-black uppercase tracking-tight text-primary text-left text-left text-left text-left">Action Required</p>
-                                                    <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left text-left text-left text-left">
+                                                <Separator className="bg-primary/10 text-left" />
+                                                <div className="flex flex-col gap-1 text-left">
+                                                    <p className="text-lg font-black uppercase tracking-tight text-primary text-left">Action Required</p>
+                                                    <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
                                                         To fulfill this offering, please review the provider's payment instructions below. after payment is done, dispatch your gift
                                                     </p>
                                                 </div>
@@ -828,59 +827,59 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4 text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left text-left text-left text-left text-left"><CreditCard className="h-3.5 w-3.5 text-left text-left text-left text-left text-left" /> FULFILLMENT GUIDE</Label><div className="space-y-3 text-left text-left text-left text-left">{cartByVendor.map(v => (
-                                        <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left text-left text-left text-left text-left text-left text-left"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left text-left text-left text-left text-left"><Store className="h-10 w-10 text-primary text-left text-left text-left text-left" /></div><div className="flex justify-between items-start mb-2 text-left text-left text-left text-left text-left text-left text-left text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left text-left">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left text-left text-left text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left text-left text-left text-left">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left text-left text-left text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left text-left text-left text-left" /></Button></div>
+                                    <div className="space-y-4 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left"><CreditCard className="h-3.5 w-3.5 text-left" /> FULFILLMENT GUIDE</Label><div className="space-y-3 text-left">{cartByVendor.map(v => (
+                                        <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left"><Store className="h-10 w-10 text-primary text-left" /></div><div className="flex justify-between items-start mb-2 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left" /></Button></div>
                                     ))}</div></div>
                                 </div>
                             ) : (
-                                <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left text-left text-left text-left text-left"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left text-left text-left text-left"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 text-left text-left text-left text-left text-left" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left text-left text-left">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-left text-left text-left text-left">Add items to place an order.</p></div>
+                                <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 text-left" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-left">Add items to place an order.</p></div>
                             )}
-                            <div className="h-24 text-left text-left text-left text-left" />
+                            <div className="h-24 text-left" />
                         </div>
                     </ScrollArea>
-                    {cartItems.length > 0 && (<DrawerFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left text-left text-left text-left text-left text-left"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left text-left text-left text-left">{(isProcessingOrder) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left" />}DISPATCH OFFERINGS</Button></DrawerFooter>)}
+                    {cartItems.length > 0 && (<DrawerFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left">{(isProcessingOrder) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}DISPATCH OFFERINGS</Button></DrawerFooter>)}
                 </DrawerContent>
             </Drawer>
 
             <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left text-left text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">{addLabel}</DialogTitle></DialogHeader></div>
-                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left">{itemForm()}</div>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{addLabel}</DialogTitle></DialogHeader></div>
+                    <div className="flex-grow overflow-hidden text-left">{itemForm()}</div>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left text-left text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left">Edit Offering</DialogTitle></DialogHeader></div>
-                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left">{itemForm(itemToEdit, true)}</div>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Offering</DialogTitle></DialogHeader></div>
+                    <div className="flex-grow overflow-hidden text-left">{itemForm(itemToEdit, true)}</div>
                 </DialogContent>
             </Dialog>
 
             <VendorOrdersSheet vendorId={vendorId} isOpen={isOrdersOpen} onOpenChange={setIsOrdersOpen} />
 
             <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left">Edit Storefront</DialogTitle></DialogHeader></div>
-                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left">{editProfileProfileForm}</div>
+                <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Storefront</DialogTitle></DialogHeader></div>
+                    <div className="flex-grow overflow-hidden text-left">{editProfileForm}</div>
                 </DialogContent>
             </Dialog>
             
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left">
-                        <AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left text-left text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left" />}Confirm</AlertDialogAction>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                    <AlertDialogHeader className="text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left">
+                        <AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}Confirm</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left text-left text-left text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left">
-                        <AlertDialogCancel disabled={isDeletingItem} className="rounded-xl h-11 font-bold text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left text-left text-left text-left text-left text-left text-left text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left" />}Delete</AlertDialogAction>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
+                    <AlertDialogHeader className="text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left">
+                        <AlertDialogCancel disabled={isDeletingItem} className="rounded-xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
