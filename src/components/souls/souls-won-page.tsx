@@ -226,7 +226,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
   );
 }
 
-export function SoulsWonPage() {
+export default function SoulsWonPage() {
   const router = useRouter();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -1079,7 +1079,7 @@ export function SoulsWonPage() {
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
-                                <DrawerHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm text-left">Record a new life won for Christ.</SheetDescription></DrawerHeader>
+                                <DrawerHeader className="text-left text-left"><SheetTitle className="text-2xl font-black font-headline text-left text-left text-left">Add New Soul</SheetTitle><SheetDescription className="text-sm text-left">Record a new life won for Christ.</SheetDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left">
                                 <LogSoulForm 
@@ -1123,7 +1123,7 @@ export function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                                 <DialogHeader className="text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left">Edit Record</DialogTitle>
@@ -1141,5 +1141,3 @@ export function SoulsWonPage() {
     </div>
   );
 }
-
-export default SoulsWonPage;

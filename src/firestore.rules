@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Typo corrections and cart permissions - 2025-06-18T14:30:00Z
+    // Deployment trigger: Typo corrections and cart permissions - 2025-06-18T15:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;

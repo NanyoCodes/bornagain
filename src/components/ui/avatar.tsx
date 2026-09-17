@@ -31,7 +31,7 @@ const AvatarImage = React.forwardRef<
     return null
   }
 
-  // Clean up Next.js props before passing to primitive to silence DOM warnings
+  // Filter out Next.js-specific props to prevent DOM warnings
   const { src, alt, ...rest } = props;
 
   return (
