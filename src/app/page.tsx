@@ -190,12 +190,12 @@ export default function LandingPage() {
                 <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-xl transition-all duration-300 border-b-8 border-b-indigo-500/10 text-left">
                     <CardHeader className="p-8 pb-4 text-left">
                         <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-4 text-left">
-                            <HeartHandshake className="h-6 w-6 text-indigo-600" />
+                            <HeartHandshake className="h-6 w-6 text-indigo-600 text-left" />
                         </div>
-                        <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Iron Sharpens Iron</CardTitle>
-                        <CardDescription className="font-medium text-sm leading-relaxed text-left">Connect with accountability partners. Nudge each other to stay sharp and maintain your spiritual fire.</CardDescription>
+                        <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Iron Sharpens Iron</CardTitle>
+                        <CardDescription className="font-medium text-sm leading-relaxed text-left text-left text-left">Connect with accountability partners. Nudge each other to stay sharp and maintain your spiritual fire.</CardDescription>
                     </CardHeader>
-                    <CardFooter className="p-8 pt-0 text-left">
+                    <CardFooter className="p-8 pt-0 text-left text-left text-left">
                         <Button variant="link" asChild className="p-0 text-primary font-bold text-left">
                             <Link href="/accountability" className="text-left">Find Partner <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
                         </Button>

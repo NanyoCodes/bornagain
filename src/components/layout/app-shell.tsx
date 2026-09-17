@@ -655,11 +655,11 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
 
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
-        <div className="relative mb-8 mx-auto w-fit">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+      <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000 text-left">
+        <div className="relative mb-8 mx-auto w-fit text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left" />
+            <div className="absolute inset-0 flex items-center justify-center text-left">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse text-left" />
             </div>
         </div>
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8">
@@ -719,10 +719,10 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       {user && mounted && isMobile ? (
         <Drawer open={!!isProfileIncomplete} onOpenChange={() => {}}>
           <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
               <DrawerHeader className="text-left">
-                <DrawerTitle className="text-xl font-bold">Complete Your Profile</DrawerTitle>
-                <DrawerDescription className="text-xs">Join the global movement by introducing yourself.</DrawerDescription>
+                <DrawerTitle className="text-xl font-bold text-left">Complete Your Profile</DrawerTitle>
+                <DrawerDescription className="text-xs text-left">Join the global movement by introducing yourself.</DrawerDescription>
               </DrawerHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8">
@@ -732,14 +732,14 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         </Drawer>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
-            <div className="p-6 border-b bg-muted/10">
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
-                <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left">
+              <DialogHeader className="text-left text-left">
+                <DialogTitle className="text-2xl font-bold text-left text-left">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
