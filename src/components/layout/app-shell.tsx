@@ -160,7 +160,7 @@ function CartButton() {
                     <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 text-left">
                         <Avatar className="h-10 w-10 border text-left">
                             <AvatarImage src={item.photoURL} className="text-left text-left" />
-                            <AvatarFallback className="text-left text-left">P</AvatarFallback>
+                            <AvatarFallback className="text-left text-left text-left">P</AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1 text-left">
                             <p className="font-bold text-sm truncate uppercase tracking-tight text-left">{item.name}</p>
@@ -192,13 +192,13 @@ function CartButton() {
             <DrawerTrigger asChild>{trigger}</DrawerTrigger>
             <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                 <div className="p-8 border-b bg-muted/10 shrink-0 flex-shrink-0 text-left text-left">
-                    <div className="flex items-center gap-2 mb-1 text-left">
-                        <ShoppingCart className="h-5 w-5 text-primary text-left text-left" />
-                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left">Kingdom Offering</span>
+                    <div className="flex items-center gap-2 mb-1 text-left text-left text-left">
+                        <ShoppingCart className="h-5 w-5 text-primary text-left text-left text-left" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Kingdom Offering</span>
                     </div>
                     <DrawerHeader className="text-left flex-shrink-0 text-left">
-                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kindness Package</DrawerTitle>
-                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Review items selected for gifting.</DrawerDescription>
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Kindness Package</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Review items selected for gifting.</DrawerDescription>
                     </DrawerHeader>
                 </div>
                 <ScrollArea className="flex-grow text-left text-left">{listContent}</ScrollArea>
@@ -212,7 +212,7 @@ function CartButton() {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left">
-            <div className="flex items-center gap-2 mb-1 text-left text-left">
+            <div className="flex items-center gap-2 mb-1 text-left text-left text-left">
                 <ShoppingCart className="h-5 w-5 text-primary text-left text-left text-left" />
                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left">Kindness Package</span>
             </div>
@@ -281,7 +281,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
           {logo && (
             <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent text-left text-left text-left">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover text-left text-left text-left" />
-              <AvatarFallback className="text-left text-left text-left text-left">T</AvatarFallback>
+              <AvatarFallback className="text-left text-left text-left text-left text-left">T</AvatarFallback>
             </Avatar>
           )}
         </Link>
@@ -432,7 +432,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator className="text-left text-left text-left" />
+                <DropdownMenuSeparator className="text-left text-left text-left text-left" />
                 
                 <div className="p-1 space-y-1 text-left text-left text-left text-left">
                   <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left text-left text-left text-left">Provision & Support</p>
@@ -462,7 +462,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   </DropdownMenuItem>
                 </div>
 
-                <DropdownMenuSeparator className="text-left text-left text-left text-left" />
+                <DropdownMenuSeparator className="text-left text-left text-left text-left text-left" />
                 
                 <div className="p-1 space-y-1 text-left text-left text-left text-left text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left">
@@ -721,7 +721,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
           >
               <div className={cn(
               "mx-auto h-full text-left text-left", 
-              (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col text-left" 
+              (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6 text-left text-left" : "w-full flex flex-col text-left text-left" 
               )}>
                   <PageTransition>{children}</PageTransition>
               </div>

@@ -120,8 +120,8 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
         if (!rawOrders) return [];
         return [...rawOrders].sort((a, b) => {
             const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-            const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
-            return timeB - timeA;
+            const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
+            return dateB - timeA;
         });
     }, [rawOrders]);
 
@@ -817,7 +817,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                                 <div className="flex flex-col gap-1 text-left">
                                                     <p className="text-lg font-black uppercase tracking-tight text-primary text-left">Action Required</p>
                                                     <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
-                                                        To fulfill this offering, please review the provider's payment instructions below. After payment is done, dispatch your gift
+                                                        To fulfill this offering, please review the provider's payment instructions below. after payment is done, dispatch your gift
                                                     </p>
                                                 </div>
                                             </div>
@@ -847,7 +847,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
             <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
                 <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left"><DialogHeader className="text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Edit Offering</DialogTitle></DialogHeader></div>
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left"><DialogHeader className="text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Edit Offering</DialogTitle></DialogHeader></div>
                     <div className="flex-grow overflow-hidden text-left text-left">{itemForm(itemToEdit, true)}</div>
                 </DialogContent>
             </Dialog>

@@ -170,7 +170,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 & {spouseObj.firstName}
                             </span>
                         )}
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-left text-left">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-left text-left text-left">
                             <p className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap text-left text-left">
                                 Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                             </p>
@@ -226,7 +226,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
   );
 }
 
-export function SoulsWonPage() {
+export default function SoulsWonPage() {
   const router = useRouter();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -806,7 +806,6 @@ export function SoulsWonPage() {
                 )}
 
                 <div className="px-4 sm:px-0 space-y-12 text-left">
-                    {/* Age Demographics */}
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left">
@@ -861,7 +860,6 @@ export function SoulsWonPage() {
                         </Card>
                     </div>
 
-                    {/* Gender Demographics */}
                     <div className="space-y-4 text-left text-left">
                         <div className="flex items-center gap-3 text-left text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left">
@@ -903,7 +901,6 @@ export function SoulsWonPage() {
                         </Card>
                     </div>
 
-                    {/* Marital Demographics */}
                     <div className="space-y-4 text-left text-left">
                         <div className="flex items-center gap-3 text-left text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left text-left text-left">
@@ -979,7 +976,7 @@ export function SoulsWonPage() {
                 </div>
             </div>
 
-            <div className="lg:col-span-4 text-left text-left">
+            <div className="lg:col-span-4 text-left text-left text-left text-left">
                 <FeedSidebar mode="harvest" />
             </div>
         </div>
@@ -1063,7 +1060,7 @@ export function SoulsWonPage() {
                         This will permanently remove the record from your Kingdom journal. This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
+                <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
                     <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-12 font-bold text-left text-left text-left">Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteSoul} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left text-left">
                         {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}
@@ -1123,9 +1120,9 @@ export function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
-                                <DialogHeader className="text-left text-left text-left text-left text-left text-left">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
+                                <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Edit Record</DialogTitle>
                                     <DialogDescription className="text-left text-left text-left text-left">Update soul identity and mission details.</DialogDescription>
                                 </DialogHeader>

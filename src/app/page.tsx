@@ -135,8 +135,8 @@ export default function LandingPage() {
         <section className="py-24 bg-muted/30 text-left">
           <div className="max-w-7xl mx-auto px-6 text-left">
             <div className="text-center mb-16 space-y-4 text-left">
-              <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center text-left">Kingdom Ready Workforce</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium text-center text-left">
+              <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center text-left text-left">Kingdom Ready Workforce</h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium text-center text-left text-left">
                 Testify equips believers with the tools needed to fulfill the Great Commission in a digital age.
               </p>
             </div>
@@ -227,7 +227,7 @@ export default function LandingPage() {
 
               <div className="space-y-6 text-left">
                 {loadingTestimonies ? (
-                  <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20" text-left /></div>
+                  <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20" /></div>
                 ) : testimonies?.map((t, idx) => (
                   <motion.div 
                     key={t.id}
@@ -296,7 +296,7 @@ export default function LandingPage() {
       <footer className="bg-muted/50 border-t py-16 text-left">
         <div className="max-w-7xl mx-auto px-8 text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
-            <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
+            <div className="col-span-1 sm:col-span-2 space-y-6 text-left text-left">
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
                 {logo && (
                   <Avatar className="h-12 w-12 text-left">
