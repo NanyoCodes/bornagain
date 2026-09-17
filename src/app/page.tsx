@@ -61,16 +61,16 @@ export default function LandingPage() {
 
   if (authLoading || user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-left">
+      <div className="min-h-screen flex items-center justify-center bg-background text-left text-left">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative text-left">
+    <div className="flex flex-col min-h-screen bg-background selection:bg-primary/30 overflow-x-hidden relative text-left text-left">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b text-left">
+      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b text-left text-left">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between text-left">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
             {logo && (
@@ -81,7 +81,7 @@ export default function LandingPage() {
             )}
           </Link>
           <div className="flex items-center gap-2 sm:gap-4 text-left">
-            <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold text-left">
+            <Button variant="ghost" asChild className="hidden sm:inline-flex font-bold text-left text-left">
               <Link href="/login" className="text-left">Sign In</Link>
             </Button>
             <Button asChild className="rounded-full px-4 font-black tracking-widest uppercase text-[10px] sm:text-xs h-9 text-left">
@@ -93,7 +93,7 @@ export default function LandingPage() {
 
       <main className="flex-grow pt-16 text-left">
         {/* Hero Section */}
-        <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden bg-zinc-950 text-left">
+        <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden bg-zinc-950 text-left text-left">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent text-left" />
           <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-left">
             <div className="max-w-4xl space-y-8 text-center sm:text-left text-left">
@@ -112,11 +112,11 @@ export default function LandingPage() {
               </motion.div>
 
               <div className="flex flex-col sm:flex-row gap-4 text-left">
-                <Button asChild size="lg" className="h-14 px-8 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest text-left">
-                  <Link href="/signup" className="text-left">GET STARTED <ArrowRight className="ml-2 h-5 w-5 text-left" /></Link>
+                <Button asChild size="lg" className="h-14 px-8 text-base font-black rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest text-left text-left">
+                  <Link href="/signup" className="text-left text-left">GET STARTED <ArrowRight className="ml-2 h-5 w-5 text-left" /></Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 text-left">
-                  <Link href="/about" className="text-left">OUR MISSION</Link>
+                <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base font-bold rounded-2xl bg-white/5 backdrop-blur-md border-white/20 text-white hover:bg-white/10 text-left text-left text-left">
+                  <Link href="/about" className="text-left text-left">OUR MISSION</Link>
                 </Button>
               </div>
             </div>
@@ -134,7 +134,7 @@ export default function LandingPage() {
         {/* Feature Grid */}
         <section className="py-24 bg-muted/30 text-left">
           <div className="max-w-7xl mx-auto px-6 text-left">
-            <div className="text-center mb-16 space-y-4 text-left">
+            <div className="text-center mb-16 space-y-4 text-left text-left">
               <h2 className="text-4xl sm:text-6xl font-black font-headline tracking-tight uppercase text-balance text-center text-left">Kingdom Ready Workforce</h2>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto text-pretty font-medium text-center text-left">
                 Testify equips believers with the tools needed to fulfill the Great Commission in a digital age.
@@ -148,56 +148,56 @@ export default function LandingPage() {
                             <Newspaper className="h-6 w-6 text-orange-600 text-left" />
                         </div>
                         <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Share Miracles</CardTitle>
-                        <CardDescription className="font-medium text-sm leading-relaxed text-left">Post testimonies to the global feed. Every shared story is a weapon that strengthens the Body.</CardDescription>
+                        <CardDescription className="font-medium text-sm leading-relaxed text-left text-left">Post testimonies to the global feed. Every shared story is a weapon that strengthens the Body.</CardDescription>
                     </CardHeader>
                     <CardFooter className="p-8 pt-0 text-left">
-                        <Button variant="link" asChild className="p-0 text-primary font-bold text-left">
-                            <Link href="/testimonies" className="text-left">Enter Feed <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
+                        <Button variant="link" asChild className="p-0 text-primary font-bold text-left text-left">
+                            <Link href="/testimonies" className="text-left text-left">Enter Feed <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
                         </Button>
                     </CardFooter>
                 </Card>
 
-                <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-xl transition-all duration-300 border-b-8 border-b-emerald-500/10 text-left">
+                <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-xl transition-all duration-300 border-b-8 border-b-emerald-500/10 text-left text-left">
                     <CardHeader className="p-8 pb-4 text-left">
                         <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-4 text-left">
                             <Target className="h-6 w-6 text-emerald-600 text-left" />
                         </div>
                         <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Mission Hub</CardTitle>
-                        <CardDescription className="font-medium text-sm leading-relaxed text-left">Organize and join local soul-winning campaigns. Mobilize your team with real-time field coordination.</CardDescription>
+                        <CardDescription className="font-medium text-sm leading-relaxed text-left text-left">Organize and join local soul-winning campaigns. Mobilize your team with real-time field coordination.</CardDescription>
                     </CardHeader>
                     <CardFooter className="p-8 pt-0 text-left">
                         <Button variant="link" asChild className="p-0 text-primary font-bold text-left">
-                            <Link href="/campaigns" className="text-left">Join Mission <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
+                            <Link href="/campaigns" className="text-left text-left">Join Mission <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
                         </Button>
                     </CardFooter>
                 </Card>
 
-                <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-xl transition-all duration-300 border-b-8 border-b-blue-500/10 text-left">
+                <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-xl transition-all duration-300 border-b-8 border-b-blue-500/10 text-left text-left">
                     <CardHeader className="p-8 pb-4 text-left">
                         <div className="h-12 w-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-4 text-left">
                             <UserPlus className="h-6 w-6 text-blue-600 text-left" />
                         </div>
                         <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Log the Harvest</CardTitle>
-                        <CardDescription className="font-medium text-sm leading-relaxed text-left">Track every soul you lead to Christ. Never lose a new brother or sister in the follow-up process.</CardDescription>
+                        <CardDescription className="font-medium text-sm leading-relaxed text-left text-left">Track every soul you lead to Christ. Never lose a new brother or sister in the follow-up process.</CardDescription>
                     </CardHeader>
                     <CardFooter className="p-8 pt-0 text-left">
                         <Button variant="link" asChild className="p-0 text-primary font-bold text-left">
-                            <Link href="/souls-won" className="text-left">View Harvest <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
+                            <Link href="/souls-won" className="text-left text-left">View Harvest <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
                         </Button>
                     </CardFooter>
                 </Card>
 
-                <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-xl transition-all duration-300 border-b-8 border-b-indigo-500/10 text-left">
+                <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-xl transition-all duration-300 border-b-8 border-b-indigo-500/10 text-left text-left">
                     <CardHeader className="p-8 pb-4 text-left">
                         <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-4 text-left">
                             <HeartHandshake className="h-6 w-6 text-indigo-600 text-left" />
                         </div>
                         <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Iron Sharpens Iron</CardTitle>
-                        <CardDescription className="font-medium text-sm leading-relaxed text-left">Connect with accountability partners. Nudge each other to stay sharp and maintain your spiritual fire.</CardDescription>
+                        <CardDescription className="font-medium text-sm leading-relaxed text-left text-left">Connect with accountability partners. Nudge each other to stay sharp and maintain your spiritual fire.</CardDescription>
                     </CardHeader>
                     <CardFooter className="p-8 pt-0 text-left">
                         <Button variant="link" asChild className="p-0 text-primary font-bold text-left">
-                            <Link href="/accountability" className="text-left">Find Partner <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
+                            <Link href="/accountability" className="text-left text-left">Find Partner <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
                         </Button>
                     </CardFooter>
                 </Card>
@@ -211,7 +211,7 @@ export default function LandingPage() {
           
           <div className="max-w-7xl mx-auto px-6 text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
-              <div className="space-y-8 text-center lg:text-left text-left">
+              <div className="space-y-8 text-center lg:text-left text-left text-left">
                 <div className="space-y-4 text-left">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 text-left">The Digital Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center text-left">See God In Action</h2>
@@ -220,7 +220,7 @@ export default function LandingPage() {
                   </p>
                 </div>
                 
-                <Button asChild size="lg" variant="outline" className="h-12 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-8 w-full sm:w-auto text-left">
+                <Button asChild size="lg" variant="outline" className="h-12 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-8 w-full sm:w-auto text-left text-left">
                   <Link href="/testimonies" className="text-left">VIEW GLORY FEED</Link>
                 </Button>
               </div>
@@ -305,20 +305,20 @@ export default function LandingPage() {
                   </Avatar>
                 )}
               </Link>
-              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty text-left">
+              <p className="text-muted-foreground text-sm max-w-sm font-medium leading-relaxed italic text-pretty text-left text-left">
                 Testify is built for believers to share the greatness of Jesus Christ who gave his life as an offering to reconcile the world to GOD.
               </p>
               <div className="flex gap-4 text-left">
                 <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left">
                   <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer">
                     <Instagram className="h-4 w-4 text-left" />
-                    <span className="sr-only">Instagram</span>
+                    <span className="sr-only text-left">Instagram</span>
                   </Link>
                 </Button>
               </div>
             </div>
 
-            <div className="space-y-4 text-left">
+            <div className="space-y-4 text-left text-left">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Platform</h4>
               <ul className="space-y-3 text-left">
                 <li><Link href="/testimonies" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Glory Feed</Link></li>

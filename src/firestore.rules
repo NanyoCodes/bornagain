@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Auth rule refinement and cart list permission - 2025-06-18T16:00:00Z
+    // Deployment trigger: Rule correction for authorized operations - 2025-06-18T17:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
