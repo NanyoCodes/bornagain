@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
@@ -26,7 +27,8 @@ import {
   Search,
   PlusCircle,
   HeartHandshake,
-  ArrowRight
+  ArrowRight,
+  MessagesSquare
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -35,7 +37,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { actionItems } from '@/lib/follow-up-data';
+import { actionItems, prayerTemplates } from '@/lib/follow-up-data';
 import Link from 'next/link';
 import {
   Dialog,
@@ -104,8 +106,8 @@ function MatchmakingDialog({
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Matching</span>
                     </div>
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black font-headline uppercase">Find Match for {sourceSoul.firstName}</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Find Match for {sourceSoul.firstName}</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1 text-left">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
                     </DialogHeader>
                     <div className="relative mt-6">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" />
@@ -187,7 +189,7 @@ function SoulSelectionDialog({
                         <Input 
                             placeholder="Search by name..." 
                             value={search} 
-                            onChange={e => setSearch(e.target.value)}
+                            onChange={e => setSearchTerm(e.target.value)}
                             className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                         />
                     </div>
@@ -435,7 +437,7 @@ export function RelationshipTrackerCard() {
                                                       "h-8 w-8 rounded-2xl flex items-center justify-center transition-all duration-500",
                                                       isCompleted ? "bg-primary/20 scale-110 shadow-lg" : "bg-muted/30"
                                                   )}>
-                                                      <Icon className={cn("h-5 w-5 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
+                                                      <Icon className={cn("h-4 w-4 transition-all", isCompleted ? "text-primary fill-current" : "text-primary/60")} />
                                                   </div>
                                                   <div className="space-y-0.5 min-w-0 w-full">
                                                       <span className={cn(

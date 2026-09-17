@@ -7,6 +7,7 @@ import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, ar
 import type { VendorProfile, Meal, UserProfile, MealGift, MealGiftStatus, Soul } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { 
     ArrowLeft, 
@@ -191,14 +192,14 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                             </p>
                             <div className="flex items-center justify-between pt-2 border-t border-dashed text-left">
                                 <p className="text-[9px] font-bold text-muted-foreground uppercase text-left">From: {order.senderName}</p>
-                                <div className="text-right text-left text-left">
+                                <div className="text-right">
                                     <p className="text-[10px] font-bold text-primary uppercase text-left">{getCurrencySymbol(order.currency)}{(order.price + (order.deliveryFee || 0)).toLocaleString()}</p>
                                     {order.deliveryFee ? <p className="text-[7px] font-black uppercase text-muted-foreground text-left">Incl. Delivery</p> : null}
                                 </div>
                             </div>
                         </CardContent>
                         {order.status !== 'cancelled' && (
-                            <CardFooter className="p-2 bg-muted/20 border-t flex gap-1 text-left text-left">
+                            <CardFooter className="p-2 bg-muted/20 border-t flex gap-1 text-left">
                                 {['preparing', 'delivering', 'delivered'].map((status) => (
                                     <Button 
                                         key={status}
@@ -206,7 +207,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                                         size="sm" 
                                         disabled={order.status === status}
                                         className={cn(
-                                            "flex-1 h-7 text-[8px] font-black uppercase tracking-tighter rounded-lg text-left text-left",
+                                            "flex-1 h-7 text-[8px] font-black uppercase tracking-tighter rounded-lg",
                                             order.status === status && "bg-background text-primary shadow-sm"
                                         )}
                                         onClick={() => updateOrderStatus(order.id, status as MealGiftStatus, order.senderId, order.mealName)}
@@ -221,9 +222,9 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                     </Card>
                 ))
             ) : (
-                <div className="text-center py-20 bg-muted/10 rounded-3xl border-2 border-dashed text-left text-left text-left">
-                    <ShoppingBag className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4 text-left" />
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest text-center text-left">No orders received yet.</p>
+                <div className="text-center py-20 bg-muted/10 rounded-3xl border-2 border-dashed">
+                    <ShoppingBag className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" />
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest text-center">No orders received yet.</p>
                 </div>
             )}
         </div>
@@ -233,13 +234,13 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
         return (
             <Sheet open={isOpen} onOpenChange={onOpenChange}>
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                        <SheetHeader className="text-left flex-shrink-0 text-left">
+                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                        <SheetHeader className="text-left flex-shrink-0">
                             <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Order Hub</SheetTitle>
                             <SheetDescription className="text-sm font-medium mt-1 text-left">Manage and update deliveries for your Kingdom offerings.</SheetDescription>
                         </SheetHeader>
                     </div>
-                    <ScrollArea className="flex-grow px-8 pt-6 text-left text-left">
+                    <ScrollArea className="flex-grow px-8 pt-6">
                         {listContent}
                     </ScrollArea>
                 </SheetContent>
@@ -249,14 +250,14 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[85vh] text-left text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
-                    <DialogHeader className="text-left text-left">
+            <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[85vh] text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                    <DialogHeader className="text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Order Hub</DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1 text-left">Manage and update deliveries for your Kingdom offerings.</DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="flex-grow p-8 text-left text-left">
+                <ScrollArea className="flex-grow p-8">
                     {listContent}
                 </ScrollArea>
             </DialogContent>
@@ -264,7 +265,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     );
 }
 
-function VendorPageClient({ vendorId }: { vendorId: string }) {
+export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const searchParams = useSearchParams();
     const soulId = searchParams?.get('soulId') || null;
     const soulName = searchParams?.get('soulName') || null;
@@ -646,7 +647,7 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
                     <div className="flex flex-col gap-4 text-left">
                         <div className="flex items-center gap-4 text-left">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
+                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
                                 <ArrowLeft className="h-6 w-6 text-left" />
                             </Button>
                             <div className="flex-1 min-w-0 text-left">
@@ -866,9 +867,9 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
             
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
                 <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogHeader className="text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6 text-left">
-                        <AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}Confirm</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -886,5 +887,3 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 }
-
-export default VendorPageClient;

@@ -71,7 +71,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { cn, safeToDate } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -83,8 +85,6 @@ import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
@@ -449,7 +449,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                       <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center text-left">
                         <Gift className="h-3.5 w-3.5 text-indigo-600 text-left" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Kindness Center</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left">Kindness Center</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
@@ -734,19 +734,19 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
       
       {user && mounted && isMobile ? (
-        <Drawer open={!!isProfileIncomplete} onOpenChange={() => {}}>
-          <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
+        <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left">
-              <DrawerHeader className="text-left">
-                <DrawerTitle className="text-xl font-bold text-left">Complete Your Profile</DrawerTitle>
-                <DrawerDescription className="text-xs text-left">Join the global movement by introducing yourself.</DrawerDescription>
-              </DrawerHeader>
+              <SheetHeader className="text-left">
+                <SheetTitle className="text-xl font-bold text-left">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs text-left">Join the global movement by introducing yourself.</SheetDescription>
+              </SheetHeader>
             </div>
             <div className="flex-grow overflow-y-auto p-8 text-left">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
-          </DrawerContent>
-        </Drawer>
+          </SheetContent>
+        </Sheet>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
           <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left">

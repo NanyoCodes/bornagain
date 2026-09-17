@@ -6,8 +6,6 @@ import { Loader2 } from 'lucide-react';
 
 /**
  * @fileOverview Redirection logic for legacy /dashboard routes.
- * Ensures that deep links saved by users or cached by browsers are seamlessly
- * routed to their new clean, root-level counterparts.
  */
 export default function LegacyDashboardRedirectLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
