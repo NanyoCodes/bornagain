@@ -111,13 +111,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10 text-left">
-        <p className="text-sm text-muted-foreground italic text-left text-left text-left">No souls found matching this criteria.</p>
+        <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 pb-6 text-left text-left text-left">
+    <div className="space-y-3 pb-6 text-left">
       {souls.map((s) => {
         const isFamilyMember = s.maritalStatus === 'Married';
         const wonAt = safeToDate(s.wonAt);
@@ -135,87 +135,87 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
         const householdChildren = allSouls.filter(child => s.childrenIds?.includes(child.id));
         
         return (
-          <div key={s.id} className="relative text-left text-left">
-            <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl border bg-background/50 group w-full relative gap-2 text-left text-left text-left">
+          <div key={s.id} className="relative text-left">
+            <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-2xl border bg-background/50 group w-full relative gap-2 text-left">
                 <button 
                     onClick={() => onSelectSoul(s)}
-                    className="flex flex-row items-center gap-2 sm:gap-3 min-w-0 flex-1 text-left active:scale-[0.98] transition-all text-left text-left"
+                    className="flex flex-row items-center gap-2 sm:gap-3 min-w-0 flex-1 text-left active:scale-[0.98] transition-all"
                 >
-                    <div className="flex -space-x-3 sm:-space-x-4 shrink-0 text-left text-left">
-                        <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0 text-left text-left")}>
-                            <AvatarImage src={s.photoURL || undefined} className="object-cover text-left text-left text-left" />
-                            <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs text-left text-left">{s.firstName?.charAt(0)}</AvatarFallback>
+                    <div className="flex -space-x-3 sm:-space-x-4 shrink-0">
+                        <Avatar className={cn("h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md shrink-0")}>
+                            <AvatarImage src={s.photoURL || undefined} className="object-cover" />
+                            <AvatarFallback className="font-black bg-primary/10 text-primary text-[10px] sm:text-xs">{s.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         {spouseObj && (
-                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0 text-left text-left">
-                                <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover text-left text-left text-left" />
-                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-[10px] sm:text-xs text-left text-left">{spouseObj.firstName?.charAt(0)}</AvatarFallback>
+                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-md ring-2 ring-primary/5 shrink-0">
+                                <AvatarImage src={spouseObj.photoURL || undefined} className="object-cover" />
+                                <AvatarFallback className="font-black bg-primary/5 text-primary/60 text-[10px] sm:text-xs">{spouseObj.firstName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                         )}
                     </div>
-                    <div className="min-w-0 flex-1 pr-1 text-left text-left text-left">
-                        <div className="flex items-center gap-1.5 flex-wrap text-left text-left text-left">
-                            <p className="font-black text-[13px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate text-left text-left">
+                    <div className="min-w-0 flex-1 pr-1 text-left">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                            <p className="font-black text-[13px] sm:text-base uppercase tracking-tight max-w-[150px] sm:max-w-full truncate">
                                 {s.firstName} {s.lastName}
                                 {s.age && (
-                                    <span className="text-muted-foreground/60 ml-1 font-bold text-left">
+                                    <span className="text-muted-foreground/60 ml-1 font-bold">
                                         ({s.age})
                                     </span>
                                 )}
                             </p>
-                            <Badge variant="outline" className={cn("h-4 px-1.5 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50 text-left", s.status === 'New' ? 'text-amber-600 border-amber-200' : s.status === 'Contacted' ? 'text-blue-600 border-blue-200' : 'text-green-600 border-green-200')}>{s.status}</Badge>
+                            <Badge variant="outline" className={cn("h-4 px-1.5 text-[7px] sm:text-[9px] uppercase font-black tracking-tighter shrink-0 bg-background/50", s.status === 'New' ? 'text-amber-600 border-amber-200' : s.status === 'Contacted' ? 'text-blue-600 border-blue-200' : 'text-green-600 border-green-200')}>{s.status}</Badge>
                         </div>
                         {spouseObj && (
-                            <span className="text-primary/60 text-[9px] sm:text-[10px] block font-bold leading-tight truncate text-left text-left">
+                            <span className="text-primary/60 text-[9px] sm:text-[10px] block font-bold leading-tight truncate">
                                 & {spouseObj.firstName}
                             </span>
                         )}
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-left text-left text-left">
-                            <p className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap text-left text-left">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
+                            <p className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap">
                                 Won {wonAt ? format(wonAt, 'MMM d, yy') : 'Recently'}
                             </p>
                             {isFamilyMember && (
-                                <Badge variant="secondary" className="h-3.5 px-1 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none text-left">Family</Badge>
+                                <Badge variant="secondary" className="h-3.5 px-1 text-[7px] font-black uppercase bg-primary/10 text-primary border-none leading-none">Family</Badge>
                             )}
                         </div>
                     </div>
                 </button>
-                <div className="flex items-center gap-1 shrink-0 ml-1 text-left text-left">
+                <div className="flex items-center gap-1 shrink-0 ml-1">
                     {isFamilyMember && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary/5 text-primary hover:bg-primary/10 text-left">
-                                    <Users className="h-3.5 w-3.5 sm:h-4 w-4 text-left" />
+                                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary/5 text-primary hover:bg-primary/10">
+                                    <Users className="h-3.5 w-3.5 sm:h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left">
                                 <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Members</DropdownMenuLabel>
-                                <DropdownMenuSeparator className="text-left" />
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem onSelect={() => onSelectSoul(s)} className="rounded-lg py-2.5 text-left">
-                                    <User className="mr-2 h-4 w-4 text-left" /> View {s.firstName}
+                                    <User className="mr-2 h-4 w-4" /> View {s.firstName}
                                 </DropdownMenuItem>
                                 {spouseObj && (
-                                    <DropdownMenuItem onSelect={() => onSelectSoul(spouseObj)} className="rounded-lg py-2.5 text-left text-left">
-                                        <div className="flex items-center gap-2 text-left">
-                                            <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouseObj.photoURL || undefined} className="text-left" /><AvatarFallback className="text-[8px] text-left">S</AvatarFallback></Avatar>
-                                            <span className="text-xs font-bold uppercase truncate text-left">{spouseObj.firstName} (Spouse)</span>
+                                    <DropdownMenuItem onSelect={() => onSelectSoul(spouseObj)} className="rounded-lg py-2.5">
+                                        <div className="flex items-center gap-2">
+                                            <Avatar className="h-6 w-6 border"><AvatarImage src={spouseObj.photoURL || undefined} /><AvatarFallback className="text-[8px]">S</AvatarFallback></Avatar>
+                                            <span className="text-xs font-bold uppercase truncate">{spouseObj.firstName} (Spouse)</span>
                                         </div>
                                     </DropdownMenuItem>
                                 )}
                                 {householdChildren.map(child => (
-                                    <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left text-left">
-                                        <div className="flex items-center gap-2 text-left"><Avatar className="h-6 w-6 border text-left text-left"><AvatarImage src={child.photoURL || undefined} className="text-left text-left" /><AvatarFallback className="text-[8px] text-left">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span></div>
+                                    <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5">
+                                        <div className="flex items-center gap-2"><Avatar className="h-6 w-6 border"><AvatarImage src={child.photoURL || undefined} /><AvatarFallback className="text-[8px]">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate">{child.firstName} (Child)</span></div>
                                     </DropdownMenuItem>
                                 ))}
-                                <DropdownMenuSeparator className="text-left" />
-                                <DropdownMenuItem onSelect={() => onAddChild(s, spouseObj)} className="rounded-lg py-2.5 text-primary font-bold text-left">
-                                    <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onSelect={() => onAddChild(s, spouseObj)} className="rounded-lg py-2.5 text-primary font-bold">
+                                    <PlusCircle className="mr-2 h-4 w-4" /> Add Child to Household
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     )}
-                    <Button variant="ghost" size="icon" onClick={() => onSelectSoul(s)} className="h-8 w-8 sm:h-9 sm:w-9 rounded-full text-muted-foreground hover:text-primary transition-colors text-left text-left">
-                        <ArrowRight className="h-4 w-4 text-left" />
+                    <Button variant="ghost" size="icon" onClick={() => onSelectSoul(s)} className="h-8 w-8 sm:h-9 sm:w-9 rounded-full text-muted-foreground hover:text-primary transition-colors">
+                        <ArrowRight className="h-4 w-4" />
                     </Button>
                 </div>
             </div>
@@ -702,9 +702,9 @@ export default function SoulsWonPage() {
                 <header className="px-4 sm:px-0 space-y-6 pt-4 text-left">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 text-left">
                         <div className="space-y-1 text-left">
-                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left text-left">MY HARVEST</h1>
+                            <h1 className="text-2xl sm:text-4xl font-black font-headline tracking-tight uppercase text-left">MY HARVEST</h1>
                             <p className="text-xs sm:text-sm text-muted-foreground font-medium uppercase tracking-widest opacity-60 flex items-center gap-2 text-left">
-                                <ClipboardList className="h-4 w-4 text-primary text-left text-left" /> Logged Records
+                                <ClipboardList className="h-4 w-4 text-primary text-left" /> Logged Records
                             </p>
                         </div>
                         <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap w-full sm:w-auto text-left">
@@ -716,7 +716,7 @@ export default function SoulsWonPage() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl text-left">
                                     <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Select Format</DropdownMenuLabel>
-                                    <DropdownMenuSeparator className="text-left text-left" />
+                                    <DropdownMenuSeparator className="text-left" />
                                     <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left text-left">
                                         <Download className="mr-2 h-4 w-4 opacity-40 text-left text-left" /> CSV (Excel)
                                     </DropdownMenuItem>
@@ -737,7 +737,7 @@ export default function SoulsWonPage() {
                         <div className="flex items-center justify-between mb-4 px-1 text-left">
                             <div className="flex items-center gap-2 text-left">
                                 <ImageIcon className="h-4 w-4 text-primary text-left" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left text-left">GALLERY OF MY SOULS</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-left">GALLERY OF MY SOULS</h3>
                             </div>
                         </div>
                         <div 
