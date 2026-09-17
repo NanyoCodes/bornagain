@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Rule correction for authorized operations - 2025-06-18T17:00:00Z
+    // Deployment trigger: authorized rule correction - 2025-06-18T18:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
