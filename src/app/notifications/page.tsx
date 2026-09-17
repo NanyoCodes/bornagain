@@ -166,10 +166,10 @@ export default function NotificationsPage() {
                         <span className="sr-only text-left">Back</span>
                     </Button>
                     <div className="space-y-0.5 sm:space-y-1 min-w-0 text-left text-left">
-                        <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight uppercase truncate text-left">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-headline tracking-tight uppercase truncate text-left text-left">
                         Notifications
                         </h1>
-                        <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] truncate text-left">
+                        <p className="text-[9px] sm:text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] truncate text-left text-left">
                         Kingdom Alerts
                         </p>
                         {!loading && notifications && notifications.length > 0 && unreadCount > 0 && (
@@ -204,7 +204,7 @@ export default function NotificationsPage() {
                         <div className="divide-y p-4 text-left">
                         {[...Array(5)].map((_, i) => (
                             <div key={i} className="py-6 flex items-start gap-4 text-left text-left text-left">
-                                <Skeleton className="h-10 w-10 rounded-full shrink-0 text-left text-left" />
+                                <Skeleton className="h-10 w-10 rounded-full shrink-0 text-left text-left text-left" />
                                 <div className="flex-1 space-y-2 text-left text-left">
                                     <Skeleton className="h-4 w-3/4 text-left text-left" />
                                     <Skeleton className="h-3 w-1/2 text-left text-left" />
@@ -219,7 +219,7 @@ export default function NotificationsPage() {
                                 {filter === 'kindness' ? <Gift className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left text-left" /> : <Bell className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground opacity-20 text-left text-left" />}
                             </div>
                             <h3 className="text-lg sm:text-xl font-bold font-headline uppercase tracking-tight text-left text-left">No {filter !== 'all' ? filter : ''} Alerts</h3>
-                            <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed text-left text-left">
+                            <p className="mt-2 text-xs sm:text-sm text-muted-foreground italic max-w-[280px] leading-relaxed text-left text-left text-left">
                                 Stay focused on the harvest. We'll notify you here about activities in the Kingdom Network.
                             </p>
                         </div>
@@ -246,7 +246,7 @@ export default function NotificationsPage() {
                                                 {getNotificationIcon(notification.type, (notification as any).actionId)}
                                             </div>
                                             <div className="flex-1 min-w-0 space-y-1 text-left text-left">
-                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1 text-left text-left text-left">
+                                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-3 mb-1 text-left text-left text-left text-left">
                                                     <p className={cn(
                                                         "font-bold text-sm sm:text-base leading-snug break-words pr-8 sm:pr-0 text-left text-left", 
                                                         isPendingAction ? "text-primary" : (!notification.isRead ? "text-foreground" : "text-muted-foreground")
@@ -257,11 +257,11 @@ export default function NotificationsPage() {
                                                         {isPendingAction ? 'ACTION REQUIRED' : (createdAt ? formatDistanceToNow(createdAt, { addSuffix: true }) : '')}
                                                     </span>
                                                 </div>
-                                                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance text-left text-left">
+                                                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-medium line-clamp-3 text-balance text-left text-left text-left">
                                                     {notification.message}
                                                 </p>
                                                 {createdAt && (
-                                                    <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1.5 text-left text-left">
+                                                    <p className="text-[9px] text-muted-foreground/50 uppercase font-black tracking-widest pt-1.5 text-left text-left text-left">
                                                         {format(createdAt, 'PPP')}
                                                     </p>
                                                 )}

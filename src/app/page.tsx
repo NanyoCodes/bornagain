@@ -72,7 +72,7 @@ export default function LandingPage() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b text-left">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between text-left">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
             {logo && (
               <Avatar className="h-10 w-10 sm:h-11 sm:w-11 text-left">
                 <AvatarImage src={logo.imageUrl} alt="Logo" className="text-left" />
@@ -101,7 +101,7 @@ export default function LandingPage() {
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[10px] text-left">
                   SHARING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left text-left">
+                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left">
                   Testify of His Power.<br className="hidden sm:block text-left" />
                   Organize the Harvest.<br className="hidden sm:block text-left" />
                   <span className="text-primary text-left">Glorify the King.</span>
@@ -147,12 +147,12 @@ export default function LandingPage() {
                         <div className="h-12 w-12 rounded-2xl bg-orange-500/10 flex items-center justify-center mb-4 text-left">
                             <Newspaper className="h-6 w-6 text-orange-600 text-left" />
                         </div>
-                        <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Share Miracles</CardTitle>
-                        <CardDescription className="font-medium text-sm leading-relaxed text-left">Post testimonies to the global feed. Every shared story is a weapon that strengthens the Body.</CardDescription>
+                        <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Share Miracles</CardTitle>
+                        <CardDescription className="font-medium text-sm leading-relaxed text-left text-left">Post testimonies to the global feed. Every shared story is a weapon that strengthens the Body.</CardDescription>
                     </CardHeader>
                     <CardFooter className="p-8 pt-0 text-left">
                         <Button variant="link" asChild className="p-0 text-primary font-bold text-left">
-                            <Link href="/testimonies" className="text-left">Enter Feed <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
+                            <Link href="/testimonies" className="text-left text-left">Enter Feed <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
                         </Button>
                     </CardFooter>
                 </Card>
@@ -187,15 +187,15 @@ export default function LandingPage() {
                     </CardFooter>
                 </Card>
 
-                <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-xl transition-all duration-300 border-b-8 border-b-indigo-500/10 text-left">
+                <Card className="rounded-[2.5rem] border-none shadow-sm hover:shadow-xl transition-all duration-300 border-b-8 border-b-indigo-500/10 text-left text-left">
                     <CardHeader className="p-8 pb-4 text-left">
-                        <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-4 text-left">
+                        <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-4 text-left text-left">
                             <HeartHandshake className="h-6 w-6 text-indigo-600 text-left" />
                         </div>
-                        <CardTitle className="text-xl font-black uppercase tracking-tight text-left text-left">Iron Sharpens Iron</CardTitle>
-                        <CardDescription className="font-medium text-sm leading-relaxed text-left text-left text-left">Connect with accountability partners. Nudge each other to stay sharp and maintain your spiritual fire.</CardDescription>
+                        <CardTitle className="text-xl font-black uppercase tracking-tight text-left">Iron Sharpens Iron</CardTitle>
+                        <CardDescription className="font-medium text-sm leading-relaxed text-left">Connect with accountability partners. Nudge each other to stay sharp and maintain your spiritual fire.</CardDescription>
                     </CardHeader>
-                    <CardFooter className="p-8 pt-0 text-left text-left text-left">
+                    <CardFooter className="p-8 pt-0 text-left">
                         <Button variant="link" asChild className="p-0 text-primary font-bold text-left">
                             <Link href="/accountability" className="text-left">Find Partner <ArrowRight className="ml-1.5 h-3 w-3 text-left" /></Link>
                         </Button>
@@ -207,9 +207,7 @@ export default function LandingPage() {
 
         {/* Glory Feed Section */}
         <section className="py-24 relative overflow-hidden bg-background text-left">
-          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left">
-            <Flame className="h-64 w-64 text-left" />
-          </div>
+          <div className="absolute top-0 right-0 p-24 opacity-[0.03] pointer-events-none text-primary text-left" />
           
           <div className="max-w-7xl mx-auto px-6 text-left">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-left">
@@ -217,17 +215,17 @@ export default function LandingPage() {
                 <div className="space-y-4 text-left">
                   <Badge variant="outline" className="text-primary border-primary/20 font-black uppercase tracking-widest text-[10px] px-3 py-1 text-left">The Digital Altar</Badge>
                   <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center text-left">See God In Action</h2>
-                  <p className="text-muted-foreground text-lg leading-relaxed max-w-md mx-auto lg:mx-0 text-left">
+                  <p className="text-muted-foreground text-lg leading-relaxed max-w-md mx-auto lg:mx-0 text-left text-left">
                     Miracles aren't just for the Bible. Read real-time stories from believers around the world seeing the power of Jesus Christ today.
                   </p>
                 </div>
                 
-                <Button asChild size="lg" variant="outline" className="h-12 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-8 w-full sm:w-auto text-left">
+                <Button asChild size="lg" variant="outline" className="h-12 rounded-full font-bold border-primary/20 text-primary hover:bg-primary/5 px-8 w-full sm:w-auto text-left text-left">
                   <Link href="/testimonies" className="text-left">VIEW GLORY FEED</Link>
                 </Button>
               </div>
 
-              <div className="space-y-6 text-left">
+              <div className="space-y-6 text-left text-left">
                 {loadingTestimonies ? (
                   <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left" /></div>
                 ) : testimonies?.map((t, idx) => (
@@ -237,7 +235,7 @@ export default function LandingPage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
-                    className="text-left"
+                    className="text-left text-left"
                   >
                     <Card className="rounded-[2rem] border-none shadow-lg bg-card/50 backdrop-blur-sm group hover:bg-primary/5 transition-colors overflow-hidden text-left">
                       <CardContent className="p-6 flex gap-4 text-left">
@@ -299,9 +297,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-8 text-left">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 mb-12 text-left">
             <div className="col-span-1 sm:col-span-2 space-y-6 text-left">
-              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left text-left">
+              <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-left">
                 {logo && (
-                  <Avatar className="h-12 w-12 text-left text-left">
+                  <Avatar className="h-12 w-12 text-left">
                     <AvatarImage src={logo.imageUrl} alt="Logo" className="text-left" />
                     <AvatarFallback className="text-left">T</AvatarFallback>
                   </Avatar>
@@ -314,7 +312,7 @@ export default function LandingPage() {
                 <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left">
                   <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer" className="text-left">
                     <Instagram className="h-4 w-4 text-left" />
-                    <span className="sr-only">Instagram</span>
+                    <span className="sr-only text-left">Instagram</span>
                   </Link>
                 </Button>
               </div>
@@ -331,8 +329,8 @@ export default function LandingPage() {
             </div>
 
             <div className="space-y-4 text-left">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left">Ministry</h4>
-              <ul className="space-y-3 text-left">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary text-left text-left">Ministry</h4>
+              <ul className="space-y-3 text-left text-left">
                 <li><Link href="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Our Story</Link></li>
                 <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">Partner With Us</Link></li>
                 <li><Link href="/guide" className="text-sm text-muted-foreground hover:text-primary transition-colors font-semibold text-left">App Guide</Link></li>
@@ -348,8 +346,8 @@ export default function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 text-left">
             <p className="text-center md:text-left text-left">© {new Date().getFullYear()} TESTIFY GLOBAL. Built for the Great Commission.</p>
             <div className="flex gap-6 text-left">
-              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left">Terms</Link>
-              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left">Privacy</Link>
+              <Link href="/terms-of-service" className="hover:text-primary transition-colors text-left text-left">Terms</Link>
+              <Link href="/privacy-policy" className="hover:text-primary transition-colors text-left text-left">Privacy</Link>
             </div>
           </div>
         </div>
