@@ -312,7 +312,7 @@ export default function LandingPage() {
                 <Button variant="outline" size="icon" asChild className="rounded-full h-10 w-10 bg-background border-muted hover:border-primary/50 transition-colors shadow-sm text-left">
                   <Link href="https://instagram.com/testifyglobal2026" target="_blank" rel="noopener noreferrer">
                     <Instagram className="h-4 w-4 text-left" />
-                    <span className="sr-only text-left">Instagram</span>
+                    <span className="sr-only">Instagram</span>
                   </Link>
                 </Button>
               </div>

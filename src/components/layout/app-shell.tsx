@@ -268,7 +268,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 
   return (
     <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4">
-      <div className="flex shrink-0 w-auto text-left text-left">
+      <div className="flex shrink-0 w-auto text-left">
         <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
             <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
@@ -487,16 +487,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
             </DropdownMenu>
           </>
         ) : showGuestButtons ? (
-          <div className="flex items-center gap-2 text-left">
+          <div className="flex items-center gap-2">
             <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold">
-              <Link href="/login" className="text-left">Sign In</Link>
+              <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
-              <Link href="/signup" className="text-left">Join Movement</Link>
+            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20">
+              <Link href="/signup">Join Movement</Link>
             </Button>
           </div>
         ) : (
-          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted text-left" />
+          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
         )}
       </div>
     </header>
@@ -672,7 +672,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center text-center">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center">
             Kingdom Network Active
         </p>
       </div>
@@ -680,6 +680,8 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   }
 
   const isProfileIncomplete = !!(user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim()));
+
+  const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
 
   return (
     <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
@@ -726,27 +728,27 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       {user && mounted && isMobile ? (
         <Drawer open={!!isProfileIncomplete} onOpenChange={() => {}}>
           <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left">
-            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left text-left">
-              <DrawerHeader className="text-left text-left text-left">
-                <DrawerTitle className="text-xl font-bold text-left text-left">Complete Your Profile</DrawerTitle>
-                <DrawerDescription className="text-xs text-left text-left">Join the global movement by introducing yourself.</DrawerDescription>
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
+              <DrawerHeader className="text-left">
+                <DrawerTitle className="text-xl font-bold">Complete Your Profile</DrawerTitle>
+                <DrawerDescription className="text-xs">Join the global movement by introducing yourself.</DrawerDescription>
               </DrawerHeader>
             </div>
-            <div className="flex-grow overflow-y-auto p-8 text-left text-left">
+            <div className="flex-grow overflow-y-auto p-8">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DrawerContent>
         </Drawer>
       ) : user ? (
         <Dialog open={!!isProfileIncomplete}>
-          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
-            <div className="p-6 border-b bg-muted/10 text-left text-left text-left">
-              <DialogHeader className="text-left text-left text-left">
-                <DialogTitle className="text-2xl font-bold text-left text-left text-left">Complete Your Profile</DialogTitle>
-                <DialogDescription className="text-sm text-left text-left text-left">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
+            <div className="p-6 border-b bg-muted/10">
+              <DialogHeader className="text-left">
+                <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
               </DialogHeader>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
+            <div className="p-6 max-h-[70vh] overflow-y-auto">
               {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
             </div>
           </DialogContent>
