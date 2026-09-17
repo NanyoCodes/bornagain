@@ -194,9 +194,9 @@ function ShareWordDialog({
 
   const renderHub = (
     <div className="space-y-8 sm:space-y-10 text-left">
-      <div className="space-y-4 text-left">
+      <div className="space-y-4">
         <div className="relative">
-            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-50 text-left" />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-50" />
             <Input 
                 placeholder="Search Bible (e.g. John 3:16)..." 
                 value={bibleSearch}
@@ -301,7 +301,7 @@ function ShareWordDialog({
             {selectedBookName} {selectedChapter}:{selectedVerses.join(', ')}
           </p>
        </div>
-       <div className="space-y-1 font-serif text-left">
+       <div className="space-y-1 font-serif">
          {loadingVerses ? (
            <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
          ) : chapterContent?.verses.map(v => (
@@ -327,7 +327,7 @@ function ShareWordDialog({
   const header = (
     <div className="p-6 sm:p-8 border-b bg-muted/10 shrink-0 text-left">
       <div className="flex items-center justify-between gap-4">
-        <div className="min-w-0 text-left">
+        <div className="min-w-0">
           <div className="flex items-center gap-3 mb-2">
             {view !== 'hub' && (
                 <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}>
@@ -337,9 +337,9 @@ function ShareWordDialog({
             <Target className="h-5 w-5 text-primary" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
           </div>
-          <DialogHeader className="text-left text-left">
-            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{titleText}</DialogTitle>
-            <DialogDescription className="text-xs sm:text-sm font-medium text-left">{descText}</DialogDescription>
+          <DialogHeader className="text-left">
+            <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">{titleText}</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm font-medium">{descText}</DialogDescription>
           </DialogHeader>
         </div>
         <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/40" onClick={() => onOpenChange(false)}>
@@ -550,7 +550,7 @@ function SoulSelectionDialog({
                 <Input 
                     placeholder="Search by name..." 
                     value={search} 
-                    onChange={e => setSearchTerm(e.target.value)}
+                    onChange={e => setSearch(e.target.value)}
                     className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base"
                 />
             </div>
@@ -643,7 +643,7 @@ export function RelationshipTrackerCard() {
   const router = useRouter();
   
   const [completedToday, setCompletedToday] = useState<string[]>([]);
-  const [togglingId, setTogglingId] = setTogglingId(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [isSoulDialogOpen, setIsSoulDialogOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
@@ -1040,14 +1040,12 @@ export function RelationshipTrackerCard() {
       }
   };
 
-  const uniquePartners = useMemo(() => {
+  const uniquePartners = React.useMemo(() => {
     const partners = userProfile?.accountabilityPartners || [];
     const uniqueMap = new Map();
     partners.forEach(p => {
-        if (p.userId) {
-          if (!uniqueMap.has(p.userId) || (!uniqueMap.get(p.userId).photoURL && p.photoURL)) {
+        if (p.userId && !uniqueMap.has(p.userId)) {
             uniqueMap.set(p.userId, p);
-          }
         }
     });
     return Array.from(uniqueMap.values());
@@ -1173,7 +1171,7 @@ export function RelationshipTrackerCard() {
                       MANAGE SOULS WON
                   </Link>
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 text-center">
+              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40">
                   Unity • Growth • Love
               </p>
         </CardFooter>
@@ -1222,7 +1220,7 @@ export function RelationshipTrackerCard() {
       </Dialog>
 
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
           <div className="p-8 border-b bg-muted/10">
             <DialogHeader>
               <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
@@ -1271,7 +1269,7 @@ export function RelationshipTrackerCard() {
                       <DialogDescription className="text-sm font-medium">Which partner should receive these details?</DialogDescription>
                   </DialogHeader>
               </div>
-              <div className="p-6">
+              <div className="p-6 text-left">
               <ScrollArea className="h-64">
                   <div className="space-y-2">
                       {uniquePartners.map(p => (
@@ -1354,6 +1352,7 @@ export function RelationshipTrackerCard() {
   );
 }
 
-function setTogglingId(arg0: null): [any, any] {
+export const RelationshipTrackerCard = React.memo(RelationshipTrackerCardComponent);
+function RelationshipTrackerCardComponent() {
     throw new Error('Function not implemented.');
 }

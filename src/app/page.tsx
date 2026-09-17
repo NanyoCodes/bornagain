@@ -95,13 +95,13 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section className="relative h-[85vh] min-h-[500px] flex items-center overflow-hidden bg-zinc-950 text-left">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent text-left" />
-          <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-left">
-            <div className="max-w-4xl space-y-8 text-center sm:text-left text-left">
+          <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-left text-left">
+            <div className="max-w-4xl space-y-8 text-center sm:text-left text-left text-left">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-left">
                 <Badge className="bg-primary text-primary-foreground mb-4 px-4 py-1 rounded-full font-black uppercase tracking-[0.2em] text-[10px] text-left">
                   SHARING GOD'S GOODNESS
                 </Badge>
-                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left">
+                <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-white leading-[1.1] sm:leading-[0.9] tracking-tighter text-balance text-left text-left">
                   Testify of His Power.<br className="hidden sm:block text-left" />
                   Organize the Harvest.<br className="hidden sm:block text-left" />
                   <span className="text-primary text-left">Glorify the King.</span>
@@ -227,7 +227,7 @@ export default function LandingPage() {
 
               <div className="space-y-6 text-left">
                 {loadingTestimonies ? (
-                  <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20 text-left" /></div>
+                  <div className="flex justify-center text-left"><Loader2 className="h-8 w-8 animate-spin opacity-20" text-left /></div>
                 ) : testimonies?.map((t, idx) => (
                   <motion.div 
                     key={t.id}
@@ -274,7 +274,7 @@ export default function LandingPage() {
           </div>
           
           <div className="max-w-7xl mx-auto px-6 text-center relative z-10 text-left">
-            <div className="max-w-3xl mx-auto space-y-8 text-left">
+            <div className="max-w-3xl mx-auto space-y-8 text-left text-left">
               <h2 className="text-4xl sm:text-6xl font-black font-headline leading-tight uppercase tracking-tighter text-balance text-center text-left">
                 The Harvest is Plentiful. Ready to Labor?
               </h2>
