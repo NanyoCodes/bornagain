@@ -111,7 +111,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
   if (!souls || souls.length === 0) {
     return (
       <div className="text-center py-10 text-left">
-        <p className="text-sm text-muted-foreground italic text-left">No souls found matching this criteria.</p>
+        <p className="text-sm text-muted-foreground italic text-left text-left">No souls found matching this criteria.</p>
       </div>
     );
   }
@@ -129,7 +129,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
             const sSpouse = (s.spouseName || "").toLowerCase();
             const otherSpouse = (other.spouseName || "").toLowerCase();
             return (sSpouse === otherFull || sSpouse === other.firstName.toLowerCase()) &&
-                   (otherSpouse === soulFullName || otherSpouse === s.firstName.toLowerCase());
+                   (otherSpouse === sFull || otherSpouse === s.firstName.toLowerCase());
         }) : null;
 
         const householdChildren = allSouls.filter(child => s.childrenIds?.includes(child.id));
@@ -180,7 +180,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                         </div>
                     </div>
                 </button>
-                <div className="flex items-center gap-1 shrink-0 ml-1 text-left">
+                <div className="flex items-center gap-1 shrink-0 ml-1 text-left text-left">
                     {isFamilyMember && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -189,13 +189,13 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-64 rounded-2xl shadow-xl text-left text-left">
-                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left">Members</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
+                                <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left">Members</DropdownMenuLabel>
+                                <DropdownMenuSeparator className="text-left" />
                                 <DropdownMenuItem onSelect={() => onSelectSoul(s)} className="rounded-lg py-2.5 text-left">
                                     <User className="mr-2 h-4 w-4 text-left" /> View {s.firstName}
                                 </DropdownMenuItem>
                                 {spouseObj && (
-                                    <DropdownMenuItem onSelect={() => onSelectSoul(spouseObj)} className="rounded-lg py-2.5 text-left text-left text-left">
+                                    <DropdownMenuItem onSelect={() => onSelectSoul(spouseObj)} className="rounded-lg py-2.5 text-left text-left">
                                         <div className="flex items-center gap-2 text-left">
                                             <Avatar className="h-6 w-6 border text-left"><AvatarImage src={spouseObj.photoURL || undefined} className="text-left" /><AvatarFallback className="text-[8px] text-left">S</AvatarFallback></Avatar>
                                             <span className="text-xs font-bold uppercase truncate text-left">{spouseObj.firstName} (Spouse)</span>
@@ -204,10 +204,10 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
                                 )}
                                 {householdChildren.map(child => (
                                     <DropdownMenuItem key={child.id} onSelect={() => onSelectSoul(child)} className="rounded-lg py-2.5 text-left text-left">
-                                        <div className="flex items-center gap-2 text-left"><Avatar className="h-6 w-6 border text-left text-left"><AvatarImage src={child.photoURL || undefined} className="text-left" /><AvatarFallback className="text-[8px] text-left">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span></div>
+                                        <div className="flex items-center gap-2 text-left text-left"><Avatar className="h-6 w-6 border text-left text-left"><AvatarImage src={child.photoURL || undefined} className="text-left" /><AvatarFallback className="text-[8px] text-left">C</AvatarFallback></Avatar><span className="text-xs font-bold uppercase truncate text-left">{child.firstName} (Child)</span></div>
                                     </DropdownMenuItem>
                                 ))}
-                                <DropdownMenuSeparator />
+                                <DropdownMenuSeparator className="text-left" />
                                 <DropdownMenuItem onSelect={() => onAddChild(s, spouseObj)} className="rounded-lg py-2.5 text-primary font-bold text-left">
                                     <PlusCircle className="mr-2 h-4 w-4 text-left" /> Add Child to Household
                                 </DropdownMenuItem>
@@ -365,11 +365,11 @@ export default function SoulsWonPage() {
               const spouse = souls.find(other => {
                 if (other.id === soul.id || other.maritalStatus !== 'Married') return false;
                 const otherFullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-                const soulFullName = `${soul.firstName} ${soul.lastName}`.toLowerCase();
-                const soulSpouse = (soul.spouseName || "").toLowerCase();
+                const sFull = `${soul.firstName} ${soul.lastName}`.toLowerCase();
+                const sSpouse = (soul.spouseName || "").toLowerCase();
                 const otherSpouse = (other.spouseName || "").toLowerCase();
-                return (soulSpouse === otherFullName || soulSpouse === other.firstName.toLowerCase()) &&
-                       (otherSpouse === soulFullName || otherSpouse === soul.firstName.toLowerCase());
+                return (sSpouse === otherFullName || sSpouse === other.firstName.toLowerCase()) &&
+                       (otherSpouse === sFull || otherSpouse === soul.firstName.toLowerCase());
               });
 
               if (spouse) {
@@ -710,17 +710,17 @@ export default function SoulsWonPage() {
                         <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap w-full sm:w-auto text-left">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none text-left">
+                                    <Button variant="outline" className="h-12 px-4 sm:px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] border-primary/20 text-primary hover:bg-primary/5 shadow-md bg-background flex-1 sm:flex-none text-left text-left">
                                         <Download className="mr-2 h-4 w-4 text-left" /> EXPORT
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="rounded-xl w-48 shadow-xl text-left">
-                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left text-left text-left text-left">Select Format</DropdownMenuLabel>
+                                    <DropdownMenuLabel className="text-[9px] font-black uppercase tracking-widest text-muted-foreground text-left">Select Format</DropdownMenuLabel>
                                     <DropdownMenuSeparator className="text-left" />
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left text-left">
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('csv')} className="rounded-lg py-2.5 text-left">
                                         <Download className="mr-2 h-4 w-4 opacity-40 text-left" /> CSV (Excel)
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5 text-left text-left">
+                                    <DropdownMenuItem onSelect={() => handleExportHarvest('pdf')} className="rounded-lg py-2.5 text-left text-left text-left">
                                         <Download className="mr-2 h-4 w-4 text-primary text-left" /> PDF Report
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -783,9 +783,9 @@ export default function SoulsWonPage() {
                                                     </div>
                                                 </div>
                                             </DialogTrigger>
-                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left text-left">
-                                                <DialogHeader className="sr-only text-left text-left"><DialogTitle className="text-left">Soul Photo</DialogTitle></DialogHeader>
-                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left">
+                                            <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-left text-left text-left">
+                                                <DialogHeader className="sr-only text-left text-left text-left"><DialogTitle className="text-left">Soul Photo</DialogTitle></DialogHeader>
+                                                <div className="relative h-full w-full flex items-center justify-center p-4 text-left text-left">
                                                     <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-left">
                                                         <Image 
                                                             src={s.photoURL!} 
@@ -840,7 +840,7 @@ export default function SoulsWonPage() {
                                                 onClick={() => setSelectedFilterGroup({ type: 'age', value: group.label })}
                                             >
                                                 <div className="flex items-center justify-between text-left">
-                                                    <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left">
+                                                    <div className="h-8 w-8 rounded-xl bg-muted/5 flex items-center justify-center transition-colors group-hover:bg-primary/10 text-left text-left">
                                                         <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary text-left" />
                                                     </div>
                                                     <span className="font-black text-lg text-primary tracking-tighter text-left">{group.count}</span>
@@ -1138,3 +1138,4 @@ export default function SoulsWonPage() {
     </div>
   );
 }
+
