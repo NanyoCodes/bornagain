@@ -8,6 +8,7 @@ import type { VendorProfile, Meal, UserProfile, MealGift, MealGiftStatus, Soul }
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { 
     ArrowLeft, 
@@ -45,13 +46,6 @@ import {
     DialogDescription,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { 
-    Sheet, 
-    SheetContent, 
-    SheetHeader, 
-    SheetTitle, 
-    SheetDescription,
-} from '@/components/ui/sheet';
 import {
     Drawer,
     DrawerContent,
@@ -164,6 +158,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
             case 'delivering': return <Truck className="h-4 w-4 text-primary" />;
             case 'delivered': return <CheckCircle2 className="h-4 w-4 text-green-500" />;
             case 'cancelled': return <XCircle className="h-4 w-4 text-destructive" />;
+            default: return <Package className="h-4 w-4" />;
         }
     };
 
@@ -265,7 +260,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     );
 }
 
-export default function VendorPageClient({ vendorId }: { vendorId: string }) {
+function VendorPageClient({ vendorId }: { vendorId: string }) {
     const searchParams = useSearchParams();
     const soulId = searchParams?.get('soulId') || null;
     const soulName = searchParams?.get('soulName') || null;
@@ -639,6 +634,15 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </form>
     );
 
+    if (loading) {
+        return (
+            <div className="flex h-full w-full flex-col items-center justify-center bg-background">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <p className="mt-4 text-muted-foreground">Accessing storefront...</p>
+            </div>
+        );
+    }
+
     if (!vendor) return null;
 
     return (
@@ -647,7 +651,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
                     <div className="flex flex-col gap-4 text-left">
                         <div className="flex items-center gap-4 text-left">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
+                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
                                 <ArrowLeft className="h-6 w-6 text-left" />
                             </Button>
                             <div className="flex-1 min-w-0 text-left">
@@ -660,7 +664,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
                         <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left">
                             {vendor.photoURL ? (
-                                <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
+                                <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left" unoptimized />
                             ) : (
                                 <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left">
                                     <Store className="h-16 w-16 text-primary opacity-10 text-left" />
@@ -677,11 +681,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             </div>
                             {isOwner && (
                                 <Button variant="outline" size="icon" className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80 text-left" onClick={() => setIsEditProfileOpen(true)}><Camera className="h-5 w-5 text-left" /></Button>
-                            )}
-                            {vendor.currency && (
-                                <Badge className="absolute top-4 right-4 rounded-xl bg-primary text-white border-none h-10 px-4 font-black uppercase tracking-widest shadow-xl hidden sm:flex text-left">
-                                    <Globe className="mr-2 h-4 w-4 text-left" /> {vendor.currency}
-                                </Badge>
                             )}
                         </div>
                     </div>
@@ -716,8 +715,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             </Button>
                         )}
                     </div>
-
-                    {vendor.description && <p className="text-sm sm:text-base text-muted-foreground leading-relaxed italic px-1 sm:px-0 text-balance max-w-3xl text-left">{vendor.description}</p>}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
@@ -887,3 +884,5 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 }
+
+export default VendorPageClient;
