@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useDoc, useFirestore, useUser, useCollection, useUserProfile } from '@/firebase';
+import { useDoc, useUser, useAuth, useCollection, useUserProfile } from '@/firebase';
 import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/lib/types';
 import { doc, collection, query, where, serverTimestamp, setDoc, addDoc } from 'firebase/firestore';
 import { 
@@ -23,7 +23,8 @@ import {
     UserPlus,
     Hourglass,
     Briefcase,
-    Heart
+    Heart,
+    ChevronDown
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -381,7 +382,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
 
           <div className="mt-8 sm:mt-10 max-w-3xl mx-auto">
             <div className="relative pl-5 sm:pl-6 border-l-4 border-primary/20 text-center md:text-left">
-                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed italic font-medium">
+                <p className="text-base sm:text-lg text-muted-foreground leading-relaxed italic font-medium text-balance">
                     {bio ? `"${bio}"` : "This believer is a member of the global harvest workforce, dedicated to sharing the goodness of Jesus Christ with the world."}
                 </p>
             </div>
@@ -514,7 +515,8 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                       <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                           <SheetHeader className="text-left">
                               <SheetTitle className="text-2xl font-black font-headline text-left">Refine Your Identity</SheetTitle>
-                              <SheetDescription className="text-sm font-medium mt-1 text-left">Update your global Kingdom profile.</SheetDescription>
+                              <SheetDescription className="text-sm font-medium mt-1 text-left text-left">Update your global Kingdom profile.</SheetDescription>
+                              <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
                           </SheetHeader>
                       </div>
                       <ScrollArea className="flex-grow p-8">

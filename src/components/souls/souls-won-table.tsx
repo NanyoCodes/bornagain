@@ -202,16 +202,10 @@ function SoulProfileContent({
   const router = useRouter();
 
   const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = React.useState(false);
-  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = React.useState(false);
-  const [isShareTargetDialogOpen, setIsShareTargetDialogOpen] = React.useState(false);
-  const [isPartnerSelectionDialogOpen, setIsPartnerSelectionDialogOpen] = React.useState(false);
-  const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = React.useState(false);
-  const [customMessageText, setCustomMessageText] = React.useState('');
   const [clickedActionId, setClickedActionId] = React.useState<string | null>(null);
   const [isActionSubmitting, setIsActionSubmitting] = React.useState(false);
 
   const address = getSoulAddress(soul);
-  const needs = soul.needsAssessment;
 
   const sortedHistory = React.useMemo(() => {
     if (!soul.followUpLog || soul.followUpLog.length === 0) return [];
@@ -289,7 +283,6 @@ function SoulProfileContent({
             </div>
             <Separator className="opacity-20" />
             
-            {/* Relational Actions - Vertical List for Mobile */}
             <div className="space-y-4">
                 <p className="text-[9px] font-black uppercase text-primary/60 tracking-widest">Relational Actions</p>
                 <div className="flex flex-col gap-2">
