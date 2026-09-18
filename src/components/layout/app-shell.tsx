@@ -160,7 +160,7 @@ function CartButton() {
                             <AvatarImage src={item.photoURL} />
                             <AvatarFallback>P</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0 flex-1 text-left text-left">
+                        <div className="min-w-0 flex-1 text-left">
                             <p className="font-bold text-sm truncate uppercase tracking-tight">{item.name}</p>
                             <p className="text-[10px] font-black uppercase tracking-widest">{item.currency}{item.price.toLocaleString()} x {item.quantity}</p>
                         </div>
