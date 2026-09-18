@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Corrected souls subcollection permission - 2025-03-05T18:00:00Z
+    // Deployment trigger: Corrected souls subcollection permission - 2025-03-05T20:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -85,7 +85,8 @@ service cloud.firestore {
       }
 
       match /souls/{soulId} {
-        allow read, list: if isOwner(userId) || (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))));
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) || (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))));
         allow create, delete: if isOwner(userId);
         allow update: if isAuthenticated() && (
           isOwner(userId) || 

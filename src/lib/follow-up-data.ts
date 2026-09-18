@@ -51,6 +51,16 @@ export const prayerTemplates = [
         id: 'victory',
         label: 'Freedom & Victory',
         text: "Lord, I speak total freedom into {name}'s life. Where the Spirit of the Lord is, there is liberty. I declare victory over every stronghold and every weight that tries to hinder {possessive} walk. May {subject} walk in the power of the Holy Spirit, free from the past and empowered for the future. You have set {object} free indeed, and I declare that freedom is {possessive} permanent reality in Christ. Amen. Join our harvest community at https://testifyglobal.com"
+    },
+    {
+        id: 'financial',
+        label: 'Financial Breakthrough',
+        text: "Father, in the name of Jesus, I speak over {name}'s finances. I declare that the windows of heaven are opened and Your abundance is being released. I command every spirit of lack and poverty to leave {possessive} life now. Lord, provide divine ideas and strategies for wealth creation. May {subject} experience a supernatural turnaround this week, for Your glory. Amen. Join at https://testifyglobal.com"
+    },
+    {
+        id: 'salvation_house',
+        label: 'Household Salvation',
+        text: "Lord, Your Word says that if I believe, I and my household shall be saved. I claim {name} and {possessive} entire family for the Kingdom today. I pull down every stronghold of rebellion and spiritual blindness. Let Your light shine into {possessive} home and draw every heart to You. I speak a total restoration of the family altar. Amen. Join at https://testifyglobal.com"
     }
 ];
 
