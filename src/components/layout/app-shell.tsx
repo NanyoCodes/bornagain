@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useState, useRef, useCallback, Suspense } from "react";
+import React, { useEffect, useMemo, useState, useCallback, Suspense, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -91,7 +91,7 @@ const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 const navItems = [
   { href: "/growth", label: "Growth", icon: TrendingUp, color: "bg-orange-500" },
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "bg-amber-500" },
-  { href: "/testimonies", label: "Feed", icon: Newspaper, color: "bg-primary" },
+  { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "bg-primary" },
   { href: "/campaigns", label: "Missions", icon: Target, color: "bg-rose-500" },
   { href: "/victory-hub", label: "Victory", icon: ShieldCheck, color: "bg-indigo-600" },
 ];
@@ -516,7 +516,7 @@ function BottomNavBar() {
     }, [pathname]);
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#09090b] border-t border-white/5 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-transparent border-t border-white/5 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden">
         <div className="flex h-16 items-stretch justify-around px-1 py-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -550,7 +550,7 @@ function BottomNavBar() {
                   </div>
                   <span className={cn(
                     "text-[9px] font-black uppercase tracking-tighter transition-colors duration-300 leading-none",
-                    isActive ? "text-white" : "text-zinc-500"
+                    isActive ? "text-foreground" : "text-zinc-500"
                   )}>
                     {item.label}
                   </span>
@@ -727,7 +727,7 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
           <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left">
             <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left">
-              <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+              <SheetHeader className="text-left flex-shrink-0 text-left text-left text-left">
                 <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
                 <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
               </SheetHeader>
