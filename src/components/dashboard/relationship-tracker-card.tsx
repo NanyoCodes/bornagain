@@ -410,7 +410,7 @@ export function RelationshipTrackerCard() {
                                           className={cn(
                                               "relative flex flex-col items-center justify-center gap-2 p-3 h-24 w-full text-center transition-all duration-300 rounded-3xl border-2 overflow-hidden text-left",
                                               isCompleted 
-                                                  ? "bg-primary/[0.03] border-primary/40 shadow-inner ring-1 ring-primary/10" 
+                                                  ? "bg-primary/5 border-primary/40 shadow-inner ring-1 ring-primary/10" 
                                                   : "bg-background/40 hover:bg-muted/50 hover:border-primary/20 text-left"
                                           )}
                                           onClick={() => handleActionClick(action.id)}
@@ -491,3 +491,4 @@ export function RelationshipTrackerCard() {
     </>
   );
 }
+

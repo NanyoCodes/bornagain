@@ -33,7 +33,8 @@ import {
   Heart,
   X,
   Utensils,
-  Info
+  Info,
+  ChevronDown
 } from "lucide-react";
 
 import {
@@ -507,11 +508,11 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 function BottomNavBar() {
     const pathname = usePathname();
     const bottomNavItems = [
-        { href: "/growth", label: "Growth", icon: TrendingUp },
-        { href: "/souls-won", label: "Souls", icon: UserPlus },
-        { href: "/testimonies", label: "Testimonies", icon: Newspaper },
-        { href: "/campaigns", label: "Campaigns", icon: Target },
-        { href: "/victory-hub", label: "Victory", icon: ShieldCheck },
+        { href: "/growth", label: "Growth", icon: TrendingUp, color: "from-orange-500 to-amber-500" },
+        { href: "/souls-won", label: "Souls", icon: UserPlus, color: "from-amber-500 to-yellow-600" },
+        { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "from-[#6366f1] via-[#a855f7] to-[#f97316]" },
+        { href: "/campaigns", label: "Campaigns", icon: Target, color: "from-rose-500 to-red-600" },
+        { href: "/victory-hub", label: "Victory", icon: ShieldCheck, color: "from-blue-600 to-indigo-700" },
     ];
   
     return (
@@ -535,12 +536,15 @@ function BottomNavBar() {
                     {isActive && (
                       <motion.div
                         layoutId="nav-active-circle"
-                        className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#6366f1] via-[#a855f7] to-[#f97316] shadow-[0_0_15px_rgba(168,85,247,0.4)]"
+                        className={cn(
+                            "absolute inset-0 rounded-full bg-gradient-to-tr shadow-[0_0_15px_rgba(0,0,0,0.4)]",
+                            item.color
+                        )}
                         transition={{ type: "spring", stiffness: 350, damping: 30 }}
                       />
                     )}
                     <item.icon className={cn(
-                      "h-5 w-5 relative z-10 transition-colors duration-300",
+                      "h-5.5 w-5.5 relative z-10 transition-colors duration-300",
                       isActive ? "text-white" : "text-zinc-500"
                     )} />
                   </div>

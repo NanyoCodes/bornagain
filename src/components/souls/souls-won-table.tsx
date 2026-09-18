@@ -641,13 +641,13 @@ function ProfileActionDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-2xl max-h-[90dvh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+            <DialogContent className="sm:max-w-2xl max-h-[90dvh] p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left flex flex-col max-h-[90dvh]">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                     <div className="flex items-center gap-2 mb-2 text-left">
                         <Sparkles className="h-4 w-4 text-primary text-left" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>
                     </div>
-                    <DialogHeader className="text-left">
+                    <DialogHeader className="text-left text-left">
                         <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">{title}</DialogTitle>
                         <DialogDescription className="text-sm font-medium mt-1 text-left">Full spiritual snapshot for the harvest workforce.</DialogDescription>
                     </DialogHeader>
@@ -1241,7 +1241,7 @@ function SoulProfileContent({
       <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
           <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
               <div className="p-8 border-b bg-muted/10 text-left">
-                  <DialogHeader className="text-left">
+                  <DialogHeader>
                       <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle>
                       <DialogDescription className="text-sm font-medium text-left">Draft a powerful prayer for {soul.firstName}.</DialogDescription>
                   </DialogHeader>
@@ -1460,7 +1460,21 @@ const SoulTableRow = React.memo(({ soul, isSelected, onSelect }: {
 });
 SoulTableRow.displayName = "SoulTableRow";
 
-const SoulsWonTable = React.forwardRef<HTMLDivElement, any>(({ souls, allSouls, loading, selectedId, onSelect, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess, onAddChild }, ref) => {
+export default function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, onFollowUp, onViewHistory, onExportSingle, onOpenAssignDialog, onEdit, onDelete, onAssess, onAddChild }: {
+  souls: Soul[];
+  allSouls: Soul[];
+  loading: boolean;
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
+  onFollowUp: (soul: Soul) => void;
+  onViewHistory: (soul: Soul) => void;
+  onExportSingle: (soul: Soul, formatType: 'csv' | 'pdf') => void;
+  onOpenAssignDialog: (soul: Soul) => void;
+  onEdit: (soul: Soul) => void;
+  onDelete: (soul: Soul) => void;
+  onAssess: (soul: Soul) => void;
+  onAddChild: (p1: Soul, p2?: Soul | null) => void;
+}) {
   const isMobile = useIsMobile();
   const [mounted, setMounted] = React.useState(false);
 
@@ -1469,7 +1483,7 @@ const SoulsWonTable = React.forwardRef<HTMLDivElement, any>(({ souls, allSouls, 
   }, []);
 
   const selectedSoul = React.useMemo(() => 
-    souls.find((s: any) => s.id === selectedId) || null
+    souls.find(s => s.id === selectedId) || null
   , [souls, selectedId]);
 
   if (loading || !mounted) {
@@ -1503,11 +1517,11 @@ const SoulsWonTable = React.forwardRef<HTMLDivElement, any>(({ souls, allSouls, 
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start text-left" ref={ref}>
+    <div className="flex flex-col lg:flex-row gap-8 items-start text-left">
         <div className="flex-1 w-full text-left">
             {isMobile ? (
                 <div className="space-y-px text-left">
-                    {souls.map((soul: any) => (
+                    {souls.map((soul) => (
                         <SoulCard key={soul.id} soul={soul} onClick={() => onSelect(soul.id)} />
                     ))}
                 </div>
@@ -1529,7 +1543,7 @@ const SoulsWonTable = React.forwardRef<HTMLDivElement, any>(({ souls, allSouls, 
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody className="text-left">
-                                    {souls.map((soul: any) => (
+                                    {souls.map((soul) => (
                                     <SoulTableRow 
                                         key={soul.id} 
                                         soul={soul} 
@@ -1594,7 +1608,5 @@ const SoulsWonTable = React.forwardRef<HTMLDivElement, any>(({ souls, allSouls, 
         </div>
     </div>
   );
-});
-SoulsWonTable.displayName = "SoulsWonTable";
+}
 
-export default SoulsWonTable;

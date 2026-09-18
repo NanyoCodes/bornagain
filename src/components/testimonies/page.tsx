@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Newspaper, HandHeart, Loader2, Trash2, Edit } from "lucide-react";
+import { Newspaper, HandHeart, Loader2, Trash2, Edit, Sparkles, Camera, Flame } from "lucide-react";
 import { CreateTestimonyForm } from "@/components/testimonies/create-testimony-form";
 import { TestimonyCard } from "@/components/testimonies/testimony-card";
 import { PrayerRequestCard } from "@/components/prayer/PrayerRequestCard";
@@ -37,7 +37,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { Testimony, PrayerRequest, UserProfile, AccountabilityRequest } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import { useCollection, useFirestore, useUser, useDoc, useStorage } from "@/firebase";
 import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where } from "firebase/firestore";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
@@ -293,42 +293,32 @@ function TestimoniesContent() {
     <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left text-left">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 text-left">
         <div className="lg:col-span-8 space-y-6 md:space-y-10 text-left text-left">
-            <Card className="border shadow-sm sm:shadow-md rounded-none sm:rounded-3xl border-x-0 sm:border-x -mx-3 sm:mx-0 text-left bg-card/50 backdrop-blur-sm overflow-hidden text-left">
-                <CardContent className="p-3 sm:p-6 text-left text-left">
-                <div className="flex flex-row items-center gap-2 sm:gap-4 w-full text-left text-left">
-                    <Button 
-                    variant="outline" 
-                    className="flex-1 justify-start text-left text-muted-foreground font-normal rounded-full h-10 sm:h-12 px-6 hover:bg-muted/50 transition-colors text-sm sm:text-base min-w-0 border-dashed text-left"
-                    onClick={() => setIsTestimonyDialogOpen(true)}
-                    disabled={loading}
-                    >
-                    <span className="truncate text-left text-left">What has God done today?</span>
-                    </Button>
-                    <div className="flex items-center gap-2 shrink-0 text-left text-left">
-                    <Button 
-                        variant="secondary" 
-                        size="icon" 
-                        className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-lg text-left"
-                        onClick={() => setIsTestimonyDialogOpen(true)}
-                        disabled={loading}
-                        title="Share Testimony"
-                    >
-                        < Newspaper className="h-5 w-5 text-left text-left" />
-                    </Button>
-                    <Button 
-                        variant="outline" 
-                        size="icon" 
-                        className="h-10 sm:h-12 w-10 sm:w-12 rounded-full shadow-md bg-background text-left"
-                        onClick={() => setIsPrayerDialogOpen(true)}
-                        disabled={loading}
-                        title="Request Prayer"
-                    >
-                        <HandHeart className="h-5 w-5 text-left text-left" />
-                    </Button>
-                    </div>
+            {/* Interaction Box */}
+            <div 
+                className="bg-[#1c1c21] border border-white/5 rounded-2xl p-2.5 flex items-center gap-3 mx-4 sm:mx-0 shadow-lg backdrop-blur-md cursor-pointer hover:bg-zinc-900 transition-all active:scale-[0.98] text-left"
+                onClick={() => setIsTestimonyDialogOpen(true)}
+            >
+                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shrink-0 shadow-inner flex items-center justify-center text-left">
+                    <Sparkles className="h-4.5 w-4.5 text-white/40 text-left" />
                 </div>
-                </CardContent>
-            </Card>
+                <div className="flex-1 min-w-0 text-left">
+                    <p className="text-[12px] font-bold text-zinc-300 leading-tight text-left">Share God's goodness today...</p>
+                </div>
+                <div className="flex items-center gap-2 text-left">
+                    <button 
+                        className="h-8 w-8 rounded-full bg-[#27272a] flex items-center justify-center text-zinc-400 hover:text-white transition-colors text-left"
+                        onClick={(e) => { e.stopPropagation(); setIsTestimonyDialogOpen(true); }}
+                    >
+                        <Camera className="h-3.5 w-3.5 text-left" />
+                    </button>
+                    <button 
+                        className="h-8 w-8 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 shadow-inner text-left"
+                        onClick={(e) => { e.stopPropagation(); setIsTestimonyDialogOpen(true); }}
+                    >
+                        <Flame className="h-4 w-4 fill-current text-left" />
+                    </button>
+                </div>
+            </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left text-left">
                 <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 text-left">
@@ -410,7 +400,7 @@ function TestimoniesContent() {
           <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
               <AlertDialogCancel disabled={isDeleting} className="rounded-2xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90 rounded-2xl h-12 font-bold text-left text-left">
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
+              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-shadow text-left" />}
               Confirm Deletion
               </AlertDialogAction>
           </AlertDialogFooter>
@@ -473,7 +463,7 @@ function TestimoniesContent() {
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 text-left text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                     <DrawerHeader className="text-left text-left text-left">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Request Prayer</DrawerTitle>
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Request Prayer</DrawerTitle>
                       <DrawerDescription className="text-sm font-medium mt-1 text-left">Share your need with the global community.</DrawerDescription>
                     </DrawerHeader>
                   </div>
@@ -543,7 +533,7 @@ function TestimoniesContent() {
                         <DialogDescription className="text-sm font-medium text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
                   </div>
-                  <ScrollArea className="max-h-[70vh] text-left text-left text-left text-left">
+                  <ScrollArea className="max-h-[70vh] text-left text-left text-left">
                     <div className="p-8 text-left text-left text-left">
                         {prayerFormContent}
                     </div>
@@ -560,7 +550,7 @@ function TestimoniesContent() {
 
 export default function TestimoniesPage() {
     return (
-        <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+        <Suspense fallback={<div className="flex justify-center py-20 text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left" /></div>}>
             <TestimoniesContent />
         </Suspense>
     );
