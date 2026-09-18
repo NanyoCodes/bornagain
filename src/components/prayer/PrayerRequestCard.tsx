@@ -45,7 +45,7 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
             </DialogTrigger>
             {photoURL && (
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center">
-                    <DialogHeader className="sr-only">
+                    <DialogHeader className="sr-only text-center">
                         <DialogTitle>Profile Photo</DialogTitle>
                         <DialogDescription>Full screen view of author's photo.</DialogDescription>
                     </DialogHeader>
@@ -154,7 +154,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
   return (
     <>
       <div className={cn(
-        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-[2rem] border sm:border border-border border-t-4 border-t-amber-500/20 shadow-none bg-card/50 backdrop-blur-sm"
+        "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-[2rem] border-y border-x-0 sm:border border-border border-t-4 border-t-amber-500/20 shadow-none bg-card/50 backdrop-blur-sm"
       )}>
         <CardHeader className="flex flex-row items-start justify-between gap-4 p-4 sm:p-6">
             <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
