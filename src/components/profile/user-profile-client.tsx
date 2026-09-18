@@ -38,6 +38,10 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
+import { EditProfileModal } from './edit-profile-modal';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { ScrollArea } from '../ui/scroll-area';
 
 function getYouTubeEmbedUrl(url: string | undefined) {
   if (!url) return null;
@@ -54,8 +58,10 @@ export default function UserProfileClient({ userId }: { userId: string }) {
   const firestore = useFirestore();
   const { user: currentUser, loading: userLoading } = useUser();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [mounted, setMounted] = useState(false);
   const [isRequestingPartner, setIsRequestingPartner] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -245,11 +251,14 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                 Back
             </Button>
             {isOwnProfile && (
-                <Button asChild variant="outline" size="sm" className="h-9 px-6 rounded-full font-bold shadow-sm">
-                    <Link href="/settings">
-                        <Edit className="mr-2 h-3.5 w-3.5" />
-                        Settings
-                    </Link>
+                <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-9 px-6 rounded-full font-bold shadow-sm"
+                    onClick={() => setIsEditModalOpen(true)}
+                >
+                    <Edit className="mr-2 h-3.5 w-3.5" />
+                    Edit Profile
                 </Button>
             )}
         </div>
@@ -387,7 +396,7 @@ export default function UserProfileClient({ userId }: { userId: string }) {
                     <Youtube className="h-8 w-8 text-red-600" />
                     Living Testimonies
                 </CardTitle>
-                <CardDescription className="text-zinc-400 text-sm sm:text-base font-medium">
+                <CardDescription className="text-zinc-400 text-sm sm:text-base font-medium text-center md:text-left">
                     Experience the power of God through these captured moments of glory.
                 </CardDescription>
             </CardHeader>
@@ -497,6 +506,38 @@ export default function UserProfileClient({ userId }: { userId: string }) {
             </div>
         )}
       </div>
+
+      {isOwnProfile && userProfile && (
+          mounted && isMobile ? (
+              <Sheet open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                  <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                      <div className="p-8 border-b flex-shrink-0 bg-muted/10">
+                          <SheetHeader className="text-left">
+                              <SheetTitle className="text-2xl font-black font-headline text-left">Refine Your Identity</SheetTitle>
+                              <SheetDescription className="text-sm font-medium mt-1 text-left">Update your global Kingdom profile.</SheetDescription>
+                          </SheetHeader>
+                      </div>
+                      <ScrollArea className="flex-grow p-8">
+                          <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
+                      </ScrollArea>
+                  </SheetContent>
+              </Sheet>
+          ) : (
+              <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                  <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl">
+                      <div className="p-8 border-b shrink-0 bg-muted/10">
+                          <DialogHeader>
+                              <DialogTitle className="text-2xl font-bold font-headline">Edit Kingdom Profile</DialogTitle>
+                              <DialogDescription className="text-sm font-medium">Keep your identity current for the harvest workforce.</DialogDescription>
+                          </DialogHeader>
+                      </div>
+                      <ScrollArea className="flex-1 min-h-0 p-8">
+                          <EditProfileModal userProfile={userProfile} onClose={() => setIsEditModalOpen(false)} />
+                      </ScrollArea>
+                  </DialogContent>
+              </Dialog>
+          )
+      )}
     </div>
   );
 }
