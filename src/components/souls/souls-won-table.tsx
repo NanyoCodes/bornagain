@@ -184,36 +184,6 @@ function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: string, fallbackInitials: string, className?: string }) {
-    const firestore = useFirestore();
-    const userRef = React.useMemo(() => userId ? doc(firestore, 'users', userId) : null, [firestore, userId]);
-    const { data: profile } = useDoc<UserProfile>(userRef);
-    const photoURL = profile?.photoURL;
-    
-    return (
-        <Dialog>
-            <DialogTrigger asChild disabled={!photoURL}>
-                <div className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
-                    <Avatar className="h-full w-full border shadow-sm">
-                        <AvatarImage src={photoURL} className="object-contain" />
-                        <AvatarFallback className="font-black bg-primary/10 text-primary text-center flex items-center justify-center w-full h-full">{fallbackInitials || 'U'}</AvatarFallback>
-                    </Avatar>
-                </div>
-            </DialogTrigger>
-            {photoURL && (
-                <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
-                    <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
-                    <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
-                            <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
-                        </div>
-                    </div>
-                </DialogContent>
-            )}
-        </Dialog>
-    );
-}
-
 function ShareWordDialog({ 
   isOpen, 
   onOpenChange, 
@@ -905,18 +875,21 @@ function SoulProfileContent({
   };
 
   const handleShareToWhatsApp = () => {
-    if (!soul) return;
-    const wonAt = safeToDate(soul.wonAt);
-    const details = `Introduction to ${soul.firstName}, a new soul won for the Kingdom! 🎊\n\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nSupport their growth on Testify: ${window.location.origin}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
-    finalizeLog('introduced_friend', 'Shared via WhatsApp External');
-    setIsShareTargetDialogOpen(false);
+      if (!soul) return;
+      const wonAt = safeToDate(soul.wonAt);
+      const details = `Introduction to ${soul.firstName}, a new soul won for the Kingdom! 🎊\n\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nSupport their growth on Testify: ${window.location.origin}`;
+      
+      window.open(`https://wa.me/?text=${encodeURIComponent(details)}`, '_blank');
+      finalizeLog('introduced_friend', 'Shared via WhatsApp External');
+      setIsShareTargetDialogOpen(false);
   };
 
   const handleShareToPartner = async (partner: UserProfile['accountabilityPartners'][0]) => {
-      if (!user || !firestore || !soul || !currentUserProfile) return;
+      if (!user || !firestore || !soul || !userProfile) return;
+
       const wonAt = safeToDate(soul.wonAt);
-      const text = `SHARING SOUL DATA: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\n\nLet's coordinate follow-up on Testify.`;
+      const text = `SHARING SOUL DATA:\nName: ${soul.firstName} ${soul.lastName}\nStatus: ${soul.status}\nWon on: ${wonAt ? format(wonAt, 'PPP') : 'Recently'}\nRelationship: ${soul.relationship || 'Outreach'}\nLet's keep them in our prayers and coordinate follow-up.`;
+
       try {
           const participantIds = [user.uid, partner.userId].sort();
           const chatsRef = collection(firestore, 'chats');
@@ -932,7 +905,7 @@ function SoulProfileContent({
               const newChat = {
                   participantIds,
                   participantInfo: {
-                      [user.uid]: { firstName: currentUserProfile.firstName, lastName: currentUserProfile.lastName, photoURL: currentUserProfile.photoURL || '' },
+                      [user.uid]: { firstName: userProfile.firstName, lastName: userProfile.lastName, photoURL: userProfile.photoURL || '' },
                       [partner.userId]: { firstName: partner.firstName, lastName: partner.lastName, photoURL: partner.photoURL || '' }
                   },
                   lastUpdatedAt: serverTimestamp(),
@@ -942,9 +915,16 @@ function SoulProfileContent({
               const ref = await addDoc(chatsRef, newChat);
               chatId = ref.id;
           }
-          await addDoc(collection(firestore, 'chats', chatId, 'messages'), { senderId: user.uid, text, createdAt: serverTimestamp() });
+
+          await addDoc(collection(firestore, 'chats', chatId, 'messages'), {
+              senderId: user.uid,
+              text,
+              createdAt: serverTimestamp()
+          });
+
           await updateDoc(doc(firestore, 'chats', chatId), { lastUpdatedAt: serverTimestamp(), hasMessages: true });
-          toast({ title: 'Shared with Partner!' });
+          
+          toast({ title: 'Shared with Partner!', description: `Details sent to ${partner.firstName}.` });
           finalizeLog('introduced_friend', `Shared with partner: ${partner.firstName}`);
           setIsPartnerSelectionDialogOpen(false);
           setIsShareTargetDialogOpen(false);
@@ -955,13 +935,13 @@ function SoulProfileContent({
   };
 
   const uniquePartners = React.useMemo(() => {
-    const partners = currentUserProfile?.accountabilityPartners || [];
+    const partners = userProfile?.accountabilityPartners || [];
     const uniqueMap = new Map();
     partners.forEach(p => {
         if (p.userId && !uniqueMap.has(p.userId)) uniqueMap.set(p.userId, p);
     });
     return Array.from(uniqueMap.values());
-  }, [currentUserProfile?.accountabilityPartners]);
+  }, [userProfile?.accountabilityPartners]);
 
   const soulsQuery = useMemo(() => {
     if (!user?.uid || !firestore) return null;
@@ -1024,7 +1004,7 @@ function SoulProfileContent({
                         <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                             <DialogHeader className="sr-only"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
                             <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
@@ -1334,7 +1314,7 @@ function SoulProfileContent({
                                   <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Intercession</span>
                               </div>
                               <DrawerTitle className="text-2xl font-black font-headline uppercase">Kingdom Intercession</DrawerTitle>
-                              <DrawerDescription className="text-sm font-medium mt-1">Draft a powerful prayer for {soul.firstName}.</DrawerDescription>
+                              <DrawerDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul.firstName}.</DrawerDescription>
                           </DrawerHeader>
                       </div>
                       <ScrollArea className="flex-grow min-h-0">
@@ -1409,7 +1389,7 @@ function SoulProfileContent({
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
-                    onChange={e => setCustomMessageText(e.target.value)} 
+                    onChange={e => setCustomMessageText(e.target.value)} // Reusing customMessageText temporarily for simple local state
                     className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
                 />
             </div>
