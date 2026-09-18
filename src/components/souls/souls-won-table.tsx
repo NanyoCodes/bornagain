@@ -276,8 +276,8 @@ function ShareWordDialog({
   };
 
   const renderHub = (
-    <div className="space-y-8 sm:space-y-10">
-      <div className="space-y-4 text-left">
+    <div className="space-y-8 sm:space-y-10 text-left">
+      <div className="space-y-4">
         <div className="relative">
             <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground opacity-50" />
             <Input 
@@ -331,7 +331,7 @@ function ShareWordDialog({
         </Button>
       </div>
 
-      <div className="space-y-6 text-left">
+      <div className="space-y-6">
         <div className="flex items-center justify-between px-1">
             <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Kingdom Essential Scriptures</Label>
             <Badge variant="outline" className="h-5 px-2 text-[8px] font-bold text-primary border-primary/20 bg-primary/5 uppercase">Top Weapons</Badge>
@@ -384,7 +384,7 @@ function ShareWordDialog({
             {selectedBook} {selectedChapter}:{selectedVerses.join(', ')}
           </p>
        </div>
-       <div className="space-y-1 font-serif text-left">
+       <div className="space-y-1 font-serif">
          {loadingVerses ? (
            <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
          ) : chapterContent?.verses.map(v => (
@@ -420,7 +420,7 @@ function ShareWordDialog({
             <Target className="h-5 w-5 text-primary" />
             <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
           </div>
-          <DialogHeader className="text-left">
+          <DialogHeader>
             <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">{title}</DialogTitle>
             <DialogDescription className="text-xs sm:text-sm font-medium">{desc}</DialogDescription>
           </DialogHeader>
@@ -434,7 +434,7 @@ function ShareWordDialog({
 
   const body = (
     <ScrollArea className="flex-grow min-h-[300px]">
-        <div className="p-4 sm:p-10">
+        <div className="p-4 sm:p-10 text-left">
             {view === 'hub' && renderHub}
             {view === 'books' && renderBooks}
             {view === 'chapters' && renderChapters}
@@ -521,7 +521,7 @@ function MatchmakingDialog({
                 <HeartHandshake className="h-5 w-5 text-primary" />
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Matching</span>
             </div>
-            <DialogHeader className="text-left">
+            <DialogHeader>
                 <DialogTitle className="text-2xl font-black font-headline uppercase">Find Match for {sourceSoul.firstName}</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
             </DialogHeader>
@@ -670,7 +670,7 @@ function ProfileActionDialog({
                     </DialogHeader>
                 </div>
                 <div className="flex-1 min-h-0">
-                    <ScrollArea className="h-full text-left">
+                    <ScrollArea className="h-full">
                         {content}
                     </ScrollArea>
                 </div>
@@ -948,7 +948,7 @@ function SoulProfileContent({
                         <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                             <DialogHeader className="sr-only text-center"><DialogTitle>Soul Photo</DialogTitle></DialogHeader>
                             <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
+                                <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
                                     <Image src={soul.photoURL} alt={soul.firstName} fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                                 </div>
                             </div>
@@ -1322,7 +1322,7 @@ function SoulProfileContent({
           </div>
           <div className="p-8 space-y-6">
             <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Details</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
                 <Textarea 
                     placeholder="e.g. Provided food items, helped with bill..." 
                     onChange={e => setCustomMessageText(e.target.value)} 
