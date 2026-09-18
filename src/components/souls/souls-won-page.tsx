@@ -97,7 +97,7 @@ import Papa from 'papaparse';
 import Image from "next/image";
 import { Checkbox } from "../ui/checkbox";
 
-const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table'), {
+const SoulsWonTable = dynamic(() => import('@/components/souls/souls-won-table').then(m => m.SoulsWonTable), {
   loading: () => <div className="flex justify-center p-12 text-left"><Loader2 className="h-8 w-8 animate-spin" /></div>,
   ssr: false
 });
@@ -1018,7 +1018,7 @@ export default function SoulsWonPage() {
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <div className="flex items-center gap-2 mb-2">
                                 <BarChart3 className="h-4 w-4 text-primary" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Demographic View</span>
+                                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Demographic View</span>
                             </div>
                             <DialogHeader className="text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedFilterGroup?.value} Directory</DialogTitle>
