@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Typo corrections and multi-device cart sync - 2025-06-15T19:00:00Z
+    // Deployment trigger: Corrected souls subcollection permission - 2025-06-16T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -85,11 +85,10 @@ service cloud.firestore {
       }
 
       match /souls/{soulId} {
-        allow read: if isOwner(soulId) || isOwner(resource.data.userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
-        allow create, delete: if isAuthenticated() && (isOwner(soulId) || isOwner(request.resource.data.userId));
+        allow read: if isOwner(userId);
+        allow create, delete: if isAuthenticated() && (isOwner(userId) || isOwner(request.resource.data.userId));
         allow update: if isAuthenticated() && (
-          isOwner(soulId) || 
-          isOwner(resource.data.userId) ||
+          isOwner(userId) || 
           isFellowshipMember(resource.data.get('fellowshipId', '')) || 
           isFellowshipMember(resource.data.get('associationId', ''))
         );
