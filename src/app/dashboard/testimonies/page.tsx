@@ -544,7 +544,7 @@ function TestimoniesContent() {
 
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
                 <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left text-left text-left text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left text-left">
                     <DialogHeader className="text-left text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Share your request with the Body of Christ.</DialogDescription>
@@ -567,7 +567,7 @@ function TestimoniesContent() {
 
 export default function TestimoniesPage() {
     return (
-        <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+        <Suspense fallback={<div className="flex justify-center py-20 text-left text-left"><Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left" /></div>}>
             <TestimoniesContent />
         </Suspense>
     );
