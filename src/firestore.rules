@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Corrected souls subcollection permission - 2025-06-18T10:00:00Z
+    // Deployment trigger: Corrected souls subcollection permission for listing - 2025-06-18T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
