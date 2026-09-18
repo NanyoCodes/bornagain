@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Corrected souls ownership check - 2025-03-05T16:00:00Z
+    // Deployment trigger: Refined souls permission logic - 2025-03-05T17:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
