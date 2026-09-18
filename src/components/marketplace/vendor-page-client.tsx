@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDoc, useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { collection, query, orderBy, doc, addDoc, serverTimestamp, updateDoc, arrayUnion, deleteDoc, writeBatch, getDocs, where, getDoc, setDoc, limit } from 'firebase/firestore';
-import type { VendorProfile, Meal, UserProfile, MealGift, MealGiftStatus, Soul } from '@/lib/types';
+import type { VendorProfile, Meal, UserProfile, MealGift, MealGiftStatus, Soul, Chat } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,7 +36,8 @@ import {
     Timer,
     XCircle,
     Globe,
-    Check
+    Check,
+    Quote
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -259,7 +260,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                         <DialogDescription className="text-sm font-medium mt-1 text-left">Manage and update deliveries for your Kingdom offerings.</DialogDescription>
                     </DialogHeader>
                 </div>
-                <ScrollArea className="flex-grow p-8">
+                <ScrollArea className="flex-grow p-8 text-left">
                     {listContent}
                 </ScrollArea>
             </DialogContent>
@@ -267,7 +268,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     );
 }
 
-function VendorPageClient({ vendorId }: { vendorId: string }) {
+export default function VendorPageClient({ vendorId }: { vendorId: string }) {
     const searchParams = useSearchParams();
     const soulId = searchParams?.get('soulId') || null;
     const soulName = searchParams?.get('soulName') || null;
@@ -545,6 +546,14 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
         batch.commit().then(() => { toast({ title: 'Offering Confirmed!' }); router.push('/souls-won'); }).finally(() => setIsProcessingOrder(false));
     };
 
+    if (loading || !vendor) {
+        return (
+            <div className="flex h-screen items-center justify-center text-left">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+        );
+    }
+
     const editProfileForm = (
         <form onSubmit={handleUpdateProfile} className="flex flex-col h-full min-h-0 text-left">
             <ScrollArea className="flex-grow min-h-0 text-left">
@@ -800,10 +809,10 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover/text:rotate-0 transition-transform text-left">
                                             <CreditCard className="h-20 w-20 text-primary rotate-12 text-left" />
                                         </div>
-                                        <div className="relative z-10 space-y-4 text-left text-left">
-                                            <div className="flex items-center gap-2 mb-2 text-left text-left">
-                                                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Checkout Guidance</span>
+                                        <div className="relative z-10 space-y-4 text-left text-left text-left">
+                                            <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
+                                                <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left text-left" />
+                                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Checkout Guidance</span>
                                             </div>
                                             <div className="space-y-3 text-left">
                                                 <div className="flex justify-between items-center text-left">
@@ -811,9 +820,9 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
                                                     <span className="text-[11px] font-black text-foreground uppercase tracking-tight text-left">Multi-Currency Hub</span>
                                                 </div>
                                                 <Separator className="bg-primary/10 text-left" />
-                                                <div className="flex flex-col gap-1 text-left">
-                                                    <p className="text-lg font-black uppercase tracking-tight text-primary text-left">Action Required</p>
-                                                    <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left text-left text-left">
+                                                <div className="flex flex-col gap-1 text-left text-left">
+                                                    <p className="text-lg font-black uppercase tracking-tight text-primary text-left text-left">Action Required</p>
+                                                    <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left text-left text-left text-left">
                                                         To fulfill this offering, please review the provider's payment instructions below. after payment is done, dispatch your gift
                                                     </p>
                                                 </div>
@@ -831,49 +840,49 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <div className="h-24 text-left" />
                         </div>
                     </ScrollArea>
-                    {cartItems.length > 0 && (<DrawerFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left">{(isProcessingOrder) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}DISPATCH OFFERINGS</Button></DrawerFooter>)}
+                    {cartItems.length > 0 && (<DrawerFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left text-left text-left"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left text-left text-left text-left">{(isProcessingOrder) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" />}DISPATCH OFFERINGS</Button></DrawerFooter>)}
                 </DrawerContent>
             </Drawer>
 
             <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{addLabel}</DialogTitle></DialogHeader></div>
-                    <div className="flex-grow overflow-hidden text-left">{itemForm()}</div>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">{addLabel}</DialogTitle></DialogHeader></div>
+                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left">{itemForm()}</div>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Offering</DialogTitle></DialogHeader></div>
-                    <div className="flex-grow overflow-hidden text-left">{itemForm(itemToEdit, true)}</div>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left text-left">
+                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left">Edit Offering</DialogTitle></DialogHeader></div>
+                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left">{itemForm(itemToEdit, true)}</div>
                 </DialogContent>
             </Dialog>
 
             <VendorOrdersSheet vendorId={vendorId} isOpen={isOrdersOpen} onOpenChange={setIsOrdersOpen} />
 
             <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Storefront</DialogTitle></DialogHeader></div>
-                    <div className="flex-grow overflow-hidden text-left">{editProfileForm}</div>
+                <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
+                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Edit Storefront</DialogTitle></DialogHeader></div>
+                    <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{editProfileForm}</div>
                 </DialogContent>
             </Dialog>
             
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left">
-                        <AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}Confirm</AlertDialogAction>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left text-left">
+                        <AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left text-left text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left" />}Confirm</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
-                    <AlertDialogHeader className="text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
-                        <AlertDialogCancel disabled={isDeletingItem} className="rounded-xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}Delete</AlertDialogAction>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left text-left text-left text-left text-left text-left text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                        <AlertDialogCancel disabled={isDeletingItem} className="rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />}Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
@@ -881,4 +890,3 @@ function VendorPageClient({ vendorId }: { vendorId: string }) {
     );
 }
 
-export default VendorPageClient;
