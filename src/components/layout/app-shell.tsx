@@ -88,14 +88,14 @@ import { SplashScreen } from "../common/splash-screen";
 const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
 
 const navItems = [
-  { href: "/growth", label: "GROWTH", icon: TrendingUp, color: "text-chart-1" },
+  { href: "/growth", label: "Growth", icon: TrendingUp, color: "text-chart-1" },
   { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
-  { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "text-chart-3" },
+  { href: "/testimonies", label: "Testimonies", icon: Newspaper, color: "text-chart-3" },
   { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
-  { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
+  { href: "/victory-hub", label: "Victory", icon: ShieldCheck, color: "text-primary" },
   { href: "/events", label: "Events", icon: CalendarDays, color: "text-primary" },
-  { href: "/victory-hub", label: "VICTORY", icon: ShieldCheck, color: "text-primary" },
-  { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
+  { href: "/fellowships", label: "Fellowship", icon: Users, color: "text-primary" },
+  { href: "/accountability", label: "Accountability", icon: HeartHandshake, color: "text-primary" },
 ];
 
 const inspirationalMessages = [
@@ -506,17 +506,17 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 
 function BottomNavBar() {
     const pathname = usePathname();
-    const bottomNavItems = navItems.filter(item => 
-        item.label === "GROWTH" || 
-        item.label === "Souls" || 
-        item.label === "TESTIMONIES" || 
-        item.label === "Campaigns" ||
-        item.label === "VICTORY"
-    );
+    const bottomNavItems = [
+        { href: "/growth", label: "Growth", icon: TrendingUp },
+        { href: "/souls-won", label: "Souls", icon: UserPlus },
+        { href: "/testimonies", label: "Testimonies", icon: Newspaper },
+        { href: "/campaigns", label: "Campaigns", icon: Target },
+        { href: "/victory-hub", label: "Victory", icon: ShieldCheck },
+    ];
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)] text-left">
-        <div className="flex min-h-[4.5rem] h-auto items-center justify-around px-1 py-1 text-left">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#09090b] border-t border-white/5 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden">
+        <div className="flex h-16 items-stretch justify-around px-1 py-1">
           {bottomNavItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
@@ -524,39 +524,32 @@ function BottomNavBar() {
                 key={item.href}
                 href={item.href}
                 prefetch={true}
-                className="relative flex flex-1 flex-col items-center justify-center min-w-0 text-left"
+                className="relative flex flex-1 flex-col items-center justify-center min-w-0"
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex flex-col items-center justify-center rounded-xl px-1 py-1 min-h-[56px] w-full text-left"
-                  whileTap={{ scale: 0.85 }}
+                  className="relative flex flex-col items-center justify-center rounded-xl px-1 py-1 h-full w-full"
+                  whileTap={{ scale: 0.9 }}
                 >
-                  {isActive && (
-                    <motion.div
-                      layoutId="nav-active-pill"
-                      className="absolute inset-0 bg-primary rounded-xl text-left"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <motion.div
-                    animate={{ 
-                      scale: isActive ? 1.15 : 1,
-                      color: isActive ? "#ffffff" : "var(--muted-foreground)"
-                    }}
-                    transition={{ duration: 0.2 }}
-                    className={cn(
-                      "relative z-10 text-left",
-                      isActive ? "text-white" : "text-muted-foreground"
+                  <div className="relative h-11 w-11 flex items-center justify-center mb-0.5">
+                    {isActive && (
+                      <motion.div
+                        layoutId="nav-active-circle"
+                        className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#6366f1] via-[#a855f7] to-[#f97316] shadow-[0_0_15px_rgba(168,85,247,0.4)]"
+                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                      />
                     )}
-                  >
-                    <item.icon className={cn("h-6 w-6 mb-1 text-left", !isActive && item.color)} />
-                    <span className={cn(
-                        "text-[8px] font-black uppercase tracking-tighter transition-all leading-none text-center text-left",
-                        isActive ? "opacity-100" : "opacity-60"
-                    )}>
-                        {item.label}
-                    </span>
-                  </motion.div>
+                    <item.icon className={cn(
+                      "h-5 w-5 relative z-10 transition-colors duration-300",
+                      isActive ? "text-white" : "text-zinc-500"
+                    )} />
+                  </div>
+                  <span className={cn(
+                    "text-[9px] font-black uppercase tracking-tighter transition-colors duration-300 leading-none",
+                    isActive ? "text-white" : "text-zinc-500"
+                  )}>
+                    {item.label}
+                  </span>
                 </motion.div>
               </Link>
             )
