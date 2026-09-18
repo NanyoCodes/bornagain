@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo, Suspense } from "react";
@@ -36,10 +35,11 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Testimony, PrayerRequest, UserProfile, AccountabilityRequest } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCollection, useFirestore, useUser, useDoc } from "@/firebase";
+import { useCollection, useFirestore, useUser, useDoc, useStorage } from "@/firebase";
 import { collection, query, orderBy, doc, deleteDoc, runTransaction, deleteField, where } from "firebase/firestore";
 import { useSearch } from "@/context/search-context";
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
@@ -159,6 +159,7 @@ function TestimoniesContent() {
       }
     }
   }, [highlightedTestimonyId, activeTab, loadingTestimonies]);
+
 
   const filteredTestimonies = useMemo(() => {
     if (!testimonies) return [];
@@ -294,23 +295,23 @@ function TestimoniesContent() {
     <div className="space-y-6 md:space-y-10 w-full max-w-7xl mx-auto pt-4 text-left">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-8 space-y-6 md:space-y-10 text-left">
-            {/* Interaction Box - Redesigned White Pill */}
-            <Card className="rounded-[1.5rem] sm:rounded-[2rem] border shadow-md bg-card mx-4 sm:mx-0 overflow-hidden">
-                <CardContent className="p-4 sm:p-6 space-y-4">
-                    <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 border shadow-sm">
+            {/* Interaction Box - Redesigned White Card */}
+            <Card className="rounded-[1.5rem] sm:rounded-[2rem] border shadow-md bg-card mx-4 sm:mx-0 overflow-hidden text-left">
+                <CardContent className="p-4 sm:p-6 space-y-4 text-left">
+                    <div className="flex items-center gap-3 text-left">
+                        <Avatar className="h-10 w-10 border shadow-sm shrink-0">
                             <AvatarImage src={userProfile?.photoURL} />
                             <AvatarFallback className="bg-primary/10 text-primary font-bold">{userProfile?.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <button 
-                            className="flex-1 text-left px-5 py-2.5 rounded-full bg-muted/20 hover:bg-muted/30 transition-colors text-sm font-medium text-muted-foreground"
+                            className="flex-1 text-left px-5 py-2.5 rounded-full bg-muted/20 hover:bg-muted/30 transition-colors text-sm font-medium text-muted-foreground truncate"
                             onClick={() => setIsTestimonyDialogOpen(true)}
                         >
                             Share what God has done today...
                         </button>
                     </div>
                     <Separator className="opacity-50" />
-                    <div className="flex items-center justify-around gap-2 px-1">
+                    <div className="flex items-center justify-around gap-2 px-1 text-left">
                         <Button 
                             variant="ghost" 
                             className="flex-1 gap-2 rounded-xl h-10 font-bold uppercase tracking-tight text-[10px] sm:text-xs text-primary hover:bg-primary/5"
@@ -341,11 +342,11 @@ function TestimoniesContent() {
                 </CardContent>
             </Card>
 
-            <div className="px-4 sm:px-0">
+            <div className="px-4 sm:px-0 text-left">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full text-left">
-                    <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8">
+                    <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted/40 p-1 h-12 sm:h-14 mb-8 text-left">
                         <TabsTrigger value="testimonies" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Testimonies</TabsTrigger>
-                        <TabsTrigger value="prayers" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full">Prayer requests</TabsTrigger>
+                        <TabsTrigger value="prayers" className="rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-widest h-full text-left">Prayer requests</TabsTrigger>
                     </TabsList>
                     
                     <TabsContent value="testimonies" className="outline-none text-left">
@@ -366,7 +367,7 @@ function TestimoniesContent() {
                                 />
                             ))}
                             {!loading && filteredTestimonies?.length === 0 && (
-                            <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
+                            <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left text-left">
                                 <Newspaper className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
                                 <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">Your Altar of Praise</h3>
                                 <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
@@ -378,7 +379,7 @@ function TestimoniesContent() {
                     </TabsContent>
                     
                     <TabsContent value="prayers" className="outline-none text-left">
-                        <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full">
+                        <div className="flex flex-col gap-0 sm:gap-6 pb-24 sm:pb-12 text-left -mx-3 sm:mx-0 w-[calc(100%+1.5rem)] sm:w-full text-left">
                             {loading ? (
                             [...Array(3)].map((_, i) => (
                                 <Card key={i} className="flex flex-col h-full rounded-none sm:rounded-3xl border bg-card/50 backdrop-blur-sm text-left"><CardContent className="p-6 space-y-4 text-left"><Skeleton className="h-12 w-12 rounded-full text-left" /><div className="w-full space-y-2 text-left"><Skeleton className="h-4 w-1/4 text-left" /><Skeleton className="h-4 w-1/5 text-left" /></div><Skeleton className="h-5 w-3/4 text-left" /><Skeleton className="h-4 w-full text-left" /><Skeleton className="h-4 w-full text-left" /></CardContent></Card>
@@ -393,7 +394,7 @@ function TestimoniesContent() {
                             />
                             ))}
                             {!loading && filteredPrayerRequests?.length === 0 && (
-                            <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left">
+                            <div className="col-span-full text-center py-32 px-8 flex flex-col items-center text-left text-left">
                                 <HandHeart className="h-20 w-20 text-muted-foreground opacity-10 mb-6 text-left" />
                                 <h3 className="text-2xl font-black font-headline uppercase tracking-tight text-left">United in Faith</h3>
                                 <p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-sm text-balance text-center text-left">
@@ -470,7 +471,7 @@ function TestimoniesContent() {
                 <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                   <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                     <SheetHeader className="text-left">
-                      <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left"> {prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</SheetTitle>
+                      <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left"> {prayerToAnswer ? 'Record Miracle' : 'Share Testimony'}</SheetTitle>
                       <SheetDescription className="text-sm font-medium mt-1 text-left">{prayerToAnswer ? "Share how God answered this prayer." : "Encourage others with what God has done."}</SheetDescription>
                     </SheetHeader>
                   </div>
@@ -503,7 +504,7 @@ function TestimoniesContent() {
               <Dialog open={!!testimonyToEdit} onOpenChange={(open) => !open && setTestimonyToEdit(null)}>
                 <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                   <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
+                    <DialogHeader className="text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Testimony</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Make changes to your testimony here.</DialogDescription>
                     </DialogHeader>
@@ -517,9 +518,9 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={!!prayerToEdit} onOpenChange={(open) => !open && setPrayerToEdit(null)}>
-                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
+                <DialogContent className="sm:max-w-lg rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left">
+                    <DialogHeader className="text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left text-left">Update the details of your request.</DialogDescription>
                     </DialogHeader>
@@ -533,9 +534,9 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={isTestimonyDialogOpen} onOpenChange={(open) => !open && setIsTestimonyDialogOpen(false)}>
-                <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
+                <DialogContent className="sm:max-w-3xl rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                    <DialogHeader className="text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-bold font-headline uppercase tracking-tight text-left">{prayerToAnswer ? 'Record Answer' : 'Share Testimony'}</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">{prayerToAnswer ? "Share how God answered this prayer request." : "Encourage others by sharing God's goodness."}</DialogDescription>
                     </DialogHeader>
@@ -549,9 +550,9 @@ function TestimoniesContent() {
               </Dialog>
 
               <Dialog open={isPrayerDialogOpen} onOpenChange={(open) => !open && setIsPrayerDialogOpen(false)}>
-                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left">
-                  <div className="p-8 border-b bg-muted/10 text-left">
-                    <DialogHeader className="text-left">
+                <DialogContent className="sm:max-w-lg rounded-3xl p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+                  <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                    <DialogHeader className="text-left text-left text-left text-left">
                         <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Share Prayer Request</DialogTitle>
                         <DialogDescription className="text-sm font-medium text-left">Share your request with the Body of Christ.</DialogDescription>
                     </DialogHeader>
