@@ -621,7 +621,7 @@ export default function SoulsWonPage() {
     if (!soulToDelete || !user || !firestore) return;
     setIsDeleting(true);
 
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, soulToDelete.id);
+    const soulRef = doc(firestore, `users/${soulToDelete.userId}/souls`, soulToDelete.id);
     const globalSoulRef = doc(firestore, 'souls', soulToDelete.id);
 
     const batch = writeBatch(firestore);
@@ -641,7 +641,7 @@ export default function SoulsWonPage() {
   const handleAssignGroup = (s: Soul, fellowshipId: string, groupType: 'Fellowship' | 'Association') => {
     if (!user || !firestore) return;
 
-    const soulRef = doc(firestore, `users/${user.uid}/souls`, s.id);
+    const soulRef = doc(firestore, `users/${s.userId}/souls`, s.id);
     const globalSoulRef = doc(firestore, 'souls', s.id);
     const selectedGroup = fellowships?.find(f => f.id === fellowshipId);
     
@@ -852,6 +852,7 @@ export default function SoulsWonPage() {
                         </Card>
                     </div>
 
+                    {/* Gender Demographics */}
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
@@ -893,6 +894,7 @@ export default function SoulsWonPage() {
                         </Card>
                     </div>
 
+                    {/* Marital Demographics */}
                     <div className="space-y-4 text-left">
                         <div className="flex items-center gap-3 text-left">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20 text-left">
@@ -1067,7 +1069,7 @@ export default function SoulsWonPage() {
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left text-left text-left">
                                 <DrawerHeader className="text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Add New Soul</DrawerTitle><DrawerDescription className="text-sm text-left text-left text-left">Record a new life won for Christ.</DrawerDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left text-left text-left">
@@ -1082,7 +1084,7 @@ export default function SoulsWonPage() {
                     </Drawer>
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
                                 <DrawerHeader className="text-left text-left text-left text-left text-left"><DrawerTitle className="text-2xl font-black font-headline text-left text-left text-left text-left">Edit Record</DrawerTitle><DrawerDescription className="text-sm text-left text-left text-left">Update soul identity and mission details.</DrawerDescription></DrawerHeader>
                             </div>
                             <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left">
@@ -1095,7 +1097,7 @@ export default function SoulsWonPage() {
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left">
-                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
+                            <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left">
                                 <DialogHeader className="text-left text-left text-left text-left">
                                     <DialogTitle className="text-2xl font-bold font-headline text-left text-left text-left">Add New Soul</DialogTitle>
                                     <DialogDescription className="text-sm text-left text-left text-left">Record a new life won for Christ.</DialogDescription>

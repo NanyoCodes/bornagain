@@ -37,7 +37,8 @@ import {
     XCircle,
     Globe,
     Check,
-    Quote
+    Quote,
+    ChevronDown
 } from 'lucide-react';
 import { 
     Dialog, 
@@ -551,14 +552,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             .finally(() => setIsProcessingOrder(false));
     };
 
-    if (loading || !vendor) {
-        return (
-            <div className="flex h-screen items-center justify-center text-left">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            </div>
-        );
-    }
-
     const editProfileForm = (
         <form onSubmit={handleUpdateProfile} className="flex flex-col h-full min-h-0 text-left">
             <ScrollArea className="flex-grow min-h-0">
@@ -568,8 +561,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         <ImageUpload initialImageUrl={vendorPhotoURL} onUploadComplete={setVendorPhotoURL} storagePath="vendor-branding" cropAspect={21/9}/>
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
-                        <Input name="businessName" defaultValue={vendor?.businessName || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" required />
+                        <Label htmlFor="businessName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Business Name</Label>
+                        <Input name="businessName" defaultValue={vendor?.businessName || ""} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" required />
                     </div>
                     <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Store Currency</Label>
@@ -655,83 +648,91 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </form>
     );
 
+    if (loading || !vendor) {
+        return (
+            <div className="flex h-screen items-center justify-center text-left">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+        );
+    }
+
     return (
         <div className="w-full text-left">
             <div className="space-y-8 pb-32 max-w-4xl mx-auto text-left">
-                <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4">
-                    <div className="flex flex-col gap-4">
-                        <div className="flex items-center gap-4">
-                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm">
-                                <ArrowLeft className="h-6 w-6" />
+                <div className="px-4 sm:px-0 flex flex-col gap-6 pt-4 text-left">
+                    <div className="flex flex-col gap-4 text-left">
+                        <div className="flex items-center gap-4 text-left">
+                            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full shrink-0 h-10 w-10 border bg-background shadow-sm text-left">
+                                <ArrowLeft className="h-6 w-6 text-left" />
                             </Button>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2.5 mb-1">
-                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary" /> : <Utensils className="h-3.5 w-3.5 text-primary" />}
-                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]"> {centerLabel}</span>
+                            <div className="flex-1 min-w-0 text-left">
+                                <div className="flex items-center gap-2.5 mb-1 text-left">
+                                    {isGiftVendor ? <Gift className="h-3.5 w-3.5 text-primary text-left" /> : <Utensils className="h-3.5 w-3.5 text-primary text-left" />}
+                                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left"> {centerLabel}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted">
-                            {vendor?.photoURL ? (
-                                <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover" unoptimized />
+                        <div className="relative w-full aspect-[21/9] sm:aspect-[3/1] rounded-[2rem] sm:rounded-[3rem] overflow-hidden shadow-2xl border-4 border-background bg-muted text-left">
+                            {vendor.photoURL ? (
+                                <Image src={vendor.photoURL} alt={vendor.businessName} fill className="object-cover text-left" unoptimized />
                             ) : (
-                                <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5">
-                                    <Store className="h-16 w-16 text-primary opacity-10" />
-                                    <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mt-2">Kingdom Hub</p>
+                                <div className="w-full h-full flex flex-col items-center justify-center bg-primary/5 text-left">
+                                    <Store className="h-16 w-16 text-primary opacity-10 text-left" />
+                                    <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mt-2 text-left">Kingdom Hub</p>
                                 </div>
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                            <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%]">
-                                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance">{vendor?.businessName}</h1>
-                                <div className="flex items-center gap-2 mt-2 opacity-80">
-                                    <MapPin className="h-3.5 w-3.5 text-primary" />
-                                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor?.location || 'Kingdom Network'}</p>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
+                            <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%] text-left">
+                                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left">{vendor.businessName}</h1>
+                                <div className="flex items-center gap-2 mt-2 opacity-80 text-left">
+                                    <MapPin className="h-3.5 w-3.5 text-primary text-left" />
+                                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate text-left">{vendor.location || 'Kingdom Network'}</p>
                                 </div>
                             </div>
                             {isOwner && (
-                                <Button variant="outline" size="icon" className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80" onClick={() => setIsEditProfileOpen(true)}><Camera className="h-5 w-5" /></Button>
+                                <Button variant="outline" size="icon" className="absolute top-4 right-4 rounded-xl h-10 w-10 bg-background/50 backdrop-blur-md border-white/20 text-white hover:bg-background/80 text-left" onClick={() => setIsEditProfileOpen(true)}><Camera className="h-5 w-5 text-left" /></Button>
                             )}
                         </div>
                     </div>
                     
-                    <div className="flex items-center justify-between gap-4 px-1">
+                    <div className="flex items-center justify-between gap-4 px-1 text-left">
                         {!isOwner ? (
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0" onClick={handleInitiateChat} disabled={isChatLoading}>
-                                            {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessagesSquare className="h-5 w-5" />}
+                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0 text-left" onClick={handleInitiateChat} disabled={isChatLoading}>
+                                            {isChatLoading ? <Loader2 className="h-5 w-5 animate-spin text-left" /> : <MessagesSquare className="h-5 w-5 text-left" />}
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Provider Chat</p></TooltipContent>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left"><p className="text-[10px] font-bold uppercase text-left">Provider Chat</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         ) : (
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0" onClick={() => setIsOrdersOpen(true)}>
-                                            <ShoppingBag className="h-5 w-5" />
+                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0 text-left" onClick={() => setIsOrdersOpen(true)}>
+                                            <ShoppingBag className="h-5 w-5 text-left" />
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl"><p className="text-[10px] font-bold uppercase">Manage Orders</p></TooltipContent>
+                                    <TooltipContent className="rounded-xl border-primary/20 shadow-xl text-left"><p className="text-[10px] font-bold uppercase text-left">Manage Orders</p></TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         )}
                         {isOwner && (
-                            <Button variant="outline" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary">
-                                <Edit className="mr-2 h-4 w-4" /> MANAGE HUB
+                            <Button variant="outline" onClick={() => setIsEditProfileOpen(true)} className="rounded-xl h-11 px-6 font-black uppercase tracking-widest text-[10px] shadow-md border-primary/20 text-primary text-left">
+                                <Edit className="mr-2 h-4 w-4 text-left" /> MANAGE HUB
                             </Button>
                         )}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-0 text-left">
                     {isOwner && (
-                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm" onClick={() => setIsAddMealOpen(true)}>
-                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4"><Plus className="h-6 w-6 text-primary" /></div>
-                            <h3 className="font-black uppercase tracking-widest text-primary text-xs"> {addLabel}</h3>
+                        <Card className="rounded-[2.5rem] border-2 border-dashed border-primary/20 bg-primary/[0.02] flex flex-col items-center justify-center p-8 text-center cursor-pointer hover:bg-primary/[0.05] transition-all min-h-[280px] shadow-sm text-left" onClick={() => setIsAddMealOpen(true)}>
+                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 text-left"><Plus className="h-6 w-6 text-primary text-left" /></div>
+                            <h3 className="font-black uppercase tracking-widest text-primary text-xs text-left"> {addLabel}</h3>
                         </Card>
                     )}
 
@@ -739,39 +740,39 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         const cartItem = cart[meal.id];
                         const itemSymbol = getCurrencySymbol(meal.currency);
                         return (
-                            <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full">
-                                <CardContent className="p-0">
-                                    <div className="aspect-[4/3] relative bg-muted">
-                                        {meal.photoURL ? <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10" />}</div>}
-                                        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5">
-                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest">{itemSymbol}{meal.price.toLocaleString()}</Badge>
-                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
+                            <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
+                                <CardContent className="p-0 text-left">
+                                    <div className="aspect-[4/3] relative bg-muted text-left">
+                                        {meal.photoURL ? <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover text-left" /> : <div className="w-full h-full flex items-center justify-center text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left" />}</div>}
+                                        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left">
+                                            <Badge className="bg-primary text-white font-black text-[10px] px-3 h-8 rounded-full shadow-lg border-none tracking-widest text-left">{itemSymbol}{meal.price.toLocaleString()}</Badge>
+                                            {meal.deliveryFee ? <Badge variant="outline" className="bg-background/80 backdrop-blur-md text-muted-foreground font-black text-[7px] px-1.5 h-4 rounded-full border-none tracking-tighter shadow-sm text-left">+ {itemSymbol}{meal.deliveryFee.toLocaleString()} DEL</Badge> : null}
                                         </div>
-                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in"> {cartItem.quantity}</div>}
+                                        {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-left"> {cartItem.quantity}</div>}
                                     </div>
-                                    <div className="p-6 sm:p-8 space-y-4 flex-grow">
-                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight">{meal.name}</h3>
-                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed">{meal.description || `Verified Kingdom service item.`}</p>
+                                    <div className="p-6 sm:p-8 space-y-4 flex-grow text-left">
+                                        <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight text-left">{meal.name}</h3>
+                                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left">{meal.description || `Verified Kingdom service item.`}</p>
                                     </div>
                                 </CardContent>
-                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2">
-                                    <div className="flex-1 flex flex-col gap-2 w-full">
-                                        <div className="flex flex-col sm:flex-row items-center gap-2">
+                                <CardFooter className="p-6 sm:p-8 pt-0 flex gap-2 text-left">
+                                    <div className="flex-1 flex flex-col gap-2 w-full text-left">
+                                        <div className="flex flex-col sm:flex-row items-center gap-2 text-left">
                                             {isOwner && (
-                                                <div className="flex gap-2 w-full sm:w-auto">
-                                                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary" /></Button>
-                                                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4" /></Button>
+                                                <div className="flex gap-2 w-full sm:w-auto text-left">
+                                                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-left" onClick={() => { setItemPhotoURL(meal.photoURL || ''); setItemToEdit(meal); }}><Edit className="h-4 w-4 text-primary text-left" /></Button>
+                                                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4 text-left" /></Button>
                                                 </div>
                                             )}
-                                            <div className="flex-1 min-w-0 w-full">
+                                            <div className="flex-1 min-w-0 w-full text-left">
                                                 {cartItem ? (
-                                                    <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border">
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3"/></Button>
-                                                        <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter">IN PACKAGE</span>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3"/></Button>
+                                                    <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left">
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3 text-left"/></Button>
+                                                        <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-left">IN PACKAGE</span>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3 text-left"/></Button>
                                                     </div>
                                                 ) : (
-                                                    <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
+                                                    <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95 text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
                                                 )}
                                             </div>
                                         </div>
@@ -783,10 +784,10 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </div>
 
                 {cartCount > 0 && (
-                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10">
-                        <Button onClick={() => setIsCartOpen(true)} className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8">
-                            <div className="flex items-center gap-3"><div className="relative"><ShoppingCart className="h-5 w-5" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center"> {cartCount}</span></div><span className="text-xs">VIEW PACKAGE</span></div>
-                            <span className="text-sm">CHECKOUT</span>
+                    <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 w-full max-w-[22rem] px-4 animate-in slide-in-from-bottom-10 text-left">
+                        <Button onClick={() => setIsCartOpen(true)} className="w-full h-14 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-primary/40 border-4 border-background flex items-center justify-between px-8 text-left">
+                            <div className="flex items-center gap-3 text-left"><div className="relative text-left"><ShoppingCart className="h-5 w-5 text-left" /><span className="absolute -top-2 -right-2 bg-white text-primary text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center text-left text-left"> {cartCount}</span></div><span className="text-xs text-left">VIEW PACKAGE</span></div>
+                            <span className="text-sm text-left">CHECKOUT</span>
                         </Button>
                     </div>
                 )}
@@ -823,8 +824,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
                                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Checkout Guidance</span>
                                             </div>
-                                            <div className="space-y-3 text-left">
-                                                <div className="flex justify-between items-center text-left">
+                                            <div className="space-y-3 text-left text-left">
+                                                <div className="flex justify-between items-center text-left text-left">
                                                     <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-left">Package subtotal</span>
                                                     <span className="text-[11px] font-black text-foreground uppercase tracking-tight text-left">Multi-Currency Hub</span>
                                                 </div>
@@ -832,7 +833,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                                 <div className="flex flex-col gap-1 text-left">
                                                     <p className="text-lg font-black uppercase tracking-tight text-primary text-left">Action Required</p>
                                                     <p className="text-xs text-muted-foreground leading-relaxed font-medium text-left">
-                                                        To fulfill this offering, please review the provider's payment instructions below. after payment is done, dispatch your gift
+                                                        after payment is done, dispatch your gift
                                                     </p>
                                                 </div>
                                             </div>
@@ -844,12 +845,12 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     ))}</div></div>
                                 </div>
                             ) : (
-                                <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 text-left" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-left">Add items to place an order.</p></div>
+                                <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 text-left text-left" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-left text-left">Add items to place an order.</p></div>
                             )}
                             <div className="h-24 text-left" />
                         </div>
                     </ScrollArea>
-                    {cartItems.length > 0 && (<DrawerFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left">{(isProcessingOrder) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}DISPATCH OFFERINGS</Button></DrawerFooter>)}
+                    {cartItems.length > 0 && (<DrawerFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left">{(isProcessingOrder) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}DISPATCH OFFERINGS</Button></DrawerFooter>)}
                 </DrawerContent>
             </Drawer>
 
@@ -871,32 +872,30 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
             <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
                 <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Storefront</DialogTitle></DialogHeader></div>
-                    <div className="flex-grow overflow-hidden text-left">{editProfileForm}</div>
+                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left"><DialogHeader className="text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Storefront</DialogTitle></DialogHeader></div>
+                    <div className="flex-grow overflow-hidden text-left text-left">{editProfileForm}</div>
                 </DialogContent>
             </Dialog>
             
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left">
-                        <AlertDialogCancel disabled={isDeletingStore} className="rounded-xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}Confirm</AlertDialogAction>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
+                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left" />}Confirm</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left">
-                        <AlertDialogCancel disabled={isDeletingItem} className="rounded-xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}Delete</AlertDialogAction>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
+                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left" />}Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
         </div>
     );
 }
-
-export { VendorPageClient };
