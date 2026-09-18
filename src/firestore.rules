@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Corrected souls subcollection permission - 2025-06-16T18:30:00Z
+    // Deployment trigger: Corrected souls subcollection permission - 2025-06-17T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -164,7 +164,7 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId);
+        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
