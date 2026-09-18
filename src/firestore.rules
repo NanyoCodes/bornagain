@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Unified security and path optimization - 2025-06-17T09:00:00Z
+    // Deployment trigger: Corrected souls subcollection permission - 2025-06-18T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -24,6 +24,33 @@ service cloud.firestore {
              fellowshipId != "none" &&
              exists(/databases/$(database)/documents/fellowships/$(fellowshipId)) &&
              request.auth.uid in get(/databases/$(database)/documents/fellowships/$(fellowshipId)).data.get('memberIds', []);
+    }
+
+    function isFellowshipOrganizer(fId) {
+      return isAuthenticated() && 
+             fId != null &&
+             fId is string &&
+             fId != "" &&
+             exists(/databases/$(database)/documents/fellowships/$(fId)) &&
+             get(/databases/$(database)/documents/fellowships/$(fId)).data.organizerId == request.auth.uid;
+    }
+
+    function isCampaignOrganizer(cId) {
+      return isAuthenticated() && 
+             cId != null && 
+             cId is string && 
+             cId != "" &&
+             exists(/databases/$(database)/documents/campaigns/$(cId)) &&
+             get(/databases/$(database)/documents/campaigns/$(cId)).data.organizerId == request.auth.uid;
+    }
+
+    function isEventOrganizer(eId) {
+      return isAuthenticated() && 
+             eId != null && 
+             eId is string && 
+             eId != "" && 
+             exists(/databases/$(database)/documents/events/$(eId)) && 
+             get(/databases/$(database)/documents/events/$(eId)).data.organizerId == request.auth.uid;
     }
 
     function canAccessChatDoc(chatData) {
@@ -58,8 +85,7 @@ service cloud.firestore {
       }
 
       match /souls/{soulId} {
-        allow get: if isOwner(userId) || (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))));
-        allow list: if isOwner(userId);
+        allow read: if isOwner(userId) || (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))));
         allow create, delete: if isOwner(userId);
         allow update: if isAuthenticated() && (
           isOwner(userId) || 
@@ -107,7 +133,7 @@ service cloud.firestore {
       match /participants/{userId} {
         allow read: if isAuthenticated();
         allow create: if isAuthenticated();
-        allow update, delete: if isOwner(userId) || (exists(/databases/$(database)/documents/events/$(eventId)) && get(/databases/$(database)/documents/events/$(eventId)).data.organizerId == request.auth.uid);
+        allow update, delete: if isOwner(userId) || isEventOrganizer(eventId);
       }
     }
 
@@ -139,9 +165,26 @@ service cloud.firestore {
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
         allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
         allow update: if isAuthenticated() && (
-          (request.resource.data.authorId == request.auth.uid) ||
+          (resource.data.authorId == request.auth.uid) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
         );
+      }
+      
+      match /foundational_armor/{armorIdx}/comments/{commentId} {
+        allow get, list: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
+        allow update: if isAuthenticated() && (
+          (request.resource.data.authorId == request.authorId) ||
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+        );
+      }
+      
+      match /resources/{resourceId} {
+        allow get, list: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId);
+        allow update: if isAuthenticated() && (resource.data.authorId == request.authorId);
       }
     }
     
@@ -159,7 +202,7 @@ service cloud.firestore {
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid);
       allow update: if isAuthenticated() && ( 
         (resource.data.authorId == request.auth.uid) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
@@ -236,6 +279,49 @@ service cloud.firestore {
         allow read, list: if isAuthenticated();
         allow write: if isAuthenticated();
       }
+
+      match /devotionals/{date} {
+        allow read: if true;
+        allow create, update, delete: if isAuthenticated() && isFellowshipOrganizer(fellowshipId);
+        
+        match /comments/{commentId} {
+            allow get, list: if true;
+            allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+            allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || isFellowshipOrganizer(fellowshipId));
+            allow update: if isAuthenticated() && (
+              (request.resource.data.authorId == request.authorId) ||
+              (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
+            );
+        }
+      }
+    }
+
+    match /vendors/{vendorId} {
+      allow get, list: if true;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+
+      match /meals/{mealId} {
+        allow get, list: if true;
+        allow create, update, delete: if isAuthenticated() && get(/databases/$(database)/documents/vendors/$(vendorId)).data.userId == request.auth.uid;
+      }
+    }
+
+    match /mealGifts/{giftId} {
+      allow create: if isAuthenticated();
+      allow get, list: if isAuthenticated() && (
+        request.auth.uid == resource.data.get('senderId', '') || 
+        request.auth.uid == resource.data.get('vendorOwnerId', '')
+      );
+      allow update: if isAuthenticated() && (
+        (request.auth.uid == request.resource.data.senderId && request.resource.data.status == 'cancelled' && resource.data.status == 'ordered') ||
+        (request.auth.uid == request.resource.data.vendorOwnerId && request.resource.data.status in ['preparing', 'delivering', 'delivered'] && resource.data.status != 'cancelled')
+      );
+    }
+
+    match /mail/{mailId} {
+      allow create: if isAuthenticated();
+      allow read, update, delete: if false;
     }
   }
 }
