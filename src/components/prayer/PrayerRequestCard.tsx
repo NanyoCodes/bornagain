@@ -26,6 +26,13 @@ import Link from "next/link";
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerDescription,
+} from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -40,7 +47,7 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
             <DialogTrigger asChild disabled={!photoURL}>
                 <Avatar className={cn(className, photoURL && "cursor-pointer active:scale-95 transition-transform hover:scale-105")}>
                     <AvatarImage src={photoURL} className="object-cover" />
-                    <AvatarFallback className="bg-primary/10 text-primary font-bold">{fallbackInitials || 'U'}</AvatarFallback>
+                    <AvatarFallback className="bg-primary/10 text-primary font-bold text-center flex items-center justify-center w-full h-full">{fallbackInitials || 'U'}</AvatarFallback>
                 </Avatar>
             </DialogTrigger>
             {photoURL && (
@@ -100,7 +107,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
   }, [prayerRequest.createdAt]);
 
   const authorName = prayerRequest.isAnonymous ? 'Confidential Request' : `${prayerRequest.authorFirstName || ''} ${prayerRequest.authorLastName || ''}`.trim();
-  const profileLink = !prayerRequest.isAnonymous && prayerRequest.authorId ? `/dashboard/profile/${prayerRequest.authorId}` : '#';
+  const profileLink = !prayerRequest.isAnonymous && prayerRequest.authorId ? `/profile/${prayerRequest.authorId}` : '#';
   const isClickable = !prayerRequest.isAnonymous && prayerRequest.authorId;
   const initials = (prayerRequest.authorFirstName?.charAt(0) || '') + (prayerRequest.authorLastName?.charAt(0) || '');
 
@@ -118,6 +125,18 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
       window.removeEventListener('resize', checkTruncation);
     };
   }, [prayerRequest.content]);
+
+  // Back button handling
+  useEffect(() => {
+    const handlePopState = () => {
+      if (showFullText) setShowFullText(false);
+    };
+    if (showFullText) {
+      window.history.pushState({ prayerPopup: prayerRequest.id }, '');
+      window.addEventListener('popstate', handlePopState);
+    }
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [showFullText, prayerRequest.id]);
 
   const handlePray = () => {
     if (!user || !firestore || hasPrayed || isAuthor) return;
@@ -156,7 +175,7 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
       <div className={cn(
         "flex flex-col h-full w-full overflow-hidden transition-all duration-300 scroll-mt-48 rounded-none sm:rounded-[2rem] border-y border-x-0 sm:border border-border border-t-4 border-t-amber-500/20 shadow-none bg-card/50 backdrop-blur-sm"
       )}>
-        <CardHeader className="flex flex-row items-start justify-between gap-4 p-4 sm:p-6">
+        <CardHeader className="flex flex-row items-start justify-between gap-4 p-4 sm:p-6 text-left">
             <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                 {prayerRequest.isAnonymous ? (
                     <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border shadow-sm">
@@ -177,20 +196,20 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
                         {displayDate}
                     </CardDescription>
                     <div className="mt-1.5 text-left">
-                        <Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50">{prayerRequest.category}</Badge>
+                        <Badge variant="outline" className="w-fit text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 h-auto bg-background/50 text-left text-left"> {prayerRequest.category}</Badge>
                     </div>
                 </div>
             </div>
         </CardHeader>
         <CardContent className="flex-grow py-0 px-4 sm:px-6 text-left">
           <div className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap text-left">
-            <p ref={contentRef} className="line-clamp-4 leading-relaxed text-left">
+            <div ref={contentRef} className="line-clamp-4 leading-relaxed text-left">
               {prayerRequest.content}
-            </p>
+            </div>
             {isTruncated && !isAuthor && (
               <Button
                 variant="link"
-                className="p-0 h-auto text-sm text-primary font-bold mt-2"
+                className="p-0 h-auto text-sm text-primary font-bold mt-2 text-left"
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowFullText(true);
@@ -201,16 +220,16 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
             )}
           </div>
         </CardContent>
-        <CardFooter className="pt-4 flex justify-between items-center mt-auto p-4 sm:p-6 border-t border-dashed mt-4">
+        <CardFooter className="pt-4 flex justify-between items-center mt-auto p-4 sm:p-6 border-t border-dashed mt-4 text-left">
           <div className="flex items-center gap-1.5 text-[11px] sm:text-sm text-muted-foreground font-medium text-left">
-              <Users className="h-4 w-4 text-primary" />
+              <Users className="h-4 w-4 text-primary text-left" />
               <span>{prayerCount} believers praying</span>
           </div>
           {isAuthor ? (
             <div className="flex items-center gap-2 text-left">
                 {!isAnswered ? (
-                    <Button onClick={onAnswerPrayer} size="sm" className="font-bold h-8 px-3">
-                        <Award className="mr-2 h-4 w-4" />
+                    <Button onClick={onAnswerPrayer} size="sm" className="font-bold h-8 px-3 text-left">
+                        <Award className="mr-2 h-4 w-4 text-left" />
                         Answered
                     </Button>
                 ) : prayerRequest.answeredTestimonyId ? (
@@ -221,18 +240,18 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
                         </Badge>
                     </Link>
                 ) : (
-                   <Button onClick={onAnswerPrayer} size="sm" className="font-bold h-8 px-3">
-                        <Newspaper className="mr-2 h-4 w-4" />
+                   <Button onClick={onAnswerPrayer} size="sm" className="font-bold h-8 px-3 text-left">
+                        <Newspaper className="mr-2 h-4 w-4 text-left" />
                         Testify
                     </Button>
                 )}
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEdit}>
-                    <Edit className="h-4 w-4" />
-                    <span className="sr-only">Edit</span>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-left" onClick={onEdit}>
+                    <Edit className="h-4 w-4 text-left" />
+                    <span className="sr-only text-left">Edit</span>
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={onDelete}>
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete</span>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive text-left" onClick={onDelete}>
+                    <Trash2 className="h-4 w-4 text-left" />
+                    <span className="sr-only text-left">Delete</span>
                 </Button>
             </div>
           ) : isAnswered && prayerRequest.answeredTestimonyId ? (
@@ -248,8 +267,8 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
                 <span className="font-bold uppercase tracking-tighter text-[10px]">Answered</span>
             </Badge>
           ) : (
-              <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user} className="font-bold shadow-md transition-transform active:scale-95 h-9">
-                  {isPraying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <HandHeart className={cn("mr-2 h-4 w-4", hasPrayed && "fill-current")} />}
+              <Button onClick={handlePray} disabled={hasPrayed || isPraying || !user} className="font-bold shadow-md transition-transform active:scale-95 h-9 text-left">
+                  {isPraying ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <HandHeart className={cn("mr-2 h-4 w-4", hasPrayed && "fill-current")} />}
                   {hasPrayed ? 'You Prayed' : 'I Will Pray'}
               </Button>
           )}
@@ -259,29 +278,29 @@ export const PrayerRequestCard = memo(function PrayerRequestCard({
       {mounted && (
         <>
           {isMobile ? (
-            <Sheet open={showFullText} onOpenChange={setShowFullText}>
-              <SheetContent side="bottom" className="h-[80dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/20 text-left">
-                  <SheetHeader className="text-left">
-                    <SheetTitle className="text-2xl font-black font-headline text-left">Prayer Request from {authorName}</SheetTitle>
-                    <SheetDescription className="text-sm font-medium text-left">{displayDate}</SheetDescription>
-                  </SheetHeader>
+            <Drawer open={showFullText} onOpenChange={setShowFullText}>
+              <DrawerContent className="h-[80dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/20 text-left text-left">
+                  <DrawerHeader className="text-left text-left">
+                    <DrawerTitle className="text-2xl font-black font-headline text-left">Prayer Request from {authorName}</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium text-left">{displayDate}</DrawerDescription>
+                  </DrawerHeader>
                 </div>
-                <div className="flex-grow min-h-0 p-8 overflow-y-auto text-left">
+                <div className="flex-grow min-h-0 p-8 overflow-y-auto text-left text-left">
                   {fullTextContent}
                 </div>
-              </SheetContent>
-            </Sheet>
+              </DrawerContent>
+            </Drawer>
           ) : (
             <Dialog open={showFullText} onOpenChange={setShowFullText}>
-              <DialogContent className="sm:max-w-2xl rounded-3xl overflow-hidden p-0 text-left">
-                <div className="p-8 border-b bg-muted/10 text-left">
-                  <DialogHeader className="text-left">
+              <DialogContent className="sm:max-w-2xl rounded-3xl overflow-hidden p-0 text-left text-left">
+                <div className="p-8 border-b bg-muted/10 text-left text-left">
+                  <DialogHeader className="text-left text-left">
                     <DialogTitle className="text-2xl font-black font-headline text-left">Prayer Request from {authorName}</DialogTitle>
                     <DialogDescription className="text-sm font-medium text-left">{displayDate}</DialogDescription>
                   </DialogHeader>
                 </div>
-                <div className="p-8 text-left">
+                <div className="p-8 text-left text-left">
                     {fullTextContent}
                 </div>
               </DialogContent>

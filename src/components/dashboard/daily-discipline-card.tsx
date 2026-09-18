@@ -48,7 +48,7 @@ function PartnerCompactStatus({ partner, date }: { partner: UserProfile['account
 
     return (
         <div className="flex items-center justify-between p-2 rounded-xl bg-muted/20 border border-transparent hover:border-primary/20 transition-all group text-left">
-            <Link href={`/dashboard/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity text-left">
+            <Link href={`/profile/${partner.userId}`} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80 transition-opacity text-left">
                 <Avatar className="h-8 w-8 border shadow-sm shrink-0 text-left">
                     <AvatarImage src={livePhotoURL} className="object-cover text-left" />
                     <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-bold text-center flex items-center justify-center w-full h-full text-left">{partner.firstName?.charAt(0)}</AvatarFallback>
@@ -116,6 +116,21 @@ export function DailyDisciplineCard() {
       }
     }
   }, [userProfile]);
+
+  // Back button handling
+  useEffect(() => {
+    const handlePopState = () => {
+      if (isPrayerDialogOpen) setIsPrayerDialogOpen(false);
+      if (isNotesDialogOpen) setIsNotesDialogOpen(false);
+      if (isAttendChurchDialogOpen) setIsAttendChurchDialogOpen(false);
+    };
+
+    if (isPrayerDialogOpen || isNotesDialogOpen || isAttendChurchDialogOpen) {
+      window.history.pushState({ disciplinePopup: true }, '');
+      window.addEventListener('popstate', handlePopState);
+    }
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isPrayerDialogOpen, isNotesDialogOpen, isAttendChurchDialogOpen]);
   
   const updateDisciplineState = async (disciplineId: string) => {
     if (!user || !firestore) {
@@ -202,7 +217,7 @@ export function DailyDisciplineCard() {
     setTogglingId(disciplineId);
     try {
         if (disciplineId === 'read_bible') {
-            let targetUrl = '/dashboard/bible';
+            let targetUrl = '/bible';
             if (userProfile?.readingHistory?.length) {
               const sortedHistory = [...userProfile.readingHistory].sort((a, b) => {
                 const timeA = safeToDate(a.readAt)?.getTime() ?? 0;
@@ -211,7 +226,7 @@ export function DailyDisciplineCard() {
               });
               const lastRead = sortedHistory[0];
               if (lastRead) {
-                targetUrl = `/dashboard/bible?book=${encodeURIComponent(lastRead.book)}&chapter=${lastRead.chapter}`;
+                targetUrl = `/bible?book=${encodeURIComponent(lastRead.book)}&chapter=${lastRead.chapter}`;
               }
             }
             router.push(targetUrl);
@@ -294,7 +309,7 @@ export function DailyDisciplineCard() {
               <CardTitle className="text-xl font-semibold tracking-tight text-left">Daily Discipline</CardTitle>
               <CardDescription className="text-sm font-medium text-left">Your spiritual checklist for today.</CardDescription>
             </div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-left text-left">
               {format(new Date(), 'PPPP')}
             </div>
           </div>
@@ -309,23 +324,23 @@ export function DailyDisciplineCard() {
                         key={discipline.id}
                         variant="outline"
                         className={cn(
-                            "relative flex flex-col items-center justify-center gap-3 p-4 h-28 text-center transition-all duration-300 rounded-3xl border-2 text-left text-left",
+                            "relative flex flex-col items-center justify-center gap-3 p-4 h-28 text-center transition-all duration-300 rounded-3xl border-2 text-left text-left text-left",
                             isCompleted ? "bg-primary/5 border-primary/40 shadow-inner" : "hover:bg-muted/50 hover:border-primary/20 hover:-translate-y-1"
                         )}
                         onClick={() => handleDisciplineClick(discipline.id)}
                         disabled={togglingId === discipline.id}
                     >
                     {isCompleted && togglingId !== discipline.id && (
-                        <div className="absolute top-3 right-3 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in text-left">
-                            <CheckCircle2 className="h-4 w-4 text-primary-foreground fill-current text-left text-left" />
+                        <div className="absolute top-3 right-3 bg-primary rounded-full p-0.5 shadow-lg animate-in zoom-in text-left text-left">
+                            <CheckCircle2 className="h-4 w-4 text-primary-foreground fill-current text-left text-left text-left" />
                         </div>
                     )}
                         {togglingId === discipline.id ? (
-                            <Loader2 className="h-8 w-8 animate-spin text-primary text-left" />
+                            <Loader2 className="h-8 w-8 animate-spin text-primary text-left text-left" />
                         ) : (
                             <>
-                                <Icon className={cn("h-8 w-8 transition-transform duration-300 group-hover:scale-110 text-left", isCompleted ? "text-primary fill-current opacity-40" : color)} />
-                                <span className={cn("xs:text-xs text-[10px] font-semibold text-left", isCompleted ? "text-primary" : "text-foreground")}>{discipline.label}</span>
+                                <Icon className={cn("h-8 w-8 transition-transform duration-300 group-hover:scale-110 text-left text-left", isCompleted ? "text-primary fill-current opacity-40" : color)} />
+                                <span className={cn("xs:text-xs text-[10px] font-semibold text-left text-left", isCompleted ? "text-primary" : "text-foreground")}>{discipline.label}</span>
                             </>
                         )}
                     </Button>
@@ -342,7 +357,7 @@ export function DailyDisciplineCard() {
                             <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-left">Partner Activity</h4>
                         </div>
                         <Button variant="ghost" asChild className="h-6 text-[9px] font-bold uppercase tracking-tighter px-2 text-left">
-                            <Link href="/dashboard/accountability" className="text-left">Full View</Link>
+                            <Link href="/accountability" className="text-left">Full View</Link>
                         </Button>
                     </div>
                     
@@ -386,3 +401,4 @@ export function DailyDisciplineCard() {
     </>
   );
 }
+
