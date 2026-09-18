@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Corrected owner variable in souls listing - 2025-06-18T10:00:00Z
+    // Deployment trigger: Corrected souls subcollection permission - 2025-06-18T12:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -85,11 +85,10 @@ service cloud.firestore {
       }
 
       match /souls/{soulId} {
-        allow get: if isOwner(resource.data.userId) || (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))));
-        allow list: if isAuthenticated();
-        allow create, delete: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+        allow read: if isOwner(userId) || (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))));
+        allow create, delete: if isOwner(userId);
         allow update: if isAuthenticated() && (
-          isOwner(resource.data.userId) || 
+          isOwner(userId) || 
           isFellowshipMember(resource.data.get('fellowshipId', '')) || 
           isFellowshipMember(resource.data.get('associationId', ''))
         );
@@ -164,7 +163,7 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
+        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId);
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
@@ -205,7 +204,7 @@ service cloud.firestore {
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
       allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || string(resource.data.authorId).split('/').pop() == request.auth.uid);
       allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.auth.uid) || 
+        (resource.data.authorId == request.authorId) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 

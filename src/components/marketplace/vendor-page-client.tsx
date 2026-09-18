@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -580,7 +579,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <Select onValueChange={setEditState} value={editState} disabled={!editCountry || statesList.length === 0}>
                                 <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner"><SelectValue placeholder={statesList.length === 0 ? "N/A" : "Select State"} /></SelectTrigger>
                                 <SelectContent className="max-h-[300px]">{statesList.map(s => <SelectItem key={s.isoCode + s.name} value={s.name}>{s.name}</SelectItem>)}</SelectContent>
-                            </Select>
+                            </div>
                         </div>
                         <Input value={editCity} onChange={e => setEditCity(e.target.value)} placeholder="City" className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner" required />
                     </div>
@@ -708,7 +707,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0 text-left" onClick={() => setIsOrdersOpen(true)}>
+                                        <Button variant="outline" size="icon" className="h-11 w-11 sm:h-12 sm:w-12 rounded-full shadow-lg border-primary/20 text-primary hover:text-primary hover:bg-primary/5 shrink-0 text-left text-left" onClick={() => setIsOrdersOpen(true)}>
                                             <ShoppingBag className="h-5 w-5 text-left text-left" />
                                         </Button>
                                     </TooltipTrigger>
@@ -746,7 +745,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                         </div>
                                         {cartItem && <div className="absolute bottom-4 left-4 bg-primary text-white font-black text-xs h-8 w-8 rounded-full flex items-center justify-center shadow-xl animate-in zoom-in text-left text-left text-left"> {cartItem.quantity}</div>}
                                     </div>
-                                    <div className="p-6 sm:p-8 space-y-4 flex-grow text-left text-left text-left">
+                                    <div className="p-6 sm:p-8 space-y-4 flex-grow text-left text-left text-left text-left">
                                         <h3 className="text-base sm:text-lg font-black uppercase tracking-tight truncate leading-tight text-left text-left text-left text-left">{meal.name}</h3>
                                         <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 font-medium italic leading-relaxed text-left text-left text-left text-left">{meal.description || `Verified Kingdom service item.`}</p>
                                     </div>
@@ -760,15 +759,15 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                                     <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl shrink-0 text-destructive hover:bg-destructive/10 text-left text-left text-left text-left text-left" onClick={() => setItemToDelete(meal)}><Trash2 className="h-4 w-4 text-left text-left text-left text-left" /></Button>
                                                 </div>
                                             )}
-                                            <div className="flex-1 min-w-0 w-full text-left text-left text-left text-left">
+                                            <div className="flex-1 min-w-0 w-full text-left text-left text-left text-left text-left">
                                                 {cartItem ? (
-                                                    <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left text-left text-left text-left text-left">
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left text-left text-left" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3 text-left text-left text-left text-left"/></Button>
-                                                        <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-left text-left text-left text-left text-left">IN PACKAGE</span>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left text-left text-left" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3 text-left text-left text-left text-left"/></Button>
+                                                    <div className="flex items-center gap-1 bg-muted/30 rounded-xl p-1 border text-left text-left text-left text-left text-left text-left">
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left text-left text-left text-left" onClick={() => updateQuantity(meal.id, -1)}><Minus className="h-3 w-3 text-left text-left text-left text-left text-left"/></Button>
+                                                        <span className="flex-1 text-center font-black text-[10px] uppercase tracking-tighter text-left text-left text-left text-left text-left text-left">IN PACKAGE</span>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-left text-left text-left text-left text-left text-left text-left" onClick={() => updateQuantity(meal.id, 1)}><Plus className="h-3 w-3 text-left text-left text-left text-left text-left"/></Button>
                                                     </div>
                                                 ) : (
-                                                    <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95 text-left text-left text-left text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
+                                                    <Button onClick={() => addToCart(meal)} className="w-full h-10 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/10 transition-all active:scale-95 text-left text-left text-left text-left text-left">{soulName ? `FOR ${soulName}` : 'ADD TO PACKAGE'}</Button>
                                                 )}
                                             </div>
                                         </div>
@@ -894,9 +893,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </Drawer>
             ) : (
                 <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left">
-                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left"> {addLabel}</DialogTitle></DialogHeader></div>
-                        <div className="flex-grow overflow-hidden text-left text-left text-left text-left">{itemForm()}</div>
+                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left text-left text-left text-left text-left">
+                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left"> {addLabel}</DialogTitle></DialogHeader></div>
+                        <div className="flex-grow overflow-hidden text-left text-left text-left text-left text-left">{itemForm()}</div>
                     </DialogContent>
                 </Dialog>
             )}
@@ -940,9 +939,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </Drawer>
             ) : (
                 <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                    <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
+                    <DialogContent className="sm:max-w-xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left text-left text-left text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left text-left">
-                            <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left">
+                            <DialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left">Edit Storefront</DialogTitle>
                             </DialogHeader>
                         </div>
@@ -953,23 +952,24 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
                 <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left text-left">
                         <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left" />}Confirm</AlertDialogAction>
+                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left" />}Confirm</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
                 <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left text-left text-left text-left text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left text-left text-left text-left text-left text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left text-left">
                         <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left text-left text-left text-left text-left text-left text-left text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left" />}Delete</AlertDialogAction>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left text-left text-left text-left text-left text-left text-left text-left text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left" />}Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
         </div>
     );
 }
+
