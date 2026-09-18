@@ -126,9 +126,9 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
     const orders = useMemo(() => {
         if (!rawOrders) return [];
         return [...rawOrders].sort((a, b) => {
-            const timeA = safeToDate(a.createdAt)?.getTime() ?? 0;
-            const timeB = safeToDate(b.createdAt)?.getTime() ?? 0;
-            return timeB - timeA;
+            const dateA = safeToDate(a.createdAt)?.getTime() ?? 0;
+            const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
+            return dateB - dateA;
         });
     }, [rawOrders]);
 
@@ -898,3 +898,5 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 }
+
+export { VendorPageClient };

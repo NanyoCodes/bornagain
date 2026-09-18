@@ -273,7 +273,7 @@ export default function LandingPage() {
                               <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-black uppercase text-left">{t.authorFirstName?.charAt(0)}{t.authorLastName?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 text-left text-left">
-                              <p className="text-xs font-black uppercase tracking-tight truncate text-left">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
+                              <p className="text-xs font-black uppercase tracking-tight text-left">{t.authorFirstName} {t.authorLastName?.charAt(0)}.</p>
                               <p className="text-[9px] font-bold text-primary uppercase tracking-widest truncate text-left">{t.category}</p>
                             </div>
                           </div>
