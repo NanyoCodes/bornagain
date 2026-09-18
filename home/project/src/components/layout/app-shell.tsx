@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, useCallback, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -21,6 +21,20 @@ import {
   TrendingUp,
   BookMarked,
   Users,
+  ShoppingCart,
+  ShieldCheck,
+  CalendarDays,
+  Store,
+  Gift,
+  Package,
+  Globe,
+  Sparkles,
+  ChevronRight,
+  Heart,
+  X,
+  Utensils,
+  Info,
+  ChevronDown
 } from "lucide-react";
 
 import {
@@ -31,10 +45,35 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn, safeToDate } from "@/lib/utils";
 import { useUser, useAuth, useFirestore, useCollection, useUserProfile } from "@/firebase";
 import { signOut } from "firebase/auth";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -42,23 +81,28 @@ import { SearchProvider, useSearch } from "@/context/search-context";
 import { collection, doc, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { Notification } from "@/lib/types";
 import { WelcomePopup } from "@/components/auth/welcome-popup";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EditProfileModal } from "@/components/profile/edit-profile-modal";
 import { PageTransition } from "../page-transition";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SplashScreen } from "../common/splash-screen";
 
+const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
+
 const navItems = [
-  { href: "/progress", label: "Progress", icon: TrendingUp, color: "text-chart-1" },
-  { href: "/souls-won", label: "Souls", icon: UserPlus, color: "text-chart-2" },
-  { href: "/testimonies", label: "Feed", icon: Newspaper, color: "text-chart-3" },
-  { href: "/campaigns", label: "Campaigns", icon: Target, color: "text-chart-4" },
-  { href: "/fellowships", label: "Groups", icon: Users, color: "text-primary" },
-  { href: "/accountability", label: "Partners", icon: HeartHandshake, color: "text-primary" },
+  { href: "/growth", label: "Growth", icon: TrendingUp, color: "bg-orange-500" },
+  { href: "/souls-won", label: "Souls", icon: UserPlus, color: "bg-amber-500" },
+  { href: "/testimonies", label: "TESTIMONIES", icon: Newspaper, color: "bg-primary" },
+  { href: "/campaigns", label: "Missions", icon: Target, color: "bg-rose-500" },
+  { href: "/victory-hub", label: "Victory", icon: ShieldCheck, color: "bg-indigo-600" },
 ];
 
-const NOTIFICATION_TYPES = ['campaign_join', 'new_chat_message', 'accountability_nudge', 'accountability_request', 'request_accepted', 'request_declined', 'accountability_partner_removed', 'new_soul_in_fellowship', 'soul_unassigned_from_fellowship'];
+const itemColors: Record<string, string> = {
+  "/growth": "from-orange-500 to-orange-600",
+  "/souls-won": "from-amber-500 to-amber-600",
+  "/testimonies": "from-primary to-orange-600",
+  "/campaigns": "from-rose-500 to-rose-600",
+  "/victory-hub": "from-indigo-600 to-violet-700",
+};
 
 const inspirationalMessages = [
   "GOD FIRST",
@@ -72,30 +116,131 @@ const inspirationalMessages = [
   "REJOICE ALWAYS"
 ];
 
-function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean }) {
-  const { user, loading: authLoading } = useUser();
-  const { userProfile } = useUserProfile();
+const SYSTEM_NOTIFICATION_TYPES = [
+  'campaign_join', 
+  'accountability_nudge', 
+  'accountability_request', 
+  'request_accepted', 
+  'request_declined', 
+  'accountability_partner_removed', 
+  'new_soul_in_fellowship', 
+  'soul_unassigned_from_fellowship', 
+  'new_order', 
+  'order_update',
+  'birthday_reminder',
+  'pending_provision'
+];
+
+function CartButton() {
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const isMobile = useIsMobile();
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const cartQuery = useMemo(() => (user && firestore) ? query(collection(firestore, 'users', user.uid, 'cart')) : null, [user, firestore]);
+  const { data: cartItems } = useCollection<any>(cartQuery);
+
+  const count = useMemo(() => {
+    return cartItems?.reduce((acc, item) => acc + (item.quantity || 0), 0) || 0;
+  }, [cartItems]);
+
+  const trigger = (
+    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+        <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
+            <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
+            {count > 0 && (
+                <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
+                    {count}
+                </div>
+            )}
+        </Button>
+    </motion.div>
+  );
+
+  const listContent = (
+    <div className="p-4 space-y-4 text-left">
+        {cartItems && cartItems.length > 0 ? (
+            <div className="space-y-3">
+                {cartItems.map((item: any) => (
+                    <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 text-left">
+                        <Avatar className="h-10 w-10 border">
+                            <AvatarImage src={item.photoURL} />
+                            <AvatarFallback>P</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0 flex-1 text-left text-left">
+                            <p className="font-bold text-sm truncate uppercase tracking-tight">{item.name}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest">{item.currency}{item.price.toLocaleString()} x {item.quantity}</p>
+                        </div>
+                    </div>
+                ))}
+                <div className="pt-4 border-t border-dashed text-left">
+                    <Button asChild className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+                        <Link href="/marketplace">PROCEED TO HUB</Link>
+                    </Button>
+                </div>
+            </div>
+        ) : (
+            <div className="py-12 text-center flex flex-col items-center text-left">
+                <ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 mb-4 text-left" />
+                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest text-center">Your package is empty</p>
+                <Button variant="link" asChild className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest h-auto p-0 text-center">
+                    <Link href="/marketplace">Explore Provision Hub</Link>
+                </Button>
+            </div>
+        )}
+    </div>
+  );
+
+  if (isMobile) {
+    return (
+        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+            <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+            <DrawerContent className="h-[70dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                <div className="p-8 border-b bg-muted/10 shrink-0 flex-shrink-0 text-left">
+                    <div className="flex items-center gap-2 mb-1 text-left">
+                        <ShoppingCart className="h-5 w-5 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kingdom Offering</span>
+                    </div>
+                    <DrawerHeader className="text-left flex-shrink-0 text-left">
+                        <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kindness Package</DrawerTitle>
+                        <DrawerDescription className="text-sm font-medium mt-1 text-left">Review selection for gifting.</DrawerDescription>
+                    </DrawerHeader>
+                </div>
+                <ScrollArea className="flex-grow text-left text-left">{listContent}</ScrollArea>
+            </DrawerContent>
+        </Drawer>
+    );
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
+        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+            <div className="flex items-center gap-2 mb-1 text-left">
+                <ShoppingCart className="h-5 w-5 text-primary text-left" />
+                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left">Kindness Package</span>
+            </div>
+            <DialogHeader className="text-left text-left">
+                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Pending Offering</DialogTitle>
+                <DialogDescription className="text-sm font-medium mt-1 text-left">Review the provisions in your active package.</DialogDescription>
+            </DialogHeader>
+        </div>
+        <ScrollArea className="flex-grow text-left text-left">{listContent}</ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfileIncomplete }: { unreadChatCount: number, unreadNotifCount: number, isPublicRoute: boolean, isProfileIncomplete: boolean }) {
+  const { user } = useUser();
   const pathname = usePathname();
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const logo = PlaceHolderImages.find((img) => img.id === "logo");
   const { searchTerm, setSearchTerm, searchPlaceholder, isSearchVisible } = useSearch();
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
-  const otherNotificationsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(
-      collection(firestore, `users/${user.uid}/notifications`),
-      where('type', 'in', NOTIFICATION_TYPES),
-      where('isRead', '==', false)
-    );
-  }, [user?.uid, firestore]);
-
-  const { data: unreadOtherNotifications } = useCollection<Notification>(otherNotificationsQuery);
-  const unreadCount = unreadOtherNotifications?.length ?? 0;
-
-  const isProfileIncomplete = userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
+  const showGuestButtons = isPublicRoute && !user;
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -105,96 +250,85 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
   
   if (showMobileSearch) {
     return (
-      <header className="sticky top-0 z-30 flex min-h-[4rem] h-auto py-2 items-center border-b bg-background px-4 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] animate-in fade-in slide-in-from-top-4 duration-300">
-        <div className="flex w-full items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)} className="shrink-0 h-10 w-10 rounded-full hover:bg-muted/50 transition-colors">
-            <ArrowLeft className="h-5 w-5" />
+      <header className="sticky top-0 z-50 flex h-dvh w-full flex-col bg-background pt-[env(safe-area-inset-top)] animate-in fade-in duration-300 text-left">
+        <div className="flex h-16 items-center gap-3 px-4 border-b shrink-0 text-left">
+          <Button variant="ghost" size="icon" onClick={() => { setShowMobileSearch(false); setSearchTerm(''); }} className="shrink-0 h-11 w-11 rounded-full hover:bg-muted/50 transition-colors text-left">
+            <ArrowLeft className="h-6 w-6 text-left" />
           </Button>
-          <form className="w-full" onSubmit={(e) => e.preventDefault()}>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+          <div className="relative flex-1 text-left text-left text-left">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50 text-left" />
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                className="w-full pl-10 h-11 rounded-2xl bg-muted/20 border-none shadow-inner text-base"
+                className="w-full pl-10 h-11 rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 autoFocus
               />
-            </div>
-          </form>
+          </div>
         </div>
       </header>
     );
   }
 
-  const showGuestButtons = isPublicRoute && !authLoading && !user;
-
   return (
-    <header className="sticky top-0 z-30 flex min-h-[4rem] md:min-h-[4.5rem] h-auto py-1 items-center justify-between border-b bg-background px-3 md:px-6 shrink-0 pt-[env(safe-area-inset-top)] relative">
-      <div className="flex items-center shrink-0">
-        <Link href={user ? "/dashboard/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+    <header className="sticky top-0 z-30 flex h-16 md:h-20 items-center justify-between border-b bg-background/95 backdrop-blur-xl px-4 md:px-8 shrink-0 pt-[env(safe-area-inset-top)] relative gap-4 text-left">
+      <div className="flex shrink-0 w-auto text-left">
+        <Link href={user ? "/testimonies" : "/"} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           {logo && (
-            <Avatar className="h-10 w-10 md:h-12 md:w-12 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
+            <Avatar className="h-11 w-11 md:h-14 md:w-14 shadow-sm transition-transform hover:scale-105 active:scale-95 border border-transparent">
               <AvatarImage src={logo.imageUrl} alt={logo.description} className="object-cover" />
-              <AvatarFallback className="font-bold">T</AvatarFallback>
+              <AvatarFallback>T</AvatarFallback>
             </Avatar>
           )}
-          <span className="sr-only">Testify</span>
         </Link>
       </div>
 
-      <nav className="hidden items-center absolute left-1/2 -translate-x-1/2 md:flex overflow-x-auto no-scrollbar max-w-[50%] lg:max-w-none h-full pt-1">
-        <div className="flex items-center gap-1.5 lg:gap-3 h-full">
+      <nav className="hidden md:flex flex-1 justify-center items-center h-full min-w-0 text-left">
+        <div className="flex items-center gap-1 lg:gap-2 h-full max-w-full overflow-x-auto no-scrollbar text-left">
           {navItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
               <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "transition-all hover:bg-muted/50 px-2 lg:px-4 h-[90%] rounded-2xl whitespace-nowrap flex flex-col items-center justify-center group relative",
-                    isActive ? "text-primary" : "text-muted-foreground"
+                    "transition-all px-2 lg:px-4 h-11 rounded-2xl whitespace-nowrap flex items-center justify-center gap-2 group relative",
+                    isActive 
+                      ? "bg-primary text-white shadow-xl shadow-primary/40 ring-2 ring-primary/20 scale-105" 
+                      : "text-muted-foreground hover:bg-muted/50"
                   )}
               >
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex flex-col items-center gap-1">
-                  <item.icon className={cn("h-5 w-5 shrink-0 transition-transform", !isActive && item.color, isActive && "scale-110")} />
-                  <span className={cn(
-                    "text-[9px] font-black uppercase tracking-tighter transition-all leading-none",
+                <item.icon className={cn("h-4 w-4 shrink-0 transition-transform", isActive && "scale-110")} />
+                <span className={cn(
+                    "text-[10px] lg:text-[11px] font-black uppercase tracking-tight transition-all leading-none",
                     isActive ? "opacity-100" : "opacity-60 group-hover:opacity-100"
-                  )}>
-                    {item.label}
-                  </span>
-                </motion.div>
-                {isActive && (
-                    <motion.div
-                      layoutId="header-nav-active-bar"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                )}
+                )}>
+                {item.label}
+                </span>
               </Link>
             );
           })}
         </div>
       </nav>
         
-      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 shrink-0 justify-end min-w-0 text-left">
         {isSearchVisible && (
-          <Button variant="ghost" size="icon" className="h-10 w-10 md:h-12 md:w-12 rounded-full transition-transform active:scale-95" onClick={() => setShowMobileSearch(true)}>
-            <Search className="h-5 w-5 md:h-6 md:w-6" />
+          <Button variant="ghost" size="icon" className="h-11 w-11 rounded-full transition-transform active:scale-95 text-left" onClick={() => setShowMobileSearch(true)}>
+            <Search className="h-6 w-6 text-left" />
             <span className="sr-only">Search</span>
           </Button>
         )}
         
         {user ? (
           <>
+            <CartButton />
             <Link href="/chats">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
-                      <MessagesSquare className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
+                      <MessagesSquare className="h-6 w-6 transition-transform group-hover:scale-110" />
                       {unreadChatCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
+                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadChatCount}
                         </div>
                       )}
@@ -203,10 +337,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <Link href="/notifications">
                 <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Button variant="ghost" size="icon" className="relative group h-10 w-10 md:h-12 md:w-12 rounded-full">
-                      <Bell className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:scale-110" />
+                    <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
+                      <Bell className="h-6 w-6 transition-transform group-hover:scale-110" />
                       {unreadNotifCount > 0 && (
-                        <div className="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-destructive-foreground animate-in zoom-in border-2 border-background">
+                        <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[8px] font-bold text-white animate-in zoom-in border-2 border-background text-center">
                           {unreadNotifCount}
                         </div>
                       )}
@@ -215,10 +349,10 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-10 w-10 md:h-12 md:w-12 shrink-0">
-                  <Avatar className="h-9 w-9 md:h-11 md:w-11 border shadow-sm">
+                <Button variant="ghost" size="icon" className="rounded-full relative hover:scale-105 transition-transform h-11 w-11 shrink-0">
+                  <Avatar className="h-10 w-10 border shadow-sm">
                     <AvatarImage src={user.photoURL ?? undefined} className="object-cover" />
-                    <AvatarFallback className="text-xs font-bold">{user.displayName?.charAt(0) || 'U'}</AvatarFallback>
+                    <AvatarFallback className="text-xs font-bold"> {user.displayName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
                   {isProfileIncomplete && (
                     <span className="absolute top-0 right-0 flex h-3 w-3">
@@ -228,58 +362,146 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 rounded-2xl shadow-xl" align="end">
+              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar text-left text-left" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal p-4">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-bold leading-tight truncate">{user.displayName || 'User'}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    <p className="text-sm font-black leading-none truncate uppercase tracking-tight">{user.displayName || 'User'}</p>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
+                
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                  <Link href="/profile">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                  <Link href="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                    <Link href="/guide" className="cursor-pointer">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    <span>App Guide</span>
+                
+                <div className="p-1 space-y-1 text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/profile" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                        <User className="h-3.5 w-3.5" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Profile Identity</span>
                     </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-lg mx-1">
-                    <Link href="/resources" className="cursor-pointer">
-                    <BookMarked className="mr-2 h-4 w-4" />
-                    <span>Spiritual Resources</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/accountability" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                        <HeartHandshake className="h-3.5 w-3.5" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Partners</span>
                     </Link>
-                </DropdownMenuItem>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/settings" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                        <Settings className="h-3.5 w-3.5" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </div>
+
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg mx-1">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Logout</span>
-                </DropdownMenuItem>
+                
+                <div className="p-1 space-y-1 text-left text-left">
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Kingdom Hubs</p>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/victory-hub" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <ShieldCheck className="h-3.5 w-3.5 text-primary text-left" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Victory Hub</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left">
+                    <Link href="/fellowships" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Users className="h-3.5 w-3.5 text-primary text-left text-left" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left">Fellowship Hub</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/events" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <CalendarDays className="h-3.5 w-3.5 text-primary text-left" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Events Hub</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </div>
+
+                <DropdownMenuSeparator />
+                
+                <div className="p-1 space-y-1 text-left text-left">
+                  <p className="text-[9px] font-black uppercase text-muted-foreground/60 px-3 py-1.5 tracking-[0.2em] text-left">Provision & Support</p>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/marketplace" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-7 w-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                        <Utensils className="h-3.5 w-3.5 text-blue-500 text-left" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Meals Center</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                    <Link href="/marketplace/gifts" className="flex items-center gap-3 w-full text-left">
+                      <div className="h-7 w-7 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                        <Gift className="h-3.5 w-3.5 text-indigo-600 text-left" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kindness Center</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
+                    <Link href="/marketplace/orders" className="flex items-center gap-3 w-full">
+                      <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
+                        <Package className="h-3.5 w-3.5 text-muted-foreground text-left" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-left">Order Hub</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </div>
+
+                <DropdownMenuSeparator />
+                
+                <div className="p-1 space-y-1 text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left">
+                      <Link href="/guide" className="flex items-center gap-3 w-full text-left">
+                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
+                          <Info className="h-3.5 w-3.5 text-left" />
+                        </div>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">App Guide</span>
+                      </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left">
+                      <Link href="/resources" className="flex items-center gap-3 w-full text-left">
+                        <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left">
+                          <BookMarked className="h-3.5 w-3.5 text-left" />
+                        </div>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-left">Kingdom Library</span>
+                      </Link>
+                  </DropdownMenuItem>
+                </div>
+
+                <DropdownMenuSeparator />
+                
+                <div className="p-1 text-left">
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer text-left">
+                    <LogOut className="mr-3 h-4 w-4 text-left" />
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-left">Sign Out</span>
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </>
         ) : showGuestButtons ? (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-9 px-4 rounded-full font-bold">
-              <Link href="/login">Sign In</Link>
+          <div className="flex items-center gap-2 text-left">
+            <Button variant="ghost" asChild size="sm" className="hidden sm:inline-flex h-10 px-4 rounded-full font-bold">
+              <Link href="/login" className="text-left">Sign In</Link>
             </Button>
-            <Button asChild size="sm" className="h-9 px-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20">
-              <Link href="/">Get Started</Link>
+            <Button asChild size="sm" className="h-10 px-6 rounded-full font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 text-left">
+              <Link href="/signup" className="text-left">Join Movement</Link>
             </Button>
           </div>
         ) : (
-          <div className="h-10 w-10 md:h-12 md:w-12 animate-pulse rounded-full bg-muted" />
+          <div className="h-11 w-11 md:h-12 md:w-12 animate-pulse rounded-full bg-muted text-left" />
         )}
       </div>
     </header>
@@ -288,11 +510,16 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute }: { unrea
 
 function BottomNavBar() {
     const pathname = usePathname();
+    const activeColorClass = useMemo(() => {
+        const matchingPath = Object.keys(itemColors).find(path => pathname === path || (path !== '/' && pathname.startsWith(path)));
+        return itemColors[matchingPath || "/testimonies"];
+    }, [pathname]);
+  
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/80 backdrop-blur-lg md:hidden pb-[calc(env(safe-area-inset-bottom)+0.25rem)] shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
-        <div className="flex min-h-[4.5rem] h-auto items-stretch justify-around px-1 py-1">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#09090b] border-t border-white/5 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden">
+        <div className="flex h-16 items-stretch justify-around px-1 py-1">
           {navItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
               <Link
                 key={item.href}
@@ -302,29 +529,31 @@ function BottomNavBar() {
                 aria-label={item.label}
               >
                 <motion.div
-                  className="relative flex items-center justify-center p-1.5 rounded-xl"
-                  whileTap={{ scale: 0.85 }}
+                  className="relative flex flex-col items-center justify-center rounded-xl px-1 py-1 h-full w-full"
+                  whileTap={{ scale: 0.9 }}
                 >
-                  {isActive && (
-                    <motion.div
-                      layoutId="nav-active-pill"
-                      className="absolute inset-0 bg-primary/10 rounded-xl"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <motion.div
-                    animate={{ 
-                      scale: isActive ? 1.1 : 1,
-                      color: isActive ? "var(--primary)" : "var(--muted-foreground)"
-                    }}
-                    transition={{ duration: 0.2 }}
-                    className={cn(
-                      "relative z-10",
-                      isActive ? "text-primary" : "text-muted-foreground"
+                  <div className="relative h-11 w-11 flex items-center justify-center mb-0.5">
+                    {isActive && (
+                      <motion.div
+                        layoutId="nav-active-circle"
+                        className={cn(
+                            "absolute inset-0 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.4)] bg-gradient-to-br",
+                            activeColorClass
+                        )}
+                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                      />
                     )}
-                  >
-                    <item.icon className={cn("h-5.5 w-5.5", !isActive && item.color)} />
-                  </motion.div>
+                    <item.icon className={cn(
+                      "h-5.5 w-5.5 relative z-10 transition-colors duration-300",
+                      isActive ? "text-white" : "text-zinc-500"
+                    )} />
+                  </div>
+                  <span className={cn(
+                    "text-[9px] font-black uppercase tracking-tighter transition-colors duration-300 leading-none",
+                    isActive ? "text-white" : "text-zinc-500"
+                  )}>
+                    {item.label}
+                  </span>
                 </motion.div>
               </Link>
             )
@@ -334,10 +563,9 @@ function BottomNavBar() {
     );
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children: React.ReactNode, unreadChatCount: number, unreadNotifCount: number }) {
   const { user, loading: authLoading } = useUser();
   const { userProfile, loading: profileLoading } = useUserProfile();
-  const firestore = useFirestore();
   const router = useRouter();
   const pathname = usePathname();
   const isMobile = useIsMobile();
@@ -349,43 +577,36 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [showSplash, setShowSplash] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
 
+  const handleDismissSplash = useCallback(() => {
+    setShowSplash(false);
+    localStorage.setItem('testify_splash_last_shown', Date.now().toString());
+    setContentVisible(true);
+  }, []);
+
   useEffect(() => { 
     setMounted(true); 
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
 
-    const SPLASH_COOLDOWN = 12 * 60 * 60 * 1000;
-    const lastShown = localStorage.getItem('testify_splash_last_shown');
-    const forceSplash = sessionStorage.getItem('testify_force_splash') === 'true';
+    const lastShown = typeof window !== 'undefined' ? localStorage.getItem('testify_splash_last_shown') : null;
+    const forceSplash = typeof window !== 'undefined' ? sessionStorage.getItem('testify_force_splash') === 'true' : false;
     const now = Date.now();
 
-    if (forceSplash || !lastShown || now - parseInt(lastShown, 10) > SPLASH_COOLDOWN) {
-        if (forceSplash) {
-          sessionStorage.removeItem('testify_force_splash');
-        }
+    if (forceSplash || !lastShown || now - parseInt(lastShown || '0', 10) > SPLASH_COOLDOWN) {
+        if (forceSplash) sessionStorage.removeItem('testify_force_splash');
         setShowSplash(true);
         const timer = setTimeout(() => {
             setShowSplash(false);
             localStorage.setItem('testify_splash_last_shown', now.toString());
             setContentVisible(true);
-        }, 10000);
-        return () => {
-            clearTimeout(timer);
-        };
+        }, 2500); 
+        return () => clearTimeout(timer);
     } else {
         setContentVisible(true);
     }
-  }, [pathname]);
-
-  const handleDismissSplash = () => {
-    setShowSplash(false);
-    localStorage.setItem('testify_splash_last_shown', Date.now().toString());
-    setContentVisible(true);
-  };
+  }, []);
 
   useEffect(() => {
-    if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop = 0;
-    }
+    if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
     window.scrollTo(0, 0);
   }, [pathname]);
 
@@ -402,18 +623,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [userProfile, mounted]);
 
-  const publicRoutes = [
-    '/testimonies', 
-    '/campaigns', 
-    '/about', 
-    '/contact', 
-    '/resources', 
-    '/guide', 
-    '/terms-of-service', 
-    '/privacy-policy',
-    '/progress',
-    '/fellowships'
-  ];
+  const publicRoutes = ['/testimonies', '/campaigns', '/about', '/contact', '/resources', '/guide', '/terms-of-service', '/privacy-policy', '/growth', '/fellowships', '/events', '/marketplace', '/marketplace/gifts', '/marketplace/orders', '/victory-hub', '/strongholds'];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) || pathname === '/';
 
   const isTakeoverPage = useMemo(() => {
@@ -429,29 +639,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }, [pathname]);
 
-  const unreadChatNotifsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
-  }, [user?.uid, firestore]);
-  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotifsQuery);
-
-  const unreadOtherNotifsQuery = useMemo(() => {
-    if (!user?.uid || !firestore) return null;
-    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', NOTIFICATION_TYPES), where('isRead', '==', false));
-  }, [user?.uid, firestore]);
-  const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotifsQuery);
-
   useEffect(() => {
-    if (!authLoading && !user && !isPublicRoute) {
-      router.push('/login');
-    }
+    if (!authLoading && !user && !isPublicRoute) router.push('/login');
   }, [authLoading, user, router, isPublicRoute]);
 
   useEffect(() => {
     if (!profileLoading && userProfile) {
         const isNewUserSession = sessionStorage.getItem('isNewUserSession') === 'true';
         const welcomePopupShown = sessionStorage.getItem('welcomePopupShown');
-        if (isNewUserSession && userProfile.firstName && !welcomePopupShown) {
+        const isProfileComplete = !!(userProfile.firstName && userProfile.lastName && userProfile.photoURL);
+        if (isNewUserSession && isProfileComplete && !welcomePopupShown) {
             const timer = setTimeout(() => {
                 setShowWelcomePopup(true);
                 sessionStorage.setItem('welcomePopupShown', 'true');
@@ -461,100 +658,139 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [profileLoading, userProfile]);
 
-  if (authLoading || (profileLoading && !isPublicRoute) || (!user && !isPublicRoute)) {
+  if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center bg-background animate-in fade-in duration-1000">
-        <div className="relative mb-8">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <div className="relative mb-8 mx-auto w-fit text-left text-left text-left">
+            <Loader2 className="h-12 w-12 animate-spin text-primary text-left text-left" />
             <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             </div>
         </div>
-        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6">
+        <p className="text-2xl font-black font-headline tracking-[0.4em] uppercase text-primary animate-pulse text-center px-6 mt-8">
           {loadingMessage || "GOD FIRST"}
         </p>
-        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60">
+        <p className="mt-4 text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/60 text-center">
             Kingdom Network Active
         </p>
       </div>
     );
   }
 
-  const isProfileIncomplete = user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim());
-  const showBottomNav = !isTakeoverPage;
+  const isProfileIncomplete = !!(user && userProfile && (!userProfile.firstName?.trim() || !userProfile.lastName?.trim() || !userProfile.photoURL?.trim()));
+
+  const showBottomNav = !isTakeoverPage || pathname.includes('/chats');
+
+  return (
+    <div className={cn("flex w-full flex-col overflow-x-hidden text-left text-left", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
+      <AnimatePresence>
+          {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
+      </AnimatePresence>
+
+      <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: contentVisible ? 1 : 0 }}
+          transition={{ duration: 1 }}
+          className="flex-1 flex flex-col min-h-0 text-left text-left"
+      >
+          {!isTakeoverPage && (
+            <AppHeader 
+                unreadChatCount={unreadChatCount} 
+                unreadNotifCount={unreadNotifCount}
+                isPublicRoute={isPublicRoute}
+                isProfileIncomplete={isProfileIncomplete}
+            />
+          )}
+          <div className="flex-1 relative min-h-0 text-left text-left">
+          <main 
+              ref={scrollContainerRef}
+              className={cn(
+                  "absolute inset-0 text-left text-left", 
+                  !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
+              )}
+          >
+              <div className={cn(
+              "mx-auto h-full text-left text-left", 
+              (!isTakeoverPage || isMobile) ? "max-w-7xl p-3 md:p-6 pb-24 sm:pb-6" : "w-full flex flex-col" 
+              )}>
+                  <PageTransition>{children}</PageTransition>
+              </div>
+          </main>
+          </div>
+      </motion.div>
+
+      {user && showBottomNav && <BottomNavBar />}
+      
+      {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
+      
+      {user && mounted && isMobile ? (
+        <Sheet open={!!isProfileIncomplete} onOpenChange={() => {}}>
+          <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl text-left text-left">
+            <div className="p-8 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)] text-left text-left">
+              <SheetHeader className="text-left flex-shrink-0 text-left text-left">
+                <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
+                <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
+              </SheetHeader>
+            </div>
+            <div className="flex-grow overflow-y-auto p-8 text-left text-left">
+              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : user ? (
+        <Dialog open={!!isProfileIncomplete}>
+          <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0 text-left text-left">
+            <div className="p-6 border-b bg-muted/10 text-left text-left text-left">
+              <DialogHeader className="text-left text-left text-left text-left">
+                <DialogTitle className="text-2xl font-bold">Complete Your Profile</DialogTitle>
+                <DialogDescription className="text-sm">Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
+              </DialogHeader>
+            </div>
+            <div className="p-6 max-h-[70vh] overflow-y-auto text-left text-left">
+              {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
+            </div>
+          </DialogContent>
+        </Dialog>
+      ) : null}
+    </div>
+  );
+}
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const unreadChatNotificationsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', '==', 'new_chat_message'), where('isRead', '==', false));
+  }, [user?.uid, firestore]);
+  const { data: unreadChatNotifications } = useCollection<Notification>(unreadChatNotificationsQuery);
+
+  const unreadOtherNotificationsQuery = useMemo(() => {
+    if (!user?.uid || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/notifications`), where('type', 'in', SYSTEM_NOTIFICATION_TYPES), where('isRead', '==', false));
+  }, [user?.uid, firestore]);
+  const { data: unreadOtherNotifications } = useCollection<Notification>(unreadOtherNotificationsQuery);
+
+  const unreadChatCount = unreadChatNotifications?.length ?? 0;
+  const unreadNotifCount = unreadOtherNotifications?.length ?? 0;
 
   return (
     <SearchProvider>
-      <div className={cn("flex w-full flex-col overflow-x-hidden", isTakeoverPage ? "h-dvh" : "min-h-dvh")}>
-        <AnimatePresence>
-            {showSplash && <SplashScreen onDismiss={handleDismissSplash} />}
-        </AnimatePresence>
-
-        <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: contentVisible ? 1 : 0 }}
-            transition={{ duration: 1 }}
-            className="flex-1 flex flex-col min-h-0"
-        >
-            {!isTakeoverPage && (
-            <AppHeader 
-                unreadChatCount={unreadChatNotifications?.length || 0} 
-                unreadNotifCount={unreadOtherNotifications?.length || 0}
-                isPublicRoute={isPublicRoute}
-            />
-            )}
-            <div className="flex-1 relative min-h-0">
-            <main 
-                ref={scrollContainerRef}
-                className={cn(
-                    "absolute inset-0", 
-                    !isTakeoverPage ? "overflow-y-auto" : "overflow-hidden"
-                )}
-            >
-                <div className={cn(
-                "mx-auto h-full", 
-                !isTakeoverPage ? "max-w-7xl p-3 md:p-6 pb-28 md:pb-6" : "w-full flex flex-col" 
-                )}>
-                    <PageTransition>{children}</PageTransition>
+        <Suspense fallback={
+            <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-center text-left text-left">
+                <div className="relative mx-auto w-fit text-left text-left">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary text-left text-left" />
                 </div>
-            </main>
             </div>
-        </motion.div>
-
-        {user && showBottomNav && <BottomNavBar />}
-        
-        {user && !isProfileIncomplete && <WelcomePopup isOpen={showWelcomePopup} onClose={() => setShowWelcomePopup(false)} userName={userProfile?.firstName} />}
-        
-        {user && mounted && isMobile ? (
-          <Sheet open={!!isProfileIncomplete}>
-            <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-2xl">
-              <div className="p-6 border-b flex-shrink-0 bg-muted/10 pt-[env(safe-area-inset-top)]">
-                <SheetHeader className="text-left">
-                  <SheetTitle className="text-xl font-bold">Complete Your Profile</SheetTitle>
-                  <SheetDescription className="text-xs">Join the global movement by introducing yourself.</SheetDescription>
-                </SheetHeader>
-              </div>
-              <div className="flex-grow overflow-y-auto p-6">
-                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
-              </div>
-            </SheetContent>
-          </Sheet>
-        ) : user ? (
-          <Dialog open={!!isProfileIncomplete}>
-            <DialogContent hideCloseButton className="sm:max-w-lg rounded-[2rem] overflow-hidden p-0">
-              <div className="p-6 border-b bg-muted/10">
-                <DialogHeader>
-                    <DialogTitle>Complete Your Profile</DialogTitle>
-                    <DialogDescription>Please provide your name and photo to join the Kingdom workforce.</DialogDescription>
-                </DialogHeader>
-              </div>
-              <div className="p-6 max-h-[70vh] overflow-y-auto">
-                {userProfile && <EditProfileModal userProfile={userProfile} onClose={() => {}} />}
-              </div>
-            </DialogContent>
-          </Dialog>
-        ) : null}
-      </div>
+        }>
+            <ShellInner 
+              unreadChatCount={unreadChatCount} 
+              unreadNotifCount={unreadNotifCount}
+            >
+              {children}
+            </ShellInner>
+        </Suspense>
     </SearchProvider>
   );
 }
