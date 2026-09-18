@@ -227,7 +227,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                     </Card>
                 ))
             ) : (
-                <div className="text-center py-20 bg-muted/10 rounded-3xl border-2 border-dashed">
+                <div className="text-center py-20 bg-muted/10 rounded-3xl border-2 border-dashed text-left">
                     <ShoppingBag className="h-10 w-10 text-muted-foreground opacity-10 mx-auto mb-4" />
                     <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest text-center">No orders received yet.</p>
                 </div>
@@ -241,8 +241,8 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                 <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                         <DrawerHeader className="text-left flex-shrink-0">
-                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Order Hub</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1">Manage and update deliveries for your Kingdom offerings.</DrawerDescription>
+                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Order Hub</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Manage and update deliveries for your Kingdom offerings.</DrawerDescription>
                         </DrawerHeader>
                     </div>
                     <ScrollArea className="flex-grow px-8 pt-6 text-left">
@@ -258,8 +258,8 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
             <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[85vh] text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                     <DialogHeader className="text-left">
-                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Order Hub</DialogTitle>
-                        <DialogDescription className="text-sm font-medium mt-1">Manage and update deliveries for your Kingdom offerings.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Order Hub</DialogTitle>
+                        <DialogDescription className="text-sm font-medium mt-1 text-left">Manage and update deliveries for your Kingdom offerings.</DialogDescription>
                     </DialogHeader>
                 </div>
                 <ScrollArea className="flex-grow p-8 text-left">
@@ -683,9 +683,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest mt-2">Kingdom Hub</p>
                                 </div>
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent text-left" />
                             <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 text-white max-w-[80%]">
-                                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance">{vendor.businessName}</h1>
+                                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-headline uppercase tracking-tight leading-tight text-balance text-left">{vendor.businessName}</h1>
                                 <div className="flex items-center gap-2 mt-2 opacity-80">
                                     <MapPin className="h-3.5 w-3.5 text-primary" />
                                     <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest truncate">{vendor.location || 'Kingdom Network'}</p>
@@ -742,7 +742,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                         const itemSymbol = getCurrencySymbol(meal.currency);
                         return (
                             <Card key={meal.id} className="rounded-[2.5rem] overflow-hidden border-none shadow-md hover:shadow-xl transition-all group bg-card/50 backdrop-blur-sm flex flex-col h-full text-left">
-                                <CardContent className="p-0 text-left">
+                                <CardContent className="p-0 text-left text-left">
                                     <div className="aspect-[4/3] relative bg-muted text-left">
                                         {meal.photoURL ? <img src={meal.photoURL} alt={meal.name} className="w-full h-full object-cover text-left" /> : <div className="w-full h-full flex items-center justify-center text-left">{isGiftVendor ? <Package className="h-12 w-12 text-muted-foreground opacity-10 text-left" /> : <Utensils className="h-12 w-12 text-muted-foreground opacity-10 text-left" />}</div>}
                                         <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 text-left">
@@ -807,14 +807,14 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             </div>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left">
+                    <ScrollArea className="flex-grow min-h-0 overscroll-contain text-left text-left">
                         <div className="p-8 space-y-10 text-left">
                             {cartItems.length > 0 ? (
                                 <div className="space-y-10 text-left">
                                     <div className="space-y-6 text-left">{cartByVendor.map(g => (
                                         <div key={g.vendorId} className="space-y-3 text-left">
-                                            <div className="flex items-center justify-between px-1 text-left">
-                                                <div className="flex items-center gap-2 text-left">
+                                            <div className="flex items-center justify-between px-1 text-left text-left">
+                                                <div className="flex items-center gap-2 text-left text-left">
                                                     <Store className="h-3.5 w-3.5 text-primary text-left"/>
                                                     <h4 className="text-[10px] font-black uppercase tracking-widest text-primary truncate max-w-[200px] text-left"> {g.vendorName}</h4>
                                                 </div>
@@ -845,6 +845,23 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                                     <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-left">Package subtotal</span>
                                                     <span className="text-[11px] font-black text-foreground uppercase tracking-tight text-left">Multi-Currency Hub</span>
                                                 </div>
+                                                
+                                                {/* Item Breakdown Injection */}
+                                                <div className="space-y-2 py-2">
+                                                    {cartItems.map((c) => (
+                                                        <div key={c.item.id} className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight">
+                                                            <span className="text-muted-foreground truncate mr-4">{c.item.name} x{c.quantity}</span>
+                                                            <span className="text-foreground shrink-0">{getCurrencySymbol(c.item.currency)}{(c.item.price * c.quantity).toLocaleString()}</span>
+                                                        </div>
+                                                    ))}
+                                                    {cartByVendor.length > 0 && cartByVendor[0].deliveryFee > 0 && (
+                                                        <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight pt-1 border-t border-dashed border-primary/10">
+                                                            <span className="text-muted-foreground">Delivery Fee</span>
+                                                            <span className="text-foreground">{getCurrencySymbol(cartByVendor[0].currency)}{cartByVendor[0].deliveryFee.toLocaleString()}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+
                                                 <Separator className="bg-primary/10 text-left" />
                                                 <div className="flex flex-col gap-1 text-left">
                                                     <p className="text-lg font-black uppercase tracking-tight text-primary text-left">Action Required</p>
@@ -857,16 +874,16 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     </div>
 
                                     <div className="space-y-4 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left"><CreditCard className="h-3.5 w-3.5 text-left" /> FULFILLMENT GUIDE</Label><div className="space-y-3 text-left">{cartByVendor.map(v => (
-                                        <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left"><Store className="h-10 w-10 text-primary text-left" /></div><div className="flex justify-between items-start mb-2 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left" /></Button></div>
+                                        <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left text-left"><Store className="h-10 w-10 text-primary text-left" /></div><div className="flex justify-between items-start mb-2 text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left" /></Button></div>
                                     ))}</div></div>
                                 </div>
                             ) : (
-                                <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 text-left" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-left">Add items to place an order.</p></div>
+                                <div className="py-24 text-center px-8 border-2 border-dashed rounded-[2.5rem] bg-muted/5 flex flex-col items-center text-left text-left"><div className="h-20 w-20 bg-muted/10 rounded-full flex items-center justify-center mb-6 text-left text-left text-left"><ShoppingCart className="h-10 w-10 text-muted-foreground opacity-10 text-left" /></div><h3 className="text-xl font-black uppercase tracking-tight opacity-40 text-left text-left">Empty Hub</h3><p className="mt-2 text-sm text-muted-foreground italic font-medium max-w-xs mx-auto text-balance leading-relaxed text-left text-left">Add items to place an order.</p></div>
                             )}
                             <div className="h-24 text-left" />
                         </div>
                     </ScrollArea>
-                    {cartItems.length > 0 && (<DrawerFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left">{(isProcessingOrder) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}DISPATCH OFFERINGS</Button></DrawerFooter>)}
+                    {cartItems.length > 0 && (<DrawerFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left">{(isProcessingOrder) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left" />}DISPATCH OFFERINGS</Button></DrawerFooter>)}
                 </DrawerContent>
             </Drawer>
 
@@ -883,7 +900,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </Drawer>
             ) : (
                 <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
+                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left text-left">
                         <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{addLabel}</DialogTitle></DialogHeader></div>
                         <div className="flex-grow overflow-hidden text-left">{itemForm()}</div>
                     </DialogContent>
@@ -914,7 +931,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
             {isMobile ? (
                 <Drawer open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                             <DrawerHeader className="text-left flex-shrink-0 text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Storefront</DrawerTitle>
@@ -927,7 +944,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
                     <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                         <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                            <DialogHeader className="text-left">
+                            <DialogHeader className="text-left text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Storefront</DialogTitle>
                             </DialogHeader>
                         </div>
@@ -947,9 +964,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             </AlertDialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left">
-                    <AlertDialogHeader className="text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left">
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left">
                         <AlertDialogCancel className="rounded-xl h-11 font-bold text-left">Cancel</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left" />}Delete</AlertDialogAction>
                     </AlertDialogFooter>
