@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Owner verification logic correction - 2025-03-05T16:00:00Z
+    // Deployment trigger: Refined owner logic for souls listing - 2025-06-17T10:00:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -85,8 +86,8 @@ service cloud.firestore {
       }
 
       match /souls/{soulId} {
-        // Corrected rule to use parent userId context
-        allow read, list: if isOwner(userId) || (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))));
+        allow get: if isOwner(userId) || (resource.data.get('isHistoryPrivate', false) == false && (isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''))));
+        allow list: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
         allow create, delete: if isOwner(userId);
         allow update: if isAuthenticated() && (
           isOwner(userId) || 

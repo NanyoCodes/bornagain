@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from "react";
@@ -613,7 +614,7 @@ function SoulProfileContent({
           {isPrayerCustomizationOpen && isMobile ? (
               <Drawer open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
                   <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
-                      <div className="p-8 border-b shrink-0 bg-muted/10 text-left flex flex-col gap-2"><div className="flex items-center gap-2"><HeartHandshake className="h-5 w-5 text-primary text-left" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Intercession</span></div><DrawerTitle className="text-2xl font-black font-headline uppercase">Kingdom Intercession</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1">Draft a powerful prayer for {soul.firstName}.</DrawerDescription><div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div></div>
+                      <div className="p-8 border-b shrink-0 bg-muted/10 text-left flex flex-col gap-2"><div className="flex items-center gap-2"><HeartHandshake className="h-5 w-5 text-primary text-left" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Intercession</span></div><DrawerTitle className="text-2xl font-black font-headline uppercase">Kingdom Intercession</DrawerTitle><DrawerDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul.firstName}.</DrawerDescription><div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div></div>
                       <ScrollArea className="flex-grow min-h-0 text-left">{PrayerBody}</ScrollArea>
                       <div className="p-8 border-t flex flex-col gap-3 shrink-0 bg-background/80 backdrop-blur-sm"><Button onClick={() => handlePrayerCustomizationConfirm(customMessageText)} disabled={!customMessageText.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">CONTINUE TO CHANNEL</Button><Button variant="outline" onClick={() => setIsPrayerCustomizationOpen(false)} className="rounded-xl h-12 font-bold">Cancel</Button></div>
                   </DrawerContent>
@@ -686,8 +687,8 @@ export function ProfileActionDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+            <DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left text-left">
+                <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                     <div className="flex items-center gap-2 mb-2 text-left text-left">
                         <Sparkles className="h-4 w-4 text-primary text-left" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Identity Hub</span>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -516,7 +517,7 @@ function BottomNavBar() {
     }, [pathname]);
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-transparent border-t border-white/5 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 border-t border-border pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden">
         <div className="flex h-16 items-stretch justify-around px-1 py-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -537,7 +538,7 @@ function BottomNavBar() {
                       <motion.div
                         layoutId="nav-active-circle"
                         className={cn(
-                            "absolute inset-0 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.4)] bg-gradient-to-br",
+                            "absolute inset-0 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.2)] bg-gradient-to-br",
                             activeColorClass
                         )}
                         transition={{ type: "spring", stiffness: 350, damping: 30 }}

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -73,13 +74,6 @@ import {
     SelectTrigger, 
     SelectValue 
 } from '@/components/ui/select';
-import { 
-    Sheet, 
-    SheetContent, 
-    SheetHeader, 
-    SheetTitle, 
-    SheetDescription 
-} from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
@@ -130,7 +124,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
         return [...rawOrders].sort((a, b) => {
             const dateA = safeToDate(a.createdAt)?.getTime() ?? 0;
             const dateB = safeToDate(b.createdAt)?.getTime() ?? 0;
-            return dateB - dateA;
+            return dateA - dateB;
         });
     }, [rawOrders]);
 
@@ -804,7 +798,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left">Review selection for {soulName || manualRecipientName || 'Self'}.</DrawerDescription>
                             <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left">
                                 <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left" />
-                                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left">Swipe down to close</span>
+                                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left">Swipe down to close</span>
                             </div>
                         </DrawerHeader>
                     </div>
@@ -828,7 +822,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                                     </Badge>
                                                 </div>
                                             </div>
-                                            <div className="space-y-2 text-left text-left text-left text-left">{g.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group text-left text-left text-left"><div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left text-left"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left text-left text-left text-left">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary text-left text-left"/> : <Utensils className="h-5 w-5 text-primary text-left text-left"/>}</div><div className="min-w-0 flex-1 text-left text-left text-left"><p className="font-black text-sm uppercase tracking-tight truncate text-left text-left text-left">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase text-left text-left text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2 text-left text-left text-left"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left text-left text-left"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left text-left text-left" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3 text-left text-left text-left"/></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center text-left text-left">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left text-left text-left" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3 text-left text-left text-left"/></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left text-left" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4 text-left text-left"/></Button></div></div>))}</div></div>
+                                            <div className="space-y-2 text-left text-left text-left text-left">{g.items.map(c => (<div key={c.item.id} className="flex items-center justify-between p-3 rounded-2xl bg-muted/30 border shadow-inner group text-left text-left text-left"><div className="flex items-center gap-3 min-w-0 flex-1 text-left text-left text-left"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border text-left text-left text-left text-left">{c.item.vendorType === 'gift' ? <Gift className="h-5 w-5 text-primary text-left text-left"/> : <Utensils className="h-5 w-5 text-primary text-left text-left"/>}</div><div className="min-w-0 flex-1 text-left text-left text-left"><p className="font-black text-sm uppercase tracking-tight truncate text-left text-left text-left">{c.item.name}</p><p className="text-[10px] font-bold text-primary uppercase text-left text-left text-left">{getCurrencySymbol(c.item.currency)}{c.item.price.toLocaleString()}</p></div></div><div className="flex items-center gap-2 ml-2 text-left text-left text-left"><div className="flex items-center gap-1 bg-background rounded-full p-0.5 border shadow-sm text-left text-left text-left"><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left text-left text-left" onClick={() => updateQuantity(c.item.id, -1)}><Minus className="h-3 w-3 text-left text-left text-left text-left"/></Button><span className="text-[11px] font-black min-w-[1.25rem] text-center text-left text-left">{c.quantity}</span><Button variant="ghost" size="icon" className="h-7 w-7 rounded-full text-left text-left text-left" onClick={() => updateQuantity(c.item.id, 1)}><Plus className="h-3 w-3 text-left text-left text-left"/></Button></div><Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground/40 hover:text-destructive text-left text-left" onClick={() => removeFromCart(c.item.id)}><Trash2 className="h-4 w-4 text-left text-left"/></Button></div></div>))}</div></div>
                                     ))}</div>
                                     <div className="space-y-6 text-left text-left text-left text-left"><div className="space-y-2 text-left text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Recipient Name</Label><Input placeholder="Enter recipient" value={manualRecipientName} onChange={(e) => setManualRecipientName(e.target.value)} className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left text-left text-left" /></div><div className="space-y-2 text-left text-left text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left text-left">Logistical Instructions</Label><Textarea placeholder="Delivery details and contact info..." value={giftInstructions} onChange={(e) => setGiftInstructions(e.target.value)} className="min-h-[100px] rounded-2xl bg-muted/20 border-none shadow-inner text-base text-left text-left text-left text-left" /></div></div>
                                     
@@ -847,7 +841,6 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                                     <span className="text-[11px] font-black text-foreground uppercase tracking-tight text-left text-left text-left text-left">Multi-Currency Hub</span>
                                                 </div>
                                                 
-                                                {/* Item Breakdown Injection */}
                                                 <div className="space-y-2 py-2 text-left">
                                                     {cartItems.map((c) => (
                                                         <div key={c.item.id} className="flex justify-between items-center text-[10px] font-bold uppercase tracking-tight">
@@ -875,7 +868,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                     </div>
 
                                     <div className="space-y-4 text-left text-left text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 px-1 text-left text-left text-left text-left text-left text-left"><CreditCard className="h-3.5 w-3.5 text-left text-left text-left text-left text-left text-left" /> FULFILLMENT GUIDE</Label><div className="space-y-3 text-left text-left text-left text-left text-left text-left">{cartByVendor.map(v => (
-                                        <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left text-left text-left text-left text-left text-left"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left text-left text-left text-left text-left text-left text-left"><Store className="h-10 w-10 text-primary text-left text-left text-left text-left text-left text-left text-left" /></div><div className="flex justify-between items-start mb-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left text-left text-left text-left text-left text-left text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left" /></Button></div>
+                                        <div key={v.vendorId} className="bg-primary/5 p-5 rounded-[1.5rem] border-2 border-dashed border-primary/20 relative group overflow-hidden text-left text-left text-left text-left text-left text-left text-left"><div className="absolute top-0 right-0 p-3 opacity-[0.03] pointer-events-none group-hover:opacity-0.06 transition-opacity text-left text-left text-left text-left text-left text-left text-left"><Store className="h-10 w-10 text-primary text-left text-left text-left text-left text-left text-left text-left" /></div><div className="flex justify-between items-start mb-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><p className="text-[9px] font-black uppercase text-primary/60 tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left">Pay to: {v.vendorName}</p><Badge variant="outline" className="h-5 px-2 bg-primary text-white border-none font-black text-[10px] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{getCurrencySymbol(v.currency)}{(v.subtotal + v.deliveryFee).toLocaleString()}</Badge></div><p className="text-sm font-bold text-foreground whitespace-pre-wrap leading-relaxed break-words text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">{v.paymentDetails || 'Contact provider for details.'}</p><Button size="icon" variant="ghost" className="absolute bottom-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-left text-left text-left text-left text-left text-left text-left text-left" onClick={() => { navigator.clipboard.writeText(v.paymentDetails); toast({ title: 'Copied!' }); }}><Clipboard className="h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left" /></Button></div>
                                     ))}</div></div>
                                 </div>
                             ) : (
@@ -884,7 +877,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                             <div className="h-24 text-left text-left text-left text-left text-left" />
                         </div>
                     </ScrollArea>
-                    {cartItems.length > 0 && (<DrawerFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left text-left text-left text-left text-left"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left text-left text-left text-left text-left text-left">{(isProcessingOrder) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left text-left text-left" />}DISPATCH OFFERINGS</Button></DrawerFooter>)}
+                    {cartItems.length > 0 && (<DrawerFooter className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left text-left text-left text-left text-left"><Button onClick={handleGiftItems} disabled={isProcessingOrder || (!soulName && !manualRecipientName.trim()) || !giftInstructions.trim()} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left text-left text-left text-left text-left text-left text-left text-left text-left">{(isProcessingOrder) && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left text-left text-left text-left text-left text-left" />}DISPATCH OFFERINGS</Button></DrawerFooter>)}
                 </DrawerContent>
             </Drawer>
 
@@ -932,9 +925,9 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
 
             {isMobile ? (
                 <Drawer open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left">
-                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left">
-                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left">
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left text-left text-left text-left">
+                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left text-left text-left text-left">
+                            <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left">
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Edit Storefront</DrawerTitle>
                                 <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left">
                                     <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left" />
@@ -959,7 +952,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             )}
             
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
                     <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left text-left">
                         <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
@@ -969,7 +962,7 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
             </AlertDialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left">
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left text-left text-left text-left">
                     <AlertDialogHeader className="text-left text-left text-left text-left text-left text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left text-left text-left text-left text-left text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
                     <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left text-left text-left text-left">
                         <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left text-left text-left text-left">Cancel</AlertDialogCancel>
@@ -980,4 +973,3 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
         </div>
     );
 }
-
