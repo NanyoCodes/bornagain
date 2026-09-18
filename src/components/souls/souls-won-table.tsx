@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from "react";
-import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { format, differenceInMinutes, isSameDay } from "date-fns";
 import { 
   MoreHorizontal, 
@@ -383,7 +383,7 @@ export function ProfileActionDialog({
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left">
                         <div className="flex items-center gap-2 mb-2 text-left text-left">
                             <Sparkles className="h-4 w-4 text-primary text-left text-left" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left">Identity Hub</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left" >Identity Hub</span>
                         </div>
                         <DrawerHeader className="text-left flex-shrink-0 text-left text-left flex flex-col gap-2">
                             <DrawerTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left text-left">{title}</DrawerTitle>
@@ -495,4 +495,3 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
     </div>
   );
 }
-
