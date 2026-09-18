@@ -204,7 +204,7 @@ function LiveAuthorAvatar({ userId, fallbackInitials, className }: { userId: str
                 <DialogContent className="p-0 bg-black/95 border-0 sm:max-w-[95vw] h-dvh rounded-none flex items-center justify-center text-center">
                     <DialogHeader className="sr-only text-center"><DialogTitle>Profile Photo</DialogTitle></DialogHeader>
                     <div className="relative h-full w-full flex items-center justify-center p-4 text-center">
-                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center">
+                        <div className="relative h-full w-full max-h-[85vh] max-w-[90vw] sm:max-w-[80vw] flex items-center justify-center text-center text-left text-left">
                             <Image src={photoURL} alt="Author" fill className="object-contain shadow-2xl ring-4 ring-white/10" unoptimized />
                         </div>
                     </div>
@@ -923,6 +923,7 @@ function SoulProfileContent({
           const q = query(chatsRef, where('participantIds', '==', participantIds), where('isGroupChat', '==', false));
           const snap = await getDocs(q);
           let chatId: string;
+
           if (!snap.empty) {
               chatId = snap.docs[0].id;
           } else {

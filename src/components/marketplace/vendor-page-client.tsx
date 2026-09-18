@@ -94,6 +94,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { cn, safeToDate } from '@/lib/utils';
 
 const currencyOptions = [
     { value: 'NGN', label: 'Naira (₦)', symbol: '₦' },
@@ -191,7 +192,7 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
                             </Badge>
                         </CardHeader>
                         <CardContent className="p-4 pt-0 space-y-3 text-left">
-                            <p className="text-xs text-muted-foreground leading-relaxed italic text-left">
+                            <p className="text-xs text-muted-foreground italic font-medium leading-relaxed text-left">
                                 &ldquo;{order.instructions}&rdquo;
                             </p>
                             <div className="flex items-center justify-between pt-2 border-t border-dashed text-left">
@@ -236,19 +237,19 @@ function VendorOrdersSheet({ vendorId, isOpen, onOpenChange }: { vendorId: strin
 
     if (isMobile) {
         return (
-            <Sheet open={isOpen} onOpenChange={onOpenChange}>
-                <SheetContent side="bottom" className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <Drawer open={isOpen} onOpenChange={onOpenChange}>
+                <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                        <SheetHeader className="text-left flex-shrink-0">
-                            <SheetTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Order Hub</SheetTitle>
-                            <SheetDescription className="text-sm font-medium mt-1 text-left">Manage and update deliveries for your Kingdom offerings.</SheetDescription>
-                        </SheetHeader>
+                        <DrawerHeader className="text-left flex-shrink-0">
+                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Order Hub</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Manage and update deliveries for your Kingdom offerings.</DrawerDescription>
+                        </DrawerHeader>
                     </div>
                     <ScrollArea className="flex-grow px-8 pt-6">
                         {listContent}
                     </ScrollArea>
-                </SheetContent>
-            </Sheet>
+                </DrawerContent>
+            </Drawer>
         );
     }
 
@@ -824,8 +825,8 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                                                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse text-left" />
                                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Checkout Guidance</span>
                                             </div>
-                                            <div className="space-y-3 text-left text-left">
-                                                <div className="flex justify-between items-center text-left text-left">
+                                            <div className="space-y-3 text-left text-left text-left">
+                                                <div className="flex justify-between items-center text-left text-left text-left">
                                                     <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider text-left">Package subtotal</span>
                                                     <span className="text-[11px] font-black text-foreground uppercase tracking-tight text-left">Multi-Currency Hub</span>
                                                 </div>
@@ -854,48 +855,88 @@ export default function VendorPageClient({ vendorId }: { vendorId: string }) {
                 </DrawerContent>
             </Drawer>
 
-            <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{addLabel}</DialogTitle></DialogHeader></div>
-                    <div className="flex-grow overflow-hidden text-left">{itemForm()}</div>
-                </DialogContent>
-            </Dialog>
+            {isMobile ? (
+                <Drawer open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
+                    <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                            <DrawerHeader className="text-left flex-shrink-0">
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{addLabel}</DrawerTitle>
+                            </DrawerHeader>
+                        </div>
+                        <div className="flex-grow overflow-hidden">{itemForm()}</div>
+                    </DrawerContent>
+                </Drawer>
+            ) : (
+                <Dialog open={isAddMealOpen} onOpenChange={setIsAddMealOpen}>
+                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
+                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">{addLabel}</DialogTitle></DialogHeader></div>
+                        <div className="flex-grow overflow-hidden text-left">{itemForm()}</div>
+                    </DialogContent>
+                </Dialog>
+            )}
 
-            <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
-                    <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Offering</DialogTitle></DialogHeader></div>
-                    <div className="flex-grow overflow-hidden text-left">{itemForm(itemToEdit, true)}</div>
-                </DialogContent>
-            </Dialog>
+            {isMobile ? (
+                <Drawer open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
+                    <DrawerContent className="h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
+                            <DrawerHeader className="text-left flex-shrink-0">
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Offering</DrawerTitle>
+                            </DrawerHeader>
+                        </div>
+                        <div className="flex-grow overflow-hidden">{itemForm(itemToEdit, true)}</div>
+                    </DrawerContent>
+                </Drawer>
+            ) : (
+                <Dialog open={!!itemToEdit} onOpenChange={(open) => !open && setItemToEdit(null)}>
+                    <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl flex flex-col max-h-[90vh] text-left">
+                        <div className="p-8 border-b bg-muted/10 shrink-0 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Offering</DialogTitle></DialogHeader></div>
+                        <div className="flex-grow overflow-hidden text-left">{itemForm(itemToEdit, true)}</div>
+                    </DialogContent>
+                </Dialog>
+            )}
 
             <VendorOrdersSheet vendorId={vendorId} isOpen={isOrdersOpen} onOpenChange={setIsOrdersOpen} />
 
-            <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
-                <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                    <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left"><DialogHeader className="text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Storefront</DialogTitle></DialogHeader></div>
-                    <div className="flex-grow overflow-hidden text-left text-left">{editProfileForm}</div>
-                </DialogContent>
-            </Dialog>
+            {isMobile ? (
+                <Drawer open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                    <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                            <DrawerHeader className="text-left flex-shrink-0">
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Storefront</DrawerTitle>
+                            </DrawerHeader>
+                        </div>
+                        <div className="flex-grow overflow-hidden">{editProfileForm}</div>
+                    </DrawerContent>
+                </Drawer>
+            ) : (
+                <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+                    <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
+                        <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left"><DialogHeader className="text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Edit Storefront</DialogTitle></DialogHeader></div>
+                        <div className="flex-grow overflow-hidden text-left text-left">{editProfileForm}</div>
+                    </DialogContent>
+                </Dialog>
+            )}
             
             <AlertDialog open={isDeleteStoreOpen} onOpenChange={setIsDeleteStoreOpen}>
                 <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
-                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left" />}Confirm</AlertDialogAction>
+                    <AlertDialogHeader className="text-left text-left text-left text-left"><AlertDialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Delete Storefront?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium leading-relaxed text-left text-left text-left text-left">This is permanent. All items and records will be removed.</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left">
+                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteStore} disabled={isDeletingStore} className="bg-destructive hover:bg-destructive/90 rounded-xl h-11 font-bold text-left text-left text-left">{isDeletingStore ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left" />}Confirm</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
 
             <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
-                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left">
-                    <AlertDialogHeader className="text-left text-left text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
-                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left">
-                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left" />}Delete</AlertDialogAction>
+                <AlertDialogContent className="rounded-[2rem] p-8 border-none shadow-2xl text-left text-left text-left text-left">
+                    <AlertDialogHeader className="text-left text-left text-left text-left text-left"><AlertDialogTitle className="font-black font-headline uppercase tracking-tight text-xl text-left">Remove Offering?</AlertDialogTitle><AlertDialogDescription className="text-sm font-medium text-left text-left text-left text-left">Delete "{itemToDelete?.name}" from your catalog?</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogFooter className="gap-3 mt-6 text-left text-left text-left text-left">
+                        <AlertDialogCancel className="rounded-xl h-11 font-bold text-left text-left text-left">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteItem} disabled={isDeletingItem} className="bg-destructive hover:bg-destructive/90 rounded-xl h-12 font-bold text-left text-left text-left">{isDeletingItem ? <Loader2 className="mr-2 h-4 w-4 animate-spin text-left text-left text-left text-left" /> : <Trash2 className="mr-2 h-4 w-4 text-left text-left text-left text-left" />}Delete</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
         </div>
     );
 }
+
