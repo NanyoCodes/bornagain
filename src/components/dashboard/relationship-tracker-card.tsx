@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
-import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, getDocs, where, getDoc, addDoc } from 'firebase/firestore';
+import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, getDocs, where, getDoc, addDoc, updateDoc } from 'firebase/firestore';
 import type { Soul, UserProfile, BibleChapterOutput, SoulRelationship } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -61,6 +61,20 @@ import { Label } from '@/components/ui/label';
 import { getBibleChapter } from '@/ai/flows/get-bible-chapter-flow';
 import { bibleData } from '@/lib/bible-data';
 import { useIsMobile } from '@/hooks/use-mobile';
+
+const iconMap: Record<string, any> = {
+    'prayed_together': Sparkles,
+    'studied_bible': BookOpen,
+    'shared_meal': Utensils,
+    'visited_home': Home,
+    'introduced_friend': Users,
+    'gave_gift': Gift,
+    'phone_call': Phone,
+    'text_message': MessageSquare,
+    'helped_with_need': Heart,
+    'invited_to_event': Calendar,
+    'matchmaking': HeartHandshake,
+};
 
 function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -171,7 +185,7 @@ function ShareWordDialog({
                 <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                     {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Select Chapter` : `${selectedBook} ${selectedChapter}`}
                 </DialogTitle>
-                {isMobile && <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>}
+                {isMobile && <div className="flex items-center gap-2 mt-4 text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>}
             </DialogHeader>
         </div>
       </div>
@@ -192,14 +206,14 @@ function ShareWordDialog({
                     </div>
                     {searchResults.length > 0 && searchResults.map((res, idx) => (
                         <Button key={idx} variant="outline" className="w-full h-auto p-6 rounded-[2rem] border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left hover:bg-primary/10 transition-all border-2 border-dashed" onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference))}>
-                            <div className="flex items-center justify-between w-full text-left text-left">
+                            <div className="flex items-center justify-between w-full text-left">
                                 <span className="font-black text-xs uppercase tracking-widest text-primary text-left">{res.reference}</span>
                                 <Send className="h-4 w-4 text-primary opacity-40 text-left" />
                             </div>
                             <p className="text-sm text-muted-foreground leading-relaxed italic line-clamp-4 text-left">"{res.text.trim()}"</p>
                         </Button>
                     ))}
-                    <div className="grid grid-cols-2 gap-4 text-left text-left">
+                    <div className="grid grid-cols-2 gap-4 text-left">
                         <Button onClick={() => setView('books')} variant="outline" className="h-28 rounded-[2rem] gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center">
                             <BookOpen className="h-8 w-8 mb-1 group-hover:scale-110 transition-transform text-left" />
                             <span className="font-black text-[10px] uppercase tracking-widest text-left">Browse Bible</span>
@@ -307,7 +321,7 @@ function MatchmakingDialog({ isOpen, onOpenChange, sourceSoul, allSouls, onMatch
     const header = (
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
             <div className="flex items-center gap-2 mb-2 text-left"><HeartHandshake className="h-5 w-5 text-primary text-left" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Matching</span></div>
-            <DialogHeader className="text-left text-left">
+            <DialogHeader className="text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Find Match for {sourceSoul.firstName}</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1 text-left">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
                 {isMobile && <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>}
@@ -324,9 +338,9 @@ function MatchmakingDialog({ isOpen, onOpenChange, sourceSoul, allSouls, onMatch
                         <Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left">
                             <AvatarFallback className="font-black bg-primary/10 text-primary text-xs flex items-center justify-center h-full w-full text-left">{c.firstName?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0 flex-1 text-left text-left">
+                        <div className="min-w-0 flex-1 text-left">
                             <p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">{c.firstName} {c.lastName} ({c.age})</p>
-                            <div className="flex items-center gap-2 mt-0.5 opacity-60 flex-wrap text-left text-left">
+                            <div className="flex items-center gap-2 mt-0.5 opacity-60 flex-wrap text-left">
                                 <Badge variant="outline" className="h-4 px-1 text-[7px] uppercase font-bold tracking-widest text-left">{c.maritalStatus}</Badge>
                                 <p className="text-[9px] font-bold uppercase truncate text-left">{c.church || 'Global Network'}</p>
                             </div>
@@ -387,7 +401,7 @@ function SoulSelectionDialog({ isOpen, onOpenChange, souls, onSelect, actionLabe
     const body = (
         <div className="p-6 space-y-6 text-left">
             <div className="relative text-left"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50 text-left" /><Input placeholder="Search by name..." value={search} onChange={e => setSearch(e.target.value)} className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left" /></div>
-            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left"><div className="p-2 space-y-1.5 text-left text-left">{filteredSouls.length > 0 ? (filteredSouls.map(soul => (<Button key={soul.id} variant="ghost" className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex flex-row items-center text-left" onClick={() => onSelect(soul)} disabled={isLoading}><Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left"><AvatarFallback className="font-black bg-primary/10 text-center flex items-center justify-center h-full w-full text-left">{soul.firstName?.charAt(0)}</AvatarFallback></Avatar><div className="text-left min-w-0 flex-1 text-left"><p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p><p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p></div><div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-left"><PlusCircle className="h-4 w-4 text-left" /></div></Button>))) : (<div className="text-center py-16 px-8 space-y-3 text-left"><div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left"><Users className="h-6 w-6 text-muted-foreground opacity-20 text-left" /></div><p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center text-left"> {search ? "No matches found" : "Log your first soul to begin tracking"}</p></div>)}</div></ScrollArea>
+            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left"><div className="p-2 space-y-1.5 text-left">{filteredSouls.length > 0 ? (filteredSouls.map(soul => (<Button key={soul.id} variant="ghost" className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex flex-row items-center text-left" onClick={() => onSelect(soul)} disabled={isLoading}><Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left"><AvatarFallback className="font-black bg-primary/10 text-center flex items-center justify-center h-full w-full text-left">{soul.firstName?.charAt(0)}</AvatarFallback></Avatar><div className="text-left min-w-0 flex-1 text-left"><p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p><p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p></div><div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-left"><PlusCircle className="h-4 w-4 text-left" /></div></Button>))) : (<div className="text-center py-16 px-8 space-y-3 text-left"><div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left"><Users className="h-6 w-6 text-muted-foreground opacity-20 text-left" /></div><p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center text-left"> {search ? "No matches found" : "Log your first soul to begin tracking"}</p></div>)}</div></ScrollArea>
         </div>
     );
 
@@ -426,8 +440,8 @@ export function RelationshipTrackerCard() {
   const [isMatchmakingOpen, setIsMatchmakingOpen] = useState(false);
   const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
   const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
-  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
   const [isStudyWordOpen, setIsStudyWordOpen] = useState(false);
+  const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
   const [customMessageText, setCustomMessageText] = useState('');
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
@@ -654,13 +668,13 @@ export function RelationshipTrackerCard() {
               <Drawer open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
                   <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                     <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                        <DrawerHeader className="text-left flex-shrink-0 text-left">
-                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DrawerTitle>
-                            <DrawerDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {selectedSoulForAction?.firstName}.</DrawerDescription>
-                            <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>
+                        <DrawerHeader className="text-left flex-shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                            <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left text-left">Kingdom Intercession</DrawerTitle>
+                            <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Draft a powerful prayer for {selectedSoulForAction?.firstName}.</DrawerDescription>
+                            <div className="flex items-center gap-2 mt-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Swipe down to close</span></div>
                         </DrawerHeader>
                     </div>
-                    <ScrollArea className="flex-grow p-8 text-left">
+                    <ScrollArea className="flex-grow p-8 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <div className="space-y-6 text-left">
                             <div className="space-y-3 text-left">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Prayer Focus</label>
@@ -670,7 +684,7 @@ export function RelationshipTrackerCard() {
                                     ))}
                                 </div>
                             </div>
-                            <div className="space-y-2 text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Your Prayer</Label><Textarea value={customMessageText} onChange={e => setCustomMessageText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" /></div>
+                            <div className="space-y-2 text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Your Prayer</Label><Textarea value={customMessageText} onChange={e => setCustomMessageText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" /></div>
                             <Button onClick={() => { setIsPrayerCustomizationOpen(false); setTimeout(() => setIsCommChannelDialogOpen(true), 100); }} disabled={!customMessageText.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left">CONTINUE TO CHANNEL</Button>
                         </div>
                     </ScrollArea>
@@ -678,10 +692,10 @@ export function RelationshipTrackerCard() {
               </Drawer>
           ) : (
             <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 text-left text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle><DialogDescription className="text-sm font-medium text-left">Draft a powerful prayer for {selectedSoulForAction?.firstName}.</DialogDescription></DialogHeader></div>
+                <div className="p-8 border-b bg-muted/10 text-left text-left text-left text-left"><DialogHeader className="text-left text-left text-left text-left text-left text-left text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left text-left text-left text-left">Kingdom Intercession</DialogTitle><DialogDescription className="text-sm font-medium text-left text-left text-left text-left text-left text-left text-left">Draft a powerful prayer for {selectedSoulForAction?.firstName}.</DialogDescription></DialogHeader></div>
                 <div className="p-8 space-y-6 text-left">
                     <div className="space-y-3 text-left"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Prayer Focus</label><div className="flex flex-wrap gap-2 text-left">{prayerTemplates.map(t => (<Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary text-left" onClick={() => selectedSoulForAction && setCustomMessageText(resolveTemplate(t.text, selectedSoulForAction))}>{t.label}</Button>))}</div></div>
-                    <div className="space-y-2 text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Your Prayer</Label><Textarea value={customMessageText} onChange={e => setCustomMessageText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" /></div>
+                    <div className="space-y-2 text-left text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Your Prayer</Label><Textarea value={customMessageText} onChange={e => setCustomMessageText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left" /></div>
                     <Button onClick={() => { setIsPrayerCustomizationOpen(false); setTimeout(() => setIsCommChannelDialogOpen(true), 100); }} disabled={!customMessageText.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest text-left">CONTINUE TO CHANNEL</Button>
                 </div>
             </DialogContent>
@@ -708,10 +722,10 @@ export function RelationshipTrackerCard() {
                 </DrawerContent>
             </Drawer>
         ) : (
-            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+            <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
                 <div className="p-8 border-b bg-muted/10 text-left"><DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Details</DialogTitle><DialogDescription className="text-sm font-medium text-left">Describe how you supported {selectedSoulForAction?.firstName}.</DialogDescription></DialogHeader></div>
                 <div className="p-8 space-y-6 text-left">
-                    <div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Provided</Label><Textarea placeholder="e.g. Provided food items, helped with bills..." onChange={e => setCustomMessageText(e.target.value)} className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left" /></div>
+                    <div className="space-y-2 text-left text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Provided</Label><Textarea placeholder="e.g. Provided food items, helped with bills..." onChange={e => setCustomMessageText(e.target.value)} className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner text-left" /></div>
                     <Button onClick={() => { if(selectedSoulForAction && selectedActionId) handleHelpNeedConfirm(customMessageText); }} className="w-full h-12 rounded-xl font-bold text-left">Confirm Service</Button>
                 </div>
             </DialogContent>
