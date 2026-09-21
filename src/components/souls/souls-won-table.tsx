@@ -387,7 +387,7 @@ function ShareWordDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">
+      <DialogContent className="sm:max-w-2xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">
         {header}
         {body}
         {footer}
@@ -414,7 +414,7 @@ function MatchmakingDialog({ isOpen, onOpenChange, sourceSoul, allSouls, onMatch
 
     const header = (
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
-            <div className="flex items-center gap-2 mb-2"><HeartHandshake className="h-5 w-5 text-primary" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Matching</span></div>
+            <div className="flex items-center gap-2 mb-2 text-left"><HeartHandshake className="h-5 w-5 text-primary" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Matching</span></div>
             <DialogHeader className="text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase">Find Match for {sourceSoul.firstName}</DialogTitle>
                 <DialogDescription className="text-sm font-medium mt-1">Listing eligible singles (18+) of the opposite gender.</DialogDescription>
@@ -664,23 +664,23 @@ function SoulProfileContent({
   };
 
   const handleCommChoice = (channel: 'whatsapp' | 'sms') => {
-      if (!soul?.phone || !clickedActionId) return;
-      const cleanPhone = soul.phone.replace(/\+/g, '').replace(/\D/g, '');
-      const message = customMessageText || `Hi ${soul.firstName}, God bless you!`;
+      if (!selectedSoulForAction?.phone || !selectedActionId) return;
+      const cleanPhone = selectedSoulForAction.phone.replace(/\+/g, '').replace(/\D/g, '');
+      const message = customMessageText || `Hi ${selectedSoulForAction.firstName}, God bless you!`;
       if (channel === 'whatsapp') window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
-      else window.location.href = `sms:${soul.phone}?body=${encodeURIComponent(message)}`;
-      finalizeLog(clickedActionId, `Sent via ${channel.toUpperCase()}`);
+      else window.location.href = `sms:${selectedSoulForAction.phone}?body=${encodeURIComponent(message)}`;
+      finalizeLog(selectedActionId, `Sent via ${channel.toUpperCase()}`);
       setIsCommChannelDialogOpen(false);
       setCustomMessageText('');
       setClickedActionId(null);
   };
 
-  const handlePrayerCustomizationConfirm = (text: string) => {
-      setCustomMessageText(text);
-      setIsPrayerCustomizationOpen(false);
-      requestAnimationFrame(() => {
-          setIsCommChannelDialogOpen(true);
-      });
+  const handleMatchConfirmed = (candidate: Soul) => {
+      if (!soul) return;
+      setIsMatchmakingOpen(false);
+      const template = `Hi ${soul.firstName}, I've found a potential Kingdom match for you! Meet ${candidate.firstName}, a believer from my harvest field. Let's explore if this is God's will for both of you. ${window.location.origin}/chats`;
+      router.push(`/chats?soulId=${soul.id}&template=${encodeURIComponent(template)}`);
+      finalizeLog('matchmaking', `Proposed match with ${candidate.firstName}`);
   };
 
   const handleHelpNeedConfirm = (note: string) => {
@@ -735,14 +735,6 @@ function SoulProfileContent({
       } catch (e) {
           toast({ variant: 'destructive', title: 'Share Failed' });
       }
-  };
-
-  const handleMatchConfirmed = (candidate: Soul) => {
-      if (!soul) return;
-      setIsMatchmakingOpen(false);
-      const template = `Hi ${soul.firstName}, I've found a potential Kingdom match for you! Meet ${candidate.firstName}, a believer from my harvest field. Let's explore if this is God's will for both of you. ${window.location.origin}/chats`;
-      router.push(`/chats?soulId=${soul.id}&template=${encodeURIComponent(template)}`);
-      finalizeLog('matchmaking', `Proposed match with ${candidate.firstName}`);
   };
 
   const uniquePartners = React.useMemo(() => {
@@ -802,7 +794,7 @@ function SoulProfileContent({
                     <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
                 </DrawerHeader>
             </div>
-            <ScrollArea className="flex-grow p-8 text-left">
+            <ScrollArea className="flex-grow p-8">
                 {prayerContent}
             </ScrollArea>
         </DrawerContent>
@@ -816,7 +808,7 @@ function SoulProfileContent({
                     <DialogDescription className="text-sm font-medium">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
                 </DialogHeader>
             </div>
-            <div className="p-8 text-left">
+            <div className="p-8">
                 {prayerContent}
             </div>
         </DialogContent>
@@ -842,12 +834,12 @@ function SoulProfileContent({
                 <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
                     <MessageSquare className="h-7 w-7 text-primary text-center text-left" />
                 </div>
-                <DrawerTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Message Hub</DrawerTitle>
-                <DrawerDescription className="text-sm font-medium text-center text-left">How would you like to encourage {soul?.firstName}?</DrawerDescription>
-                <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Swipe down to close</span></div>
+                <DrawerTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DrawerTitle>
+                <DrawerDescription className="text-sm font-medium text-center">How would you like to encourage {soul?.firstName}?</DrawerDescription>
+                <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
             </DrawerHeader>
         </div>
-        <div className="p-8 text-left">
+        <div className="p-8">
             {commBody}
         </div>
       </DrawerContent>
@@ -862,9 +854,7 @@ function SoulProfileContent({
           <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
           <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul?.firstName}?</DialogDescription>
         </DialogHeader>
-        <div className="p-8 text-left">
-            {commBody}
-        </div>
+        {commBody}
       </DialogContent>
     </Dialog>
   );
@@ -890,10 +880,10 @@ function SoulProfileContent({
             <DrawerHeader className="text-left flex-shrink-0 text-left">
                 <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DrawerTitle>
                 <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Describe how you supported {soul?.firstName}.</DrawerDescription>
-                <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">Swipe down to close</span></div>
+                <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>
             </DrawerHeader>
         </div>
-        <div className="p-8 text-left">
+        <div className="p-8">
             {helpContent}
         </div>
       </DrawerContent>
@@ -907,7 +897,7 @@ function SoulProfileContent({
             <DialogDescription className="text-sm font-medium text-left text-left text-left">Describe how you supported {soul?.firstName}.</DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-8 text-left">
+        <div className="p-8">
             {helpContent}
         </div>
       </DialogContent>
@@ -916,7 +906,7 @@ function SoulProfileContent({
 
   const shareTargetBody = (
     <div className="flex flex-col gap-3 pt-6 text-left">
-      <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20 text-left">
+      <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
         <WhatsAppIcon className="h-5 w-5 text-left" /> WhatsApp External
       </Button>
       <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5 text-left">
@@ -935,18 +925,18 @@ function SoulProfileContent({
                 </div>
                 <DrawerTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Share Details</DrawerTitle>
                 <DrawerDescription className="text-sm font-medium text-center text-left">Where would you like to share {soul?.firstName}'s info?</DrawerDescription>
-                <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Swipe down to close</span></div>
+                <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center text-left">Swipe down to close</span></div>
             </DrawerHeader>
         </div>
-        <div className="p-8 text-left">
+        <div className="p-8">
             {shareTargetBody}
         </div>
       </DrawerContent>
     </Drawer>
   ) : (
     <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
-      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left text-left">
-        <DialogHeader className="text-center space-y-2 text-left text-left text-left">
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left text-left text-left">
+        <DialogHeader className="text-center space-y-2 text-left text-left text-left text-left">
             <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left">
                 <Share className="h-7 w-7 text-primary text-center text-left" />
             </div>
@@ -991,7 +981,7 @@ function SoulProfileContent({
                 <DrawerHeader className="text-left flex-shrink-0 text-left text-left">
                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DrawerTitle>
                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Which partner should receive these details?</DrawerDescription>
-                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">Swipe down to close</span></div>
+                    <div className="flex items-center gap-2 mt-4 text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">Swipe down to close</span></div>
                 </DrawerHeader>
             </div>
             <div className="p-8 text-left">
@@ -1361,7 +1351,7 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
                 <div className="space-y-px text-left text-left text-left">{souls.map((soul) => (<SoulCard key={soul.id} soul={soul} onClick={() => onSelect(soul.id)} />))}</div>
             ) : (
                 <Card className="rounded-none sm:rounded-[2rem] border-x-0 sm:border-x shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden text-left text-left text-left">
-                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left text-left"><CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left text-left text-left text-left text-left text-left text-left"><Heart className="h-6 w-6 text-primary fill-current text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />Harvest Dashboard</CardTitle><CardDescription className="text-base font-medium text-left text-left text-left text-left text-left text-left text-left text-left">Keep track of spiritual development and community integration.</CardDescription></CardHeader>
+                    <CardHeader className="p-8 border-b bg-muted/5 text-left text-left text-left text-left text-left"><CardTitle className="text-2xl font-black font-headline tracking-tight flex items-center gap-3 uppercase text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />Harvest Dashboard</CardHeader>
                     <CardContent className="p-0 text-left text-left text-left text-left text-left">
                         <div className="overflow-x-auto text-left text-left text-left text-left text-left text-left">
                             <Table className="text-left text-left text-left text-left text-left">
@@ -1437,3 +1427,4 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
     </div>
   );
 }
+
