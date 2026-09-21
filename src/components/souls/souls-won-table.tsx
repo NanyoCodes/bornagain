@@ -757,7 +757,7 @@ function SoulProfileContent({
                 <DrawerHeader className="text-left flex-shrink-0">
                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kingdom Intercession</DrawerTitle>
                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Draft a powerful prayer for {soul?.firstName}.</DrawerDescription>
-                    <div className="flex items-center gap-2 mt-4 text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">Swipe down to close</span></div>
+                    <div className="flex items-center gap-2 mt-4 text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">Swipe down to close</span></div>
                 </DrawerHeader>
             </div>
             <ScrollArea className="flex-grow p-8 text-left text-left">
@@ -835,7 +835,7 @@ function SoulProfileContent({
               className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
           />
       </div>
-      <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-14 rounded-2xl font-black shadow-lg uppercase tracking-widest">Confirm Service</Button>
+      <Button onClick={() => handleHelpNeedConfirm(customMessageText)} className="w-full h-14 rounded-2xl font-black shadow-lg uppercase tracking-widest">CONFIRM SERVICE</Button>
     </div>
   );
 
@@ -901,7 +901,7 @@ function SoulProfileContent({
     </Drawer>
   ) : (
     <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
-      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
         <DialogHeader className="text-center space-y-2 text-left">
             <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
                 <Share className="h-7 w-7 text-primary" />
@@ -941,14 +941,14 @@ function SoulProfileContent({
   const PartnerSelectionDialog = isMobile ? (
     <Drawer open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
         <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-            <div className="p-8 border-b bg-muted/10 text-left">
+            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                 <DrawerHeader className="text-left flex-shrink-0 text-left">
                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DrawerTitle>
                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Which partner should receive these details?</DrawerDescription>
                     <div className="flex items-center gap-2 mt-4 text-left text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left text-left">Swipe down to close</span></div>
                 </DrawerHeader>
             </div>
-            <div className="p-6 text-left">
+            <div className="p-8">
                 {partnerSelectionBody}
             </div>
         </DrawerContent>
