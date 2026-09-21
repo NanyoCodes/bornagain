@@ -163,7 +163,7 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId);
+        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
