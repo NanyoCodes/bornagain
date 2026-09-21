@@ -362,7 +362,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar text-left" align="end" forceMount>
+              <DropdownMenuContent className="w-64 rounded-[1.5rem] shadow-2xl p-2 border-none max-h-[80vh] overflow-y-auto no-scrollbar text-left" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal p-4 text-left">
                   <div className="flex flex-col space-y-1 text-left">
                     <p className="text-sm font-black leading-none truncate uppercase tracking-tight text-left">{user.displayName || 'User'}</p>
@@ -516,7 +516,7 @@ function BottomNavBar() {
     }, [pathname]);
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden text-left">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden text-left">
         <div className="flex h-16 items-stretch justify-around px-1 py-1 text-left">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -537,7 +537,7 @@ function BottomNavBar() {
                       <motion.div
                         layoutId="nav-active-circle"
                         className={cn(
-                            "absolute inset-0 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.2)] bg-gradient-to-br text-left",
+                            "absolute inset-0 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.15)] bg-gradient-to-br text-left",
                             activeColorClass
                         )}
                         transition={{ type: "spring", stiffness: 350, damping: 30 }}
@@ -621,6 +621,16 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
       pathname.startsWith('/dashboard/notifications')
     );
   }, [pathname]);
+
+  // Unified popstate handler for back button
+  useEffect(() => {
+      const handlePopState = () => {
+          // If we had logic here to manually close a global popup state, we would.
+          // Individual pages handle their own popups currently.
+      };
+      window.addEventListener('popstate', handlePopState);
+      return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   useEffect(() => {
     if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;

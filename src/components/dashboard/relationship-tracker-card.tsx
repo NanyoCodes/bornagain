@@ -181,11 +181,11 @@ function ShareWordDialog({
                 <BookMarked className="h-5 w-5 text-primary text-left" />
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Study</span>
             </div>
-            <DialogHeader className="text-left text-left text-left">
+            <DialogHeader className="text-left">
                 <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight text-left">
                     {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Select Chapter` : `${selectedBook} ${selectedChapter}`}
                 </DialogTitle>
-                {isMobile && <div className="flex items-center gap-2 mt-4 text-left text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>}
+                {isMobile && <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>}
             </DialogHeader>
         </div>
       </div>
@@ -399,9 +399,9 @@ function SoulSelectionDialog({ isOpen, onOpenChange, souls, onSelect, actionLabe
     );
 
     const body = (
-        <div className="p-6 space-y-6 text-left">
-            <div className="relative text-left"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50 text-left" /><Input placeholder="Search by name..." value={search} onChange={e => setSearch(e.target.value)} className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left" /></div>
-            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left"><div className="p-2 space-y-1.5 text-left">{filteredSouls.length > 0 ? (filteredSouls.map(soul => (<Button key={soul.id} variant="ghost" className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex flex-row items-center text-left" onClick={() => onSelect(soul)} disabled={isLoading}><Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left"><AvatarFallback className="font-black bg-primary/10 text-center flex items-center justify-center h-full w-full text-left">{soul.firstName?.charAt(0)}</AvatarFallback></Avatar><div className="text-left min-w-0 flex-1 text-left"><p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p><p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p></div><div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-left"><PlusCircle className="h-4 w-4 text-left" /></div></Button>))) : (<div className="text-center py-16 px-8 space-y-3 text-left"><div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left"><Users className="h-6 w-6 text-muted-foreground opacity-20 text-left" /></div><p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center text-left"> {search ? "No matches found" : "Log your first soul to begin tracking"}</p></div>)}</div></ScrollArea>
+        <div className="p-6 space-y-6 text-left text-left">
+            <div className="relative text-left"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50 text-left" /><Input placeholder="Search by name..." value={search} onChange={e => setSearchTerm(e.target.value)} className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left" /></div>
+            <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left"><div className="p-2 space-y-1.5 text-left">{filteredSouls.length > 0 ? (filteredSouls.map(soul => (<Button key={soul.id} variant="ghost" className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex flex-row items-center text-left text-left" onClick={() => onSelect(soul)} disabled={isLoading}><Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left"><AvatarFallback className="font-black bg-primary/10 text-center flex items-center justify-center h-full w-full text-left">{soul.firstName?.charAt(0)}</AvatarFallback></Avatar><div className="text-left min-w-0 flex-1 text-left"><p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p><p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p></div><div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-left"><PlusCircle className="h-4 w-4 text-left" /></div></Button>))) : (<div className="text-center py-16 px-8 space-y-3 text-left"><div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left"><Users className="h-6 w-6 text-muted-foreground opacity-20 text-left" /></div><p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center text-left"> {search ? "No matches found" : "Log your first soul to begin tracking"}</p></div>)}</div></ScrollArea>
         </div>
     );
 
@@ -710,7 +710,7 @@ export function RelationshipTrackerCard() {
                         <DrawerHeader className="text-left flex-shrink-0 text-left">
                             <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DrawerTitle>
                             <DrawerDescription className="text-sm font-medium mt-1 text-left">Describe how you supported {selectedSoulForAction?.firstName}.</DrawerDescription>
-                            <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>
+                            <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce text-left text-left" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>
                         </DrawerHeader>
                     </div>
                     <div className="p-8 text-left">
