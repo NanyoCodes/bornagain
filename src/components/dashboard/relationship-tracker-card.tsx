@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, getDocs, where, getDoc, addDoc } from 'firebase/firestore';
-import type { Soul, UserProfile } from '@/lib/types';
+import type { Soul, UserProfile, BibleChapterOutput } from '@/lib/types';
 import { isToday, format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -30,11 +30,7 @@ import {
   Smartphone,
   X,
   Send,
-  MoreVertical,
-  Edit,
-  Trash2,
-  Check,
-  ChevronDown
+  BookMarked
 } from 'lucide-react';
 import { cn, safeToDate } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -43,7 +39,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { actionItems, prayerTemplates } from '@/lib/follow-up-data';
+import { actionItems, prayerTemplates, kingdomVerses } from '@/lib/follow-up-data';
 import Link from 'next/link';
 import {
   Dialog,
@@ -59,6 +55,8 @@ import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { getBibleChapter } from '@/ai/flows/get-bible-chapter-flow';
+import { bibleData } from '@/lib/bible-data';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -82,6 +80,198 @@ function WhatsAppIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function ShareWordDialog({ 
+  isOpen, 
+  onOpenChange, 
+  soul, 
+  onSelectVerse 
+}: { 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  soul: Soul | null; 
+  onSelectVerse: (verse: string) => void;
+}) {
+  const [view, setView] = useState<'hub' | 'books' | 'chapters' | 'verses'>('hub');
+  const [bibleSearch, setBibleSearch] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<{reference: string, text: string}[]>([]);
+  
+  const [selectedBook, setSelectedBook] = useState<string | null>(null);
+  const [selectedChapter, setSelectedChapter] = useState<number | null>(null);
+  const [chapterContent, setChapterContent] = useState<BibleChapterOutput | null>(null);
+  const [loadingVerses, setLoadingVerses] = useState(false);
+  const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setView('hub');
+      setBibleSearch('');
+      setSearchResults([]);
+      setSelectedBook(null);
+      setSelectedChapter(null);
+      setChapterContent(null);
+      setSelectedVerses([]);
+    }
+  }, [isOpen]);
+
+  const constructInvitationMessage = useCallback((verseText: string, reference: string) => {
+    return `"${verseText.trim()}" — ${reference}\n\nJoin the harvest at Testify! Share your miracles and win souls for Christ. Visit: ${window.location.origin}/bible`;
+  }, []);
+
+  const handleSearch = async () => {
+      if (!bibleSearch.trim()) return;
+      setIsSearching(true);
+      try {
+          const res = await fetch(`https://bible-api.com/${encodeURIComponent(bibleSearch)}`);
+          if (res.ok) {
+              const data = await res.json();
+              if (data.verses) {
+                  setSearchResults([{ reference: data.reference, text: data.text }]);
+              }
+          }
+      } catch (e) {
+          console.warn("Bible search failed", e);
+      } finally {
+          setIsSearching(false);
+      }
+  };
+
+  const handleSelectBook = (bookName: string) => {
+    setSelectedBook(bookName);
+    setView('chapters');
+  };
+
+  const handleSelectChapter = async (num: number) => {
+    if (!selectedBook) return;
+    setSelectedChapter(num);
+    setLoadingVerses(true);
+    try {
+      const content = await getBibleChapter({ book: selectedBook, chapter: num });
+      setChapterContent(content);
+      setView('verses');
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingVerses(false);
+    }
+  };
+
+  const toggleVerse = (num: number) => {
+    setSelectedVerses(prev => prev.includes(num) ? prev.filter(v => v !== num) : [...prev, num].sort((a,b) => a-b));
+  };
+
+  const handleShareSelected = () => {
+    if (!chapterContent || selectedVerses.length === 0) return;
+    const selectedTexts = chapterContent.verses.filter(v => selectedVerses.includes(v.verse)).map(v => v.text).join(' ');
+    const reference = `${chapterContent.book} ${chapterContent.chapter}:${selectedVerses.join(', ')}`;
+    onSelectVerse(constructInvitationMessage(selectedTexts, reference));
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl max-h-[85vh] p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl text-left flex flex-col">
+        <div className="p-8 border-b bg-muted/10 shrink-0">
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+                <div className="flex items-center gap-3 mb-2">
+                    {view !== 'hub' && <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full -ml-2" onClick={() => setView(view === 'verses' ? 'chapters' : view === 'chapters' ? 'books' : 'hub')}><ArrowLeft className="h-4 w-4" /></Button>}
+                    <BookMarked className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Study</span>
+                </div>
+                <DialogHeader className="text-left">
+                    <DialogTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-tight">
+                        {view === 'hub' ? "Share the Word" : view === 'books' ? "Select Book" : view === 'chapters' ? `${selectedBook}: Select Chapter` : `${selectedBook} ${selectedChapter}`}
+                    </DialogTitle>
+                </DialogHeader>
+            </div>
+          </div>
+        </div>
+        <ScrollArea className="flex-grow min-h-[300px]">
+            <div className="p-8">
+                {view === 'hub' && (
+                    <div className="space-y-8">
+                        <div className="relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground opacity-50" />
+                            <Input placeholder="Search Bible (e.g. John 3:16)..." value={bibleSearch} onChange={e => setBibleSearch(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} className="h-12 pl-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" />
+                            <Button onClick={handleSearch} disabled={isSearching || !bibleSearch.trim()} variant="ghost" size="sm" className="absolute right-3 top-1/2 -translate-y-1/2 h-8 px-4 rounded-xl font-black text-[10px] uppercase text-primary">
+                                {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : 'SEARCH'}
+                            </Button>
+                        </div>
+                        {searchResults.length > 0 && searchResults.map((res, idx) => (
+                            <Button key={idx} variant="outline" className="w-full h-auto p-6 rounded-[2rem] border-primary/20 bg-primary/5 flex flex-col items-start gap-3 text-left hover:bg-primary/10 transition-all border-2 border-dashed" onClick={() => onSelectVerse(constructInvitationMessage(res.text, res.reference))}>
+                                <div className="flex items-center justify-between w-full">
+                                    <span className="font-black text-xs uppercase tracking-widest text-primary">{res.reference}</span>
+                                    <Send className="h-4 w-4 text-primary opacity-40" />
+                                </div>
+                                <p className="text-sm text-muted-foreground leading-relaxed italic line-clamp-4">"{res.text.trim()}"</p>
+                            </Button>
+                        ))}
+                        <div className="grid grid-cols-2 gap-4">
+                            <Button onClick={() => setView('books')} variant="outline" className="h-28 rounded-[2rem] gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center">
+                                <BookOpen className="h-8 w-8 mb-1 group-hover:scale-110 transition-transform" />
+                                <span className="font-black text-[10px] uppercase tracking-widest">Browse Bible</span>
+                            </Button>
+                            <Button variant="outline" asChild className="h-28 rounded-[2rem] gap-3 border-2 border-primary/20 text-primary hover:bg-primary/5 group transition-all flex flex-col items-center justify-center">
+                                <Link href="/dashboard/bible">
+                                    <BookMarked className="h-8 w-8 mb-1 group-hover:scale-110 transition-transform" />
+                                    <span className="font-black text-[10px] uppercase tracking-widest">Open Reader</span>
+                                </Link>
+                            </Button>
+                        </div>
+                        <div className="space-y-4">
+                            <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground px-1">Essential Scriptures</Label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {kingdomVerses.slice(0, 4).map((v, idx) => (
+                                    <Button key={idx} variant="ghost" className="w-full justify-start h-auto py-4 px-5 rounded-2xl hover:bg-primary/5 group border border-transparent hover:border-primary/10 transition-all text-left block relative bg-muted/5 shadow-sm" onClick={() => onSelectVerse(constructInvitationMessage(v.text, v.reference))}>
+                                        <p className="font-black text-[9px] uppercase tracking-widest text-primary mb-1">{v.reference}</p>
+                                        <p className="text-xs text-muted-foreground leading-relaxed italic line-clamp-2">"{v.text}"</p>
+                                    </Button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {view === 'books' && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {bibleData.map(book => (
+                            <Button key={book.name} variant="outline" className="h-12 rounded-xl font-bold uppercase text-[10px]" onClick={() => handleSelectBook(book.name)}>{book.name}</Button>
+                        ))}
+                    </div>
+                )}
+                {view === 'chapters' && (
+                    <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
+                       {selectedBook && bibleData.find(b => b.name === selectedBook)?.chapters.map(ch => (
+                         <Button key={ch.chapter} variant="outline" className="h-10 w-10 p-0 rounded-lg font-black text-sm" onClick={() => handleSelectChapter(ch.chapter)}>{ch.chapter}</Button>
+                       ))}
+                    </div>
+                )}
+                {view === 'verses' && (
+                    <div className="space-y-4">
+                       <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 mb-6">
+                          <p className="text-[10px] font-black uppercase text-primary mb-1">SELECTED VERSES</p>
+                          <p className="text-xs font-bold text-muted-foreground">{selectedVerses.length > 0 ? `${selectedBook} ${selectedChapter}:${selectedVerses.join(', ')}` : 'Select verses below...'}</p>
+                       </div>
+                       <div className="space-y-1 font-serif">
+                         {loadingVerses ? <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div> : chapterContent?.verses.map(v => (
+                           <div key={v.verse} className={cn("p-3 rounded-xl transition-all cursor-pointer border-2", selectedVerses.includes(v.verse) ? "bg-primary/10 border-primary/40" : "bg-transparent border-transparent hover:bg-muted/50")} onClick={() => toggleVerse(v.verse)}>
+                              <sup className="text-[10px] font-black mr-2 opacity-40">{v.verse}</sup>
+                              <span className="text-sm leading-relaxed">{v.text}</span>
+                           </div>
+                         ))}
+                       </div>
+                    </div>
+                )}
+            </div>
+        </ScrollArea>
+        <div className="p-6 border-t bg-muted/5 flex justify-end gap-3 shrink-0">
+            {view === 'verses' && <Button onClick={handleShareSelected} disabled={selectedVerses.length === 0} className="rounded-xl h-12 flex-1 font-black uppercase tracking-widest shadow-lg shadow-primary/20">PREPARE SHARE ({selectedVerses.length})</Button>}
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-2xl h-12 px-10 font-black uppercase tracking-widest text-xs">Close Hub</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function MatchmakingDialog({ isOpen, onOpenChange, sourceSoul, allSouls, onMatchConfirmed }: { isOpen: boolean; onOpenChange: (open: boolean) => void; sourceSoul: Soul | null; allSouls: Soul[]; onMatchConfirmed: (candidate: Soul) => void; }) {
     const [searchTerm, setSearchTerm] = useState('');
     const candidates = useMemo(() => {
@@ -94,16 +284,18 @@ function MatchmakingDialog({ isOpen, onOpenChange, sourceSoul, allSouls, onMatch
             return `${s.firstName} ${s.lastName}`.toLowerCase().includes(term);
         }).sort((a,b) => a.firstName.localeCompare(b.firstName));
     }, [sourceSoul, allSouls, searchTerm]);
+
     if (!sourceSoul) return null;
+
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
-                <div className="p-8 border-b bg-muted/10 text-left">
-                    <div className="flex items-center gap-2 mb-2 text-left"><HeartHandshake className="h-5 w-5 text-primary text-left" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] text-left">Kingdom Matching</span></div>
-                    <DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase text-left">Find Match for {sourceSoul.firstName}</DialogTitle><DialogDescription className="text-sm font-medium mt-1 text-left">Listing eligible singles (18+) of the opposite gender.</DialogDescription></DialogHeader>
-                    <div className="relative mt-6 text-left"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" /><Input placeholder="Search candidates..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="h-11 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold text-left" /></div>
+                <div className="p-8 border-b bg-muted/10">
+                    <div className="flex items-center gap-2 mb-2"><HeartHandshake className="h-5 w-5 text-primary" /><span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Kingdom Matching</span></div>
+                    <DialogHeader className="text-left"><DialogTitle className="text-2xl font-black font-headline uppercase">Find Match for {sourceSoul.firstName}</DialogTitle><DialogDescription className="text-sm font-medium mt-1">Listing eligible singles (18+) of the opposite gender.</DialogDescription></DialogHeader>
+                    <div className="relative mt-6"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40" /><Input placeholder="Search candidates..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="h-11 pl-10 rounded-2xl bg-muted/20 border-none shadow-inner font-bold" /></div>
                 </div>
-                <ScrollArea className="max-h-[50vh] text-left"><div className="p-4 space-y-2 text-left">{candidates.length > 0 ? candidates.map(c => (<Button key={c.id} variant="ghost" className="w-full justify-start h-auto min-h-[4rem] rounded-2xl gap-4 hover:bg-primary/5 group p-4 flex flex-row items-center text-left" onClick={() => onMatchConfirmed(c)}><Avatar className="h-10 w-10 border shadow-sm shrink-0 text-left"><AvatarFallback className="font-black bg-primary/10 text-primary text-xs flex items-center justify-center h-full w-full text-left">{c.firstName?.charAt(0)}</AvatarFallback></Avatar><div className="min-w-0 flex-1 text-left"><p className="font-black text-sm uppercase tracking-tight truncate leading-tight text-left">{c.firstName} {c.lastName} ({c.age})</p><div className="flex items-center gap-2 mt-0.5 opacity-60 flex-wrap text-left"><Badge variant="outline" className="h-4 px-1 text-[7px] uppercase font-bold tracking-widest text-left">{c.maritalStatus}</Badge><p className="text-[9px] font-bold uppercase truncate text-left">{c.church || 'Global Network'}</p></div></div><ArrowRight className="h-4 w-4 opacity-20 group-hover:opacity-100 transition-opacity shrink-0 text-left" /></Button>)) : (<div className="py-20 text-center flex flex-col items-center text-left"><Users className="h-12 w-12 text-muted-foreground/10 mb-4 text-left" /><p className="text-sm text-muted-foreground italic text-center text-left">No eligible candidates found.</p></div>)}</div></ScrollArea>
+                <ScrollArea className="max-h-[50vh]"><div className="p-4 space-y-2">{candidates.length > 0 ? candidates.map(c => (<Button key={c.id} variant="ghost" className="w-full justify-start h-auto min-h-[4rem] rounded-2xl gap-4 hover:bg-primary/5 group p-4 flex flex-row items-center text-left" onClick={() => onMatchConfirmed(c)}><Avatar className="h-10 w-10 border shadow-sm shrink-0"><AvatarFallback className="font-black bg-primary/10 text-primary text-xs flex items-center justify-center h-full w-full">{c.firstName?.charAt(0)}</AvatarFallback></Avatar><div className="min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight truncate leading-tight">{c.firstName} {c.lastName} ({c.age})</p><div className="flex items-center gap-2 mt-0.5 opacity-60 flex-wrap"><Badge variant="outline" className="h-4 px-1 text-[7px] uppercase font-bold tracking-widest">{c.maritalStatus}</Badge><p className="text-[9px] font-bold uppercase truncate">{c.church || 'Global Network'}</p></div></div><ArrowRight className="h-4 w-4 opacity-20 group-hover:opacity-100 transition-opacity shrink-0" /></Button>)) : (<div className="py-20 text-center flex flex-col items-center"><Users className="h-12 w-12 text-muted-foreground/10 mb-4" /><p className="text-sm text-muted-foreground italic text-center">No eligible candidates found.</p></div>)}</div></ScrollArea>
             </DialogContent>
         </Dialog>
     );
@@ -120,13 +312,15 @@ function SoulSelectionDialog({ isOpen, onOpenChange, souls, onSelect, actionLabe
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                <DialogHeader className="p-8 border-b bg-muted/10 text-left">
-                    <DialogTitle className="text-2xl font-black font-headline uppercase text-left">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
-                    <DialogDescription className="text-sm font-medium text-left">Select a convert to link this action to their record.</DialogDescription>
-                </DialogHeader>
-                <div className="p-6 space-y-6 text-left">
-                    <div className="relative text-left"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50 text-left" /><Input placeholder="Search by name..." value={search} onChange={e => setSearch(e.target.value)} className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base text-left" /></div>
-                    <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5 text-left"><div className="p-2 space-y-1.5 text-left">{filteredSouls.length > 0 ? (filteredSouls.map(soul => (<Button key={soul.id} variant="ghost" className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex flex-row items-center text-left" onClick={() => onSelect(soul)} disabled={isLoading}><Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm text-left"><AvatarFallback className="font-black bg-primary/10 text-center flex items-center justify-center h-full w-full text-left">{soul.firstName?.charAt(0)}</AvatarFallback></Avatar><div className="text-left min-w-0 flex-1 text-left"><p className="font-black text-sm uppercase tracking-tight text-left">{soul.firstName} {soul.lastName}</p><p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60 text-left">{soul.status}</p></div><div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-left"><PlusCircle className="h-4 w-4 text-left" /></div></Button>))) : (<div className="text-center py-16 px-8 space-y-3 text-left"><div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left"><Users className="h-6 w-6 text-muted-foreground opacity-20 text-left" /></div><p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center text-left">{search ? "No matches found" : "Log your first soul to begin tracking"}</p></div>)}</div></ScrollArea>
+                <div className="p-8 border-b bg-muted/10">
+                    <DialogHeader className="text-left">
+                        <DialogTitle className="text-2xl font-black font-headline uppercase">Who did you {actionLabel.toLowerCase()}?</DialogTitle>
+                        <DialogDescription className="text-sm font-medium">Select a convert to link this action to their record.</DialogDescription>
+                    </DialogHeader>
+                </div>
+                <div className="p-6 space-y-6">
+                    <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" /><Input placeholder="Search by name..." value={search} onChange={e => setSearchTerm(e.target.value)} className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base" /></div>
+                    <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5"><div className="p-2 space-y-1.5">{filteredSouls.length > 0 ? (filteredSouls.map(soul => (<Button key={soul.id} variant="ghost" className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex flex-row items-center text-left" onClick={() => onSelect(soul)} disabled={isLoading}><Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm"><AvatarFallback className="font-black bg-primary/10 text-center flex items-center justify-center h-full w-full">{soul.firstName?.charAt(0)}</AvatarFallback></Avatar><div className="text-left min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight">{soul.firstName} {soul.lastName}</p><p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p></div><div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><PlusCircle className="h-4 w-4" /></div></Button>))) : (<div className="text-center py-16 px-8 space-y-3"><div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto text-left"><Users className="h-6 w-6 text-muted-foreground opacity-20" /></div><p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center">{search ? "No matches found" : "Log your first soul to begin tracking"}</p></div>)}</div></ScrollArea>
                 </div>
             </DialogContent>
         </Dialog>
@@ -147,6 +341,7 @@ export function RelationshipTrackerCard() {
   const [isCommChannelDialogOpen, setIsCommChannelDialogOpen] = useState(false);
   const [isPrayerCustomizationOpen, setIsPrayerCustomizationOpen] = useState(false);
   const [isHelpNeedDialogOpen, setIsHelpNeedDialogOpen] = useState(false);
+  const [isStudyWordOpen, setIsStudyWordOpen] = useState(false);
   const [customMessageText, setCustomMessageText] = useState('');
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
@@ -224,8 +419,8 @@ export function RelationshipTrackerCard() {
         return;
     }
 
-    if (['text_message', 'prayed_together'].includes(selectedActionId)) {
-        if (!soul.phone) {
+    if (['text_message', 'prayed_together', 'studied_bible'].includes(selectedActionId)) {
+        if (!soul.phone && selectedActionId !== 'studied_bible') {
             toast({ variant: 'destructive', title: 'Phone Missing', description: `Please save a number for ${soul.firstName} first.` });
             return;
         }
@@ -236,6 +431,8 @@ export function RelationshipTrackerCard() {
             setIsPrayerCustomizationOpen(true);
         } else if (selectedActionId === 'text_message') {
             setIsCommChannelDialogOpen(true);
+        } else if (selectedActionId === 'studied_bible') {
+            setIsStudyWordOpen(true);
         }
         return;
     }
@@ -261,6 +458,15 @@ export function RelationshipTrackerCard() {
     } else if (selectedActionId === 'invited_to_event') {
         router.push('/dashboard/events');
         await finalizeLog(soul, selectedActionId, 'Redirected to Events Hub');
+    } else if (selectedActionId === 'introduced_friend') {
+        setSelectedSoulForAction(soul);
+        setIsSoulDialogOpen(false);
+        // Special case: we could open a partner selection, but for dashboard simplicity we'll just redirect to accountability
+        router.push('/dashboard/accountability');
+    } else if (selectedActionId === 'helped_with_need') {
+        setSelectedSoulForAction(soul);
+        setIsSoulDialogOpen(false);
+        setIsHelpNeedDialogOpen(true);
     } else {
         await finalizeLog(soul, selectedActionId);
     }
@@ -309,8 +515,9 @@ export function RelationshipTrackerCard() {
 
       <SoulSelectionDialog isOpen={isSoulDialogOpen} onOpenChange={setIsSoulDialogOpen} souls={souls} onSelect={handleSoulSelected} actionLabel={activeActionLabel} isLoading={togglingId !== null} />
       <MatchmakingDialog isOpen={isMatchmakingOpen} onOpenChange={setIsMatchmakingOpen} sourceSoul={selectedSoulForAction} allSouls={souls || []} onMatchConfirmed={handleMatchConfirmed} />
+      <ShareWordDialog isOpen={isStudyWordOpen} onOpenChange={setIsStudyWordOpen} soul={selectedSoulForAction} onSelectVerse={(v) => { setCustomMessageText(v); setIsStudyWordOpen(false); setIsCommChannelDialogOpen(true); }} />
       <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}><DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center"><DialogHeader className="text-center space-y-2"><div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center"><MessageSquare className="h-7 w-7 text-primary text-center" /></div><DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle><DialogDescription className="text-sm font-medium text-center">Encourage {selectedSoulForAction?.firstName} via Kingdom channels.</DialogDescription></DialogHeader><div className="flex flex-col gap-3 pt-6"><Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20"><WhatsAppIcon className="h-5 w-5" /> WhatsApp</Button><Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5"><MessageSquare className="h-5 w-5" /> Standard SMS</Button></div></DialogContent></Dialog>
-      <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}><DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left"><div className="p-8 border-b bg-muted/10 text-left"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle><DialogDescription className="text-sm font-medium">Draft a powerful prayer for {selectedSoulForAction?.firstName}.</DialogDescription></DialogHeader></div><div className="p-8 space-y-6"><div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Your Prayer</Label><Textarea value={customMessageText} onChange={e => setCustomMessageText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" /></div><Button onClick={() => { setIsPrayerCustomizationOpen(false); setTimeout(() => setIsCommChannelDialogOpen(true), 100); }} disabled={!customMessageText.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">CONTINUE TO CHANNEL</Button></div></DialogContent></Dialog>
+      <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}><DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left"><div className="p-8 border-b bg-muted/10 text-left"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DialogTitle><DialogDescription className="text-sm font-medium">Draft a powerful prayer for {selectedSoulForAction?.firstName}.</DialogDescription></DialogHeader></div><div className="p-8 space-y-6"><div className="space-y-3 text-left"><label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Prayer Focus</label><div className="flex flex-wrap gap-2 text-left">{prayerTemplates.map(t => (<Button key={t.id} variant="outline" size="sm" className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary" onClick={() => selectedSoulForAction && setCustomMessageText(resolveTemplate(t.text, selectedSoulForAction))}>{t.label}</Button>))}</div></div><div className="space-y-2 text-left"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Your Prayer</Label><Textarea value={customMessageText} onChange={e => setCustomMessageText(e.target.value)} className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6" /></div><Button onClick={() => { setIsPrayerCustomizationOpen(false); setTimeout(() => setIsCommChannelDialogOpen(true), 100); }} disabled={!customMessageText.trim()} className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest">CONTINUE TO CHANNEL</Button></div></DialogContent></Dialog>
       <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}><DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left"><div className="p-8 border-b bg-muted/10 text-left"><DialogHeader><DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Details</DialogTitle><DialogDescription className="text-sm font-medium">Describe how you supported {selectedSoulForAction?.firstName}.</DialogDescription></DialogHeader></div><div className="p-8 space-y-6"><div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Support Provided</Label><Textarea placeholder="e.g. Provided food items, helped with bills..." onChange={e => setCustomMessageText(e.target.value)} className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner" /></div><Button onClick={() => { if(selectedSoulForAction && selectedActionId) handleHelpNeedConfirm(customMessageText); }} className="w-full h-12 rounded-xl font-bold">Confirm Service</Button></div></DialogContent></Dialog>
     </>
   );
