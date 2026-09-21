@@ -496,8 +496,8 @@ export default function BibleReaderPage() {
                     ) : (
                         <Card key={h.id} onClick={() => setActiveHighlightId(h.id)} className={cn("cursor-pointer hover:bg-muted/50 border-l-4 rounded-xl shadow-sm border-l-primary text-left text-left", getNoteCardClass(h.color))}>
                             <CardHeader className="p-4 text-left text-left">
-                                <div className="flex justify-between items-start text-left text-left text-left text-left">
-                                    <CardTitle className="text-sm font-black uppercase tracking-tight truncate text-left text-left text-left">{getVerseReference(h)}</CardTitle>
+                                <div className="flex justify-between items-start text-left text-left text-left text-left text-left">
+                                    <CardTitle className="text-sm font-black uppercase tracking-tight truncate text-left text-left text-left text-left">{getVerseReference(h)}</CardTitle>
                                 </div>
                             </CardHeader>
                             {h.note && <CardContent className="p-4 pt-0 text-left text-left text-left"><p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed italic text-left">&ldquo;{h.note}&rdquo;</p></CardContent>}
@@ -558,7 +558,7 @@ export default function BibleReaderPage() {
                                 <span className="sr-only text-left">History</span>
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent className="text-left"><p className="text-[10px] font-bold uppercase text-left">Study History</p></TooltipContent>
+                        <TooltipContent className="text-left text-left"><p className="text-[10px] font-bold uppercase text-left">Study History</p></TooltipContent>
                     </Tooltip>
                    </TooltipProvider>
                 </div>
@@ -600,6 +600,21 @@ export default function BibleReaderPage() {
                                   </ScrollArea>
                                 </PopoverContent>
                             </Popover>
+
+                            <div className="flex items-center gap-1 ml-1 bg-background/50 rounded-full px-2 py-0.5 border border-primary/5">
+                                <Input 
+                                    type="number" 
+                                    placeholder="v." 
+                                    value={goToVerse} 
+                                    onChange={(e) => setGoToVerse(e.target.value)} 
+                                    className="w-10 h-7 rounded-lg bg-transparent border-none shadow-none font-black text-[10px] text-center p-0 focus-visible:ring-0" 
+                                    onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()} 
+                                />
+                                <Button onClick={handleGoToVerse} size="icon" variant="ghost" className="h-6 w-6 rounded-full text-primary hover:bg-primary/10 transition-colors">
+                                    <ChevronRight className="h-3 w-3" />
+                                    <span className="sr-only">Go</span>
+                                </Button>
+                            </div>
                         </div>
 
                         <div className="flex items-center gap-2 text-left">
@@ -644,18 +659,14 @@ export default function BibleReaderPage() {
                                                 <Card className="border-amber-500/50 bg-amber-500/5 p-4 w-full sm:w-auto shadow-inner rounded-2xl text-left">
                                                 <div className="flex items-center justify-between gap-8 text-left">
                                                     <div className="space-y-0.5 text-left text-left">
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 text-left text-left text-left">Revelation Pending</p>
-                                                    <p className="text-xs text-muted-foreground text-left text-left">Add a note to your highlight.</p>
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 text-left text-left text-left text-left">Revelation Pending</p>
+                                                    <p className="text-xs text-muted-foreground text-left text-left text-left">Add a note to your highlight.</p>
                                                     </div>
-                                                    <Button size="sm" variant="outline" onClick={() => setActiveHighlightId(unfinishedHighlight.id)} className="rounded-xl h-9 font-bold px-4 text-left text-left">Go to Note</Button>
+                                                    <Button size="sm" variant="outline" onClick={() => setActiveHighlightId(unfinishedHighlight.id)} className="rounded-xl h-9 font-bold px-4 text-left text-left text-left">Go to Note</Button>
                                                 </div>
                                                 </Card>
                                             )}
                                             <div className="flex gap-2 items-center text-left">
-                                              <div className="flex items-center gap-2 text-left">
-                                                  <Input type="number" placeholder="Verse" value={goToVerse} onChange={(e) => setGoToVerse(e.target.value)} className="w-20 h-9 text-left" onKeyDown={(e) => e.key === 'Enter' && handleGoToVerse()} />
-                                                  <Button onClick={handleGoToVerse} size="sm" variant="secondary" className="text-left">Go</Button>
-                                              </div>
                                               <Button onClick={handleMarkAsRead} disabled={isSubmitting} size="lg" className="w-full sm:w-auto font-black uppercase tracking-[0.2em] h-14 px-12 shadow-xl shadow-primary/20 rounded-2xl text-xs text-left">
                                                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                                                   FINISH CHAPTER
@@ -717,8 +728,8 @@ export default function BibleReaderPage() {
                                 <History className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-40 text-left" />
                             </div>
                             {historyFilterDate && (
-                                <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-12 w-12 rounded-2xl shadow-md text-left text-left">
-                                    <XCircle className="h-5 w-5 text-left text-left" />
+                                <Button variant="secondary" size="icon" onClick={() => setHistoryFilterDate('')} className="h-12 w-12 rounded-2xl shadow-md text-left text-left text-left">
+                                    <XCircle className="h-5 w-5 text-left text-left text-left" />
                                 </Button>
                             )}
                         </div>
@@ -758,8 +769,8 @@ export default function BibleReaderPage() {
                                 )) : (
                                     <div className="text-center py-32 flex flex-col items-center text-left">
                                         <History className="h-16 w-16 text-muted-foreground/10 mb-4 text-left" />
-                                        <h3 className="font-black uppercase tracking-tight text-xl opacity-30 text-center text-left">No Records</h3>
-                                        <p className="text-sm text-muted-foreground mt-2 italic px-12 text-balance leading-relaxed text-center text-left">
+                                        <h3 className="font-black uppercase tracking-tight text-xl opacity-30 text-center text-left text-left">No Records</h3>
+                                        <p className="text-sm text-muted-foreground mt-2 italic px-12 text-balance leading-relaxed text-center text-left text-left">
                                             {historyFilterDate ? "No study logged for this date." : "Your spiritual milestones will appear here as you meditate on the Word."}
                                         </p>
                                     </div>
@@ -772,4 +783,3 @@ export default function BibleReaderPage() {
         </div>
     );
 }
-
