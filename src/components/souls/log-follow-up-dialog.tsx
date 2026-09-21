@@ -8,6 +8,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "../ui/button";
@@ -17,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn, safeToDate } from "@/lib/utils";
 import { actionItems, statusOptions, prayerTemplates } from "@/lib/follow-up-data";
-import type { Soul, FollowUpStatus, UserProfile } from "@/lib/types";
+import type { Soul, FollowUpStatus, UserProfile, Chat } from "@/lib/types";
 import { 
   Church, 
   BookOpen, 
@@ -38,7 +39,8 @@ import {
   Share2,
   Share,
   HeartHandshake,
-  Hourglass
+  Hourglass,
+  ChevronDown
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -375,8 +377,8 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
 
   const formBody = (
     <Form {...form}>
-        <div className="space-y-6">
-            <div className="space-y-1.5">
+        <div className="space-y-6 text-left">
+            <div className="space-y-1.5 text-left">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Interaction Notes</label>
                 <FormField
                     control={form.control}
@@ -392,7 +394,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                 />
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 text-left">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Soul Status</label>
                 <FormField
                     control={form.control}
@@ -417,7 +419,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                 />
             </div>
             
-            <div className="space-y-3">
+            <div className="space-y-3 text-left">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Relationship Actions</label>
                 <FormField
                     control={form.control}
@@ -482,15 +484,15 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
             
             <Accordion type="single" collapsible className="w-full space-y-3">
                 <AccordionItem value="progress" className="border rounded-2xl overflow-hidden px-4 bg-muted/10">
-                     <AccordionTrigger className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:no-underline">Growth Milestones</AccordionTrigger>
+                     <AccordionTrigger className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:no-underline text-left">Growth Milestones</AccordionTrigger>
                      <AccordionContent>
-                        <div className="space-y-2 pt-2 pb-4">
+                        <div className="space-y-2 pt-2 pb-4 text-left">
                             <FormField
                                 control={form.control}
                                 name="attendingChurch"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-xl p-3 hover:bg-background/50 transition-colors">
-                                        <FormLabel className="font-bold text-sm flex items-center gap-2.5 cursor-pointer"><Church className="h-4 w-4 text-primary" />Attending Church</FormLabel>
+                                        <FormLabel className="font-bold text-sm flex items-center gap-2.5 cursor-pointer text-left"><Church className="h-4 w-4 text-primary" />Attending Church</FormLabel>
                                         <FormControl>
                                             <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
@@ -502,7 +504,7 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
                                 name="inBibleStudy"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-xl p-3 hover:bg-background/50 transition-colors">
-                                        <FormLabel className="font-bold text-sm flex items-center gap-2.5 cursor-pointer"><BookOpen className="h-4 w-4 text-primary" />In Bible Study</FormLabel>
+                                        <FormLabel className="font-bold text-sm flex items-center gap-2.5 cursor-pointer text-left"><BookOpen className="h-4 w-4 text-primary" />In Bible Study</FormLabel>
                                         <FormControl>
                                             <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
@@ -517,153 +519,258 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
     </Form>
   );
 
-  const PrayerCustomizationDialog = (
+  const prayerContent = (
+    <div className="space-y-6 text-left">
+        <div className="space-y-3 text-left">
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Prayer Focus</label>
+            <div className="flex flex-wrap gap-2 text-left">
+                {prayerTemplates.map(t => (
+                    <Button 
+                        key={t.id} 
+                        variant="outline" 
+                        size="sm" 
+                        className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary text-left"
+                        onClick={() => soul && setCustomPrayerText(resolveTemplate(t.text, soul))}
+                    >
+                        {t.label}
+                    </Button>
+                ))}
+            </div>
+        </div>
+
+        <div className="space-y-2 text-left">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Your Prayer</Label>
+            <Textarea 
+                value={customPrayerText}
+                onChange={e => setCustomPrayerText(e.target.value)}
+                className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6 text-left"
+            />
+        </div>
+
+        <Button 
+            onClick={() => handlePrayerCustomizationConfirm(customPrayerText)} 
+            disabled={!customPrayerText.trim()} 
+            className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
+        >
+            CONTINUE TO CHANNEL
+        </Button>
+    </div>
+  );
+
+  const PrayerCustomizationDialog = isMobile ? (
+    <Drawer open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
+        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                <DrawerHeader className="text-left flex-shrink-0">
+                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {soul?.firstName}.</DrawerDescription>
+                    <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Swipe down to close</span></div>
+                </DrawerHeader>
+            </div>
+            <ScrollArea className="flex-grow p-8">
+                {prayerContent}
+            </ScrollArea>
+        </DrawerContent>
+    </Drawer>
+  ) : (
     <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
-        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
-            <div className="p-8 border-b bg-muted/10">
-                <DialogHeader>
+        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+            <div className="p-8 border-b bg-muted/10 text-left">
+                <DialogHeader className="text-left">
                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DialogTitle>
                     <DialogDescription className="text-sm font-medium">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
                 </DialogHeader>
             </div>
-            <div className="p-8 space-y-6">
-                <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Prayer Focus</label>
-                    <div className="flex flex-wrap gap-2">
-                        {prayerTemplates.map(t => (
-                            <Button 
-                                key={t.id} 
-                                variant="outline" 
-                                size="sm" 
-                                className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/5 hover:text-primary"
-                                onClick={() => soul && setCustomPrayerText(resolveTemplate(t.text, soul))}
-                            >
-                                {t.label}
-                            </Button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Customize Your Prayer</Label>
-                    <Textarea 
-                        value={customPrayerText}
-                        onChange={e => setCustomPrayerText(e.target.value)}
-                        className="min-h-[200px] rounded-2xl bg-muted/20 border-none shadow-inner text-base leading-relaxed p-6"
-                    />
-                </div>
-
-                <Button 
-                    onClick={() => handlePrayerCustomizationConfirm(customPrayerText)} 
-                    disabled={!customPrayerText.trim()} 
-                    className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
-                >
-                    CONTINUE TO CHANNEL
-                </Button>
+            <div className="p-8">
+                {prayerContent}
             </div>
         </DialogContent>
     </Dialog>
   );
 
-  const CommDialog = (
+  const commBody = (
+    <div className="flex flex-col gap-3 pt-6 text-left">
+      <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+        <WhatsAppIcon className="h-5 w-5" /> WhatsApp
+      </Button>
+      <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+        <MessageSquare className="h-5 w-5" /> Standard SMS
+      </Button>
+    </div>
+  );
+
+  const CommDialog = isMobile ? (
+    <Drawer open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
+      <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
+        <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+            <DrawerHeader className="text-center space-y-2">
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
+                    <MessageSquare className="h-7 w-7 text-primary" />
+                </div>
+                <DrawerTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DrawerTitle>
+                <DrawerDescription className="text-sm font-medium text-center">How would you like to encourage {soul?.firstName}?</DrawerDescription>
+                <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
+            </DrawerHeader>
+        </div>
+        <div className="p-8">
+            {commBody}
+        </div>
+      </DrawerContent>
+    </Drawer>
+  ) : (
     <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
-      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center">
-        <DialogHeader className="text-center space-y-2">
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
+        <DialogHeader className="text-center space-y-2 text-left">
             <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                 <MessageSquare className="h-7 w-7 text-primary" />
             </div>
-          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Message Hub</DialogTitle>
+          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Message Hub</DialogTitle>
           <DialogDescription className="text-sm font-medium text-center">How would you like to encourage {soul?.firstName}?</DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-3 pt-6">
-          <Button onClick={() => handleCommChoice('whatsapp')} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
-            <WhatsAppIcon className="h-5 w-5" /> WhatsApp
-          </Button>
-          <Button onClick={() => handleCommChoice('sms')} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
-            <MessageSquare className="h-5 w-5" /> Standard SMS
-          </Button>
-        </div>
+        {commBody}
       </DialogContent>
     </Dialog>
   );
 
-  const NeedDialog = (
+  const helpContent = (
+    <div className="space-y-6 text-left">
+      <div className="space-y-2 text-left">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Support Details</Label>
+          <Textarea 
+              placeholder="e.g. Provided food items, helped with bill..." 
+              onChange={e => setCustomPrayerText(e.target.value)}
+              className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
+          />
+      </div>
+      <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-14 rounded-2xl font-black shadow-lg uppercase tracking-widest">CONFIRM SERVICE</Button>
+    </div>
+  );
+
+  const NeedDialog = isMobile ? (
+    <Drawer open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
+      <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+        <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+            <DrawerHeader className="text-left flex-shrink-0">
+                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DrawerTitle>
+                <DrawerDescription className="text-sm font-medium mt-1 text-left">Describe how you supported {soul?.firstName}.</DrawerDescription>
+                <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>
+            </DrawerHeader>
+        </div>
+        <div className="p-8">
+            {helpContent}
+        </div>
+      </DrawerContent>
+    </Drawer>
+  ) : (
     <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
       <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
         <div className="p-8 border-b bg-muted/10">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DialogTitle>
-            <DialogDescription className="text-sm font-medium">Describe how you supported {soul?.firstName}.</DialogDescription>
+          <DialogHeader className="text-left">
+            <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
+            <DialogDescription className="text-sm font-medium text-left">Describe how you supported {soul?.firstName}.</DialogDescription>
           </DialogHeader>
         </div>
-        <div className="p-8 space-y-6">
-          <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Support Details</Label>
-              <Textarea 
-                  placeholder="e.g. Provided food items, helped with bill..." 
-                  onChange={e => setCustomPrayerText(e.target.value)} // Reusing customPrayerText temporarily for simple local state
-                  className="min-h-[120px] rounded-2xl bg-muted/20 border-none shadow-inner"
-              />
-          </div>
-          <Button onClick={() => handleHelpNeedConfirm(customPrayerText)} className="w-full h-12 rounded-xl font-bold">Confirm Service</Button>
+        <div className="p-8">
+            {helpContent}
         </div>
       </DialogContent>
     </Dialog>
   );
 
-  const ShareTargetDialogEl = (
+  const shareTargetBody = (
+    <div className="flex flex-col gap-3 pt-6 text-left">
+      <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
+        <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
+      </Button>
+      <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
+        <HeartHandshake className="h-5 w-5" /> Partner on App
+      </Button>
+    </div>
+  );
+
+  const ShareTargetDialogEl = isMobile ? (
+    <Drawer open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
+      <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
+        <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+            <DrawerHeader className="text-center space-y-2 text-left">
+                <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
+                    <Share className="h-7 w-7 text-primary" />
+                </div>
+                <DrawerTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DrawerTitle>
+                <DrawerDescription className="text-sm font-medium text-center">Where would you like to share {soul?.firstName}'s info?</DrawerDescription>
+                <div className="flex items-center justify-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-center">Swipe down to close</span></div>
+            </DrawerHeader>
+        </div>
+        <div className="p-8">
+            {shareTargetBody}
+        </div>
+      </DrawerContent>
+    </Drawer>
+  ) : (
     <Dialog open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
-      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl">
-        <DialogHeader className="text-center space-y-2">
-            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
+      <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-left">
+        <DialogHeader className="text-center space-y-2 text-left">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
                 <Share className="h-7 w-7 text-primary" />
             </div>
-          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase">Share Details</DialogTitle>
-          <DialogDescription className="text-sm font-medium">Where would you like to share {soul?.firstName}'s info?</DialogDescription>
+          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DialogTitle>
+          <DialogDescription className="text-sm font-medium text-center">Where would you like to share {soul?.firstName}'s info?</DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-3 pt-6">
-          <Button onClick={handleShareToWhatsApp} className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] shadow-lg shadow-primary/20">
-            <WhatsAppIcon className="h-5 w-5" /> WhatsApp External
-          </Button>
-          <Button onClick={() => { setIsShareTargetDialogOpen(false); setTimeout(() => setIsPartnerSelectionDialogOpen(true), 100); }} variant="outline" className="h-14 rounded-2xl gap-3 font-black uppercase tracking-[0.1em] border-2 border-primary/20 text-primary hover:bg-primary/5">
-            <HeartHandshake className="h-5 w-5" /> Partner on App
-          </Button>
-        </div>
+        {shareTargetBody}
       </DialogContent>
     </Dialog>
   );
 
-  const PartnerSelectionDialog = (
+  const partnerSelectionBody = (
+    <ScrollArea className="h-64 text-left">
+        <div className="space-y-2 text-left">
+            {uniquePartners.map(p => (
+                <Button 
+                    key={p.userId} 
+                    variant="ghost" 
+                    className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group text-left"
+                    onClick={() => handleShareToPartner(p)}
+                >
+                    <Avatar className="h-8 w-8 border shrink-0 text-left">
+                        <AvatarImage src={p.photoURL} />
+                        <AvatarFallback className="font-bold text-[10px] text-left">{p.firstName?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <span className="font-bold text-sm group-hover:text-primary transition-colors text-left">{p.firstName} {p.lastName}</span>
+                </Button>
+            ))}
+            {uniquePartners.length === 0 && (
+                <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
+            )}
+        </div>
+    </ScrollArea>
+  );
+
+  const PartnerSelectionDialog = isMobile ? (
+    <Drawer open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
+        <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
+                <DrawerHeader className="text-left flex-shrink-0 text-left">
+                    <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DrawerTitle>
+                    <DrawerDescription className="text-sm font-medium mt-1 text-left">Which partner should receive these details?</DrawerDescription>
+                    <div className="flex items-center gap-2 mt-4 text-left"><ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" /><span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest text-left">Swipe down to close</span></div>
+                </DrawerHeader>
+            </div>
+            <div className="p-8">
+                {partnerSelectionBody}
+            </div>
+        </DrawerContent>
+    </Drawer>
+  ) : (
     <Dialog open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl">
-            <div className="p-8 border-b bg-muted/10">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DialogTitle>
-                    <DialogDescription className="text-sm font-medium">Which partner should receive these details?</DialogDescription>
+        <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
+            <div className="p-8 border-b bg-muted/10 text-left text-left text-left">
+                <DialogHeader className="text-left text-left text-left text-left">
+                    <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DialogTitle>
+                    <DialogDescription className="text-sm font-medium text-left text-left">Which partner should receive these details?</DialogDescription>
                 </DialogHeader>
             </div>
-            <div className="p-6">
-            <ScrollArea className="h-64">
-                <div className="space-y-2">
-                    {uniquePartners.map(p => (
-                        <Button 
-                            key={p.userId} 
-                            variant="ghost" 
-                            className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group"
-                            onClick={() => handleShareToPartner(p)}
-                        >
-                            <Avatar className="h-8 w-8 border shrink-0">
-                                <AvatarImage src={p.photoURL} />
-                                <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <span className="font-bold text-sm group-hover:text-primary transition-colors">{p.firstName} {p.lastName}</span>
-                        </Button>
-                    ))}
-                    {uniquePartners.length === 0 && (
-                        <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
-                    )}
-                </div>
-            </ScrollArea>
+            <div className="p-6 text-left text-left">
+                {partnerSelectionBody}
             </div>
         </DialogContent>
     </Dialog>
@@ -675,24 +782,24 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
         <SheetContent side="bottom" className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
           {soul && (
             <>
-              <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                <SheetHeader className="text-left">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Sparkles className="h-4 w-4 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Harvest Follow-up</span>
+              <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                <SheetHeader className="text-left text-left">
+                    <div className="flex items-center gap-2 mb-2 text-left">
+                        <Sparkles className="h-4 w-4 text-primary text-left" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left">Harvest Follow-up</span>
                     </div>
-                    <SheetTitle className="text-2xl font-black font-headline leading-tight">Log: {soul.firstName}</SheetTitle>
-                    <SheetDescription className="text-sm font-medium mt-1">Record the latest spiritual development.</SheetDescription>
+                    <SheetTitle className="text-2xl font-black font-headline leading-tight text-left">Log: {soul.firstName}</SheetTitle>
+                    <SheetDescription className="text-sm font-medium mt-1 text-left">Record the latest spiritual development.</SheetDescription>
                 </SheetHeader>
               </div>
-              <ScrollArea className="flex-grow px-8">
-                <div className="py-6">
+              <ScrollArea className="flex-grow px-8 text-left">
+                <div className="py-6 text-left">
                     {formBody}
                 </div>
               </ScrollArea>
-              <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm">
-                <Button type="button" onClick={form.handleSubmit(onSubmit)} disabled={isLoading} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase">
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <div className="p-8 border-t flex-shrink-0 bg-background/80 backdrop-blur-sm text-left">
+                <Button type="button" onClick={form.handleSubmit(onSubmit)} disabled={isLoading} className="w-full h-14 text-lg font-black rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-left">
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                     SAVE INTERACTION
                 </Button>
               </div>
@@ -714,21 +821,21 @@ export function LogFollowUpDialog({ soul, isOpen, onOpenChange, onFollowUpLogged
         <DialogContent className="sm:max-w-lg flex flex-col max-h-[90vh] p-0 rounded-3xl overflow-hidden text-left">
           {soul && (
             <>
-              <div className="p-6 border-b shrink-0 bg-muted/10">
-                  <DialogHeader>
-                      <DialogTitle className="text-2xl font-bold font-headline">Log Follow-up for {soul.firstName}</DialogTitle>
-                      <DialogDescription className="text-sm font-medium">Record this interaction in the shared history.</DialogDescription>
+              <div className="p-6 border-b shrink-0 bg-muted/10 text-left">
+                  <DialogHeader className="text-left">
+                      <DialogTitle className="text-2xl font-bold font-headline text-left">Log Follow-up for {soul.firstName}</DialogTitle>
+                      <DialogDescription className="text-sm font-medium text-left">Record this interaction in the shared history.</DialogDescription>
                   </DialogHeader>
               </div>
-              <ScrollArea className="flex-grow px-6">
-                  <div className="py-6">
+              <ScrollArea className="flex-grow px-6 text-left">
+                  <div className="py-6 text-left">
                       {formBody}
                   </div>
               </ScrollArea>
-              <div className="p-6 border-t shrink-0">
-                  <DialogFooter>
-                      <Button type="button" onClick={form.handleSubmit(onSubmit)} disabled={isLoading} className="w-full h-12 rounded-2xl font-bold">
-                          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              <div className="p-6 border-t shrink-0 text-left text-left">
+                  <DialogFooter className="text-left text-left">
+                      <Button type="button" onClick={form.handleSubmit(onSubmit)} disabled={isLoading} className="w-full h-12 rounded-2xl font-bold text-left text-left">
+                          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-left" />}
                           Save Interaction
                       </Button>
                   </DialogFooter>
