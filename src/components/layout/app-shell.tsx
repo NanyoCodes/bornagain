@@ -217,8 +217,9 @@ function CartButton() {
       <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl flex flex-col max-h-[90dvh] text-left text-left">
         <div className="p-8 border-b bg-muted/10 shrink-0 text-left text-left text-left">
             <div className="flex items-center gap-2 mb-1 text-left text-left text-left text-left">
-                <ShoppingCart className="h-5 w-5 text-primary text-left text-left text-left text-left" />
-                <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left">Pending Offering</span>
+                <ShoppingCart className="h-5 w-5 text-primary text-left text-left text-left text-left">
+                    <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em] text-left text-left text-left text-left">Pending Offering</span>
+                </ShoppingCart>
             </div>
             <DialogHeader className="text-left text-left text-left text-left text-left">
                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left text-left">Pending Offering</DialogTitle>
@@ -370,7 +371,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                   </div>
                 </DropdownMenuLabel>
                 
-                <DropdownMenuSeparator className="text-left text-left text-left text-left text-left text-left text-left" />
+                <DropdownMenuSeparator className="text-left text-left text-left text-left text-left text-left text-left text-left" />
                 
                 <div className="p-1 space-y-1 text-left text-left text-left text-left text-left text-left">
                   <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left text-left">
@@ -470,7 +471,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
                         <span className="text-[11px] font-bold uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">App Guide</span>
                       </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                  <DropdownMenuItem asChild className="rounded-xl h-10 px-3 transition-colors cursor-pointer text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                       <Link href="/resources" className="flex items-center gap-3 w-full text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                         <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                           <BookMarked className="h-3.5 w-3.5 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
@@ -482,7 +483,7 @@ function AppHeader({ unreadChatCount, unreadNotifCount, isPublicRoute, isProfile
 
                 <DropdownMenuSeparator className="text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                 
-                <div className="p-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                <div className="p-1 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                   <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-xl h-10 px-3 cursor-pointer text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
                     <LogOut className="mr-3 h-4 w-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" />
                     <span className="text-[11px] font-black uppercase tracking-[0.2em] text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Sign Out</span>
@@ -577,6 +578,15 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   const [showSplash, setShowSplash] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
 
+  // 1. Unified popstate handler for back button (MUST stay at top level)
+  useEffect(() => {
+      const handlePopState = () => {
+          // Individual pages handle their own popups currently.
+      };
+      window.addEventListener('popstate', handlePopState);
+      return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const handleDismissSplash = useCallback(() => {
     setShowSplash(false);
     localStorage.setItem('testify_splash_last_shown', Date.now().toString());
@@ -657,16 +667,6 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
         }
     }
   }, [profileLoading, userProfile]);
-
-  // Unified popstate handler for back button
-  useEffect(() => {
-      const handlePopState = () => {
-          // If we had logic here to manually close a global popup state, we would.
-          // Individual pages handle their own popups currently.
-      };
-      window.addEventListener('popstate', handlePopState);
-      return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
 
   if (authLoading || (profileLoading && !userProfile) || (!user && !isPublicRoute)) {
     return (

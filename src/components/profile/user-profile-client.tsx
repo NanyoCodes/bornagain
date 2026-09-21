@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useDoc, useUser, useAuth, useCollection, useUserProfile } from '@/firebase';
+import { useDoc, useUser, useAuth, useCollection, useUserProfile, useFirestore } from '@/firebase';
 import type { Testimony, Campaign, UserProfile, AccountabilityRequest } from '@/lib/types';
 import { doc, collection, query, where, serverTimestamp, setDoc, addDoc } from 'firebase/firestore';
 import { 
@@ -24,6 +24,7 @@ import {
     Hourglass,
     Briefcase,
     Heart,
+    ChevronRight,
     ChevronDown
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
