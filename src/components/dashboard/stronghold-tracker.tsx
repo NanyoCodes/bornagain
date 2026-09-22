@@ -9,9 +9,10 @@ import {
     addDoc, 
     serverTimestamp, 
     doc, 
-    updateDoc, 
+    orderBy,
+    updateDoc,
     deleteDoc,
-    orderBy 
+    where 
 } from 'firebase/firestore';
 import type { Stronghold, StrongholdStatus } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -355,7 +356,7 @@ export function StrongholdTracker() {
                                 <SheetDescription className="text-sm font-medium mt-1">Naming a struggle is the first step toward the Light.</SheetDescription>
                                 <div className="flex items-center gap-2 mt-4 text-left">
                                     <ChevronDown className="h-3 w-3 text-muted-foreground animate-bounce" />
-                                    <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">SWIPE DOWN TO CLOSE</span>
+                                    <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">swipe down to close the dialog</span>
                                 </div>
                             </SheetHeader>
                         </div>
