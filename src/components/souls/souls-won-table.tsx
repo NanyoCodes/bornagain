@@ -530,7 +530,7 @@ function SoulProfileContent({
           .replace(/{possessive}/g, pronouns.possessive);
   }, []);
 
-  const finalizeLog = async (actionId: string, noteAddendum: string = '') => {
+  const finalizeLog = async (soul: Soul, actionId: string, noteAddendum: string = '') => {
     if (!user || !firestore || !soul) return;
     setIsActionSubmitting(true);
     const action = actionItems.find(a => a.id === actionId);
@@ -723,7 +723,7 @@ function SoulProfileContent({
   const PrayerCustomizationDialog = isMobile ? (
     <Drawer open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-            <div className="p-8 border-b shrink-0 bg-muted/10">
+            <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                 <DrawerHeader className="text-left flex-shrink-0">
                     <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kingdom Intercession</DrawerTitle>
                     <DrawerDescription className="text-sm font-medium mt-1 text-left text-left text-left">Draft a powerful prayer for {soul?.firstName}.</DrawerDescription>
@@ -737,7 +737,7 @@ function SoulProfileContent({
   ) : (
     <Dialog open={isPrayerCustomizationOpen} onOpenChange={setIsPrayerCustomizationOpen}>
         <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-            <div className="p-8 border-b bg-muted/10">
+            <div className="p-8 border-b bg-muted/10 text-left">
                 <DialogHeader className="text-left text-left">
                     <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kingdom Intercession</DialogTitle>
                     <DialogDescription className="text-sm font-medium text-left text-left">Draft a powerful prayer for {soul?.firstName}.</DialogDescription>
@@ -764,13 +764,13 @@ function SoulProfileContent({
   const CommDialog = isMobile ? (
     <Drawer open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
       <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
-        <div className="p-8 border-b shrink-0 bg-muted/10">
+        <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
             <DrawerHeader className="text-center space-y-2">
                 <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
-                    <MessageSquare className="h-7 w-7 text-primary text-center text-left" />
+                    <MessageSquare className="h-7 w-7 text-primary" />
                 </div>
-                <DrawerTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Message Hub</DrawerTitle>
-                <DrawerDescription className="text-sm font-medium text-center text-left">How would you like to encourage {soul?.firstName}?</DrawerDescription>
+                <DrawerTitle className="text-2xl font-black font-headline uppercase text-center text-left text-left">Message Hub</DrawerTitle>
+                <DrawerDescription className="text-sm font-medium text-center text-left text-left">How would you like to encourage {soul?.firstName}?</DrawerDescription>
             </DrawerHeader>
         </div>
         <div className="p-8">
@@ -781,12 +781,12 @@ function SoulProfileContent({
   ) : (
     <Dialog open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
       <DialogContent className="sm:max-w-[340px] rounded-[2.5rem] p-8 border-none shadow-2xl text-center text-left">
-        <DialogHeader className="text-center space-y-2 text-left">
-            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
-                <MessageSquare className="h-7 w-7 text-primary text-center text-left" />
+        <DialogHeader className="text-center space-y-2 text-left text-left">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left text-left text-left">
+                <MessageSquare className="h-7 w-7 text-primary" />
             </div>
-          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left">Message Hub</DialogTitle>
-          <DialogDescription className="text-sm font-medium text-center text-left text-left">How would you like to encourage {soul?.firstName}?</DialogDescription>
+          <DialogTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-left text-left">Message Hub</DialogTitle>
+          <DialogDescription className="text-sm font-medium text-center text-left text-left text-left">How would you like to encourage {soul?.firstName}?</DialogDescription>
         </DialogHeader>
         {commBody}
       </DialogContent>
@@ -810,7 +810,7 @@ function SoulProfileContent({
   const NeedDialog = isMobile ? (
     <Drawer open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
       <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-        <div className="p-8 border-b shrink-0 bg-muted/10">
+        <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
             <DrawerHeader className="text-left flex-shrink-0 text-left">
                 <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Support Provided</DrawerTitle>
                 <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Describe how you supported {soul?.firstName}.</DrawerDescription>
@@ -823,7 +823,7 @@ function SoulProfileContent({
     </Drawer>
   ) : (
     <Dialog open={isHelpNeedDialogOpen} onOpenChange={setIsHelpNeedDialogOpen}>
-      <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+      <DialogContent className="sm:max-w-md rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">
         <div className="p-8 border-b bg-muted/10 text-left text-left">
           <DialogHeader className="text-left">
             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DialogTitle>
@@ -1329,7 +1329,7 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
             <DrawerContent hideCloseButton className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left text-left">
                 <div className="p-8 border-b shrink-0 bg-muted/10 text-left text-left text-left">
                     <div className="flex items-center gap-2 mb-2 text-left text-left text-left">
-                        <Sparkles className="h-4 w-4 text-primary text-left text-left text-left" />
+                        <div className="h-4 w-4 bg-primary/20 rounded-full flex items-center justify-center"><Sparkles className="h-2.5 w-2.5 text-primary" /></div>
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary text-left text-left text-left">Identity Hub</span>
                     </div>
                     <DrawerHeader className="p-0 text-left text-left text-left text-left text-left">
@@ -1374,4 +1374,3 @@ export function SoulsWonTable({ souls, allSouls, loading, selectedId, onSelect, 
     </div>
   );
 }
-

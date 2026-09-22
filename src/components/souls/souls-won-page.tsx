@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -123,7 +122,7 @@ function FilteredSoulList({ souls, allSouls, onSelectSoul, onAddChild }: { souls
             const sSpouse = (s.spouseName || "").toLowerCase();
             const otherSpouse = (other.spouseName || "").toLowerCase();
             return (sSpouse === otherFull || sSpouse === other.firstName.toLowerCase()) &&
-                   (otherSpouse === sFull || otherSpouse === soul.firstName.toLowerCase());
+                   (otherSpouse === sFull || otherSpouse === s.firstName.toLowerCase());
         }) : null;
 
         const householdChildren = allSouls.filter(child => s.childrenIds?.includes(child.id));
@@ -991,8 +990,8 @@ export default function SoulsWonPage() {
                                 <BarChart3 className="h-4 w-4 text-primary" />
                                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Harvest Demographic</span>
                             </div>
-                            <DrawerHeader className="text-left flex-shrink-0">
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight">{selectedFilterGroup?.value} Directory</DrawerTitle>
+                            <DrawerHeader className="text-left flex-shrink-0 text-left">
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase leading-tight"> {selectedFilterGroup?.value} Directory</DrawerTitle>
                                 <DrawerDescription className="text-sm font-medium mt-1">Converts within the {selectedFilterGroup?.value?.toLowerCase()} demographic.</DrawerDescription>
                             </DrawerHeader>
                         </div>
@@ -1020,7 +1019,7 @@ export default function SoulsWonPage() {
                                 <span className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Demographic View</span>
                             </div>
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">{selectedFilterGroup?.value} Directory</DialogTitle>
+                                <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight"> {selectedFilterGroup?.value} Directory</DialogTitle>
                                 <DialogDescription className="text-sm font-medium">Viewing all souls within this demographic group.</DialogDescription>
                             </DialogHeader>
                         </div>
@@ -1076,7 +1075,7 @@ export default function SoulsWonPage() {
                 <>
                     <Drawer open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
                         <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
-                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left text-left">
                                 <DrawerHeader className="text-left flex-shrink-0">
                                     <DrawerTitle className="text-2xl font-black font-headline">Add New Soul</DrawerTitle>
                                     <DrawerDescription className="text-sm">Record a new life won for Christ.</DrawerDescription>
@@ -1093,9 +1092,9 @@ export default function SoulsWonPage() {
                         </DrawerContent>
                     </Drawer>
                     <Drawer open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
-                                <DrawerHeader className="text-left flex-shrink-0">
+                                <DrawerHeader className="text-left flex-shrink-0 text-left">
                                     <DrawerTitle className="text-2xl font-black font-headline">Edit Record</DrawerTitle>
                                     <DrawerDescription className="text-sm">Update soul identity and mission details.</DrawerDescription>
                                 </DrawerHeader>
@@ -1109,7 +1108,7 @@ export default function SoulsWonPage() {
             ) : (
                 <>
                     <Dialog open={isLogDialogOpen} onOpenChange={(open) => { setIsLogDialogOpen(open); if(!open) setLogSoulDefaults({}); }}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-bold font-headline">Add New Soul</DialogTitle>
@@ -1127,7 +1126,7 @@ export default function SoulsWonPage() {
                         </DialogContent>
                     </Dialog>
                     <Dialog open={!!editSoulId} onOpenChange={(open) => !open && setEditSoulId(null)}>
-                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl">
+                        <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl text-left">
                             <div className="p-8 border-b shrink-0 bg-muted/10">
                                 <DialogHeader>
                                     <DialogTitle className="text-2xl font-black font-headline">Edit Record</DialogTitle>

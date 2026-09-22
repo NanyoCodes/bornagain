@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -46,6 +45,7 @@ import {
     DrawerTitle,
     DrawerDescription,
 } from "@/components/ui/drawer";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { doc, updateDoc, arrayUnion, arrayRemove, collection, query, serverTimestamp, addDoc, setDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -163,7 +163,6 @@ export const TestimonyCard = React.memo(function TestimonyCard({
   const { data: comments } = useCollection<{id: string}>(commentsQuery);
   const commentCount = comments?.length || 0;
 
-  // Back button handling for TestimonyCard dialogs
   useEffect(() => {
     const handlePopState = () => {
       if (showFullText) setShowFullText(false);
@@ -512,7 +511,7 @@ export const TestimonyCard = React.memo(function TestimonyCard({
             ) : (
                 <>
                     <Dialog open={showFullText} onOpenChange={open => { setShowFullText(open); if(!open) setIsCommentsOpen(false); }}>
-                        <DialogContent className="sm:max-w-4xl rounded-3xl overflow-hidden p-0 text-left text-left"><div className="p-8 border-b bg-muted/10 text-left text-left"><DialogHeader className="text-left"><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase text-left text-left">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest text-left text-left">BY {authorName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8 text-left">{fullTextContent}</div></DialogContent>
+                        <DialogContent className="sm:max-w-4xl rounded-3xl overflow-hidden p-0 text-left text-left"><div className="p-8 border-b bg-muted/10 text-left text-left"><DialogHeader className="text-left text-left"><DialogTitle className="text-3xl font-black font-headline tracking-tight uppercase text-left text-left">Kingdom Testimony</DialogTitle><DialogDescription className="text-sm font-bold uppercase tracking-widest text-left text-left">BY {authorName} • {displayDate}</DialogDescription></DialogHeader></div><div className="p-8 text-left">{fullTextContent}</div></DialogContent>
                     </Dialog>
                     <Dialog open={showFullPrayer} onOpenChange={setShowFullPrayer}>
                         <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl text-left text-left">

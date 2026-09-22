@@ -146,7 +146,7 @@ function CartButton() {
 
   const trigger = (
     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-        <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full text-left">
+        <Button variant="ghost" size="icon" className="relative group h-11 w-11 rounded-full">
             <ShoppingCart className="h-6 w-6 transition-transform group-hover:scale-110" />
             {count > 0 && (
                 <div className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-white animate-in zoom-in border-2 border-background">
@@ -162,7 +162,7 @@ function CartButton() {
         {cartItems && cartItems.length > 0 ? (
             <div className="space-y-3">
                 {cartItems.map((item: any) => (
-                    <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5 text-left">
+                    <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/5">
                         <Avatar className="h-10 w-10 border">
                             <AvatarImage src={item.photoURL} />
                             <AvatarFallback>P</AvatarFallback>
@@ -173,7 +173,7 @@ function CartButton() {
                         </div>
                     </div>
                 ))}
-                <div className="pt-4 border-t border-dashed text-left">
+                <div className="pt-4 border-t border-dashed">
                     <Button asChild className="w-full h-12 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20">
                         <Link href="/marketplace">PROCEED TO HUB</Link>
                     </Button>
@@ -516,7 +516,7 @@ function BottomNavBar() {
     }, [pathname]);
   
     return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#09090b] border-t border-white/5 pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border pb-[calc(env(safe-area-inset-bottom)+0.25rem)] md:hidden shadow-[0_-5px_15px_-10px_rgba(0,0,0,0.1)]">
         <div className="flex h-16 items-stretch justify-around px-1 py-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -537,7 +537,7 @@ function BottomNavBar() {
                       <motion.div
                         layoutId="nav-active-circle"
                         className={cn(
-                            "absolute inset-0 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.4)] bg-gradient-to-br",
+                            "absolute inset-0 rounded-full shadow-lg bg-gradient-to-br",
                             activeColorClass
                         )}
                         transition={{ type: "spring", stiffness: 350, damping: 30 }}
@@ -545,12 +545,12 @@ function BottomNavBar() {
                     )}
                     <item.icon className={cn(
                       "h-5.5 w-5.5 relative z-10 transition-colors duration-300",
-                      isActive ? "text-white" : "text-zinc-500"
+                      isActive ? "text-white" : "text-muted-foreground"
                     )} />
                   </div>
                   <span className={cn(
                     "text-[9px] font-black uppercase tracking-tighter transition-colors duration-300 leading-none",
-                    isActive ? "text-white" : "text-zinc-500"
+                    isActive ? "text-primary font-black" : "text-muted-foreground"
                   )}>
                     {item.label}
                   </span>
@@ -577,7 +577,6 @@ function ShellInner({ children, unreadChatCount, unreadNotifCount }: { children:
   const [showSplash, setShowSplash] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
 
-  // Unified hooks called before any early returns to satisfy Rules of Hooks
   useEffect(() => { 
     setMounted(true); 
     setLoadingMessage(inspirationalMessages[Math.floor(Math.random() * inspirationalMessages.length)]);
