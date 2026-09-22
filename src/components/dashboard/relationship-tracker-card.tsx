@@ -562,14 +562,14 @@ export function RelationshipTrackerCard() {
               })}
           </div>
         </CardContent>
-        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left">
-              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm">
-                  <Link href="/dashboard/souls-won">
-                      <UserPlus className="mr-2 h-4 w-4" />
+        <CardFooter className="px-4 sm:px-6 pb-6 pt-4 flex flex-col gap-4 border-t mt-4 bg-muted/5 text-left text-left">
+              <Button asChild variant="default" className="w-full font-black h-12 rounded-2xl shadow-xl shadow-primary/20 tracking-widest uppercase text-xs sm:text-sm text-left">
+                  <Link href="/dashboard/souls-won" className="text-left">
+                      <UserPlus className="mr-2 h-4 w-4 text-left" />
                       MANAGE SOULS WON
                   </Link>
               </Button>
-              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40">
+              <p className="text-[8px] text-center text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-40 text-center">
                   Unity • Growth • Love
               </p>
         </CardFooter>
@@ -587,8 +587,8 @@ export function RelationshipTrackerCard() {
       <Drawer open={isCommChannelDialogOpen} onOpenChange={setIsCommChannelDialogOpen}>
           <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
               <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                  <DrawerHeader className="text-center space-y-2">
-                      <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center text-left">
+                  <DrawerHeader className="text-center space-y-2 text-center text-left">
+                      <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                           <MessageSquare className="h-7 w-7 text-primary text-left" />
                       </div>
                       <DrawerTitle className="text-2xl font-black font-headline uppercase text-center text-left">Message Hub</DrawerTitle>
@@ -610,7 +610,7 @@ export function RelationshipTrackerCard() {
           <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
               <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                   <DrawerHeader className="text-left flex-shrink-0 text-left text-left">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left text-left">Kingdom Intercession</DrawerTitle>
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Kingdom Intercession</DrawerTitle>
                       <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DrawerDescription>
                   </DrawerHeader>
               </div>
@@ -618,7 +618,7 @@ export function RelationshipTrackerCard() {
                   <div className="space-y-6 text-left">
                       <div className="space-y-3 text-left">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Select Prayer Focus</label>
-                          <div className="flex flex-wrap gap-2 text-left text-left">
+                          <div className="flex flex-wrap gap-2 text-left">
                               {prayerTemplates.map(t => (
                                   <Button 
                                       key={t.id} 
@@ -633,8 +633,8 @@ export function RelationshipTrackerCard() {
                           </div>
                       </div>
 
-                      <div className="space-y-2 text-left text-left text-left">
-                          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left text-left">Customize Your Prayer</Label>
+                      <div className="space-y-2 text-left">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 text-left">Customize Your Prayer</Label>
                           <Textarea 
                               value={customText}
                               onChange={e => setCustomText(e.target.value)}
@@ -662,7 +662,7 @@ export function RelationshipTrackerCard() {
               <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
                   <DrawerHeader className="text-left flex-shrink-0 text-left">
                       <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1 text-left">Describe how you supported {activeSoul?.firstName}.</DrawerDescription>
+                      <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Describe how you supported {activeSoul?.firstName}.</DrawerDescription>
                   </DrawerHeader>
               </div>
               <div className="p-8 space-y-6 text-left">
@@ -682,12 +682,12 @@ export function RelationshipTrackerCard() {
       <Drawer open={isShareTargetDialogOpen} onOpenChange={setIsShareTargetDialogOpen}>
           <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12 text-left">
               <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                  <DrawerHeader className="text-center space-y-2 text-left">
+                  <DrawerHeader className="text-center space-y-2 text-center text-left text-left">
                       <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
-                          <Share className="h-7 w-7 text-primary text-left" />
+                          <Share className="h-7 w-7 text-primary text-left text-left" />
                       </div>
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase text-center text-left">Share Details</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium text-center text-left">Where would you like to share {activeSoul?.firstName}'s info?</DrawerDescription>
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase text-center text-left text-left">Share Details</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium text-center text-left text-left">Where would you like to share {activeSoul?.firstName}'s info?</DrawerDescription>
                   </DrawerHeader>
               </div>
               <div className="p-8 flex flex-col gap-3 text-left text-left">
@@ -704,12 +704,12 @@ export function RelationshipTrackerCard() {
       <Drawer open={isPartnerSelectionDialogOpen} onOpenChange={setIsPartnerSelectionDialogOpen}>
           <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
               <div className="p-8 border-b shrink-0 bg-muted/10 text-left">
-                  <DrawerHeader className="text-left flex-shrink-0 text-left">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1 text-left">Which partner should receive these details?</DrawerDescription>
+                  <DrawerHeader className="text-left flex-shrink-0 text-left text-left">
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left text-left">Select Partner</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1 text-left text-left">Which partner should receive these details?</DrawerDescription>
                   </DrawerHeader>
               </div>
-              <div className="p-8 text-left">
+              <div className="p-8 text-left text-left text-left">
                   {partnerSelectionBody}
               </div>
           </DrawerContent>
@@ -717,4 +717,3 @@ export function RelationshipTrackerCard() {
     </>
   );
 }
-

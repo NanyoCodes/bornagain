@@ -171,7 +171,7 @@ export function StrongholdTracker() {
     };
 
     const formFields = (
-        <div className="space-y-6 text-left">
+        <div className="space-y-6">
             <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Area of Struggle</Label>
                 <Input 
@@ -220,7 +220,7 @@ export function StrongholdTracker() {
     );
 
     return (
-        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/victory text-left">
+        <Card className="rounded-none sm:rounded-lg border-x-0 sm:border-x shadow-none border-b-2 sm:border-b overflow-hidden relative group/victory">
             <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover/victory:opacity-[0.05] transition-opacity">
                 <ShieldCheck className="h-32 w-32 text-primary rotate-12" />
             </div>
@@ -343,9 +343,9 @@ export function StrongholdTracker() {
 
             {mounted && isMobile ? (
                 <Drawer open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DrawerContent hideCloseButton className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
-                            <DrawerHeader className="text-left flex-shrink-0 flex flex-col gap-2">
+                    <DrawerContent className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                            <DrawerHeader className="text-left flex-shrink-0">
                                 <div className="flex items-center gap-2 mb-2">
                                     <ShieldCheck className="h-4 w-4 text-primary" />
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Warfare Protocol</span>
