@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Refined soul data access logic - 2025-03-05T16:00:00Z
+    // Deployment trigger: Added permission for user fellowships subcollection - 2025-03-05T17:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -111,6 +111,10 @@ service cloud.firestore {
       }
 
       match /joinedEvents/{eventId} {
+        allow get, list, write: if isOwner(userId);
+      }
+
+      match /fellowships/{fellowshipId} {
         allow get, list, write: if isOwner(userId);
       }
     }

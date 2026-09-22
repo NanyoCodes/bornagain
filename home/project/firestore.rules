@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Deployment trigger: Unification and private event security - 2025-06-15T12:00:00Z
+    // Deployment trigger: Added permission for user fellowships subcollection - 2025-03-05T17:30:00Z
     
     function isAuthenticated() {
       return request.auth != null;
@@ -76,18 +76,16 @@ service cloud.firestore {
         ))
       );
 
+      match /cart/{itemId} {
+        allow read, list, write: if isOwner(userId);
+      }
+
       match /strongholds/{id} {
         allow read, write: if isOwner(userId);
       }
 
       match /souls/{soulId} {
-        allow read: if isOwner(userId) || isFellowshipMember(resource.data.get('fellowshipId', '')) || isFellowshipMember(resource.data.get('associationId', ''));
-        allow create, delete: if isOwner(userId);
-        allow update: if isAuthenticated() && (
-          isOwner(userId) || 
-          isFellowshipMember(resource.data.get('fellowshipId', '')) || 
-          isFellowshipMember(resource.data.get('associationId', ''))
-        );
+        allow read, write: if isOwner(userId);
       }
       
       match /disciplineHistory/{logId} {
@@ -113,6 +111,10 @@ service cloud.firestore {
       }
 
       match /joinedEvents/{eventId} {
+        allow get, list, write: if isOwner(userId);
+      }
+
+      match /fellowships/{fellowshipId} {
         allow get, list, write: if isOwner(userId);
       }
     }
@@ -159,7 +161,7 @@ service cloud.firestore {
       match /armor/{armorId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
         allow update: if isAuthenticated() && (
           (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters']))
@@ -169,9 +171,9 @@ service cloud.firestore {
       match /foundational_armor/{armorIdx}/comments/{commentId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || get(/databases/$(database)/documents/victoryCircles/$(category)/foundational_armor/$(armorIdx)).data.authorId == request.auth.uid);
+        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
         allow update: if isAuthenticated() && (
-          (request.resource.data.authorId == request.auth.uid) ||
+          (request.resource.data.authorId == request.authorId) ||
           (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
         );
       }
@@ -179,8 +181,8 @@ service cloud.firestore {
       match /resources/{resourceId} {
         allow get, list: if isAuthenticated();
         allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow delete: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-        allow update: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
+        allow update: if isAuthenticated() && (request.resource.data.authorId == request.authorId);
       }
     }
     
@@ -198,9 +200,9 @@ service cloud.firestore {
     match /testimonies/{testimonyId} {
       allow get, list: if true;
       allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || string(resource.data.authorId).split('/').pop() == request.auth.uid);
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.authorId || string(resource.data.authorId).split('/').pop() == request.auth.uid);
       allow update: if isAuthenticated() && ( 
-        (resource.data.authorId == request.auth.uid) || 
+        (resource.data.authorId == request.authorId) || 
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supporters', 'inspiredBy', 'connectedBy']))
       );
 
