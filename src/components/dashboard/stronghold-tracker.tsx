@@ -187,7 +187,7 @@ export function StrongholdTracker() {
                     <SelectTrigger className="h-12 rounded-2xl bg-muted/20 border-none shadow-inner font-bold">
                         <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-2xl border-none shadow-2xl text-left">
+                    <SelectContent className="rounded-2xl border-none shadow-2xl">
                         <ScrollArea className="h-64">
                             {strongholdCategories.map(c => (
                                 <SelectItem key={c} value={c} className="rounded-xl">
@@ -200,7 +200,7 @@ export function StrongholdTracker() {
             </div>
             <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-start gap-3">
                 <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">This record is <span className="font-black text-foreground">strictly private</span>. It exists only for your personal accountability before God.</p>
+                <p className="text-[10px] text-muted-foreground leading-relaxed font-medium text-left">This record is <span className="font-black text-foreground">strictly private</span>. It exists only for your personal accountability before God.</p>
             </div>
         </div>
     );
@@ -255,7 +255,7 @@ export function StrongholdTracker() {
 
                             return (
                                 <div key={s.id} className={cn(
-                                    "p-0 rounded-[1.5rem] border-2 transition-all group/item relative overflow-hidden text-left",
+                                    "p-0 rounded-[1.5rem] border-2 transition-all group/item relative overflow-hidden",
                                     isVictorious ? "bg-green-500/5 border-green-500/20" : "bg-muted/10 border-transparent hover:border-primary/10"
                                 )}>
                                     <div className="p-4">
@@ -268,7 +268,7 @@ export function StrongholdTracker() {
                                                     {isVictorious && <Badge className="h-4 px-1.5 text-[7px] font-black uppercase tracking-tighter bg-green-500 text-white border-none">Victorious</Badge>}
                                                 </div>
                                                 <Link href={circleLink} className="group/title">
-                                                    <h4 className="font-black text-sm sm:text-base uppercase tracking-tight truncate group-hover/title:text-primary transition-colors">{s.title}</h4>
+                                                    <h4 className="font-black text-sm sm:text-base uppercase tracking-tight truncate group-hover/title:text-primary transition-colors text-left">{s.title}</h4>
                                                 </Link>
                                             </div>
                                             <DropdownMenu>
@@ -306,7 +306,7 @@ export function StrongholdTracker() {
                                                     <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
                                                         <CheckCircle2 className="h-5 w-5 text-green-600" />
                                                     </div>
-                                                    <p className="text-[10px] font-bold text-green-700 leading-tight italic break-words">
+                                                    <p className="text-[10px] font-bold text-green-700 leading-tight italic break-words text-left">
                                                         "{victoryVerse.text}" — {victoryVerse.ref}
                                                     </p>
                                                 </div>
@@ -346,14 +346,14 @@ export function StrongholdTracker() {
             {mounted && isMobile ? (
                 <Drawer open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
                     <DrawerContent hideCloseButton className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
-                        <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
+                        <div className="p-8 border-b flex-shrink-0 bg-muted/10">
                             <DrawerHeader className="text-left flex-shrink-0 flex flex-col gap-2">
                                 <div className="flex items-center gap-2 mb-2">
                                     <ShieldCheck className="h-4 w-4 text-primary" />
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Warfare Protocol</span>
                                 </div>
                                 <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Enter the Warfare</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1">Naming a struggle is the first step toward the Light.</DrawerDescription>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Naming a struggle is the first step toward the Light.</DrawerDescription>
                             </DrawerHeader>
                         </div>
                         <ScrollArea className="flex-grow">
@@ -369,7 +369,7 @@ export function StrongholdTracker() {
             ) : (
                 <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
                     <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
-                        <div className="p-8 border-b bg-muted/10 text-left">
+                        <div className="p-8 border-b bg-muted/10 text-left text-left">
                             <DialogHeader className="text-left">
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Enter the Warfare</DialogTitle>
                                 <DialogDescription className="text-sm font-medium text-left">Naming a struggle is the first step toward the Light.</DialogDescription>
