@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useUser, useFirestore, useCollection, useUserProfile } from '@/firebase';
 import { doc, serverTimestamp, writeBatch, arrayUnion, query, collection, orderBy, getDocs, addDoc, getDoc } from 'firebase/firestore';
@@ -50,8 +51,8 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 const iconMap: Record<string, any> = {
     'prayed_together': Sparkles,
@@ -371,6 +372,7 @@ export function RelationshipTrackerCard() {
           const q = query(chatsRef, where('participantIds', '==', participantIds), where('isGroupChat', '==', false));
           const snap = await getDocs(q);
           let chatId: string;
+
           if (!snap.empty) {
               chatId = snap.docs[0].id;
           } else {
@@ -389,8 +391,15 @@ export function RelationshipTrackerCard() {
               const ref = await addDoc(chatsRef, newChat);
               chatId = ref.id;
           }
-          await addDoc(collection(firestore, 'chats', chatId, 'messages'), { senderId: user.uid, text, createdAt: serverTimestamp() });
+
+          await addDoc(collection(firestore, 'chats', chatId, 'messages'), {
+              senderId: user.uid,
+              text,
+              createdAt: serverTimestamp()
+          });
+
           await updateDoc(doc(firestore, 'chats', chatId), { lastUpdatedAt: serverTimestamp(), hasMessages: true });
+          
           toast({ title: 'Shared with Partner!' });
           finalizeLog(activeSoul, 'introduced_friend', `Shared with partner: ${partner.firstName}`);
           setIsPartnerSelectionDialogOpen(false);
@@ -401,9 +410,46 @@ export function RelationshipTrackerCard() {
       }
   };
 
+  const partnerSelectionBody = (
+    <ScrollArea className="h-64">
+        <div className="space-y-2">
+            {uniquePartners.map(p => (
+                <Button 
+                    key={p.userId} 
+                    variant="ghost" 
+                    className="w-full justify-start h-14 rounded-xl gap-4 hover:bg-primary/5 group"
+                    onClick={() => handleShareToPartner(p)}
+                >
+                    <Avatar className="h-8 w-8 border shrink-0">
+                        <AvatarImage src={p.photoURL} />
+                        <AvatarFallback className="font-bold text-[10px]">{p.firstName?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <span className="font-bold text-sm group-hover:text-primary transition-colors">{p.firstName} {p.lastName}</span>
+                </Button>
+            ))}
+            {uniquePartners.length === 0 && (
+                <p className="text-center text-xs text-muted-foreground py-12">No partners found. Connect with some in Settings!</p>
+            )}
+        </div>
+    </ScrollArea>
+  );
+
   const activeActionLabel = useMemo(() => 
     actionItems.find(a => a.id === selectedActionId)?.label || "Connect with", 
   [selectedActionId]);
+
+  const uniquePartnersList = useMemo(() => {
+    const partners = userProfile?.accountabilityPartners || [];
+    const uniqueMap = new Map();
+    partners.forEach(p => {
+        if (p.userId) {
+          if (!uniqueMap.has(p.userId) || (!uniqueMap.get(p.userId).photoURL && p.photoURL)) {
+            uniqueMap.set(p.userId, p);
+          }
+        }
+    });
+    return Array.from(uniqueMap.values());
+  }, [userProfile?.accountabilityPartners]);
 
   if (userLoading || profileLoading || soulsLoading) {
     return (
@@ -448,7 +494,7 @@ export function RelationshipTrackerCard() {
         </CardHeader>
 
         <CardContent className="px-4 sm:px-6 pb-2 relative z-10">
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 text-center">
               {actionItems.map(action => {
                   const isCompleted = completedToday.includes(action.id);
                   const Icon = iconMap[action.id] || Heart;
@@ -500,7 +546,7 @@ export function RelationshipTrackerCard() {
                               </TooltipTrigger>
                               <TooltipContent className="rounded-xl border-primary/20 shadow-xl" side="bottom">
                                   <p className="text-[10px] font-bold uppercase text-primary">Kingdom Action</p>
-                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic text-left">{action.label}</p>
+                                  <p className="text-xs font-medium max-w-[150px] leading-relaxed italic">{action.label}</p>
                               </TooltipContent>
                           </Tooltip>
                       </TooltipProvider>
@@ -534,11 +580,11 @@ export function RelationshipTrackerCard() {
           <DrawerContent className="p-0 rounded-t-[2.5rem] h-auto pb-12">
               <div className="p-8 border-b shrink-0 bg-muted/10">
                   <DrawerHeader className="text-center space-y-2">
-                      <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
+                      <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2">
                           <MessageSquare className="h-7 w-7 text-primary" />
                       </div>
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase text-center text-balance">Message {activeSoul?.firstName}</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium text-center text-balance">Choose how to encourage your convert externally.</DrawerDescription>
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase text-center">Message Hub</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium text-center">How would you like to encourage {activeSoul?.firstName}?</DrawerDescription>
                   </DrawerHeader>
               </div>
               <div className="p-8 flex flex-col gap-3">
@@ -556,12 +602,12 @@ export function RelationshipTrackerCard() {
           <DrawerContent className="h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
               <div className="p-8 border-b shrink-0 bg-muted/10">
                   <DrawerHeader className="text-left flex-shrink-0">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Kingdom Intercession</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1 text-left">Draft a powerful prayer for {activeSoul?.firstName}.</DrawerDescription>
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Kingdom Intercession</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1">Draft a powerful prayer for {activeSoul?.firstName}.</DrawerDescription>
                   </DrawerHeader>
               </div>
               <ScrollArea className="flex-grow p-8">
-                  <div className="space-y-6 text-left">
+                  <div className="space-y-6 text-left text-left">
                       <div className="space-y-3">
                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Prayer Focus</label>
                           <div className="flex flex-wrap gap-2">
@@ -607,8 +653,8 @@ export function RelationshipTrackerCard() {
           <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
               <div className="p-8 border-b shrink-0 bg-muted/10">
                   <DrawerHeader className="text-left flex-shrink-0">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Support Provided</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1 text-left">Describe how you supported {activeSoul?.firstName}.</DrawerDescription>
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Support Provided</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1">Describe how you supported {activeSoul?.firstName}.</DrawerDescription>
                   </DrawerHeader>
               </div>
               <div className="p-8 space-y-6">
@@ -632,8 +678,8 @@ export function RelationshipTrackerCard() {
                       <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                           <Share className="h-7 w-7 text-primary" />
                       </div>
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-center text-balance">Share Details</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium text-center text-balance">Where would you like to share {activeSoul?.firstName}'s info?</DrawerDescription>
+                      <DrawerTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium text-center">Where would you like to share {activeSoul?.firstName}'s info?</DrawerDescription>
                   </DrawerHeader>
               </div>
               <div className="p-8 flex flex-col gap-3">
@@ -651,8 +697,8 @@ export function RelationshipTrackerCard() {
           <DrawerContent className="h-auto max-h-[90dvh] flex flex-col p-0 rounded-t-[2.5rem]">
               <div className="p-8 border-b shrink-0 bg-muted/10">
                   <DrawerHeader className="text-left flex-shrink-0">
-                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Select Partner</DrawerTitle>
-                      <DrawerDescription className="text-sm font-medium mt-1 text-left">Which partner should receive these details?</DrawerDescription>
+                      <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Select Partner</DrawerTitle>
+                      <DrawerDescription className="text-sm font-medium mt-1">Which partner should receive these details?</DrawerDescription>
                   </DrawerHeader>
               </div>
               <div className="p-8">

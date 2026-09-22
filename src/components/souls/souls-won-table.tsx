@@ -464,7 +464,7 @@ function MatchmakingDialog({ isOpen, onOpenChange, sourceSoul, allSouls, onMatch
     );
 }
 
-function SoulSelectionDialog({ isOpen, onOpenChange, souls, onSelect, actionLabel, isLoading }: { isOpen: boolean; onOpenChange: (open: boolean) => void; souls: Soul[] | null; onSelect: (soul: Soul) => void; actionLabel: string; isLoading: boolean; }) {
+function SoulSelectionDialogAlt({ isOpen, onOpenChange, souls, onSelect, actionLabel, isLoading }: { isOpen: boolean; onOpenChange: (open: boolean) => void; souls: Soul[] | null; onSelect: (soul: Soul) => void; actionLabel: string; isLoading: boolean; }) {
     const isMobile = useIsMobile();
     const [search, setSearch] = useState('');
     const filteredSouls = useMemo(() => {
@@ -485,7 +485,7 @@ function SoulSelectionDialog({ isOpen, onOpenChange, souls, onSelect, actionLabe
 
     const body = (
         <div className="p-6 space-y-6">
-            <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" /><Input placeholder="Search by name..." value={search} onChange={e => setBookSearchTerm(e.target.value)} className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base" /></div>
+            <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" /><Input placeholder="Search by name..." value={search} onChange={e => setSearch(e.target.value)} className="rounded-2xl h-12 pl-10 bg-muted/20 border-none shadow-inner text-base" /></div>
             <ScrollArea className="h-[40vh] border rounded-3xl bg-muted/5"><div className="p-2 space-y-1.5">{filteredSouls.length > 0 ? (filteredSouls.map(soul => (<Button key={soul.id} variant="ghost" className="w-full justify-start h-16 px-4 rounded-2xl hover:bg-primary/5 hover:text-primary transition-all gap-4 group flex flex-row items-center" onClick={() => onSelect(soul)} disabled={isLoading}><Avatar className="h-10 w-10 border-2 group-hover:border-primary/20 transition-colors shadow-sm"><AvatarFallback className="font-black bg-primary/10 text-center flex items-center justify-center h-full w-full">{soul.firstName?.charAt(0)}</AvatarFallback></Avatar><div className="text-left min-w-0 flex-1"><p className="font-black text-sm uppercase tracking-tight">{soul.firstName} {soul.lastName}</p><p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">{soul.status}</p></div><div className="h-8 w-8 rounded-full bg-muted/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><PlusCircle className="h-4 w-4" /></div></Button>))) : (<div className="text-center py-16 px-8 space-y-3"><div className="h-12 w-12 rounded-2xl bg-muted/20 flex items-center justify-center mx-auto"><Users className="h-6 w-6 text-muted-foreground opacity-20" /></div><p className="text-xs font-bold uppercase tracking-widest text-muted-foreground opacity-60 text-center"> {search ? "No matches found" : "Log your first soul to begin tracking"}</p></div>)}</div></ScrollArea>
         </div>
     );
@@ -765,7 +765,7 @@ function SoulProfileContent({
         </div>
 
         <Button 
-            onClick={() => handlePrayerCustomizationConfirm(customMessageText)} 
+            onClick={() => { setCustomMessageText(customMessageText); setIsPrayerCustomizationOpen(false); requestAnimationFrame(() => setIsCommChannelDialogOpen(true)); }} 
             disabled={!customMessageText.trim()} 
             className="w-full h-14 rounded-2xl font-black shadow-lg shadow-primary/20 uppercase tracking-widest"
         >
@@ -823,7 +823,7 @@ function SoulProfileContent({
                 <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                     <MessageSquare className="h-7 w-7 text-primary" />
                 </div>
-                <DrawerTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center text-balance">Message Hub</DrawerTitle>
+                <DrawerTitle className="text-2xl font-black font-headline uppercase text-center text-balance">Message Hub</DrawerTitle>
                 <DrawerDescription className="text-sm font-medium text-center text-balance">How would you like to encourage {soul?.firstName}?</DrawerDescription>
             </DrawerHeader>
         </div>
@@ -910,7 +910,7 @@ function SoulProfileContent({
                 <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 text-center">
                     <Share className="h-7 w-7 text-primary" />
                 </div>
-                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight uppercase text-center">Share Details</DrawerTitle>
+                <DrawerTitle className="text-2xl font-black font-headline tracking-tight uppercase text-center">Share Details</DrawerTitle>
                 <DrawerDescription className="text-sm font-medium text-center">Where would you like to share {soul?.firstName}'s info?</DrawerDescription>
             </DrawerHeader>
         </div>
@@ -1242,14 +1242,14 @@ const SoulCard = React.memo(({ soul, onClick }: {
     return (
         <Card onClick={onClick} className="rounded-none sm:rounded-xl border-x-0 sm:border-x border-b-2 sm:border-b shadow-none bg-card/50 backdrop-blur-sm transition-all duration-300 cursor-pointer hover:bg-primary/[0.02] text-left">
             <div className="flex items-center justify-between p-4 gap-4">
-                <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="flex items-center gap-3 min-w-0 flex-1 text-left">
                     <Avatar className={cn("h-10 w-10 border shadow-inner shrink-0")}>
                         <AvatarImage src={soul.photoURL || undefined} className="object-cover" />
                         <AvatarFallback className="font-black bg-primary/10 text-primary text-xs">
                             {soul.firstName?.charAt(0) || 'S'}
                         </AvatarFallback>
                     </Avatar>
-                    <div className="min-w-0">
+                    <div className="min-w-0 text-left">
                         <div className="flex items-center gap-2 flex-wrap">
                             <p className="font-bold truncate text-[13px] sm:text-base leading-tight capitalize tracking-tight">
                               {soul.firstName || 'Unknown'} {soul.lastName || ''}
