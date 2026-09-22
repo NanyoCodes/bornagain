@@ -206,7 +206,7 @@ export function StrongholdTracker() {
     );
 
     const formFooter = (
-        <div className="flex flex-col sm:flex-row gap-3 w-full text-left">
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
             <Button variant="outline" onClick={() => setIsAddOpen(false)} className="rounded-xl h-12 flex-1 font-bold">Cancel</Button>
             <Button 
                 onClick={handleAddStronghold} 
@@ -225,9 +225,9 @@ export function StrongholdTracker() {
                 <ShieldCheck className="h-32 w-32 text-primary rotate-12" />
             </div>
 
-            <CardHeader className="p-4 sm:p-6 pb-4 text-left">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
-                    <div className="space-y-1 text-left">
+            <CardHeader className="p-4 sm:p-6 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-1">
                         <CardTitle className="text-base sm:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
                             <Flame className="h-5 w-5 text-primary" />
                             Victory Tracker
@@ -241,11 +241,11 @@ export function StrongholdTracker() {
                 </div>
             </CardHeader>
 
-            <CardContent className="px-4 sm:px-6 pb-6 space-y-4 text-left">
+            <CardContent className="px-4 sm:px-6 pb-6 space-y-4">
                 {loading ? (
                     <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary opacity-20" /></div>
                 ) : strongholds && strongholds.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {strongholds.map((s) => {
                             const isVictorious = s.status === 'victorious';
                             const circleLink = `/strongholds/${(s.category || 'Other').toLowerCase().replace(/ /g, '-')}`;
@@ -333,25 +333,25 @@ export function StrongholdTracker() {
                         })}
                     </div>
                 ) : (
-                    <div className="text-center py-12 bg-muted/20 rounded-[2rem] border-2 border-dashed text-left">
+                    <div className="text-center py-12 bg-muted/20 rounded-[2rem] border-2 border-dashed">
                         <div className="h-12 w-12 bg-muted/40 rounded-full flex items-center justify-center mx-auto mb-4"><Zap className="h-6 w-6 text-muted-foreground opacity-20" /></div>
-                        <p className="text-xs text-muted-foreground font-medium italic px-12 text-balance leading-relaxed text-center">"For the weapons of our warfare are not carnal but mighty in God for pulling down strongholds." — 2 Cor 10:4</p>
-                        <Button variant="link" onClick={() => setIsAddOpen(true)} className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest w-full text-center">Initialize a Tracker</Button>
+                        <p className="text-xs text-muted-foreground font-medium italic px-12 text-balance leading-relaxed">"For the weapons of our warfare are not carnal but mighty in God for pulling down strongholds." — 2 Cor 10:4</p>
+                        <Button variant="link" onClick={() => setIsAddOpen(true)} className="mt-2 text-primary font-black uppercase text-[10px] tracking-widest w-full">Initialize a Tracker</Button>
                     </div>
                 )}
             </CardContent>
 
             {mounted && isMobile ? (
                 <Drawer open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DrawerContent className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem] text-left">
+                    <DrawerContent className="h-auto max-h-[95dvh] flex flex-col p-0 rounded-t-[2.5rem]">
                         <div className="p-8 border-b flex-shrink-0 bg-muted/10 text-left">
                             <DrawerHeader className="text-left flex-shrink-0">
                                 <div className="flex items-center gap-2 mb-2">
                                     <ShieldCheck className="h-4 w-4 text-primary" />
                                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Warfare Protocol</span>
                                 </div>
-                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight">Enter the Warfare</DrawerTitle>
-                                <DrawerDescription className="text-sm font-medium mt-1">Naming a struggle is the first step toward the Light.</DrawerDescription>
+                                <DrawerTitle className="text-2xl font-black font-headline uppercase tracking-tight text-left">Enter the Warfare</DrawerTitle>
+                                <DrawerDescription className="text-sm font-medium mt-1 text-left">Naming a struggle is the first step toward the Light.</DrawerDescription>
                             </DrawerHeader>
                         </div>
                         <ScrollArea className="flex-grow p-8">
@@ -364,7 +364,7 @@ export function StrongholdTracker() {
                 </Drawer>
             ) : (
                 <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if(!open) setTitle(''); }}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl text-left">
+                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
                         <div className="p-8 border-b bg-muted/10 text-left">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Enter the Warfare</DialogTitle>
@@ -382,7 +382,7 @@ export function StrongholdTracker() {
             )}
 
             <Dialog open={!!testimonyStronghold} onOpenChange={(open) => !open && setTestimonyStronghold(null)}>
-                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh] text-left">
+                <DialogContent className="sm:max-w-xl rounded-[2rem] p-0 overflow-hidden border-none shadow-2xl flex flex-col max-h-[90dvh]">
                     <div className="p-8 border-b bg-muted/10 shrink-0 text-left">
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-black font-headline uppercase tracking-tight">Share Your Victory</DialogTitle>
@@ -391,8 +391,8 @@ export function StrongholdTracker() {
                             </DialogDescription>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="flex-1 min-h-0 text-left">
-                        <div className="p-8 text-left">
+                    <ScrollArea className="flex-1 min-h-0">
+                        <div className="p-8">
                             {userProfile && testimonyStronghold && (
                                 <CreateTestimonyForm 
                                     userProfile={userProfile} 
